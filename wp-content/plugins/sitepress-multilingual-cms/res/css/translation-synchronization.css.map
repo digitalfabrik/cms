@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEC,4CAAmB;EACjB,KAAK,EAAE,eAAe;;AAGxB,qCAAY;EACX,WAAW,EAAE,GAAG;EAChB,OAAO,EAAE,GAAG;EACZ,KAAK,EAAE,IAAI;;;AAIb,sBAAuB;EACrB,MAAM,EAAE,IAAI;EACZ,QAAQ,EAAE,QAAQ;;;AAGpB,4DAA6D;EAC3D,KAAK,EAAE,GAAG;EACV,KAAK,EAAE,IAAI;;;AAGb,8BAA+B;EAC7B,YAAY,EAAE,EAAE",
+"sources": ["../scss/translation-synchronization.scss"],
+"names": [],
+"file": "translation-synchronization.css"
+}

@@ -1,0 +1,15 @@
+/* line 1, ../scss/overview.scss */
+p.sub {
+  color: #444444;
+  font-family: Verdana, serif;
+  font-size: 12px;
+  padding: 5px 10px 15px;
+  margin: 0;
+}
+
+/* line 9, ../scss/overview.scss */
+.postbox hr {
+  border: none;
+  border-bottom: solid 1px #ccc;
+  height: 1px;
+}

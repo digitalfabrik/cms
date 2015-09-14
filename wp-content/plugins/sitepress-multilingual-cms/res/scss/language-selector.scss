@@ -1,0 +1,333 @@
+/* IE5.5 hacks */
+* html {
+	#lang_sel,
+	#lang_sel_list {
+		width: 12em;
+
+		a {
+			width: 149px;
+			&:visited {
+				width: 149px;
+			}
+		}
+	}
+
+	#lang_sel ul ul,
+	#lang_sel_list ul {
+		top: 18px;
+
+		a {
+			width: 150px;
+			&:visited {
+				width: 150px;
+			}
+		}
+	}
+}
+
+/* remove all the bullets, borders and padding from the default list styling */
+#lang_sel {
+	height: 32px;
+	position: relative;
+	font-family: verdana, arial, sans-serif;
+	display: inline-block;
+
+  ul {
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style-type: none !important;
+
+		li:hover ul, a:hover ul {
+			visibility: visible;
+		}
+
+		/* hide the sub levels and give them a positon absolute so that they take up no room */
+		ul {
+			width: 149px;
+			visibility: hidden;
+			position: absolute;
+			height: 0;
+			top: 25px;
+			left: 0;
+			border-top: 1px solid #cdcdcd;
+
+			a {
+				background: #ffffff;
+				color: #444444;
+				height: auto;
+				line-height: 1em;
+				padding: 5px 10px;
+				border-width: 0 1px 1px 1px;
+
+				&:visited {
+					background: #ffffff;
+					color: #444444;
+					height: auto;
+					line-height: 1em;
+					padding: 5px 10px;
+					border-width: 0 1px 1px 1px;
+				}
+			}
+		}
+  }
+
+  li {
+		float: left;
+		width: 149px;
+		position: relative;
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style-type: none !important;
+
+    &:before {
+      content: '' !important;
+    }
+  }
+
+  a {
+    display: block;
+    font-size: 11px;
+    text-decoration: none !important;
+    color: #444444;
+    border: 1px solid #cdcdcd;
+    background: #fff;
+    padding-left: 10px;
+    line-height: 24px;
+
+    &:visited {
+      display: block;
+      font-size: 11px;
+      text-decoration: none !important;
+      color: #444444;
+      border: 1px solid #cdcdcd;
+      background: #fff;
+      padding-left: 10px;
+      line-height: 24px;
+    }
+
+		&.lang_sel_sel {
+			background: url(../img/nav-arrow-down.png) #fff right no-repeat;
+			color: #444;
+			&:hover {
+				text-decoration: none;
+				color: #000;
+			}
+		}
+  }
+
+	/* style the table so that it takes no part in the layout - required for IE to work */
+	table {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-collapse: collapse;
+	}
+
+	/* style the top level hover */
+	a:hover, ul ul a:hover, :hover > a, ul ul :hover > a {
+		color: #000;
+		background: #eee;
+	}
+
+	img.iclflag {
+		width: 18px;
+		height: 12px;
+		position: relative;
+		top: 1px;
+	}
+
+	&.icl_rtl {
+		text-align: right;
+		direction: rtl;
+		.lang_sel_sel {
+			padding-right: 14px;
+		}
+	}
+}
+
+
+/* make the second level visible when hover on first level list OR link */
+#lang_sel_footer {
+  margin: 0;
+  padding: 7px;
+  text-align: center;
+  font: 11px Verdana, sans-serif;
+  min-height: 15px;
+  clear: both;
+  background-color: #fff;
+  border: 1px solid #cdcdcd;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+			display: inline;
+			margin: 0 1px 0 0;
+			padding: 0;
+			white-space: nowrap;
+			line-height: 25px;
+
+      img {
+        position: relative;
+        top: 1px;
+        width: 18px;
+        height: 12px;
+      }
+
+      a {
+        text-decoration: none;
+        padding: 5px 10px;
+        &:visited {
+          text-decoration: none;
+          padding: 5px 10px;
+        }
+      }
+    }
+  }
+}
+
+#wpml_credit_footer {
+  width: 100%;
+  margin: 10px 0;
+  padding: 0;
+  text-align: center;
+  font-size: 11px;
+}
+
+
+/* remove all the bullets, borders and padding from the default list styling */
+#lang_sel_list {
+	height: 32px;
+	position: relative;
+	z-index: 99;
+	font-family: verdana, arial, sans-serif;
+
+  ul {
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style-type: none !important;
+
+		li:hover ul, a:hover ul {
+			visibility: visible;
+		}
+
+		&.lang_sel_list_vertical {
+			width: 149px;
+		}
+
+		a {
+			background: #ffffff;
+			color: #444444;
+			height: auto;
+			line-height: 1em;
+		}
+  }
+
+  li {
+		float: left;
+		position: relative;
+    padding: 0 !important;
+    margin: 0 !important;
+    list-style-type: none !important;
+
+    &:before {
+      content: '' !important;
+    }
+  }
+
+  a {
+    display: block;
+    font-size: 11px;
+    text-decoration: none !important;
+    color: #444444;
+    background: #fff;
+    line-height: 18px;
+    padding-left: 5px;
+
+    &:visited {
+      display: block;
+      font-size: 11px;
+      text-decoration: none !important;
+      color: #444444;
+      background: #fff;
+      line-height: 18px;
+      padding-left: 5px;
+    }
+
+		&.lang_sel_sel {
+			background-image: none;
+			color: #444;
+			&:hover {
+				text-decoration: none;
+				color: #000;
+			}
+		}
+  }
+
+	&.lang_sel_list_vertical {
+		width: 149px;
+
+		/* hide the sub levels and give them a positon absolute so that they take up no room */
+		ul {
+			/*visibility:hidden;position:absolute;*/
+			height: 0;
+			top: 19px;
+			left: 0;
+			border-top: 1px solid #cdcdcd;
+
+			a {
+				padding: 3px 10px;
+			}
+		}
+
+		li {
+			width: 149px;
+		}
+
+		a {
+			border: 1px solid #cdcdcd;
+			border-top-width: 0;
+			padding-left: 10px;
+
+			&:visited {
+				border: 1px solid #cdcdcd;
+				border-top-width: 0;
+				padding-left: 10px;
+			}
+		}
+	}
+
+	/* style the table so that it takes no ppart in the layout - required for IE to work */
+	table {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-collapse: collapse;
+	}
+
+	img.iclflag {
+		width: 18px;
+		height: 12px;
+		position: relative;
+		top: 1px;
+	}
+}
+
+/* style the second level links */
+#lang_sel_list_list ul a:visited {
+  background: #ffffff;
+  color: #444444;
+  height: auto;
+  line-height: 1em;
+	padding: 3px 10px;
+}
+
+/* reset menu img definitions */
+.menu-item-language img.iclflag {
+  height: 12px !important;
+  width: 18px !important;
+  margin-bottom: 0 !important;
+  margin-right: 4px;
+}

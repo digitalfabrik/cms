@@ -1,0 +1,27 @@
+.wpml-dialog {
+	z-index: 10000 !important;
+
+	.ui-dialog-titlebar .ui-dialog-title {
+		text-align: left;
+	}
+	.wpml-dialog-content {
+		input[type="text"] {
+			width: 100%;
+		}
+		li {
+			list-style: disc inside;
+		}
+	}
+	.posts-found, .no-posts-found, .ajax-loader {
+		display: none;
+	}
+	.spinner {
+		display: block;
+	}
+	button .spinner {
+		display:        inline-block;
+		margin:         0 0 0 5px;
+		vertical-align: middle;
+		float:          none;
+	}
+}

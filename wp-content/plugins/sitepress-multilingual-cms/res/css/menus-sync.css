@@ -1,0 +1,92 @@
+/* line 1, ../scss/menus-sync.scss */
+.icl_msync i.inactive {
+  color: #aaa;
+  font-weight: normal;
+}
+
+/* line 6, ../scss/menus-sync.scss */
+.icl_msync_item {
+  border-radius: 3px 3px;
+}
+
+/* line 11, ../scss/menus-sync.scss */
+.icl_msync_add {
+  background-color: #CCFF99;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 18, ../scss/menus-sync.scss */
+.icl_msync_del {
+  background-color: #F5BFCC;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 25, ../scss/menus-sync.scss */
+.icl_msync_not {
+  background-color: #A1A1A1;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 32, ../scss/menus-sync.scss */
+.icl_msync_mov {
+  background-color: #33B3B3;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 39, ../scss/menus-sync.scss */
+.icl_msync_label_changed {
+  background-color: #33b3ff;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 46, ../scss/menus-sync.scss */
+.icl_msync_url_changed, .icl_msync_options_changed {
+  background-color: #2743ff;
+  color: #ddd;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 54, ../scss/menus-sync.scss */
+.icl_msync_label_missing {
+  background-color: #F55959;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 61, ../scss/menus-sync.scss */
+.icl_msync_url_missing {
+  background-color: #f58f36;
+  padding: 2px 4px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* line 68, ../scss/menus-sync.scss */
+.icl_msync_menu_title {
+  background-color: #99CCCC;
+  font-weight: bold;
+}
+
+/* line 73, ../scss/menus-sync.scss */
+input.icl_msync_add {
+  background-color: #CCFF99;
+  padding: 2px 4px;
+}
+
+/* line 78, ../scss/menus-sync.scss */
+.icl_msync_menu_title small {
+  font-weight: normal;
+}

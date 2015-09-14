@@ -1,0 +1,19 @@
+/* line 1, ../scss/post-edit.scss */
+#project-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+/* line 7, ../scss/post-edit.scss */
+#project-icon {
+  float: left;
+  height: 32px;
+  width: 32px;
+}
+
+/* line 13, ../scss/post-edit.scss */
+#project-description {
+  margin: 0;
+  padding: 0;
+}
