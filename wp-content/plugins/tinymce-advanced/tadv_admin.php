@@ -9,7 +9,6 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	wp_die('Access denied');
 }
 
-load_plugin_textdomain( 'tinymce-advanced', false, 'tinymce-advanced/langs' );
 $message = '';
 
 $imgpath = TADV_URL . 'images/';

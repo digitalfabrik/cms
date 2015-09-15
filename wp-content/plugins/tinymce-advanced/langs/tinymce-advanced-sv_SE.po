@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TinyMCE Advanced\n"
-"POT-Creation-Date: 2015-05-04 13:27-0800\n"
-"PO-Revision-Date: 2015-05-04 13:27-0800\n"
+"POT-Creation-Date: 2015-09-15 10:42-0800\n"
+"PO-Revision-Date: 2015-09-15 10:45-0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../tadv_admin.php:128
+#: ../tadv_admin.php:125
 msgid "Default settings restored."
 msgstr "Standardinställningar återställda."
 
@@ -50,15 +50,15 @@ msgstr ""
 msgid "Select All"
 msgstr "Välj allt"
 
-#: ../tadv_admin.php:150 ../tadv_admin.php:174
+#: ../tadv_admin.php:150 ../tadv_admin.php:176
 msgid "Back to Editor Settings"
 msgstr "Tillbaka till redigerarinställningar"
 
-#: ../tadv_admin.php:160
+#: ../tadv_admin.php:162
 msgid "TinyMCE Advanced Settings Import"
 msgstr "TinyMCE Avancerad Inställningsimport"
 
-#: ../tadv_admin.php:163
+#: ../tadv_admin.php:165
 msgid ""
 "The settings are imported from a JSON encoded string. Please paste the "
 "exported string in the text area below."
@@ -66,35 +66,35 @@ msgstr ""
 "Inställningarna importeras från en JSON-kodad sträng. Vänligen klistra in "
 "den exporterade strängen i textfältet nedan."
 
-#: ../tadv_admin.php:168
+#: ../tadv_admin.php:170
 msgid "Verify"
 msgstr "Jämför"
 
-#: ../tadv_admin.php:169
+#: ../tadv_admin.php:171
 msgid "Import"
 msgstr "Importera"
 
-#: ../tadv_admin.php:196
+#: ../tadv_admin.php:201
 msgid "Importing of settings failed."
 msgstr "Import av inställningar misslyckades."
 
-#: ../tadv_admin.php:221
+#: ../tadv_admin.php:227
 msgid "ERROR: All toolbars are empty. Default settings loaded."
 msgstr "FEL: Alla verktygsfält är tomma. Ursprungsinställningar inladdade."
 
-#: ../tadv_admin.php:233
+#: ../tadv_admin.php:239
 msgid "Editor Settings"
 msgstr "Redigerarinställningar"
 
-#: ../tadv_admin.php:240
+#: ../tadv_admin.php:246
 msgid "Settings saved."
 msgstr "Inställningar sparade."
 
-#: ../tadv_admin.php:249 ../tadv_admin.php:513
+#: ../tadv_admin.php:255 ../tadv_admin.php:509
 msgid "Save Changes"
 msgstr "Spara ändringar"
 
-#: ../tadv_admin.php:254
+#: ../tadv_admin.php:260
 msgid ""
 "New in TinyMCE 4.0/WordPress 3.9 is the editor menu. When it is enabled, "
 "most buttons are also available as menu items."
@@ -102,11 +102,11 @@ msgstr ""
 "Nytt i TinyMCE 4.0/WordPress 3.9 är redigerarmenyn. När den är aktiverad "
 "blir de flesta knapparna också tillgängliga som menyval."
 
-#: ../tadv_admin.php:258
+#: ../tadv_admin.php:264
 msgid "Enable the editor menu."
 msgstr "Aktivera redigerarmenyn."
 
-#: ../tadv_admin.php:370
+#: ../tadv_admin.php:376
 msgid ""
 "Drag buttons from the unused buttons below and drop them in the toolbars "
 "above, or drag the buttons in the toolbars to rearrange them."
@@ -114,40 +114,40 @@ msgstr ""
 "Dra knappar från de oanvända knapparna nedan och släpp dem i verktygsfälten "
 "ovan, eller dra knapparna i verktygsfältet för att arrangera om dem."
 
-#: ../tadv_admin.php:373
+#: ../tadv_admin.php:379
 msgid "Unused Buttons"
 msgstr "Oanvända knappar"
 
-#: ../tadv_admin.php:414
+#: ../tadv_admin.php:420
 msgid "Also enable:"
 msgstr "Aktivera också:"
 
-#: ../tadv_admin.php:417
+#: ../tadv_admin.php:423
 msgid "List Style Options"
 msgstr "Liststil-tillval"
 
-#: ../tadv_admin.php:422
+#: ../tadv_admin.php:428
 msgid "Context Menu"
 msgstr "Sammanhangsmeny"
 
-#: ../tadv_admin.php:427
+#: ../tadv_admin.php:433
 msgid "Link (replaces the Insert/Edit Link dialog)"
 msgstr "Länk (ersätter dialogfönstret Infoga/redigera länk)"
 
-#: ../tadv_admin.php:437
+#: ../tadv_admin.php:443
 msgid "Advanced Options"
 msgstr "Avancerade tillval"
 
-#: ../tadv_admin.php:445
+#: ../tadv_admin.php:451
 msgid "Import editor-style.css."
 msgstr "Importera editor-style.css."
 
-#: ../tadv_admin.php:447
+#: ../tadv_admin.php:453
 msgid "It seems your theme does not support customised styles for the editor."
 msgstr ""
 "Det verkar som att ditt tema inte stöder anpassade stilar för redigeraren."
 
-#: ../tadv_admin.php:448
+#: ../tadv_admin.php:454
 msgid ""
 "You can create a CSS file named <code>editor-style.css</code> and upload it "
 "to your theme's directory."
@@ -155,11 +155,11 @@ msgstr ""
 "Du kan skapa en CSS-fil namngiven <code>editor-style.css</code> och ladda "
 "upp till ditt temas mapp."
 
-#: ../tadv_admin.php:449
+#: ../tadv_admin.php:455
 msgid "After that, enable this setting."
 msgstr "Efteråt, aktivera denna inställning."
 
-#: ../tadv_admin.php:458
+#: ../tadv_admin.php:464
 msgid ""
 "Load the CSS classes used in editor-style.css and replace the Formats button "
 "and sub-menu."
@@ -167,33 +167,7 @@ msgstr ""
 "Ladda CSS-klasser från editor-style.css och ersätt Formaterings-knapp och "
 "undermeny."
 
-#: ../tadv_admin.php:463
-msgid "Markdown typing support (text pattern plugin)"
-msgstr "Stöd för att skriva Markdown (tillägg för textflöde)"
-
-#: ../tadv_admin.php:465
-msgid ""
-"This plugin matches special patterns while you type and applies formats or "
-"executes commands on the matched text."
-msgstr ""
-"Detta tillägg matchar speciella mönster medan du skriver och applicerar "
-"formatering eller utför kommandon utifrån matchad text."
-
-#: ../tadv_admin.php:466
-msgid ""
-"The default patterns are the same as the markdown syntax so you can type "
-"<code># text</code> to create a header, <code>1. text</code> to create a "
-"list, <code>**text**</code> to make it bold, etc."
-msgstr ""
-"Standardmönster är samma som markdown-syntax så att du kan skriva <code># "
-"text</code> för att skapa en rubrik, <code>1. text</code> för att skapa en "
-"lista, <code>**text**</code> för fet stil etc."
-
-#: ../tadv_admin.php:467
-msgid "More information"
-msgstr "Mer information"
-
-#: ../tadv_admin.php:473
+#: ../tadv_admin.php:469
 msgid ""
 "Stop removing the &lt;p&gt; and &lt;br /&gt; tags when saving and show them "
 "in the Text editor"
@@ -201,7 +175,7 @@ msgstr ""
 "Sluta ta bort &lt;p&gt; och &lt;br /&gt;-taggar vid sparande och visa dem i "
 "textredigeraren"
 
-#: ../tadv_admin.php:475
+#: ../tadv_admin.php:471
 msgid ""
 "This will make it possible to use more advanced coding in the HTML editor "
 "without the back-end filtering affecting it much."
@@ -209,7 +183,7 @@ msgstr ""
 "Detta möjliggör mer avancerad kodning i HTML-redigeraren utan att backend-"
 "filtrering påverkar så mycket."
 
-#: ../tadv_admin.php:476
+#: ../tadv_admin.php:472
 msgid ""
 "However it may behave unexpectedly in rare cases, so test it thoroughly "
 "before enabling it permanently."
@@ -217,7 +191,7 @@ msgstr ""
 "Ändå kan det uppföra sig oväntat i särskilda fall, så testa noggrant innan "
 "du aktiverar det permanent."
 
-#: ../tadv_admin.php:477
+#: ../tadv_admin.php:473
 msgid ""
 "Line breaks in the HTML editor would still affect the output, in particular "
 "do not use empty lines, line breaks inside HTML tags or multiple &lt;br /"
@@ -227,11 +201,11 @@ msgstr ""
 "använd i synnerhet inte några tomma rader, radbrytningar inuti HTML-taggar "
 "eller flera &lt;br /&gt;-taggar."
 
-#: ../tadv_admin.php:483
+#: ../tadv_admin.php:479
 msgid "Replace font size settings"
 msgstr "Ersätt textstorleksinställningar"
 
-#: ../tadv_admin.php:484
+#: ../tadv_admin.php:480
 msgid ""
 "Replaces the size setting available for fonts with: 8px 10px 12px 14px 16px "
 "20px 24px 28px 32px 36px."
@@ -239,11 +213,11 @@ msgstr ""
 "Ersätter storleksinställningen för teckensnitt med: 8px 10px 12px 14px 16px "
 "20px 24px 28px 32px 36px."
 
-#: ../tadv_admin.php:489
+#: ../tadv_admin.php:485
 msgid "Enable pasting of image source"
 msgstr "Aktivera inklistring av bildkällor"
 
-#: ../tadv_admin.php:491
+#: ../tadv_admin.php:487
 msgid ""
 "Works only in Firefox and Safari. These browsers support pasting of images "
 "directly in the editor and convert them to base64 encoded text."
@@ -251,7 +225,7 @@ msgstr ""
 "Fungerar enbart med Firefox och Safari. Dessa webbläsare stöder inklistring "
 "av bilder direkt i redigeraren och konverterar dem till base64-kodad text."
 
-#: ../tadv_admin.php:492
+#: ../tadv_admin.php:488
 msgid ""
 "This is not acceptable for larger images like photos or graphics, but may be "
 "useful in some cases for very small images like icons, not larger than 2-3KB."
@@ -260,27 +234,27 @@ msgstr ""
 "vara användbart i vissa fall för väldigt små bilder såsom ikoner, inte "
 "större än 2-3kB."
 
-#: ../tadv_admin.php:493
+#: ../tadv_admin.php:489
 msgid "These images will not be available in the Media Library."
 msgstr "Dessa bilder kommer inte att finnas i Mediabiblioteket."
 
-#: ../tadv_admin.php:499
+#: ../tadv_admin.php:495
 msgid "Administration"
 msgstr "Administration"
 
-#: ../tadv_admin.php:501
+#: ../tadv_admin.php:497
 msgid "Export Settings"
 msgstr "Exportera inställningar"
 
-#: ../tadv_admin.php:502
+#: ../tadv_admin.php:498
 msgid "Import Settings"
 msgstr "Importera inställningar"
 
-#: ../tadv_admin.php:512
+#: ../tadv_admin.php:508
 msgid "Restore Default Settings"
 msgstr "Återställ ursprungsinställningar"
 
-#: ../tadv_admin.php:518
+#: ../tadv_admin.php:514
 msgid ""
 "The [Toolbar toggle] button shows or hides the second, third, and forth "
 "button rows. It will only work when it is in the first row and there are "
@@ -290,7 +264,7 @@ msgstr ""
 "knappraden. Det fungerar endast när knappen finns på den första raden och "
 "det finns knappar i den andra raden."
 
-#: ../tinymce-advanced.php:166
+#: ../tinymce-advanced.php:180
 #, php-format
 msgid ""
 "TinyMCE Advanced requires WordPress version %1$s or newer. It appears that "
@@ -299,7 +273,7 @@ msgstr ""
 "Detta tillägg kräver WordPress version %1$s eller nyare. Det verkar som att "
 "du kör %2$s. Detta kan göra redigeraren instabil."
 
-#: ../tinymce-advanced.php:173
+#: ../tinymce-advanced.php:187
 #, php-format
 msgid ""
 "Please upgrade your WordPress installation or download an <a href=\"%s"
@@ -307,3 +281,25 @@ msgid ""
 msgstr ""
 "Vänligen uppgradera din WordPress-installation eller ladda hem en <a href="
 "\"%s\">äldre version av tillägget</a>."
+
+#~ msgid "Markdown typing support (text pattern plugin)"
+#~ msgstr "Stöd för att skriva Markdown (tillägg för textflöde)"
+
+#~ msgid ""
+#~ "This plugin matches special patterns while you type and applies formats "
+#~ "or executes commands on the matched text."
+#~ msgstr ""
+#~ "Detta tillägg matchar speciella mönster medan du skriver och applicerar "
+#~ "formatering eller utför kommandon utifrån matchad text."
+
+#~ msgid ""
+#~ "The default patterns are the same as the markdown syntax so you can type "
+#~ "<code># text</code> to create a header, <code>1. text</code> to create a "
+#~ "list, <code>**text**</code> to make it bold, etc."
+#~ msgstr ""
+#~ "Standardmönster är samma som markdown-syntax så att du kan skriva <code># "
+#~ "text</code> för att skapa en rubrik, <code>1. text</code> för att skapa "
+#~ "en lista, <code>**text**</code> för fet stil etc."
+
+#~ msgid "More information"
+#~ msgstr "Mer information"

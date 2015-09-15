@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: TinyMCE Advanced\n"
-"POT-Creation-Date: 2015-04-02 17:49-0800\n"
-"PO-Revision-Date: 2015-04-02 18:01-0800\n"
+"POT-Creation-Date: 2015-09-15 10:42-0800\n"
+"PO-Revision-Date: 2015-09-15 10:44-0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../tadv_admin.php:128
+#: ../tadv_admin.php:125
 msgid "Default settings restored."
 msgstr "تمت استعادة الاعدادات الافتراضية."
 
@@ -48,15 +48,15 @@ msgstr ""
 msgid "Select All"
 msgstr "تحديد الكل"
 
-#: ../tadv_admin.php:150 ../tadv_admin.php:174
+#: ../tadv_admin.php:150 ../tadv_admin.php:176
 msgid "Back to Editor Settings"
 msgstr "العودة الى اعدادات الحرر"
 
-#: ../tadv_admin.php:160
+#: ../tadv_admin.php:162
 msgid "TinyMCE Advanced Settings Import"
 msgstr "TinyMCE Advanced إستيراد إعدادات"
 
-#: ../tadv_admin.php:163
+#: ../tadv_admin.php:165
 msgid ""
 "The settings are imported from a JSON encoded string. Please paste the "
 "exported string in the text area below."
@@ -64,53 +64,35 @@ msgstr ""
 "الاعدادات مستوردة من  JSON سلسلة مشفرة ,الرجاء الصاق السلسلة المصدرة في "
 "منطقة النص ادناه."
 
-#: ../tadv_admin.php:168
+#: ../tadv_admin.php:170
 msgid "Verify"
 msgstr "تحقق"
 
-#: ../tadv_admin.php:169
+#: ../tadv_admin.php:171
 msgid "Import"
 msgstr "إستيراد"
 
-#: ../tadv_admin.php:196
+#: ../tadv_admin.php:201
 msgid "Importing of settings failed."
 msgstr "إستيراد الاعدادات فشل."
 
-#: ../tadv_admin.php:221
+#: ../tadv_admin.php:227
 msgid "ERROR: All toolbars are empty. Default settings loaded."
 msgstr "خطأ: جميع الاشرطة فارغة. الاعدادات الافتراضية ارجعت."
 
-#: ../tadv_admin.php:233
+#: ../tadv_admin.php:239
 msgid "Editor Settings"
 msgstr "إعدادات المحرر"
 
-#: ../tadv_admin.php:244
-#, php-format
-msgid ""
-"This plugin requires WordPress version %1$s or newer. It appears that you "
-"are running %2$s. This can make the editor unstable."
-msgstr ""
-"This plugin requires WordPress version %1$s or newer. It appears that you "
-"are running %2$s. This can make the editor unstable."
-
-#: ../tadv_admin.php:251
-#, php-format
-msgid ""
-"Please upgrade your WordPress installation or download an <a href=\"%s"
-"\">older version of the plugin</a>."
-msgstr ""
-"Please upgrade your WordPress installation or download an <a href=\"%s"
-"\">older version of the plugin</a>."
-
-#: ../tadv_admin.php:261
+#: ../tadv_admin.php:246
 msgid "Settings saved."
 msgstr "الاعدادات حفظت."
 
-#: ../tadv_admin.php:270 ../tadv_admin.php:534
+#: ../tadv_admin.php:255 ../tadv_admin.php:509
 msgid "Save Changes"
 msgstr "حفظ التغييرات"
 
-#: ../tadv_admin.php:275
+#: ../tadv_admin.php:260
 msgid ""
 "New in TinyMCE 4.0/WordPress 3.9 is the editor menu. When it is enabled, "
 "most buttons are also available as menu items."
@@ -118,11 +100,11 @@ msgstr ""
 "جديد قائمة المحرر في TinyMCE 4.0/WordPress 3.9 , عند تفعيلها , اغلب الازرار "
 "متاحة في القائمة."
 
-#: ../tadv_admin.php:279
+#: ../tadv_admin.php:264
 msgid "Enable the editor menu."
 msgstr "تفعيل قائمة المحرر."
 
-#: ../tadv_admin.php:391
+#: ../tadv_admin.php:376
 msgid ""
 "Drag buttons from the unused buttons below and drop them in the toolbars "
 "above, or drag the buttons in the toolbars to rearrange them."
@@ -130,39 +112,39 @@ msgstr ""
 "اسحب الازرار من منطقة الازرار الغير مستخدمة في الاسفل وافلتها في الشريط "
 "العلوي , او اسحب الازرار من الشريط لاعادة ترتيبهم."
 
-#: ../tadv_admin.php:394
+#: ../tadv_admin.php:379
 msgid "Unused Buttons"
 msgstr "الازرار الغير مستخدمة"
 
-#: ../tadv_admin.php:435
+#: ../tadv_admin.php:420
 msgid "Also enable:"
 msgstr "فعل ايضا:"
 
-#: ../tadv_admin.php:438
+#: ../tadv_admin.php:423
 msgid "List Style Options"
 msgstr "قائمة خيارات الشكل"
 
-#: ../tadv_admin.php:443
+#: ../tadv_admin.php:428
 msgid "Context Menu"
 msgstr "حالة القائمة"
 
-#: ../tadv_admin.php:448
+#: ../tadv_admin.php:433
 msgid "Link (replaces the Insert/Edit Link dialog)"
 msgstr "رابط (استبدال المدرج/تعديل رابط الحوار)"
 
-#: ../tadv_admin.php:458
+#: ../tadv_admin.php:443
 msgid "Advanced Options"
 msgstr "خيارات متقدمة"
 
-#: ../tadv_admin.php:466
+#: ../tadv_admin.php:451
 msgid "Import editor-style.css."
 msgstr "استيراد ملفeditor-style.css."
 
-#: ../tadv_admin.php:468
+#: ../tadv_admin.php:453
 msgid "It seems your theme does not support customised styles for the editor."
 msgstr "يبدو ان قالبك لايدعم الستايل المخصص للمحرر."
 
-#: ../tadv_admin.php:469
+#: ../tadv_admin.php:454
 msgid ""
 "You can create a CSS file named <code>editor-style.css</code> and upload it "
 "to your theme's directory."
@@ -170,11 +152,11 @@ msgstr ""
 "تستطيع انشاء ملف CSS بأسم <code>editor-style.css</code> ورفعه الى مسار الثيم "
 "الخاص بك."
 
-#: ../tadv_admin.php:470
+#: ../tadv_admin.php:455
 msgid "After that, enable this setting."
 msgstr "بعد ذلك, فعل هذا"
 
-#: ../tadv_admin.php:479
+#: ../tadv_admin.php:464
 msgid ""
 "Load the CSS classes used in editor-style.css and replace the Formats button "
 "and sub-menu."
@@ -182,45 +164,21 @@ msgstr ""
 "استخدم كلاسات css المستخدمة في ملف editor-style.css , و استبدل زر الصيغ "
 "والقائمة الفرعية."
 
-#: ../tadv_admin.php:484
-msgid "Markdown typing support (text pattern plugin)"
-msgstr "دعم تنسيق الكتابة ( اضافة اسلوب النص )"
-
-#: ../tadv_admin.php:486
-msgid ""
-"This plugin matches special patterns while you type and applies formats or "
-"executes commands on the matched text."
-msgstr "هذه الاضافة "
-
-#: ../tadv_admin.php:487
-msgid ""
-"The default patterns are the same as the markdown syntax so you can type "
-"<code># text</code> to create a header, <code>1. text</code> to create a "
-"list, <code>**text**</code> to make it bold, etc."
-msgstr ""
-"الاساليب الافتراضية هي نفسها الموجودة في markdown syntax لذا يمكنك كتابة "
-"<code># text</code> لإنشاء هيدر , <code>1. text</code> لإنشاء قائمة ,"
-"<code>**text**</code> لجعله سميك , الخ"
-
-#: ../tadv_admin.php:488
-msgid "More information"
-msgstr "معلومات اكثر"
-
-#: ../tadv_admin.php:494
+#: ../tadv_admin.php:469
 msgid ""
 "Stop removing the &lt;p&gt; and &lt;br /&gt; tags when saving and show them "
 "in the Text editor"
 msgstr "ايقاف حذف وسم &lt;p&gt; و &lt;br /&gt; عند الحفظ وعرضهم في محرر النصوص"
 
 # تحتاج مراجعة
-#: ../tadv_admin.php:496
+#: ../tadv_admin.php:471
 msgid ""
 "This will make it possible to use more advanced coding in the HTML editor "
 "without the back-end filtering affecting it much."
 msgstr ""
 "هذه سوف تتيح لك استخدام HTML اكثر تقدما بدون فلاتر ومؤثرات برمجية كثيرة."
 
-#: ../tadv_admin.php:497
+#: ../tadv_admin.php:472
 msgid ""
 "However it may behave unexpectedly in rare cases, so test it thoroughly "
 "before enabling it permanently."
@@ -228,7 +186,7 @@ msgstr ""
 "على اية حال انه تصرف مفاجئ في حالات نادرة , لذا قم بتجربته بشكل كامل قبل "
 "تضمينه."
 
-#: ../tadv_admin.php:498
+#: ../tadv_admin.php:473
 msgid ""
 "Line breaks in the HTML editor would still affect the output, in particular "
 "do not use empty lines, line breaks inside HTML tags or multiple &lt;br /"
@@ -237,22 +195,22 @@ msgstr ""
 "الخطوط الفارغة في محرر HTML سوف تؤثر في الاخراج . لذا لاتستخدم خطوط فارغة "
 "داخل وسوم HTML او تعدد وسوم &lt;br /&gt; ."
 
-#: ../tadv_admin.php:504
+#: ../tadv_admin.php:479
 msgid "Replace font size settings"
 msgstr " استبداال خيارات حجم الخط"
 
-#: ../tadv_admin.php:505
+#: ../tadv_admin.php:480
 msgid ""
 "Replaces the size setting available for fonts with: 8px 10px 12px 14px 16px "
 "20px 24px 28px 32px 36px."
 msgstr ""
 "استبدل خيار حجم الخطوط مع :8px 10px 12px 14px 16px 20px 24px 28px 32px 36px."
 
-#: ../tadv_admin.php:510
+#: ../tadv_admin.php:485
 msgid "Enable pasting of image source"
 msgstr "تفعيل اللصق بمصدر الصورة"
 
-#: ../tadv_admin.php:512
+#: ../tadv_admin.php:487
 msgid ""
 "Works only in Firefox and Safari. These browsers support pasting of images "
 "directly in the editor and convert them to base64 encoded text."
@@ -260,7 +218,7 @@ msgstr ""
 "تعمل فقط على فايرفوكس و سفاري. هؤلاء المتصفحات يدعمون لصق الصور مباشرة في "
 "المحرر و تحويلها الى base64 نص مشفر."
 
-#: ../tadv_admin.php:513
+#: ../tadv_admin.php:488
 msgid ""
 "This is not acceptable for larger images like photos or graphics, but may be "
 "useful in some cases for very small images like icons, not larger than 2-3KB."
@@ -268,27 +226,27 @@ msgstr ""
 "هذه غير متوافقة للصور الكبير مثل الصور الفوتوغرافية , ولكنها مفيدة لالصور "
 "الصغيرة كالايقونات , ليست اكبر من 2-3 كيلوبايت"
 
-#: ../tadv_admin.php:514
+#: ../tadv_admin.php:489
 msgid "These images will not be available in the Media Library."
 msgstr "لن تكون هذه الصور متاحة في مكتبة الوسائط."
 
-#: ../tadv_admin.php:520
+#: ../tadv_admin.php:495
 msgid "Administration"
 msgstr "الادارة"
 
-#: ../tadv_admin.php:522
+#: ../tadv_admin.php:497
 msgid "Export Settings"
 msgstr "تصدير الاعدادات"
 
-#: ../tadv_admin.php:523
+#: ../tadv_admin.php:498
 msgid "Import Settings"
 msgstr "استيراد الاعدادات"
 
-#: ../tadv_admin.php:533
+#: ../tadv_admin.php:508
 msgid "Restore Default Settings"
 msgstr "استعادة الاعدادات الافتراضية"
 
-#: ../tadv_admin.php:539
+#: ../tadv_admin.php:514
 msgid ""
 "The [Toolbar toggle] button shows or hides the second, third, and forth "
 "button rows. It will only work when it is in the first row and there are "
@@ -296,3 +254,41 @@ msgid ""
 msgstr ""
 "زر شريط التبديل يعرض او يخفي صف الازرار الثاني ,الثالث وصاعدا. سيعمل فقط "
 "عندما يكون في اول صف و الازرار في ثاني صف."
+
+#: ../tinymce-advanced.php:180
+#, php-format
+msgid ""
+"TinyMCE Advanced requires WordPress version %1$s or newer. It appears that "
+"you are running %2$s. This can make the editor unstable."
+msgstr ""
+"TinyMCE Advanced requires WordPress version %1$s or newer. It appears that "
+"you are running %2$s. This can make the editor unstable."
+
+#: ../tinymce-advanced.php:187
+#, php-format
+msgid ""
+"Please upgrade your WordPress installation or download an <a href=\"%s"
+"\">older version of the plugin</a>."
+msgstr ""
+"Please upgrade your WordPress installation or download an <a href=\"%s"
+"\">older version of the plugin</a>."
+
+#~ msgid "Markdown typing support (text pattern plugin)"
+#~ msgstr "دعم تنسيق الكتابة ( اضافة اسلوب النص )"
+
+#~ msgid ""
+#~ "This plugin matches special patterns while you type and applies formats "
+#~ "or executes commands on the matched text."
+#~ msgstr "هذه الاضافة "
+
+#~ msgid ""
+#~ "The default patterns are the same as the markdown syntax so you can type "
+#~ "<code># text</code> to create a header, <code>1. text</code> to create a "
+#~ "list, <code>**text**</code> to make it bold, etc."
+#~ msgstr ""
+#~ "الاساليب الافتراضية هي نفسها الموجودة في markdown syntax لذا يمكنك كتابة "
+#~ "<code># text</code> لإنشاء هيدر , <code>1. text</code> لإنشاء قائمة ,"
+#~ "<code>**text**</code> لجعله سميك , الخ"
+
+#~ msgid "More information"
+#~ msgstr "معلومات اكثر"
