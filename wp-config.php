@@ -78,6 +78,8 @@ $table_prefix  = 'wp_';
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
 define('WP_DEBUG', false);
+// Enable Debug logging to the /wp-content/debug.log file
+define('WP_DEBUG_LOG', true);
 
 /* Multisite */
 define('WP_ALLOW_MULTISITE', true);
