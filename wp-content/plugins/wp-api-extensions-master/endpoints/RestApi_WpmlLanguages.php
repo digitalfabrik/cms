@@ -30,11 +30,11 @@ class RestApi_WpmlLanguages {
 	}
 
 	private function prepare_item($language) {
-		print_r($language);
 		return [
-			'short_name' => $language->short_name,
-			'long_name' => $language->long_name,
-			'icon' => $language->icon,
+			'id' => $language['id'],
+			'code' => $language['code'],
+			'native_name' => $language['native_name'],
+			'country_flag_url' => $language['country_flag_url'],
 		];
 	}
 }
