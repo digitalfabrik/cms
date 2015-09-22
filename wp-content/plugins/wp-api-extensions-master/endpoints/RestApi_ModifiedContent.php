@@ -53,7 +53,7 @@ class RestApi_ModifiedContent {
 			'title' => $item->post_title,
 			'type' => $item->post_type,
 			'modified_gmt' => $item->post_modified_gmt,
-			'excerpt' => $item->post_excerpt,
+			'excerpt' => $item->post_content ?: wp_trim_excerpt($item->post_content),
 			'content' => $item->post_content,
 			'parent' => $item->post_parent
 		];
