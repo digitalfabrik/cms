@@ -1,26 +1,21 @@
 <?php
+
 /**
- * Plugin Name: WP API Modified Content
- * Description: Retrieve only modified content, given the modification datetime
- * Version: 0.2
- * Created: 19.09.2015 23:08
- * Author: Martin Schrimpf
- * Author URI: https://github.com/Meash
- * License: MIT
+ * Retrieve only content that has been modified since a given datetime
  */
-
-
-add_action('rest_api_init', function () {
-	$endpoint = new RESTAPIModifiedContent_API_Site();
-	$endpoint->register_routes();
-});
-
-class RESTAPIModifiedContent_API_Site {
-	private $BASE_URL = 'modified_content';
+class RestApi_ModifiedContent {
+	const URL = 'modified_content';
 	private $datetime_format = 'Y-m-d G:i:s';
 
+	private $baseUrl;
+
+	public function __construct($pluginBaseUrl) {
+		$this->baseUrl = $pluginBaseUrl . '/' . self::URL;
+	}
+
+
 	public function register_routes() {
-		register_rest_route($this->BASE_URL, '/posts_and_pages/(?P<last_modified_gmt>.*)', array(
+		register_rest_route($this->baseUrl, '/posts_and_pages/(?P<last_modified_gmt>.*)', array(
 			'methods' => WP_REST_Server::READABLE,
 			'callback' => array($this, 'get_modified_posts_and_pages'),
 		));
