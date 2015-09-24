@@ -1,0 +1,14 @@
+#slide-list { margin-top: 20px; }
+
+#slide-list li {
+	padding: 10px;	
+	width: 50%;	
+	font-weight: bold;
+	
+	background: #f0f0f0;
+	cursor: move;
+	
+	border: 1px solid #ddd;
+}
+	
+#loading-animation { display: none; }

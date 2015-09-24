@@ -1,0 +1,533 @@
+# Copyright (C) 2015 Facebook Open Graph, Google+ and Twitter Card Tags
+# This file is distributed under the same license as the Facebook Open Graph, Google+ and Twitter Card Tags package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Facebook Open Graph, Google+ and Twitter Card Tags 1.6\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/wonderm00ns-simple-facebook-open-graph-tags\n"
+"POT-Creation-Date: 2015-06-30 12:13:21+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: includes/settings-page.php:86
+msgid "Please set some default values and which tags should, or should not, be included. It may be necessary to exclude some tags if other plugins are already including them."
+msgstr ""
+
+#: includes/settings-page.php:101
+msgid "Include Facebook Platform App ID (fb:app_id) tag"
+msgstr ""
+
+#: includes/settings-page.php:107
+msgid "Facebook Platform App ID"
+msgstr ""
+
+#: includes/settings-page.php:116
+msgid "Include Facebook Admin(s) ID (fb:admins) tag"
+msgstr ""
+
+#: includes/settings-page.php:122
+msgid "Facebook Admin(s) ID"
+msgstr ""
+
+#: includes/settings-page.php:126
+msgid "Comma separated if more than one"
+msgstr ""
+
+#: includes/settings-page.php:133
+msgid "Include locale (fb:locale) tag"
+msgstr ""
+
+#: includes/settings-page.php:139
+msgid "Locale"
+msgstr ""
+
+#: includes/settings-page.php:142
+msgid "WordPress current locale/language"
+msgstr ""
+
+#: includes/settings-page.php:193
+msgid "List loaded from Facebook (online)"
+msgstr ""
+
+#: includes/settings-page.php:196
+msgid "List loaded from local cache (offline)"
+msgstr ""
+
+#: includes/settings-page.php:196
+msgid "You\\'l lose any changes you haven\\'t saved. Are you sure?"
+msgstr ""
+
+#: includes/settings-page.php:196
+msgid "Reload from Facebook"
+msgstr ""
+
+#: includes/settings-page.php:198
+msgid "List not loaded"
+msgstr ""
+
+#: includes/settings-page.php:208
+msgid "Include Site Name (og:site_name) tag"
+msgstr ""
+
+#: includes/settings-page.php:217
+msgid "Include Post/Page title (og:title) tag"
+msgstr ""
+
+#: includes/settings-page.php:223
+msgid "Include Schema.org \"itemprop\" Name tag"
+msgstr ""
+
+#: includes/settings-page.php:229 includes/settings-page.php:444
+#: includes/settings-page.php:512
+msgid "Recommended for Google+ sharing purposes if no other plugin is setting it already"
+msgstr ""
+
+#: includes/settings-page.php:233
+msgid "Include Twitter Card Title tag"
+msgstr ""
+
+#: includes/settings-page.php:239 includes/settings-page.php:454
+#: includes/settings-page.php:522
+msgid "Recommended for Twitter sharing purposes if no other plugin is setting it already"
+msgstr ""
+
+#: includes/settings-page.php:246
+msgid "Include URL (og:url) tag"
+msgstr ""
+
+#: includes/settings-page.php:252
+msgid "Include Twitter Card URL tag"
+msgstr ""
+
+#: includes/settings-page.php:258
+msgid "Add trailing slash at the end"
+msgstr ""
+
+#: includes/settings-page.php:262
+msgid "On the homepage will be"
+msgstr ""
+
+#: includes/settings-page.php:266
+msgid "Set Canonical URL"
+msgstr ""
+
+#: includes/settings-page.php:277
+msgid "Include Type (og:type) tag"
+msgstr ""
+
+#: includes/settings-page.php:281
+msgid "Will be \"%1$s\" for posts and pages and \"%2$s\" or \"%3$s\"; for the homepage"
+msgstr ""
+
+#: includes/settings-page.php:285
+msgid "Homepage type"
+msgstr ""
+
+#: includes/settings-page.php:287 includes/settings-page.php:475
+msgid "Use"
+msgstr ""
+
+#: includes/settings-page.php:298
+msgid "Include published and modified dates (article:published_time, article:modified_time and og:updated_time) tags"
+msgstr ""
+
+#: includes/settings-page.php:302 includes/settings-page.php:313
+msgid "Works for posts only"
+msgstr ""
+
+#: includes/settings-page.php:309
+msgid "Include article section (article:section) tags"
+msgstr ""
+
+#: includes/settings-page.php:313
+msgid "from the categories"
+msgstr ""
+
+#: includes/settings-page.php:320
+msgid "Include Publisher Page (article:publisher) tag"
+msgstr ""
+
+#: includes/settings-page.php:324
+msgid "Links the website to the publisher Facebook Page."
+msgstr ""
+
+#: includes/settings-page.php:328
+msgid "Website's Facebook Page"
+msgstr ""
+
+#: includes/settings-page.php:332 includes/settings-page.php:348
+#: includes/settings-page.php:531
+msgid "Full URL with http://"
+msgstr ""
+
+#: includes/settings-page.php:336
+msgid "Include Google+ \"publisher\" tag"
+msgstr ""
+
+#: includes/settings-page.php:340
+msgid "Links the website to the publisher Google+ Page."
+msgstr ""
+
+#: includes/settings-page.php:344
+msgid "Website's Google+ Page"
+msgstr ""
+
+#: includes/settings-page.php:352
+msgid "Include Twitter Card Website Username tag"
+msgstr ""
+
+#: includes/settings-page.php:356
+msgid "Links the website to the publisher Twitter Username."
+msgstr ""
+
+#: includes/settings-page.php:360
+msgid "Website's Twitter Username"
+msgstr ""
+
+#: includes/settings-page.php:364 wonderm00n-open-graph.php:950
+msgid "Twitter username (without @)"
+msgstr ""
+
+#: includes/settings-page.php:372
+msgid "Include Author Profile (article:author) tag"
+msgstr ""
+
+#: includes/settings-page.php:376
+msgid "Links the article to the author Facebook Profile. The user's Facebook profile URL must be filled in."
+msgstr ""
+
+#: includes/settings-page.php:380
+msgid "Include Meta Author tag"
+msgstr ""
+
+#: includes/settings-page.php:386
+msgid "Sets the article author name"
+msgstr ""
+
+#: includes/settings-page.php:390
+msgid "Include Google+ link rel \"author\" tag"
+msgstr ""
+
+#: includes/settings-page.php:396
+msgid "Links the article to the author Google+ Profile (authorship). The user's Google+ profile URL must be filled in."
+msgstr ""
+
+#: includes/settings-page.php:400
+msgid "Include Twitter Card Creator tag"
+msgstr ""
+
+#: includes/settings-page.php:406
+msgid "Links the article to the author Twitter profile. The user's Twitter user must be filled in."
+msgstr ""
+
+#: includes/settings-page.php:410
+msgid "Hide author on pages"
+msgstr ""
+
+#: includes/settings-page.php:414
+msgid "Hides all author tags on pages."
+msgstr ""
+
+#: includes/settings-page.php:422
+msgid "Include Description (og:description) tag"
+msgstr ""
+
+#: includes/settings-page.php:428
+msgid "Include Meta Description tag"
+msgstr ""
+
+#: includes/settings-page.php:434
+msgid "Recommended for SEO purposes if no other plugin is setting it already"
+msgstr ""
+
+#: includes/settings-page.php:438
+msgid "Include Schema.org \"itemprop\" Description tag"
+msgstr ""
+
+#: includes/settings-page.php:448
+msgid "Include Twitter Card Description tag"
+msgstr ""
+
+#: includes/settings-page.php:458
+msgid "Description maximum length"
+msgstr ""
+
+#: includes/settings-page.php:462
+msgid "0 or blank for no maximum length"
+msgstr ""
+
+#: includes/settings-page.php:466
+msgid "Homepage description"
+msgstr ""
+
+#: includes/settings-page.php:472
+msgid "The description of your front page:"
+msgstr ""
+
+#: includes/settings-page.php:477
+msgid "Website tagline"
+msgstr ""
+
+#: includes/settings-page.php:478
+msgid "Custom text"
+msgstr ""
+
+#: includes/settings-page.php:492
+msgid "WPML users: Set the default language description here, save changes and then go to <a href=\"%s\">WPML &gt; String translation</a> to set it for other languages."
+msgstr ""
+
+#: includes/settings-page.php:490
+msgid "Include Image (og:image) tag"
+msgstr ""
+
+#: includes/settings-page.php:494
+msgid "All images MUST have at least 200px on both dimensions in order to Facebook to load them at all.<br/>1200x630px for optimal results.<br/>Minimum of 600x315px is recommended."
+msgstr ""
+
+#: includes/settings-page.php:498
+msgid "Include Image size (og:image:width and og:image:height) tags"
+msgstr ""
+
+#: includes/settings-page.php:502
+msgid "Recommended only if Facebook is having problems loading the image when the post is shared for the first time."
+msgstr ""
+
+#: includes/settings-page.php:506
+msgid "Include Schema.org \"itemprop\" Image tag"
+msgstr ""
+
+#: includes/settings-page.php:516
+msgid "Include Twitter Card Image tag"
+msgstr ""
+
+#: includes/settings-page.php:526
+msgid "Default image"
+msgstr ""
+
+#: includes/settings-page.php:533 wonderm00n-open-graph.php:792
+msgid "Recommended size: 1200x630px"
+msgstr ""
+
+#: includes/settings-page.php:537
+msgid "Add image to RSS/RSS2 feeds"
+msgstr ""
+
+#: includes/settings-page.php:541
+msgid "For auto-posting apps like RSS Graffiti, twitterfeed, ..."
+msgstr ""
+
+#: includes/settings-page.php:545
+msgid "On posts/pages"
+msgstr ""
+
+#: includes/settings-page.php:549
+msgid "Image will be fetched from the specific \"Open Graph Image\" custom field on the post"
+msgstr ""
+
+#: includes/settings-page.php:553
+msgid "If it's not set, image will be fetched from post/page featured/thumbnail picture"
+msgstr ""
+
+#: includes/settings-page.php:557
+msgid "If it doesn't exist, use the first image from the post/page content"
+msgstr ""
+
+#: includes/settings-page.php:561
+msgid "If it doesn't exist, use first image from the post/page media gallery"
+msgstr ""
+
+#: includes/settings-page.php:565
+msgid "If it doesn't exist, use the default image above"
+msgstr ""
+
+#: includes/settings-page.php:573
+msgid "Twitter Card Type"
+msgstr ""
+
+#: includes/settings-page.php:576
+msgid "Summary Card"
+msgstr ""
+
+#: includes/settings-page.php:577
+msgid "Summary Card with Large Image"
+msgstr ""
+
+#: includes/settings-page.php:586
+msgid "3rd Party Integration"
+msgstr ""
+
+#: includes/settings-page.php:597
+msgid "It's HIGHLY recommended to go to <a href=\"admin.php?page=wpseo_social\" target=\"_blank\">SEO &gt; Social</a> and disable \"Add Open Graph meta data\", \"Add Twitter card meta data\" and \"Add Google+ specific post meta data\""
+msgstr ""
+
+#: includes/settings-page.php:597
+msgid "even if you don't enable integration bellow. You will get duplicate tags if you don't do this."
+msgstr ""
+
+#: includes/settings-page.php:600
+msgid "Use title, url (canonical) and description from WPSEO"
+msgstr ""
+
+#: includes/settings-page.php:616
+msgid "Add SubHeading to Post/Page title"
+msgstr ""
+
+#: includes/settings-page.php:632
+msgid "Use BDP listing contents as OG tags"
+msgstr ""
+
+#: includes/settings-page.php:636
+msgid "Setting \"Include URL\", \"Set Canonical URL\", \"Include Description\" and \"Include Image\" options above is HIGHLY recommended"
+msgstr ""
+
+#: includes/settings-page.php:644
+msgid "You don't have any compatible 3rd Party plugin installed/active."
+msgstr ""
+
+#: includes/settings-page.php:645
+msgid "This plugin is currently compatible with:"
+msgstr ""
+
+#: includes/settings-page.php:658
+msgid "Advanced settings"
+msgstr ""
+
+#: includes/settings-page.php:660
+msgid "Don't mess with this unless you know what you're doing"
+msgstr ""
+
+#: includes/settings-page.php:663
+msgid "Force getimagesize on local file even if allow_url_fopen=1"
+msgstr ""
+
+#: includes/settings-page.php:667
+msgid "May cause problems with some multisite configurations but fix \"HTTP request failed\" errors"
+msgstr ""
+
+#: includes/settings-page.php:671
+msgid "Try to update Facebook Open Graph Tags cache when saving the post"
+msgstr ""
+
+#: includes/settings-page.php:677
+msgid "Supress Facebook Open Graph Tags cache updated notice"
+msgstr ""
+
+#: includes/settings-page.php:696
+msgid "Test your URLs at Facebook URL Linter / Debugger"
+msgstr ""
+
+#: includes/settings-page.php:699
+msgid "Test (and request approval for) your URLs at Twitter Card validator"
+msgstr ""
+
+#: includes/settings-page.php:702
+msgid "About the Open Graph Protocol (on Facebook)"
+msgstr ""
+
+#: includes/settings-page.php:705
+msgid "The Open Graph Protocol (official website)"
+msgstr ""
+
+#: includes/settings-page.php:708
+msgid "About Twitter Cards"
+msgstr ""
+
+#: includes/settings-page.php:711
+msgid "Plugin official URL"
+msgstr ""
+
+#: includes/settings-page.php:714
+msgid "Author's website: Webdados"
+msgstr ""
+
+#: includes/settings-page.php:717
+msgid "Author's Facebook page: Webdados"
+msgstr ""
+
+#: includes/settings-page.php:720
+msgid "Author's Twitter account: @Wonderm00n<br/>(Webdados founder)"
+msgstr ""
+
+#: includes/settings-page.php:727
+msgid "Rate this plugin"
+msgstr ""
+
+#: includes/settings-page.php:729
+msgid "If you like this plugin,"
+msgstr ""
+
+#: includes/settings-page.php:729
+msgid "please give it a high Rating"
+msgstr ""
+
+#: includes/settings-page.php:736
+msgid "Useful links"
+msgstr ""
+
+#: includes/settings-page.php:749
+msgid "Donate"
+msgstr ""
+
+#: includes/settings-page.php:751
+msgid "If you find this plugin useful and want to make a contribution towards future development please consider making a small, or big ;-), donation."
+msgstr ""
+
+#: wonderm00n-open-graph.php:753
+#: wonderm00n-open-graph.php:787
+msgid "Use this image:"
+msgstr ""
+
+#: wonderm00n-open-graph.php:790
+msgid "Upload/Choose Open Graph Image"
+msgstr ""
+
+#: wonderm00n-open-graph.php:791
+msgid "Clear field"
+msgstr ""
+
+#: wonderm00n-open-graph.php:856
+msgid "URL failed:"
+msgstr ""
+
+#: wonderm00n-open-graph.php:864
+msgid "Facebook returned:"
+msgstr ""
+
+#: wonderm00n-open-graph.php:881
+msgid "Facebook Open Graph Tags cache updated/purged."
+msgstr ""
+
+#: wonderm00n-open-graph.php:881
+msgid "Share this on Facebook"
+msgstr ""
+
+#: wonderm00n-open-graph.php:889
+msgid "Error: Facebook Open Graph Tags cache NOT updated/purged."
+msgstr ""
+
+#: wonderm00n-open-graph.php:929
+msgid "Use as Image Open Graph Tag"
+msgstr ""
+
+#: wonderm00n-open-graph.php:948
+msgid "Google+"
+msgstr ""
+
+#: wonderm00n-open-graph.php:952
+msgid "Facebook profile URL"
+msgstr ""
+
+#: wonderm00n-open-graph.php:970
+msgid "Please ignore the (dumb) Yoast WordPress SEO warning regarding open graph issues with this plugin. Just disable WPSEO Social settings at"
+msgstr ""
+
+#: wonderm00n-open-graph.php:971
+msgid "SEO &gt; Social"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid "Inserts Facebook Open Graph, Google+ / Schema.org and Twitter Card Tags into your WordPress Blog/Website for more effective and efficient Facebook, Google+ and Twitter sharing results. You can also choose to insert the \"enclosure\" and \"media:content\" tags to the RSS feeds, so that apps like RSS Graffiti and twitterfeed post the image to Facebook correctly."
+msgstr ""

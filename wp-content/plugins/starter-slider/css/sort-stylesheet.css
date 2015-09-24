@@ -1,0 +1,17 @@
+#slide-list { margin-top: 20px; }
+
+	#slide-list li {
+		padding: 10px;	
+		width: 50%;	
+		font-weight: bold;
+		
+		background: #f0f0f0; /* for non-css3 browsers */
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f7f7f7', endColorstr='#e7e7e7'); /* for IE */
+		background: -webkit-gradient(linear, left top, left bottom, from(#f7f7f7), to(#e7e7e7)); /* for webkit browsers */
+		background: -moz-linear-gradient(top,  #f7f7f7,  #e7e7e7); /* for firefox 3.6+ */
+		cursor: move;
+		
+		border: 1px solid #ddd;
+	}
+	
+#loading-animation { display: none; }

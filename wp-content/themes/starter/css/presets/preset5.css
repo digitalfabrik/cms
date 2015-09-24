@@ -1,0 +1,17 @@
+/* anchor */
+a,
+#navigation .navbar-nav li.current-menu-item a,
+#navigation .navbar-nav > li.current-menu-parent > a,
+.team-box ul.social li a{
+  color: #00C3C3;
+}
+
+a:hover{
+  color: #009090;
+}
+
+
+.team-box:hover {
+	background: #00C3C3;
+}
+
