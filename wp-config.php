@@ -81,6 +81,9 @@ define('WP_DEBUG', false);
 // Enable Debug logging to the /wp-content/debug.log file
 define('WP_DEBUG_LOG', true);
 
+/* Trash */
+define('EMPTY_TRASH_DAYS', 99999); // "never" delete content
+
 /* Multisite */
 define('WP_ALLOW_MULTISITE', true);
 define('MULTISITE', true);
