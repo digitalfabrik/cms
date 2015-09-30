@@ -8,8 +8,8 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
 class RestApi_Multisites extends RestApi_ExtensionBase {
 	const URL = 'multisites';
 
-	const EXCLUDED_SITE_IDS = [1];
-	const GLOBAL_SITE_IDS = [5];
+	private $EXCLUDED_SITE_IDS = [1];
+	private $GLOBAL_SITE_IDS = [5];
 
 	public function __construct($namespace) {
 		parent::__construct($namespace, self::URL);
@@ -27,7 +27,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 		$result = [];
 		foreach ($multisites as $blog) {
-			if (in_array($blog['blog_id'], self::EXCLUDED_SITE_IDS)) {
+			if (in_array($blog['blog_id'], $this->EXCLUDED_SITE_IDS)) {
 				continue;
 			}
 			$result[] = $this->prepare_item($blog);
@@ -44,7 +44,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'icon' => $this->get_icon($id),
 			'path' => $blog['path'],
 			'description' => get_bloginfo($blog),
-			'global' => in_array($id, self::GLOBAL_SITE_IDS)
+			'global' => in_array($id, $this->GLOBAL_SITE_IDS)
 		];
 	}
 
