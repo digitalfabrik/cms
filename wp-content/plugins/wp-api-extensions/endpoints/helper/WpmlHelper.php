@@ -31,7 +31,7 @@ class WpmlHelper {
 			if ($id == null) {
 				continue;
 			}
-			$other_pages_ids[] = $id;
+			$other_pages_ids[$language_code] = $id;
 		}
 		return $other_pages_ids;
 	}
