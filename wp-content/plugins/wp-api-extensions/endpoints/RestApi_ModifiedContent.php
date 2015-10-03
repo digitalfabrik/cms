@@ -91,7 +91,8 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 			'content' => $this->prepare_content($post),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
-			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type)
+			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
+			'thumbnail' => $this->prepare_thumbnail($post)
 		];
 	}
 
@@ -111,6 +112,14 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	private function prepare_excerpt($post) {
 		return $post->post_excerpt ?:
 			apply_filters('the_excerpt', apply_filters('get_the_excerpt', $post->post_excerpt));
+	}
+
+	private function prepare_thumbnail($post) {
+		if (!has_post_thumbnail($post->ID)) {
+			return null;
+		}
+		$image_src = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID));
+		return $image_src[0];
 	}
 
 	private function disable_permanent_deletion() {
@@ -134,5 +143,6 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	public function restrict_post_deletion() {
 		echo "You are not authorized to delete this page.";
 		exit;
+
 	}
 }
