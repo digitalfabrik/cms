@@ -73,8 +73,8 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		$query_result = $query->query($query_args);
 
 		$result = [];
-		foreach ($query_result as $item) {
-			$result[] = $this->prepare_item($item);
+		foreach ($query_result as $post) {
+			$result[] = $this->prepare_item($post);
 		}
 		return $result;
 	}
@@ -88,7 +88,7 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 			'status' => $post->post_status,
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => $this->prepare_excerpt($post),
-			'content' => $post->post_content,
+			'content' => $this->prepare_content($post),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
 			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type)
@@ -101,6 +101,11 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 
 	private function make_datetime($arg) {
 		return DateTime::createFromFormat($this->datetime_input_format, $arg);
+	}
+
+	private function prepare_content($post) {
+		// replace all newlines with surrounding p tags
+		return "<p>" . str_replace(["\r\n", "\r", "\n"], "</p><p>", $post->post_content) . "</p>";
 	}
 
 	private function prepare_excerpt($post) {
