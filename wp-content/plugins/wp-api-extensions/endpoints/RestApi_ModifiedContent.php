@@ -62,8 +62,7 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 				'after' => $last_modified_gmt,
 			],
 			/* keep order */
-			'orderby' => 'menu_order',
-			'order' => 'ASC',
+			'orderby' => ['menu_order' => 'ASC', 'title' => 'ASC'],
 			/* also show deleted items */
 			'post_status' => ['publish', 'trash'],
 			/* no pagination, show all */
