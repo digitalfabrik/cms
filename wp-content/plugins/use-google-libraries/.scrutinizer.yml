@@ -1,0 +1,25 @@
+filter:
+    excluded_paths:
+        - 'tests/*'
+        - 'bin/*'
+
+tools:
+    php_code_sniffer:
+        config:
+            standard: WordPress
+    
+    php_cpd: true
+
+    php_mess_detector:
+        config:
+            code_size_rules: { cyclomatic_complexity: true }
+            unused_code_rules: { unused_local_variable: true, unused_private_method: true, unused_formal_parameter: true }
+    
+    php_pdepend: true
+    
+    php_analyzer: true
+
+    sensiolabs_security_checker: true
+
+    external_code_coverage: 
+        timeout: 1200
