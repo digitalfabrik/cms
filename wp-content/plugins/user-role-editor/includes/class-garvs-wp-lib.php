@@ -38,7 +38,7 @@ class Garvs_WP_Lib {
         
         $this->init_options($options_id);
 
-        add_action('admin_notices', array(&$this, 'show_message'));
+        //add_action('admin_notices', array(&$this, 'show_message'));   // TODO: use WordPress notifications instead of my own
     }
     // end of __construct()
 

@@ -34,5 +34,3 @@ if (!is_multisite()) {
   }
   switch_to_blog($old_blog);
 }
-
-?>

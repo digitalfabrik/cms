@@ -230,9 +230,9 @@ class User_Role_Editor {
       wp_enqueue_script ( 'ure-users-js' );      
       wp_localize_script( 'ure-users-js', 'ure_users_data', array(
         'wp_nonce' => wp_create_nonce('user-role-editor'),
-        'move_from_no_role_title' => esc_html__('Change role for users without role', 'ure'),
-        'no_rights_caption' => esc_html__('No rights', 'ure'),  
-        'provide_new_role_caption' => esc_html__('Provide new role', 'ure')
+        'move_from_no_role_title' => esc_html__('Change role for users without role', 'user-role-editor'),
+        'no_rights_caption' => esc_html__('No rights', 'user-role-editor'),  
+        'provide_new_role_caption' => esc_html__('Provide new role', 'user-role-editor')
               ));
       
   }
@@ -435,7 +435,7 @@ class User_Role_Editor {
             if ($current_user->has_cap($this->key_capability)) {
                 $actions['capabilities'] = '<a href="' .
                         wp_nonce_url("users.php?page=users-" . URE_PLUGIN_FILE . "&object=user&amp;user_id={$user->ID}", "ure_user_{$user->ID}") .
-                        '">' . esc_html__('Capabilities', 'ure') . '</a>';
+                        '">' . esc_html__('Capabilities', 'user-role-editor') . '</a>';
             }
         }
 
@@ -518,7 +518,7 @@ class User_Role_Editor {
      */
     function load_translation() {
 
-        load_plugin_textdomain('ure', '', dirname( plugin_basename( URE_PLUGIN_FULL_PATH ) ) .'/lang');
+        load_plugin_textdomain('user-role-editor', '', dirname( plugin_basename( URE_PLUGIN_FULL_PATH ) ) .'/lang');
         
     }
     // end of ure_load_translation()
@@ -532,7 +532,7 @@ class User_Role_Editor {
      */
     public function plugin_action_links($links) {
 
-        $settings_link = "<a href='options-general.php?page=settings-" . URE_PLUGIN_FILE . "'>" . esc_html__('Settings', 'ure') . "</a>";
+        $settings_link = "<a href='options-general.php?page=settings-" . URE_PLUGIN_FILE . "'>" . esc_html__('Settings', 'user-role-editor') . "</a>";
         array_unshift($links, $settings_link);
 
         return $links;
@@ -543,7 +543,7 @@ class User_Role_Editor {
     public function plugin_row_meta($links, $file) {
 
         if ($file == plugin_basename(dirname(URE_PLUGIN_FULL_PATH) .'/'.URE_PLUGIN_FILE)) {
-            $links[] = '<a target="_blank" href="http://role-editor.com/changelog">' . esc_html__('Changelog', 'ure') . '</a>';
+            $links[] = '<a target="_blank" href="http://role-editor.com/changelog">' . esc_html__('Changelog', 'user-role-editor') . '</a>';
         }
 
         return $links;
@@ -565,25 +565,25 @@ class User_Role_Editor {
         $screen_help = new Ure_Screen_Help();
         $screen->add_help_tab( array(
             'id'	=> 'general',
-            'title'	=> esc_html__('General', 'ure'),
+            'title'	=> esc_html__('General', 'user-role-editor'),
             'content'	=> $screen_help->get_settings_help('general')
             ));
         if ($this->lib->is_pro() || !$this->lib->multisite) {
             $screen->add_help_tab( array(
                 'id'	=> 'additional_modules',
-                'title'	=> esc_html__('Additional Modules', 'ure'),
+                'title'	=> esc_html__('Additional Modules', 'user-role-editor'),
                 'content'	=> $screen_help->get_settings_help('additional_modules')
                 ));
         }
         $screen->add_help_tab( array(
             'id'	=> 'default_roles',
-            'title'	=> esc_html__('Default Roles', 'ure'),
+            'title'	=> esc_html__('Default Roles', 'user-role-editor'),
             'content'	=> $screen_help->get_settings_help('default_roles')
             ));
         if ($this->lib->multisite) {
             $screen->add_help_tab( array(
                 'id'	=> 'multisite',
-                'title'	=> esc_html__('Multisite', 'ure'),
+                'title'	=> esc_html__('Multisite', 'user-role-editor'),
                 'content'	=> $screen_help->get_settings_help('multisite')
                 ));
         }
@@ -593,7 +593,7 @@ class User_Role_Editor {
     
     public function plugin_menu() {
 
-        $translated_title = esc_html__('User Role Editor', 'ure');
+        $translated_title = esc_html__('User Role Editor', 'user-role-editor');
         if (function_exists('add_submenu_page')) {
             $ure_page = add_submenu_page(
                     'users.php', 
@@ -622,7 +622,7 @@ class User_Role_Editor {
 
     public function network_plugin_menu() {        
         if (is_multisite()) {
-            $translated_title = esc_html__('User Role Editor', 'ure');
+            $translated_title = esc_html__('User Role Editor', 'user-role-editor');
             $this->settings_page_hook = add_submenu_page(
                     'settings.php', 
                     $translated_title,
@@ -682,7 +682,7 @@ class User_Role_Editor {
         do_action('ure_settings_update1');
 
         $this->lib->flush_options();
-        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'ure'));
+        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'user-role-editor'));
         
     }
     // end of update_general_options()
@@ -700,7 +700,7 @@ class User_Role_Editor {
         do_action('ure_settings_update2');
         
         $this->lib->flush_options();
-        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'ure'));
+        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'user-role-editor'));
     }
     // end of update_addons_options()
     
@@ -728,7 +728,7 @@ class User_Role_Editor {
         }  // foreach()
         $this->lib->put_option('other_default_roles', $other_default_roles, true);
         
-        $this->lib->show_message(esc_html__('Default Roles are updated', 'ure'));
+        $this->lib->show_message(esc_html__('Default Roles are updated', 'user-role-editor'));
     }
     // end of update_default_roles()
     
@@ -744,7 +744,7 @@ class User_Role_Editor {
         do_action('ure_settings_ms_update');
 
         $this->lib->flush_options();
-        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'ure'));
+        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'user-role-editor'));
         
     }
     // end of update_multisite_options()
@@ -753,7 +753,7 @@ class User_Role_Editor {
     public function settings() {
         $settings_capability = $this->lib->get_settings_capability();
         if (!current_user_can($settings_capability)) {
-            wp_die(esc_html__( 'You do not have sufficient permissions to manage options for User Role Editor.', 'ure' ));
+            wp_die(esc_html__( 'You do not have sufficient permissions to manage options for User Role Editor.', 'user-role-editor' ));
         }
         $action = $this->get_settings_action();
         switch ($action) {
@@ -825,7 +825,7 @@ class User_Role_Editor {
     public function edit_roles() {
 
         if (!current_user_can($this->key_capability)) {
-            wp_die(esc_html__('Insufficient permissions to work with User Role Editor', 'ure'));
+            wp_die(esc_html__('Insufficient permissions to work with User Role Editor', 'user-role-editor'));
         }
 
         $this->lib->editor();
@@ -882,34 +882,34 @@ class User_Role_Editor {
             'wp_nonce' => wp_create_nonce('user-role-editor'),
             'page_url' => URE_WP_ADMIN_URL . URE_PARENT . '?page=users-' . URE_PLUGIN_FILE,
             'is_multisite' => is_multisite() ? 1 : 0,
-            'select_all' => esc_html__('Select All', 'ure'),
-            'unselect_all' => esc_html__('Unselect All', 'ure'),
-            'reverse' => esc_html__('Reverse', 'ure'),
-            'update' => esc_html__('Update', 'ure'),
-            'confirm_submit' => esc_html__('Please confirm permissions update', 'ure'),
-            'add_new_role_title' => esc_html__('Add New Role', 'ure'),
-            'rename_role_title' => esc_html__('Rename Role', 'ure'),
-            'role_name_required' => esc_html__(' Role name (ID) can not be empty!', 'ure'),
-            'role_name_valid_chars' => esc_html__(' Role name (ID) must contain latin characters, digits, hyphens or underscore only!', 'ure'),
-            'numeric_role_name_prohibited' => esc_html__(' WordPress does not support numeric Role name (ID). Add latin characters to it.', 'ure'),
-            'add_role' => esc_html__('Add Role', 'ure'),
-            'rename_role' => esc_html__('Rename Role', 'ure'),
-            'delete_role' => esc_html__('Delete Role', 'ure'),
-            'cancel' => esc_html__('Cancel', 'ure'),
-            'add_capability' => esc_html__('Add Capability', 'ure'),
-            'delete_capability' => esc_html__('Delete Capability', 'ure'),
-            'reset' => esc_html__('Reset', 'ure'),
-            'reset_warning' => esc_html__('DANGER! Resetting will restore default settings from WordPress Core.', 'ure') . "\n\n" .
-            esc_html__('If any plugins have changed capabilities in any way upon installation (such as S2Member, WooCommerce, and many more), those capabilities will be DELETED!', 'ure') . "\n\n" .
-            esc_html__('For more information on how to undo changes and restore plugin capabilities go to', 'ure') . "\n" .
+            'select_all' => esc_html__('Select All', 'user-role-editor'),
+            'unselect_all' => esc_html__('Unselect All', 'user-role-editor'),
+            'reverse' => esc_html__('Reverse', 'user-role-editor'),
+            'update' => esc_html__('Update', 'user-role-editor'),
+            'confirm_submit' => esc_html__('Please confirm permissions update', 'user-role-editor'),
+            'add_new_role_title' => esc_html__('Add New Role', 'user-role-editor'),
+            'rename_role_title' => esc_html__('Rename Role', 'user-role-editor'),
+            'role_name_required' => esc_html__(' Role name (ID) can not be empty!', 'user-role-editor'),
+            'role_name_valid_chars' => esc_html__(' Role name (ID) must contain latin characters, digits, hyphens or underscore only!', 'user-role-editor'),
+            'numeric_role_name_prohibited' => esc_html__(' WordPress does not support numeric Role name (ID). Add latin characters to it.', 'user-role-editor'),
+            'add_role' => esc_html__('Add Role', 'user-role-editor'),
+            'rename_role' => esc_html__('Rename Role', 'user-role-editor'),
+            'delete_role' => esc_html__('Delete Role', 'user-role-editor'),
+            'cancel' => esc_html__('Cancel', 'user-role-editor'),
+            'add_capability' => esc_html__('Add Capability', 'user-role-editor'),
+            'delete_capability' => esc_html__('Delete Capability', 'user-role-editor'),
+            'reset' => esc_html__('Reset', 'user-role-editor'),
+            'reset_warning' => esc_html__('DANGER! Resetting will restore default settings from WordPress Core.', 'user-role-editor') . "\n\n" .
+            esc_html__('If any plugins have changed capabilities in any way upon installation (such as S2Member, WooCommerce, and many more), those capabilities will be DELETED!', 'user-role-editor') . "\n\n" .
+            esc_html__('For more information on how to undo changes and restore plugin capabilities go to', 'user-role-editor') . "\n" .
             'http://role-editor.com/how-to-restore-deleted-wordpress-user-roles/' . "\n\n" .
-            esc_html__('Continue?', 'ure'),
-            'default_role' => esc_html__('Default Role', 'ure'),
-            'set_new_default_role' => esc_html__('Set New Default Role', 'ure'),
-            'delete_capability' => esc_html__('Delete Capability', 'ure'),
-            'delete_capability_warning' => esc_html__('Warning! Be careful - removing critical capability could crash some plugin or other custom code', 'ure'),
-            'capability_name_required' => esc_html__(' Capability name (ID) can not be empty!', 'ure'),
-            'capability_name_valid_chars' => esc_html__(' Capability name (ID) must contain latin characters, digits, hyphens or underscore only!', 'ure'),
+            esc_html__('Continue?', 'user-role-editor'),
+            'default_role' => esc_html__('Default Role', 'user-role-editor'),
+            'set_new_default_role' => esc_html__('Set New Default Role', 'user-role-editor'),
+            'delete_capability' => esc_html__('Delete Capability', 'user-role-editor'),
+            'delete_capability_warning' => esc_html__('Warning! Be careful - removing critical capability could crash some plugin or other custom code', 'user-role-editor'),
+            'capability_name_required' => esc_html__(' Capability name (ID) can not be empty!', 'user-role-editor'),
+            'capability_name_valid_chars' => esc_html__(' Capability name (ID) must contain latin characters, digits, hyphens or underscore only!', 'user-role-editor'),
         ));
         
         // load additional JS stuff for Pro version, if exists

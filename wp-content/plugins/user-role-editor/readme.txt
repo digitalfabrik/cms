@@ -3,8 +3,8 @@ Contributors: shinephp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=vladimir%40shinephp%2ecom&lc=RU&item_name=ShinePHP%2ecom&item_number=User%20Role%20Editor%20WordPress%20plugin&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: user, role, editor, security, access, permission, capability
 Requires at least: 4.0
-Tested up to: 4.3
-Stable tag: trunk
+Tested up to: 4.3.1
+Stable tag: 4.19.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,23 +68,17 @@ To read full FAQ section visit [this page](http://www.shinephp.com/user-role-edi
 To read more about 'User Role Editor' visit [this page](http://www.shinephp.com/user-role-editor-wordpress-plugin/) at [shinephp.com](shinephp.com).
 
 = Translations =
-* Dutch: Gerhard Hoogterp;
-* French: [Transifex](https://www.transifex.com);
-* Hebrew: [atar4u](http://atar4u.com);
-* Hungarian: Németh Balázs;
-* Italian: [Giuseppe Velardo](http://www.comprensivoleopardi.gov.it/);
-* Persian: [Morteza](https://wordpress.org/support/profile/mo0orteza);
-* Russian: [Vladimir Garagulya](https://www.role-editor.com)
-* Spanish: [Dario Ferrer](http://darioferrer.com/) - needs update;
-* Turkish: [Transifex](https://www.transifex.com).
-
 
 Dear plugin User!
-If you wish to help me with this plugin translation I very appreciate it. Please send your language .po and .mo files to vladimir[at-sign]shinephp.com email. Do not forget include you site link in order to show it with greetings for the translation help in this readme.txt file.
-Some translations may be outdated. If you have better translation for some phrases, send it to me and it will be taken into consideration. You are welcome!
-
+If you wish to check available translations or help with translation visit this link
+https://translate.wordpress.org/projects/wp-plugins/user-role-editor/
 
 == Changelog ==
+
+= [4.19.2] 01.10.2015 =
+* Fix: multiple default roles assignment did not work under the multisite environment, when user was created from front-end by WooCommerce, etc.
+* Update: the translation text domain was changed to the plugin slug (user-role-editor) for the compatibility with translations.wordpress.org
+* Update: CSS enhanced to exclude column wrapping for the capabilities with the long names.
 
 = [4.19.1] 20.08.2015 =
 * Default role value has not been refreshed automatically after change at the "Default Role" dialog - fixed.

@@ -1,0 +1,478 @@
+msgid ""
+msgstr "MIME-Version: 1.0\n"
+
+#. Name.
+msgid "User Role Editor"
+msgstr ""
+
+#. Short description.
+msgid "User Role Editor WordPress plugin makes user roles and capabilities changing easy. Edit/add/delete WordPress user roles and capabilities."
+msgstr ""
+
+#. Screenshot description.
+msgid "screenshot-1.png User Role Editor main form"
+msgstr ""
+
+#. Screenshot description.
+msgid "screenshot-2.png Add/Remove roles or capabilities"
+msgstr ""
+
+#. Screenshot description.
+msgid "screenshot-3.png User Capabilities link"
+msgstr ""
+
+#. Screenshot description.
+msgid "screenshot-4.png User Capabilities Editor"
+msgstr ""
+
+#. Screenshot description.
+msgid "screenshot-5.png Bulk change role for users without roles"
+msgstr ""
+
+#. Found in description list item.
+msgid "Block selected admin menu items for role."
+msgstr ""
+
+#. Found in description list item.
+msgid "Block selected widgets under \"Appearance\" menu for role."
+msgstr ""
+
+#. Found in description list item.
+msgid "\"Export/Import\" module. You can export user roles to the local file and import them then to any WordPress site or other sites of the multi-site WordPress network."
+msgstr ""
+
+#. Found in description list item.
+msgid "Roles and Users permissions management via Network Admin  for multisite configuration. One click Synchronization to the whole network."
+msgstr ""
+
+#. Found in description list item.
+msgid "\"Other roles access\" module allows to define which other roles user with current role may see at WordPress: dropdown menus, e.g assign role to user editing user profile, etc."
+msgstr ""
+
+#. Found in description list item.
+msgid "Per posts/pages users access management to post/page editing functionality."
+msgstr ""
+
+#. Found in description list item.
+msgid "Per plugin users access management for plugins activate/deactivate operations."
+msgstr ""
+
+#. Found in description list item.
+msgid "Per form users access management for Gravity Forms plugin."
+msgstr ""
+
+#. Found in description list item.
+msgid "Shortcode to show enclosed content to the users with selected roles only."
+msgstr ""
+
+#. Found in description list item.
+msgid "Posts and pages view restrictions for selected roles."
+msgstr ""
+
+#. Found in description paragraph.
+msgid "Pro version is advertisement free. Premium support is included. It is provided by User Role Editor plugin developer Vladimir Garagulya. You will get an answer on your question not once a week, but in 24 hours or quicker."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Deactivate plugin if you have the previous version installed."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Extract \"user-role-editor.zip\" archive content to the \"/wp-content/plugins/user-role-editor\" directory."
+msgstr ""
+
+#. Found in installation list item.
+msgid "Activate \"User Role Editor\" plugin via 'Plugins' menu in WordPress admin menu. "
+msgstr ""
+
+#. Found in installation list item.
+msgid "Go to the \"Users\"-\"User Role Editor\" menu item and change your WordPress standard roles capabilities according to your needs."
+msgstr ""
+
+#. Found in installation paragraph.
+msgid "Installation procedure:"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Fix: multiple default roles assignment did not work under the multisite environment, when user was created from front-end by WooCommerce, etc."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Update: the translation text domain was changed to the plugin slug (user-role-editor) for the compatibility with translations.wordpress.org"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Update: CSS enhanced to exclude column wrapping for the capabilities with the long names."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Default role value has not been refreshed automatically after change at the \"Default Role\" dialog - fixed."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "More detailed notice messages are shown after default role change - to reflect a possible error or problem."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Other default roles (in addition to the primary role) has been assigned to a new registered user for requests from the admin back-end only. Now this feature works for the requests from the front-end user registration forms too."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "28.07.2015"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "It is possible to assign to the user multiple roles directly through a user profile edit page. "
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Custom SQL-query (checked if the role is in use and slow on the huge data) was excluded and replaced with WordPress built-in function call. <a href=\"https://wordpress.org/support/topic/poorly-scaling-queries\">Thanks to Aaron</a>."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Bulk role assignment to the users without role was rewritten for cases with a huge quant of users. It processes just 50 users without role for the one request to return the answer from the server in the short time. The related code was extracted to the separate class."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Code to fix JavaScript and CSS compatibility issues introduced by other plugins and themes, which load its stuff globally, was extracted into the separate class."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Custom filters were added: 'ure_full_capabilites' - takes 1 input parameter, array with a full list of user capabilities visible at URE, 'ure_built_in_wp_caps' - takes 1 input parameter, array with a list of WordPress core user capabilities. These filters may be useful if you give access to the URE for some not administrator user, and wish to change the list of capabilities which are available to him at URE."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Dutch translation was updated. Thanks to Gerhard Hoogterp."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "30.04.2015"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Calls to the function add_query_arg() is properly escaped with esc_url_raw() to exclude potential XSS vulnerabilities. Nothing critical: both calls of add_query_arg() are placed at the unused sections of the code."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Italian translation was updated. Thanks to Leo."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "24.02.2015"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Fixed PHP fatal error for roles reset operation."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Fixed current user capability checking before URE Options page open."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "3 missed phrases were added to the translations files. Thanks to <a href=\"https://wordpress.org/support/profile/mo0orteza\">Morteza</a>"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Hebrew translation updated. Thanks to <a href=\"http://atar4u.com\">atar4u</a>"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Persian translation updated. Thanks to <a href=\"https://wordpress.org/support/profile/mo0orteza\">Morteza</a>"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "06.02.2015"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "New option \"Edit user capabilities\" was added. If it is unchecked - capabilities section of selected user will be shown in the readonly mode. Administrator (except superadmin for multisite) can not assign capabilities to the user directly. He should make it using roles only."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "More universal checking applied to the custom post type capabilities creation to exclude not existing property notices."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Multisite: URE's options page is prohibited by 'manage_network_users' capability instead of 'ure_manage_options' in case single site administrators does not have permission to use URE."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "URE protects administrator user from editing by other users by default. If you wish to turn off such protection, you may add filter 'ure_supress_administrators_protection' and return 'true' from it."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Plugin installation to the WordPress multisite with large (thousands) subsites had a problem with script execution time. Fixed. URE does not try to update all subsites at once now. It does it for every subsite separately, only when you visit that subsite."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Fixed JavaScript bug with 'Reset Roles' for FireFox v.34."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "14.12.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "As activation hook does not fire during bulk plugins update, automatic plugin version check and upgrade execution were added."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Own custom user capabilities, e.g. 'ure_edit_roles' are used to restrict access to User Role Editor functionality (<a href=\"https://www.role-editor.com/user-role-editor-4-18-new-permissions/\">read more</a>)."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "If custom post type uses own custom user capabilities URE add them to the 'Custom Capabilities' section automatically."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Multisite: You may allow to the users without superadmin privileges to add/create site users without sending them email confirmation request."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Bug fix: when non-admin user updated other user profile, that user lost secondary roles."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Italian translation was added. Thanks to <a href=\"http://www.comprensivoleopardi.gov.it/\">Giuseppe Velardo</a>."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "23.11.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "French and Turkish translation were updated. Thanks to <a href=\"https://www.transifex.com\">Transifex</a> translation team."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "21.10.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Notice: \"Undefined property: Ure_Lib::$pro in .../class-user-role-editor.php on line 550\" was fixed."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Settings help screen text was updated."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Russian translation was updated."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Hungarian translation was updated. Thanks to Németh Balázs."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "01.10.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Help screen for the Settings page was updated."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Hungarian translation was added. Thanks to Németh Balázs."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Dutch translation was added. Thanks to Arjan Bosch."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "11.09.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "\"create_sites\" user capability was added to the list of built-in WordPress user capabilities for WordPress multisite. It does not exist by default. But it is used to control \"Add New\" button at the \"Sites\" page under WordPress multisite network admin."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "bug fix: WordPress database prefix value was not used in 2 SQL queries related to the \"count users without role\" module - updated."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "08.09.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Rename role button was added to the URE toolbar. It allows to change user role display name (role ID is always the same). Be careful and double think before rename some built-in WordPress role."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "08.08.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Missed \"manage_sites\" user capability was added to the list of built-in WordPress capabilities managed by User Role Editor."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "25.07.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Integer \"1\" as default capability value for new added empty role was excluded for the better compatibility with WordPress core. Boolean \"true\" is used instead as WordPress itself does."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Integration with Gravity Forms permissions system was enhanced for WordPress multisite."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "18.07.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "The instance of main plugin class User_Role_Editor is available for other developers now via $GLOBALS['user_role_editor']"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Compatibility issue with the theme <a href=\"http://wpdance.com\">\"WD TechGoStore\"</a> is resolved. This theme loads its JS and CSS stuff for admin backend uncoditionally - for all pages. While the problem is caused just by CSS URE unloads all this theme JS and CSS for optimizaiton purpose for WP admin backend pages where conflict is possible."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "13.06.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "MySQL query optimizing to reduce memory consumption. Thanks to <a href=\"http://wordpress.org/support/topic/allowed-memory-size-exhausted-fixed\">SebastiaanO</a>."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Extra WordPress nonce field was removed from the post at main role editor page to exclude nonce duplication."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Minor code enhancements."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Fixes for some missed translations."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "16.05.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Persian translation was added. Thanks to Morteza."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "22.04.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Bug was fixed. It had prevented bulk move users without role (--No role for this site--) to the selected role in case such users were shown more than at one WordPress Users page."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Korean translation was added. Thanks to <a href=\"http://www.ajinsys.com\">Taek Yoon</a>."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version update notes:"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Posts/Pages edit restriction feature does not prohibit to add new post/page now. Now it should be managed via 'create_posts' or 'create_pages' user capabilities."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "If you use Posts/Pages edit restriction by author IDs, there is no need to add user ID to allow him edit his own posts or page. Current user is added to the allowed authors list automatically."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "New tab \"Additional Modules\" was added to the User Role Editor options page. As per name all options related to additional modules were moved there."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "06.04.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Single-site: It is possible to bulk move users without role (--No role for this site--) to the selected role or automatically created role \"No rights\" without any capabilities. Get more details at http://role-editor.com/no-role-for-this-site/"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Plugin uses for dialogs jQuery UI CSS included into WordPress package."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version: It is possible to restrict editing posts/pages by its authors user ID (targeted user should have edit_others_posts or edit_others_pages capability)."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version, multi-site: Superadmin can setup individual lists of themes available for activation to selected sites administrators."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version, Gravity Forms access restriction module was tested and compatible with Gravity Forms version 1.8.5"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "15.02.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Security enhancement: WordPress text translation functions were replaced with more secure esc_html__() and esc_html_e() variants."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version: It is possible to restrict access to the post or page content view for selected roles. Activate the option at plugin \"Settings\" page and use new \"Content View Restrictions\" metabox at post/page editor to setup content view access restrictions."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version: Gravity Forms access management module was updated for compatibility with Gravity Forms version 1.8.3. If you need compatibility with earlier Gravity Forms versions, e.g. 1.7.9, use User Role Editor version 4.9."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "19.01.2014"
+msgstr ""
+
+#. Found in changelog list item.
+msgid "New tab \"Default Roles\" was added to the User Role Editor settings page. It is possible to select multiple default roles to assign them automatically to the new registered user."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "CSS and dialog windows layout various enhancements."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "'members_get_capabilities' filter was applied to provide better compatibility with themes and plugins which may use it to add its own user capabilities."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "jQuery UI CSS was updated to version 1.10.4."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version: Option was added to download jQuery UI CSS from the jQuery CDN."
+msgstr ""
+
+#. Found in changelog list item.
+msgid "Pro version: Bug was fixed: Plugins activation assess restriction section was not shown for selected user under multi-site environment."
+msgstr ""
+
+#. Found in changelog paragraph.
+msgid "Click <a href=\"http://role-editor.com/changelog\">here</a> to look at <a href=\"http://role-editor.com/changelog\">the full list of changes</a> of User Role Editor plugin."
+msgstr ""
+
+#. Found in faq paragraph.
+msgid "To read full FAQ section visit <a href=\"http://www.shinephp.com/user-role-editor-wordpress-plugin/#faq\">this page</a> at <a href=\"shinephp.com\">shinephp.com</a>."
+msgstr ""
+
+#. Found in remaining content header.
+msgid "Additional Documentation"
+msgstr ""
+
+#. Found in remaining content paragraph.
+msgid "You can find more information about \"User Role Editor\" plugin at <a href=\"http://www.shinephp.com/user-role-editor-wordpress-plugin/\">this page</a>"
+msgstr ""
+
+#. Found in remaining content paragraph.
+msgid "I am ready to answer on your questions about plugin usage. Use <a href=\"http://www.shinephp.com/user-role-editor-wordpress-plugin/\">plugin page comments</a> for that."
+msgstr ""

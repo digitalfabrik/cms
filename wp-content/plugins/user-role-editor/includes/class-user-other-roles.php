@@ -37,9 +37,9 @@ class URE_User_Other_Roles {
         }
         if ($this->lib->multisite) {          
             add_action( 'wpmu_activate_user', array($this, 'add_other_roles'), 10, 1 );
-        } else {
-            add_action( 'user_register', array($this, 'add_other_roles'), 10, 1 );
-        }    
+        }
+        add_action( 'user_register', array($this, 'add_other_roles'), 10, 1 );
+            
     }
     // end of set_hooks()
     
@@ -79,8 +79,8 @@ class URE_User_Other_Roles {
         wp_enqueue_script('ure-user-profile-other-roles');
         wp_localize_script('ure-user-profile-other-roles', 'ure_data_user_profile_other_roles', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),
-            'other_roles' => esc_html__('Other Roles', 'ure'),
-            'select_roles' => esc_html__('Select additional roles for this user', 'ure')
+            'other_roles' => esc_html__('Other Roles', 'user-role-editor'),
+            'select_roles' => esc_html__('Select additional roles for this user', 'user-role-editor')
         ));
     }
     // end of load_js()
@@ -159,14 +159,14 @@ class URE_User_Other_Roles {
 ?>
           <tr>
               <th>
-                  <?php esc_html_e('Capabilities', 'ure'); ?>
+                  <?php esc_html_e('Capabilities', 'user-role-editor'); ?>
               </th>    
               <td>
 <?php 
                 echo $user_caps .'<br/>'; 
       if ($this->lib->user_is_admin($current_user->ID)) {
             echo '<a href="' . wp_nonce_url("users.php?page=users-".URE_PLUGIN_FILE."&object=user&amp;user_id={$user->ID}", "ure_user_{$user->ID}") . '">' . 
-                 esc_html__('Edit', 'ure') . '</a>';
+                 esc_html__('Edit', 'user-role-editor') . '</a>';
       }                      
 ?>
               </td>
@@ -180,7 +180,7 @@ class URE_User_Other_Roles {
 ?>
         <table class="form-table">
         		<tr>
-        			<th scope="row"><?php esc_html_e('Other Roles', 'ure'); ?></th>
+        			<th scope="row"><?php esc_html_e('Other Roles', 'user-role-editor'); ?></th>
         			<td>
 <?php
             $this->roles_select_html($user);            
@@ -212,7 +212,7 @@ class URE_User_Other_Roles {
             return;
         }
 ?>
-        <h3><?php esc_html_e('Additional Capabilities', 'ure'); ?></h3>
+        <h3><?php esc_html_e('Additional Capabilities', 'user-role-editor'); ?></h3>
 <?php
         $this->display($user, 'user-edit');
     }
@@ -240,7 +240,7 @@ class URE_User_Other_Roles {
      */
     public function user_role_column($columns = array()) {
 
-        $columns['ure_roles'] = esc_html__('Other Roles', 'ure');
+        $columns['ure_roles'] = esc_html__('Other Roles', 'user-role-editor');
 
         return $columns;
     }
@@ -314,7 +314,9 @@ class URE_User_Other_Roles {
             return;
         }
         foreach ($other_default_roles as $role) {
-            $user->add_role($role);
+            if (!isset($user->caps[$role])) {
+                $user->add_role($role);
+            }
         }
     }
 
