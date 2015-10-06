@@ -689,10 +689,13 @@ function get_bloginfo( $show = '', $filter = 'raw' ) {
 	}
 
 	$url = true;
-	if (strpos($show, 'url') === false &&
-		strpos($show, 'directory') === false &&
-		strpos($show, 'home') === false)
+	if (is_array($show)) {
 		$url = false;
+	} elseif (strpos($show, 'url') === false &&
+		strpos($show, 'directory') === false &&
+		strpos($show, 'home') === false) {
+		$url = false;
+	}
 
 	if ( 'display' == $filter ) {
 		if ( $url ) {
