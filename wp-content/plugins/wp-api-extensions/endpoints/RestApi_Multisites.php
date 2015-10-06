@@ -8,7 +8,10 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
 class RestApi_Multisites extends RestApi_ExtensionBase {
 	const URL = 'multisites';
 
-	private $EXCLUDED_SITE_IDS = [1];
+	private $EXCLUDED_SITE_IDS = [
+		1, // landing page
+		6 // pre arrival
+	];
 	private $GLOBAL_SITE_IDS = [5];
 
 	public function __construct($namespace) {
