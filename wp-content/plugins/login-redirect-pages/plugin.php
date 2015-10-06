@@ -8,9 +8,11 @@
  * License: MIT
  */
 
+// TODO: this should probably go to a custom theme (functions.php)
+
 add_filter('login_redirect', 'login_redirect_pages');
 function login_redirect_pages() {
-	$url = esc_url(admin_url('edit.php?post_type=page&page=cms-tpv-page-page'));
+	$url = esc_url_raw(admin_url('edit.php?post_type=page&page=cms-tpv-page-page'));
 	return $url;
 }
 
