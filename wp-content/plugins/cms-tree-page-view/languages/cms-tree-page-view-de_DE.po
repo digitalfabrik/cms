@@ -205,13 +205,13 @@ msgstr "%1$s Baumstruktur"
 #: ../cms-tree-page-view/functions.php:571
 msgctxt "name in menu"
 msgid "Tree View"
-msgstr "Baumstruktur"
+msgstr "Seiten"
 
 #: ../cms-tree-page-view/functions.php:572
 #, php-format
 msgctxt "title on page with tree"
 msgid "%1$s Tree View"
-msgstr "%1$s Baumstruktur"
+msgstr "%1$s"
 
 #: ../cms-tree-page-view/functions.php:592
 msgid "settings"
@@ -353,7 +353,7 @@ msgstr "Seiten-ID"
 #, php-format
 msgctxt "headline of page with tree"
 msgid "%1$s Tree View"
-msgstr "%1$s Baumstruktur"
+msgstr "%1$s"
 
 #: ../cms-tree-page-view/functions.php:1248
 msgid "Unknown user"
