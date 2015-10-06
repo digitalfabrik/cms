@@ -674,8 +674,8 @@ function cms_tpv_admin_menu() {
 		if ( ! empty( $post_type_object ) ) {
 
 			$menu_name = _x("Tree View", "name in menu", "cms-tree-page-view");
-			$page_title = sprintf(_x('%1$s Tree View', "title on page with tree", "cms-tree-page-view"), $post_type_object->labels->name);
-			add_submenu_page($slug, $page_title, $menu_name, $post_type_object->cap->edit_posts, "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page");
+			$page_title = sprintf(_x('%1$s', "title on page with tree", "cms-tree-page-view"), $post_type_object->labels->name);
+			add_menu_page($page_title, $menu_name, $post_type_object->cap->edit_posts, "cms-tpv-page-$one_menu_post_type", "cms_tpv_pages_page", 'dashicons-admin-page', 20);
 
 		}
 	}
