@@ -8,6 +8,26 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
  */
 class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	const URL = 'modified_content';
+	/**
+	 * Match empty p html tags spanning the whole string.
+	 *
+	 * Examples matched:
+	 *
+	 *     <p></p>
+	 *     <p></p><p></p>
+	 *     <p>  </p>
+	 *     <p></p>  <p></p>
+	 *     \n
+	 *     <p></p>\n<p></p>
+	 *     <p></p>\n  <p></p>
+	 *     <p></p>\r\n  <p></p>\r\n
+	 *     <p>&nbsp; &nbsp;</p>\n
+	 *     &nbsp; &nbsp;\n
+	 *     <p>\n</p>
+	 */
+	const EMPTY_P_PATTERN = '#^((<p>(\s|&nbsp;|<br\s*/\s*>|[\\\n\\\r\s])*</p>)|([\\\n\\\r\s]|&nbsp;|<br\s*/\s*>))*$#';
+	/** The return value for a content that is considered empty */
+	const EMPTY_CONTENT = "";
 
 	private $datetime_input_format = DateTime::ATOM;
 	private $datetime_query_format = DateTime::ATOM;
@@ -37,6 +57,15 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 			'callback' => [$this, 'get_modified_posts'],
 			'args' => $args
 		]);
+	}
+
+
+	public function validate_datetime($arg) {
+		return $this->make_datetime($arg) !== false;
+	}
+
+	private function make_datetime($arg) {
+		return DateTime::createFromFormat($this->datetime_input_format, $arg);
 	}
 
 	public function get_modified_pages(WP_REST_Request $request) {
@@ -80,14 +109,15 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 
 	private function prepare_item($post) {
 		setup_postdata($post);
+		$content = $this->prepare_content($post);
 		return [
 			'id' => $post->ID,
 			'title' => $post->post_title,
 			'type' => $post->post_type,
 			'status' => $post->post_status,
 			'modified_gmt' => $post->post_modified_gmt,
-			'excerpt' => $this->prepare_excerpt($post),
-			'content' => $this->prepare_content($post),
+			'excerpt' => $content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post),
+			'content' => $content,
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
 			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
@@ -95,17 +125,17 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		];
 	}
 
-	public function validate_datetime($arg) {
-		return $this->make_datetime($arg) !== false;
-	}
-
-	private function make_datetime($arg) {
-		return DateTime::createFromFormat($this->datetime_input_format, $arg);
-	}
-
 	private function prepare_content($post) {
+		$content = $post->post_content;
+		$match_result = preg_match(self::EMPTY_P_PATTERN, $content);
+		if ($match_result === false) {
+			throw new RuntimeException("preg_match on content indicated error status (pattern='" . self::EMPTY_P_PATTERN . "', content='$content'");
+		}
+		if ($match_result) {
+			return self::EMPTY_CONTENT;
+		}
 		// replace all newlines with surrounding p tags
-		return "<p>" . str_replace(["\r\n", "\r", "\n"], "</p><p>", $post->post_content) . "</p>";
+		return "<p>" . str_replace(["\r\n", "\r", "\n"], "</p><p>", $content) . "</p>";
 	}
 
 	private function prepare_excerpt($post) {
