@@ -1,0 +1,57 @@
+<wpml-config>
+	<custom-fields>
+		<custom-field action="copy">_blog_id</custom-field>
+		<custom-field action="copy">_end_ts</custom-field>
+		<custom-field action="copy">_event_all_day</custom-field>
+		<custom-field action="copy">_event_date_created</custom-field>
+		<custom-field action="copy">_event_date_modified</custom-field>
+		<custom-field action="copy">_event_end_date</custom-field>
+		<custom-field action="copy">_event_end_time</custom-field>
+		<custom-field action="ignore">_event_id</custom-field>
+		<custom-field action="copy">_event_private</custom-field>
+		<custom-field action="copy">_event_rsvp</custom-field>
+		<custom-field action="copy">_event_rsvp_date</custom-field>
+		<custom-field action="copy">_event_rsvp_spaces</custom-field>
+		<custom-field action="copy">_event_rsvp_time</custom-field>
+		<custom-field action="copy">_event_slug</custom-field>
+		<custom-field action="copy">_event_spaces</custom-field>
+		<custom-field action="copy">_event_start_date</custom-field>
+		<custom-field action="copy">_event_start_time</custom-field>
+		<custom-field action="copy">_event_status</custom-field>
+		<custom-field action="copy">_group_id</custom-field>
+		<custom-field action="copy">_location_address</custom-field>
+		<custom-field action="copy">_location_country</custom-field>
+		<custom-field action="ignore">_location_id</custom-field>
+		<custom-field action="copy">_location_latitude</custom-field>
+		<custom-field action="copy">_location_longitude</custom-field>
+		<custom-field action="copy">_location_postcode</custom-field>
+		<custom-field action="copy">_location_private</custom-field>
+		<custom-field action="copy">_location_region</custom-field>
+		<custom-field action="copy">_location_state</custom-field>
+		<custom-field action="copy">_location_status</custom-field>
+		<custom-field action="copy">_location_town</custom-field>
+		<custom-field action="copy">_post_id</custom-field>
+		<custom-field action="copy">_recurrence</custom-field>
+		<custom-field action="copy">_recurrence_byday</custom-field>
+		<custom-field action="copy">_recurrence_byweekno</custom-field>
+		<custom-field action="copy">_recurrence_days</custom-field>
+		<custom-field action="copy">_recurrence_freq</custom-field>
+		<custom-field action="copy">_recurrence_id</custom-field>
+		<custom-field action="copy">_recurrence_interval</custom-field>
+		<custom-field action="copy">_recurrence_rsvp_days</custom-field>
+		<custom-field action="copy">_start_ts</custom-field>
+		<!-- depricated -->
+		<custom-field action="ignore">_event_category_id</custom-field>
+		<!-- PRO -->
+		<custom-field action="copy">_custom_booking_form</custom-field>
+		<custom-field action="copy">_custom_attendee_form</custom-field>
+    </custom-fields>
+    <custom-types>
+        <custom-type translate="1">event</custom-type>
+        <custom-type translate="1">location</custom-type>
+    </custom-types>    
+    <taxonomies>
+        <taxonomy translate="1">event-categories</taxonomy>
+        <taxonomy translate="1">event-tags</taxonomy>
+    </taxonomies>
+</wpml-config>
