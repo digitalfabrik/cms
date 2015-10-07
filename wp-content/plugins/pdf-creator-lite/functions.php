@@ -8,7 +8,7 @@ function SSAPDF_addAdminPage ()
 {
 	$page_title = 'PDF Creator';
 	$menu_title = 'PDF Creator';
-	$capability = 'manage_options';
+	$capability = 'edit_pages';
 	$menu_slug = 'exportAsPDF';
 	$function = 'SSAPDF_drawAdminPage';
 	
