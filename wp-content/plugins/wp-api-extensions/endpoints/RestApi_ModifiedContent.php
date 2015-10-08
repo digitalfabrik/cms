@@ -28,6 +28,7 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	const EMPTY_P_PATTERN = '#^((<p>(\s|&nbsp;|<br\s*/\s*>|[\\\n\\\r\s])*</p>)|([\\\n\\\r\s]|&nbsp;|<br\s*/\s*>))*$#';
 	/** The return value for a content that is considered empty */
 	const EMPTY_CONTENT = "";
+	const EXCERPT_LINEBREAK_INDICATOR = " ";
 
 	private $datetime_input_format = DateTime::ATOM;
 	private $datetime_query_format = DateTime::ATOM;
@@ -161,8 +162,12 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	}
 
 	protected function prepare_excerpt($post) {
-		return $post->post_excerpt ?:
+		$excerpt = $post->post_excerpt ?:
 			apply_filters('the_excerpt', apply_filters('get_the_excerpt', $post->post_excerpt));
+		$excerpt = str_replace(["</p>", "\r\n", "\n", "\r", "<p>"],
+			[self::EXCERPT_LINEBREAK_INDICATOR, self::EXCERPT_LINEBREAK_INDICATOR, self::EXCERPT_LINEBREAK_INDICATOR, "", ""],
+			$excerpt);
+		return trim($excerpt);
 	}
 
 	protected function prepare_thumbnail($post) {
