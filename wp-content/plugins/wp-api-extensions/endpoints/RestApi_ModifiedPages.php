@@ -12,6 +12,6 @@ class RestApi_ModifiedPages extends RestApi_ModifiedContent {
 	}
 
 	protected function get_posts_type() {
-		return '/events/';
+		return 'page';
 	}
 }
