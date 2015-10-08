@@ -42,6 +42,31 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'wpml_manage_languages' => true,
 			'wpml_manage_navigation' => true,
 			'wpml_manage_media_translation' => true,
+			/* Events */
+			'publish_events' => true,
+			'delete_others_events' => true,
+			'edit_others_events' => true,
+			'delete_events' => true,
+			'edit_events' => true,
+			'read_private_events' => true,
+
+			'publish_recurring_events' => true,
+			'delete_others_recurring_events' => true,
+			'edit_others_recurring_events' => true,
+			'delete_recurring_events' => true,
+			'edit_recurring_events' => true,
+
+			'publish_locations' => true,
+			'delete_others_locations' => true,
+			'edit_others_locations' => true,
+			'delete_locations' => true,
+			'edit_locations' => true,
+			'read_private_locations' => true,
+			'read_others_locations' => true,
+
+			'delete_event_categories' => true,
+			'edit_event_categories' => true,
+			'upload_event_images' => true,
 		]);
 		add_role('organizer', 'Organisator', [
 			/* Pages */
@@ -53,7 +78,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'delete_others_pages' => true,
 			'delete_pages' => true,
 			'delete_publishes_pages' => true,
-			'publish_pages' => true, // TODO: remove when approval process online
+			'publish_pages' => true,
 			'upload_files' => true,
 			/* Profile */
 			'read' => true,
@@ -61,6 +86,19 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'wpml_manage_translation_management' => true,
 			'wpml_manage_navigation' => true,
 			'wpml_manage_media_translation' => true,
+			/* Events */
+			'delete_events' => true,
+			'edit_events' => true,
+
+			'delete_recurring_events' => true,
+			'edit_recurring_events' => true,
+
+			'publish_locations' => true,
+			'delete_locations' => true,
+			'edit_locations' => true,
+			'read_others_locations' => true,
+
+			'upload_event_images' => true,
 		]);
 
 		/* Delete default user roles */
