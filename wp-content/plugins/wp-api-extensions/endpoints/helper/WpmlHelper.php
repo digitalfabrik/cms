@@ -28,7 +28,9 @@ class WpmlHelper {
 				continue;
 			}
 			$id = apply_filters('wpml_object_id', $post_id, $post_type, FALSE, $language_code);
-			if ($id == null) {
+			if ($id == null
+				|| $id == $post_id // happens for events
+			) {
 				continue;
 			}
 			$other_pages_ids[$language_code] = $id;
