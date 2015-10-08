@@ -6,7 +6,7 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
 /**
  * Retrieve only content that has been modified since a given datetime
  */
-class RestApi_ModifiedContent extends RestApi_ExtensionBase {
+abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	const URL = 'modified_content';
 	/**
 	 * Match empty p html tags spanning the whole string.
@@ -40,25 +40,27 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		$this->wpml_helper = new WpmlHelper();
 	}
 
-
 	public function register_routes() {
-		$args = [
+		$args = $this->get_route_args();
+
+		parent::register_route($this->get_subpath(), [
+			'callback' => [$this, 'get_modified_content'],
+			'args' => $args
+		]);
+	}
+
+	private function get_route_args() {
+		return [
 			'since' => [
 				'required' => true,
 				'validate_callback' => [$this, 'validate_datetime']
 			]
 		];
-
-		parent::register_route('/pages/', [
-			'callback' => [$this, 'get_modified_pages'],
-			'args' => $args
-		]);
-		parent::register_route('/posts/', [
-			'callback' => [$this, 'get_modified_posts'],
-			'args' => $args
-		]);
 	}
 
+	protected abstract function get_subpath();
+
+	protected abstract function get_posts_type();
 
 	public function validate_datetime($arg) {
 		return $this->make_datetime($arg) !== false;
@@ -68,34 +70,13 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		return DateTime::createFromFormat($this->datetime_input_format, $arg);
 	}
 
-	public function get_modified_pages(WP_REST_Request $request) {
-		return $this->get_modified_posts_by_type("page", $request);
-	}
-
-	public function get_modified_posts(WP_REST_Request $request) {
-		return $this->get_modified_posts_by_type("post", $request);
+	public function get_modified_content(WP_REST_Request $request) {
+		return $this->get_modified_posts_by_type($this->get_posts_type(), $request);
 	}
 
 	private function get_modified_posts_by_type($type, WP_REST_Request $request) {
-		$since = $request->get_param('since');
-		$last_modified_gmt = $this
-			->make_datetime($since)
-			->setTimezone($this->datetime_zone_gmt)
-			->format($this->datetime_query_format);
-
 		global $wpdb;
-		$querystr = "
-			SELECT posts.ID, post_title, post_type, post_status, post_modified_gmt, post_excerpt, post_content, post_parent, menu_order,
-					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname
-			FROM $wpdb->posts posts
-				JOIN $wpdb->users users ON users.ID = posts.post_author
-				JOIN $wpdb->usermeta usermeta_firstname ON usermeta_firstname.user_id = users.ID AND usermeta_firstname.meta_key = 'first_name'
-				JOIN $wpdb->usermeta usermeta_lastname ON usermeta_lastname.user_id = users.ID AND usermeta_lastname.meta_key = 'last_name'
-			WHERE post_type = '$type'
-				AND post_modified_gmt >= '$last_modified_gmt'
-				AND post_status IN ('publish', 'trash')
-			ORDER BY menu_order ASC, post_title ASC
-			";
+		$querystr = $this->build_query_string($type, $request);
 		$query_result = $wpdb->get_results($querystr, OBJECT);
 
 		$result = [];
@@ -105,7 +86,49 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		return $result;
 	}
 
-	private function prepare_item($post) {
+	/**
+	 * @param $post_type
+	 * @param WP_REST_Request $request
+	 * @return string
+	 */
+	protected function build_query_string($post_type, WP_REST_Request $request) {
+		return
+			$this->build_query_select() . " " .
+			$this->build_query_from() . " " .
+			$this->build_query_where($post_type, $request) . " " .
+			$this->build_query_aggregate();
+	}
+
+	protected function build_query_select() {
+		return "SELECT posts.ID, posts.post_title, posts.post_type, posts.post_status, posts.post_modified_gmt,
+					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order,
+					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
+	}
+
+	protected function build_query_from() {
+		global $wpdb;
+		return "FROM $wpdb->posts posts
+				JOIN $wpdb->users users ON users.ID = posts.post_author
+				JOIN $wpdb->usermeta usermeta_firstname ON usermeta_firstname.user_id = users.ID AND usermeta_firstname.meta_key = 'first_name'
+				JOIN $wpdb->usermeta usermeta_lastname ON usermeta_lastname.user_id = users.ID AND usermeta_lastname.meta_key = 'last_name'";
+	}
+
+	protected function build_query_where($type, WP_REST_Request $request) {
+		$since = $request->get_param('since');
+		$last_modified_gmt = $this
+			->make_datetime($since)
+			->setTimezone($this->datetime_zone_gmt)
+			->format($this->datetime_query_format);
+		return "WHERE post_type = '$type'
+				AND post_modified_gmt >= '$last_modified_gmt'
+				AND post_status IN ('publish', 'trash')";
+	}
+
+	protected function build_query_aggregate() {
+		return "ORDER BY menu_order ASC, post_title ASC";
+	}
+
+	protected function prepare_item($post) {
 		setup_postdata($post);
 		$content = $this->prepare_content($post);
 		return [
@@ -124,7 +147,7 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		];
 	}
 
-	private function prepare_content($post) {
+	protected function prepare_content($post) {
 		$content = $post->post_content;
 		$match_result = preg_match(self::EMPTY_P_PATTERN, $content);
 		if ($match_result === false) {
@@ -137,12 +160,12 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		return "<p>" . str_replace(["\r\n", "\r", "\n"], "</p><p>", $content) . "</p>";
 	}
 
-	private function prepare_excerpt($post) {
+	protected function prepare_excerpt($post) {
 		return $post->post_excerpt ?:
 			apply_filters('the_excerpt', apply_filters('get_the_excerpt', $post->post_excerpt));
 	}
 
-	private function prepare_thumbnail($post) {
+	protected function prepare_thumbnail($post) {
 		if (!has_post_thumbnail($post->ID)) {
 			return null;
 		}
@@ -150,7 +173,7 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		return $image_src[0];
 	}
 
-	private function prepare_author($post) {
+	protected function prepare_author($post) {
 		return [
 			'login' => $post->user_login,
 			'first_name' => $post->author_firstname,

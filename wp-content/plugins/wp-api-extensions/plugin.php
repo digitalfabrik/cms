@@ -8,7 +8,8 @@
  * License: MIT
  */
 
-require_once __DIR__ . '/endpoints/RestApi_ModifiedContent.php';
+require_once __DIR__ . '/endpoints/RestApi_ModifiedPages.php';
+require_once __DIR__ . '/endpoints/RestApi_ModifiedEvents.php';
 require_once __DIR__ . '/endpoints/RestApi_WpmlLanguages.php';
 require_once __DIR__ . '/endpoints/RestApi_Multisites.php';
 
@@ -18,7 +19,8 @@ const API_VERSION = 0;
 add_action('rest_api_init', function () {
 	$versioned_namespace = PLUGIN_NAMESPACE . '/v' . API_VERSION;
 	$endpoints = [
-		new RestApi_ModifiedContent($versioned_namespace),
+		new RestApi_ModifiedPages($versioned_namespace),
+		new RestApi_ModifiedEvents($versioned_namespace),
 		new RestApi_WpmlLanguages($versioned_namespace),
 		new RestApi_Multisites($versioned_namespace)
 	];
