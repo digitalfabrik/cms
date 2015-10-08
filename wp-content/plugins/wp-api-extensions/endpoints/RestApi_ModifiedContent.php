@@ -83,22 +83,20 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 			->setTimezone($this->datetime_zone_gmt)
 			->format($this->datetime_query_format);
 
-		$query_args = [
-			'post_type' => $type,
-			/* only after datetime */
-			'date_query' => [
-				'column' => 'post_modified_gmt',
-				'after' => $last_modified_gmt,
-			],
-			/* keep order */
-			'orderby' => ['menu_order' => 'ASC', 'title' => 'ASC'],
-			/* also show deleted items */
-			'post_status' => ['publish', 'trash'],
-			/* no pagination, show all */
-			'posts_per_page' => -1,
-		];
-		$query = new WP_Query();
-		$query_result = $query->query($query_args);
+		global $wpdb;
+		$querystr = "
+			SELECT posts.ID, post_title, post_type, post_status, post_modified_gmt, post_excerpt, post_content, post_parent, menu_order,
+					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname
+			FROM $wpdb->posts posts
+				JOIN $wpdb->users users ON users.ID = posts.post_author
+				JOIN $wpdb->usermeta usermeta_firstname ON usermeta_firstname.user_id = users.ID AND usermeta_firstname.meta_key = 'first_name'
+				JOIN $wpdb->usermeta usermeta_lastname ON usermeta_lastname.user_id = users.ID AND usermeta_lastname.meta_key = 'last_name'
+			WHERE post_type = '$type'
+				AND post_modified_gmt >= '$last_modified_gmt'
+				AND post_status IN ('publish', 'trash')
+			ORDER BY menu_order ASC, post_title ASC
+			";
+		$query_result = $wpdb->get_results($querystr, OBJECT);
 
 		$result = [];
 		foreach ($query_result as $post) {
@@ -121,7 +119,8 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
 			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
-			'thumbnail' => $this->prepare_thumbnail($post)
+			'thumbnail' => $this->prepare_thumbnail($post),
+			'author' => $this->prepare_author($post)
 		];
 	}
 
@@ -129,7 +128,7 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		$content = $post->post_content;
 		$match_result = preg_match(self::EMPTY_P_PATTERN, $content);
 		if ($match_result === false) {
-			throw new RuntimeException("preg_match on content indicated error status (pattern='" . self::EMPTY_P_PATTERN . "', content='$content'");
+			throw new RuntimeException("preg_match on content indicated error status (pattern='" . self::EMPTY_P_PATTERN . "', content='$content')");
 		}
 		if ($match_result) {
 			return self::EMPTY_CONTENT;
@@ -149,6 +148,14 @@ class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		}
 		$image_src = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID));
 		return $image_src[0];
+	}
+
+	private function prepare_author($post) {
+		return [
+			'login' => $post->user_login,
+			'first_name' => $post->author_firstname,
+			'last_name' => $post->author_lastname
+		];
 	}
 
 	private function disable_permanent_deletion() {
