@@ -33,12 +33,14 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	private $datetime_input_format = DateTime::ATOM;
 	private $datetime_query_format = DateTime::ATOM;
 	private $datetime_zone_gmt;
+	private $current_request;
 
 	public function __construct($namespace) {
 		parent::__construct($namespace, self::URL);
 		$this->datetime_zone_gmt = new DateTimeZone('GMT');
 		$this->disable_permanent_deletion();
 		$this->wpml_helper = new WpmlHelper();
+		$this->current_request = new stdClass();
 	}
 
 	public function register_routes() {
@@ -76,8 +78,11 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	}
 
 	private function get_modified_posts_by_type($type, WP_REST_Request $request) {
+		$this->current_request->post_type = $type;
+		$this->current_request->rest_request = $request;
+
 		global $wpdb;
-		$querystr = $this->build_query_string($type, $request);
+		$querystr = $this->build_query_string();
 		$query_result = $wpdb->get_results($querystr, OBJECT);
 
 		$result = [];
@@ -88,15 +93,13 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	}
 
 	/**
-	 * @param $post_type
-	 * @param WP_REST_Request $request
 	 * @return string
 	 */
-	protected function build_query_string($post_type, WP_REST_Request $request) {
+	protected function build_query_string() {
 		return
 			$this->build_query_select() . " " .
-			$this->build_query_from($post_type) . " " .
-			$this->build_query_where($post_type, $request) . " " .
+			$this->build_query_from() . " " .
+			$this->build_query_where() . " " .
 			$this->build_query_aggregate();
 	}
 
@@ -106,12 +109,12 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
 	}
 
-	protected function build_query_from($post_type) {
+	protected function build_query_from() {
 		global $wpdb;
 		$current_language = ICL_LANGUAGE_CODE;
 		return "FROM $wpdb->posts posts
 				JOIN {$wpdb->prefix}icl_translations translations
-						ON translations.element_type = 'post_{$post_type}'
+						ON translations.element_type = 'post_{$this->current_request->post_type}'
 						AND translations.element_id = posts.ID
 						AND translations.language_code = '$current_language'
 				JOIN $wpdb->users users
@@ -124,13 +127,13 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 						AND usermeta_lastname.meta_key = 'last_name'";
 	}
 
-	protected function build_query_where($type, WP_REST_Request $request) {
-		$since = $request->get_param('since');
+	protected function build_query_where() {
+		$since = $this->current_request->rest_request->get_param('since');
 		$last_modified_gmt = $this
 			->make_datetime($since)
 			->setTimezone($this->datetime_zone_gmt)
 			->format($this->datetime_query_format);
-		return "WHERE post_type = '$type'
+		return "WHERE post_type = '{$this->current_request->post_type}'
 				AND post_modified_gmt >= '$last_modified_gmt'
 				AND post_status IN ('publish', 'trash')";
 	}
