@@ -95,22 +95,46 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	}
 
 	/**
+	 * Builds the query string based on the result of the query helper methods.
+	 *
 	 * @return string
 	 */
 	protected function build_query_string() {
+		/**
+		 * The approach is currently not unified - the helper methods return strings and arrays.
+		 * We should implement at least a half-fledged query builder to cope with the different needs
+		 * (or use an adequate framework).
+		 */
+		$select = $this->build_query_select();
+		$from = $this->build_query_from();
+		$where = $this->build_query_where();
+		$groups = $this->build_query_groups();
+		$order_clauses = $this->build_query_order_clauses();
+
+		$where_first = array_shift($where);
+		$where_rest = $where;
+
 		return
-			$this->build_query_select() . " " .
-			$this->build_query_from() . " " .
-			$this->build_query_where() . " " .
-			$this->build_query_aggregate();
+			"SELECT $select
+			$from
+			WHERE $where_first " .
+			($where_rest ? "AND " . join(" AND ", $where_rest) : "") . " " .
+			($groups ? "GROUP BY " . join(",", $groups) : "") . " " .
+			($order_clauses ? "ORDER BY " . join(",", $order_clauses) : "");
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function build_query_select() {
-		return "SELECT posts.ID, posts.post_title, posts.post_type, posts.post_status, posts.post_modified_gmt,
+		return "posts.ID, posts.post_title, posts.post_type, posts.post_status, posts.post_modified_gmt,
 					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order,
 					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function build_query_from() {
 		global $wpdb;
 		$current_language = ICL_LANGUAGE_CODE;
@@ -129,19 +153,33 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 						AND usermeta_lastname.meta_key = 'last_name'";
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function build_query_where() {
 		$since = $this->current_request->rest_request->get_param('since');
 		$last_modified_gmt = $this
 			->make_datetime($since)
 			->setTimezone($this->datetime_zone_gmt)
 			->format($this->datetime_query_format);
-		return "WHERE post_type = '{$this->current_request->post_type}'
-				AND post_modified_gmt >= '$last_modified_gmt'
-				AND post_status IN ('publish', 'trash')";
+		return [
+			"post_type = '{$this->current_request->post_type}'",
+			"post_modified_gmt >= '$last_modified_gmt'",
+			"post_status IN ('publish', 'trash')"];
 	}
 
-	protected function build_query_aggregate() {
-		return "ORDER BY menu_order ASC, post_title ASC";
+	/**
+	 * @return array
+	 */
+	protected function build_query_groups() {
+		return [];
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function build_query_order_clauses() {
+		return ["menu_order ASC", "post_title ASC"];
 	}
 
 	protected function prepare_item($post) {
