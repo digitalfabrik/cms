@@ -28,6 +28,7 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	const EMPTY_P_PATTERN = '#^((<p>(\s|&nbsp;|<br\s*/\s*>|[\\\n\\\r\s])*</p>)|([\\\n\\\r\s]|&nbsp;|<br\s*/\s*>))*$#';
 	/** The return value for a content that is considered empty */
 	const EMPTY_CONTENT = "";
+	/** The string that indicates a line break in the excerpt */
 	const EXCERPT_LINEBREAK_INDICATOR = " ";
 
 	private $datetime_input_format = DateTime::ATOM;
@@ -39,6 +40,7 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		parent::__construct($namespace, self::URL);
 		$this->datetime_zone_gmt = new DateTimeZone('GMT');
 		$this->disable_permanent_deletion();
+		$this->remove_read_more_link();
 		$this->wpml_helper = new WpmlHelper();
 		$this->current_request = new stdClass();
 	}
@@ -221,5 +223,13 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		echo "You are not authorized to delete this page.";
 		exit;
 
+	}
+
+	private function remove_read_more_link() {
+		add_filter('excerpt_more', [$this, 'excerpt_no_read_more_link']);
+	}
+
+	public function excerpt_no_read_more_link() {
+		return "";
 	}
 }
