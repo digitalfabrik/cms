@@ -95,7 +95,7 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	protected function build_query_string($post_type, WP_REST_Request $request) {
 		return
 			$this->build_query_select() . " " .
-			$this->build_query_from() . " " .
+			$this->build_query_from($post_type) . " " .
 			$this->build_query_where($post_type, $request) . " " .
 			$this->build_query_aggregate();
 	}
@@ -106,12 +106,22 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
 	}
 
-	protected function build_query_from() {
+	protected function build_query_from($post_type) {
 		global $wpdb;
+		$current_language = ICL_LANGUAGE_CODE;
 		return "FROM $wpdb->posts posts
-				JOIN $wpdb->users users ON users.ID = posts.post_author
-				JOIN $wpdb->usermeta usermeta_firstname ON usermeta_firstname.user_id = users.ID AND usermeta_firstname.meta_key = 'first_name'
-				JOIN $wpdb->usermeta usermeta_lastname ON usermeta_lastname.user_id = users.ID AND usermeta_lastname.meta_key = 'last_name'";
+				JOIN {$wpdb->prefix}icl_translations translations
+						ON translations.element_type = 'post_{$post_type}'
+						AND translations.element_id = posts.ID
+						AND translations.language_code = '$current_language'
+				JOIN $wpdb->users users
+						ON users.ID = posts.post_author
+				JOIN $wpdb->usermeta usermeta_firstname
+						ON usermeta_firstname.user_id = users.ID
+						AND usermeta_firstname.meta_key = 'first_name'
+				JOIN $wpdb->usermeta usermeta_lastname
+						ON usermeta_lastname.user_id = users.ID
+						AND usermeta_lastname.meta_key = 'last_name'";
 	}
 
 	protected function build_query_where($type, WP_REST_Request $request) {
