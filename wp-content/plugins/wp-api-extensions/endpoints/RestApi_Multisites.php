@@ -41,33 +41,16 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 	private function prepare_item($blog) {
 		$details = get_blog_details($blog);
 		$id = $blog['blog_id'];
-		return [
+		switch_to_blog($id);
+		$result = [
 			'id' => $id,
 			'name' => $details->blogname,
-			'icon' => $this->get_icon($id),
+			'icon' => get_site_icon_url(),
 			'path' => $blog['path'],
 			'description' => get_bloginfo($blog),
 			'global' => in_array($id, $this->GLOBAL_SITE_IDS)
 		];
-	}
-
-	private function get_icon($blog_id) {
-		$posts = $blog_id > 1 ? "wp_${blog_id}_posts" : "wp_posts";
-		$postmeta = $blog_id > 1 ? "wp_${blog_id}_postmeta" : "wp_postmeta";
-		$query_string = "
-			SELECT post_content AS icon_path
-			FROM $posts
-			JOIN $postmeta ON $postmeta.post_id = $posts.ID
-			WHERE $postmeta.meta_key = '_wp_attachment_context'
-			  AND $postmeta.meta_value = 'site-icon'";
-		global $wpdb;
-		$results = $wpdb->get_results($query_string, OBJECT);
-		if (sizeof($results) > 1) {
-			throw new LogicException("More than one icon defined for site $blog_id");
-		}
-		if (sizeof($results) == 0) {
-			return null;
-		}
-		return $results[0]->icon_path;
+		restore_current_blog();
+		return $result;
 	}
 }
