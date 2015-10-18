@@ -34,7 +34,14 @@ class Ure_Lib extends Garvs_WP_Lib {
 	protected $role_delete_html = '';
 	protected $capability_remove_html = '';
 	protected $advert = null;
+ 
+ // when allow_edit_users_to_not_super_admin option is turned ON, we set this property to true 
+ // when we raise single site admin permissions up to the superadmin for the 'Add new user' new-user.php page
+ // User_Role_Editor::allow_add_user_as_superadmin()
+ public $raised_permissions = false; 
+ 
  public $debug = false;
+ 
   
   
     /** class constructor
@@ -331,13 +338,14 @@ class Ure_Lib extends Garvs_WP_Lib {
     
 
     protected function show_editor() {
+    $container_width = ($this->ure_object == 'user') ? 1400 : 1200;
     
     $this->show_message($this->notification);
 ?>
 <div class="wrap">
 		  <div id="ure-icon" class="icon32"><br/></div>
     <h2><?php _e('User Role Editor', 'user-role-editor'); ?></h2>
-    <div id="poststuff">
+    <div id="ure_container" style="min-width: <?php echo $container_width;?>px;">
         <div class="ure-sidebar" >
             <?php
             $this->advertisement();
@@ -1599,6 +1607,8 @@ class Ure_Lib extends Garvs_WP_Lib {
     
     protected function add_custom_post_type_caps() {
                
+        global $wp_roles;
+        
         $capabilities = array(
             'create_posts',
             'edit_posts',
@@ -1612,20 +1622,36 @@ class Ure_Lib extends Garvs_WP_Lib {
             'delete_published_posts',
             'delete_others_posts'
         );
-        $post_types = get_post_types(array('public'=>true, 'show_ui'=>true, '_builtin'=>false), 'objects');
-        foreach($post_types as $post_type) {
-            if ($post_type->capability_type=='post') {
-                continue;
-            }
+        $post_types = get_post_types(array('_builtin'=>false), 'objects');
+        foreach($post_types as $post_type) {            
             if (!isset($post_type->cap)) {
                 continue;
             }
             foreach($capabilities as $capability) {
                 if (isset($post_type->cap->$capability)) {
-                    $this->add_capability_to_full_caps_list($post_type->cap->$capability);
+                    $cap_to_check = $post_type->cap->$capability;
+                    $this->add_capability_to_full_caps_list($cap_to_check);
+                    if (!$this->multisite &&
+                        isset($wp_roles->role_objects['administrator']) && 
+                        !isset($wp_roles->role_objects['administrator']->capabilities[$cap_to_check])) {
+                        // admin should be capable to edit any posts
+                        $wp_roles->role_objects['administrator']->add_cap($cap_to_check, true);
+                    }
                 }
             }                        
         }
+        
+        if (!$this->multisite && isset($wp_roles->role_objects['administrator'])) {
+            foreach(array('post', 'page') as $post_type_name) {
+                $post_type = get_post_type_object($post_type_name);
+                if ($post_type->cap->create_posts!=='edit_'. $post_type->name .'s') {   // 'create' capability is active
+                    if (!isset($wp_roles->role_objects['administrator']->capabilities[$post_type->cap->create_posts])) {
+                        // admin should be capable to create posts and pages
+                        $wp_roles->role_objects['administrator']->add_cap($post_type->cap->create_posts, true);
+                    }
+                }
+            }   // foreach()
+        }   // if ()
         
     }
     // end of add_custom_post_type_caps()

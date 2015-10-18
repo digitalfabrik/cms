@@ -17,15 +17,17 @@ class ure_Advertisement {
 		$used = array(-1);
 		$index = $this->rand_unique( $used );		
 		$this->slots[$index] = $this->admin_menu_editor();
-		
 		$used[] = $index;
-		$index = $this->rand_unique( $used );
-		$this->slots[$index] = $this->manage_wp();
   
-  $used[] = $index;
+  if ( date('Y-m-d') < date('Y-m-d', strtotime('2015-11-03')) ) {
+    $index = $this->rand_unique( $used );
+    $this->slots[$index] = $this->manage_wp();
+    $used[] = $index;
+  }
+  
 		$index = $this->rand_unique( $used );
 		$this->slots[$index] = $this->wp_esignature();
-  
+  $used[] = $index;
 				
 	}
 	// end of __construct
