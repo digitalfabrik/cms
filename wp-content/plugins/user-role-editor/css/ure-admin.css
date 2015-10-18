@@ -68,6 +68,11 @@ input.warning:hover, a.warning:hover {
   white-space: nowrap;
 }
 
+#ure_container {
+    float: left;
+    width: 100%;
+}
+
 .ure-sidebar {
   float: right;
 }

@@ -159,6 +159,8 @@ class User_Role_Editor {
   
       global $pagenow, $current_user;
       
+      $this->lib->raised_permissions = false;
+      
       if ($pagenow!=='user-new.php') {
           return $site_admins;
       }
@@ -173,7 +175,8 @@ class User_Role_Editor {
       }
               
       if (!in_array($current_user->user_login, $site_admins)) {
-        $site_admins[] = $current_user->user_login;
+          $this->lib->raised_permissions = true;
+          $site_admins[] = $current_user->user_login;
       }
       
       return $site_admins;
