@@ -1,0 +1,221 @@
+<!doctype html>  
+<!--[if IE 6 ]><html lang="en-us" class="ie6"> <![endif]-->
+<!--[if IE 7 ]><html lang="en-us" class="ie7"> <![endif]-->
+<!--[if IE 8 ]><html lang="en-us" class="ie8"> <![endif]-->
+<!--[if (gt IE 7)|!(IE)]><!-->
+<html lang="en-us"><!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	
+	<title>WordPress GCM Plugin</title>
+	
+	<meta name="description" content="A simple plugin to bring GCM to WordPress">
+	<meta name="author" content="Deniz Celebi and Pixelart Web and App Development">
+	<meta name="copyright" content="Deniz Celebi and Pixelart Web and App Development">
+	<meta name="generator" content="Documenter v2.0 http://rxa.li/documenter">
+	<meta name="date" content="2014-10-13T00:00:00+02:00">
+	
+	<link rel="stylesheet" href="assets/css/documenter_style.css" media="all">
+	
+	
+	
+	<script src="assets/js/jquery.js"></script>
+	
+	<script src="assets/js/jquery.scrollTo.js"></script>
+	<script src="assets/js/jquery.easing.js"></script>
+	
+	<script>document.createElement('section');var duration='500',easing='swing';</script>
+	<script src="assets/js/script.js"></script>
+	
+	<style>
+		html{background-color:#F1F1CA;color:#554236;}
+		::-moz-selection{background:#45352C;color:#CDB380;}
+		::selection{background:#45352C;color:#CDB380;}
+		#documenter_sidebar #documenter_logo{background-image:url();}
+		a{color:#F77825;}
+		.btn {
+			border-radius:3px;
+		}
+		.btn-primary {
+			  background-image: -moz-linear-gradient(top, #F77825, #C7611E);
+			  background-image: -ms-linear-gradient(top, #F77825, #C7611E);
+			  background-image: -webkit-gradient(linear, 0 0, 0 F77825%, from(#554236), to(#C7611E));
+			  background-image: -webkit-linear-gradient(top, #F77825, #C7611E);
+			  background-image: -o-linear-gradient(top, #F77825, #C7611E);
+			  background-image: linear-gradient(top, #F77825, #C7611E);
+			  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F77825', endColorstr='#C7611E', GradientType=0);
+			  border-color: #C7611E #C7611E #bfbfbf;
+			  color:#FFFFFF;
+		}
+		.btn-primary:hover,
+		.btn-primary:active,
+		.btn-primary.active,
+		.btn-primary.disabled,
+		.btn-primary[disabled] {
+		  border-color: #F77825 #F77825 #bfbfbf;
+		  background-color: #C7611E;
+		}
+		hr{border-top:1px solid #DEDEBA;border-bottom:1px solid #FFFFD6;}
+		#documenter_sidebar, #documenter_sidebar ul a{background-color:#554236;color:#CDB380;}
+		#documenter_sidebar ul a{-webkit-text-shadow:1px 1px 0px #6B5344;-moz-text-shadow:1px 1px 0px #6B5344;text-shadow:1px 1px 0px #6B5344;}
+		#documenter_sidebar ul{border-top:1px solid #30251F;}
+		#documenter_sidebar ul a{border-top:1px solid #6B5344;border-bottom:1px solid #30251F;color:#F77825;}
+		#documenter_sidebar ul a:hover{background:#45352C;color:#CDB380;border-top:1px solid #45352C;}
+		#documenter_sidebar ul a.current{background:#45352C;color:#CDB380;border-top:1px solid #45352C;}
+		#documenter_copyright{display:block !important;visibility:visible !important;}
+	</style>
+	
+</head>
+<body class="documenter-project-wordpress-gcm-plugin">
+	<div id="documenter_sidebar">
+		<a href="#documenter_cover" id="documenter_logo"></a>
+		<ul id="documenter_nav">
+			<li><a class="current" href="#documenter_cover">Start</a></li>
+				
+			<li><a href="#how_to_start" title="How To Start">How To Start</a></li>
+			<li><a href="#the_message_types" title="The Message Types">The Message Types</a></li>
+			<li><a href="#custom_message_type" title="Custom Message Type">Custom Message Type</a></li>
+			<li><a href="#license" title="License">License</a></li>
+			<li><a href="#info" title="Info">Info</a></li>
+
+		</ul>
+		<div id="documenter_copyright">Copyright Deniz Celebi and Pixelart Web and App Development 2014<br>
+		made with the <a href="http://rxa.li/documenter">Documenter v2.0</a> 
+		</div>
+	</div>
+	<div id="documenter_content">
+	<section id="documenter_cover">
+	<h1>WordPress GCM Plugin</h1>
+	
+	<div id="documenter_buttons">
+		
+	</div>
+	<hr>
+	<ul>
+	<li>created: 04/02/2014</li>
+	<li>latest update: 10/13/2014</li>
+	<li>by: Deniz Celebi and Pixelart Web and App Development</li>
+	<li><a href="http://wordpress.org/plugins/wp">wordpress.org/plugins/wp</a></li>
+	
+	</ul>
+	<p></p>
+	</section>
+	
+	<section id="how_to_start">
+	<div class="page-header"><h3>How To Start</h3><hr class="notop"></div>
+<p>
+	Before we can start, you need an API Key. If you already know, hot to obtain one, jump to 7, else follow these steps:</p>
+<p>
+	<strong>1</strong>. You need a Google Account. If you already have one, go to the Google Api Console, and login. Create a new Project if you haven&#39;t already.</p>
+<p>
+	<strong>2</strong>. Now select your Project and go to &quot;APIs &amp; auth&quot; &gt; &quot;APIs&quot; and activate &quot;Google Cloud Messaging for Android&quot;<br>
+	<img alt="" width="100%" src="assets/img/screen-1.png"></p>
+<p>
+	<strong>3</strong>. No you need youir API Key. Tp get one navigate to &quot;APIs &amp;auth&quot; &gt; &quot;Credentials&quot;. Then click on &quot;Create new Key&quot;.<br>
+	<img alt="" width="auto" src="assets/img/screen-2.png"></p>
+<p>
+	<strong>4</strong>. Now this step is very important: Click on &quot;<strong>Browser</strong> <strong>key</strong>&quot;, not on &quot;Server key&quot;.<br>
+	<img alt="" width="auto" src="assets/img/screen-3.png"></p>
+<p>
+	<strong>5</strong>. Just enter your Domain like below an press &quot;Create&quot;<br>
+	<img alt="" width="auto" src="assets/img/screen-4.png"></p>
+<p>
+	<strong>6</strong>. Now you will see you Api Key. Copy the line &quot;API KEY&quot; highlited below. This is your API Key<br>
+	<img alt="" width="auto" src="assets/img/screen-5.png"></p>
+<p>
+	<strong>7.</strong> Now open your WordPress Admin Backend, on go to &quot;GCM&quot; &gt; &quot;Settings&quot;. Enter in the Api Key Field your Api Key and press &quot;Save Changes&quot;<br>
+	<img alt="" width="100%" src="assets/img/screen-6.png"></p>
+<p>
+	<strong>8</strong>. Your done!</p>
+</section>
+<section id="the_message_types">
+	<div class="page-header"><h3>The Message Types</h3><hr class="notop"></div>
+<p>
+	Now the Plugin comes with 3 different Message Types out of the box.&nbsp;<br>
+	The first one you already know, its the normal &quot;message&quot; one. The two others are &quot;new_post&quot; and &quot;update&quot;.</p>
+<p>
+	As GCM sends Messages in Json format it needs two attributes. The first Parameter ist the message type, the second one is the data.&nbsp;<br>
+	&nbsp;</p>
+<p>
+	For example, if the message type is &quot;message&quot; it will include the data &quot;message&quot;, containing the message.<br>
+	But if the message type is &quot;update&quot; or &quot;new_post&quot;, it will include the data: &quot;post-title; post-url; post-id; post_author;&quot;.</p>
+<p>
+	So if a new post will be published, it automatically sends a GCM-Message containing the post title, url, id and author.</p>
+<p>
+	<img alt="" width="auto" src="assets/img/screen-7.png"></p>
+</section>
+<section id="custom_message_type">
+	<div class="page-header"><h3>Custom Message Type</h3><hr class="notop"></div>
+<p>
+	If you want to Create your custom Plugin Message Type and Message, all you need is to add a function called xy:</p>
+<blockquote>
+	<div>
+		function xy () {</div>
+	<div>
+		&nbsp;</div>
+	<div>
+		&nbsp; $messageData = &quot;Hello wolrd!&quot;;</div>
+	<div>
+		&nbsp; $messageType = &quot;myType&quot;;</div>
+	<div>
+		&nbsp;</div>
+	<div>
+		px_sendGCM($messageData, $messageType);</div>
+	<div>
+		}</div>
+</blockquote>
+<div>
+	This is all you need. Just Call px_sendGCM($param1, $param2);</div>
+</section>
+<section id="license">
+	<div class="page-header"><h3>License</h3><hr class="notop"></div>
+<div>
+	<strong>GPLv3&nbsp;</strong><a href="http://www.gnu.org/licenses/old-licenses/gpl-3.0.html">http://www.gnu.org/licenses/old-licenses/gpl-3.0.html</a></div>
+<div>
+	&nbsp;</div>
+<div>
+	Copyright 2014 Pixelart and Deniz Celebi &nbsp;(email : &#111;&#102;&#102;&#105;&#99;&#101;&#64;&#112;&#105;&#120;&#101;&#108;&#97;&#114;&#116;&#100;&#101;&#118;&#46;&#99;&#111;&#109;)</div>
+<div>
+	&nbsp;</div>
+<div>
+	&nbsp; &nbsp; This program is free software; you can redistribute it and/or modify</div>
+<div>
+	&nbsp; &nbsp; it under the terms of the GNU General Public License, version 2, as&nbsp;</div>
+<div>
+	&nbsp; &nbsp; published by the Free Software Foundation.</div>
+<div>
+	&nbsp;</div>
+<div>
+	&nbsp; &nbsp; This program is distributed in the hope that it will be useful,</div>
+<div>
+	&nbsp; &nbsp; but WITHOUT ANY WARRANTY; without even the implied warranty of</div>
+<div>
+	&nbsp; &nbsp; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. &nbsp;See the</div>
+<div>
+	&nbsp; &nbsp; GNU General Public License for more details.</div>
+<div>
+	&nbsp;</div>
+<div>
+	&nbsp; &nbsp; You should have received a copy of the GNU General Public License</div>
+<div>
+	&nbsp; &nbsp; along with this program; if not, write to the Free Software</div>
+<div>
+	&nbsp; &nbsp; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA &nbsp;02110-1301 &nbsp;USA</div>
+</section>
+<section id="info">
+	<div class="page-header"><h3>Info</h3><hr class="notop"></div>
+<p>
+	WordPress Plugin Page : <a href="http://wordpress.org/plugins/wp-gcm">http://wordpress.org/plugins/wp-gcm</a></p>
+<p>
+	WordPress Plugin Support:&nbsp;<a href="https://wordpress.org/support/plugin/wp-gcm">https://wordpress.org/support/plugin/wp-gcm</a></p>
+<p>
+	Plugin Homepage:&nbsp;<a href="http://pixelartdev.com/referenz/wp-google-cloud-messaging-plugin">http://pixelartdev.com/referenz/wp-google-cloud-messaging-plugin</a>&nbsp;(German)</p>
+<h3>
+	<strong>Please Rate at WordPress Plugin Page!</strong></h3>
+<p>
+	Donate if you are happy with my plugin and motivate me for more!</p>
+</section>
+
+	</div>
+</body>
+</html>
