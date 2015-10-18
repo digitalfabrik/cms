@@ -32,43 +32,56 @@ $dir = px_gcm_dir();
 @include_once "$dir/page/write.php";
 @include_once "$dir/register.php";
 
- function px_gcm_activated() {
-   	global $wpdb;
-  	$px_table_name = $wpdb->prefix.'gcm_users';
+function px_gcm_activated($network_wide) {
+	if (!function_exists('is_multisite') || !is_multisite() || !$network_wide) {
+		px_gcm_create_table();
+	} else {
+		$mu_blogs = wp_get_sites();
+		foreach ($mu_blogs as $mu_blog) {
+			switch_to_blog($mu_blog['blog_id']);
+			px_gcm_create_table();
+		}
+		restore_current_blog();
+	}
 
-	if($wpdb->get_var("show tables like '$px_table_name'") != $px_table_name) {
-		$sql = "CREATE TABLE " . $px_table_name . " (
-		`id` int(11) NOT NULL AUTO_INCREMENT,
-        `gcm_regid` text,
-        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`id`)
-		);";
- 
+	add_option('px_gcm_do_activation_redirect', true);
+}
+
+function px_gcm_create_table() {
+	global $wpdb;
+	$px_table_name = $wpdb->prefix . 'gcm_users';
+
+	if ($wpdb->get_var("show tables like '$px_table_name'") != $px_table_name) {
+		$sql = "CREATE TABLE $px_table_name (
+					`id` int(11) NOT NULL AUTO_INCREMENT,
+					`gcm_regid` text,
+					`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+					PRIMARY KEY (`id`)
+				);";
+
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 	}
-         add_option('px_gcm_do_activation_redirect', true);
 }
 
 function px_gcm_setting_redirect() {
-    if (get_option('px_gcm_do_activation_redirect', false)) {
-        delete_option('px_gcm_do_activation_redirect');
-        if(!isset($_GET['activate-multi']))
-        {
-            wp_redirect(get_site_url().'/wp-admin/admin.php?page=px-gcm-settings');
-        }
-    }
+	if (get_option('px_gcm_do_activation_redirect', false)) {
+		delete_option('px_gcm_do_activation_redirect');
+		if (!isset($_GET['activate-multi'])) {
+			wp_redirect(get_site_url() . '/wp-admin/admin.php?page=px-gcm-settings');
+		}
+	}
 }
 
 function px_gcm_dir() {
-  if (defined('PX_GCM_DIR') && file_exists(PX_GCM_DIR)) {
-    return PX_GCM_DIR;
-  } else {
-    return dirname(__FILE__);
-  }
+	if (defined('PX_GCM_DIR') && file_exists(PX_GCM_DIR)) {
+		return PX_GCM_DIR;
+	} else {
+		return dirname(__FILE__);
+	}
 }
 
 register_activation_hook("$dir/gcm.php", 'px_gcm_activated');
 add_action('admin_init', 'px_gcm_setting_redirect');
-add_action('init','px_gcm_register');
+add_action('init', 'px_gcm_register');
 ?>

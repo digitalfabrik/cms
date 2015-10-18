@@ -1,26 +1,25 @@
 <?php
 
 function px_gcm_register() {
+	if (!isset($_GET["gcm_register_id"])) {
+		return;
+	}
 
-  if (isset($_GET["regId"])) {
+	global $wpdb;
+	$gcm_regid = $_GET["gcm_register_id"];
+	$px_table_name = $wpdb->prefix . 'gcm_users';
+	$query = "SELECT gcm_regid FROM $px_table_name WHERE gcm_regid='$gcm_regid'";
+	$result = $wpdb->get_results($query);
 
-   global $wpdb;
-   $gcm_regid = $_GET["regId"];
-   $time = date("Y-m-d H:i:s");
-   $px_table_name = $wpdb->prefix.'gcm_users';
-   $sql = "SELECT gcm_regid FROM $px_table_name WHERE gcm_regid='$gcm_regid'";
-   $result = $wpdb->get_results($sql);
-
-   if (!$result) {
-        $sql = "INSERT INTO $px_table_name (gcm_regid, created_at) VALUES ('$gcm_regid', '$time')";
-        $q = $wpdb->query($sql);
-
-        echo "Du bist jetzt registriert";
-
-    } else {
-      echo 'You\'re already registered';
-    }
- }
+	if ($result) {
+		echo "You're already registered";
+	} else {
+		$query = "INSERT INTO $px_table_name (gcm_regid, created_at) VALUES ('$gcm_regid', 'NOW()')";
+		if ($wpdb->query($query) === false) {
+			throw new RuntimeException("Could not insert into GCM registration table $px_table_name: "
+				. $wpdb->last_error);
+		}
+		echo "You are now registered";
+	}
+	exit;
 }
-
-?>
