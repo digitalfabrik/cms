@@ -14,23 +14,23 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		wp_die('Dieses Plugin setzt eine Multisite Installation voraus');
 	}
 
-	$mu_blogs = wp_get_sites();
-
-	foreach ($mu_blogs as $mu_blog) {
-		switch_to_blog($mu_blog['blog_id']);
-
-		/* Add specific user roles */
-		add_role('manager', 'Verwalter', [
+	$role_displaynames = [
+		'manager' => 'Verwalter',
+		'organizer' => 'Organisator'
+	];
+	$role_capabilities = [
+		'manager' => [
 			/* Users */
-			'add_users' => true,
 			'create_users' => true,
+			'edit_users' => true,
+			'promote_users' => true,
+			'list_users' => true,
 			/* Pages */
 			'edit_pages' => true,
 			'edit_others_pages' => true,
 			'edit_private_pages' => true,
 			'edit_published_pages' => true,
 			'read_private_pages' => true,
-			'delete_others_pages' => true,
 			'delete_pages' => true,
 			'delete_publishes_pages' => true,
 			'publish_pages' => true,
@@ -67,8 +67,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'delete_event_categories' => true,
 			'edit_event_categories' => true,
 			'upload_event_images' => true,
-		]);
-		add_role('organizer', 'Organisator', [
+		],
+		'organizer' => [
 			/* Pages */
 			'edit_pages' => true,
 			'edit_others_pages' => true,
@@ -99,7 +99,20 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'read_others_locations' => true,
 
 			'upload_event_images' => true,
-		]);
+		]
+	];
+
+	$mu_blogs = wp_get_sites();
+	foreach ($mu_blogs as $mu_blog) {
+		switch_to_blog($mu_blog['blog_id']);
+
+		foreach ($role_displaynames as $rolename => $displayname) {
+			$role = get_role($rolename);
+			if ($role != null) { // role already exists
+				remove_role($rolename);
+			}
+			add_role($rolename, $displayname, $role_capabilities[$rolename]);
+		}
 
 		/* Delete default user roles */
 		remove_role('subscriber');
@@ -129,3 +142,11 @@ register_deactivation_hook(__FILE__,
 		$method->invoke($ure_lib);
 	}
 );
+
+/**
+ * @param $role
+ * @return bool
+ */
+function role_exists($role) {
+	return get_role($role) != null;
+}
