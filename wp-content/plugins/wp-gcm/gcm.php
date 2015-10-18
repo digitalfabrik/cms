@@ -52,7 +52,7 @@ function px_gcm_create_table() {
 	$px_table_name = $wpdb->prefix . 'gcm_users';
 
 	if ($wpdb->get_var("show tables like '$px_table_name'") != $px_table_name) {
-		$sql = "CREATE TABLE $px_table_name (
+		$sql = "CREATE TABLE IF NOT EXISTS $px_table_name (
 					`id` int(11) NOT NULL AUTO_INCREMENT,
 					`gcm_regid` text,
 					`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -12,14 +12,14 @@ function px_gcm_register() {
 	$result = $wpdb->get_results($query);
 
 	if ($result) {
-		echo "You're already registered";
+		echo "You are already registered on blog " . get_current_blog_id();
 	} else {
 		$query = "INSERT INTO $px_table_name (gcm_regid, created_at) VALUES ('$gcm_regid', 'NOW()')";
 		if ($wpdb->query($query) === false) {
 			throw new RuntimeException("Could not insert into GCM registration table $px_table_name: "
 				. $wpdb->last_error);
 		}
-		echo "You are now registered";
+		echo "You are now registered on blog " . get_current_blog_id();
 	}
 	exit;
 }
