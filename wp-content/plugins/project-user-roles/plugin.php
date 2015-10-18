@@ -67,6 +67,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'delete_event_categories' => true,
 			'edit_event_categories' => true,
 			'upload_event_images' => true,
+			/* Push Notifications */
+			'send_push_notifications' => true,
 		],
 		'organizer' => [
 			/* Pages */

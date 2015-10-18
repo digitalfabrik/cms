@@ -15,7 +15,6 @@ function px_display_page_msg() {
 ?>
 
 <div class="wrap">
-	<h2 class="">Google Cloud Messaging</h2>
 	<div id="poststuff">
 		<div id="post-body" class="metabox-holder columns-2"> 
 			<!-- main content -->

@@ -117,3 +117,6 @@ msgstr ""
 #: ../1.2.2/options.php:30
 msgid "Show debug response"
 msgstr ""
+
+msgid "Push Notification"
+msgstr ""
