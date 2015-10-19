@@ -15,8 +15,12 @@ register_activation_hook(__FILE__, function ($network_wide) {
 	}
 
 	$role_displaynames = [
-		'manager' => 'Verwalter',
-		'organizer' => 'Organisator'
+		// manager and organizer should actually be named management and organization
+		// but there are a lot of users assigned to these roles already
+		// which would have to be changed.
+		'manager' => 'Verwaltung',
+		'organizer' => 'Organisation',
+		'trustworthy_organization' => 'Vertrauenswürdige Organisation'
 	];
 	$role_capabilities = [
 		'manager' => [
@@ -73,11 +77,38 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		'organizer' => [
 			/* Pages */
 			'edit_pages' => true,
-			'edit_others_pages' => true,
 			'edit_private_pages' => true,
 			'edit_published_pages' => true,
 			'read_private_pages' => true,
-			'delete_others_pages' => true,
+			'delete_pages' => true,
+			'delete_publishes_pages' => true,
+			'upload_files' => true,
+			/* Profile */
+			'read' => true,
+			/* WPML */
+			'wpml_manage_translation_management' => true,
+			'wpml_manage_navigation' => true,
+			'wpml_manage_media_translation' => true,
+			/* Events */
+			'delete_events' => true,
+			'edit_events' => true,
+
+			'delete_recurring_events' => true,
+			'edit_recurring_events' => true,
+
+			'publish_locations' => true,
+			'delete_locations' => true,
+			'edit_locations' => true,
+			'read_others_locations' => true,
+
+			'upload_event_images' => true,
+		],
+		'trustworthy_organization' => [
+			/* Pages */
+			'edit_pages' => true,
+			'edit_private_pages' => true,
+			'edit_published_pages' => true,
+			'read_private_pages' => true,
 			'delete_pages' => true,
 			'delete_publishes_pages' => true,
 			'publish_pages' => true,
@@ -89,6 +120,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'wpml_manage_navigation' => true,
 			'wpml_manage_media_translation' => true,
 			/* Events */
+			'publish_events' => true,
 			'delete_events' => true,
 			'edit_events' => true,
 
