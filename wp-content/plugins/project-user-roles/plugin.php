@@ -20,7 +20,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		// which would have to be changed.
 		'manager' => 'Verwaltung',
 		'organizer' => 'Organisation',
-		'trustworthy_organization' => 'Vertrauenswürdige Organisation'
+		'trustworthy_organization' => 'Vertrauenswuerdige Organisation'
 	];
 	$role_capabilities = [
 		'manager' => [
