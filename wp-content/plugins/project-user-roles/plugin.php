@@ -67,6 +67,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'edit_locations' => true,
 			'read_private_locations' => true,
 			'read_others_locations' => true,
+			'manage_others_bookings' => true, // necessary to publish others events
 
 			'delete_event_categories' => true,
 			'edit_event_categories' => true,
