@@ -78,6 +78,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		'organizer' => [
 			/* Pages */
 			'edit_pages' => true,
+			'edit_others_pages' => true,
 			'edit_private_pages' => true,
 			'edit_published_pages' => true,
 			'read_private_pages' => true,
@@ -107,6 +108,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		'trustworthy_organization' => [
 			/* Pages */
 			'edit_pages' => true,
+			'edit_others_pages' => true,
 			'edit_private_pages' => true,
 			'edit_published_pages' => true,
 			'read_private_pages' => true,
