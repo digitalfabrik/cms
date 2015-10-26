@@ -74,6 +74,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'upload_event_images' => true,
 			/* Push Notifications */
 			'send_push_notifications' => true,
+			/* PDF */
+			'create_and_download_pdf' => true,
 		],
 		'organizer' => [
 			/* Pages */

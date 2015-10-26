@@ -108,7 +108,7 @@ function SSAPDFadminBuildPDF ()
 		switch_to_blog( $blogID );
 	}
 	
-	if ( current_user_can( 'manage_options' ) ) //Only let them download the file if they are admin
+	if ( current_user_can( 'create_and_download_pdf' ) ) //Only let them download the file if they are allowed to
 	{ 
 		//get the WP pages
 		$args = array(
