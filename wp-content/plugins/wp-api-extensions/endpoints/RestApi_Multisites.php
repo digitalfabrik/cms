@@ -10,7 +10,13 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	private $EXCLUDED_SITE_IDS = [
 		1, // landing page
-		6 // pre arrival
+		6, // pre arrival
+		8, // Duesseldorf
+		10, // Regensburg
+		11, // Bad Toelz
+		12, // Muenchen
+		13, // Erlangen
+		14, // Ahlen
 	];
 	private $GLOBAL_SITE_IDS = [5];
 
