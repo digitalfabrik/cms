@@ -10,7 +10,7 @@
 
 require_once __DIR__ . '/activation.php';
 
-require_once __DIR__ . '/Translator.php';
+require_once __DIR__ . '/TranslationManager.php';
 
-$translator = new Translator();
+$translator = new TranslationManager();
 $translator->add_save_post_hook();

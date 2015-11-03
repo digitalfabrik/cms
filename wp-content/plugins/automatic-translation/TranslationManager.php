@@ -1,9 +1,21 @@
 <?php
 
+const ERR_MSGS_OPTION_KEY = 'automatic-translation-error-messages';
 require_once __DIR__ . '/TranslationService.php';
 
-class Translator {
+add_action('admin_notices', function () {
+	$messages = get_option(ERR_MSGS_OPTION_KEY);
+	if (empty($messages)) return;
+	foreach ($messages as $i => $message) {
+		echo "<div class='update-nag'> <p>$message</p></div>";
+		unset($messages[$i]);
+		update_option(ERR_MSGS_OPTION_KEY, $messages);
+	}
+});
+
+class TranslationManager {
 	const AUTOMATIC_TRANSLATION_META_KEY = 'automatic_translation';
+	const TRANSLATION_DISCLAIMER = '<p>This page was translated automatically, manual translation coming soon.</p><br>';
 	private $translation_service;
 
 	public function __construct() {
@@ -33,8 +45,8 @@ class Translator {
 		}
 	}
 
-	private function create_translation($post, $language_code) {
-		$current_translation_id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
+	private function create_translation($post, $target_language_code) {
+		$current_translation_id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $target_language_code);
 		if ($current_translation_id === $post->ID) {
 			throw new RuntimeException("translated post id equal to source post id");
 		}
@@ -44,16 +56,23 @@ class Translator {
 		) {
 			return;
 		}
-		$translated_post = $this->translation_service->translate_post($post);
+		try {
+			$translated_post = $this->translation_service->translate_post($post, $target_language_code);
+		} catch (Exception $e) {
+			$messages = get_option(ERR_MSGS_OPTION_KEY);
+			$messages[] = $e->getMessage();
+			update_option(ERR_MSGS_OPTION_KEY, $messages);
+			return;
+		}
+		$translated_post['post_content'] = self::TRANSLATION_DISCLAIMER . $translated_post['post_content'];
 		if ($current_translation_id !== null) {
 			$translated_post['ID'] = $current_translation_id;
 		}
-		print_r($translated_post);
 		$this->remove_save_post_hook(); // remove and re-add hook to avoid infinite loop
 		// potential issue: the last row's content is changed too with wp_insert_post
 		$translated_post_id = wp_insert_post($translated_post);
 		$this->add_save_post_hook();
-		$this->link_wpml($post->ID, $post->post_type, $translated_post_id, $language_code);
+		$this->link_wpml($post->ID, $post->post_type, $translated_post_id, $target_language_code);
 		$this->mark_as_automatic_translation($translated_post_id);
 	}
 
