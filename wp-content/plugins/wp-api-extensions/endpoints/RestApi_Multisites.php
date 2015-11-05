@@ -8,15 +8,9 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
 class RestApi_Multisites extends RestApi_ExtensionBase {
 	const URL = 'multisites';
 
-	private $EXCLUDED_SITE_IDS = [
-		1, // landing page
-		6, // pre arrival
-		8, // Duesseldorf
-		10, // Regensburg
-		11, // Bad Toelz
-		12, // Muenchen
-		13, // Erlangen
-		14, // Ahlen
+	private $INCLUDED_SITE_IDS = [
+		2, // Augsburg
+		5, // Deutschland
 	];
 	private $GLOBAL_SITE_IDS = [5];
 
@@ -36,7 +30,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 		$result = [];
 		foreach ($multisites as $blog) {
-			if (in_array($blog['blog_id'], $this->EXCLUDED_SITE_IDS)) {
+			if (! in_array($blog['blog_id'], $this->INCLUDED_SITE_IDS)) {
 				continue;
 			}
 			$result[] = $this->prepare_item($blog);
