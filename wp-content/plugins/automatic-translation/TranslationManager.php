@@ -15,7 +15,7 @@ add_action('admin_notices', function () {
 
 class TranslationManager {
 	const AUTOMATIC_TRANSLATION_META_KEY = 'automatic_translation';
-	const TRANSLATION_DISCLAIMER = '<p>This page was translated automatically, manual translation coming soon.</p><br>';
+	const TRANSLATION_DISCLAIMER = '<p><em>This page was translated automatically, manual translation coming soon.</em></p><br>';
 	private $translation_service;
 
 	public function __construct() {
