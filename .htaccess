@@ -20,3 +20,7 @@ RewriteRule . index.php [L]
 	Order Allow,Deny
 	Deny from all
 </Files>
+<Files config.ini>
+	Order Allow,Deny
+	Deny from all
+</Files>
