@@ -23,13 +23,13 @@ $configuration = parse_ini_file("config.ini", true);
 // ** MySQL settings - You can get this info from your web host ** //
 $db_configuration = $configuration['database'];
 /** The name of the database for WordPress */
-define('DB_NAME', $db_configuration['name']);
+define('DB_NAME', 'refguide');
 
 /** MySQL database username */
-define('DB_USER', $db_configuration['user']);
+define('DB_USER', 'root');
 
 /** MySQL database password */
-define('DB_PASSWORD', $db_configuration['password']);
+define('DB_PASSWORD', '');
 
 /** MySQL hostname */
 define('DB_HOST', $db_configuration['host']);
@@ -92,7 +92,7 @@ $multisite_config = $configuration['multisite'];
 define('WP_ALLOW_MULTISITE', true);
 define('MULTISITE', true);
 define('SUBDOMAIN_INSTALL', false);
-define('DOMAIN_CURRENT_SITE', $multisite_config['domain_current_site']);
+define('DOMAIN_CURRENT_SITE', 'localhost:8080');
 define('PATH_CURRENT_SITE', $multisite_config['path_current_site']);
 define('SITE_ID_CURRENT_SITE', 1);
 define('BLOG_ID_CURRENT_SITE', 1);

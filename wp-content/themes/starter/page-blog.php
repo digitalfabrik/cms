@@ -1,4 +1,8 @@
-<?php get_header(); ?>
+<?php 
+/*
+ * Template Name: Blog
+ */
+get_header(); ?>
 
 <section id="main" class="container">
     <div class="row">
@@ -11,18 +15,20 @@
                 </header> <!-- .page-header -->
 
                 <?php 
+                    $page = (get_query_var('paged')) ? get_query_var('paged') : 1;
                     $args = array(
-                            'posts_per_page'    => 6,
-                            'post_type'         => 'post',
-                            'orderby'           => 'date',
-                            'ORDER'             => DESC,
-                        );
-                    $blog = get_posts( $args );
+                        'post_type' => 'post',
+                        'posts_per_page' => 6,
+                        'orderby' => 'date',
+                        'order' => DESC,
+                        'paged' => $page,
+                    );
+                    query_posts( $args );
                 ?>
-                <?php foreach ($blog as $post) : setup_postdata( $post ); ?>
+                <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
                     <?php get_template_part( 'post-format/content', get_post_format() ); ?>
-                <?php endforeach; ?>
-
+                <?php endwhile; endif; ?> 
+                <br />
                 <?php echo thm_pagination(); ?>
 
             <?php else: ?>
