@@ -10,7 +10,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	private $INCLUDED_SITE_IDS = [
 			2, // Augsburg
-			5, // Deutschland
+			15, // Main-Taunus-Kreis
 	];
 	private $GLOBAL_SITE_IDS = [5];
 
