@@ -60,7 +60,7 @@ class TranslationManager {
 			$translated_post = $this->translation_service->translate_post($post, $target_language_code);
 		} catch (Exception $e) {
 			$messages = get_option(ERR_MSGS_OPTION_KEY);
-			$messages[] = $e->getMessage();
+			$messages[] = "Fehler beim automatischen Uebersetzen: " . $e->getMessage();
 			update_option(ERR_MSGS_OPTION_KEY, $messages);
 			return;
 		}

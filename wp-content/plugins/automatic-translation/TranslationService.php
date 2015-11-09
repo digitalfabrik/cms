@@ -1,6 +1,14 @@
 <?php
 
 class TranslationService {
+	private $clientId;
+	private $clientSecret;
+
+	public function __construct() {
+		$this->clientId = TRANSLATION_MICROSOFT_CLIENT_ID;
+		$this->clientSecret = TRANSLATION_MICROSOFT_CLIENT_SECRET;
+	}
+
 	public function translate_post($post, $target_language_code) {
 		$source_language_code = ICL_LANGUAGE_CODE;
 		$translated_title = $this->translate_string($post->post_title, $source_language_code, $target_language_code);
@@ -18,10 +26,6 @@ class TranslationService {
 	 * See http://blogs.msdn.com/b/translation/p/phptranslator.aspx
 	 */
 	public function translate_string($string, $source_language_code, $target_language_code) {
-		//Client ID of the application.
-		$clientID = "Integreat";
-		//Client Secret key of the application.
-		$clientSecret = "t5DmdEypuZuZ9ts78JiGbL3ylGwon13tYCXTESrEg/k=";
 		//OAuth Url.
 		$authUrl = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13/";
 		//Application Scope Url
@@ -32,7 +36,7 @@ class TranslationService {
 		//Create the AccessTokenAuthentication object.
 		$authObj = new AccessTokenAuthentication();
 		//Get the Access token.
-		$accessToken = $authObj->getTokens($grantType, $scopeUrl, $clientID, $clientSecret, $authUrl);
+		$accessToken = $authObj->getTokens($grantType, $scopeUrl, $this->clientId, $this->clientSecret, $authUrl);
 		//Create the authorization Header string.
 		$authHeader = "Authorization: Bearer " . $accessToken;
 
