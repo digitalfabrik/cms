@@ -9,8 +9,9 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 	const URL = 'multisites';
 
 	private $INCLUDED_SITE_IDS = [
-		2, // Augsburg
-		5, // Deutschland
+			2, // Augsburg
+			8, // Duesseldorf
+			15, // Main-Taunus-Kreis
 	];
 	private $GLOBAL_SITE_IDS = [5];
 
@@ -21,7 +22,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	public function register_routes() {
 		parent::register_route('/', [
-			'callback' => [$this, 'get_multisites']
+				'callback' => [$this, 'get_multisites']
 		]);
 	}
 
@@ -43,12 +44,12 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 		$id = $blog['blog_id'];
 		switch_to_blog($id);
 		$result = [
-			'id' => $id,
-			'name' => $details->blogname,
-			'icon' => get_site_icon_url(),
-			'path' => $blog['path'],
-			'description' => get_bloginfo($blog),
-			'global' => in_array($id, $this->GLOBAL_SITE_IDS)
+				'id' => $id,
+				'name' => $details->blogname,
+				'icon' => get_site_icon_url(),
+				'path' => $blog['path'],
+				'description' => get_bloginfo($blog),
+				'global' => in_array($id, $this->GLOBAL_SITE_IDS)
 		];
 		restore_current_blog();
 		return $result;
