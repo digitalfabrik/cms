@@ -2,6 +2,7 @@
 
 const ERR_MSGS_OPTION_KEY = 'automatic-translation-error-messages';
 require_once __DIR__ . '/TranslationService.php';
+require_once __DIR__ . '/TranslationWpmlHelper.php';
 
 add_action('admin_notices', function () {
 	$messages = get_option(ERR_MSGS_OPTION_KEY);
@@ -15,20 +16,21 @@ add_action('admin_notices', function () {
 
 class TranslationManager {
 	const AUTOMATIC_TRANSLATION_META_KEY = 'automatic_translation';
-	const TRANSLATION_DISCLAIMER = '<p>This page was translated automatically, manual translation coming soon.</p><br>';
+	const TRANSLATION_DISCLAIMER = '<p><em>This page was translated automatically, manual translation coming soon.</em></p>';
 	private $translation_service;
 
 	public function __construct() {
 		$this->translation_service = new TranslationService();
+		$this->wpml_helper = new TranslationWpmlHelper();
 	}
 
 	public function on_save_post($post_id) {
 		update_post_meta($post_id, self::AUTOMATIC_TRANSLATION_META_KEY, false);
 		$post = get_post($post_id, OBJECT);
 		if (!in_array($post->post_status, ['publish', 'revision'])
-			|| ICL_LANGUAGE_CODE !== 'de'
-			// Only translate from German for now.
-			// This is based on the assumption that content will always be available in German at first,
+			|| !in_array(ICL_LANGUAGE_CODE, ['de', 'en'])
+			// Only translate on updates to the German and English content for now.
+			// This is based on the assumption that content will always be available in these languages at first,
 			// but gets rid of the case where manual changes to previously automatically translated content
 			// are propagated into other languages.
 		) {
@@ -41,28 +43,60 @@ class TranslationManager {
 			if ($language_code == ICL_LANGUAGE_CODE) { // ignore current language
 				continue;
 			}
-			$this->create_translation($post, $language_code);
+			if ($language_code == 'en') {
+				// default behaviour for translating into english
+				$this->create_translation($post, ICL_LANGUAGE_CODE, $language_code);
+			} else {
+				// special behaviour: as of issue #166, the quality of translations is better
+				// when the source language is english.
+				// This even holds true when the english content is an automatic translation.
+				$english_post = $this->get_or_create_english_translation($post);
+				$this->create_translation($english_post, 'en', $language_code);
+			}
 		}
 	}
 
-	private function create_translation($post, $target_language_code) {
-		$current_translation_id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $target_language_code);
+	private function get_or_create_english_translation($post) {
+		if (ICL_LANGUAGE_CODE == 'en') {
+			return $post;
+		}
+		$english_post_id = $this->wpml_helper->get_translated_post_id($post, 'en');
+		if ($english_post_id) {
+			$english_post = get_post($english_post_id, OBJECT);
+		} else {
+			$english_post = $this->create_translation($post, ICL_LANGUAGE_CODE, 'en');
+			$english_post = get_post($english_post, OBJECT); // convert to object
+		}
+		return $this->remove_disclaimer($english_post);
+	}
+
+	/**
+	 * @param WP_Post $post WP_Post object
+	 * @param string $source_language_code
+	 * @param string $target_language_code
+	 * @return array|null post in ARRAY_A format or null on error or when a manual translation exists
+	 */
+	private function create_translation($post, $source_language_code, $target_language_code) {
+		if(! is_object($post)) {
+			throw new RuntimeException("Given post is not an object");
+		}
+		$current_translation_id = $this->wpml_helper->get_translated_post_id($post, $target_language_code);
 		if ($current_translation_id === $post->ID) {
-			throw new RuntimeException("translated post id equal to source post id");
+			throw new RuntimeException("translated post id equal to source post id ($current_translation_id)");
 		}
 		// already translated manually
 		if ($current_translation_id !== null
 			&& !get_post_meta($current_translation_id, self::AUTOMATIC_TRANSLATION_META_KEY, true)
 		) {
-			return;
+			return null;
 		}
 		try {
-			$translated_post = $this->translation_service->translate_post($post, $target_language_code);
+			$translated_post = $this->translation_service->translate_post($post, $source_language_code, $target_language_code);
 		} catch (Exception $e) {
 			$messages = get_option(ERR_MSGS_OPTION_KEY);
-			$messages[] = $e->getMessage();
+			$messages[] = "Fehler beim automatischen Uebersetzen: " . $e->getMessage();
 			update_option(ERR_MSGS_OPTION_KEY, $messages);
-			return;
+			return null;
 		}
 		$translated_post['post_content'] = self::TRANSLATION_DISCLAIMER . $translated_post['post_content'];
 		if ($current_translation_id !== null) {
@@ -71,20 +105,29 @@ class TranslationManager {
 		$this->remove_save_post_hook(); // remove and re-add hook to avoid infinite loop
 		// potential issue: the last row's content is changed too with wp_insert_post
 		$translated_post_id = wp_insert_post($translated_post);
+		$translated_post['ID'] = $translated_post_id;
 		$this->add_save_post_hook();
-		$this->link_wpml($post->ID, $post->post_type, $translated_post_id, $target_language_code);
+		$this->wpml_helper->link_wpml($post->ID, $post->post_type, $translated_post_id, $target_language_code);
 		$this->mark_as_automatic_translation($translated_post_id);
-	}
-
-	private function link_wpml($source_post_id, $source_post_type, $translated_post_id, $language_code) {
-		global $sitepress;
-		$wpml_post_type = 'post_' . $source_post_type;
-		$source_trid = $sitepress->get_element_trid($source_post_id, $wpml_post_type);
-		$sitepress->set_element_language_details($translated_post_id, $wpml_post_type, $source_trid, $language_code);
+		return $translated_post;
 	}
 
 	private function mark_as_automatic_translation($post_id) {
 		add_post_meta($post_id, self::AUTOMATIC_TRANSLATION_META_KEY, true);
+	}
+
+	/**
+	 * @param WP_Post $post WP_Post object
+	 * @return WP_Post
+	 */
+	private function remove_disclaimer($post) {
+		$result_post = clone $post;
+		$content = $post->post_content;
+		if (strrpos($content, self::TRANSLATION_DISCLAIMER, -strlen($content)) === false) {
+			throw new RuntimeException("Post {$post['id']} does not have a disclaimer");
+		}
+		$result_post->post_content = substr($content, strlen(self::TRANSLATION_DISCLAIMER));
+		return $result_post;
 	}
 
 	public function add_save_post_hook() {

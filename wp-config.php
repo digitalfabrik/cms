@@ -98,10 +98,9 @@ define('SITE_ID_CURRENT_SITE', 1);
 define('BLOG_ID_CURRENT_SITE', 1);
 
 /* Translation */
-require_once __DIR__ . '/wp-content/plugins/automatic-translation/TranslationService.php';
 $translation_config = $configuration['translation-microsoft'];
-TranslationService::$clientId = $translation_config['client-id'];
-TranslationService::$clientSecret = $translation_config['client-secret'];
+define('TRANSLATION_MICROSOFT_CLIENT_ID', $translation_config['client-id']);
+define('TRANSLATION_MICROSOFT_CLIENT_SECRET', $translation_config['client-secret']);
 
 /* That's all, stop editing! Happy blogging. */
 

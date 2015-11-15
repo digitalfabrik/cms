@@ -1,11 +1,15 @@
 <?php
 
 class TranslationService {
-	public static $clientId;
-	public static $clientSecret;
+	private $clientId;
+	private $clientSecret;
 
-	public function translate_post($post, $target_language_code) {
-		$source_language_code = ICL_LANGUAGE_CODE;
+	public function __construct() {
+		$this->clientId = TRANSLATION_MICROSOFT_CLIENT_ID;
+		$this->clientSecret = TRANSLATION_MICROSOFT_CLIENT_SECRET;
+	}
+
+	public function translate_post($post, $source_language_code, $target_language_code) {
 		$translated_title = $this->translate_string($post->post_title, $source_language_code, $target_language_code);
 		$translated_content = $this->translate_string($post->post_content, $source_language_code, $target_language_code);
 		$translated_post = [
@@ -31,7 +35,7 @@ class TranslationService {
 		//Create the AccessTokenAuthentication object.
 		$authObj = new AccessTokenAuthentication();
 		//Get the Access token.
-		$accessToken = $authObj->getTokens($grantType, $scopeUrl, self::$clientId, self::$clientSecret, $authUrl);
+		$accessToken = $authObj->getTokens($grantType, $scopeUrl, $this->clientId, $this->clientSecret, $authUrl);
 		//Create the authorization Header string.
 		$authHeader = "Authorization: Bearer " . $accessToken;
 
