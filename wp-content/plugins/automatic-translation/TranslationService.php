@@ -52,7 +52,7 @@ class TranslationService {
 		//Interprets a string of XML into an object.
 		$xmlObj = simplexml_load_string($curlResponse);
 		if (strpos($xmlObj->body->h1, "Exception") !== false) {
-			throw new RuntimeException("Fehler bei der automatischen Uebersetzung der Inhalte nach $target_language_code: "
+			throw new AutomaticTranslationException("Fehler bei der automatischen Uebersetzung der Inhalte nach $target_language_code: "
 				. implode(", ", (array)$xmlObj->body->p));
 		}
 		$translatedStr = "";
@@ -122,7 +122,7 @@ class AccessTokenAuthentication {
  * Processing the translator request.
  */
 
-Class HTTPTranslator {
+class HTTPTranslator {
 	/*
 	 * Create and execute the HTTP CURL request.
 	 *
@@ -156,4 +156,7 @@ Class HTTPTranslator {
 		curl_close($ch);
 		return $curlResponse;
 	}
+}
+
+class AutomaticTranslationException extends Exception {
 }

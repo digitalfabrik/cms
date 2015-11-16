@@ -43,15 +43,19 @@ class TranslationManager {
 			if ($language_code == ICL_LANGUAGE_CODE) { // ignore current language
 				continue;
 			}
-			if ($language_code == 'en') {
-				// default behaviour for translating into english
-				$this->create_translation($post, ICL_LANGUAGE_CODE, $language_code);
-			} else {
-				// special behaviour: as of issue #166, the quality of translations is better
-				// when the source language is english.
-				// This even holds true when the english content is an automatic translation.
-				$english_post = $this->get_or_create_english_translation($post);
-				$this->create_translation($english_post, 'en', $language_code);
+			try {
+				if ($language_code == 'en') {
+					// default behaviour for translating into english
+					$this->create_translation($post, ICL_LANGUAGE_CODE, $language_code);
+				} else {
+					// special behaviour: as of issue #166, the quality of translations is better
+					// when the source language is english.
+					// This even holds true when the english content is an automatic translation.
+					$english_post = $this->get_or_create_english_translation($post);
+					$this->create_translation($english_post, 'en', $language_code);
+				}
+			} catch (AutomaticTranslationException $e) {
+				break;
 			}
 		}
 	}
@@ -75,19 +79,17 @@ class TranslationManager {
 	 * @param string $source_language_code
 	 * @param string $target_language_code
 	 * @return array|null post in ARRAY_A format or null on error or when a manual translation exists
+	 * @throws Exception when the translation failed
 	 */
 	private function create_translation($post, $source_language_code, $target_language_code) {
-		if(! is_object($post)) {
+		if (!is_object($post)) {
 			throw new RuntimeException("Given post is not an object");
 		}
 		$current_translation_id = $this->wpml_helper->get_translated_post_id($post, $target_language_code);
 		if ($current_translation_id === $post->ID) {
 			throw new RuntimeException("translated post id equal to source post id ($current_translation_id)");
 		}
-		// already translated manually
-		if ($current_translation_id !== null
-			&& !get_post_meta($current_translation_id, self::AUTOMATIC_TRANSLATION_META_KEY, true)
-		) {
+		if (!$this->should_create_automatic_translation($current_translation_id)) {
 			return null;
 		}
 		try {
@@ -96,7 +98,7 @@ class TranslationManager {
 			$messages = get_option(ERR_MSGS_OPTION_KEY);
 			$messages[] = "Fehler beim automatischen Uebersetzen: " . $e->getMessage();
 			update_option(ERR_MSGS_OPTION_KEY, $messages);
-			return null;
+			throw new AutomaticTranslationException($e);
 		}
 		$translated_post['post_content'] = self::TRANSLATION_DISCLAIMER . $translated_post['post_content'];
 		if ($current_translation_id !== null) {
@@ -112,6 +114,19 @@ class TranslationManager {
 		return $translated_post;
 	}
 
+	private function should_create_automatic_translation($current_translation_id) {
+		if ($current_translation_id === null) {
+			return true;
+		}
+		if (get_post_meta($current_translation_id, self::AUTOMATIC_TRANSLATION_META_KEY, true)) {
+			return true;
+		}
+		if (get_post_status($current_translation_id) == 'trash') {
+			return true;
+		}
+		return false;
+	}
+
 	private function mark_as_automatic_translation($post_id) {
 		add_post_meta($post_id, self::AUTOMATIC_TRANSLATION_META_KEY, true);
 	}
@@ -124,7 +139,8 @@ class TranslationManager {
 		$result_post = clone $post;
 		$content = $post->post_content;
 		if (strrpos($content, self::TRANSLATION_DISCLAIMER, -strlen($content)) === false) {
-			throw new RuntimeException("Post {$post['id']} does not have a disclaimer");
+			// does not contain disclaimer
+			return $post;
 		}
 		$result_post->post_content = substr($content, strlen(self::TRANSLATION_DISCLAIMER));
 		return $result_post;
