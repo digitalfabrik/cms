@@ -99,7 +99,7 @@ function SSAPDFadminBuildPDF ()
 		false
 	);
 		
-	
+	apply_filters('fox_modify_pdf',$pdf);
 	//--- build the contents ---------------------------------------
 	$blogID = get_current_blog_id();
 	
