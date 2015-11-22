@@ -32,6 +32,10 @@ class WPML_WordPress_Actions {
             return false;
         }
     }
+	
+	public static function is_heartbeat( ) {
+        return self::is_action( 'heartbeat', 'post' );
+	}
 
     protected static function is_trash_action() {
         return self::is_action( 'trash' );
@@ -46,8 +50,14 @@ class WPML_WordPress_Actions {
      *
      * @return bool
      */
-    protected static function is_action( $action ) {
-        return ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == $action ) || ( isset( $_GET[ 'action2' ] ) && $_GET[ 'action2' ] == $action );
+    protected static function is_action( $action, $type = 'get' ) {
+		if ( $type == 'get' ) {
+			return ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == $action ) || ( isset( $_GET[ 'action2' ] ) && $_GET[ 'action2' ] == $action );
+		} elseif ( $type == 'post' ) {
+			return ( isset( $_POST[ 'action' ] ) && $_POST[ 'action' ] == $action ) || ( isset( $_POST[ 'action2' ] ) && $_POST[ 'action2' ] == $action );
+		} else {
+			return false;
+		}
     }
 
     /**

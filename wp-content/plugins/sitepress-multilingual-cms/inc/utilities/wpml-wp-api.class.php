@@ -104,6 +104,76 @@ class WPML_WP_API {
 		return get_post_type( $post );
 	}
 
+	public final function get_tm_url( $tab = null, $hash = null ) {
+		$tm_url = menu_page_url(WPML_TM_FOLDER . '/menu/main.php', false);
+
+		$query_vars = array();
+		if ( $tab ) {
+			$query_vars[ 'sm' ] = $tab;
+		}
+
+		$tm_url = add_query_arg( $query_vars, $tm_url );
+
+		if ( $hash ) {
+			if ( strpos( $hash, '#' ) !== 0 ) {
+				$hash = '#' . $hash;
+			}
+			$tm_url .= $hash;
+		}
+
+		return $tm_url;
+	}
+
+	public final function is_jobs_tab() {
+		return $this->is_tm_page( 'jobs' );
+	}
+
+	public final function is_tm_page( $tab = null ) {
+		$result = is_admin()
+							&& isset( $_GET[ 'page' ] )
+							&& $_GET[ 'page' ] == WPML_TM_FOLDER . '/menu/main.php';
+
+		if ( $tab ) {
+			if ( $tab == 'dashboard' && ! isset( $_GET[ 'sm' ] ) ) {
+				$result = $result && true;
+			} else {
+				$result = $result && isset( $_GET[ 'sm' ] ) && $_GET[ 'sm' ] == $tab;
+			}
+		}
+
+		return $result;
+	}
+
+	public final function is_troubleshooting_page() {
+		return $this->is_core_page( 'troubleshooting.php' );
+	}
+
+	public final function is_core_page( $page ) {
+		$result = is_admin()
+							&& isset( $_GET[ 'page' ] )
+							&& $_GET[ 'page' ] == ICL_PLUGIN_FOLDER . '/menu/' . $page;
+
+		return $result;
+	}
+
+	public final function is_back_end() {
+		return is_admin() && ! $this->is_ajax() && ! $this->is_cron_job();
+	}
+
+	public final function is_ajax() {
+		return defined( 'DOING_AJAX' ) && DOING_AJAX;
+	}
+
+	public final function is_cron_job() {
+		return defined( 'DOING_CRON' ) && DOING_CRON;
+	}
+
+	public final function is_heartbeat() {
+		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
+
+		return $action == 'heartbeat';
+	}
+
 	/**
 	 * Wrapper for \is_feed that returns false if called before the loop
 	 *
@@ -193,7 +263,6 @@ class WPML_WP_API {
 
 	/**
 	 * Wrapper for \get_current_user_id
-	 *
 	 * @return int
 	 */
 	function get_current_user_id() {
@@ -254,5 +323,14 @@ class WPML_WP_API {
 	function get_post_custom( $post_id = 0 ) {
 
 		return get_post_custom( $post_id );
+	}
+
+	function is_dashboard_tab() {
+		return $this->is_tm_page( 'dashboard' );
+	}
+
+	public function wp_safe_redirect( $redir_target, $status = 302 ) {
+		wp_safe_redirect( $redir_target, $status );
+		exit;
 	}
 }

@@ -12,6 +12,7 @@ class iclNavMenu extends WPML_Full_Translation_API {
 		global $pagenow;
 
 		parent::__construct( $sitepress, $wpdb, $post_translations, $term_translation );
+		
 		add_action( 'init', array( $this, 'init' ) );
 		$this->nav_menu_actions = new WPML_Nav_Menu_Actions( $sitepress,
 		                                                     $wpdb,
@@ -37,7 +38,9 @@ class iclNavMenu extends WPML_Full_Translation_API {
     function init(){
         /** @var WPML_Request $wpml_request_handler */
         global $sitepress, $sitepress_settings, $pagenow, $wpml_request_handler, $wpml_language_resolution;
-        
+
+		$this->adjust_current_language_if_required();
+		
 		$default_language = $sitepress->get_default_language();
 
         // add language controls for menus no option but javascript
@@ -686,6 +689,20 @@ class iclNavMenu extends WPML_Full_Translation_API {
 		}
 
 		return $menus;
+	}
+	
+	private function adjust_current_language_if_required( ) {
+		global $pagenow;
+		
+		if ( $pagenow === 'nav-menus.php' && isset( $_GET[ 'menu' ] ) && $_GET[ 'menu' ] ) {
+			$current_lang = $this->sitepress->get_current_language();
+			$menu_lang    = $this->_get_menu_language( $_GET[ 'menu' ] );
+			if ( $menu_lang && ( $current_lang != $menu_lang ) ) {
+				$this->sitepress->switch_lang( $menu_lang );
+				$_GET[ 'lang' ] = $menu_lang;
+			}
+		}
+		
 	}
 } 
 

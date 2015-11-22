@@ -392,6 +392,19 @@
   font-weight: bold;
 }
 
+.wpml-tab-controls .nav-tab {
+  background-color: #efefef;
+  color: #000;
+}
+.wpml-tab-controls .nav-tab:hover {
+  background-color: #fff;
+}
+.wpml-tab-controls .nav-tab-active {
+  border-bottom-color: #fff;
+  background-color: #fff;
+  font-weight: bold;
+}
+
 #icon-wpml {
   background: transparent url(../img/icon.png) no-repeat;
 }

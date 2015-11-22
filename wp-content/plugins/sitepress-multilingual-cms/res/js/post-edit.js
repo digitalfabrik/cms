@@ -152,7 +152,8 @@ jQuery(document).ready(function ($) {
 				var translation_set_has_source_language = false;
 
 				$.each(posts, function () {
-					var $li  = $('<li>').append('<span>[' + this.language + '] ' + this.title + '</span>');
+					var $li  = $('<li>').append('<span></span>');
+					$li.find('span').text('[' + this.language + '] ' + this.title);
 					$li.appendTo ( $ul );
 					if(this.source_language && !translation_set_has_source_language) {
 						translation_set_has_source_language = true;
@@ -246,30 +247,31 @@ jQuery(document).ready(function ($) {
 
 	// if jquery ui smoothness css is loaded
 	if( jQueryUI.length ) {
-		// event listener for hide
-		$.each( ['hide'], function ( i, ev ) {
-			var el = $.fn[ev];
-			if( $( this.hidden ) ) {
-				$.fn[ev] = function () {
-					this.trigger( ev );
-					return el.apply( this, arguments );
-				};
-			}
-		});
-
 		// click on Connect with translations
 		$( 'body' ).on( 'click', '#icl_document_connect_translations_dropdown .js-set-post-as-source', function() {
-			var connectDialog = $( '[aria-describedby="connect_translations_dialog"]' );
+			var connectDialog = $( '[aria-describedby="connect_translations_dialog"]'), intervalCheckDialog;
 
+			// abort if dialog does not exists
+			if( ! connectDialog.length ) return false;
+
+			// backup href of jquery ui smoothness
 			jQuerySmoothnessHref = jQueryUI.attr( 'href' );
+
+			// remove jquery ui smoothness css
 			jQueryUI.attr( 'href', '' );
 
-			connectDialog.on( 'hide', function() {
-				if( $( '.ui-widget-overlay' ).length == 0 ) {
-					jQueryUI.attr( 'href', jQuerySmoothnessHref );
-					connectDialog.off( 'hide' );
+			// check every 250ms if connect translations dialog is still open
+			intervalCheckDialog = setInterval( function() {
+				// if dialog is not open anymore
+				if( ! connectDialog.is(':visible') ) {
+					if( $( '.ui-widget-overlay' ).length == 0 ) {
+						// reapply jquery ui smoothness css again
+						jQueryUI.attr( 'href', jQuerySmoothnessHref );
+						// stop interval
+						clearInterval( intervalCheckDialog );
+					}
 				}
-			} );
+			}, 250 );
 		} );
 	}
 	/* HOTFIX END */

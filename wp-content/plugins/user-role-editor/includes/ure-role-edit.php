@@ -14,7 +14,7 @@ if (!defined('URE_PLUGIN_URL')) {
 
 <div class="has-sidebar-content">
   			<div class="postbox" style="float: left; min-width:850px;">
-        	<h3><?php esc_html_e('Select Role and change its capabilities:', 'user-role-editor'); ?> <?php echo $this->role_select_html; ?></h3>         
+        	<h3>&nbsp;<?php esc_html_e('Select Role and change its capabilities:', 'user-role-editor'); ?> <?php echo $this->role_select_html; ?></h3>         
         	<div class="inside">        
 <?php
   if ($this->caps_readable) {
@@ -92,9 +92,11 @@ if ($this->multisite && $this->active_for_network && !is_network_admin() && is_m
       </table>
 <?php
 	}  // if ($quant>0)
+ 
+ $this->role_additional_options->show($this->current_role);
+ 
 ?>
-
-  <input type="hidden" name="object" value="role" />
+    <input type="hidden" name="object" value="role" />
 <?php
   $this->display_box_end();
 ?>  

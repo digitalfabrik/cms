@@ -42,7 +42,7 @@ abstract class WPML_URL_Converter {
 	 * @return bool True if the input $url points to an admin screen.
 	 */
 	public function is_url_admin($url){
-		$url_query_parts = parse_url ( $url );
+		$url_query_parts = parse_url( strpos( $url, 'http' ) === false ? 'http://' . $url : $url );
 
 		return isset( $url_query_parts[ 'path' ] )
 		       && strpos ( wpml_strip_subdir_from_url($url_query_parts[ 'path' ]), '/wp-admin' ) === 0;
@@ -103,11 +103,7 @@ abstract class WPML_URL_Converter {
 									FROM {$wpdb->blogs} b
 									WHERE blog_id = {$wpdb->blogid}
 									LIMIT 1" )
-
-					: $wpdb->get_var( "	SELECT option_value
-									FROM {$wpdb->options}
-									WHERE option_name = 'home'
-									LIMIT 1" ) )
+					: $this->get_unfiltered_home_option() )
 			);
 
 		return $this->absolute_home;
@@ -130,10 +126,12 @@ abstract class WPML_URL_Converter {
 		$new_url     = wp_cache_get( $cache_key, $cache_group, false, $cache_found );
 
 		if ( ! $cache_found ) {
-			$new_url = $this->get_language_from_url( $url ) === $lang_code
-				? $url
-				: $this->convert_url_string( $url,
-											 $lang_code );
+			$language_from_url = $this->get_language_from_url( $url );
+			if ( $language_from_url === $lang_code ) {
+				$new_url = $url;
+			} else {
+				$new_url = $this->convert_url_string( $url, $lang_code );
+			}
 			$new_url = $this->fix_trailing_slash( $new_url, $url );
 			wp_cache_set( $cache_key, $new_url, $cache_group );
 		}
@@ -182,12 +180,13 @@ abstract class WPML_URL_Converter {
 		}
 
 		$translated_slug = apply_filters( 'wpml_get_translated_slug',
-											$slug,
+										    $slug,
+											$post_type,
 											$language_code );
 
 		if ( is_string( $translated_slug ) ) {
 			$link_new = trailingslashit(
-				preg_replace( "/" . preg_quote( $slug, "/" ) . "/", $translated_slug, $link, 1 )
+				preg_replace( "#\/" . preg_quote( $slug, "/" ) . "#", '/' . $translated_slug, $link, 1 )
 			);
 			$link = $this->fix_trailing_slash($link_new, $link);
 		}
@@ -208,7 +207,7 @@ abstract class WPML_URL_Converter {
 
 	protected abstract function get_lang_from_url_string($url);
 
-	protected abstract function convert_url_string( $url, $lang );
+	protected abstract function convert_url_string( $source_url, $lang );
 
 	/**
 	 * Filters the string content of the .htaccess file that WP writes when saving permalinks.
@@ -222,17 +221,16 @@ abstract class WPML_URL_Converter {
 	public function rewrite_rules_filter( $htaccess_string ) {
 		global $wpml_url_filters;
 
-		if ( $wpml_url_filters->frontend_uses_root () ) {
-			$htaccess_string = str_replace (
-				'/' . $this->default_language . '/index.php',
-				'/index.php',
-				$htaccess_string
-			);
-			$htaccess_string = str_replace (
-				'RewriteBase /' . $this->default_language . '/',
-				'RewriteBase /',
-				$htaccess_string
-			);
+		if ( $wpml_url_filters->frontend_uses_root() ) {
+			foreach ( $this->active_languages as $lang_code ) {
+				foreach ( array( '', 'index.php' ) as $base ) {
+					$htaccess_string = str_replace(
+						'/' . $lang_code . '/' . $base,
+						'/' . $base,
+						$htaccess_string
+					);
+				}
+			}
 		}
 
 		return $htaccess_string;
@@ -271,5 +269,22 @@ abstract class WPML_URL_Converter {
 		return trailingslashit( $reference_url ) === $reference_url && strpos( $url, '?lang=' ) === false
 			   && strpos( $url, '&lang=' ) === false
 			? trailingslashit( $url ) : untrailingslashit( $url );
+	}
+
+	/**
+	 * Returns the unfiltered home option from the database.
+	 *
+	 * @uses \WPML_Include_Url::get_unfiltered_home in case the $wpml_include_url_filter global is loaded
+	 *
+	 * @return string
+	 */
+	private function get_unfiltered_home_option() {
+		global $wpml_include_url_filter, $wpdb;
+
+		return ( $wpml_include_url_filter ? $wpml_include_url_filter->get_unfiltered_home()
+			: $wpdb->get_var( "	SELECT option_value
+									FROM {$wpdb->options}
+									WHERE option_name = 'home'
+									LIMIT 1" ) );
 	}
 }

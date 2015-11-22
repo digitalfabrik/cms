@@ -53,7 +53,7 @@ foreach ($active_languages as $lang) {
 <?php do_action('icl_dashboard_widget_content'); ?>
 
 <?php
-/* $rss = fetch_feed('https://wpml.org/feed/');
+$rss = fetch_feed('https://wpml.org/feed/');
 if (!is_wp_error($rss)) { // Checks that the object is created correctly
     // Figure out how many total items there are, but limit it to 2.
     $maxitems = $rss->get_item_quantity(2);
@@ -73,5 +73,5 @@ if (!empty($maxitems)) {
 <?php } ?>
                                                 </ul></div>
 <?php
-} */
+}
 ?>

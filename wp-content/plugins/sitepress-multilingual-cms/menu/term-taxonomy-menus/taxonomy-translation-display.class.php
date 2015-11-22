@@ -60,6 +60,15 @@ class WPML_Taxonomy_Translation_Table_Display {
 			"wpml_tt_sync_hierarchy_nonce"          => wp_create_nonce( 'wpml_tt_sync_hierarchy_nonce' )
 		);
 
+		if ( defined( 'WPML_ST_FOLDER' ) ) {
+			$changeLabelLanguage_url = admin_url( 'admin.php?page=' . WPML_ST_FOLDER . '/menu/string-translation.php&context=WordPress' );
+			$changeLabelLanguage     = __( 'You can change the language of this label from the <a href="%s">string translation page</a>.', "sitepress" );
+		} else {
+			$changeLabelLanguage_url = 'https://wpml.org/account/downloads/#wpml-string-translation';
+			$changeLabelLanguage     = __( 'You can change the language of this label if you install and activate <a href="%s">WPML String Translation</a>.', "sitepress" );
+		}
+		$labels['changeLabelLanguage'] = sprintf( $changeLabelLanguage, $changeLabelLanguage_url );
+
 		return $labels;
 	}
 

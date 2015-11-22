@@ -53,6 +53,13 @@ if ( !empty( $tax_sync_not_set ) ) {
 }
 
 if(!empty($custom_posts)){
+	
+	if ( class_exists( 'WPML_Custom_Post_Slug_UI' ) ) {
+		$CPT_slug_UI = new WPML_Custom_Post_Slug_UI( $wpdb, $sitepress );
+	} else {
+		$CPT_slug_UI = null;
+	}
+	
 	?>
 
 
@@ -69,8 +76,6 @@ if(!empty($custom_posts)){
             		echo $notice;
             	}
 
-            	cpt_warnings();
-            	ICL_AdminNotifier::displayMessages( 'cpt-translation' );
             ?>
 
             <form id="icl_custom_posts_sync_options" name="icl_custom_posts_sync_options" action="">
@@ -95,90 +100,7 @@ if(!empty($custom_posts)){
                                     <p>
                                         <?php echo $custom_post->labels->name; ?>
                                     </p>
-
-                                    <?php if(defined('WPML_ST_VERSION')): ?>
-                                        <?php
-                                            $_has_slug = isset($custom_post->rewrite['slug']) && $custom_post->rewrite['slug'];
-                                            $_on = $sitepress_settings['posts_slug_translation']['on'] &&
-                                                   $_has_slug &&
-                                                   isset($sitepress_settings['custom_posts_sync_option'][$k]) &&
-                                                   $sitepress_settings['custom_posts_sync_option'][$k] == 1;
-                                            $is_hidden = $_on ? '' : 'hidden';
-                                            $_translate = !empty($sitepress_settings['posts_slug_translation']['types'][$k]);
-                                            if ($_has_slug) {
-												$string_id = null;
-												$_slug_translations = false;
-												
-												if ( class_exists( 'WPML_Slug_Translation' ) ) {
-													list( $string_id, $_slug_translations ) = WPML_Slug_Translation::get_translations( trim( $custom_post->rewrite[ 'slug' ], '/' ) );
-												}
-												
-												if($sitepress_settings['posts_slug_translation']['on'] && $_translate && !$string_id) {
-													$message = sprintf( __( "%s slugs are set to be translated, but they are missing their translation", 'sitepress'), $custom_post->labels->name);
-													ICL_AdminNotifier::displayInstantMessage( $message, 'error', 'below-h2', false );
-												}
-                                            } else {
-                                                $_slug_translations = false;
-                                            }
-                                        ?>
-                                        <?php if($_has_slug && isset($sitepress_settings['posts_slug_translation']['on']) && $sitepress_settings['posts_slug_translation']['on']): ?>
-                                            <div class="icl_slug_translation_choice <?php echo $is_hidden; ?>">
-                                                <p>
-                                                    <label>
-                                                        <input name="translate_slugs[<?php echo $k ?>][on]" type="checkbox" value="1" <?php checked(1, $_translate, true) ?> />
-                                                        <?php printf(__('Use different slugs in different languages for %s.', 'sitepress'), $custom_post->labels->name); ?>
-                                                    </label>
-                                                </p>
-
-                                                <table class="js-cpt-slugs <?php if(empty($_translate)): ?>hidden<?php endif; ?>">
-
-
-													<?php
-
-													foreach ( $sitepress->get_active_languages() as $language ) {
-														if ( $language[ 'code' ] != $sitepress_settings[ 'st' ][ 'strings_language' ] ) {
-															$slug_translation_value  = !empty( $_slug_translations[ $language[ 'code' ] ][ 'value' ] ) ? $_slug_translations[ $language[ 'code' ] ][ 'value' ] : '';
-															$slug_translation_sample = trim($custom_posts[ $k ]->rewrite[ 'slug' ],'/') . ' @' . $language[ 'code' ];
-															?>
-															<tr>
-																<td>
-																	<label for="translate_slugs[<?php echo $k ?>][langs][<?php echo $language[ 'code' ] ?>]"><?php echo $language[ 'display_name' ] ?></label>
-																</td>
-																<td>
-																	<input id="translate_slugs[<?php echo $k ?>][langs][<?php echo $language[ 'code' ] ?>]" name="translate_slugs[<?php echo $k ?>][langs][<?php echo $language[ 'code' ] ?>]" type="text" value="<?php echo $slug_translation_value; ?>"
-																		   placeholder="<?php echo $slug_translation_sample; ?>"/>
-																	<?php
-																	if ( isset( $_slug_translations[ $language[ 'code' ] ] ) && $_slug_translations[ $language[ 'code' ] ][ 'status' ] != ICL_TM_COMPLETE ) {
-																		?>
-																		<em class="icl_st_slug_tr_warn"><?php _e( "Not marked as 'complete'. Press 'Save' to enable.", 'sitepress' ) ?></em>
-																	<?php
-																	}
-																	?>
-																</td>
-															</tr>
-														<?php
-														} else {
-															?>
-															<tr>
-																<td>
-																	<label for="translate_slugs[<?php echo $k ?>][langs][<?php echo $language[ 'code' ] ?>]"><?php echo $language[ 'display_name' ] ?> <em><?php _e( "(original)", 'sitepress' ) ?></em></label>
-																</td>
-																<td><input disabled="disabled" class="disabled" id="translate_slugs[<?php echo $k ?>][langs][<?php echo $language[ 'code' ] ?>]" name="translate_slugs[<?php echo $k ?>][langs][<?php echo $language[ 'code' ] ?>]" type="text"
-																								 value="<?php echo trim($custom_posts[ $k ]->rewrite[ 'slug' ],'/'); ?>"/>
-																</td>
-															</tr>
-														<?php
-														}
-													}
-													?>
-
-
-
-
-                                                </table>
-                                            </div>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
+									
                                 </td>
                                 <td align="right">
                                     <p>
@@ -200,6 +122,16 @@ if(!empty($custom_posts)){
                                     <?php endif; ?>
                                 </td>
                             </tr>
+							<tr>
+								<td colspan="3">
+									<?php
+										if ( $CPT_slug_UI ) {
+											$CPT_slug_UI->render( $k, $custom_post );
+										}
+									?>
+								</td>
+							</tr>
+							
                         <?php endforeach; ?>
                     </tbody>
                 </table>
@@ -280,39 +212,3 @@ if(!empty($custom_taxonomies)) {
 <?php
 }
 
-function cpt_warnings()
-{
-	if(!defined('WPML_ST_PATH')) return;
-
-	global $sitepress_settings;
-	ICL_AdminNotifier::removeMessage( 'cpt_default_and_st_language_warning' );
-	if ( $sitepress_settings[ 'st' ][ 'strings_language' ] != 'en' ) {
-		cpt_default_and_st_language_warning();
-	}
-}
-
-function cpt_default_and_st_language_warning()
-{
-	static $called = false;
-	if (defined('WPML_ST_FOLDER') && !$called ) {
-		global $sitepress, $sitepress_settings;
-		$st_language_code = $sitepress_settings[ 'st' ][ 'strings_language' ];
-		$st_language      = $sitepress->get_display_language_name( $st_language_code, $sitepress->get_admin_language() );
-
-		$st_page_url = admin_url( 'admin.php?page=' . WPML_ST_FOLDER . '/menu/string-translation.php' );
-
-		$message = __(
-			'The strings language in your site is set to %s instead of English.
-			This means that the original slug will appear in the URL when displaying content in %s.
-			<strong><a href="%s" target="_blank">Read more</a> |  <a href="%s#icl_st_sw_form">Change strings language</a></strong>',
-		'wpml-string-translation' );
-
-		$message = sprintf( $message, $st_language, $st_language, 'https://wpml.org/faq/string-translation-default-language-not-english/', $st_page_url );
-
-		$fallback_message = __( '<a href="%s" target="_blank">How to translate strings when default language is not English</a>', 'wpml-string-translation'  );
-		$fallback_message = sprintf( $fallback_message, 'https://wpml.org/faq/string-translation-default-language-not-english/' );
-
-		ICL_AdminNotifier::addMessage( 'cpt_default_and_st_language_warning', $message, 'icl-admin-message-warning', true, $fallback_message, false, 'cpt-translation' );
-		$called = true;
-	}
-}

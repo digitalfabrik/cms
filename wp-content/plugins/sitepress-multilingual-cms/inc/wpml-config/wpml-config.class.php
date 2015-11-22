@@ -3,15 +3,14 @@
 require_once ICL_PLUGIN_PATH . "/inc/taxonomy-term-translation/wpml-term-language-synchronization.class.php";
 require_once ICL_PLUGIN_PATH . "/inc/setup/wpml-tm-settings-update.class.php";
 
-class WPML_Config
-{
+class WPML_Config {
 	static $wpml_config_files = array();
     static $active_plugins = array();
 
 	static function load_config() {
-		global $pagenow;
+		global $pagenow, $sitepress;
 
-		if ( !( is_admin() && !wpml_is_ajax() && ( !isset( $_POST[ 'action' ] ) || $_POST[ 'action' ] != 'heartbeat' ) ) ) {
+		if ( ! is_admin() || wpml_is_ajax() || ( isset( $_POST['action'] ) && $_POST['action'] === 'heartbeat' ) || ! $sitepress || ! $sitepress->get_default_language() ) {
 			return;
 		}
 

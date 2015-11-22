@@ -25,7 +25,7 @@ class WPML_Admin_Post_Actions extends  WPML_Post_Translation{
 	 */
 	function get_save_post_trid( $post_id, $post_status ) {
 		$trid = $this->get_element_trid( $post_id );
-		$trid = ! $trid && isset( $post_vars['icl_trid'] ) ? $post_vars['icl_trid'] : $trid;
+		$trid = $trid ? $trid : filter_var( isset( $_POST['icl_trid'] ) ? $_POST['icl_trid'] : '', FILTER_SANITIZE_NUMBER_INT );
 		$trid = $trid ? $trid : filter_var( isset( $_GET['trid'] ) ? $_GET['trid'] : '', FILTER_SANITIZE_NUMBER_INT );
 		$trid = $trid ? $trid : $this->get_trid_from_referer();
 		$trid = apply_filters( 'wpml_save_post_trid_value', $trid, $post_status );
@@ -44,7 +44,9 @@ class WPML_Admin_Post_Actions extends  WPML_Post_Translation{
 
 			return;
 		}
-		if ( WPML_WordPress_Actions::is_bulk_trash( $pidd ) || WPML_WordPress_Actions::is_bulk_untrash( $pidd ) ) {
+		if ( WPML_WordPress_Actions::is_bulk_trash( $pidd ) ||
+			 WPML_WordPress_Actions::is_bulk_untrash( $pidd ) ||
+			 WPML_WordPress_Actions::is_heartbeat( ) ) {
 
 			return;
 		}

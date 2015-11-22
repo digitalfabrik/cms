@@ -19,6 +19,7 @@ if (!is_multisite()) {
   delete_option('ure_show_deprecated_caps');
   delete_option('ure_hide_pro_banner');
   delete_option('user_role_editor');
+  delete_option('ure_role_additional_options_values');
 } else {
   $old_blog = $wpdb->blogid;
   // Get all blog ids
@@ -31,6 +32,7 @@ if (!is_multisite()) {
     delete_option('ure_show_deprecated_caps');      
     delete_option('ure_hide_pro_banner');
     delete_option('user_role_editor');
+    delete_option('ure_role_additional_options_values');
   }
   switch_to_blog($old_blog);
 }

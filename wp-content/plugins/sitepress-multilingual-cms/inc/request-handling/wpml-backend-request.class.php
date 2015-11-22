@@ -12,15 +12,16 @@ class WPML_Backend_Request extends WPML_Request {
 	 * @param WPML_URL_Converter $url_converter
 	 * @param array              $active_languages
 	 * @param string             $default_language
+	 * @param WPML_Cookie        $cookie
 	 */
-	public function __construct( &$url_converter, $active_languages, $default_language ) {
-		parent::__construct( $url_converter, $active_languages, $default_language );
+	public function __construct( &$url_converter, $active_languages, $default_language, $cookie ) {
+		parent::__construct( $url_converter, $active_languages, $default_language, $cookie );
 		global $wpml_url_filters;
 
 		if ( strpos( (string) filter_var( $_SERVER['REQUEST_URI'] ), 'wpml_root_page=1' ) !== false
 		     || $wpml_url_filters->frontend_uses_root() !== false
 		) {
-			require_once ICL_PLUGIN_PATH . '/inc/url-handling/wpml-root-page.class.php';
+			WPML_Root_Page::init();
 		}
 	}
 
@@ -103,6 +104,28 @@ class WPML_Backend_Request extends WPML_Request {
 	protected function get_cookie_name() {
 
 		return wpml_is_ajax() && $this->check_if_admin_action_from_referer() === false
-			? '_icl_current_language' : '_icl_current_admin_language';
+			? '_icl_current_language' : '_icl_current_admin_language_' . md5( $this->get_cookie_domain() );
 	}
+	
+	/**
+	 * Returns SERVER_NAME, or HTTP_HOST if the first is not available
+	 *
+	 * @return string
+	 */
+	public function get_server_host_name() {
+		$host = isset( $_SERVER[ 'HTTP_HOST' ] ) ? $_SERVER[ 'HTTP_HOST' ] : null;
+		$host = $host !== null
+			? $host
+			: ( isset( $_SERVER[ 'SERVER_NAME' ] )
+				? $_SERVER[ 'SERVER_NAME' ]
+				  . ( isset( $_SERVER[ 'SERVER_PORT' ] ) && ! in_array( $_SERVER[ 'SERVER_PORT' ], array( 80, 443 ) )
+					? $_SERVER[ 'SERVER_PORT' ] : '' )
+				: '' );
+
+		//Removes standard ports 443 (80 should be already omitted in all cases)
+		$result = preg_replace( "@:[443]+([/]?)@", '$1', $host );
+
+		return $result;
+	}
+	
 }
