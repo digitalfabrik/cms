@@ -597,45 +597,18 @@ function wpml_version_is( $version_to_check, $comparison = '==' ) {
 }
 
 function wpml_site_uses_icl_message_notice() {
-	$messages[ ] = 'Your website is configured to connect to ICanLocalize.';
-	$messages[ ] = 'This version of WPML cannot be used in this case and it will be not functional until you downgrade or update, once available, to a version which is compatible.';
-	$messages[ ] = 'To downgrade to a previous compatible version of WPML please %sfollow this link%s.';
+	$plugin_download_url = 'https://wpml.org/account/downloads/#migrate-icanlocalize-translation-to-wpml-3-2';
+	$plugin_download_label = _x('Download from WPML.org', 'Site Uses ICL: message notice, plugin download button', 'sitepress');
+	$plugin_download_anchor = '<a href="' . $plugin_download_url . '" class="button-primary" target="_blank">' . $plugin_download_label . '</a>';
 
-	$translated_messages      = array();
-	$downgrade_url            = 'https://wpml.org/forums/topic/how-to-downgrade-from-wpml-3-2/';
-	$downgrade_anchor_opening = '<a href="' . $downgrade_url . '" target="_blank">';
-	$downgrade_anchor_closing = '</a>';
-	foreach ( $messages as $message ) {
-		$translated_messages[ ] = sprintf( __( $message, 'sitepress' ), $downgrade_anchor_opening, $downgrade_anchor_closing );
-	}
+	$messages[] = _x( 'Your website is using ICanLocalize for professional translation. This version of WPML requires an update to your ICanLocalize project. We prepared a plugin that will do this update for you.', 'Site Uses ICL: message notice line 1', 'sitepress' );
+	$messages[] = $plugin_download_anchor;
+	$messages[] = _x( 'After you log-in, go to Downloads and get the plugin called "Migrate ICanLocalize Translation to WPML 3.2". Install and activate it, then follow the instructions to migrate your translation project.', 'Site Uses ICL: message notice line 2', 'sitepress' );
 	?>
 	<div class="error">
-		<p><?php echo implode( '<br/>', $translated_messages ); ?></p>
+		<p><?php echo implode( '</p><p>', $messages ); ?></p>
 	</div>
 <?php
-}
-
-function wpml_apply_include_filters() {
-	if ( icl_get_setting( 'language_domains' ) ) {
-		add_filter( 'plugins_url', 'wpml_filter_include_url' ); //so plugin includes get the correct path
-		add_filter( 'template_directory_uri', 'wpml_filter_include_url' ); //js includes get correct path
-		add_filter( 'stylesheet_directory_uri', 'wpml_filter_include_url' ); //style.css gets included right
-	}
-}
-
-if(!function_exists('wpml_filter_include_url')) {
-	function wpml_filter_include_url( $result ) {
-		if ( isset( $_SERVER[ 'HTTP_HOST' ] ) ) {
-			$http_host_parts = explode( ':', $_SERVER[ 'HTTP_HOST' ] );
-			unset( $http_host_parts[ 1 ] );
-			$http_host_without_port = implode( $http_host_parts );
-			$path                   = str_replace( parse_url( $result, PHP_URL_HOST ), $http_host_without_port, $result );
-		} else {
-			$path = '';
-		}
-
-		return $path;
-	}
 }
 
 /**
@@ -659,20 +632,24 @@ function icl_suppress_activation() {
 /**
  * @param SitePress $sitepress
  */
-function activate_installer( $sitepress ) {
+function activate_installer( $sitepress = null ) {
 	// installer hook - start
 	include_once ICL_PLUGIN_PATH . '/inc/installer/loader.php'; //produces global variable $wp_installer_instance
 	$args = array(
 		'plugins_install_tab' => 1,
 		'high_priority'       => 1,
-		'site_key_nags'       => array(
+
+	);
+
+	if ( $sitepress ) {
+		$args[ 'site_key_nags' ] = array(
 			array(
 				'repository_id' => 'wpml',
 				'product_name'  => 'WPML',
 				'condition_cb'  => array( $sitepress, 'setup' )
 			)
-		)
-	);
+		);
+	}
 	/** @var WP_Installer $wp_installer_instance */
 	WP_Installer_Setup( $wp_installer_instance, $args );
 	// installer hook - end

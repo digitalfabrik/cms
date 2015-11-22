@@ -66,7 +66,7 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 		) {
 			$language_code_item = $args['menu-item-type'] === 'post_type'
 				? $this->post_translations->get_element_lang_code( $args['menu-item-object-id'] )
-				: $this->term_translations->get_element_lang_code( $args['menu-item-object-id'] );
+				: $this->term_translations->lang_code_by_termid( $args['menu-item-object-id'] );
 			$language_code_item = $language_code_item ? $language_code_item : $this->sitepress->get_current_language();
 			if ( $language_code_item !== $menu_lang ) {
 				wp_remove_object_terms( (int) $menu_item_db_id, (int) $menu_id, 'nav_menu' );
@@ -119,15 +119,18 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 		return $val;
 	}
 
-	public function theme_mod_nav_menu_locations( $val ) {
-		if ( is_admin() && (bool) $val === true ) {
+	public function theme_mod_nav_menu_locations( $theme_locations ) {
+		if ( is_admin() && (bool) $theme_locations === true ) {
 			$current_lang = $this->sitepress->get_current_language();
-			foreach ( (array) $val as $k => $v ) {
-				$val[ $k ] = $this->term_translations->term_id_in( $v, $current_lang );
+			foreach ( (array) $theme_locations as $location => $menu_id ) {
+				$translated_menu_id = $this->term_translations->term_id_in( $menu_id, $current_lang );
+				if ( $translated_menu_id ) {
+					$theme_locations[ $location ] = $translated_menu_id;
+				}
 			}
 		}
 
-		return $val;
+		return $theme_locations;
 	}
 
 	private function get_save_lang( $menu_id ) {

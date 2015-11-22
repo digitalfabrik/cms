@@ -41,4 +41,14 @@ if (!function_exists('ure_get_post_view_access_users')) {
     }   
     // end of ure_get_post_view_users()
     
-}   // if (!function_exists('ure_get_post_view_users'))
+}   
+
+
+if (!function_exists('ure_hide_admin_bar')) {
+    function ure_hide_admin_bar() {
+        
+        show_admin_bar(false);
+        
+    }
+    // end of hide_admin_bar()
+}

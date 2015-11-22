@@ -31,7 +31,7 @@ TaxonomyTranslation.data.syncData = {};
             "<div style=\"margin-top: 10px;\" id=\"taxonomy-translation\">",
             "</div>"],
         tabs: [
-                "<span id=\"term-table-tab-controls\" style=\"white-space: nowrap\">",
+                "<span id=\"term-table-tab-controls\" class=\"wpml-tab-controls\" style=\"white-space: nowrap\">",
                     "<button class=\"nav-tab <%=(mode ==='translate' && taxonomy.hierarchical ? 'nav-tab-active' : '')%>\" id=\"term-table-header\"><%=headerTerms%></button>",
                     "<% if(taxonomy.hierarchical) {%>",
                             "<button class=\"nav-tab <%=(mode ==='sync' && taxonomy.hierarchical ? 'nav-tab-active' : '')%>\" id=\"term-table-sync-header\"><%=syncLabel%></button>",
@@ -47,6 +47,7 @@ TaxonomyTranslation.data.syncData = {};
                 "<% if(TaxonomyTranslation.data.translatedTaxonomyLabels) {%>",
                     "<p id=\"term-label-summary\"><%=labelSummary%></p>",
                     "<div id=\"wpml-taxonomy-translation-labels-table\"></div>",
+                    "<p id=\"term-label-summary\"><%=labels.changeLabelLanguage%></p>",
                 "<% } %>",
             "</div>"
         ],

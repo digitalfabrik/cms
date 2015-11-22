@@ -5,7 +5,6 @@ class WPML_Post_Status_Display {
 
 	public function __construct( $active_languages ) {
 		$this->active_langs = $active_languages;
-		do_action('wpml_pre_status_icon_display');
 	}
 
 	/**
@@ -40,12 +39,15 @@ class WPML_Post_Status_Display {
 	 * @return string
 	 */
 	public function get_status_html( $post_id, $lang ) {
-		list( $icon, $text, $link, $trid ) = $this->get_status_data ( $post_id, $lang );
-		$link = apply_filters ( 'wpml_link_to_translation', $link, $post_id, $lang, $trid );
-		$icon = apply_filters ( 'wpml_icon_to_translation', $icon, $lang, $trid );
-		$text = apply_filters ( 'wpml_text_to_translation', $text, $post_id, $lang, $trid );
+		list( $icon, $text, $link, $trid ) = $this->get_status_data( $post_id, $lang );
+		if ( ! did_action( 'wpml_pre_status_icon_display' ) ) {
+			do_action( 'wpml_pre_status_icon_display' );
+		}
+		$link = apply_filters( 'wpml_link_to_translation', $link, $post_id, $lang, $trid );
+		$icon = apply_filters( 'wpml_icon_to_translation', $icon, $post_id, $lang, $trid );
+		$text = apply_filters( 'wpml_text_to_translation', $text, $post_id, $lang, $trid );
 
-		return $this->render_status_icon ( $link, $text, $icon );
+		return $this->render_status_icon( $link, $text, $icon );
 	}
 
 	private function get_status_data( $post_id, $lang ) {

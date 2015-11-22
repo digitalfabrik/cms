@@ -1,5 +1,168 @@
 # Changelog
 
+## 2.0 Beta 7.0
+
+- Sync infrastructure from WordPress core as of r35691.
+
+  * Remove `register_api_field()` because it's conceptually tied to `WP_REST_Controller` [#34730](https://core.trac.wordpress.org/ticket/34730)
+  * Update the REST API header links to use api.w.org [#34303](https://core.trac.wordpress.org/ticket/34303)
+  * Require the `$namespace` argument in `register_rest_route()` [#34416](https://core.trac.wordpress.org/ticket/34416)
+  * Include `enum` and `description` in help data [#34543](https://core.trac.wordpress.org/ticket/34543)
+  * Save `preg_match` iterations in `WP_REST_Server` [#34488](https://core.trac.wordpress.org/ticket/34488)
+  * Don't return route URL in `WP_REST_Request:get_params()` [#34647](https://core.trac.wordpress.org/ticket/34647)
+
+- Restore `register_api_field()` within the plugin.
+
+  (props @danielbachhuber, [#1748](https://github.com/WP-API/WP-API/pull/1748))
+
+- Require admin functions for use of `wp_handle_upload()`, fixing fatal.
+
+  (props @joehoyle, [#1746](https://github.com/WP-API/WP-API/pull/1746))
+
+- Properly handle requesting terms where `parent=0` and `0` is a string.
+
+  (props @danielbachhuber, [#1739](https://github.com/WP-API/WP-API/pull/1739))
+
+- Prevent PHP error notice when `&filter` isn't an array.
+
+  (props @danielbachhuber, [#1734](https://github.com/WP-API/WP-API/pull/1734))
+
+- Change link relations to use api.w.org.
+
+  (props @danielbachhuber, [#1726](https://github.com/WP-API/WP-API/pull/1726))
+
+
+## 2.0 Beta 6.0
+
+- Remove global inclusion of wp-admin/includes/admin.php
+
+  For a long time, the REST API loaded wp-admin/includes/admin.php to make use of specific admin utilities. Now, it only loads those admin utilities when it needs them.
+
+  If your custom endpoints make use of admin utilities, you'll need to make sure to load wp-admin/includes/admin.php before you use them.
+
+  (props @joehoyle, [#1696](https://github.com/WP-API/WP-API/pull/1696))
+
+- Link directly to the featured image in a Post's links.
+
+  (props @rmccue, [#1563](https://github.com/WP-API/WP-API/pull/1563), [#1711](https://github.com/WP-API/WP-API/pull/1711))
+
+- Provide object type as callback argument for custom API fields.
+
+  (props @jtsternberg, [#1714](https://github.com/WP-API/WP-API/pull/1714))
+
+- Change users schema order to be order of importance instead of alpha.
+
+  (props @rachelbaker, [#1708](https://github.com/WP-API/WP-API/pull/1708))
+
+- Clarify documentation for `date` and `modified` attributes.
+
+  (props @danielbachhuber, [#1715](https://github.com/WP-API/WP-API/pull/1715))
+
+- Update the wp-api.js client from the client-js repo.
+
+  (props @rachelbaker, [#1709](https://github.com/WP-API/WP-API/pull/1709))
+
+- Fix the `format` enum to be an array of strings.
+
+  (props @joehoyle, [#1707](https://github.com/WP-API/WP-API/pull/1707))
+
+- Run revisions for collection through `prepare_response_for_collection()`.
+
+  (props @danielbachhuber, @rachelbaker, [#1671](https://github.com/WP-API/WP-API/pull/1671))
+
+- Expose `date_gmt` for `view` context of Posts and Comments.
+
+  (props @danielbachhuber, [#1690](https://github.com/WP-API/WP-API/pull/1690))
+
+- Fix PHP and JS docblock formatting.
+
+  (props @ahmadawais, [#1699](https://github.com/WP-API/WP-API/pull/1698), [#1699](https://github.com/WP-API/WP-API/pull/1699), [#1701](https://github.com/WP-API/WP-API/pull/1701), [#1700](https://github.com/WP-API/WP-API/pull/1700), [#1702](https://github.com/WP-API/WP-API/pull/1702), [#1703](https://github.com/WP-API/WP-API/pull/1703))
+
+- Include `media_details` attribute for attachments in embed context.
+
+  For image attachments, media_details includes a sizes array of image sizes, which is useful for templating.
+
+  (props @danielbachhuber, [#1667](https://github.com/WP-API/WP-API/pull/1667))
+
+- Make `WP_REST_Controller` error messages more helpful by specifying method to subclass.
+
+  (props @danielbachhuber, [#1670](https://github.com/WP-API/WP-API/pull/1670))
+
+- Expose `slug` in `embed` context for Users.
+
+  `user_nicename` is a public attribute, used in user URLs, so this is safe data to present.
+
+  (props @danielbachhuber, [#1666](https://github.com/WP-API/WP-API/pull/1666))
+
+- Handle falsy value from `wp_count_terms()`, fixing fatal.
+
+  (props @joehoyle, [#1641](https://github.com/WP-API/WP-API/pull/1641))
+
+- Correct methods in `WP_REST_SERVER::EDITABLE` description.
+
+  (props @rachelbaker, [#1601](https://github.com/WP-API/WP-API/pull/1601))
+
+- Add the embed context to Users collection query params.
+
+  (props @rachelbaker, [#1591](https://github.com/WP-API/WP-API/pull/1591))
+
+- Add Terms Controller collection args details.
+
+  (props @rachelbaker, [#1603](https://github.com/WP-API/WP-API/pull/1603))
+
+- Set comment author details from current user.
+
+  (props @rmccue, [#1580](https://github.com/WP-API/WP-API/pull/1580))
+
+- More hook documentation.
+
+  (props @adamsilverstein, [#1556](https://github.com/WP-API/WP-API/pull/1556), [#1560](https://github.com/WP-API/WP-API/pull/1560))
+
+- Return the trashed status of deleted posts/comments.
+
+  When a post or a comment is deleted, returns a flag to say whether it's been trashed or properly deleted.
+
+  (props @pento, [#1499](https://github.com/WP-API/WP-API/pull/1499))
+
+- In `WP_REST_Posts_Controller::update_item()`, check the post ID based on the proper post type.
+
+  (props @rachelbaker, [#1497](https://github.com/WP-API/WP-API/pull/1497))
+
+## 2.0 Beta 5.0
+
+- Load api-core as a compatibility library
+
+  Now api-core has been merged into WordPress trunk (for 4.4) we should no longer load the infrastructure code
+  when it's already available. This also fixes a fatal error for users who were on trunk.
+
+  (props @rmccue)
+
+- Switch to new mysql_to_rfc3339
+
+  (props @rmccue)
+
+- Double-check term taxonomy
+
+  (props @rmccue)
+
+- Load admin functions
+
+  This was removed from the latest beta of WordPress in the REST API infrastructure, a more long term fix is planned.
+
+  (props @joehoyle)
+
+- Add Add compat shim for renamed `rest_mysql_to_rfc3339()`
+
+  (props @danielbachhuber)
+
+- Compat shim for `wp_is_numeric_array()`
+
+  (props @danielbachhuber)
+
+- Revert Switch to register_post_type_args filter
+
+  (props @joehoyle)
+
 ## 2.0 Beta 4.0
 
 - Show public user information through the user controller.

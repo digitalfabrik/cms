@@ -106,12 +106,12 @@ jQuery(document).ready(function($){
 
     jQuery('#icl_custom_posts_sync_options').submit(function(){
         iclHaltSave = false;
-        var slugTranslationChoice = jQuery('.icl_slug_translation_choice input[type=text]');
+        var slugTranslationChoice = jQuery('.icl_slug_translation_choice input[type=text].js-translate-slug');
         var ajaxResponseCP = jQuery('#icl_ajx_response_cp');
         slugTranslationChoice.removeClass('icl_error_input');
         ajaxResponseCP.html('').fadeOut();
         slugTranslationChoice.each(function(){
-            if(jQuery(this).is(':visible') && jQuery.trim(jQuery(this).val()) === ''){
+            if(jQuery(this).is(':visible') && !jQuery(this).is(':disabled') && jQuery.trim(jQuery(this).val()) === ''){
                 jQuery(this).addClass('icl_error_input');
                 iclHaltSave = true;
             }
@@ -224,14 +224,6 @@ jQuery(document).ready(function($){
 
 });
 
-var icl_tn_initial_value   = '';
-
-window.onbeforeunload = function() {
-    if(icl_tn_initial_value != jQuery('#icl_post_note').find('textarea').val()){
-        return jQuery('#icl_tn_cancel_confirm').val();
-    }
-};
-
 function fadeInAjxResp(spot, msg, err){
     if(err != undefined){
         col = jQuery(spot).css('color');
@@ -274,7 +266,9 @@ function iclSaveForm() {
 				for (var i = 0; i < iclSaveForm_success_cb.length; i++) {
 					iclSaveForm_success_cb[i](jQuery('form[name="' + form_name + '"]'), spl);
 				}
-				if (form_name == 'icl_slug_translation' || form_name == 'icl_save_language_switcher_options') {
+				if (form_name == 'icl_slug_translation' ||
+						form_name == 'icl_save_language_switcher_options' ||
+						form_name == 'icl_custom_posts_sync_options') {
 					location.reload();
 				}
 			} else {

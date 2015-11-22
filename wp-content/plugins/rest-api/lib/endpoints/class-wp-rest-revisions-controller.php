@@ -69,11 +69,12 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller {
 
 		$revisions = wp_get_post_revisions( $request['parent_id'] );
 
-		$struct = array();
+		$response = array();
 		foreach ( $revisions as $revision ) {
-			$struct[] = $this->prepare_item_for_response( $revision, $request );
+			$data = $this->prepare_item_for_response( $revision, $request );
+			$response[] = $this->prepare_response_for_collection( $data );
 		}
-		return $struct;
+		return $response;
 	}
 
 	/**
@@ -136,6 +137,17 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller {
 	 */
 	public function delete_item( $request ) {
 		$result = wp_delete_post( $request['id'], true );
+
+		/**
+		 * Fires after a revision is deleted via the REST API.
+		 *
+		 * @param (mixed) $result The revision object (if it was deleted or moved to the trash successfully)
+		 *                        or false (failure). If the revision was moved to to the trash, $result represents
+		 *                        its new state; if it was deleted, $result represents its state before deletion.
+		 * @param WP_REST_Request $request The request sent to the API.
+		 */
+		do_action( 'rest_delete_revision', $result, $request );
+
 		if ( $result ) {
 			return true;
 		} else {
@@ -164,7 +176,7 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller {
 	/**
 	 * Prepare the revision for the REST response
 	 *
-	 * @param mixed $item WordPress representation of the revision.
+	 * @param WP_Post $post Post revision object.
 	 * @param WP_REST_Request $request Request object.
 	 * @return array
 	 */
@@ -226,10 +238,10 @@ class WP_REST_Revisions_Controller extends WP_REST_Controller {
 		}
 
 		if ( isset( $date ) ) {
-			return rest_mysql_to_rfc3339( $date );
+			return mysql_to_rfc3339( $date );
 		}
 
-		return rest_mysql_to_rfc3339( $date_gmt );
+		return mysql_to_rfc3339( $date_gmt );
 	}
 
 	/**

@@ -18,13 +18,7 @@ class ure_Advertisement {
 		$index = $this->rand_unique( $used );		
 		$this->slots[$index] = $this->admin_menu_editor();
 		$used[] = $index;
-  
-  if ( date('Y-m-d') < date('Y-m-d', strtotime('2015-11-03')) ) {
-    $index = $this->rand_unique( $used );
-    $this->slots[$index] = $this->manage_wp();
-    $used[] = $index;
-  }
-  
+    
 		$index = $this->rand_unique( $used );
 		$this->slots[$index] = $this->wp_esignature();
   $used[] = $index;
@@ -65,23 +59,7 @@ class ure_Advertisement {
 		return $output;
 	}
 	// end of admin_menu_editor()
-	
-	
-	// content of Manage WP advertisement slot
-	private function manage_wp() {
-	
-		$output = '
-			<div style="text-align: center;">
-			<a title="ManageWP" href="http://managewp.com/?utm_source=user_role_editor&utm_medium=Banner&utm_content=mwp250_2&utm_campaign=Plugins" target="_new" >
-				<img width="250" height="250" alt="ManageWP" src="'. URE_PLUGIN_URL .'images/mwp250_2.png">
-			</a>                        
-		</div>  
-			';
-
-		return $output;
-	}
-	// end of manage_wp()
- 
+	 
  
  // content of WP eSignature advertisement slot
 	private function wp_esignature() {

@@ -37,14 +37,29 @@ class WPML_Language_Domains extends WPML_SP_User {
 			if ( $lang[ 'code' ] === $default_language ) {
 				$output .= '<td id="icl_ln_home">' . $home . '</td><td>&nbsp;</td><td>&nbsp;</td>';
 			} else {
-				$output .= '<td><input type="text" id="language_domain_' . $lang[ 'code' ]
-				           . '" name="language_domains[' . $lang[ 'code' ] . ']" value="'
-				           . $suggested_url . '" size="40" /></td>'
-						   .'<td id="icl_validation_result_' . $lang[ 'code' ]
-				           . '"><label><input class="validate_language_domain" type="checkbox" name="validate_language_domains[]" value="'
-				           . $lang[ 'code' ]
-				           . '" checked="checked" /> ' . __ ( 'Validate on save', 'sitepress' )
-				           . '</label></td><td><span id="ajx_ld_' . $lang[ 'code' ] . '"></span></td>';
+				$output .= '<td>
+									<input
+										type="text"
+										id="language_domain_' . $lang['code'] . '"
+										name="language_domains[' . $lang['code'] . ']"
+										value="' . $suggested_url . '"
+										data-language="' . $lang['code'] . '"
+										size="40"
+				           />
+				           </td>
+				           <td id="icl_validation_result_' . $lang['code'] . '">
+				           	<label>
+				           		<input
+				           			class="validate_language_domain"
+				           			type="checkbox"
+				           			name="validate_language_domains[]"
+				           			value="' . $lang['code'] . '"
+				           			checked="checked"
+				           		/> ' . __( 'Validate on save', 'sitepress' ) . '</label>
+				           </td>
+				           <td>
+				           	<span id="ajx_ld_' . $lang['code'] . '"></span>
+				           </td>';
 			}
 			$output .= '</tr>';
 		}

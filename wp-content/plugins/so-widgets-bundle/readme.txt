@@ -2,7 +2,7 @@
 Tags: bundle, widget, button, slider, image, carousel, price table, google maps, tinymce, social links
 Requires at least: 3.9
 Tested up to: 4.3
-Stable tag: 1.5
+Stable tag: 1.5.2
 License: GPLv3 or later
 Contributors: gpriday, braam-genis
 
@@ -49,6 +49,30 @@ The SiteOrigin Widgets Bundle is the perfect platform to build widgets for your 
 3. An example of the button widget.
 
 == Changelog ==
+
+= 1.5.4 - November 18 2015 =
+* Fixed compatibility with PHP 5.2
+
+= 1.5.3 - November 17 2015 =
+* Fixed defaults for Features widget and Hero Image widget.
+* Fixed previewing for Editor widget.
+* Change measurement field to work as single string.
+* Use new measurement field for existing widgets.
+* Carousel widget supports RTL.
+
+= 1.5.2 - November 10 2015 =
+* Removed word break style from headline widget.
+* Fixed image grid URL field.
+* Added more text styling options to features widget.
+* Added measurement field to use in various widgets.
+* Prefix function name in Google Map widget to prevent conflicts.
+* Fixed styling for contact form widget.
+* Fix to allow multiple duplicated contact forms on a single page.
+* Fixed Hero Image widget button shortcode in text mode.
+* TinyMCE fields maintain editor state.
+* Added support for WP Canvas Shortcodes in TinyMCE field.
+* Don't initialize TinyMCE outside the admin.
+* Added more styling to contact form submit button.
 
 = 1.5.1 - October 7 2015 =
 * Fixed: Issue with Call To Action widget being missing.

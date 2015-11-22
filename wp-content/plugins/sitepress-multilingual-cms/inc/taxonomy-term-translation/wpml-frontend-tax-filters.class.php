@@ -32,7 +32,7 @@ class WPML_Frontend_Tax_Filters{
 		$current_language = $sitepress->get_current_language();
 		$default_language = $sitepress->get_default_language();
 
-		if (is_taxonomy_translated( $taxonomy ) && $current_language !== $default_language ) {
+		if ( is_taxonomy_translated( $taxonomy ) ) {
 			$templates = $this->add_term_templates($term, $current_language, $templates);
 			$templates = $this->add_original_term_templates($term,$default_language, $current_language, $templates);
 		}
