@@ -39,6 +39,7 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 		$last_part = count( $parts ) > 2 ? array_pop( $parts ) : "";
 		$url       = join( '?', $parts );
 		$url       = preg_replace( '#(.+?)(/\?|\?)(.*?)(/.+?[/$|$])$#', '$1$4$5?$3', $url );
+		$url       = preg_replace( '#(\?.+)(%2F|\/)$#', '$1', $url );
 
 		return $url . ( $last_part !== "" && strpos( $url, '?' . $last_part ) === false ? '&' . $last_part : '' );
 	}
@@ -63,28 +64,28 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 		return $this->lang_by_param ( $url, false );
 	}
 
-	protected function convert_url_string( $url, $lang_code ) {
-		$old_lang_code = $this->get_lang_from_url_string ( $url );
+	protected function convert_url_string( $source_url, $lang_code ) {
+		$old_lang_code = $this->get_lang_from_url_string ( $source_url );
 		$lang_code     = (bool) $lang_code === false ? $this->default_language : $lang_code;
 		$lang_code     = $lang_code === $this->default_language ? "" : $lang_code;
 		if ( (bool) $old_lang_code !== false ) {
 			$replace = $lang_code === "" ? "" : '?lang=' . $lang_code;
-			$url     = str_replace ( '?lang=' . $old_lang_code, $replace, $url );
+			$source_url     = str_replace ( '?lang=' . $old_lang_code, $replace, $source_url );
 			$replace = str_replace ( '?', '&', $replace );
-			$url     = str_replace ( '&lang=' . $old_lang_code, $replace, $url );
-			$url     = strpos($url, '?') === false ? $url . '?lang=' . $lang_code : $url;
+			$source_url     = str_replace ( '&lang=' . $old_lang_code, $replace, $source_url );
+			$source_url     = strpos($source_url, '?') === false ? $source_url . '?lang=' . $lang_code : $source_url;
 		}
 
-		if ( strpos ( $url, 'lang=' . $lang_code ) === false ) {
-			$url .= ( strpos ( $url, '?' ) === false ? '?' : '&' ) . 'lang=' . $lang_code;
+		if ( strpos ( $source_url, 'lang=' . $lang_code ) === false ) {
+			$source_url .= ( strpos ( $source_url, '?' ) === false ? '?' : '&' ) . 'lang=' . $lang_code;
 		}
 
-		$url = str_replace ( '?lang=&', '?', $url );
-		$url = str_replace ( '&lang=&', '&', $url );
-		$url = str_replace ( '&lang=/', '', trailingslashit ( $url ) );
-		$url = str_replace ( '?lang=/', '', $url );
-		$url = str_replace ( '//?', '/?', $url );
+		$source_url = str_replace ( '?lang=&', '?', $source_url );
+		$source_url = str_replace ( '&lang=&', '&', $source_url );
+		$source_url = str_replace ( '&lang=/', '', trailingslashit ( $source_url ) );
+		$source_url = str_replace ( '?lang=/', '', $source_url );
+		$source_url = str_replace ( '//?', '/?', $source_url );
 
-		return untrailingslashit ( $url );
+		return untrailingslashit ( $source_url );
 	}
 }

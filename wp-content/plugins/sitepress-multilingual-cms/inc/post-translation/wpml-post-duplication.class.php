@@ -30,20 +30,8 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 	}
 
 	function make_duplicate( $master_post_id, $lang ) {
-		global $wpml_post_translations, $wpml_language_resolution;
+		global $wpml_post_translations;
 
-		static $duplicated_post_ids;
-		if ( ! isset( $duplicated_post_ids ) ) {
-			$duplicated_post_ids = array();
-		}
-
-		//It is already done? (avoid infinite recursions)
-		if ( ! $wpml_language_resolution->is_language_active( $lang )
-			 || in_array( $master_post_id . '|' . $lang, $duplicated_post_ids )
-		) {
-			return true;
-		}
-		$duplicated_post_ids[ ] = $master_post_id . '|' . $lang;
 		do_action( 'icl_before_make_duplicate', $master_post_id, $lang );
 		$master_post = get_post( $master_post_id );
 		$is_duplicated = false;

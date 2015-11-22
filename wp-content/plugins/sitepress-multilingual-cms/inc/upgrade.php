@@ -109,6 +109,7 @@ function icl_plugin_upgrade(){
 			'3.1.9.5',
 			'3.2',
 			'3.2.3',
+			'3.3',
 		);
     
 		foreach($versions as $version) {

@@ -146,7 +146,7 @@ function siteorigin_widget_preview_widget_action(){
 	?>
 	<html>
 		<head>
-			<title><?php _e('Widget Preview', 'siteorigin-widgets') ?></title>
+			<title><?php _e('Widget Preview', 'so-widgets-bundle') ?></title>
 			<?php
 			wp_print_scripts();
 			wp_print_styles();
@@ -309,3 +309,25 @@ function siteorigin_widgets_tinymce_admin_print_styles() {
 	wp_enqueue_style( 'editor-buttons' );
 }
 add_action( 'admin_print_styles', 'siteorigin_widgets_tinymce_admin_print_styles' );
+
+/**
+ * Get list of supported measurements
+ *
+ * @return array
+ */
+function siteorigin_widgets_get_measurements_list() {
+	$measurements = array(
+		'px',
+		'%',
+		'in',
+		'cm',
+		'mm',
+		'em',
+		'ex',
+		'pt',
+		'pc',
+	);
+
+	// Allow themes and plugins to trim or enhance the list.
+	return apply_filters('siteorigin_widgets_get_measurements_list', $measurements);
+}

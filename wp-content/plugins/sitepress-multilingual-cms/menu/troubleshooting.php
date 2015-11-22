@@ -26,36 +26,11 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 		case 'icl_fix_collation':
 			repair_el_type_collate();
 			exit;
-		case 'reset_pro_translation_configuration':
-			$sitepress_settings = get_option( 'icl_sitepress_settings' );
 
-			$sitepress_settings[ 'content_translation_languages_setup' ] = false;
-			$sitepress_settings[ 'content_translation_setup_complete' ]  = false;
-			unset( $sitepress_settings[ 'content_translation_setup_wizard_step' ] );
-			unset( $sitepress_settings[ 'site_id' ] );
-			unset( $sitepress_settings[ 'access_key' ] );
-			unset( $sitepress_settings[ 'translator_choice' ] );
-			unset( $sitepress_settings[ 'icl_lang_status' ] );
-			unset( $sitepress_settings[ 'icl_balance' ] );
-			unset( $sitepress_settings[ 'icl_support_ticket_id' ] );
-			unset( $sitepress_settings[ 'icl_current_session' ] );
-			unset( $sitepress_settings[ 'last_get_translator_status_call' ] );
-			unset( $sitepress_settings[ 'last_icl_reminder_fetch' ] );
-			unset( $sitepress_settings[ 'icl_account_email' ] );
-			unset( $sitepress_settings[ 'translators_management_info' ] );
-
-			update_option( 'icl_sitepress_settings', $sitepress_settings );
-
-			global $wpdb;
-			$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}icl_core_status" );
-			$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}icl_content_status" );
-			$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}icl_string_status" );
-			$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}icl_node" );
-			$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}icl_reminders" );
-
-			echo "<script type=\"text/javascript\">location.href='admin.php?page=" .
-				basename( ICL_PLUGIN_PATH ) . '/menu/troubleshooting.php&message=' . __( 'PRO translation was reset.', 'sitepress' ) . "'</script>";
+		case 'cache_clear':
+			icl_cache_clear();
 			exit;
+
 		case 'ghost_clean':
 
 			// clean the icl_translations table
@@ -474,6 +449,10 @@ echo '</textarea>';
 	<?php if(SitePress_Setup::setup_complete()) { ?>
 		<?php do_action('wpml_troubleshooting_after_setup_complete_cleanup_begin'); ?>
 		<?php do_action('before_setup_complete_troubleshooting_functions'); ?>
+	<p>
+		<input id="icl_cache_clear" type="button" class="button-secondary" value="<?php _e( 'Clear the cache in WPML', 'sitepress' ) ?>"/><br/>
+		<small style="margin-left:10px;"><?php _e( 'This may solve issues like missing languages in the language switcher.', 'sitepress' ) ?></small>
+	</p>
 	<p>
 		<input id="icl_remove_ghost" type="button" class="button-secondary" value="<?php _e( 'Remove ghost entries from the translation tables', 'sitepress' ) ?>"/><br/>
 		<small style="margin-left:10px;"><?php _e( 'Removes entries from the WPML tables that are not linked properly. Cleans the table off entries left over upgrades, bug fixes or undetermined factors.', 'sitepress' ) ?></small>

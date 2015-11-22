@@ -38,6 +38,10 @@ global $sitepress, $sitepress_settings;
                     <?php _e('Synchronize sticky flag', 'sitepress') ?></label>
                 </p>
                 <p>
+                    <label><input type="checkbox" name="icl_sync_password" <?php if($sitepress_settings['sync_password']): ?>checked<?php endif; ?> value="1" />
+                    <?php _e('Synchronize password for password protected posts', 'sitepress') ?></label>
+                </p>
+                <p>
                     <label><input type="checkbox" name="icl_sync_private_flag" <?php if($sitepress_settings['sync_private_flag']): ?>checked<?php endif; ?> value="1" />
                     <?php _e('Synchronize private flag', 'sitepress') ?></label>
                 </p>

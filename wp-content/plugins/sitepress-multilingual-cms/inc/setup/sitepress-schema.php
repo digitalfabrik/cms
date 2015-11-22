@@ -97,7 +97,7 @@ function icl_sitepress_activate() {
                  `md5` varchar(32) NOT NULL,
                  `translation_service` varchar(16) NOT NULL,
                  `batch_id` int DEFAULT 0 NOT NULL,
-                 `translation_package` text NOT NULL,
+                 `translation_package` longtext NOT NULL,
                  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                  `links_fixed` tinyint(4) NOT NULL DEFAULT 0,
                  `_prevstate` longtext,

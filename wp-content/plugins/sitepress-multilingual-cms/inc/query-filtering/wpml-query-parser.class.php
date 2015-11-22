@@ -32,8 +32,15 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 			return $q;
 		}
 
+		list( $q, $redir_pid ) = $this->maybe_adjust_name_var( $q );
+		/** @var WP_Query $q */
+		if ( $q->is_main_query() && (bool) $redir_pid === true ) {
+			if ( (bool) ( $redir_target = $this->is_redirected( $redir_pid ) ) ) {
+				$this->sitepress->get_wp_api()->wp_safe_redirect( $redir_target );
+			}
+		}
+
 		$current_language = $this->sitepress->get_current_language();
-		$q                = $this->maybe_adjust_name_var( $q );
 		if ( $current_language !== $this->sitepress->get_default_language() ) {
 			$cat_array = ! empty( $q->query_vars['cat'] ) ? array_map( 'intval',
 			                                                           array_map( 'trim',
@@ -202,9 +209,6 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 				$q->query_vars['page_id'] = $this->post_translations->element_id_in( $q->query_vars['page_id'],
 				                                                                     $current_language,
 				                                                                     true );
-				$q->query                 = preg_replace( '/page_id=[0-9]+/',
-				                                          'page_id=' . $q->query_vars['page_id'],
-				                                          $q->query );
 			}
 			$q = $this->adjust_query_ids( $q, 'include' );
 			$q = $this->adjust_query_ids( $q, 'exclude' );
@@ -236,23 +240,7 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 			}
 			$q = $this->adjust_q_var_pids( $q, $post_type, 'post__in' );
 			$q = $this->adjust_q_var_pids( $q, $post_type, 'post__not_in' );
-			if ( ! empty( $q->query_vars['post_parent'] ) && $q->query_vars['post_type'] !== 'attachment' && $post_type ) {
-				$q->query_vars['post_parent'] = $this->post_translations->element_id_in( $q->query_vars['post_parent'],
-				                                                                         $current_language,
-				                                                                         true );
-			}
-			if ( isset( $q->query_vars['taxonomy'] ) && $q->query_vars['taxonomy'] ) {
-				$tax_id = $this->wpdb->get_var( $this->wpdb->prepare( "SELECT term_id FROM {$this->wpdb->terms} WHERE slug=%s LIMIT 1",
-				                                                      $q->query_vars['term'] ) );
-				if ( $tax_id ) {
-					$translated_tax_id = $this->term_translations->term_id_in( $tax_id, $current_language, true );
-				}
-				if ( isset( $translated_tax_id ) ) {
-					$q->query_vars['term']                  = $this->wpdb->get_var( $this->wpdb->prepare( "SELECT slug FROM {$this->wpdb->terms} WHERE term_id = %d LIMIT 1",
-					                                                                                      $translated_tax_id ) );
-					$q->query[ $q->query_vars['taxonomy'] ] = $q->query_vars['term'];
-				}
-			}
+			$q = $this->maybe_adjust_parent( $q, $post_type, $current_language );
 			//TODO: [WPML 3.3] Discuss this. Why WP assumes it's there if query vars are altered? Look at wp-includes/query.php line #2468 search: if ( $this->query_vars_changed ) {
 			$q->query_vars['meta_query'] = isset( $q->query_vars['meta_query'] ) ? $q->query_vars['meta_query'] : array();
 			if ( isset( $q->query_vars['tax_query'] ) && is_array( $q->query_vars['tax_query'] ) ) {
@@ -262,12 +250,13 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 					}
 					if ( is_array( $fields['terms'] ) ) {
 						foreach ( $fields['terms'] as $term ) {
-							$taxonomy = get_term_by( $fields['field'], $term, $fields['taxonomy'] );
+							$term_index = isset( $fields['field'] ) ? $fields['field'] : 'term_id';
+							$taxonomy   = get_term_by( $term_index, $term, $fields['taxonomy'] );
 							if ( is_object( $taxonomy ) ) {
-								if ( $fields['field'] === 'id' ) {
+								if ( $term_index === 'id' && ! isset( $taxonomy->id ) ) {
 									$field = isset( $taxonomy->term_id ) ? $taxonomy->term_id : null;
 								} else {
-									$field = isset( $taxonomy->{$fields['field']} ) ? $taxonomy->{$fields['field']} : null;
+									$field = isset( $taxonomy->{$term_index} ) ? $taxonomy->{$term_index} : null;
 								}
 								$tmp   = $q->query['tax_query'][ $num ]['terms'];
 								$tmp   = array_diff( (array) $tmp,
@@ -291,9 +280,10 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 							}
 						}
 					} else if ( is_string( $fields['terms'] ) ) {
-						$taxonomy = get_term_by( $fields['field'], $fields['terms'], $fields['taxonomy'] );
+						$term_index = $fields['field'];
+						$taxonomy   = get_term_by( $term_index, $fields['terms'], $fields['taxonomy'] );
 						if ( is_object( $taxonomy ) ) {
-							$field                                       = isset( $taxonomy->{$fields['field']} ) ? $taxonomy->{$fields['field']} : null;
+							$field                                       = isset( $taxonomy->{$term_index} ) ? $taxonomy->{$term_index} : null;
 							$q->query['tax_query'][ $num ]['terms']      = $field;
 							$q->tax_query->queries[ $num ]['terms'][0]   = $field;
 							$q->query_vars['tax_query'][ $num ]['terms'] = $field;
@@ -301,6 +291,33 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 					}
 				}
 			}
+		}
+
+		return $q;
+	}
+
+	/**
+	 * Adjust the parent post in the query in case we're dealing with a translated
+	 * post type.
+	 *
+	 * @param WP_Query        $q
+	 * @param string|string[] $post_type
+	 * @param string          $current_language
+	 *
+	 * @return WP_Query  mixed
+	 */
+	private function maybe_adjust_parent( $q, $post_type, $current_language ) {
+		$post_type = ! is_scalar( $post_type ) && count( $post_type ) === 1 ? end( $post_type ) : $post_type;
+		if ( ! empty( $q->query_vars['post_parent'] )
+		     && $q->query_vars['post_type'] !== 'attachment'
+		     && $post_type
+		     && is_scalar( $post_type )
+		     && $this->sitepress->is_translated_post_type( $post_type )
+		) {
+			$q->query_vars['post_parent'] = $this->post_translations->element_id_in(
+				$q->query_vars['post_parent'],
+				$current_language,
+				true );
 		}
 
 		return $q;
@@ -315,6 +332,7 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 	 * @return WP_Query
 	 */
 	private function maybe_adjust_name_var( $q ) {
+		$redirect = false;
 		if ( ( (bool) ( $name_in_q = $q->get( 'name' ) ) === true
 		     || (bool) ( $name_in_q = $q->get( 'pagename' ) ) === true )
 			&& (bool) $q->get( 'page_id' ) === false
@@ -329,13 +347,18 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 			}
 			$type = $type ? $type : 'page';
 			$type = is_scalar( $type ) ? $type : ( count( $type ) === 1 ? end( $type ) : false );
-			$q    = $type ? $this->query_filter->get_page_name_filter( $type )->filter_page_name( $q ) : $q;
+			/**
+			 * @var WP_Query $q
+			 * @var $pid int|false
+			 */
+			list( $q, $redirect ) = $type
+				? $this->query_filter->get_page_name_filter( $type )->filter_page_name( $q ) : array( $q, false );
 			if ( isset( $name_before ) ) {
 				$q->set( 'name', $name_before );
 			}
 		}
 
-		return $q;
+		return array( $q, $redirect );
 	}
 
 	private function adjust_query_ids( $q, $index ) {
@@ -368,5 +391,28 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 		}
 
 		return $q;
+	}
+
+	/**
+	 * @param int $post_id
+	 *
+	 * @return false|string redirect target url if redirect is needed, false otherwise
+	 */
+	private function is_redirected( $post_id ) {
+		$request_uri = $_SERVER['REQUEST_URI'];
+		$post        = $this->sitepress->get_wp_api()->get_post( $post_id );
+		$parent      = $post->post_parent;
+		$redirect    = false;
+		if ( $parent ) {
+			if ( strpos( $request_uri,
+					parse_url(
+						$this->sitepress->get_wp_api()->get_permalink( $post_id ),
+						PHP_URL_PATH ) ) === false
+			) {
+				$redirect = $this->sitepress->get_wp_api()->get_permalink( $post_id );
+			}
+		}
+
+		return $redirect;
 	}
 }

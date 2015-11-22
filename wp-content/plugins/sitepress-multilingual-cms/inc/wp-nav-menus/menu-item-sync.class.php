@@ -182,7 +182,7 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 				}
 			}
 		}
-		$this->fix_hierarchy_added_items( $added_data, $menus );
+		$this->fix_hierarchy_added_items( $added_data );
 
 		return $menus;
 	}
@@ -291,9 +291,7 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 		}
 	}
 
-	private function fix_hierarchy_added_items( $added_data, $menus ) {
-		global $wpdb;
-
+	private function fix_hierarchy_added_items( $added_data ) {
 		foreach ( $added_data as $menu_id => $items ) {
 			foreach ( $items as $language => $translations ) {
 				foreach ( $translations as $item_id => $name ) {

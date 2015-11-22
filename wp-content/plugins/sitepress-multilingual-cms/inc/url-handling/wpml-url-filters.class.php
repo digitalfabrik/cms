@@ -17,7 +17,7 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 		parent::__construct( $post_translation, $sitepress );
 		$this->url_converter = $url_converter;
 		if ( $this->frontend_uses_root() === true ) {
-			require_once ICL_PLUGIN_PATH . '/inc/url-handling/wpml-root-page.class.php';
+			WPML_Root_Page::init();
 			add_filter( 'page_link', array( $this, 'permalink_filter_root' ), 1, 2 );
 		} else {
 			add_filter( 'page_link', array( $this, 'permalink_filter' ), 1, 2 );

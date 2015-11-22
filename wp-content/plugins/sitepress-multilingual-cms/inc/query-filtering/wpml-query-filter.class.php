@@ -71,6 +71,9 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 		     && ( $current_language = $this->sitepress->get_current_language () ) !== 'all'
 		) {
 			$join_part = $this->get_comment_query_join ( $obj );
+			if ( strstr( $clauses['join'], "JOIN {$this->wpdb->posts}" ) !== false ) {
+				$join_part = ' AND ';
+			}
 			$clauses[ 'join' ]
 					.= "	JOIN {$this->wpdb->prefix}icl_translations icltr2
 							ON icltr2.element_id = {$this->wpdb->comments}.comment_post_ID
@@ -98,20 +101,19 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 	public function posts_join_filter( $join, $query ) {
 		global $pagenow;
 
-		if ( !$this->is_join_filter_active ( $query, $pagenow ) ) {
+		if ( ! $this->is_join_filter_active( $query, $pagenow ) ) {
 			return $join;
 		}
 
-		$post_type = $this->determine_post_type ( 'posts_join' );
-		$post_type = $post_type ? $post_type : 'post';
-
-		if ( is_array ( $post_type ) && $this->has_translated_type ( $post_type ) === true ) {
-			$join .= $this->any_post_type_join ();
+		$post_type = $this->determine_post_type( 'posts_join' );
+		$post_type = $post_type ? $post_type : ( $query->is_tax() ? $this->get_tax_query_posttype( $query ) : 'post' );
+		if ( is_array( $post_type ) && $this->has_translated_type( $post_type ) === true ) {
+			$join .= $this->any_post_type_join();
 		} elseif ( $post_type ) {
-			$join = $this->filter_single_type_join ( $join, $post_type );
+			$join = $this->filter_single_type_join( $join, $post_type );
 		} else {
-			$taxonomy_post_types = $this->tax_post_types_from_query ( $query );
-			$join                = $this->tax_types_join ( $join, $taxonomy_post_types );
+			$taxonomy_post_types = $this->tax_post_types_from_query( $query );
+			$join                = $this->tax_types_join( $join, $taxonomy_post_types );
 		}
 
 		return $join;
@@ -171,7 +173,7 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 	 *
 	 * @return string
 	 */
-	private function any_post_type_join($left = true) {
+	private function any_post_type_join( $left = true ) {
 		$left = $left ? " LEFT " : "";
 
 		return $left . " JOIN {$this->wpdb->prefix}icl_translations t
@@ -221,14 +223,15 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 
 	/**
 	 * @param String $query_type
+	 *
 	 * @return array|bool|string
 	 */
-	private function determine_post_type($query_type) {
-		$debug_backtrace = $this->sitepress->get_backtrace ( 0, true, false ); //Limit to a maximum level?
+	private function determine_post_type( $query_type ) {
+		$debug_backtrace = $this->sitepress->get_backtrace( 0, true, false ); //Limit to a maximum level?
 		$post_type       = false;
 		foreach ( $debug_backtrace as $o ) {
-			if ( $o[ 'function' ] == 'apply_filters_ref_array' && $o[ 'args' ][ 0 ] === $query_type ) {
-				$post_type = esc_sql ( $o[ 'args' ][ 1 ][ 1 ]->query_vars[ 'post_type' ] );
+			if ( $o['function'] == 'apply_filters_ref_array' && $o['args'][0] === $query_type ) {
+				$post_type = esc_sql( $o['args'][1][1]->query_vars['post_type'] );
 				break;
 			}
 		}
@@ -269,20 +272,20 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 	private function get_tax_query_posttype( $query ) {
 		$tax       = $query->get( 'taxonomy' );
 		$post_type = $this->term_translations->get_taxonomy_post_types( $tax );
-		foreach ( $post_type as $k => $v ) {
-			if ( ! $this->sitepress->is_translated_post_type( $v ) ) {
-				unset( $post_type[ $k ] );
-			}
-		}
 
 		return $post_type;
 	}
 
+	/**
+	 * @param string|string[] $post_types
+	 *
+	 * @return bool true if non of the input post types are translatable
+	 */
 	private function posttypes_not_translated( $post_types ) {
-		$post_types = is_array($post_types) ? $post_types : array($post_types);
+		$post_types      = is_array( $post_types ) ? $post_types : array( $post_types );
 		$none_translated = true;
 		foreach ( $post_types as $ptype ) {
-			if ( $this->sitepress->is_translated_post_type ( $ptype ) ) {
+			if ( $this->sitepress->is_translated_post_type( $ptype ) ) {
 				$none_translated = false;
 				break;
 			}

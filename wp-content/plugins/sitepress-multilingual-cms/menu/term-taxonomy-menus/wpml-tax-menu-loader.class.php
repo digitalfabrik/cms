@@ -33,7 +33,6 @@ class WPML_Tax_Menu_Loader extends WPML_WPDB_And_SP_User {
 				add_action ( 'admin_notices', array( $this, '_tax_adding' ) );
 			}
 		}
-		$term_lang_filter = new WPML_Term_Language_Filter( $this->wpdb, $this->sitepress );
 		if ( $this->taxonomy === 'category' ) {
 			add_action ( 'edit_category_form', array( $this, 'wpml_edit_term_form' ) );
 		} else {
@@ -42,7 +41,11 @@ class WPML_Tax_Menu_Loader extends WPML_WPDB_And_SP_User {
 		}
 		add_action ( 'admin_print_scripts-edit-tags.php', array( $this, 'js_scripts_tags' ) );
 		add_filter ( 'wp_dropdown_cats', array( $this, 'wp_dropdown_cats_select_parent' ), 10, 2 );
-		add_action ( 'admin_footer', array( $term_lang_filter, 'terms_language_filter' ), 0 );
+		$action_get   = (string) filter_input( INPUT_GET, 'action' );
+		if ( $action_get !== 'edit' ) {
+			$term_lang_filter = new WPML_Term_Language_Filter( $this->wpdb, $this->sitepress );
+			add_action ( 'admin_footer', array( $term_lang_filter, 'terms_language_filter' ), 0 );
+		}
 	}
 
 	/**

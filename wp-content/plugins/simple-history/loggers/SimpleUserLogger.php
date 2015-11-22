@@ -29,6 +29,8 @@ class SimpleUserLogger extends SimpleLogger {
 				'user_updated_profile' => __("Edited the profile for user {edited_user_login} ({edited_user_email})", "simple-history"),
 				'user_created' => __("Created user {created_user_login} ({created_user_email}) with role {created_user_role}", "simple-history"),
 				'user_deleted' => __("Deleted user {deleted_user_login} ({deleted_user_email})", "simple-history"),
+				"user_password_reseted" => __("Reseted their password", "simple-history"),
+				"user_requested_password_reset_link" => __("Requested a password reset link for user with login '{user_login}' and email '{user_email}'", "simple-history"),
 
 				/*
 				Text used in admin:
@@ -115,6 +117,98 @@ class SimpleUserLogger extends SimpleLogger {
 		// User sessions is destroyed. AJAX call that we hook onto early.
 		add_action("wp_ajax_destroy-sessions", array($this, "on_destroy_user_session"), 0);
 
+		// User reaches reset password (from link or only from user created link)
+		add_action( 'validate_password_reset', array( $this, "on_validate_password_reset" ), 10, 2 );
+
+		add_action( 'retrieve_password_message', array( $this, "on_retrieve_password_message" ), 10, 4 ); 
+
+	}
+
+	/*
+	
+	user requests a reset password link
+
+		$errors = apply_filters( 'wp_login_errors', $errors, $redirect_to );
+
+		elseif	( isset($_GET['checkemail']) && 'confirm' == $_GET['checkemail'] )
+			$errors->add('confirm', __('Check your e-mail for the confirmation link.'), 'message');
+
+	*/
+	function on_retrieve_password_message( $message, $key, $user_login, $user_data ) {
+		
+		if ( isset( $_GET["action"] ) && ( "lostpassword" == $_GET["action"] ) ) {
+		
+			$context = array(
+				"_initiator" => SimpleLoggerLogInitiators::WEB_USER,
+				"message" => $message,
+				"key" => $key,
+				"user_login" => $user_login,
+				"user_data" => $user_data,
+				"GET" => $_GET,
+				"POST" => $_POST
+			);
+
+			if ( is_a($user_data, "WP_User") ) {
+
+				$context["user_email"] = $user_data->user_email;
+
+			}
+
+			$this->noticeMessage( "user_requested_password_reset_link", $context );
+
+		}
+
+		return $message;
+
+	}
+
+	/**
+	 * Fired before the password reset procedure is validated.
+	 *
+	 * @param object           $errors WP Error object.
+	 * @param WP_User|WP_Error $user   WP_User object if the login and reset key match. WP_Error object otherwise.
+	 */
+	function on_validate_password_reset( $errors, $user ) {
+
+		/*
+		User visits the forgot password screen
+		$errors object are empty
+		$user contains a user
+		$_post is empty
+
+		User resets password
+		$errors empty
+		$user user object
+		$_post 
+
+		*/
+
+		$context = array();
+
+		if ( is_a( $user, "WP_User") ) {
+			$context["_initiator"] = SimpleLoggerLogInitiators::WP_USER;
+			$context["_user_id"] = $user->ID;
+			$context["_user_login"] = $user->user_login;
+			$context["_user_email"] = $user->user_email;
+		}
+
+		if ( isset($_POST['pass1']) && $_POST['pass1'] != $_POST['pass2'] ) {
+			
+			// $errors->add( 'password_reset_mismatch', __( 'The passwords do not match.' ) );
+			// user failed to reset password
+
+		}
+
+
+		if ( ( ! $errors->get_error_code() ) && isset( $_POST['pass1'] ) && !empty( $_POST['pass1'] ) ) {
+			
+			// login_header( __( 'Password Reset' ), '<p class="message reset-pass">' . __( 'Your password has been reset.' ) . ' <a href="' . esc_url( 
+			$this->infoMessage( "user_password_reseted", $context );
+
+
+		}
+
+
 	}
 
 	/**
@@ -192,7 +286,7 @@ class SimpleUserLogger extends SimpleLogger {
 			"deleted_user_login" => $wp_user_to_delete->user_login,
 			"deleted_user_role" => $role,
 			"reassign_user_id" => $reassign,
-			"server_http_user_agent" => $_SERVER["HTTP_USER_AGENT"],
+			"server_http_user_agent" => isset( $_SERVER["HTTP_USER_AGENT"] ) ? $_SERVER["HTTP_USER_AGENT"] : null
 		);
 
 		// Let's log this as a little bit more significant that just "message"
@@ -302,7 +396,7 @@ class SimpleUserLogger extends SimpleLogger {
 			$context["_user_id"] = $user_obj->ID;
 			$context["_user_login"] = $user_obj->user_login;
 			$context["_user_email"] = $user_obj->user_email;
-			$context["server_http_user_agent"] = $_SERVER["HTTP_USER_AGENT"];
+			$context["server_http_user_agent"] = isset( $_SERVER["HTTP_USER_AGENT"] ) ? $_SERVER["HTTP_USER_AGENT"] : null;
 
 			$this->infoMessage("user_logged_in", $context);
 
@@ -339,7 +433,7 @@ class SimpleUserLogger extends SimpleLogger {
 			"edited_user_id" => $wp_user_edited->ID,
 			"edited_user_email" => $wp_user_edited->user_email,
 			"edited_user_login" => $wp_user_edited->user_login,
-			"server_http_user_agent" => $_SERVER["HTTP_USER_AGENT"],
+			"server_http_user_agent" => isset( $_SERVER["HTTP_USER_AGENT"] ) ? $_SERVER["HTTP_USER_AGENT"] : null
 		);
 
 		$this->infoMessage("user_updated_profile", $context);
@@ -368,7 +462,7 @@ class SimpleUserLogger extends SimpleLogger {
 			"created_user_email" => $wp_user_added->user_email,
 			"created_user_login" => $wp_user_added->user_login,
 			"created_user_role" => $role,
-			"server_http_user_agent" => $_SERVER["HTTP_USER_AGENT"],
+			"server_http_user_agent" => isset( $_SERVER["HTTP_USER_AGENT"] ) ? $_SERVER["HTTP_USER_AGENT"] : null
 		);
 
 		$this->infoMessage("user_created", $context);
@@ -395,7 +489,7 @@ class SimpleUserLogger extends SimpleLogger {
 				"login_user_id" => $user->ID,
 				"login_user_email" => $user->user_email,
 				"login_user_login" => $user->user_login,
-				"server_http_user_agent" => $_SERVER["HTTP_USER_AGENT"],
+				"server_http_user_agent" => isset( $_SERVER["HTTP_USER_AGENT"] ) ? $_SERVER["HTTP_USER_AGENT"] : null,
 				//"_occasionsID" => __CLASS__  . '/' . __FUNCTION__ . "/failed_user_login/userid:{$user->ID}"
 				"_occasionsID" => __CLASS__ . '/failed_user_login',
 			);
@@ -454,7 +548,7 @@ class SimpleUserLogger extends SimpleLogger {
 			$context = array(
 				"_initiator" => SimpleLoggerLogInitiators::WEB_USER,
 				"failed_login_username" => $username,
-				"server_http_user_agent" => $_SERVER["HTTP_USER_AGENT"],
+				"server_http_user_agent" => isset( $_SERVER["HTTP_USER_AGENT"] ) ? $_SERVER["HTTP_USER_AGENT"] : null,
 				// count all failed logins to unknown users as the same occasions,
 				// to prevent log being flooded with login/hack attempts
 				// "_occasionsID" => __CLASS__  . '/' . __FUNCTION__

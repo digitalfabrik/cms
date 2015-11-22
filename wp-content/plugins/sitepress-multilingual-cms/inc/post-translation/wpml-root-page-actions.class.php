@@ -239,10 +239,19 @@ class WPML_Root_Page_Actions {
 	}
 }
 
+/**
+ * Checks if the language switcher is to be displayed.
+ * Used to check if the displayed page is a root page and the switcher is to be hidden because of it.
+ *
+ * @return bool true if the switcher is to be hidden
+ */
 function wpml_home_url_ls_hide_check() {
-	global $sitepress_settings, $sitepress;
+	global $sitepress;
 
-	$hide = $sitepress_settings[ 'language_negotiation_type' ] == 1 && $sitepress_settings[ 'urls' ][ 'directory_for_default_language' ] && $sitepress_settings[ 'urls' ][ 'show_on_root' ] == 'page' && $sitepress_settings[ 'urls' ][ 'hide_language_switchers' ] && isset( $sitepress->ROOT_URL_PAGE_ID ) && $sitepress->ROOT_URL_PAGE_ID == $sitepress_settings[ 'urls' ][ 'root_page' ];
-
-	return $hide;
+	return $sitepress->get_setting( 'language_negotiation_type' ) == 1
+	       && (bool) ( $urls = $sitepress->get_setting( 'urls' ) ) === true
+	       && ! empty( $urls['directory_for_default_language'] )
+	       && isset( $urls['show_on_root'] ) && $urls['show_on_root'] === 'page'
+	       && ! empty( $urls['hide_language_switchers'] )
+	       && WPML_Root_Page::is_current_request_root();
 }
