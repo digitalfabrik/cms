@@ -273,6 +273,8 @@ function SSAPDF_drawAdminPage ()
 				echo 					'<option value="helvetica" selected="selected">Arial / Helvetica</option>';
 				echo 					'<option value="times">Times New Roman</option>';
 				echo 					'<option value="courier">Courier</option>';
+				do_action('fox_add_fonts');
+				//echo					'<option value="dejavusans">dejavusans</option>';
 				echo 				'</select>';
 				echo				'<br clear="left" /><br />';
 				
