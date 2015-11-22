@@ -50,7 +50,7 @@ abstract class WP_REST_Meta_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'create_item' ),
 				'permission_callback' => array( $this, 'create_item_permissions_check' ),
-				'args'                => $this->get_endpoint_args_for_item_schema( true ),
+				'args'                => $this->get_endpoint_args_for_item_schema( WP_REST_Server::CREATABLE ),
 			),
 
 			'schema' => array( $this, 'get_public_item_schema' ),
@@ -76,7 +76,11 @@ abstract class WP_REST_Meta_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'delete_item' ),
 				'permission_callback' => array( $this, 'delete_item_permissions_check' ),
-				'args'                => array(),
+				'args'                => array(
+					'force' => array(
+						'default' => false,
+					),
+				),
 			),
 
 			'schema' => array( $this, 'get_public_item_schema' ),
@@ -236,6 +240,14 @@ abstract class WP_REST_Meta_Controller extends WP_REST_Controller {
 		$parent_column = $this->get_parent_column();
 		$response->add_link( 'about', rest_url( 'wp/' . $this->parent_base . '/' . $data->$parent_column ), array( 'embeddable' => true ) );
 
+		/**
+		 * Filter a meta value returned from the API.
+		 *
+		 * Allows modification of the meta value right before it is returned.
+		 *
+		 * @param array           $response Key value array of meta data: id, key, value.
+		 * @param WP_REST_Request $request  Request used to generate the response.
+		 */
 		return apply_filters( 'rest_prepare_meta_value', $response, $request );
 	}
 
@@ -316,6 +328,15 @@ abstract class WP_REST_Meta_Controller extends WP_REST_Controller {
 		) );
 		$response = $this->get_item( $request );
 
+		/**
+		 * Fires after meta is added to an object or updated via the REST API.
+		 *
+		 * @param array           $value    The inserted meta data.
+		 * @param WP_REST_Request $request  The request sent to the API.
+		 * @param bool            $creating True when adding meta, false when updating.
+		 */
+		do_action( 'rest_insert_meta', $value, $request, false );
+
 		return rest_ensure_response( $response );
 	}
 
@@ -380,6 +401,9 @@ abstract class WP_REST_Meta_Controller extends WP_REST_Controller {
 		$data = $response->get_data();
 		$response->header( 'Location', rest_url( $this->parent_base . '/' . $parent_id . '/meta/' . $data['id'] ) );
 
+		/* This action is documented in lib/endpoints/class-wp-rest-meta-controller.php */
+		do_action( 'rest_insert_meta', $data, $request, true );
+
 		return $response;
 	}
 
@@ -423,6 +447,13 @@ abstract class WP_REST_Meta_Controller extends WP_REST_Controller {
 		if ( ! delete_metadata_by_mid( $this->parent_type, $mid ) ) {
 			return new WP_Error( 'rest_meta_could_not_delete', __( 'Could not delete meta.' ), array( 'status' => 500 ) );
 		}
+
+		/**
+		 * Fires after a meta value is deleted via the REST API.
+		 *
+		 * @param WP_REST_Request $request The request sent to the API.
+		 */
+		do_action( 'rest_delete_meta', $request );
 
 		return rest_ensure_response( array( 'message' => __( 'Deleted meta' ) ) );
 	}

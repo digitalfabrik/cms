@@ -353,7 +353,7 @@ function wpml_link_to_element_filter(
  * @param bool        $return_original_if_missing
  * @param null|string $ulanguage_code
  *
- * @return null|string
+ * @return null|int
  */
 function icl_object_id( $element_id, $element_type = 'post', $return_original_if_missing = false, $ulanguage_code = null ) {
 
@@ -1015,10 +1015,10 @@ function icl_language_selector_footer() {
  * @since 3.2
  * Will use the language selector include configuration from the WPML -> Language admin screen
  * @use \SitePress::api_hooks
- * example: do_action('wpml_add_footer_language_selector');
+ * example: do_action('wpml_footer_language_selector');
  */
-function wpml_add_footer_language_selector_filter() {
-	return add_action( 'wpml_add_footer_language_selector', array( 'SitePressLanguageSwitcher', 'language_selector_footer' ) );
+function wpml_footer_language_selector_action() {
+	echo SitePressLanguageSwitcher::get_language_selector_footer();
 }
 
 /**
@@ -1070,13 +1070,11 @@ function wpml_the_language_input_field() {
  * @return string|null HTML input field or null
  * @use \SitePress::api_hooks
  */
-function wpml_get_language_input_field_filter() {
+function wpml_get_language_input_field_action() {
 	global $sitepress;
 	if ( isset( $sitepress ) ) {
-		return "<input type='hidden' name='lang' value='" . $sitepress->get_current_language() . "' />";
+		echo "<input type='hidden' name='lang' value='" . $sitepress->get_current_language() . "' />";
 	}
-
-	return null;
 }
 
 /**

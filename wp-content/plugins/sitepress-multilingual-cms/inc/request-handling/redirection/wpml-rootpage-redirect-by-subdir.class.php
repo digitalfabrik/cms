@@ -1,6 +1,4 @@
 <?php
-
-require_once ICL_PLUGIN_PATH . '/inc/url-handling/wpml-root-page.class.php';
 require_once ICL_PLUGIN_PATH . '/inc/request-handling/redirection/wpml-redirect-by-subdir.class.php';
 
 class WPML_Rootpage_Redirect_By_Subdir extends WPML_Redirect_By_Subdir {

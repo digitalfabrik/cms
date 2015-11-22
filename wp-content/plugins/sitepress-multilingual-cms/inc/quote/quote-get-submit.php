@@ -7,7 +7,7 @@
  * Thickbox form submit process
  */
 global $sitepress, $sitepress_settings, $wpdb;
-
+// @todo: This does nothing at this point it seems, it was calling a method on an interface ...
 /**
  * Save for later
  */
@@ -39,11 +39,6 @@ if (isset($data['submit-for-later'])) {
 	$wc_description = implode(', ', $wc_description);
 	$language_pairs = array($saved['from'] => $saved['to']);
 
-	echo TranslationProxy_Interface::get_quote_form(
-		$sitepress_settings,
-		$language_pairs,
-		$word_count,
-		$wc_description );
 	echo '<script type="text/javascript">iclShowQuoteResult();</script>';
 	exit;
 }

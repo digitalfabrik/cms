@@ -357,7 +357,7 @@
             var split = ref.split('/');
             var repo        = split[0];
 
-            if(typeof split[1] != 'undefiend'){
+            if(typeof split[1] != 'undefined'){
                 var package     = split[1];
                 var repo_element = jQuery('#repository-' + repo);
 

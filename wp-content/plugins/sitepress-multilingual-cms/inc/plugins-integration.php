@@ -2,7 +2,7 @@
 
 add_action('plugins_loaded', 'wpml_plugins_integration_setup', 10);
 
-
+//Todo: do not include files: move to autoloaded classes
 function wpml_plugins_integration_setup(){
     // WPSEO XML Sitemaps integration
     if ( defined( 'WPSEO_VERSION' ) && version_compare( WPSEO_VERSION, '1.0.3', '>=' ) ){

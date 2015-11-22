@@ -3,8 +3,8 @@ Contributors: shinephp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=vladimir%40shinephp%2ecom&lc=RU&item_name=ShinePHP%2ecom&item_number=User%20Role%20Editor%20WordPress%20plugin&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: user, role, editor, security, access, permission, capability
 Requires at least: 4.0
-Tested up to: 4.3.1
-Stable tag: 4.19.3
+Tested up to: 4.4
+Stable tag: 4.20.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,13 @@ If you wish to check available translations or help with translation visit this 
 https://translate.wordpress.org/projects/wp-plugins/user-role-editor/
 
 == Changelog ==
+= [4.20.1] 15.11.2015 =
+* Fix: "Primary default role" drop-down menu was not shown at "Settings - User Role Editor - Default Roles" tab for WordPress single site installation.
+
+= [4.20] 15.11.2015 =
+* "Additional options" section was added to the user role editor page. Currently it contains the only "Hide admin bar". The list of options may be customized/extended by developers via "ure_role_additonal_options" filter.
+* "Default Role" button is hidden to not duplicate functionality. Use "Settings - User Role Editor - Default Roles" tab instead. This button is available only for the single sites of WP multisite now.
+* Code restructure, optimization: administrator protection parts extracted to the separate class.
 
 = [4.19.3] 14.10.2015 =
 * Fix: minor CSS change.

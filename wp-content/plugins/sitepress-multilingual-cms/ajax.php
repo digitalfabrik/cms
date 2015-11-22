@@ -5,10 +5,6 @@
  */
 global $wpdb, $sitepress, $sitepress_settings;
 
-@header( 'Content-Type: ' . get_option( 'html_type' ) . '; charset=' . get_option( 'blog_charset' ) );
-@header( "Cache-Control: no-cache, must-revalidate" );
-@header( "Expires: Sat, 16 Aug 1980 05:00:00 GMT" );
-
 $request = filter_input( INPUT_POST, 'icl_ajx_action' );
 $request = $request ? $request : filter_input( INPUT_GET, 'icl_ajx_action' );
 switch ( $request ) {
@@ -104,33 +100,6 @@ switch($request){
         $this->save_settings($iclsettings);
         echo '1|';
        break;
-    case 'icl_save_language_negotiation_type':
-
-	    $filtered_icl_language_negotiation_type = filter_input( INPUT_POST, 'icl_language_negotiation_type', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
-	    $filtered_language_domains              = filter_input( INPUT_POST, 'language_domains', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY | FILTER_NULL_ON_FAILURE  );
-	    $filtered_use_directory                 = filter_input( INPUT_POST, 'use_directory', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
-	    $filtered_show_on_root                  = filter_input( INPUT_POST, 'show_on_root', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
-	    $filtered_root_html_file_path           = filter_input( INPUT_POST, 'root_html_file_path', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
-	    $filtered_hide_language_switchers       = filter_input( INPUT_POST, 'hide_language_switchers', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
-
-        $iclsettings['language_negotiation_type'] = $filtered_icl_language_negotiation_type;
-        if( !empty( $filtered_language_domains ) ) {
-            $iclsettings['language_domains'] = $filtered_language_domains;
-        }
-        if($iclsettings['language_negotiation_type'] == 1){
-            $iclsettings['urls']['directory_for_default_language'] = $filtered_use_directory !== false ? $filtered_use_directory : 0;
-            if($iclsettings['urls']['directory_for_default_language']){
-                $iclsettings['urls']['show_on_root']   = $filtered_use_directory ? $filtered_show_on_root : '';
-                if($iclsettings['urls']['show_on_root'] == 'html_file'){
-                    $iclsettings['urls']['root_html_file_path'] = $filtered_root_html_file_path ? $filtered_root_html_file_path : '';
-                }else{
-                    $iclsettings['urls']['hide_language_switchers'] = $filtered_hide_language_switchers !=- false ? $filtered_hide_language_switchers : 0;
-                }
-            }
-        }
-        $this->save_settings($iclsettings);
-        echo 1;
-        break;
     case 'icl_save_language_switcher_options':
         $_POST   = stripslashes_deep( $_POST );
 
@@ -178,9 +147,7 @@ switch($request){
         if (isset($_POST['icl_lang_sel_stype']))
             $iclsettings['icl_lang_sel_stype'] = $_POST['icl_lang_sel_stype'];
 
-        if($iclsettings['icl_lang_sel_type'] == 'list'){
-            $iclsettings['icl_lang_sel_orientation'] = $_POST['icl_lang_sel_orientation'];
-        }
+			$iclsettings['icl_lang_sel_orientation'] = $_POST['icl_lang_sel_orientation'];
 
         if (isset($_POST['icl_lang_sel_footer']))
             $iclsettings['icl_lang_sel_footer'] = 1;
@@ -267,6 +234,7 @@ switch($request){
         $iclsettings['sync_comment_status'] = @intval($_POST['icl_sync_comment_status']);
         $iclsettings['sync_ping_status'] = @intval($_POST['icl_sync_ping_status']);
         $iclsettings['sync_sticky_flag'] = @intval($_POST['icl_sync_sticky_flag']);
+        $iclsettings['sync_password'] = @intval($_POST['icl_sync_password']);
         $iclsettings['sync_private_flag'] = @intval($_POST['icl_sync_private_flag']);
         $iclsettings['sync_post_format'] = @intval($_POST['icl_sync_post_format']);
         $iclsettings['sync_delete'] = @intval($_POST['icl_sync_delete']);
@@ -280,11 +248,6 @@ switch($request){
     case 'language_domains':
         $language_domains_helper = new WPML_Language_Domains( $this );
         echo $language_domains_helper->render_domains_options();
-        break;
-    case 'validate_language_domain':
-        $language_domains_helper = new WPML_Language_Domains( $this );
-        $posted_url = filter_input(INPUT_POST, 'url');
-        echo $language_domains_helper->validate_domain_networking($posted_url);
         break;
     case 'icl_theme_localization_type':
         $icl_tl_type = @intval($_POST['icl_theme_localization_type']);

@@ -50,16 +50,20 @@ class SitePressLanguageSwitcher {
 			add_action( 'wp_head', array( $this, 'custom_language_switcher_style' ) );
 		}
 
-		if ( ! empty( $sitepress_settings[ 'display_ls_in_menu' ] ) && ( ! function_exists( 'wpml_home_url_ls_hide_check' ) || ! wpml_home_url_ls_hide_check() ) ) {
-			add_filter( 'wp_nav_menu_items', array( $this, 'wp_nav_menu_items_filter' ), 10, 2 );
-			add_filter( 'wp_page_menu', array( $this, 'wp_page_menu_filter' ), 10, 2 );
-		}
+		add_filter( 'wp_nav_menu_items', array( $this, 'wp_nav_menu_items_filter' ), 10, 2 );
+		add_filter( 'wp_page_menu', array( $this, 'wp_page_menu_filter' ), 10, 2 );
 	}
 
 	function language_selector_widget_init() {
 		register_widget( 'ICL_Language_Switcher' );
 		add_action( 'template_redirect', 'icl_lang_sel_nav_ob_start', 0 );
 		add_action( 'wp_head', 'icl_lang_sel_nav_ob_end' );
+	}
+
+	private function must_filter_menus() {
+		global $sitepress_settings;
+
+		return ! empty( $sitepress_settings[ 'display_ls_in_menu' ] ) && ( ! function_exists( 'wpml_home_url_ls_hide_check' ) || ! wpml_home_url_ls_hide_check() );
 	}
 
 	function set_widget() {
@@ -172,7 +176,7 @@ class SitePressLanguageSwitcher {
 		$languages                = array();
 
 		if ( ! function_exists( 'wpml_home_url_ls_hide_check' ) || ! wpml_home_url_ls_hide_check() ) {
-			$languages = $sitepress->footer_preview ? icl_get_languages() : $sitepress->get_ls_languages();
+			$languages = $sitepress->get_ls_languages();
 		}
 
 		if ( ! empty( $languages ) ) {
@@ -579,17 +583,18 @@ class SitePressLanguageSwitcher {
 	}
 
 	function wp_page_menu_filter( $items, $args ) {
-		$obj_args = new stdClass();
-		foreach ( $args as $key => $value ) {
-			$obj_args->$key = $value;
+		if($this->must_filter_menus()) {
+			$obj_args = new stdClass();
+			foreach ( $args as $key => $value ) {
+				$obj_args->$key = $value;
+			}
+
+			$items = str_replace( "</ul></div>", "", $items );
+
+			$items = apply_filters( 'wp_nav_menu_items', $items, $obj_args );
+
+			$items .= "</ul></div>";
 		}
-
-		$items = str_replace( "</ul></div>", "", $items );
-
-		$items = apply_filters( 'wp_nav_menu_items', $items, $obj_args );
-
-		$items .= "</ul></div>";
-
 		return $items;
 	}
 
@@ -602,7 +607,7 @@ class SitePressLanguageSwitcher {
 	 * @return string
 	 */
 	function wp_nav_menu_items_filter( $items, $args ) {
-		if ( $this->menu_has_ls( $args ) ) {
+		if ( $this->must_filter_menus() && $this->menu_has_ls( $args ) ) {
 			$items .= $this->get_menu_ls_html( $args );
 		}
 
@@ -624,7 +629,7 @@ class SitePressLanguageSwitcher {
 		$languages        = $sitepress->get_ls_languages();
 
 		$items = '';
-		$items .= '<li class="menu-item menu-item-language menu-item-language-current">';
+		$items .= '<li class="menu-item menu-item-language menu-item-language-current menu-item-has-children">';
 		$items .= isset( $args->before ) ? $args->before : '';
 		$items .= '<a href="#" onclick="return false">';
 		$items .= isset( $args->link_before ) ? $args->link_before : '';
@@ -678,19 +683,21 @@ class SitePressLanguageSwitcher {
 	private function get_menu_locations_and_ids( $args ) {
 		global $sitepress;
 
-		$default_language = $sitepress->get_default_language();
-		$args->menu       = isset( $args->menu->term_id ) ? $args->menu->term_id : $args->menu;
-		$abs_menu_id      = apply_filters( 'translate_object_id', $args->menu, 'nav_menu', false, $default_language );
-		$settings_menu_id = apply_filters( 'translate_object_id',
-										   $sitepress->get_setting( 'menu_for_ls' ),
-										   'nav_menu',
-										   false,
-										   $default_language );
-		$menu_locations   = get_nav_menu_locations();
-		if ( ! $abs_menu_id && $settings_menu_id ) {
-			foreach ( $menu_locations as $location => $id ) {
-				if ( $id != $settings_menu_id ) {
-					unset( $menu_locations[ $location ] );
+		$abs_menu_id = false;
+		$settings_menu_id = false;
+		$menu_locations = array();
+
+		if(isset($args->menu)) {
+			$default_language = $sitepress->get_default_language();
+			$args->menu       = isset( $args->menu->term_id ) ? $args->menu->term_id : $args->menu;
+			$abs_menu_id      = apply_filters( 'translate_object_id', $args->menu, 'nav_menu', false, $default_language );
+			$settings_menu_id = apply_filters( 'translate_object_id', $sitepress->get_setting( 'menu_for_ls' ), 'nav_menu', false, $default_language );
+			$menu_locations   = get_nav_menu_locations();
+			if ( ! $abs_menu_id && $settings_menu_id ) {
+				foreach ( $menu_locations as $location => $id ) {
+					if ( $id != $settings_menu_id ) {
+						unset( $menu_locations[ $location ] );
+					}
 				}
 			}
 		}
@@ -701,7 +708,8 @@ class SitePressLanguageSwitcher {
 	private function render_ls_sub_items( $languages ) {
 		global $sitepress;
 
-		$ls_orientation   = $sitepress->get_setting( 'icl_lang_sel_orientation' );
+		$ls_type   = $sitepress->get_setting( 'icl_lang_sel_type' );
+		$ls_orientation   = ($ls_type == 'list') && $sitepress->get_setting( 'icl_lang_sel_orientation' );
 		$menu_is_vertical = ! $ls_orientation || $ls_orientation === 'vertical';
 
 		$sub_items = '';

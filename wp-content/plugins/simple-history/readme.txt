@@ -4,7 +4,7 @@ Donate link: http://eskapism.se/sida/donate/
 Tags: history, log, changes, changelog, audit, trail, pages, attachments, users, cms, dashboard, admin, syslog, feed, activity, stream, audit trail, brute-force
 Requires at least: 3.6.0
 Tested up to: 4.3
-Stable tag: 2.2.4
+Stable tag: 2.4
 
 View changes made by users within WordPress. See who created a page, uploaded an attachment or approved an comment, and more.
 
@@ -32,6 +32,23 @@ info about added, updated or removed users
 see when a user login & logout. Also see when a user fails to login (good way to catch brute-force login attempts).
 * **Failed user logins**<br>
 see when someone has tried to log in, but failed. The log will then include ip address of the possible hacker.
+* **Menu edits**
+* **Option screens**<br>
+view details about changes made in the differnt settings sections of WordPress. Things like changes to the site title and the permalink structure will be logged.
+
+#### Support for third party plugins
+
+By default Simple History comes with support for these third party plugins:
+
+**User Switching**  
+The [User Switching plugin](https://wordpress.org/plugins/user-switching/) allows you to quickly swap between user accounts in WordPress at the click of a button. Simple History will log each user switch being made.
+
+**Enable Media Replace**  
+The [Enable Media Replace plugin](https://wordpress.org/plugins/enable-media-replace/) allows you to replace a file in your media library by uploading a new file in its place. Simple history will log details about the file being replaced and details about the new file.
+
+Support for more plugins are coming.
+
+#### RSS feed available
 
 There is also a **RSS feed of changes** available, so you can keep track of the changes made via your favorite RSS reader on your phone, on your iPad, or on your computer.
 
@@ -108,45 +125,69 @@ https://github.com/bonny/WordPress-Simple-History
 are of type post and pages and media (i.e. images & other uploads), and only events
 initiated by a specific user.
 
-2. Events with different severity – Simple History uses the log levels specified in the PHP PSR-3 standard.
+2. The __Post Quick Diff__ feature will make it quick and easy for a user of a site to see what updates other users are have done to posts and pages.
 
-3. Events have context with extra details - Each logged event can include useful rich formatted extra information. For example: a plugin install can contain author info and a the url to the plugin, and an uploaded image can contain a thumbnail of the image.
+3. Events with different severity – Simple History uses the log levels specified in the PHP PSR-3 standard.
 
-4. Click on the IP address of an entry to view the location of for example a failed login attempt.
+4. Events have context with extra details - Each logged event can include useful rich formatted extra information. For example: a plugin install can contain author info and a the url to the plugin, and an uploaded image can contain a thumbnail of the image.
+
+5. Click on the IP address of an entry to view the location of for example a failed login attempt.
+
+6. See even more details about a logged event (by clicking on the date and time of the event).
 
 
 == Changelog ==
 
 ## Changelog
 
+= 2.4 (November 2015) =
+
+- Added: Now logs when a user changes their password using the "reset password" link.
+- Added: Now logs when a user uses the password reset form.
+- Added: New method `register_dropin` that can be used to add dropins.
+- Added: New action `simple_history/add_custom_dropin`.
+- Added: Example on how to add an external dropin: [example-dropin.php](https://github.com/bonny/WordPress-Simple-History/blob/master/examples/example-dropin.php).
+- Added: "Last day" added to filter, because a brute force attack can add so many logs that it's not possible to fetch a whole week.
+- Changed: Filter `simple_history/log/do_log` now pass 5 arguments instead of 3. Before this update in was not possible for multiple add_action()-calls to use this filter, because you would not now if any other code had canceled it and so on. If you have been using this filter you need to modify your code.
+- Changed: When hovering the time of an event in the log, the date of the event displays in both local time and GMT time. Hopefully makes it easier for admins in different timezones that work together on a site to understand when each event happened. Fixes https://github.com/bonny/WordPress-Simple-History/issues/84.
+- Fixed: Line height was a bit tight on the dashboard. Also: the margin was a tad to small for the first logged event on the dashboard.
+- Fixed: Username was not added correctly to failed login attempts when using plugin Captcha on Login + it would still show that a user logged out sometimes when a bot/script brute force attacked a site by only sending login and password and not the captcha field.
+
+= 2.3.1 (October 2015) =
+
+- Fixed: Hopefully fixed the wrong relative time, as reported here: https://wordpress.org/support/topic/wrong-reporting-time.
+- Changed: The RSS-feed with updates is now disabled by default for new installs. It is password protected, but some users felt that is should be optional to activate it. And now it is! Thanks to https://github.com/guillaumemolter for adding this feature.
+- Fixed: Failed login entries when using plugin [Captcha on Login](https://wordpress.org/plugins/captcha-on-login/) was reported as "Logged out" when they really meant "Failed to log in". Please note that this was nothing that Simple History did wrong, it was rather Captcha on Login that manually called `wp_logout()` each time a user failed to login. Should fix all those mystery "Logged out"-entried some of you users had.
+- Added: Filter `simple_history/log/do_log` that can be used to shortcut the log()-method.
+- Updated: German translation updated.
+
+= 2.3 (October 2015) =
+
+- Added: The title of the browser tab with Simple History open will now show the number of new and unread events available. Nice feature to have if you keep a tab with the Simple History log open but in the background: now you can see directly in the title if new events are available. Such small change. Very much nice.
+- Added: If the AJAX call to fetch the log failed, a message now appears telling the user that something went wrong. Also, the output from the server is displayed so they can get a hint of what's going wrong. Hopefully this will reduce the number of support requests that is caused by other plugins.
+- Fixed: Edited posts/pages/custom post types does not get a linked title unless the user viewing the log has edit rights.
+- Fixed: Another try to fix the notice error here: https://wordpress.org/support/topic/simplehistoryphp-creates-debug-entries.
+- Updated: Danish translation updated.
+- Updated: POT file updated.
+
 = 2.2.4 (September 2015) =
 
-- Added: Basic support for plugin [https://wordpress.org/plugins/ultimate-member/](Ultimate Member), so users logging in using the plugin will now be logged in Simple History. Fixes https://wordpress.org/support/topic/compatibility-with-ultimate-member.
-
+- Added: Basic support for plugin [Ultimate Member](https://wordpress.org/plugins/ultimate-member/), so users logging in using the plugin will now be logged in Simple History. Fixes https://wordpress.org/support/topic/compatibility-with-ultimate-member.
 - Added: Filter `simple_history/logger/interpolate/context` that can be used to modify the variables sent to the message template.
-
 - Changed: Remove "type" key from context detail table, because it's an old an unused column.
-
 - Changed: During a first install the plugin now creates a few less columns than before (some columns where left from version 1 of the plugin).
-
 - Changed: Don't show the "translate this plugin" metabox for any english talking locale.
-
 - Changed: Don't show the GitHub metabox.
-
 - Fixed: If the plugin is deleted (but why?!) then the context table is also removed now.
-
 - Behind the scenes: More unit tests! Hopefully more nasty things will get caught before releasing new versions of the plugin.
-
 
 = 2.2.3 (September 2015) =
 
 - Fixed: On new installs the database tables was not created correctly and new events could not be logged.
 
-
 = 2.2.2 (September 2015) =
 
 - Fixed: Logging stopped working for languages other then English. Sorry about that!
-
 - Fixed: When running unit tests for a site where Simple History is a must use plugin it sometimes tried to create tables and add columns more then once. Now uses `if not exists` and similar to only try to create the tables if they not already exists.
 
 = 2.2.1 (September 2015) =
@@ -156,9 +197,7 @@ initiated by a specific user.
 = 2.2 (September 2015) =
 
 - Added: Support for plugin [User Switching](https://wordpress.org/plugins/user-switching/). The event log will show when a user switched to another user, when they switched back, or when they switched off.
-
 - Added: Support for plugin [Enable Media Replace](https://wordpress.org/plugins/enable-media-replace/). Whenever a user replaces an attachment with a new, you will now know about it and also see the name of both the old and the new attachment. Awesome!
-
 - Fixed: Mouse over (:hover state) on buttons no longer use blue background. Now works much better with admin themes other than the standard one. Fixes https://wordpress.org/support/topic/pagination-button-design.
 
 = 2.1.7 (September 2015) =

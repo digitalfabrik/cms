@@ -83,6 +83,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML extends WPML_SP_And_PT_User {
 			<select name="icl_post_language" id="icl_post_language" <?php echo $disabled_language; ?>>
 				<?php
 				$active_langs = $this->sitepress->get_active_languages();
+				$active_langs = apply_filters('wpml_active_languages_access', $active_langs, array( 'action'=>'edit' ));
 				$translations = $this->get_translations();
 				foreach ( $active_langs as $code => $lang ) {
 					if ( ( $code != $this->selected_language && ! in_array( $code, $this->allowed_languages ) )
@@ -173,7 +174,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML extends WPML_SP_And_PT_User {
 		?>
 		<div id="translation_of_wrap">
 			<?php
-			if ( $this->is_a_translation() ) {
+			if ( $this->is_a_translation() || ! $this->has_translations() ) {
 				$disabled = disabled( false, $this->is_edit_action() && $this->get_trid(), false );
 				?>
 
@@ -232,6 +233,10 @@ class WPML_Meta_Boxes_Post_Edit_HTML extends WPML_SP_And_PT_User {
 		return ! $this->is_original && ( $this->selected_language != $this->source_language || ( isset( $_GET[ 'lang' ] ) && $_GET[ 'lang' ] != $this->source_language ) ) && 'all' != $this->sitepress->get_current_language();
 	}
 
+	private function has_translations() {
+		return (bool) $this->get_translations();
+	}
+
 	private function render_translation_of_options() {
 		$this->init_translation_of_options();
 		foreach ( $this->translation_of_options as $option_value => $option_data ) {
@@ -284,6 +289,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML extends WPML_SP_And_PT_User {
 			</tr>
 			<?php
 			$active_langs = $this->sitepress->get_active_languages();
+			$active_langs = apply_filters('wpml_active_languages_access', $active_langs, array( 'action'=>'edit', 'post_type'=>$this->post_type_label, 'post_id' => $this->post->ID ));
 			foreach ( $active_langs as $lang ) {
 				$this->translate_option( $lang, $status_display );
 			}
@@ -353,9 +359,7 @@ class WPML_Meta_Boxes_Post_Edit_HTML extends WPML_SP_And_PT_User {
 			$element_id = $this->post_translation->get_element_id( $this->source_language,
 				                                           $this->trid );
 		}
-		if ( $this->handle_as_original() || ! $this->trid ) {
-			$this->add_translation_of_option( 'none', __( '--None--', 'sitepress' ), false );
-		}
+		$this->add_translation_of_option( 'none', __( '--None--', 'sitepress' ), false );
 		if ( $element_id && ! isset( $_GET['icl_ajx'] ) ) {
 			$element_title = $this->get_element_title( $element_id );
 			$this->add_translation_of_option( $element_id, $element_title, true );

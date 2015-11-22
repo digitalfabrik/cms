@@ -1,6 +1,6 @@
 <?php
 
-class WPML_Term_Translation_Utils {
+class WPML_Term_Translation_Utils extends WPML_SP_User {
 
 	/**
 	 * Duplicates all terms, that exist in the given target language,
@@ -39,9 +39,21 @@ class WPML_Term_Translation_Utils {
 
 			foreach ( $taxonomies as $tax ) {
 				$terms_on_original = wp_get_object_terms ( $original_post_id, $tax );
-				/** @var int[] $translated_terms translated term_ids */
-				$translated_terms = $this->get_translated_term_ids ( $terms_on_original, $lang, $tax, $duplicate );
-				wp_set_object_terms ( $translated_post_id, $translated_terms, $tax );
+				
+				if ( ! $this->sitepress->is_translated_taxonomy( $tax ) ) {
+					if ( $this->sitepress->get_setting( 'sync_post_taxonomies' ) ) {
+						// Taxonomy is not translated so we can just copy from the original
+						foreach ( $terms_on_original as $key => $term ) {
+							$terms_on_original[ $key ] = $term->term_id;
+						}
+						wp_set_object_terms ( $translated_post_id, $terms_on_original, $tax );
+					}
+				} else {
+				
+					/** @var int[] $translated_terms translated term_ids */
+					$translated_terms = $this->get_translated_term_ids ( $terms_on_original, $lang, $tax, $duplicate );
+					wp_set_object_terms ( $translated_post_id, $translated_terms, $tax );
+				}
 			}
 		}
 		clean_object_term_cache ( $original_post_id, get_post_type ( $original_post_id ) );

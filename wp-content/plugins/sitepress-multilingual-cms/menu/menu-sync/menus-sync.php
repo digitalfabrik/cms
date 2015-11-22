@@ -18,6 +18,7 @@ foreach ( $active_languages as $code => $lang ) {
 <div class="wrap">
 <div id="icon-wpml" class="icon32"><br/></div>
 <h2><?php echo __( 'WP Menus Sync', 'sitepress' ) ?></h2>
+<p><?php echo sprintf( __( 'Menu synchronization will sync the menu structure from the default language of %s to the secondary languages.', 'sitepress' ), $def_lang[ 'display_name' ] ); ?></p>
 
 <br/>
 <?php
@@ -154,7 +155,7 @@ if ( $icl_menus_sync->is_preview ) {
 									?>
 									<input type="text" name="sync[menu_translations][<?php echo $menu_id ?>][<?php echo $l[ 'code' ] ?>]" class="icl_msync_add" value="<?php
 									echo esc_attr( $menu[ 'name' ] ) . ' - ' . $l[ 'display_name' ] ?>"/>
-									<small><?php _e( 'Auto-generated title. Edit to change.', 'sitepress' ) ?></small>
+									<small><?php _e( 'Auto-generated title. Click to edit.', 'sitepress' ) ?></small>
 									<input type="hidden" name="sync[menu_options][<?php echo $menu_id ?>][<?php echo $l[ 'code' ] ?>][auto_add]"
 																				value=""/>
 								<?php
@@ -188,7 +189,7 @@ if ( $icl_menus_sync->is_preview ) {
 					  style="display:none"
 					  class="icl-admin-message-warning"
 					  data-max_input_vars="<?php echo ini_get( 'max_input_vars' ); ?>">
-					<?php _e( 'The menus on this page may not sync because it requires more input variables. Please modify the <strong>max_input_vars</strong> setting in your php.ini or .htaccess files to <strong>!NUM!</strong> or more.', 'siteprss'); ?>
+					<?php _e( 'The menus on this page may not sync because it requires more input variables. Please modify the <strong>max_input_vars</strong> setting in your php.ini or .htaccess files to <strong>!NUM!</strong> or more.', 'sitepress'); ?>
 				</span>
 			<?php
 			} else {

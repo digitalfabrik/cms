@@ -88,7 +88,7 @@ class WPML_Term_Translation extends WPML_Element_Translation {
 
 		if ( ! isset( $this->ttids ) || ! isset( $this->term_ids ) ) {
 			$data           = $this->wpdb->get_results( "	SELECT t.element_id, tax.term_id, tax.taxonomy
-													 {$this->element_join}
+													 " . $this->get_element_join() . "
 													 JOIN {$this->wpdb->terms} terms
 													  ON terms.term_id = tax.term_id
 													 WHERE tax.term_id != tax.term_taxonomy_id",

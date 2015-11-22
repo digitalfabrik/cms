@@ -44,7 +44,7 @@ class SimpleLogger {
 	 * Constructor. Remember to call this as parent constructor if making a childlogger
 	 * @param $simpleHistory history class  objectinstance
 	 */
-	public function __construct($simpleHistory) {
+        public function __construct( $simpleHistory = null ) {
 
 		global $wpdb;
 
@@ -119,7 +119,7 @@ class SimpleLogger {
 	 * @param array $context
 	 * @param array $row Currently not always passed, because loggers need to be updated to support this...
 	 */
-	function interpolate($message, $context = array(), $row = null) {
+	function interpolate( $message, $context = array(), $row = null ) {
 
 		if ( ! is_array( $context ) ) {
 			return $message;
@@ -135,10 +135,28 @@ class SimpleLogger {
 		// Build a replacement array with braces around the context keys
 		$replace = array();
 		foreach ( $context as $key => $val ) {
+
+			// Both key and val must be strings
+			if ( ! is_string( $key ) || ! is_string( $val ) ) {
+				continue;
+			}
+
 			$replace['{' . $key . '}'] = $val;
+
 		}
 
 		// Interpolate replacement values into the message and return
+		/*
+		if ( ! is_string( $message )) {
+			echo "message:";
+			var_dump($message);exit;
+		}
+		if ( ! is_string( $replace )) {
+			echo "replace";
+			var_dump($replace);exit;
+		}
+		// */
+		
 		return strtr($message, $replace);
 
 	}
@@ -347,8 +365,13 @@ class SimpleLogger {
 		// http://developers.whatwg.org/text-level-semantics.html#the-time-element
 		$date_html = "";
 		$str_when = "";
-		$date_datetime = new DateTime( $row->date );
 
+		// $row->date is in GMT
+		$date_datetime = new DateTime( $row->date );
+		
+		// Current datetime in GMT
+		$time_current = strtotime( current_time("mysql", 1) );
+	
 		/**
 		 * Filter how many seconds as most that can pass since an
 		 * event occured to show "nn minutes ago" (human diff time-format) instead of exact date
@@ -371,12 +394,12 @@ class SimpleLogger {
 		$time_ago_just_now_max_time = 30;
 		$time_ago_just_now_max_time = apply_filters("simple_history/header_just_now_max_time", $time_ago_just_now_max_time);
 
-		if ( time() - $date_datetime->getTimestamp() <= $time_ago_just_now_max_time ) {
+		if ( $time_current - $date_datetime->getTimestamp() <= $time_ago_just_now_max_time ) {
 
 			// show "just now" if event is very recent
 			$str_when = __("Just now", "simple-history");
 
-		} else if ( time() - $date_datetime->getTimestamp() > $time_ago_max_time ) {
+		} else if ( $time_current - $date_datetime->getTimestamp() > $time_ago_max_time ) {
 
 			/* translators: Date format for log row header, see http://php.net/date */
 			$datef = __('M j, Y \a\t G:i', "simple-history");
@@ -385,21 +408,30 @@ class SimpleLogger {
 		} else {
 
 			// Show "nn minutes ago" when event is xx seconds ago or earlier
-			$date_human_time_diff = human_time_diff($date_datetime->getTimestamp(), time());
+			$date_human_time_diff = human_time_diff($date_datetime->getTimestamp(), $time_current );
 			/* translators: 1: last modified date and time in human time diff-format */
 			$str_when = sprintf(__('%1$s ago', 'simple-history'), $date_human_time_diff);
 
 		}
-
+		
 		$item_permalink = admin_url("index.php?page=simple_history_page");
 		$item_permalink .= "#item/{$row->id}";
+
+		$date_format = get_option('date_format') . ' - '. get_option('time_format');
+		$str_datetime_title = sprintf(
+			__('%1$s local time %3$s (%2$s GMT time)', "simple-history"),
+			get_date_from_gmt( $date_datetime->format('Y-m-d H:i:s'), $date_format ), // 1 local time
+			$date_datetime->format( $date_format ), // GMT time
+			PHP_EOL // 3, new line
+		);
 
 		$date_html = "<span class='SimpleHistoryLogitem__permalink SimpleHistoryLogitem__when SimpleHistoryLogitem__inlineDivided'>";
 		$date_html .= "<a class='' href='{$item_permalink}'>";
 		$date_html .= sprintf(
-			'<time datetime="%1$s" title="%1$s" class="">%2$s</time>',
-			$date_datetime->format(DateTime::RFC3339), // 1 datetime attribute
-			$str_when
+			'<time datetime="%3$s" title="%1$s" class="">%2$s</time>',
+			esc_attr( $str_datetime_title ), // 1 datetime attribute
+			esc_html( $str_when ), // 2 date text, visible in log
+			$date_datetime->format( DateTime::RFC3339 ) // 3
 		);
 		$date_html .= "</a>";
 		$date_html .= "</span>";
@@ -860,6 +892,18 @@ class SimpleLogger {
 	public function log($level, $message, array $context = array()) {
 
 		global $wpdb;
+
+		/*
+		 * Filter that makes it possible to shortcut this log.
+		 * Return bool false to cancel.
+		 *
+		 * @since 2.3.1
+		 */
+		$do_log = apply_filters( "simple_history/log/do_log", true, $level, $message, $context, $this );
+		
+		if ( $do_log === false ) {
+			return $this;
+		}
 
 		// Check if $message is a translated message, and if so then fetch original
 		$sh_latest_translations = $this->simpleHistory->gettextLatestTranslations;

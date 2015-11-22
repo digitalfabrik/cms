@@ -68,9 +68,11 @@ class WPML_Term_Filters extends WPML_WPDB_And_SP_User {
 					 WHERE tt.parent > 0
 					  AND tt.taxonomy = %s
 					  AND iclt.language_code = %s
+					  AND iclt.element_type = %s
 					 ORDER BY term_id",
 					$taxonomy,
-					$lang_code
+					$lang_code,
+					'tax_' . $taxonomy
 				)
 			);
 		} else {

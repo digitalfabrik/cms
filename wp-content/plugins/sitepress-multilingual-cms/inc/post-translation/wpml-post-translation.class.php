@@ -238,6 +238,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		if ( $original_id ) {
 			$translation_sync->sync_with_translations( $original_id, $post_vars );
 		}
+		$translation_sync->sync_with_duplicates( $post_vars['ID'] );
 		require_once ICL_PLUGIN_PATH . '/inc/cache.php';
 		icl_cache_clear( $post_vars['post_type'] . 's_per_language', true );
 		wp_defer_term_counting( false );
@@ -264,7 +265,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 			$res            = $this->wpdb->get_var (
 				$this->wpdb->prepare (
 					"SELECT {$attribute}
-					 {$this->element_join}
+					 " . $this->get_element_join() . "
 					 WHERE t.trid=%d
 					{$source_snippet}
 					LIMIT 1",

@@ -70,7 +70,7 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 			}
 		}
 
-		return $page_query;
+		return array($page_query, isset($pid) ? $pid : false);
 	}
 
 	protected abstract function select_best_match( $pages_with_name );
@@ -207,68 +207,13 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 				" . $this->get_where_snippet() . " p.post_name IN (" . wpml_prepare_in( $slugs ) . ")
 				ORDER BY par.post_name IN (" . wpml_prepare_in( $parent_slugs ) . ") DESC"
 		);
-		foreach ( $pages_with_name as $key => $page ) {
-			if ( $page->parent_name ) {
-				$slug_pos     = array_keys( $slugs, $page->post_name, true );
-				$par_slug_pos = array_keys( $slugs, $page->parent_name, true );
-				if ( (bool) $par_slug_pos !== false
-				     && (bool) $slug_pos !== false
-				) {
-					$remove = true;
-					foreach ( $slug_pos as $child_slug_pos ) {
-						if ( in_array( $child_slug_pos - 1, $par_slug_pos ) ) {
-							$remove = false;
-							break;
-						}
-					}
-					if ( $remove === true ) {
-						unset( $pages_with_name[ $key ] );
-					}
-				}
-			}
-		}
-		$possible_ids = array();
-		foreach ( $pages_with_name as $key => $page ) {
-			$correct_slug = end( $slugs );
-			if ( $page->post_name === $correct_slug ) {
-				$possible_ids[ $page->ID ] = $this->calculate_score( $parent_slugs, $pages_with_name, $page );
-			} else {
-				unset( $pages_with_name[ $key ] );
-			}
-		}
-		arsort( $possible_ids );
+		$query_scorer = new WPML_Score_Hierarchy( $pages_with_name, $slugs );
 
-		return array_keys( $possible_ids );
+		return $query_scorer->get_possible_ids_ordered();
 	}
 
 	private function get_where_snippet() {
 
 		return $this->wpdb->prepare( " WHERE p.post_type = %s AND ", $this->post_type );
-	}
-
-	/**
-	 * @param string[] $parent_slugs
-	 * @param object[] $pages_with_name
-	 * @param object   $page
-	 *
-	 * @return int
-	 */
-	private function calculate_score( $parent_slugs, $pages_with_name, $page ) {
-		$parent_positions = array_keys( $parent_slugs, $page->parent_name, true );
-		$new_score        = (bool) $parent_positions === true ? max( $parent_positions ) + 1 : ( $page->post_parent ? - 1 : 0 );
-		if ( $page->post_parent ) {
-			foreach ( $pages_with_name as $parent ) {
-				if ( $parent->ID == $page->post_parent ) {
-					$remaining_parent_slugs = $parent_slugs;
-					if ( $new_score !== 0 ) {
-						$remaining_parent_slugs[ $new_score - 1 ] = false;
-					}
-					$new_score += $this->calculate_score( $remaining_parent_slugs, $pages_with_name, $parent );
-					break;
-				}
-			}
-		}
-
-		return $new_score;
 	}
 }

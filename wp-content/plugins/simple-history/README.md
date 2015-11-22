@@ -5,6 +5,10 @@ Simple History is a WordPress plugin that logs various things that occur in Word
 Download from WordPress.org:  
 https://wordpress.org/plugins/simple-history/
 
+[![Build Status](https://travis-ci.org/bonny/WordPress-Simple-History.svg?branch=master)](https://travis-ci.org/bonny/WordPress-Simple-History)
+![Rating at wordpress.org](https://img.shields.io/wordpress/plugin/r/simple-history.svg)
+![Number of downloads](https://img.shields.io/wordpress/plugin/dt/simple-history.svg)
+
 # Screenshots
 
 ## Viewing history events
