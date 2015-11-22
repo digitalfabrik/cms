@@ -60,7 +60,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 /* change header image size */
 add_action('after_setup_theme', function () {
 	add_theme_support('custom-header', apply_filters('custom_header_args', [
-		'width' => 1280,
-		'height' => 640,
+		'width' => 600,
+		'height' => 450,
 	]));
 });
