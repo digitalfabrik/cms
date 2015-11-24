@@ -270,11 +270,10 @@ function SSAPDF_drawAdminPage ()
 				echo				'<div style="float:left; width:100px;">Font:</div>';
 				echo				'<input type="text" value="#333" name="font_cpicker" id="font_cpicker"/>';
 				echo 				'&nbsp; &nbsp;<select name="fontFamily" id="fontFamily">';
-				echo 					'<option value="helvetica" selected="selected">Arial / Helvetica</option>';
+				echo 					'<option value="helvetica">Arial / Helvetica</option>';
 				echo 					'<option value="times">Times New Roman</option>';
 				echo 					'<option value="courier">Courier</option>';
 				do_action('fox_add_fonts');
-				//echo					'<option value="dejavusans">dejavusans</option>';
 				echo 				'</select>';
 				echo				'<br clear="left" /><br />';
 				
