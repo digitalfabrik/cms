@@ -16,7 +16,12 @@ function wpml_get_authenticated_action() {
 }
 
 function wpml_is_action_authenticated( $action ) {
-	$nonce = isset( $_POST[ '_icl_nonce' ] ) ? $_POST[ '_icl_nonce' ] : "";
+	$nonce = isset( $_POST['_icl_nonce'] ) ? $_POST['_icl_nonce'] : '';
+	if ( '' !== $nonce ) {
+		$action = $action . '_nonce';
+	} else {
+		$nonce = isset( $_POST['nonce'] ) ? $_POST['nonce'] : '';
+	}
 
-	return wp_verify_nonce( $nonce, $action . '_nonce' );
+	return wp_verify_nonce( $nonce, $action );
 }

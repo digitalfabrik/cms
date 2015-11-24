@@ -1,3 +1,13 @@
+# 2.1.14
+
+## New
+* Updated dependency versions
+
+## Fix
+* [wpmltm-830] Fix duplication of featured image when using the translation editor
+* [wpmlmedia-54] Fix issue when all secondary languages were hidden and Media translation page was not available
+* [wpmlmedia-71] Don't try to make duplicate attachments if the original attachment has no language set (ie trid == null)
+
 # 2.1.13
 
 ## New

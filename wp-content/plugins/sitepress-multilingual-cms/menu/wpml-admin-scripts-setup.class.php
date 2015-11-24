@@ -75,7 +75,11 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 
 		if ( 'options-reading.php' === $pagenow ) {
 			$this->print_reading_options_js();
-		} elseif ( in_array( $pagenow, array( 'categories.php', 'edit-tags.php' ), true )
+		} elseif ( in_array( $pagenow, array(
+				'categories.php',
+				'edit-tags.php',
+				'edit.php'
+			), true )
 		           && $current_language !== $default_language
 		) {
 			$this->correct_status_links_js( $current_language );
@@ -124,7 +128,7 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 				if ( $this->sitepress->get_setting( 'sync_ping_status' ) || $this->sitepress->get_setting( 'sync_comment_status' ) ) {
 					$this->print_ping_and_comment_sync_js( $trid, $source_lang );
 				}
-				if ( 'private' === $this->post_translations->get_original_post_status ( $trid, $source_lang )
+				if ($this->sitepress->get_setting( 'sync_private_flag' ) && 'private' === $this->post_translations->get_original_post_status ( $trid, $source_lang )
 				) {
 					?>
 					<script type="text/javascript">addLoadEvent(function () {
@@ -204,7 +208,7 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 				function () {
 					jQuery(document).ready(
 						function () {
-							jQuery('.subsubsub:not(.icl_subsubsub) li a').each(
+							jQuery('.subsubsub>li a').each(
 								function () {
 									var h = jQuery(this).attr('href');
 									var urlg = -1 === h.indexOf('?') ? '?' : '&';
@@ -299,7 +303,9 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 					addLoadEvent(
 						function () {
 							jQuery('#aa').val('<?php echo $aa ?>').attr('readonly', 'readonly');
-							jQuery('#mm').val('<?php echo $mm ?>').attr('disabled', 'disabled');
+							jQuery('#mm').val('<?php echo $mm ?>').attr('disabled', 'disabled').attr('id', 'mm-disabled').attr('name', 'mm-disabled');
+							// create a hidden element for month because we wont get anything returned from the disabled month dropdown.
+							jQuery('<input type="hidden" id="mm" name="mm" value="<?php echo $mm ?>" />').insertAfter('#mm-disabled')
 							jQuery('#jj').val('<?php echo $jj ?>').attr('readonly', 'readonly');
 							jQuery('#hh').val('<?php echo $hh ?>').attr('readonly', 'readonly');
 							jQuery('#mn').val('<?php echo $mn ?>').attr('readonly', 'readonly');

@@ -27,30 +27,33 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 	private $sync_page_template;
 	/** @var bool $sync_menu_order */
 	private $sync_menu_order;
+	/** @var $sync_password bool */
+	private $sync_password;
 	/** @var $sync_private_flag bool */
 	private $sync_private_flag;
 	/** @var $language_order string[] */
 	private $language_order;
 
 	/**
-	 * @param Array                 $settings
+	 * @param array                 $settings
 	 * @param WPML_Post_Translation $post_translations
 	 * @param SitePress             $sitepress
 	 */
 	public function __construct( &$settings, &$post_translations, &$sitepress ) {
 		parent::__construct( $post_translations, $sitepress );
-		$this->sync_delete         = isset( $settings['sync_delete'] ) ? $settings['sync_delete'] : false;
-		$this->sync_parent         = isset( $settings['sync_page_parent'] ) ? $settings['sync_page_parent'] : false;
-		$this->sync_ping_status    = isset( $settings['sync_ping_status'] ) ? $settings['sync_ping_status'] : false;
-		$this->sync_post_date      = isset( $settings['sync_post_date'] ) ? $settings['sync_post_date'] : false;
-		$this->sync_post_format    = isset( $settings['sync_post_format'] ) ? $settings['sync_post_format'] : false;
-		$this->sync_sticky_flag    = isset( $settings['sync_sticky_flag'] ) ? $settings['sync_sticky_flag'] : false;
-		$this->sync_comment_status = isset( $settings['sync_comment_status'] ) ? $settings['sync_comment_status'] : false;
-		$this->sync_page_template  = isset( $settings['sync_page_template'] ) ? $settings['sync_page_template'] : false;
-		$this->sync_private_flag   = isset( $settings['sync_private_flag'] ) ? $settings['sync_private_flag'] : false;
-		$this->language_order      = isset( $settings['languages_order'] ) && $settings['languages_order']
-			? $settings['languages_order'] : wpml_get_setting_filter( false, 'active_languages' );
-		$this->sync_menu_order     = isset( $settings['sync_page_ordering'] ) ? $settings['sync_page_ordering'] : array();
+		$this->sync_delete          = isset( $settings[ 'sync_delete' ] ) ? $settings[ 'sync_delete' ] : false;
+		$this->sync_parent          = isset( $settings[ 'sync_page_parent' ] ) ? $settings[ 'sync_page_parent' ] : false;
+		$this->sync_ping_status     = isset( $settings[ 'sync_ping_status' ] ) ? $settings[ 'sync_ping_status' ] : false;
+		$this->sync_post_date       = isset( $settings[ 'sync_post_date' ] ) ? $settings[ 'sync_post_date' ] : false;
+		$this->sync_post_format     = isset( $settings[ 'sync_post_format' ] ) ? $settings[ 'sync_post_format' ] : false;
+		$this->sync_sticky_flag     = isset( $settings[ 'sync_sticky_flag' ] ) ? $settings[ 'sync_sticky_flag' ] : false;
+		$this->sync_comment_status  = isset( $settings[ 'sync_comment_status' ] ) ? $settings[ 'sync_comment_status' ] : false;
+		$this->sync_page_template   = isset( $settings[ 'sync_page_template' ] ) ? $settings[ 'sync_page_template' ] : false;
+		$this->sync_password        = isset( $settings[ 'sync_password' ] ) ? $settings[ 'sync_password' ] : false;
+		$this->sync_private_flag    = isset( $settings[ 'sync_private_flag' ] ) ? $settings[ 'sync_private_flag' ] : false;
+		$this->sync_document_status = isset( $settings[ 'translated_document_status' ] ) ? $settings[ 'translated_document_status' ] : 1;
+		$this->language_order       = isset( $settings[ 'languages_order' ] ) && $settings[ 'languages_order' ] ? $settings[ 'languages_order' ] : wpml_get_setting_filter( false, 'active_languages' );
+		$this->sync_menu_order      = isset( $settings[ 'sync_page_ordering' ] ) ? $settings[ 'sync_page_ordering' ] : array();
 	}
 
 	/**
@@ -65,6 +68,13 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 		if ( $this->sync_parent ) {
 			$sync_helper = wpml_get_hierarchy_sync_helper();
 			$sync_helper->sync_element_hierarchy( $post_type );
+		}
+	}
+
+	public function sync_with_duplicates( $post_id ) {
+		$duplicates = $this->sitepress->get_duplicates( $post_id );
+		foreach ( array_keys( $duplicates ) as $lang_code ) {
+			$this->sitepress->make_duplicate( $post_id, $lang_code );
 		}
 	}
 
@@ -89,9 +99,9 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 	}
 
 	private function delete_translations( $translated_ids, $keep_db_entries ) {
-		if ( $this->sync_delete && !empty( $translated_ids ) ) {
+		if ( $this->sync_delete && ! empty( $translated_ids ) ) {
 			foreach ( $translated_ids as $trans_id ) {
-				if ( !$this->is_bulk_prevented( $trans_id ) ) {
+				if ( ! $this->is_bulk_prevented( $trans_id ) ) {
 					if ( $keep_db_entries ) {
 						$this->post_translation->trash_translation( $trans_id );
 					} else {
@@ -122,17 +132,19 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 
 	public function sync_with_translations( $post_id, $post_vars = false ) {
 		global $wpdb;
+		
+		$term_count_update = new WPML_Update_Term_Count();
+		
 		$post           = get_post ( $post_id );
-		$translated_ids = $this->post_translation->get_element_translations ( $post_id, false, true );
-		$post_format    = $this->sync_post_format ? get_post_format ( $post_id ) : null;
-		$ping_status    = $this->sync_ping_status ? ( pings_open ( $post_id ) ? 'open' : 'closed' ) : null;
-		$comment_status = $this->sync_comment_status ? ( comments_open ( $post_id ) ? 'open' : 'closed' ) : null;
-		$post_status    = $this->sync_private_flag &&  get_post_status ( $post_id ) === 'private' ? 'private' : null;
-		$menu_order     = $this->sync_menu_order && !empty($post->menu_order) ? $post->menu_order : null;
-		$page_template  = $this->sync_page_template && get_post_type ( $post_id ) === 'page'
-			? get_page_template_slug ( $post_id ) : null;
-		$post_date      = $this->sync_post_date
-			? $wpdb->get_var ( $wpdb->prepare ( "SELECT post_date FROM {$wpdb->posts} WHERE ID=%d LIMIT 1", $post_id ) ) : null;
+		$translated_ids = $this->post_translation->get_element_translations( $post_id, false, true );
+		$post_format = $this->sync_post_format ? get_post_format( $post_id ) : null;
+		$ping_status = $this->sync_ping_status ? ( pings_open( $post_id ) ? 'open' : 'closed' ) : null;
+		$comment_status = $this->sync_comment_status ? ( comments_open( $post_id ) ? 'open' : 'closed' ) : null;
+		$post_password = $this->sync_password ? $post->post_password : null;
+		$post_status = $this->sync_private_flag && get_post_status( $post_id ) === 'private' ? 'private' : null;
+		$menu_order = $this->sync_menu_order && ! empty( $post->menu_order ) ? $post->menu_order : null;
+		$page_template = $this->sync_page_template && get_post_type( $post_id ) === 'page' ? get_page_template_slug( $post_id ) : null;
+		$post_date = $this->sync_post_date ? $wpdb->get_var( $wpdb->prepare( "SELECT post_date FROM {$wpdb->posts} WHERE ID=%d LIMIT 1", $post_id ) ) : null;
 
 		if ( (bool) $post_vars === true ) {
 			$this->sync_sticky_flag ( $this->post_translation->get_element_trid ( $post_id ), $post_vars );
@@ -144,11 +156,27 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 				set_post_format ( $translated_pid, $post_format );
 			}
 			if ( $post_date !== null ) {
-				$data = array( 'post_date' => $post_date, 'post_date_gmt' => get_gmt_from_date ( $post_date ) );
+				$post_date_gmt = get_gmt_from_date ( $post_date );
+				$data = array( 'post_date' => $post_date, 'post_date_gmt' => $post_date_gmt );
+				$now = gmdate('Y-m-d H:i:59');
+				if ( mysql2date('U', $post_date_gmt, false) > mysql2date('U', $now, false) ) {
+					$post_status = 'future';
+				} else {
+					$post_status = 'publish';
+				}
+				$data[ 'post_status' ] = $post_status;
 				$wpdb->update ( $wpdb->posts, $data, array( 'ID' => $translated_pid ) );
+			}
+			if ( $post_password !== null ) {
+				$wpdb->update ( $wpdb->posts, array( 'post_password' => $post_password ), array( 'ID' => $translated_pid ) );
 			}
 			if ( $post_status !== null && ! in_array( get_post_status( $translated_pid ), array( 'auto-draft', 'draft', 'inherit', 'trash' ) ) ) {
 				$wpdb->update ( $wpdb->posts, array( 'post_status' => $post_status ), array( 'ID' => $translated_pid ) );
+				$term_count_update->update_for_post( $translated_pid );
+			}
+			if ( $post_status == null && $this->sync_private_flag && get_post_status( $translated_pid ) == 'private' ) {
+				$wpdb->update ( $wpdb->posts, array( 'post_status' => get_post_status( $post_id ) ), array( 'ID' => $translated_pid ) );
+				$term_count_update->update_for_post( $translated_pid );
 			}
 			if ( $ping_status !== null ) {
 				$wpdb->update ( $wpdb->posts, array( 'ping_status' => $ping_status ), array( 'ID' => $translated_pid ) );
@@ -208,6 +236,7 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 	private function set_new_original( $trid, $removed_lang_code ) {
 		if ( $trid && $removed_lang_code ) {
 			$priorities           = $this->language_order;
+			$this->post_translation->reload();
 			$translations         = $this->post_translation->get_element_translations( false, $trid );
 			$new_source_lang_code = false;
 			foreach ( $priorities as $lang_code ) {

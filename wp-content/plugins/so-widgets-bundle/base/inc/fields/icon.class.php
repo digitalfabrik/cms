@@ -15,7 +15,7 @@ class SiteOrigin_Widget_Field_Icon extends SiteOrigin_Widget_Field_Base {
 
 		<div class="siteorigin-widget-icon-selector-current">
 			<div class="siteorigin-widget-icon"><span></span></div>
-			<label><?php _e('Choose Icon', 'siteorigin-widgets') ?></label>
+			<label><?php _e('Choose Icon', 'so-widgets-bundle') ?></label>
 		</div>
 
 		<div class="siteorigin-widget-icon-selector siteorigin-widget-field-subcontainer">
@@ -34,7 +34,7 @@ class SiteOrigin_Widget_Field_Icon extends SiteOrigin_Widget_Field_Base {
 		<?php
 	}
 
-	protected function sanitize_field_input( $value ) {
+	protected function sanitize_field_input( $value, $instance ) {
 		$sanitized_value = $value;
 		// Alphanumeric characters and hyphens.
 		if( preg_match( '/[\w\d]+[\w\d-]*/', $sanitized_value, $sanitized_matches ) ) {

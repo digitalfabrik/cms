@@ -54,6 +54,7 @@ class WPML_404_Guess extends WPML_Slug_Resolution {
 									 WHERE $where
 									 	AND post_status = 'publish'
 									 	" . $this->order_by_language_snippet( (bool) $date_snippet) . "
+									 	," . $this->order_by_post_type_snippet() . "
 								     LIMIT 1" );
 			if ( (bool) $res === true ) {
 				$ret = array( $res->post_name, $res->post_type, true );
@@ -107,6 +108,21 @@ class WPML_404_Guess extends WPML_Slug_Resolution {
 				$order_by .= ", CASE p.post_type WHEN 'post' THEN 0 ELSE 1 END ";
 			}
 		}
+
+		return $order_by;
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	private function order_by_post_type_snippet() {
+		$post_types = array( 'page' => 2, 'post' => 1 );
+		$order_by   = ' CASE p.post_type ';
+		foreach ( $post_types as $type => $score ) {
+			$order_by .= $this->wpdb->prepare( ' WHEN %s THEN %d ', $type, $score );
+		}
+		$order_by .= ' ELSE 0 END DESC ';
 
 		return $order_by;
 	}

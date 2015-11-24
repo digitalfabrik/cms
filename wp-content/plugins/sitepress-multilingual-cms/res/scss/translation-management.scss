@@ -34,20 +34,6 @@
 	border-radius:    4px;
 }
 
-.nav-tab {
-	background-color: #efefef;
-	color:            #000;
-	&:hover {
-		background-color: #fff;
-	}
-}
-
-.nav-tab-active {
-	font-weight:         bold;
-	background-color:    #fff;
-	border-bottom-color: #fff;
-}
-
 .form-table {
 	td, th {
 		border-bottom: none;

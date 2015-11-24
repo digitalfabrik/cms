@@ -16,7 +16,7 @@ function icl_import_xml() {
 	}
 	$default = $sitepress->get_default_language();
 	
-		$out = '<h2>' . __('Select Language', 'sitepress') . '<\/h2><p><select name="icl_post_language">';
+		$out = '<h3>' . __('Select Language', 'sitepress') . '</h3><p><select name="icl_post_language">';
 		foreach ($langs as $lang) {
 			$out .= '<option value="' . $lang['code'] . '"';
 			if ($default == $lang['code']) {

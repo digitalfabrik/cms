@@ -166,7 +166,18 @@ jQuery(document).ready(function(){
         }
     });
 
-    jQuery('select[name=icl_lang_sel_orientation]').change(function () {
+	jQuery('select[name=icl_lang_sel_stype]').change(function () {
+		var container = jQuery(this).closest('.wpml-section-content-inner');
+		var mustReload = jQuery(this).find('option:selected').data('reload');
+		var mustReloadNotice = container.find('h4 span');
+		if (mustReload) {
+			mustReloadNotice.show();
+		} else {
+			mustReloadNotice.hide();
+		}
+	});
+
+	jQuery('select[name=icl_lang_sel_orientation]').change(function () {
         var lang_sel_list = jQuery('#lang_sel_list');
         lang_sel_list.removeClass('lang_sel_list_horizontal').removeClass('lang_sel_list_vertical');
         lang_sel_list.addClass('lang_sel_list_' + jQuery(this).val());
@@ -234,12 +245,10 @@ function updateSwitcherPreview(){
     }
 
     if(showFlag){
-        jQuery('#lang_sel').find('.iclflag').show();
-        jQuery('#lang_sel_list').find('.iclflag').show();
+        jQuery('#icl_lang_sel_preview').find('.iclflag').show();
         jQuery('#lang_sel_footer').find('.iclflag').show();
     }else {
-        jQuery('#lang_sel').find('.iclflag').hide();
-        jQuery('#lang_sel_list').find('.iclflag').hide();
+        jQuery('#icl_lang_sel_preview').find('.iclflag').hide();
         jQuery('#lang_sel_footer').find('.iclflag').hide();
     }
 
@@ -407,11 +416,13 @@ function setDomainInputEvents() {
 }
 
 function iclLntDomains() {
-    var language_negotiation_type, icl_lnt_domains_box, icl_lnt_domains_options;
+    var language_negotiation_type, icl_lnt_domains_box, icl_lnt_domains_options, icl_lnt_xdomain_options;
     icl_lnt_domains_box = jQuery('#icl_lnt_domains_box');
 	icl_lnt_domains_options = jQuery('#icl_lnt_domains');
+    icl_lnt_xdomain_options = jQuery('#language_domain_xdomain_options');
 
     if (icl_lnt_domains_options.attr('checked')) {
+
         setDomainInputEvents();
         icl_lnt_domains_box.html(icl_ajxloaderimg);
         icl_lnt_domains_box.show();
@@ -425,10 +436,12 @@ function iclLntDomains() {
                 icl_lnt_domains_box.html(resp);
                 language_negotiation_type.prop('disabled', false);
                 setDomainInputEvents();
+                icl_lnt_xdomain_options.show();
             }
         });
     } else if (icl_lnt_domains_box.length) {
         icl_lnt_domains_box.fadeOut('fast');
+        icl_lnt_xdomain_options.fadeOut('fast');
     }
     /*jshint validthis: true */
     if (jQuery(this).val() !== "1") {
@@ -436,6 +449,8 @@ function iclLntDomains() {
     } else {
         jQuery('#icl_use_directory_wrap').fadeIn();
     }
+
+
 }
 
 function iclToggleShowOnRoot() {
@@ -450,7 +465,6 @@ function iclToggleShowOnRoot() {
 }
 
 function iclUseDirectoryToggle() {
-    /*jshint validthis: true */
     if (jQuery(this).attr('checked')) {
         jQuery('#icl_use_directory_details').fadeIn();
     } else {
@@ -458,88 +472,201 @@ function iclUseDirectoryToggle() {
     }
 }
 
-function iclSaveLanguageNegotiationType() {
+	function iclSaveLanguageNegotiationType() {
+		var validSettings = true;
+		var ajaxResponse;
+		var usedUrls;
+		var formErrors;
+		var formName;
 
-    var ajx_resp, use_directory_wrap, negotiation_type, form_name, form_errors, used_urls;
-    use_directory_wrap = jQuery('#icl_use_directory_wrap');
-    negotiation_type = jQuery('#icl_save_language_negotiation_type');
-    use_directory_wrap.find('.icl_error_text').hide();
+		var languageNegotiationType;
+		var rootHtmlFile;
+		var showOnRoot;
+		var useDirectories;
+		var validatedDomains;
+		var domainsToValidateCount;
+		var domainsToValidate;
+		var validDomains;
 
-    if (negotiation_type.find('[name=use_directory]:checked').length && (!negotiation_type.find('[name=show_on_root]:checked').length || negotiation_type.find('[name=show_on_root]:checked').val() === 'html_file') && !negotiation_type.find('[name=root_html_file_path]').val()) {
-        use_directory_wrap.find('.icl_error_text.icl_error_1').fadeIn();
-        return false;
-    }
+		var form = jQuery('#icl_save_language_negotiation_type');
 
-    /*jshint validthis: true */
-    form_name = jQuery(this).attr('name');
-    form_errors = false;
-    used_urls = [jQuery('#icl_ln_home').html()];
-    jQuery('form[name="' + form_name + '"] .icl_form_errors').html('').hide();
-    ajx_resp = jQuery('form[name="' + form_name + '"] .icl_ajx_response').attr('id');
-    fadeInAjxResp('#' + ajx_resp, icl_ajxloaderimg);
-    jQuery.ajaxSetup({async: false});
-    jQuery('.validate_language_domain').filter(':visible').each(function () {
-        var lang_domain_input, lang, language_domain;
-        if (jQuery(this).prop('checked')) {
-            lang = jQuery(this).attr('value');
-            language_domain = jQuery('#ajx_ld_' + lang);
-            language_domain.html(icl_ajxloaderimg);
-            lang_domain_input = jQuery('#language_domain_' + lang);
-            if (used_urls.indexOf(lang_domain_input.attr('value')) !== -1) {
-                language_domain.html('');
-                form_errors = true;
-            } else {
-                used_urls.push(lang_domain_input.attr('value'));
-                lang_domain_input.css('color', '#000');
-                language_domain.load(icl_ajx_url,
-                    {icl_ajx_action: 'validate_language_domain', url: lang_domain_input.attr('value'), _icl_nonce: jQuery('#_icl_nonce_vd').val()},
-                    function (resp) {
-                        jQuery('#ajx_ld_' + lang).html('');
-                        if (resp === '0') {
-                            form_errors = true;
-                        }
-                    });
-            }
-        }
-    });
-    jQuery.ajaxSetup({async: true});
-    if (form_errors) {
-        fadeInAjxResp('#' + ajx_resp, icl_ajx_error, true);
-        return false;
-    }
-    jQuery.ajax({
-        type: "POST",
-        url: icl_ajx_url,
-        data: "icl_ajx_action=" + jQuery(this).attr('name') + "&" + jQuery(this).serialize(),
-        success: function (msg) {
-            var form_errors, root_html_file, root_page, spl;
-            spl = msg.split('|');
-            if (spl[0] === '1') {
-                fadeInAjxResp('#' + ajx_resp, icl_ajx_saved);
+		var useDirectoryWrapper = jQuery('#icl_use_directory_wrap');
+		languageNegotiationType = parseInt(form.find('input[name=icl_language_negotiation_type]:checked').val());
+		useDirectoryWrapper.find('.icl_error_text').hide();
 
-                if (jQuery('input[name=show_on_root]').length) {
-                    root_html_file = jQuery('#wpml_show_on_root_html_file');
-                    root_page = jQuery('#wpml_show_on_root_page');
-                    if (root_html_file.prop('checked')) {
-                        root_html_file.addClass('active');
-                        root_page.removeClass('active');
-                    }
-                    if (root_page.prop('checked')) {
-                        root_page.addClass('active');
-                        root_html_file.removeClass('active');
-                    }
-                }
+		formName = form.attr('name');
+		formErrors = false;
+		usedUrls = [jQuery('#icl_ln_home').html()];
+		jQuery('form[name="' + formName + '"] .icl_form_errors').html('').hide();
+		ajaxResponse = jQuery('form[name="' + formName + '"] .icl_ajx_response').attr('id');
+		fadeInAjxResp('#' + ajaxResponse, icl_ajxloaderimg);
 
-            } else {
-                form_errors = jQuery('form[name="' + form_name + '"] .icl_form_errors');
-                form_errors.html(spl[1]);
-                form_errors.fadeIn();
-                fadeInAjxResp('#' + ajx_resp, icl_ajx_error, true);
-            }
-        }
-    });
-    return false;
-}
+		if (1 === languageNegotiationType) {
+			useDirectories = form.find('[name=use_directory]').is(':checked');
+			showOnRoot = form.find('[name=show_on_root]:checked').val();
+			rootHtmlFile = form.find('[name=root_html_file_path]').val();
+
+			if (useDirectories) {
+				if ('html' === showOnRoot && !rootHtmlFile) {
+					validSettings = false;
+					useDirectoryWrapper.find('.icl_error_text.icl_error_1').fadeIn();
+				}
+			}
+
+			if(true === validSettings) {
+				saveLanguageForm();
+			}
+		}
+
+		if (3 === languageNegotiationType) {
+			saveLanguageForm();
+		}
+
+		if (2 === languageNegotiationType) {
+			domainsToValidate = jQuery('.validate_language_domain');
+			domainsToValidateCount = domainsToValidate.length;
+			validatedDomains = 0;
+			validDomains = 0;
+
+			if (0 < domainsToValidateCount) {
+				domainsToValidate.filter(':visible').each(function (index, element) {
+					var languageDomainURL;
+					var domainValidationCheckbox = jQuery(element);
+
+					var langDomainInput, lang, languageDomain;
+
+					lang = domainValidationCheckbox.attr('value');
+					languageDomain = jQuery('.spinner.spinner-' + lang);
+					langDomainInput = jQuery('#language_domain_' + lang);
+					languageDomainURL = langDomainInput.attr('value');
+
+					if (domainValidationCheckbox.prop('checked')) {
+						languageDomain.addClass('is-active');
+						if (-1 !== usedUrls.indexOf(languageDomainURL)) {
+							languageDomain.empty();
+							formErrors = true;
+						} else {
+							usedUrls.push(languageDomainURL);
+							langDomainInput.css('color', '#000');
+
+							jQuery.ajax({
+								method:   "POST",
+								url:      ajaxurl,
+								data:     {
+									url:    languageDomainURL,
+									action: 'validate_language_domain',
+									nonce:  jQuery('#validate_language_domain_nonce').val()
+								},
+								success:  function (resp) {
+									var ajaxLanguagePlaceholder = jQuery('#ajx_ld_' + lang);
+
+									ajaxLanguagePlaceholder.html(resp.data);
+									ajaxLanguagePlaceholder.removeClass('icl_error_text');
+									ajaxLanguagePlaceholder.removeClass('icl_valid_text');
+									if (resp.success) {
+										ajaxLanguagePlaceholder.addClass('icl_valid_text');
+										validDomains++;
+									} else {
+										ajaxLanguagePlaceholder.addClass('icl_error_text');
+									}
+									validatedDomains++;
+								},
+								error:    function (jqXHR, textStatus, errorThrown) {
+									console.log(jqXHR);
+									console.log(textStatus);
+									console.log(errorThrown);
+									jQuery('#ajx_ld_' + lang).html('');
+									if ('0' === resp) {
+										fadeInAjxResp('#' + textStatus, icl_ajx_error, true);
+									}
+								},
+								complete: function () {
+									languageDomain.removeClass('is-active');
+									if (domainsToValidateCount === validDomains) {
+										saveLanguageForm();
+									}
+								}
+							});
+						}
+					} else {
+						saveLanguageForm();
+					}
+				});
+			}
+		}
+
+		return false;
+	}
+
+	function saveLanguageForm() {
+		var domains;
+		var xdomain = 0;
+		var useDirectory = false;
+		var hideSwitcher = false;
+		var data;
+		var form = jQuery('#icl_save_language_negotiation_type');
+		var formName = jQuery(form).attr('name');
+		var ajxResponse = jQuery(form).find('.icl_ajx_response').attr('id');
+
+		if (form.find('input[name=use_directory]').is(':checked')) {
+			useDirectory = 1;
+		}
+		if (form.find('input[name=hide_language_switchers]').is(':checked')) {
+			hideSwitcher = 1;
+		}
+		if (form.find('input[name=icl_xdomain_data]:checked').val()) {
+			xdomain = parseInt(form.find('input[name=icl_xdomain_data]:checked').val());
+		}
+		domains = {};
+		form.find('input[name^=language_domains]').each(function () {
+			var item = jQuery(this);
+			domains[item.data('language')] = item.val();
+		});
+
+		data = {
+			action:                        'save_language_negotiation_type',
+			nonce:                         jQuery('#save_language_negotiation_type_nonce').val(),
+			icl_language_negotiation_type: form.find('input[name=icl_language_negotiation_type]:checked').val(),
+			language_domains:              domains,
+			use_directory:                 useDirectory,
+			show_on_root:                  form.find('input[name=show_on_root]:checked').val(),
+			root_html_file_path:           form.find('input[name=root_html_file_path]').val(),
+			hide_language_switchers:       hideSwitcher,
+			xdomain:                       xdomain
+		};
+
+		jQuery.ajax({
+
+			method:  "POST",
+			url:     ajaxurl,
+			data:    data,
+			success: function (response) {
+				var formErrors, rootHtmlFile, rootPage, spl;
+				if (response.success) {
+					fadeInAjxResp('#' + ajxResponse, icl_ajx_saved);
+
+					if (jQuery('input[name=show_on_root]').length) {
+						rootHtmlFile = jQuery('#wpml_show_on_root_html_file');
+						rootPage = jQuery('#wpml_show_on_root_page');
+						if (rootHtmlFile.prop('checked')) {
+							rootHtmlFile.addClass('active');
+							rootPage.removeClass('active');
+						}
+						if (rootPage.prop('checked')) {
+							rootPage.addClass('active');
+							rootHtmlFile.removeClass('active');
+						}
+					}
+				} else {
+					formErrors = jQuery('form[name="' + formName + '"] .icl_form_errors');
+					formErrors.html(response.data);
+					formErrors.fadeIn();
+					fadeInAjxResp('#' + ajxResponse, icl_ajx_error, true);
+				}
+			}
+		});
+	}
+
 
 function bindHoverColor(element, cssAttribute,colorNormal,colorHover) {
 

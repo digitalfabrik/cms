@@ -36,7 +36,9 @@ define('ICL_TM_TMETHOD_MANUAL', 0);
 define('ICL_TM_TMETHOD_EDITOR', 1);
 define('ICL_TM_TMETHOD_PRO', 2);
 
-define('ICL_TM_DOCS_PER_PAGE', 20);
+if ( ! defined( 'ICL_TM_DOCS_PER_PAGE' ) ) {
+	define( 'ICL_TM_DOCS_PER_PAGE', 20 );
+}
 
 define('ICL_ASIAN_LANGUAGE_CHAR_SIZE', 6);
 
@@ -97,3 +99,7 @@ define( 'WPML_STRING_TABLE_NAME_CONTEXT_LENGTH', 160 );
 define( "WPML_QUERY_IS_ROOT", 1 );
 define( "WPML_QUERY_IS_OTHER_THAN_ROOT", 2 );
 define( "WPML_QUERY_IS_NOT_FOR_POST", 3 );
+
+define( 'WPML_XDOMAIN_DATA_OFF', 	0 );
+define( 'WPML_XDOMAIN_DATA_GET', 	1 );
+define( 'WPML_XDOMAIN_DATA_POST', 	2 );

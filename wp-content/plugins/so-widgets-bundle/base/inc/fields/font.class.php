@@ -14,7 +14,7 @@ class SiteOrigin_Widget_Field_Font extends SiteOrigin_Widget_Field_Base {
 		?>
 		<div class="siteorigin-widget-font-selector siteorigin-widget-field-subcontainer">
 			<select name="<?php echo esc_attr( $this->element_name ) ?>" id="<?php echo esc_attr( $this->element_id ) ?>" class="siteorigin-widget-input">
-				<option value="default" selected="selected"><?php esc_html_e( 'Use theme font', 'siteorigin-widgets' ) ?></option>
+				<option value="default" selected="selected"><?php esc_html_e( 'Use theme font', 'so-widgets-bundle' ) ?></option>
 				<?php foreach( $widget_font_families as $key => $val ) : ?>
 					<option value="<?php echo esc_attr( $key ) ?>" <?php selected( $key, $value ) ?>><?php echo esc_html( $val ) ?></option>
 				<?php endforeach; ?>
@@ -23,7 +23,7 @@ class SiteOrigin_Widget_Field_Font extends SiteOrigin_Widget_Field_Base {
 		<?php
 	}
 
-	protected function sanitize_field_input( $value ) {
+	protected function sanitize_field_input( $value, $instance ) {
 		$sanitized_value = trim( $value );
 		// Any alphanumeric character followed by alphanumeric or whitespace characters (except newline),
 		// with optional colon and number.

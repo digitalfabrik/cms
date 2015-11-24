@@ -198,4 +198,15 @@ jQuery(document).ready(function () {
 				}
 			});
 	}
+
+	jQuery('#icl_cache_clear').click(function () {
+		var self = jQuery(this);
+		self.attr('disabled', 'disabled');
+		self.after(icl_ajxloaderimg);
+		jQuery.post(location.href + '&debug_action=cache_clear&nonce=' + troubleshooting_strings.cacheClearNonce, function () {
+			self.removeAttr('disabled');
+			alert( troubleshooting_strings.done );
+			self.next().fadeOut();
+		});
+	});
 });

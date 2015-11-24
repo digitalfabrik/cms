@@ -371,7 +371,7 @@ For each language, you need to enter the following information:
 		}
 			// Refresh cache.
 		$sitepress->icl_language_name_cache->clear();
-		$sitepress->icl_flag_cache->clear();
+		$sitepress->clear_flags_cache();
 		delete_option('_icl_cache');
 		
 			// Unset ADD fields.
@@ -583,7 +583,7 @@ For each language, you need to enter the following information:
                 icl_cache_clear(false);
                 
                 $sitepress->icl_translations_cache->clear();
-                $sitepress->icl_flag_cache->clear();
+                $sitepress->clear_flags_cache();
                 $sitepress->icl_language_name_cache->clear();
                 
                 $this->message(sprintf(__("The language %s was deleted.", 'sitepress'), '<strong>' . $lang->code . '</strong>'));

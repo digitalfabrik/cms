@@ -25,7 +25,7 @@ class WPML_Post_Edit_Screen extends WPML_SP_User {
 		                  ICL_SITEPRESS_VERSION );
 		wp_enqueue_script( 'sitepress-post-edit',
 		                   ICL_PLUGIN_URL . '/res/js/post-edit.js',
-		                   array( 'jquery-ui-dialog', 'jquery-ui-autocomplete', 'autosave' ),
+		                   array( 'jquery-ui-dialog', 'jquery-ui-autocomplete' ),
 		                   ICL_SITEPRESS_VERSION );
 	}
 

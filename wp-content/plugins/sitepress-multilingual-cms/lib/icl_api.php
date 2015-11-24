@@ -17,30 +17,6 @@ class ICanLocalizeQuery{
           return $this->error;
       }
 
-    function createAccount($data){
-		$page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-		if ($page == ICL_PLUGIN_FOLDER . '/menu/support.php') {
-			$add = '?ignore_languages=1';
-		}else{
-            $add = '';
-        }
-        $request = ICL_API_ENDPOINT . '/websites/create_by_cms.xml'.$add;
-        $response = $this->_request($request, 'POST', $data);        
-        
-        if(defined('ICL_DEB_SHOW_ICL_RAW_RESPONSE') && ICL_DEB_SHOW_ICL_RAW_RESPONSE){
-            $response['HTTP_ERROR'] = $this->error();
-            return $response;    
-        }
-                
-        if(!$response){
-            return array(0, $this->error);
-        }else{
-            $site_id = $response['info']['website']['attr']['id'];
-            $access_key = $response['info']['website']['attr']['accesskey'];
-        }
-        return array($site_id, $access_key);
-    }
-
     function updateAccount($data){        
         $request = ICL_API_ENDPOINT . '/websites/'.$data['site_id'].'/update_by_cms.xml';
         unset($data['site_id']);
@@ -52,15 +28,24 @@ class ICanLocalizeQuery{
         }
     }
 
-    function get_website_details(){
-        $request_url = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '.xml?accesskey=' . $this->access_key;
-        $res = $this->_request($request_url);
-        if(isset($res['info']['website'])){
-            return $res['info']['website'];
-        }else{
-            return array();
-        }
-    }
+	/**
+	 * @return array of website details returned from a direct API call to ICL
+	 */
+	function get_website_details() {
+		global $sitepress;
+
+		$website_details_cache_index = '_last_valid_icl_website_details';
+		$request_url                 = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '.xml?accesskey=' . $this->access_key;
+		$res                         = $this->_request( $request_url );
+		if ( isset( $res['info']['website'] ) ) {
+			$res = $res['info']['website'];
+			$sitepress->set_setting( $website_details_cache_index, $res, true );
+		} else {
+			$res = $sitepress->get_setting( $website_details_cache_index, array() );
+		}
+
+		return $res;
+	}
     
     function _request($request, $method='GET', $formvars=null, $formfiles=null, $gzipped = false){
         global $sitepress_settings;
@@ -93,25 +78,23 @@ class ICanLocalizeQuery{
         // restore error reporting
         // needed for open_basedir restrictions
         ini_set('display_errors', $_display_errors);        
-        ini_set('error_reporting', $_error_reporting);        
+        ini_set('error_reporting', $_error_reporting);
         
-        
-        $c->_fp_timeout = 3;
+        $c->_fp_timeout  = 3;
         $c->read_timeout = 5;
-        if($sitepress_settings['troubleshooting_options']['http_communication']){
-            $request = str_replace('https://','http://',$request);
+        if ( $sitepress_settings['troubleshooting_options']['http_communication'] ) {
+            $request = str_replace( 'https://', 'http://', $request );
         }
-        if($method=='GET'){                        
-            $c->fetch($request);  
-            if($c->timed_out){die(__('Error:','sitepress').$c->error);}
-        }else{
-            $c->set_submit_multipart();          
-            $c->submit($request, $formvars, $formfiles);            
-            if($c->timed_out){die(__('Error:','sitepress').$c->error);}
+        if ( $method == 'GET' ) {
+            $c->fetch( $request );
+        } else {
+            $c->set_submit_multipart();
+            $c->submit( $request, $formvars, $formfiles );
         }
-        
-        if($c->error){
+
+        if ( $c->error || $c->timed_out ) {
             $this->error = $c->error;
+
             return false;
         }
         
@@ -126,47 +109,6 @@ class ICanLocalizeQuery{
         }
                 
         return $results;
-    }
-        
-    function cms_requests_all(){
-        $request_url = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '/cms_requests.xml?show_languages=1&accesskey=' . $this->access_key;        
-        $res = $this->_request($request_url);
-        
-        if($res === false) return false;
-        
-        if(!isset($res['info']['pending_cms_requests']['cms_request'])){
-            $pending_requests = false;
-        }elseif(empty($res['info']['pending_cms_requests']['cms_request'])){
-            $pending_requests = array();
-        }elseif(count($res['info']['pending_cms_requests']['cms_request'])==1){
-            $req = $res['info']['pending_cms_requests']['cms_request']['attr'];
-            $req['target'] = $res['info']['pending_cms_requests']['cms_request']['target_language']['attr'];
-            $pending_requests[0] = $req; 
-        }else{
-            foreach($res['info']['pending_cms_requests']['cms_request'] as $req){
-                $req['attr']['target'] = $req['target_language']['attr'];
-                $pending_requests[] = $req['attr'];
-            }
-        }
-        
-        return $pending_requests;
-    }
-
-    function update_cms_id($args){
-        $request_url = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '/cms_requests/update_cms_id.xml';               
-        $parameters['accesskey'] = $this->access_key;
-        $parameters['permlink'] = $args['permalink'];
-        $parameters['from_language'] = $args['from_language'];
-        $parameters['to_language'] = $args['to_language'];
-        $parameters['cms_id'] = $args['cms_id'];
-        
-        $res = $this->_request($request_url, 'POST', $parameters);
-        
-        if(isset($res['info']['status']['attr']['err_code'])){
-            return $res['info']['updated']['cms_request']['attr']['cms_id'];
-        }else{
-            return array();
-        }        
     }
     
     function _gzdecode($data){
@@ -187,14 +129,6 @@ class ICanLocalizeQuery{
         }else{
             return isset($res['info']['status']['attr']['err_code'])?-1*$res['info']['status']['attr']['err_code']:0;
         }
-    }
-    
-    function get_help_links() {
-        $request_url = 'https://wpml.org/wpml-resource-maps/pro-translation.xml';
-
-        $res = $this->_request($request_url, 'GET');
-        
-        return $res;
     }
 }
   
@@ -221,14 +155,7 @@ function icl_gzdecode($data, &$filename = '', &$error = '', $maxlength = null) {
         $error = "Reserved bits not allowed.";
         return null;
     }
-    // NOTE: $mtime may be negative (PHP integer limitations)
-    $mtime = unpack ( "V", substr ( $data, 4, 4 ) );
-    $mtime = $mtime [1];
-    $xfl = substr ( $data, 8, 1 );
-    $os = substr ( $data, 8, 1 );
     $headerlen = 10;
-    $extralen = 0;
-    $extra = "";
     if ($flags & 4) {
         // 2-byte length prefixed EXTRA data in header
         if ($len - $headerlen - 2 < 8) {
@@ -239,10 +166,8 @@ function icl_gzdecode($data, &$filename = '', &$error = '', $maxlength = null) {
         if ($len - $headerlen - 2 - $extralen < 8) {
             return false; // invalid
         }
-        $extra = substr ( $data, 10, $extralen );
         $headerlen += 2 + $extralen;
     }
-    $filenamelen = 0;
     $filename = "";
     if ($flags & 8) {
         // C-style string
@@ -256,8 +181,6 @@ function icl_gzdecode($data, &$filename = '', &$error = '', $maxlength = null) {
         $filename = substr ( $data, $headerlen, $filenamelen );
         $headerlen += $filenamelen + 1;
     }
-    $commentlen = 0;
-    $comment = "";
     if ($flags & 16) {
         // C-style string COMMENT data in header
         if ($len - $headerlen - 1 < 8) {
@@ -267,10 +190,8 @@ function icl_gzdecode($data, &$filename = '', &$error = '', $maxlength = null) {
         if ($commentlen === false || $len - $headerlen - $commentlen - 1 < 8) {
             return false; // Invalid header format
         }
-        $comment = substr ( $data, $headerlen, $commentlen );
         $headerlen += $commentlen + 1;
     }
-    $headercrc = "";
     if ($flags & 2) {
         // 2-bytes (lowest order) of CRC32 on header present
         if ($len - $headerlen - 2 < 8) {

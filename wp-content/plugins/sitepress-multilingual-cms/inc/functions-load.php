@@ -56,7 +56,7 @@ function load_essential_globals() {
 	$wpml_language_resolution             = new WPML_Language_Resolution( $active_language_codes, $default_lang_code );
 	$admin                                = is_admin ();
 
-	wpml_load_post_translation( $admin, $settings, $active_language_codes, $default_lang_code );
+	wpml_load_post_translation( $admin, $settings );
 	$wpml_term_translations = new WPML_Term_Translation( $wpdb );
 	$domain_validation      = filter_input( INPUT_GET, '____icl_validate_domain' ) ? 1 : false;
 	$domain_validation      = filter_input( INPUT_GET, '____icl_validate_directory' ) ? 2 : $domain_validation;
@@ -95,11 +95,13 @@ function wpml_load_request_handler( $admin, $active_language_codes, $default_lan
 	if ( $admin === true ) {
 		$wpml_request_handler = new WPML_Backend_Request( $wpml_url_converter,
 		                                                  $active_language_codes,
-		                                                  $default_language );
+		                                                  $default_language,
+														  new WPML_Cookie() );
 	} else {
 		$wpml_request_handler = new WPML_Frontend_Request( $wpml_url_converter,
 		                                                   $active_language_codes,
-		                                                   $default_language );
+		                                                   $default_language,
+														   new WPML_Cookie() );
 	}
 
 	return $wpml_request_handler;
@@ -313,8 +315,6 @@ function wpml_get_root_page_actions_obj() {
 function wpml_get_hierarchy_sync_helper( $type = 'post' ) {
 	global $wpdb;
 
-	require_once ICL_PLUGIN_PATH . '/inc/core-abstract-classes/wpml-hierarchy-sync.class.php';
-
 	if ( $type === 'post' ) {
 		require_once ICL_PLUGIN_PATH . '/inc/post-translation/wpml-post-hierarchy-sync.class.php';
 		$hierarchy_helper = new WPML_Post_Hierarchy_Sync( $wpdb );
@@ -368,9 +368,10 @@ function wpml_load_settings_helper() {
 }
 
 function wpml_get_term_translation_util() {
+	global $sitepress;
 	require_once ICL_PLUGIN_PATH . '/inc/taxonomy-term-translation/wpml-term-translation-utils.class.php';
 
-	return new WPML_Term_Translation_Utils();
+	return new WPML_Term_Translation_Utils( $sitepress );
 }
 
 /**
