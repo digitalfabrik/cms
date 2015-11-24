@@ -1,5 +1,6 @@
-README
-======
+	I GENERAL
+	#########
+
 
 1) Version-trouble
 ==================
@@ -33,3 +34,24 @@ NOTE: The filename of the .ttf file might cause trouble. Make sure it has no '-'
 ==========
 
 In case anything is not working as it should, contact p.blanz@tum.de
+
+	
+	II VERSIONs
+	###########
+
+1. Version 1.0
+==============
+
++ Allows to add new fonts as explained above
++ Added two hooks to the plugin core as explained above
+
+
+2. Version 1.1
+==============
+
++ Added two fonts:
+	"aerufat" for ArabiC
+	"dejavusans" for Persian
++ The font will be automatically selected according to the current language (ICL_LANGUAGE_CODE)
++ removed the selected="selected" attribute from the font selection to guarantee automatic language selection
++ minor bugfixes

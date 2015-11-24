@@ -22,13 +22,13 @@ function SSAPDFadminBuildPDF ()
 	$link_hex = '#3333ff';
 
 	//swap in custom options if needed
-	if ( $_POST['useCSS'] == 'custom' )
-	{
+	//if ( $_POST['useCSS'] == 'custom' )
+	//{
 		$bg_rgb = SSAPDF_hex2RGB( $_POST['bg_cpicker'] );
 		$text_font = $_POST['fontFamily'];
 		$text_hex = $_POST['font_cpicker'];
 		$link_hex = $_POST['link_cpicker'];
-	}
+	//}
 
 	$text_rgb = SSAPDF_hex2RGB( $text_hex );
 	$link_rgb = SSAPDF_hex2RGB( $link_hex );
@@ -93,7 +93,6 @@ function SSAPDFadminBuildPDF ()
 	// print standard ASCII chars, you can use core fonts like
 	// helvetica or times to reduce file size.
 	//$pdf->SetFont( 'dejavusans', '', 11, '', true, true );
-	
 	$pdf->SetTextColorArray	(
 		array( $text_rgb['red'], $text_rgb['green'], $text_rgb['blue'] ),
 		false
@@ -136,8 +135,9 @@ function SSAPDFadminBuildPDF ()
 		{
 			$displayTitle = get_bloginfo( 'name', 'display' );
 			//$htmlStr .= '<div class="pageBreak">';
-			$htmlStr = '&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /><h1 style="font-size:40px; text-align:center; text-decoration:underline;">' . $displayTitle . '</h1>';
-			$htmlStr .= '<p style="text-align:center;">&nbsp;<br />&nbsp;<br />PDF Created on ' . $displayDate . '<br /><a href="' . $siteURL . '">' . $siteURL . '</a></p>';
+			$htmlStr = '&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /><h1 style="font-size:40px; text-align:center; text-decoration:underline;">' . $displayTitle. '</h1>';
+			$htmlStr .= '<p style="text-align:center;">&nbsp;<br />&nbsp;<br />PDF Created on ' . $displayDate . '<br /><a href="' . $siteURL . '">' . $siteURL. '</a></p>';
+			
 			//$htmlStr .= '</div>';
 			
 			$pdf->AddPage();
@@ -196,7 +196,7 @@ function SSAPDFadminBuildPDF ()
 					$topPage = ( $hasFrontPage ) ? '#2' : '#1';
 					
 					//build the page content
-					$htmlStr = '<h1>' . $title . '</h1>';
+					$htmlStr = '<h1>' . $title .'</h1>';
 					$htmlStr .= $PRcontent;
 					
 					//tcpdf issue linking to toc. 

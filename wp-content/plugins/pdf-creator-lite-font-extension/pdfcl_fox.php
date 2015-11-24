@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 /*
 Plugin Name: pdf_creator_lite_font_extension
-Version: 1.0
+Version: 1.1
 Author: Blanz
 Depends: pdf-creator-lite, PDF Creator LITE
 */
@@ -16,6 +16,7 @@ $EXT_PHP='.php';
 $EXT_CTG_Z='.ctg.z';
 $EXT_ERROR='ERROR';
 $FONT_DIRECTORY='pdf-creator-lite/tcpdf/fonts/';
+
 
 /****************************************/
 /*        Import new fonts              */
@@ -31,11 +32,15 @@ function set_fonts($pdf){
 		return false;
 	}
 	install_fonts($path,$pdf);
-	//$pdf->SetFont( $font, '', 11, '', true, true );
+	$pdf->SetFont( $font, '', 11, '', true, true );
 	//TODO make it dependent from chosen font
-	if(strcasecmp($font, 'dejavusans') == 0 || strcasecmp($font, 'aefurat')){
+	$pdf->SetRTL(false);
+	if(ICL_LANGUAGE_CODE!==null){
+		if(ICL_LANGUAGE_CODE=='ar' || ICL_LANGUAGE_CODE=='fa'){
 			$pdf->SetRTL(true);
-	}	
+		}
+	}
+	//set_pdf($pdf);
 	return $pdf;
 }
 
@@ -141,16 +146,43 @@ function has_font($file){
 * For each font in the plugins fonts-folder, add select boxes to the adminpage.php
 */
 function set_select(){
+	$first = '';
+	$selection = '';
 	$path = __FILE__;
 	$path = return_path_wo_file($path);
 	$path = $path.$GLOBALS["DELIMITER"].$GLOBALS["FONTS"].$GLOBALS["DELIMITER"]; //--> ".../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/"
 	foreach (glob($path."*".$GLOBALS["EXT_TTF"]) as $file) {
 		$filename = basename($file,$GLOBALS["EXT_TTF"]);
 		$filename = strtolower($filename);
-		echo('<option value="'.$filename.'">'.$filename.'</option>');
+		if(ICL_LANGUAGE_CODE!==null){
+			//for persian we use dejavusans
+			if(strcasecmp($filename, 'dejavusans') == 0){
+				if(strcasecmp(ICL_LANGUAGE_CODE, 'fa') == 0){
+					$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
+				}
+				else{
+					$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
+				}
+			}
+			//for arabic we use aefurat
+			else if(strcasecmp($filename, 'aefurat') == 0){
+				if(strcasecmp(ICL_LANGUAGE_CODE, 'ar') == 0){
+					$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
+				}
+				else{
+					$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
+				}
+			}
+			else{
+				$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
+			}
+		}
+		else{
+			$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
+		}	
 	}
+	echo($first.$selection);
 }
-
 
 /****************************************/
 /*         Filters and Actions          */
