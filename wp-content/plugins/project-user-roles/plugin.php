@@ -107,6 +107,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'read_others_locations' => true,
 
 			'upload_event_images' => true,
+			/* PDF */
+			'create_and_download_pdf' => true,
 		],
 		'trustworthy_organization' => [
 			/* Pages */
@@ -139,6 +141,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'read_others_locations' => true,
 
 			'upload_event_images' => true,
+			/* PDF */
+			'create_and_download_pdf' => true,
 		]
 	];
 
