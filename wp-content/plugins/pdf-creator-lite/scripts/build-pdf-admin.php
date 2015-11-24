@@ -20,7 +20,6 @@ function SSAPDFadminBuildPDF ()
 	$text_font = 'helvetica';
 	$text_hex = '#363636';
 	$link_hex = '#3333ff';
-
 	//swap in custom options if needed
 	//if ( $_POST['useCSS'] == 'custom' )
 	//{

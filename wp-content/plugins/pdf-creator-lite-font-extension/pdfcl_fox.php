@@ -2,7 +2,7 @@
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 /*
 Plugin Name: pdf_creator_lite_font_extension
-Version: 1.1
+Version: 1.2
 Author: Blanz
 Depends: pdf-creator-lite, PDF Creator LITE
 */
@@ -40,7 +40,6 @@ function set_fonts($pdf){
 			$pdf->SetRTL(true);
 		}
 	}
-	//set_pdf($pdf);
 	return $pdf;
 }
 
