@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: de plus Benutzerrollen
- * Description: Benutzerrollen fuer das de plus project: Verwalter, Organisatoren (Administratoren existieren immer)
+ * Plugin Name: Projektspezifische Benutzerrollen
+ * Description: Benutzerrollen fuer das Integreat Projekt: Verwalter, Vertrauenswuerdige Organisation, Organisation
  * Version: 0.1
  * Author: Martin Schrimpf
  * Author URI: https://github.com/Meash
