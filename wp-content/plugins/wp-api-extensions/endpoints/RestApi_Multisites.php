@@ -49,7 +49,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'name' => $details->blogname,
 			'icon' => get_site_icon_url(),
 			'cover_image' => get_header_image(),
-			'color' => '#FFDA03',
+			'color' => '#FFA000',
 			'path' => $blog['path'],
 			'description' => get_bloginfo($blog),
 			'global' => in_array($id, $this->GLOBAL_SITE_IDS)
