@@ -17,7 +17,18 @@ add_action('init', function () {
 			],
 			'public' => true,
 			'has_archive' => true,
-			'menu_icon' => 'dashicons-info'
+			'menu_icon' => 'dashicons-info',
+			'capabilities' => [
+				'publish_posts' => 'manage_disclaimer',
+				'edit_posts' => 'manage_disclaimer',
+				'edit_others_posts' => 'manage_disclaimer',
+				'delete_posts' => 'manage_disclaimer',
+				'delete_others_posts' => 'manage_disclaimer',
+				'read_private_posts' => 'manage_disclaimer',
+				'edit_post' => 'manage_disclaimer',
+				'delete_post' => 'manage_disclaimer',
+				'read_post' => 'manage_disclaimer'
+			]
 		]
 	);
 });
