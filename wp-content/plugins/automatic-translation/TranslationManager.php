@@ -27,13 +27,7 @@ class TranslationManager {
 	public function on_save_post($post_id) {
 		update_post_meta($post_id, self::AUTOMATIC_TRANSLATION_META_KEY, false);
 		$post = get_post($post_id, OBJECT);
-		if (!in_array($post->post_status, ['publish', 'revision'])
-			|| !in_array(ICL_LANGUAGE_CODE, ['de', 'en'])
-			// Only translate on updates to the German and English content for now.
-			// This is based on the assumption that content will always be available in these languages at first,
-			// but gets rid of the case where manual changes to previously automatically translated content
-			// are propagated into other languages.
-		) {
+		if (!$this->accept_post($post)) {
 			return;
 		}
 
@@ -58,6 +52,19 @@ class TranslationManager {
 				break;
 			}
 		}
+	}
+
+	private function accept_post($post) {
+		return
+				// do not translate drafts
+				in_array($post->post_status, ['publish', 'revision'])
+				// Only translate selected types
+				&& in_array($post->post_type, ['page', 'event'])
+				// Only translate on updates to the German and English content for now.
+				// This is based on the assumption that content will always be available in these languages at first,
+				// but gets rid of the case where manual changes to previously automatically translated content
+				// are propagated into other languages.
+				&& in_array(ICL_LANGUAGE_CODE, ['de', 'en']);
 	}
 
 	private function get_or_create_english_translation($post) {
