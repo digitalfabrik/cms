@@ -13,6 +13,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 		8, // Duesseldorf
 		11, // Bad Toelz
 		15, // Main-Taunus-Kreis
+		25, // Kiel
 	];
 	private $GLOBAL_SITE_IDS = [5];
 
