@@ -7,14 +7,8 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
  */
 class RestApi_Multisites extends RestApi_ExtensionBase {
 	const URL = 'multisites';
+	const LIVEINSTANCES_FILE = "liveinstances.txt";
 
-	private $INCLUDED_SITE_IDS = [
-		2, // Augsburg
-		8, // Duesseldorf
-		11, // Bad Toelz
-		15, // Main-Taunus-Kreis
-		25, // Kiel
-	];
 	private $GLOBAL_SITE_IDS = [5];
 
 	public function __construct($namespace) {
@@ -30,10 +24,11 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	public function get_multisites() {
 		$multisites = wp_get_sites();
+		$included_site_ids = $this->get_live_instances();
 
 		$result = [];
 		foreach ($multisites as $blog) {
-			if (!in_array($blog['blog_id'], $this->INCLUDED_SITE_IDS)) {
+			if (!in_array($blog['blog_id'], $included_site_ids)) {
 				continue;
 			}
 			$result[] = $this->prepare_item($blog);
@@ -57,6 +52,28 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 		];
 		restore_current_blog();
 		return $result;
+	}
+
+	private function get_live_instances() {
+		$handle = fopen(__DIR__ . '/' . self::LIVEINSTANCES_FILE, "r");
+		if (!$handle) {
+			throw new RuntimeException("Could not open live instances file '" . self::LIVEINSTANCES_FILE . "'");
+		}
+		try {
+			$ids = [];
+			while (($line = fgets($handle)) !== false) {
+				$id_length = strpos($line, " ");
+				if($id_length > 0) {
+					$id = substr($line, 0, $id_length);
+				} else {
+					$id = $line;
+				}
+				$ids[] = $id;
+			}
+		} finally {
+			fclose($handle);
+		}
+		return $ids;
 	}
 }
 
