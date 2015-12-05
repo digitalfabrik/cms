@@ -1,14 +1,12 @@
 <?php
 
-abstract class RestApi_ExtensionBase {
+abstract class RestApi_ExtensionBaseV0 {
 	private $DEFAULT_ROUTE_OPTIONS = [
-		'methods' => WP_REST_Server::READABLE,
+			'methods' => WP_REST_Server::READABLE,
 	];
 
 	public function __construct() {
 	}
-
-	public abstract function register_routes($namespace);
 
 	/**
 	 * @param string $namespace

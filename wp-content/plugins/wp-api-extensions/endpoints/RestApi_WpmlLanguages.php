@@ -9,16 +9,17 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
 class RestApi_WpmlLanguages extends RestApi_ExtensionBase {
 	const URL = 'languages';
 
-	public function __construct($namespace) {
-		parent::__construct($namespace, self::URL);
+	public function __construct() {
+		parent::__construct();
 		$this->wpml_helper = new WpmlHelper();
 	}
 
 
-	public function register_routes() {
-		parent::register_route('/wpml', [
-			'callback' => [$this, 'get_wpml_languages']
-		]);
+	public function register_routes($namespace) {
+		parent::register_route($namespace,
+			self::URL, '/wpml', [
+				'callback' => [$this, 'get_wpml_languages']
+			]);
 	}
 
 	public function get_wpml_languages() {

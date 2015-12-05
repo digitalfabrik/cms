@@ -5,9 +5,9 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
 /**
  * Retrieve the multisites defined in this network
  */
-class RestApi_Multisites extends RestApi_ExtensionBase {
+class RestApi_MultisitesV0 extends RestApi_ExtensionBaseV0 {
 	const URL = 'multisites';
-	const LIVEINSTANCES_FILE = __DIR__ . '/liveinstances.txt';
+	const LIVEINSTANCES_FILE = __DIR__ . '/../liveinstances.txt';
 
 	private $GLOBAL_SITE_IDS = [5];
 
