@@ -6,7 +6,7 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
 /**
  * Retrieve the active WPML languages of a site
  */
-class RestApi_WpmlLanguages extends RestApi_ExtensionBase {
+class RestApi_WpmlLanguagesV0 extends RestApi_ExtensionBaseV0 {
 	const URL = 'languages';
 
 	public function __construct() {

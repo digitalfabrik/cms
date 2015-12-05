@@ -6,7 +6,7 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
 /**
  * Retrieve only content that has been modified since a given datetime
  */
-class RestApi_ModifiedEvents extends RestApi_ModifiedContent {
+class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 	protected function get_subpath() {
 		return '/events/';
 	}

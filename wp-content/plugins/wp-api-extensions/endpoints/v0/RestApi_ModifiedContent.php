@@ -6,7 +6,7 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
 /**
  * Retrieve only content that has been modified since a given datetime
  */
-abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
+abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	const URL = 'modified_content';
 	/**
 	 * Match empty p html tags spanning the whole string.
