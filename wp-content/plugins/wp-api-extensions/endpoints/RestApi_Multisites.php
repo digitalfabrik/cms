@@ -7,7 +7,7 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
  */
 class RestApi_Multisites extends RestApi_ExtensionBase {
 	const URL = 'multisites';
-	const LIVEINSTANCES_FILE = __DIR__ . '/liveinstances.txt';
+	const LIVEINSTANCES_FILENAME = 'liveinstances.txt';
 
 	private $included_site_ids = false;
 
@@ -48,9 +48,10 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 	}
 
 	private function get_live_instances() {
-		$handle = fopen(self::LIVEINSTANCES_FILE, "r");
+		$filepath = __DIR__ . '/' . self::LIVEINSTANCES_FILENAME;
+		$handle = fopen($filepath, "r");
 		if (!$handle) {
-			throw new RuntimeException("Could not open live instances file '" . self::LIVEINSTANCES_FILE . "'");
+			throw new RuntimeException("Could not open live instances file '" . $filepath . "'");
 		}
 		try {
 			$ids = [];
