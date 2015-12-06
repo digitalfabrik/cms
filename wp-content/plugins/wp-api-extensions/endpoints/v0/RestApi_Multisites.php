@@ -5,11 +5,11 @@ require_once __DIR__ . '/RestApi_ExtensionBase.php';
 /**
  * Retrieve the multisites defined in this network
  */
-class RestApi_Multisites extends RestApi_ExtensionBase {
+class RestApi_MultisitesV0 extends RestApi_ExtensionBaseV0 {
 	const URL = 'multisites';
-	const LIVEINSTANCES_FILE = __DIR__ . '/liveinstances.txt';
+	const LIVEINSTANCES_FILE = __DIR__ . '/../liveinstances.txt';
 
-	private $included_site_ids = false;
+	private $GLOBAL_SITE_IDS = [5];
 
 	public function register_routes($namespace) {
 		parent::register_route($namespace,
@@ -20,10 +20,13 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	public function get_multisites() {
 		$multisites = wp_get_sites();
-		$this->load_included_site_ids();
+		$included_site_ids = $this->get_live_instances();
 
 		$result = [];
 		foreach ($multisites as $blog) {
+			if (!in_array($blog['blog_id'], $included_site_ids)) {
+				continue;
+			}
 			$result[] = $this->prepare_item($blog);
 		}
 		return $result;
@@ -41,7 +44,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'color' => '#FFA000',
 			'path' => $blog['path'],
 			'description' => get_bloginfo($blog),
-			'live' => in_array($id, $this->included_site_ids)
+			'global' => in_array($id, $this->GLOBAL_SITE_IDS)
 		];
 		restore_current_blog();
 		return $result;
@@ -67,18 +70,6 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			fclose($handle);
 		}
 		return $ids;
-	}
-
-	/**
-	 * If the included site ids are not already loaded,
-	 * retrieves them and stores them in #included_site_ids.
-	 */
-	private function load_included_site_ids() {
-		if ($this->included_site_ids !== false) {
-			// already loaded
-			return;
-		}
-		$this->included_site_ids = $this->get_live_instances();
 	}
 }
 
