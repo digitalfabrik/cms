@@ -48,17 +48,17 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		$args = $this->get_route_args();
 
 		parent::register_route($this->get_subpath(), [
-				'callback' => [$this, 'get_modified_content'],
-				'args' => $args
+			'callback' => [$this, 'get_modified_content'],
+			'args' => $args
 		]);
 	}
 
 	private function get_route_args() {
 		return [
-				'since' => [
-						'required' => true,
-						'validate_callback' => [$this, 'validate_datetime']
-				]
+			'since' => [
+				'required' => true,
+				'validate_callback' => [$this, 'validate_datetime']
+			]
 		];
 	}
 
@@ -114,12 +114,12 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 		$where_rest = $where;
 
 		return
-				"SELECT $select
+			"SELECT $select
 			$from
 			WHERE $where_first " .
-				($where_rest ? "AND " . join(" AND ", $where_rest) : "") . " " .
-				($groups ? "GROUP BY " . join(",", $groups) : "") . " " .
-				($order_clauses ? "ORDER BY " . join(",", $order_clauses) : "");
+			($where_rest ? "AND " . join(" AND ", $where_rest) : "") . " " .
+			($groups ? "GROUP BY " . join(",", $groups) : "") . " " .
+			($order_clauses ? "ORDER BY " . join(",", $order_clauses) : "");
 	}
 
 	/**
@@ -158,13 +158,13 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	protected function build_query_where() {
 		$since = $this->current_request->rest_request->get_param('since');
 		$last_modified_gmt = $this
-				->make_datetime($since)
-				->setTimezone($this->datetime_zone_gmt)
-				->format($this->datetime_query_format);
+			->make_datetime($since)
+			->setTimezone($this->datetime_zone_gmt)
+			->format($this->datetime_query_format);
 		return [
-				"post_type = '{$this->current_request->post_type}'",
-				"post_modified_gmt >= '$last_modified_gmt'",
-				"post_status IN ('publish', 'trash')"];
+			"post_type = '{$this->current_request->post_type}'",
+			"post_modified_gmt >= '$last_modified_gmt'",
+			"post_status IN ('publish', 'trash')"];
 	}
 
 	/**
@@ -184,20 +184,22 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 	protected function prepare_item($post) {
 		setup_postdata($post);
 		$content = $this->prepare_content($post);
-		return [
-				'id' => $post->ID,
-				'title' => $post->post_title,
-				'type' => $post->post_type,
-				'status' => $post->post_status,
-				'modified_gmt' => $post->post_modified_gmt,
-				'excerpt' => $content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post),
-				'content' => $content,
-				'parent' => $post->post_parent,
-				'order' => $post->menu_order,
-				'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
-				'thumbnail' => $this->prepare_thumbnail($post),
-				'author' => $this->prepare_author($post)
+		$output_post = [
+			'id' => $post->ID,
+			'title' => $post->post_title,
+			'type' => $post->post_type,
+			'status' => $post->post_status,
+			'modified_gmt' => $post->post_modified_gmt,
+			'excerpt' => $content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post),
+			'content' => $content,
+			'parent' => $post->post_parent,
+			'order' => $post->menu_order,
+			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
+			'thumbnail' => $this->prepare_thumbnail($post),
+			'author' => $this->prepare_author($post),
 		];
+		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
+		return $output_post;
 	}
 
 	protected function prepare_content($post) {
@@ -215,10 +217,10 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 
 	protected function prepare_excerpt($post) {
 		$excerpt = $post->post_excerpt ?:
-				apply_filters('the_excerpt', apply_filters('get_the_excerpt', $post->post_excerpt));
+			apply_filters('the_excerpt', apply_filters('get_the_excerpt', $post->post_excerpt));
 		$excerpt = str_replace(["</p>", "\r\n", "\n", "\r", "<p>"],
-				[self::EXCERPT_LINEBREAK_INDICATOR, self::EXCERPT_LINEBREAK_INDICATOR, self::EXCERPT_LINEBREAK_INDICATOR, "", ""],
-				$excerpt);
+			[self::EXCERPT_LINEBREAK_INDICATOR, self::EXCERPT_LINEBREAK_INDICATOR, self::EXCERPT_LINEBREAK_INDICATOR, "", ""],
+			$excerpt);
 		return trim($excerpt);
 	}
 
@@ -232,9 +234,9 @@ abstract class RestApi_ModifiedContent extends RestApi_ExtensionBase {
 
 	protected function prepare_author($post) {
 		return [
-				'login' => $post->user_login,
-				'first_name' => $post->author_firstname,
-				'last_name' => $post->author_lastname
+			'login' => $post->user_login,
+			'first_name' => $post->author_firstname,
+			'last_name' => $post->author_lastname
 		];
 	}
 

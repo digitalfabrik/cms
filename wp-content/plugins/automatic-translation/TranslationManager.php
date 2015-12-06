@@ -14,9 +14,13 @@ add_action('admin_notices', function () {
 	}
 });
 
+add_filter('wp_api_extensions_output_post', function ($output_post) {
+	$output_post['automatic_translation'] = get_post_meta($output_post['id'], TranslationManager::AUTOMATIC_TRANSLATION_META_KEY, true);
+	return $output_post;
+});
+
 class TranslationManager {
 	const AUTOMATIC_TRANSLATION_META_KEY = 'automatic_translation';
-	const TRANSLATION_DISCLAIMER = '<p><em>This page was translated automatically, manual translation coming soon.</em></p>';
 	private $translation_service;
 
 	public function __construct() {
@@ -56,15 +60,15 @@ class TranslationManager {
 
 	private function accept_post($post) {
 		return
-				// do not translate drafts
-				in_array($post->post_status, ['publish', 'revision'])
-				// Only translate selected types
-				&& in_array($post->post_type, ['page', 'event'])
-				// Only translate on updates to the German and English content for now.
-				// This is based on the assumption that content will always be available in these languages at first,
-				// but gets rid of the case where manual changes to previously automatically translated content
-				// are propagated into other languages.
-				&& in_array(ICL_LANGUAGE_CODE, ['de', 'en']);
+			// do not translate drafts
+			in_array($post->post_status, ['publish', 'revision'])
+			// Only translate selected types
+			&& in_array($post->post_type, ['page', 'event'])
+			// Only translate on updates to the German and English content for now.
+			// This is based on the assumption that content will always be available in these languages at first,
+			// but gets rid of the case where manual changes to previously automatically translated content
+			// are propagated into other languages.
+			&& in_array(ICL_LANGUAGE_CODE, ['de', 'en']);
 	}
 
 	private function get_or_create_english_translation($post) {
@@ -78,7 +82,7 @@ class TranslationManager {
 			$english_post = $this->create_translation($post, ICL_LANGUAGE_CODE, 'en');
 			$english_post = get_post($english_post, OBJECT); // convert to object
 		}
-		return $this->remove_disclaimer($english_post);
+		return $english_post;
 	}
 
 	/**
@@ -107,7 +111,6 @@ class TranslationManager {
 			update_option(ERR_MSGS_OPTION_KEY, $messages);
 			throw new AutomaticTranslationException($e);
 		}
-		$translated_post['post_content'] = self::TRANSLATION_DISCLAIMER . $translated_post['post_content'];
 		if ($current_translation_id !== null) {
 			$translated_post['ID'] = $current_translation_id;
 		}
@@ -136,21 +139,6 @@ class TranslationManager {
 
 	private function mark_as_automatic_translation($post_id) {
 		add_post_meta($post_id, self::AUTOMATIC_TRANSLATION_META_KEY, true);
-	}
-
-	/**
-	 * @param WP_Post $post WP_Post object
-	 * @return WP_Post
-	 */
-	private function remove_disclaimer($post) {
-		$result_post = clone $post;
-		$content = $post->post_content;
-		if (strrpos($content, self::TRANSLATION_DISCLAIMER, -strlen($content)) === false) {
-			// does not contain disclaimer
-			return $post;
-		}
-		$result_post->post_content = substr($content, strlen(self::TRANSLATION_DISCLAIMER));
-		return $result_post;
 	}
 
 	public function add_save_post_hook() {
