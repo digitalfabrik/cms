@@ -1,0 +1,36 @@
+/*
+ Theme Name:   Twenty Fifteen Child
+ Description:  Twenty Fifteen Child Theme
+ Author:       Sascha Beele
+ Template:     twentyfifteen
+ Version:      1.0.0
+ Text Domain:  twentyfifteen-child
+*/
+
+.secondary-toggle,
+.secondary-toggle:hover,
+.secondary-toggle:focus {
+	background-color: #fff;
+}
+
+@media screen and (min-width: 59.6875em) {
+	.site-branding {
+		padding: 15px;
+		background-color: rgba(255,255,255,0.75);
+	}
+
+	.site-header,
+	.widget,
+	aside.widget.widget_pages {
+		padding: 0 12%;
+	}
+	aside.widget.widget_pages > h2.widget-title { 
+		margin-bottom: 0;
+		padding: 15px;
+		background-color: rgba(255,255,255,0.75);
+	}
+	aside.widget.widget_pages > ul {
+		padding: 15px;
+		background-color: rgba(255,255,255,0.75);
+	}
+}
