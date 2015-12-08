@@ -16,6 +16,8 @@ $EXT_PHP='.php';
 $EXT_CTG_Z='.ctg.z';
 $EXT_ERROR='ERROR';
 $FONT_DIRECTORY='pdf-creator-lite/tcpdf/fonts/';
+$LANGUAGE_ARABIC='ar';
+$LANGUAGE_PERSIAN='fa';
 
 
 /****************************************/
@@ -33,10 +35,9 @@ function set_fonts($pdf){
 	}
 	install_fonts($path,$pdf);
 	$pdf->SetFont( $font, '', 11, '', true, true );
-	//TODO make it dependent from chosen font
 	$pdf->SetRTL(false);
 	if(ICL_LANGUAGE_CODE!==null){
-		if(ICL_LANGUAGE_CODE=='ar' || ICL_LANGUAGE_CODE=='fa'){
+		if(strcasecmp(ICL_LANGUAGE_CODE,$GLOBALS["LANGUAGE_ARABIC"])==0 || strcasecmp(ICL_LANGUAGE_CODE,$GLOBALS["LANGUAGE_PERSIAN"])==0){
 			$pdf->SetRTL(true);
 		}
 	}
@@ -75,7 +76,7 @@ function return_path_wo_file($path){
 * Add fonts to tcpdf
 */
 function install_fonts($path,$pdf){
-	$worked;
+	$worked = false;
 	$path = $path.$GLOBALS["DELIMITER"].$GLOBALS["FONTS"].$GLOBALS["DELIMITER"];
 	foreach (glob($path."*".$GLOBALS["EXT_TTF"]) as $file) {
 		if(has_font($file)){
@@ -153,24 +154,19 @@ function set_select(){
 	foreach (glob($path."*".$GLOBALS["EXT_TTF"]) as $file) {
 		$filename = basename($file,$GLOBALS["EXT_TTF"]);
 		$filename = strtolower($filename);
-		if(ICL_LANGUAGE_CODE!==null){
-			//for persian we use dejavusans
-			if(strcasecmp($filename, 'dejavusans') == 0){
-				if(strcasecmp(ICL_LANGUAGE_CODE, 'fa') == 0){
-					$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
-				}
-				else{
-					$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
-				}
+		//for persian we use dejavusans
+		if(strcasecmp($filename, 'dejavusans') == 0){
+			if(strcasecmp(ICL_LANGUAGE_CODE, 'fa') == 0){
+				$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
 			}
-			//for arabic we use aefurat
-			else if(strcasecmp($filename, 'aefurat') == 0){
-				if(strcasecmp(ICL_LANGUAGE_CODE, 'ar') == 0){
-					$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
-				}
-				else{
-					$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
-				}
+			else{
+				$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
+			}
+		}
+		//for arabic we use aefurat
+		else if(strcasecmp($filename, 'aefurat') == 0){
+			if(strcasecmp(ICL_LANGUAGE_CODE, 'ar') == 0){
+				$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
 			}
 			else{
 				$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
@@ -178,8 +174,8 @@ function set_select(){
 		}
 		else{
 			$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
-		}	
-	}
+		}
+	}	
 	echo($first.$selection);
 }
 
