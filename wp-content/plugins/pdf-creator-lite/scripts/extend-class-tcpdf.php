@@ -81,7 +81,12 @@ class SSA_PDF extends TCPDF
 				false
 			);
 		// Set font
-		$headerContent = '<br><p style="font-family:' . $this->text_font . '; font-size:10px; color:' . $this->text_hex . '; line-height:15px;">Page: '. $this->siteTitle . ' - Date: ' . $this->displayDate .'</p>';
+		$title = $this->siteTitle;
+		if(strlen($title)>100){
+			$title = substr($title,0,99);
+			$title .= '...';
+		}
+		$headerContent = '<br><p style="font-family:' . $this->text_font . '; font-size:15px; color:' . $this->text_hex . '; line-height:15px;">Page: '. $title . ' -  ' . $this->displayDate .'</p>';
         // Title
 
 		$this->writeHTMLCell(
@@ -98,7 +103,7 @@ class SSA_PDF extends TCPDF
 			false
 		);
 
-		$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' => array($this->text_rgb['red'], $this->text_rgb['green'], $this->text_rgb['blue']) );
+		$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' =>  array('R'=>255,'G'=>215,'B'=>0) );
 		$this->Line( 20, 23, 188, 23, $style );
 
 		/*####################################################
@@ -156,7 +161,7 @@ class SSA_PDF extends TCPDF
 		
 		$this->Cell( 173, 10, 'Page '.$this->getAliasNumPage(), 0, false, 'R', 0, '', 0, false, 'T', 'M' );
 		
-		$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' => array($this->text_rgb['red'], $this->text_rgb['green'], $this->text_rgb['blue']) );
+		$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' => array('R'=>255,'G'=>215,'B'=>0) );
 		$this->Line(20, 282, 188, 282, $style);
 	}
 	
