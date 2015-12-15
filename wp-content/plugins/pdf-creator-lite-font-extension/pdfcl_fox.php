@@ -16,6 +16,7 @@ require_once('fox_constants.php');
 function set_fonts($pdf){
 	$font = $pdf->text_font;
 	$path = __FILE__;				// --> ...wordpress\wp-content\plugins\pdf-creator-lite-font-extension\pdfcl_fox.php
+	$path = str_replace(fox_constants::FOX_DELIMITER_WINDOWS,fox_constants::FOX_DELIMITER,$path);
 	$path = dirname($path); 		// --> ...wordpress/wp-content/plugins/pdf-creator-lite-font-extension
 	install_fonts($path,$pdf);
 	$pdf->SetFont( $font, '', 11, '', true, true );
@@ -85,10 +86,13 @@ function has_font($file){
  * For each font in the plugins fonts-folder, add select boxes to the adminpage.php
  */
 function set_select(){
+
 	$first = '';
 	$selection = '';
 	$path = __FILE__;
+	$path = str_replace(fox_constants::FOX_DELIMITER_WINDOWS,fox_constants::FOX_DELIMITER,$path);
 	$path = dirname($path);
+	add_language();
 	$path = $path.fox_constants::FOX_DELIMITER.fox_constants::FOX_FONTS.fox_constants::FOX_DELIMITER; //--> ".../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/"
 	foreach (glob($path."*".fox_constants::FOX_EXT_TTF) as $file) {
 		$filename = basename($file,fox_constants::FOX_EXT_TTF);		//e.G.: basename("/etc/sudoers.d", ".d"). --> sudoers
@@ -114,6 +118,33 @@ function set_select(){
 		}
 	}	
 	echo($first.$selection);
+}
+
+function add_language(){
+
+	$args = array(
+			'sort_order' => 'ASC',
+			'sort_column' => 'menu_order',
+			'hierarchical' => 1,
+			'exclude' => '',
+			'include' => '',
+			'post_type' => 'page',
+			'post_status' => 'publish'
+	);
+	$pages = get_pages( $args );
+
+	echo '<script type="text/javascript">';
+	foreach ($pages as $page)
+	{
+		$original_ID_DE = icl_object_id( $page->ID,'post',false, 'de' );
+		$original_title_de = get_the_title( $original_ID_DE );
+		$original_ID_EN = icl_object_id( $page->ID,'post',false, 'en' );
+		$original_title_en = get_the_title( $original_ID_EN );
+		echo 'jQuery(\'#page'.$page->ID.'\').next("label").append(" -- <font color=\"blue\"><i>'.$original_title_de.'</i></font>");';
+		echo 'jQuery(\'#page'.$page->ID.'\').next("label").append(" -- <font color=\"brown\"><i>'.$original_title_en.'</i></font>");';
+	}
+	echo '</script>';
+
 }
 
 /****************************************/
