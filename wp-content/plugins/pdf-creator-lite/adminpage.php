@@ -121,7 +121,7 @@ function SSAPDF_drawAdminPage ()
 				'post_status' => 'publish'
 			);
 			$pages = get_pages( $args );
-			
+
 			echo '<div style="height:30px; border-bottom:1px solid #ccc;">';
 			echo '<input type="checkbox" value="true" id="checkAll" name="checkAll" checked="checked" /><label for="checkAll">Uncheck / Check All</label>';
 			echo '</div><br />';
