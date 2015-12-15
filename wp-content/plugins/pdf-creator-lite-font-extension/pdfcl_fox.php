@@ -6,38 +6,22 @@ Version: 1.2
 Author: Blanz
 Depends: pdf-creator-lite, PDF Creator LITE
 */
+require_once('fox_constants.php');
 
-$DELIMITER_WINDOWS = '\\';
-$DELIMITER = '/';
-$FONTS = 'fonts';
-$EXT_TTF='.ttf';
-$EXT_Z='.z';
-$EXT_PHP='.php';
-$EXT_CTG_Z='.ctg.z';
-$EXT_ERROR='ERROR';
-$FONT_DIRECTORY='pdf-creator-lite/tcpdf/fonts/';
-$LANGUAGE_ARABIC='ar';
-$LANGUAGE_PERSIAN='fa';
-
-
-/****************************************/
-/*        Import new fonts              */
-/****************************************/                                        
-
+/**
+ *
+ * @param $pdf
+ * @return bool
+ */
 function set_fonts($pdf){
 	$font = $pdf->text_font;
-	$path = __FILE__;	// --> ...wordpress\wp-content\plugins\pdf-creator-lite-font-extension\pdfcl_fox.php
-	$path = return_path_wo_file($path); // --> ...wordpress/wp-content/plugins/pdf-creator-lite-font-extension
-	if($path === false){
-		//bad path
-		error_log(print_r('BAD PATH!', true));
-		return false;
-	}
+	$path = __FILE__;				// --> ...wordpress\wp-content\plugins\pdf-creator-lite-font-extension\pdfcl_fox.php
+	$path = dirname($path); 		// --> ...wordpress/wp-content/plugins/pdf-creator-lite-font-extension
 	install_fonts($path,$pdf);
 	$pdf->SetFont( $font, '', 11, '', true, true );
 	$pdf->SetRTL(false);
 	if(ICL_LANGUAGE_CODE!==null){
-		if(strcasecmp(ICL_LANGUAGE_CODE,$GLOBALS["LANGUAGE_ARABIC"])==0 || strcasecmp(ICL_LANGUAGE_CODE,$GLOBALS["LANGUAGE_PERSIAN"])==0){
+		if(ICL_LANGUAGE_CODE==fox_constants::FOX_LANGUAGE_ARABIC || ICL_LANGUAGE_CODE==fox_constants::FOX_LANGUAGE_PERSIAN){
 			$pdf->SetRTL(true);
 		}
 	}
@@ -45,127 +29,80 @@ function set_fonts($pdf){
 }
 
 /**
-* 1) Remove the file from the path to get the directory
-* e.G.: 
-* input:	c:\abc\def\ghi.jkl
-* output:	c:\abc\def
-*
-* 2) Normalize path (for linux)
-* e.G.:
-* input:	c:\abc\def
-* output:	c:/abc/def
-*/
-function return_path_wo_file($path){
-	$path = str_replace($GLOBALS["DELIMITER_WINDOWS"],$GLOBALS["DELIMITER"],$path);
-	$last = strlen($path)-1;
-	$first = 0;
-	$path=strrev($path);
-	$x = strpos($path,$GLOBALS["DELIMITER"]);
-	if($x===false){
-		//invalid path
-		error_log(print_r('INVALID PATH!', true));
-		return false;
-	}
-	$x = $last-$x;
-	$path = strrev($path);
-	$path = substr($path,$first,$x);
-	return $path;
-}
-
-/**
-* Add fonts to tcpdf
-*/
+ * Add fonts to tcpdf
+ * @param $path: path where the font has to be installed
+ * @param $pdf: object the font is added to
+ */
 function install_fonts($path,$pdf){
 	$worked = false;
-	$path = $path.$GLOBALS["DELIMITER"].$GLOBALS["FONTS"].$GLOBALS["DELIMITER"];
-	foreach (glob($path."*".$GLOBALS["EXT_TTF"]) as $file) {
+	$path = $path.fox_constants::FOX_DELIMITER.fox_constants::FOX_FONTS.fox_constants::FOX_DELIMITER;
+	foreach (glob($path."*".fox_constants::FOX_EXT_TTF) as $file) {
 		if(has_font($file)){
 			if(file_exists($file)){
 				$worked = $pdf->addTTFfont($file);
 				//something went wrong with the font --> add ERROR file extension
 				if($worked === false){
 					$filename = basename($file);
-					$new_filename = $filename.$GLOBALS["EXT_ERROR"];
+					$new_filename = $filename.fox_constants::FOX_EXT_ERROR;
 					$filename = $path.$filename;
 					$new_filename = $path.$new_filename;
 					rename($filename,$new_filename);
 				}
 			}						
 		}
-		//else font already added
+		//else font already added --> do nothing
 	}
 }
 
 /**
-* check if tcpdf has the font installed already
-* e.G.: 
-* input: /wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/dejavusans.ttf
-* returns true if font is not exisiting
-*/
+ * check if tcpdf has the font installed already
+ * e.G.:
+ * input: /wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/dejavusans.ttf
+ * returns true if font is not exisiting
+ *
+ * @param $file: the font which has to be checked regarding existance
+ * @return bool
+ */
 function has_font($file){
-	$path = return_path_wo_file($file); // --> .../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts
-	if($path === false){
-		error_log(print_r('INVALID PATH!', true));
-		return false;
-	}
+	$path = dirname($file); 		// --> .../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts
 	$filename = basename($file);	// --> e.g.: dejavusans.ttf
-	$filename = str_replace($GLOBALS["EXT_TTF"],'',$filename); // --> e.g.: defavusans
+	$filename = str_replace(fox_constants::FOX_EXT_TTF,'',$filename); // --> e.g.: defavusans
 	$filename = strtolower($filename);
-	/**
-	* 
-	* navigate from 
-	*    ".../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/"
-	* to ".../wordpress/wp-content/plugins/pdf-creator-lite/tcpdf/fonts/"
-	*/
-	$path = return_path_wo_file($path); // --> .../wordpress/wp-content/plugins/pdf-creator-lite-font-extension
-	if($path === false){
-		error_log(print_r('INVALID PATH!', true));
-		return false;
-	}
-	$path = return_path_wo_file($path);  // --> .../wordpress/wp-content/plugins
-	if($path === false){
-		error_log(print_r('INVALID PATH!', true));
-		return false;
-	}
-	$path .= $GLOBALS["DELIMITER"].$GLOBALS["FONT_DIRECTORY"]; // --> .../wordpress/wp-content/plugins/pdf-creator-lite/tcpdf/fonts/
-	//$path = strtolower($path);
+	$path = dirname($path); 		// --> .../wordpress/wp-content/plugins/pdf-creator-lite-font-extension
+	$path = dirname($path);  		// --> .../wordpress/wp-content/plugins
+	$path .= fox_constants::FOX_DELIMITER.fox_constants::FOX_FONT_DIRECTORY; // --> .../wordpress/wp-content/plugins/pdf-creator-lite/tcpdf/fonts/
+
 	//TODO TCPDF might modify the filename. E.g.: by removing '-'
-	if(file_exists($path.$filename.$GLOBALS["EXT_CTG_Z"]) &&
-		file_exists($path.$filename.$GLOBALS["EXT_Z"]) &&
-		file_exists($path.$filename.$GLOBALS["EXT_PHP"])){
+	if(file_exists($path.$filename.fox_constants::FOX_EXT_CTG_Z) &&
+		file_exists($path.$filename.fox_constants::FOX_EXT_Z) &&
+		file_exists($path.$filename.fox_constants::FOX_EXT_PHP)){
 			return false;
 	}
 	return true;
 }
 
-/****************************************/
-/*     Add select for each new font     */
-/****************************************/ 
-
 /**
-* For each font in the plugins fonts-folder, add select boxes to the adminpage.php
-*/
+ * For each font in the plugins fonts-folder, add select boxes to the adminpage.php
+ */
 function set_select(){
 	$first = '';
 	$selection = '';
 	$path = __FILE__;
-	$path = return_path_wo_file($path);
-	$path = $path.$GLOBALS["DELIMITER"].$GLOBALS["FONTS"].$GLOBALS["DELIMITER"]; //--> ".../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/"
-	foreach (glob($path."*".$GLOBALS["EXT_TTF"]) as $file) {
-		$filename = basename($file,$GLOBALS["EXT_TTF"]);
+	$path = dirname($path);
+	$path = $path.fox_constants::FOX_DELIMITER.fox_constants::FOX_FONTS.fox_constants::FOX_DELIMITER; //--> ".../wordpress/wp-content/plugins/pdf-creator-lite-font-extension/fonts/"
+	foreach (glob($path."*".fox_constants::FOX_EXT_TTF) as $file) {
+		$filename = basename($file,fox_constants::FOX_EXT_TTF);		//e.G.: basename("/etc/sudoers.d", ".d"). --> sudoers
 		$filename = strtolower($filename);
-		//for persian we use dejavusans
-		if(strcasecmp($filename, 'dejavusans') == 0){
-			if(strcasecmp(ICL_LANGUAGE_CODE, 'fa') == 0){
+		if($filename == fox_constants::FOX_DEJAVUSANS){				//for persian we use dejavusans
+			if(ICL_LANGUAGE_CODE == fox_constants::FOX_LANGUAGE_PERSIAN){
 				$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
 			}
 			else{
 				$selection.= '<option value="'.$filename.'">'.$filename.'</option>';
 			}
 		}
-		//for arabic we use aefurat
-		else if(strcasecmp($filename, 'aefurat') == 0){
-			if(strcasecmp(ICL_LANGUAGE_CODE, 'ar') == 0){
+		else if($filename == fox_constants::FOX_AEFURAT){				//for arabic we use aefurat
+			if(ICL_LANGUAGE_CODE == fox_constants::FOX_LANGUAGE_ARABIC){
 				$first = '<option value="'.$filename.'" selected>'.$filename.'</option>';
 			}
 			else{
@@ -186,4 +123,3 @@ function set_select(){
 add_filter('fox_modify_pdf','set_fonts');
 
 add_action('fox_add_fonts','set_select');
-?>
