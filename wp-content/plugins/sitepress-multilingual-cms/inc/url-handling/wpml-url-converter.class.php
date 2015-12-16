@@ -16,7 +16,6 @@ abstract class WPML_URL_Converter {
 
 	protected $default_language;
 	protected $active_languages;
-	protected $current_lang;
 	protected $absolute_home;
 	/** @var  string[] $cache */
 	protected $cache;
@@ -28,11 +27,19 @@ abstract class WPML_URL_Converter {
 	 */
 	public function __construct($default_language, $hidden_languages){
 		global $wpml_language_resolution;
+		add_filter( 'admin_url', array( $this, 'admin_url_filter' ), 1, 2 );
 		add_filter( 'term_link', array( $this, 'tax_permalink_filter' ), 1, 3 );
-		$this->absolute_home = $this->get_abs_home();
 		$this->default_language = $default_language;
 		$this->hidden_languages = (array)$hidden_languages;
 		$this->active_languages = $wpml_language_resolution->get_active_language_codes();
+	}
+
+	public function admin_url_filter( $url, $path ) {
+		if ( 'admin-ajax.php' === $path ) {
+			$url = $this->convert_url( $url );
+		}
+
+		return $url;
 	}
 
 	/**
@@ -121,9 +128,10 @@ abstract class WPML_URL_Converter {
 		$cache_key_args = array( $url, $lang_code );
 		$cache_key      = md5( wp_json_encode( $cache_key_args ) );
 		$cache_group    = 'convert_url';
-
-		$cache_found = false;
-		$new_url     = wp_cache_get( $cache_key, $cache_group, false, $cache_found );
+		$cache_found    = false;
+		$cache          = new WPML_WP_Cache( $cache_group );
+		
+		$new_url        = $cache->get( $cache_key, $cache_found );
 
 		if ( ! $cache_found ) {
 			$language_from_url = $this->get_language_from_url( $url );
@@ -133,7 +141,7 @@ abstract class WPML_URL_Converter {
 				$new_url = $this->convert_url_string( $url, $lang_code );
 			}
 			$new_url = $this->fix_trailing_slash( $new_url, $url );
-			wp_cache_set( $cache_key, $new_url, $cache_group );
+			$cache->set( $cache_key, $new_url );
 		}
 
 		return $new_url;
@@ -248,18 +256,21 @@ abstract class WPML_URL_Converter {
 	public function tax_permalink_filter( $permalink, $tag, $taxonomy ) {
 		/** @var WPML_Term_Translation $wpml_term_translations */
 		global $wpml_term_translations;
-		$tag = is_object($tag) ? $tag : get_term($tag, $taxonomy);
-		$tag_id   = $tag ? $tag->term_taxonomy_id : 0;
+		
+		$tag                  = is_object( $tag ) ? $tag : get_term( $tag, $taxonomy );
+		$tag_id               = $tag ? $tag->term_taxonomy_id : 0;
 		$cached_permalink_key =  $tag_id . '.' . $taxonomy;
-		$found  = false;
-		$cached_permalink = wp_cache_get($cached_permalink_key, 'icl_tax_permalink_filter', $found);
-		if($found === true) {
+		$cache_group          = 'icl_tax_permalink_filter';
+		$found                = false;
+		$cache                = new WPML_WP_Cache( $cache_group );
+		$cached_permalink     = $cache->get( $cached_permalink_key, $found );
+		if( $found === true ) {
 			return $cached_permalink;
 		}
-		$term_language = $tag_id ? $wpml_term_translations->get_element_lang_code($tag_id) : false;
+		$term_language = $tag_id ? $wpml_term_translations->get_element_lang_code( $tag_id ) : false;
 		$permalink = (bool) $term_language === true  ? $this->convert_url( $permalink, $term_language ) : $permalink;
 
-		wp_cache_set($cached_permalink_key, $permalink, 'icl_tax_permalink_filter');
+		$cache->set( $cached_permalink_key, $permalink );
 
 		return $permalink;
 	}

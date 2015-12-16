@@ -73,7 +73,7 @@ class WPML_Translation_Editor extends WPML_WPDB_And_SP_User {
 					$posts_in_trid = $wpml_post_translations->get_element_translations( false, $trid );
 					$post_id       = isset( $posts_in_trid[ $source_language_code ] ) ? $posts_in_trid[ $source_language_code ] : false;
 				}
-				$blog_translators = new WPML_TM_Blog_Translators( $wpdb );
+				$blog_translators = wpml_tm_load_blog_translators();
 				$args             = array(
 					'lang_from' => $source_language_code,
 					'lang_to'   => $language_code,

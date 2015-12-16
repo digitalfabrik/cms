@@ -865,6 +865,28 @@ function wpml_get_language_information( $empty_value = null, $post_id = null ) {
 	return $info;
 }
 
+/** This action is documented in  */
+add_filter( 'wpcf_meta_box_post_type', 'wpml_wpcf_meta_box_order_defaults' );
+
+/**
+ * Add metabox definition to edit post type in Types
+ * @since x.x.x
+ *
+ * @param array $boxes Meta boxes in Types.
+ *
+ * @return array Meta boxes in Types.
+ */
+function wpml_wpcf_meta_box_order_defaults( $boxes ) {
+	$boxes['wpml'] = array(
+		'callback' => 'wpml_custom_post_translation_options',
+		'title'    => __( 'Translation', 'sitepress' ),
+		'default'  => 'normal',
+		'priority' => 'low',
+	);
+
+	return $boxes;
+}
+
 /**
  * @todo: [WPML 3.3] refactor in 3.3
  *
@@ -872,10 +894,11 @@ function wpml_get_language_information( $empty_value = null, $post_id = null ) {
  *
  * @return string
  */
-function wpml_custom_post_translation_options( $type_id ) {
+function wpml_custom_post_translation_options() {
 	global $sitepress, $sitepress_settings;
+	$type_id = isset( $_GET['wpcf-post-type'] ) ? $_GET['wpcf-post-type'] : '';
 
-	$out = '<table id="wpcf-types-form-visibility-table" class="wpcf-types-form-table widefat"><thead><tr><th>' . __( 'Translation', 'sitepress' ) . '</th></tr></thead><tbody><tr><td>';
+	$out = '';
 
 	$type = get_post_type_object( $type_id );
 
@@ -892,10 +915,10 @@ function wpml_custom_post_translation_options( $type_id ) {
 
 		$out .= sprintf( __( '%s is translated via WPML. %sClick here to change translation options.%s', 'sitepress' ), '<strong>' . $type->labels->singular_name . '</strong>', '<a href="' . $link . '">', '</a>' );
 
-		if ( $type->rewrite[ 'enabled' ] ) {
+		if ( $type->rewrite['enabled'] ) {
 
-			if ( $sitepress_settings[ 'posts_slug_translation' ][ 'on' ] ) {
-				if ( empty( $sitepress_settings[ 'posts_slug_translation' ][ 'types' ][ $type_id ] ) ) {
+			if ( $sitepress_settings['posts_slug_translation']['on'] ) {
+				if ( empty( $sitepress_settings['posts_slug_translation']['types'][ $type_id ] ) ) {
 					$out .= '<ul><li>' . __( 'Slugs are currently not translated.', 'sitepress' ) . '<li></ul>';
 				} else {
 					$out .= '<ul><li>' . __( 'Slugs are currently translated. Click the link above to edit the translations.', 'sitepress' ) . '<li></ul>';
@@ -908,8 +931,6 @@ function wpml_custom_post_translation_options( $type_id ) {
 
 		$out .= sprintf( __( '%s is not translated. %sClick here to make this post type translatable.%s', 'sitepress' ), '<strong>' . $type->labels->singular_name . '</strong>', '<a href="' . $link . '">', '</a>' );
 	}
-
-	$out .= '</tbody></table>';
 
 	return $out;
 }
@@ -1070,11 +1091,24 @@ function wpml_the_language_input_field() {
  * @return string|null HTML input field or null
  * @use \SitePress::api_hooks
  */
-function wpml_get_language_input_field_action() {
+function wpml_add_language_form_field_action() {
+	echo wpml_get_language_form_field();
+}
+
+function wpml_language_form_field_shortcode() {
+	return wpml_get_language_form_field();
+}
+
+function wpml_get_language_form_field() {
+	$language_form_field = '';
 	global $sitepress;
 	if ( isset( $sitepress ) ) {
-		echo "<input type='hidden' name='lang' value='" . $sitepress->get_current_language() . "' />";
+		$current_language    = $sitepress->get_current_language();
+		$language_form_field = "<input type='hidden' name='lang' value='" . $current_language . "' />";
+		$language_form_field = apply_filters( 'wpml_language_form_input_field', $language_form_field, $current_language );
 	}
+
+	return $language_form_field;
 }
 
 /**

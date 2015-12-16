@@ -1,27 +1,37 @@
 <?php
 
-class WPML_TM_API extends WPML_WPDB_User {
-	/**
-	 * @var TranslationManagement
-	 */
+class WPML_TM_API {
+
+	/** @var TranslationManagement */
 	private $TranslationManagement;
+
+	/** @var WPML_TM_Blog_Translators $blog_translators */
+	private $blog_translators;
 
 	/**
 	 * WPML_TM_API constructor.
 	 *
-	 * @param wpdb                  $wpdb
-	 * @param TranslationManagement $TranslationManagement
+	 * @param WPML_TM_Blog_Translators $blog_translators
+	 * @param TranslationManagement    $TranslationManagement
 	 */
-	public function __construct( &$wpdb, &$TranslationManagement ) {
-		parent::__construct( $wpdb );
+	public function __construct( &$blog_translators, &$TranslationManagement ) {
+		$this->blog_translators      = &$blog_translators;
 		$this->TranslationManagement = &$TranslationManagement;
-		$this->init_hooks();
 	}
 
 	public function init_hooks() {
-		add_filter( 'wpml_is_translator', array( $this, 'is_translator_filter' ), 10, 3 );
-		add_filter( 'wpml_translator_languages_pairs', array( $this, 'translator_languages_pairs_filter' ), 10, 2 );
-		add_action( 'wpml_edit_translator', array( $this, 'edit_translator_action' ), 10, 2 );
+		add_filter( 'wpml_is_translator', array(
+			$this,
+			'is_translator_filter'
+		), 10, 3 );
+		add_filter( 'wpml_translator_languages_pairs', array(
+			$this,
+			'translator_languages_pairs_filter'
+		), 10, 2 );
+		add_action( 'wpml_edit_translator', array(
+			$this,
+			'edit_translator_action'
+		), 10, 2 );
 	}
 
 	/**
@@ -32,12 +42,10 @@ class WPML_TM_API extends WPML_WPDB_User {
 	 * @return bool
 	 */
 	public function is_translator_filter( $default, $user, $args ) {
-		$blog_translators = new WPML_TM_Blog_Translators( $this->wpdb );
-
 		$result  = $default;
 		$user_id = $this->get_user_id( $user );
 		if ( is_numeric( $user_id ) ) {
-			$result = $blog_translators->is_translator( $user_id, $args );
+			$result = $this->blog_translators->is_translator( $user_id, $args );
 		}
 
 		return $result;
@@ -54,9 +62,8 @@ class WPML_TM_API extends WPML_WPDB_User {
 		$result  = $default;
 		$user_id = $this->get_user_id( $user );
 		if ( is_numeric( $user_id ) ) {
-			$blog_translators = new WPML_TM_Blog_Translators( $this->wpdb );
-			if ( $blog_translators->is_translator( $user_id ) ) {
-				$result = get_user_meta( $user_id, $this->wpdb->prefix . 'language_pairs', true );
+			if ( $this->blog_translators->is_translator( $user_id ) ) {
+				$result = $this->blog_translators->get_language_pairs( $user_id );
 			}
 		}
 
@@ -66,7 +73,7 @@ class WPML_TM_API extends WPML_WPDB_User {
 	/**
 	 * @param $user
 	 *
-	 * @return mixed
+	 * @return int
 	 */
 	private function get_user_id( $user ) {
 		$user_id = $user;

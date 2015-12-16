@@ -7,7 +7,7 @@
 /**
  * Class WPML_Pro_Translation
  */
-class WPML_Pro_Translation {
+class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 
 	public $errors = array();
 	/** @var TranslationManagement $tmg */
@@ -18,14 +18,25 @@ class WPML_Pro_Translation {
 
 	/**
 	 * WPML_Pro_Translation constructor.
+	 *
+	 * @param WPML_Translation_Job_Factory $job_factory
 	 */
-	function __construct() {
-		global $iclTranslationManagement;
-		$this->tmg             =& $iclTranslationManagement;
-		$this->cms_id_helper   = new WPML_TM_CMS_ID();
+	function __construct( &$job_factory ) {
+		parent::__construct( $job_factory );
+		global $iclTranslationManagement, $wpdb;
+		$this->tmg                  =& $iclTranslationManagement;
+		$this->xliff_reader_factory = new WPML_TM_Xliff_Reader_Factory( $this->job_factory );
+		$wpml_tm_records            = new WPML_TM_Records( $wpdb );
+		$this->cms_id_helper        = new WPML_TM_CMS_ID( $wpml_tm_records, $job_factory );;
 		add_filter( 'xmlrpc_methods', array( $this, 'custom_xmlrpc_methods' ) );
-		add_action( 'post_submitbox_start', array( $this, 'post_submitbox_start' ) );
-		add_action( 'icl_ajx_custom_call', array( $this, 'ajax_calls' ), 10, 2 );
+		add_action( 'post_submitbox_start', array(
+			$this,
+			'post_submitbox_start'
+		) );
+		add_action( 'icl_ajx_custom_call', array(
+			$this,
+			'ajax_calls'
+		), 10, 2 );
 	}
 
 	/**
@@ -192,6 +203,7 @@ class WPML_Pro_Translation {
 	 * @return bool
 	 */
 	function cancel_translation( $rid, $cms_id ) {
+		/** @var WPML_String_Translation $WPML_String_Translation */
 		global $sitepress, $wpdb, $WPML_String_Translation, $iclTranslationManagement;
 
 		$res           = false;
@@ -291,17 +303,14 @@ class WPML_Pro_Translation {
 
 			try {
 				/** @var $job_xliff_translation WP_Error|array */
-				$xliff                 = new WPML_TM_xliff();
-				$job_xliff_translation = $xliff->get_job_xliff_translation( $translation );
+				$job_xliff_translation = $this->xliff_reader_factory
+					->general_xliff_import()->import( $translation, $translation_id );
 				if ( is_wp_error( $job_xliff_translation ) ) {
 					$this->add_error( $job_xliff_translation->get_error_message() );
 
 					return false;
-				} else {
-					$data = $job_xliff_translation[1];
 				}
-				wpml_tm_save_data( $data );
-
+				wpml_tm_save_data( $job_xliff_translation );
 				$translations = $sitepress->get_element_translations( $translation_info->trid, $translation_info->element_type, false, true, true );
 				if ( isset( $translations[ $translation_info->language_code ] ) ) {
 					$translation = $translations[ $translation_info->language_code ];
@@ -690,17 +699,12 @@ class WPML_Pro_Translation {
         echo '</p>';
     }
 
-	function process_translated_string( $translation_proxy_job_id, $language ) {
-
-		$project     = TranslationProxy::get_current_project( );
+	private function process_translated_string( $translation_proxy_job_id, $language ) {
+		$project     = TranslationProxy::get_current_project();
 		$translation = $project->fetch_translation( $translation_proxy_job_id );
 		$translation = apply_filters( 'icl_data_from_pro_translation', $translation );
-
-		$ret = false;
-
-		$xliff = new WPML_TM_xliff();
-		$translation = $xliff->get_strings_xliff_translation( $translation );
-
+		$ret         = false;
+		$translation = $this->xliff_reader_factory->string_xliff_reader()->get_data( $translation );
 		if ( $translation ) {
 			$ret = icl_translation_add_string_translation( $translation_proxy_job_id, $translation, $language );
 			if ( $ret ) {

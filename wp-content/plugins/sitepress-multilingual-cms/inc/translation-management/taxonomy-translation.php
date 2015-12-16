@@ -43,7 +43,7 @@ require ICL_PLUGIN_PATH . '/menu/term-taxonomy-menus/wpml-translation-tree.class
 			$output .= '<div id="icon-wpml" class="icon32" style="clear:both"><br/></div>';
 
 			if ( $this->tax_selector ) {
-				$output .= '<h2>' . __( 'Taxonomy Translation', 'sitepress' ) . '</h2>';
+				$output .= '<h1>' . __( 'Taxonomy Translation', 'sitepress' ) . '</h1>';
 
 				$output .= '<br/>';
 			}

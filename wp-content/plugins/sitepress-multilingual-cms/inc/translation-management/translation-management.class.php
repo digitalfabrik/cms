@@ -3,9 +3,6 @@
  * @package wpml-core
  */
 
-if ( ! class_exists( 'WPML_Config' ) ) {
-	require ICL_PLUGIN_PATH . '/inc/wpml-config/wpml-config.class.php';
-}
 if ( ! class_exists( 'WPML_Translator' ) ) {
 	require_once ICL_PLUGIN_PATH . '/inc/translation-management/wpml-translator.class.php';
 }

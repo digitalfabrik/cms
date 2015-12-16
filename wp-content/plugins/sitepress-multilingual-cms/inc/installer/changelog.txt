@@ -1,3 +1,13 @@
+= 1.7.2 =
+* Added an exception to handle the case when Types embedded is installer from Toolset Installer and its included Installer version overrides the one running the Toolset setup wizard
+
+= 1.7.1 =
+* Added an exception for the case of Types 1.8.9 (Installer 1.7.0) together with older WPML (older Installer)
+
+= 1.7.0 =
+* New format for the products data file.
+* Other fixes
+
 = 1.6.8 =
 * Sanitized an input that was a potential security issue
 

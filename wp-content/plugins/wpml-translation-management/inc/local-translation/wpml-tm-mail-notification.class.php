@@ -77,7 +77,6 @@ class WPML_TM_Mail_Notification extends WPML_WPDB_And_SP_User {
 							);
 					}
 					$body_to_send .= $footer;
-					$body_to_send = apply_filters( 'WPML_new_job_notification_body', $body_to_send, $tj_url );
 					$attachments  = isset( $content['attachment'] ) ? $content['attachment'] : array();
 					$attachments  = apply_filters( 'WPML_new_job_notification_attachments', $attachments );
 					$this->sitepress->get_wp_api()->wp_mail( $to, $subject, $body_to_send, '', $attachments );

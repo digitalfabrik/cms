@@ -23,12 +23,10 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 	function __construct( $job_id, $batch_id = null, &$tm_instance = null, &$job_factory = null ) {
 		parent::__construct( $job_id, $batch_id, $tm_instance );
 		$this->original_del_text = __( "The original has been deleted!", "sitepress" );
-
 		if ( ! $job_factory ) {
 			global $wpml_translation_job_factory;
 			$job_factory = &$wpml_translation_job_factory;
 		}
-
 		$this->job_factory = $job_factory;
 	}
 
@@ -44,13 +42,13 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		$data_array['status']               = $this->get_status();
 		$data_array['translation_edit_url'] = $this->get_url();
 		$data_array['original_url']         = $this->get_url( true );
-		$data_array['post_title']           = $this->get_title();
+		$data_array['post_title']           = esc_html( $this->get_title() );
 
 		return $data_array;
 	}
 
 	function to_xliff_file() {
-		$xliff = new WPML_TM_xliff();
+		$xliff = new WPML_TM_Xliff_Writer( $this->job_factory );
 
 		return $xliff->get_job_xliff_file( $this->get_id() );
 	}
@@ -77,12 +75,21 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		return $translation_id;
 	}
 
-	function save_to_element( $complete = false ) {
+	/**
+	 * Saves the job data in this object to the database (e.g. to a post)
+	 *
+	 * @param bool $complete whether or not to set the status
+	 *                       of the target element to complete
+	 */
+	public function save_to_element( $complete = false ) {
+		global $wpdb;
+
+		$wpml_tm_records  = new WPML_TM_Records( $wpdb );
 		$save_data_action = new WPML_Save_Translation_Data_Action( array(
 			'job_id'   => $this->get_id(),
 			'complete' => $complete,
 			'fields'   => array()
-		) );
+		), $wpml_tm_records );
 		$save_data_action->save_translation();
 	}
 
@@ -90,7 +97,6 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 	 * @return int
 	 */
 	function estimate_word_count() {
-
 		$words           = 0;
 		$lang_code       = $this->get_source_language_code();
 		$is_asian_lang   = in_array( $lang_code, $this->asian_languages, true );

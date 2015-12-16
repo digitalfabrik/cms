@@ -3,35 +3,39 @@
 /**
  * @return WPML_TM_Element_Translations
  */
-function wpml_tm_load_element_translations(){
-	global $wpml_tm_element_translations;
+function wpml_tm_load_element_translations() {
+	global $wpml_tm_element_translations, $wpdb;
 
-	if(!isset($wpml_tm_element_translations)){
+	if ( ! isset( $wpml_tm_element_translations ) ) {
 		require WPML_TM_PATH . '/inc/core/wpml-tm-element-translations.class.php';
-		$wpml_tm_element_translations = new WPML_TM_Element_Translations();
+		$tm_records                   = new WPML_TM_Records( $wpdb );
+		$wpml_tm_element_translations = new WPML_TM_Element_Translations( $tm_records );
+		$wpml_tm_element_translations->init_hooks();
 	}
 
 	return $wpml_tm_element_translations;
 }
 
 function wpml_tm_load_status_display_filter() {
-	global $wpml_tm_status_display_filter, $iclTranslationManagement, $sitepress, $wpdb;
+	global $wpml_tm_status_display_filter, $wpml_post_translations, $iclTranslationManagement, $sitepress, $wpdb;
 
-	new WPML_TM_API( $wpdb, $iclTranslationManagement );
-
-	if ( !isset( $wpml_tm_status_display_filter ) ) {
-		$user_id                       = get_current_user_id ();
-		$lang_pairs                    = get_user_meta ( $user_id, $wpdb->prefix . 'language_pairs', true );
+	$blog_translators = wpml_tm_load_blog_translators();
+	$tm_api           = new WPML_TM_API( $blog_translators, $iclTranslationManagement );
+	$tm_api->init_hooks();
+	if ( ! isset( $wpml_tm_status_display_filter ) ) {
+		$status_helper                 = wpml_get_post_status_helper();
+		$job_factory                   = wpml_tm_load_job_factory();
 		$wpml_tm_status_display_filter = new WPML_TM_Translation_Status_Display(
-			$user_id,
-			current_user_can ( 'manage_options' ),
-			$lang_pairs,
-			$sitepress->get_current_language (),
-			$sitepress->get_active_languages ()
+			$wpdb,
+			$sitepress,
+			$wpml_post_translations,
+			$status_helper,
+			$job_factory,
+			$tm_api
 		);
 	}
 
-	$wpml_tm_status_display_filter->init ( false );
+	$wpml_tm_status_display_filter->init();
 }
 
 /**
@@ -62,6 +66,17 @@ function wpml_tm_load_tp_networking() {
 }
 
 /**
+ * @return WPML_TM_Blog_Translators
+ */
+function wpml_tm_load_blog_translators() {
+	global $wpdb, $sitepress;
+
+	$tm_records = new WPML_TM_Records( $wpdb );
+
+	return new WPML_TM_Blog_Translators( $sitepress, $tm_records );
+}
+
+/**
  * @return WPML_TM_Mail_Notification
  */
 function wpml_tm_init_mail_notifications() {
@@ -69,7 +84,7 @@ function wpml_tm_init_mail_notifications() {
 
 	if ( ! isset( $wpml_tm_mailer ) ) {
 		require WPML_TM_PATH . '/inc/local-translation/wpml-tm-mail-notification.class.php';
-		$blog_translators         = new WPML_TM_Blog_Translators( $wpdb );
+		$blog_translators         = wpml_tm_load_blog_translators();
 		$iclTranslationManagement = $iclTranslationManagement ? $iclTranslationManagement : wpml_load_core_tm();
 		if ( empty( $iclTranslationManagement->settings ) ) {
 			$iclTranslationManagement->init();
@@ -101,6 +116,21 @@ function wpml_tm_load_tm_dashboard_ajax(){
 	return $wpml_tm_dashboard_ajax;
 }
 
+/**
+ * @return WPML_Translation_Job_Factory
+ */
+function wpml_tm_load_job_factory() {
+	global $wpml_translation_job_factory, $wpdb;
+
+	if ( ! isset( $wpml_translation_job_factory ) ) {
+		$tm_records                   = new WPML_TM_Records( $wpdb );
+		$wpml_translation_job_factory = new WPML_Translation_Job_Factory( $tm_records );
+		$wpml_translation_job_factory->init_hooks();
+	}
+
+	return $wpml_translation_job_factory;
+}
+
 if ( defined( 'DOING_AJAX' ) ) {
     $wpml_tm_dashboard_ajax = wpml_tm_load_tm_dashboard_ajax();
     add_action( 'init', array( $wpml_tm_dashboard_ajax, 'init_ajax_actions' ) );
@@ -112,33 +142,56 @@ if ( defined( 'DOING_AJAX' ) ) {
 }
 
 function tm_after_load() {
-	require WPML_TM_PATH . '/inc/actions/wpml-tm-action-helper.class.php';
-	require WPML_TM_PATH . '/inc/translation-jobs/collections/wpml-abstract-job-collection.class.php';
-	require WPML_TM_PATH . '/inc/translation-proxy/wpml-translation-basket.class.php';
-	require WPML_TM_PATH . '/inc/translation-jobs/wpml-translation-batch.class.php';
-	require WPML_TM_PATH . '/inc/translation-jobs/wpml-translation-job-factory.class.php';
-	require WPML_TM_PATH . '/inc/translation-proxy/translationproxy.class.php';
-	require WPML_TM_PATH . '/inc/ajax.php';
+	global $wpml_tm_translation_status, $wpdb;
 
-	global $wpml_translation_job_factory, $wpdb, $wpml_tm_translation_status;
-	$wpml_translation_job_factory = new WPML_Translation_Job_Factory( $wpdb );
-	wpml_tm_init_mail_notifications();
-	wpml_tm_load_element_translations();
-	$wpml_tm_translation_status = new WPML_TM_Translation_Status();
-	$wpml_tm_translation_status->init();
-	add_action( 'wpml_pre_status_icon_display', 'wpml_tm_load_status_display_filter' );
-	require WPML_TM_PATH . '/inc/wpml-private-actions.php';
+	if ( ! isset( $wpml_tm_translation_status ) ) {
+		require WPML_TM_PATH . '/inc/actions/wpml-tm-action-helper.class.php';
+		require WPML_TM_PATH . '/inc/translation-jobs/collections/wpml-abstract-job-collection.class.php';
+		require WPML_TM_PATH . '/inc/translation-proxy/wpml-translation-basket.class.php';
+		require WPML_TM_PATH . '/inc/translation-jobs/wpml-translation-batch.class.php';
+		require WPML_TM_PATH . '/inc/translation-proxy/translationproxy.class.php';
+		require WPML_TM_PATH . '/inc/ajax.php';
+		wpml_tm_load_job_factory();
+		wpml_tm_init_mail_notifications();
+		wpml_tm_load_element_translations();
+		$tm_records                 = new WPML_TM_Records( $wpdb );
+		$wpml_tm_translation_status = new WPML_TM_Translation_Status( $tm_records );
+		$wpml_tm_translation_status->init();
+		add_action( 'wpml_pre_status_icon_display', 'wpml_tm_load_status_display_filter' );
+		require WPML_TM_PATH . '/inc/wpml-private-actions.php';
+	}
 }
 
 function wpml_tm_load_dashboard_widget() {
 	if ( is_admin() ) {
 		global $pagenow;
 		if ( $pagenow === 'index.php' ) {
-			global $sitepress, $wpdb;
-			$widget = new WPML_TM_CPT_Dashboard_Widget( $wpdb, $sitepress );
+			global $sitepress, $wp_taxonomies;
+			$widget = new WPML_TM_CPT_Dashboard_Widget( $sitepress, $wp_taxonomies );
 			echo $widget->render();
 		}
 	}
 }
 
 add_action( 'icl_dashboard_widget_notices', 'wpml_tm_load_dashboard_widget' );
+
+/**
+ * @return WPML_TM_Xliff_Frontend
+ */
+function setup_xliff_frontend() {
+	global $sitepress;
+
+	$job_factory    = wpml_tm_load_job_factory();
+	$xliff_frontend = new WPML_TM_Xliff_Frontend( $job_factory, $sitepress );
+	add_action(
+		'init', array( $xliff_frontend, 'init' ),
+		( isset( $_POST['xliff_upload'] ) || ( isset( $_GET['wpml_xliff_action'] ) && $_GET['wpml_xliff_action'] === 'download' ) ) ? 1501 : 10 );
+
+	return $xliff_frontend;
+}
+
+if ( defined( 'WPML_ST_VERSION' ) ) {
+	add_action( 'wpml_st_below_menu', array( 'WPML_Remote_String_Translation', 'display_string_menu' ) );
+	//Todo: [WPML 3.3] this needs to be moved to ST plugin
+	add_action( 'wpml_tm_send_string_jobs', array( 'WPML_Remote_String_Translation', 'send_strings_jobs' ), 10, 5 );
+}

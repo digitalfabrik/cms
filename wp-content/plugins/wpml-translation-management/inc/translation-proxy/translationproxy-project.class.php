@@ -465,53 +465,6 @@ class TranslationProxy_Project {
 		return $this->get_jobs( 'translation_ready' );
 	}
 
-	/**
-	 * @return object[]
-	 * @param null|bool $include_archived
-	 */
-	public function cancelled_jobs($include_archived = null) {
-		$jobs           = $this->get_jobs( 'any', $include_archived );
-		$jobs_cancelled = $this->get_jobs( 'cancelled', $include_archived );
-		$current        = array();
-		foreach ( $jobs_cancelled as $job ) {
-			if ( $job->cms_id === '' ) {
-				$current[ 'string_' . $job->id ] = $job;
-			} elseif ( ! isset( $current[ $job->cms_id ] ) || $current[ $job->cms_id ]->id < $job->id ) {
-				$current[ $job->cms_id ] = $job;
-			}
-		}
-
-		foreach ( $jobs as $maybe_newer_job ) {
-			if ( isset( $current[ $maybe_newer_job->cms_id ] )
-			     && $maybe_newer_job->id > $current[ $maybe_newer_job->cms_id ]->id
-			) {
-				unset( $current[ $maybe_newer_job->cms_id ] );
-			}
-		}
-
-		return array_values( $current );
-	}
-
-	public function archive_translation( $job_id ) {
-		$params = array(
-			'job_id'     => $job_id,
-			'project_id' => $this->id,
-			'accesskey'  => $this->access_key,
-			'job'        => array(
-				'archived' => true,
-			),
-		);
-		try {
-			TranslationProxy_Api::proxy_request( '/jobs/{job_id}.json', $params, 'PUT' );
-
-			return true;
-		} catch ( Exception $ex ) {
-			$this->add_error( $ex->getMessage() );
-
-			return false;
-		}
-	}
-
 	public function update_delivery_method( $method ) {
 		global $sitepress;
 		if ( 'xmlrpc' === $method ) {
@@ -600,11 +553,10 @@ class TranslationProxy_Project {
 
 	/**
 	 * @param string    $state
-	 * @param null|bool $include_archived `null` ignores this argument, `true` or `false` filters by this argument
 	 *
 	 * @return mixed
 	 */
-	private function get_jobs( $state = 'any', $include_archived = null ) {
+	private function get_jobs( $state = 'any' ) {
 		$batch = TranslationProxy_Basket::get_batch_data();
 
 		$params = array(
@@ -612,10 +564,6 @@ class TranslationProxy_Project {
 			'accesskey'  => $this->access_key,
 			'state'      => $state,
 		);
-
-		if ( null !== $include_archived ) {
-			$params['archived'] = $include_archived;
-		}
 
 		if ( $batch ) {
 			$params['batch_id'] = $batch ? $batch->id : false;

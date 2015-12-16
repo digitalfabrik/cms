@@ -2,7 +2,7 @@
 Contributors: elliotcondon
 Tags: custom, field, custom field, advanced, simple fields, magic fields, more fields, repeater, matrix, post, type, text, textarea, file, image, edit, admin
 Requires at least: 3.5.0
-Tested up to: 4.2
+Tested up to: 4.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +66,7 @@ http://www.advancedcustomfields.com/
 * [Field Types](http://www.advancedcustomfields.com/resources/#field-types)
 * [Functions](http://www.advancedcustomfields.com/resources/#functions)
 * [Actions](http://www.advancedcustomfields.com/resources/#actions)
+* [Features](http://www.advancedcustomfields.com/resources/#features)
 * [Filters](http://www.advancedcustomfields.com/resources/#filters)
 * [How to guides](http://www.advancedcustomfields.com/resources/#how-to)
 * [Tutorials](http://www.advancedcustomfields.com/resources/#tutorials)
@@ -105,6 +106,14 @@ http://support.advancedcustomfields.com/
 
 
 == Changelog ==
+
+= 4.4.4 =
+* Field group: Fixed disabled update button after saving with empty title
+* Language: Updated Portuguese translation
+* Language: Updated French translation
+* Language: Updated Polish translation
+* Language: Added Finnish translation
+* Core: Minor fixes and improvements
 
 = 4.4.3 = 
 * WYSIWYG field: Added compatibility for WP 4.3 filters

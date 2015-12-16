@@ -23,7 +23,7 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 	) {
 		$this->clear_cache();
 		if ( $check_duplicates && $el_id && $this->check_duplicate( $el_type, $el_id ) === true ) {
-			trigger_error( 'Element ID already exists with a different type', E_USER_NOTICE );
+			throw new InvalidArgumentException( 'element_id and type do not match' );
 		}
 
 		$src_language_code = $src_language_code === $language_code ? null : $src_language_code;

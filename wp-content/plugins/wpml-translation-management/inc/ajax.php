@@ -66,7 +66,7 @@ function icl_populate_translations_pickup_box() {
 		die( 'Wrong Nonce' );
 	}
 
-	global $sitepress;
+	global $sitepress, $wpdb;
 
 	$last_picked_up     = $sitepress->get_setting( 'last_picked_up' );
 	$translation_offset = strtotime( current_time( 'mysql' ) ) - @intval( $last_picked_up ) - 5 * 60;
@@ -84,10 +84,12 @@ function icl_populate_translations_pickup_box() {
 				'wait_text' => $wait_text,
 		);
 	} else {
-		$project        = TranslationProxy::get_current_project();
-		$cms_id_helper  = new WPML_TM_CMS_ID();
-		$polling_status = new WPML_TP_Polling_Status( $project, $sitepress, $cms_id_helper );
-		$result         = $polling_status->get_status_array();
+		$project         = TranslationProxy::get_current_project();
+		$job_factory     = wpml_tm_load_job_factory();
+		$wpml_tm_records = new WPML_TM_Records( $wpdb );
+		$cms_id_helper   = new WPML_TM_CMS_ID( $wpml_tm_records, $job_factory );
+		$polling_status  = new WPML_TP_Polling_Status( $project, $sitepress, $cms_id_helper );
+		$result          = $polling_status->get_status_array();
 	}
 
 	wp_send_json_success( $result );
@@ -97,9 +99,11 @@ function icl_pickup_translations() {
 	if ( ! wpml_is_action_authenticated( 'icl_pickup_translations' ) ) {
 		die( 'Wrong Nonce' );
 	}
-	global $ICL_Pro_Translation;
-	$cms_id_helper   = new WPML_TM_CMS_ID();
-	$pickup = new WPML_TP_Polling_Pickup( $ICL_Pro_Translation, $cms_id_helper );
+	global $ICL_Pro_Translation, $wpdb;
+	$job_factory     = wpml_tm_load_job_factory();
+	$wpml_tm_records = new WPML_TM_Records( $wpdb );
+	$cms_id_helper   = new WPML_TM_CMS_ID( $wpml_tm_records, $job_factory );
+	$pickup          = new WPML_TP_Polling_Pickup( $ICL_Pro_Translation, $cms_id_helper );
 	wp_send_json_success( $pickup->poll_job( $_POST ) );
 }
 

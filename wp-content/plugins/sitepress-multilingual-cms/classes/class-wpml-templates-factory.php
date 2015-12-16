@@ -23,7 +23,7 @@ abstract class WPML_Templates_Factory {
 	 *
 	 * @return string
 	 */
-	protected function get_view( $template = null, $model = null ) {
+	public function get_view( $template = null, $model = null ) {
 		$this->maybe_init_twig();
 
 		if ( $model === null ) {
