@@ -384,12 +384,8 @@ class User_Role_Editor {
         }
 
         // exclude URE from plugins list
-        foreach ($plugins as $key => $value) {
-            if ($key == 'user-role-editor/' . URE_PLUGIN_FILE) {
-                unset($plugins[$key]);
-                break;
-            }
-        }
+        $key = basename(URE_PLUGIN_DIR) .'/'. URE_PLUGIN_FILE;
+        unset($plugins[$key]);        
 
         return $plugins;
     }
@@ -560,6 +556,9 @@ class User_Role_Editor {
         $show_deprecated_caps = $this->lib->get_request_var('show_deprecated_caps', 'checkbox');
         $this->lib->put_option('ure_show_deprecated_caps', $show_deprecated_caps);       
         
+        $confirm_role_update = $this->lib->get_request_var('confirm_role_update', 'checkbox');
+        $this->lib->put_option('ure_confirm_role_update', $confirm_role_update);
+        
         $edit_user_caps = $this->lib->get_request_var('edit_user_caps', 'checkbox');
         $this->lib->put_option('edit_user_caps', $edit_user_caps);       
         
@@ -664,6 +663,7 @@ class User_Role_Editor {
         }
         $caps_readable = $this->lib->get_option('ure_caps_readable', 0);
         $show_deprecated_caps = $this->lib->get_option('ure_show_deprecated_caps', 0);
+        $confirm_role_update = $this->lib->get_option('ure_confirm_role_update', 1);
         $edit_user_caps = $this->lib->get_option('edit_user_caps', 1);
                 
         if ($this->lib->multisite) {
@@ -758,6 +758,8 @@ class User_Role_Editor {
             return;
         }
         
+        $confirm_role_update = $this->lib->get_option('ure_confirm_role_update', 1);
+        
         wp_enqueue_script('jquery-ui-dialog', false, array('jquery-ui-core', 'jquery-ui-button', 'jquery'));
         wp_enqueue_script('jquery-ui-tabs', false, array('jquery-ui-core', 'jquery'));
         wp_register_script('ure-js', plugins_url('/js/ure-js.js', URE_PLUGIN_FULL_PATH));
@@ -766,6 +768,10 @@ class User_Role_Editor {
             'wp_nonce' => wp_create_nonce('user-role-editor'),
             'page_url' => URE_WP_ADMIN_URL . URE_PARENT . '?page=users-' . URE_PLUGIN_FILE,
             'is_multisite' => is_multisite() ? 1 : 0,
+            'confirm_role_update' => $confirm_role_update ? 1 : 0,
+            'confirm_title' => esc_html__('Confirm', 'user-role-editor'),
+            'yes_label' => esc_html__('Yes', 'user-role-editor'),
+            'no_label' => esc_html__('No', 'user-role-editor'),
             'select_all' => esc_html__('Select All', 'user-role-editor'),
             'unselect_all' => esc_html__('Unselect All', 'user-role-editor'),
             'reverse' => esc_html__('Reverse', 'user-role-editor'),

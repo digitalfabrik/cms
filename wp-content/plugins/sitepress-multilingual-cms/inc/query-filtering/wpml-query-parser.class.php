@@ -243,7 +243,10 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 			$q = $this->maybe_adjust_parent( $q, $post_type, $current_language );
 			//TODO: [WPML 3.3] Discuss this. Why WP assumes it's there if query vars are altered? Look at wp-includes/query.php line #2468 search: if ( $this->query_vars_changed ) {
 			$q->query_vars['meta_query'] = isset( $q->query_vars['meta_query'] ) ? $q->query_vars['meta_query'] : array();
-			if ( isset( $q->query_vars['tax_query'] ) && is_array( $q->query_vars['tax_query'] ) ) {
+
+			if ( isset( $q->query_vars['tax_query'] ) && is_array( $q->query_vars['tax_query'] ) &&
+					 isset( $q->query['tax_query'] ) && is_array( $q->query['tax_query'] )) {
+
 				foreach ( $q->query['tax_query'] as $num => $fields ) {
 					if ( ! isset( $fields['terms'] ) ) {
 						continue;

@@ -26,6 +26,7 @@
   padding: 10px;
   border: 1px solid #CCCCCC;
   background-color: #ffffff;
+  clear: both;
 }
 .icl_tm_wrap .form-table {
   border-collapse: separate;

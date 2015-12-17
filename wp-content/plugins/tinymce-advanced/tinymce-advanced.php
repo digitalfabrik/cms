@@ -3,7 +3,7 @@
 Plugin Name: TinyMCE Advanced
 Plugin URI: http://www.laptoptips.ca/projects/tinymce-advanced/
 Description: Enables advanced features and plugins in TinyMCE, the visual editor in WordPress.
-Version: 4.2.5
+Version: 4.2.8
 Author: Andrew Ozz
 Author URI: http://www.laptoptips.ca/
 License: GPL2
@@ -29,7 +29,7 @@ if ( ! class_exists('Tinymce_Advanced') ) :
 
 class Tinymce_Advanced {
 
-	private $required_version = '4.3';
+	private $required_version = '4.4';
 	private $settings;
 	private $admin_settings;
 	private $admin_options;
@@ -174,7 +174,7 @@ class Tinymce_Advanced {
 			$wp_ver = ! empty( $GLOBALS['wp_version'] ) ? $GLOBALS['wp_version'] : '(undefined)';
 
 			?>
-			<div class="error"><p>
+			<div class="error notice is-dismissible"><p>
 			<?php
 
 			printf( __( 'TinyMCE Advanced requires WordPress version %1$s or newer. It appears that you are running %2$s. This can make the editor unstable.', 'tinymce-advanced' ),
@@ -460,7 +460,7 @@ class Tinymce_Advanced {
 		}
 
 		if ( $this->check_admin_setting( 'fontsize_formats' ) ) {
-			$init['fontsize_formats'] =  '8px 10px 12px 14px 16px 20px 24px 28px 32px 36px';
+			$init['fontsize_formats'] =  '8px 10px 12px 14px 16px 20px 24px 28px 32px 36px 40px 48px 60px';
 		}
 
 		if ( $this->check_setting( 'paste_images' ) ) {
@@ -484,20 +484,20 @@ class Tinymce_Advanced {
 				tagOpenRe = new RegExp( '<(?:' + blocklist + ')(?: [^>]*)?>', 'gi' ),
 				tagCloseRe = new RegExp( '</(?:' + blocklist + ')>', 'gi' ),
 				$ = tinymce.$;
-			
+
 			function addLineBreaks( html ) {
 				html = html.replace( tagOpenRe, '\n$&' );
 				html = html.replace( tagCloseRe, '$&\n' );
 				html = html.replace( /<br(?: [^>]*)?>/gi, '$&\n' );
 				html = html.replace( />\n\n</g, '>\n<' );
 				html = html.replace( /^<li/gm, '\t<li' );
-		
+
 				return tinymce.trim( html );
 			}
-			
+
 			tinymce.each( $( '.wp-editor-wrap' ), function( element ) {
 				var textarea, content;
-				
+
 				if ( $( element ).hasClass( 'html-active' ) ) {
 					textarea = $( '.wp-editor-area', element )[0];
 					content = textarea && textarea.value;

@@ -125,7 +125,7 @@ class ICL_AdminNotifier {
 
 		$id = $args[ 'id' ];
 
-		//Check if existing message has been set as dismissed
+		//Check if existing message has been set as dismissed or hidden
 		if ( self::message_id_exists( $id ) ) {
 			$temp_msg = self::get_message( $id );
 
@@ -133,13 +133,7 @@ class ICL_AdminNotifier {
 				$current_user_id = get_current_user_id();
 				$message_user_data = isset( $temp_msg[ 'users' ][ $current_user_id ] ) ? $temp_msg[ 'users' ][ $current_user_id ] : false;
 
-				if ( ( !empty( $temp_msg[ 'dismiss_per_user' ] )
-				       && isset( $message_user_data[ 'dismissed' ] )
-				       && $message_user_data[ 'dismissed' ] )
-				     || ( !empty( $temp_msg[ 'dismiss' ] )
-				          && isset( $temp_msg[ 'dismissed' ] )
-				          && $temp_msg[ 'dismissed' ] )
-				) {
+				if ( self::is_user_dismissed( $temp_msg ) || self::is_globally_dismissed( $temp_msg ) || self::is_globally_hidden( $temp_msg ) ) {
 					return;
 				}
 
@@ -184,6 +178,21 @@ class ICL_AdminNotifier {
 			$messages[ 'messages' ][ $id ] = $message;
 			self::save_messages( $messages );
 		}
+	}
+
+	public static function is_user_dismissed( $message_data ) {
+		$current_user_id   = get_current_user_id();
+		$message_user_data = isset( $message_data['users'][ $current_user_id ] ) ? $message_data['users'][ $current_user_id ] : false;
+
+		return ! empty( $message_data['dismiss_per_user'] ) && ! empty( $message_user_data['dismissed'] );
+	}
+
+	public static function is_globally_dismissed( $message_data ) {
+		return ! empty( $message_data['dismiss'] ) && $message_data['dismissed'];
+	}
+
+	public static function is_globally_hidden( $message_data ) {
+		return ! empty( $message_data['hide'] ) && $message_data['hidden'];
 	}
 
 	public static function hide_message() {

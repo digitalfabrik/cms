@@ -3,17 +3,8 @@
 class WPML_Translation_Job_Helper {
 
 	public function encode_field_data( $data, $format ) {
-		if ( $format == 'base64' ) {
-			$data = base64_encode( $data );
-		} elseif ( $format == 'csv_base64' ) {
-			$exp = (array) $data;
-			foreach ( $exp as $k => $e ) {
-				$exp[ $k ] = '"' . base64_encode( trim( $e ) ) . '"';
-			}
-			$data = join( ',', $exp );
-		}
 
-		return $data;
+		return base64_encode( $data );
 	}
 
 	function decode_field_data( $data, $format ) {

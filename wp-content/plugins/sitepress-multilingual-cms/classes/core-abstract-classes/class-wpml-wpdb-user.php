@@ -3,7 +3,7 @@
 /**
  * Class WPML_WPDB_User
  *
- * Superclass for all WPML classes using the @global $wpdb directly
+ * Superclass for all WPML classes using the @global wpdb $wpdb
  *
  * @since 3.2.3
  */

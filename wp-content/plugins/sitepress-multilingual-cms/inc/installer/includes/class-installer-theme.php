@@ -41,7 +41,7 @@ class Installer_Theme_Class {
     protected $installer_themes_available_updates;
 
     /** The Themes */
-    protected $installer_themes;
+    protected $installer_themes = array();
 
     /** Repository with themes */
     protected $installer_repo_with_themes;

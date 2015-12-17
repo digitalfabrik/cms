@@ -419,7 +419,7 @@ class WPML_TM_Menus
                                         'selected' => $selected_translator,
                                         'services' => array( 'local', TranslationProxy::get_current_service_id() )
                                     );
-                                    $blog_translators = new WPML_TM_Blog_Translators( $wpdb );
+                                    $blog_translators = wpml_tm_load_blog_translators();
                                     $translators_dropdown = new WPML_TM_Translators_Dropdown( $blog_translators );
                                     $translators_dropdown->render( $args );
                                     ?>

@@ -49,10 +49,6 @@ class WPML_TM_Words_Count_Summary_UI extends WPML_Templates_Factory {
 		return $model;
 	}
 
-	public function get_view( $template = null, $model = null ) {
-		return parent::get_view( $template, $model );
-	}
-
 	protected function init_template_base_dir() {
 		$this->template_paths = array(
 			WPML_TM_PATH . '/templates/words-count/',

@@ -260,7 +260,6 @@ function wpml_get_post_status_helper() {
 	global $wpml_post_status, $wpdb;
 
 	if ( ! isset( $wpml_post_status ) ) {
-		require ICL_PLUGIN_PATH . '/inc/post-translation/wpml-post-status.class.php';
 		$wpml_post_status = new WPML_Post_Status( $wpdb );
 	}
 
@@ -387,4 +386,15 @@ function wpml_load_term_filters() {
 	}
 
 	return $wpml_term_filters_general;
+}
+
+function wpml_show_user_options() {
+	global $sitepress, $current_user;
+
+	$user_options_menu = new WPML_User_Options_Menu( $sitepress, $current_user );
+	echo $user_options_menu->render();
+}
+
+if ( is_admin() ) {
+	add_action( 'show_user_profile', 'wpml_show_user_options' );
 }

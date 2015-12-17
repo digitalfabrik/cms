@@ -19,22 +19,24 @@ class WP_REST_Posts_Terms_Controller extends WP_REST_Controller {
 		$base     = $this->posts_controller->get_post_type_base( $this->post_type );
 		$tax_base = $this->terms_controller->get_taxonomy_base( $this->taxonomy );
 
-		$query_params = $this->get_collection_params();
-		register_rest_route( 'wp/v2', sprintf( '/%s/(?P<post_id>[\d]+)/terms/%s', $base, $tax_base ), array(
+		register_rest_route( 'wp/v2', sprintf( '/%s/(?P<post_id>[\d]+)/%s', $base, $tax_base ), array(
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_items' ),
 				'permission_callback' => array( $this, 'get_items_permissions_check' ),
-				'args'                => $query_params,
+				'args'                => $this->get_collection_params(),
 			),
 			'schema' => array( $this, 'get_public_item_schema' ),
 		) );
 
-		register_rest_route( 'wp/v2', sprintf( '/%s/(?P<post_id>[\d]+)/terms/%s/(?P<term_id>[\d]+)', $base, $tax_base ), array(
+		register_rest_route( 'wp/v2', sprintf( '/%s/(?P<post_id>[\d]+)/%s/(?P<term_id>[\d]+)', $base, $tax_base ), array(
 			array(
 				'methods'             => WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_item' ),
 				'permission_callback' => array( $this, 'get_items_permissions_check' ),
+				'args'                => array(
+					'context'         => $this->get_context_param( array( 'default' => 'view' ) ),
+				),
 			),
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
@@ -104,11 +106,11 @@ class WP_REST_Posts_Terms_Controller extends WP_REST_Controller {
 
 		$terms = wp_get_object_terms( $post->ID, $this->taxonomy );
 
-		if ( ! in_array( $term_id, wp_list_pluck( $terms, 'term_taxonomy_id' ) ) ) {
-			return new WP_Error( 'rest_post_not_in_term', __( 'Invalid taxonomy for post ID.' ), array( 'status' => 404 ) );
+		if ( ! in_array( $term_id, wp_list_pluck( $terms, 'term_id' ) ) ) {
+			return new WP_Error( 'rest_post_not_in_term', __( 'Invalid taxonomy for post id.' ), array( 'status' => 404 ) );
 		}
 
-		$term = $this->terms_controller->prepare_item_for_response( get_term_by( 'term_taxonomy_id', $term_id, $this->taxonomy ), $request );
+		$term = $this->terms_controller->prepare_item_for_response( get_term( $term_id, $this->taxonomy ), $request );
 
 		$response = rest_ensure_response( $term );
 
@@ -130,14 +132,14 @@ class WP_REST_Posts_Terms_Controller extends WP_REST_Controller {
 			return $is_request_valid;
 		}
 
-		$term = get_term_by( 'term_taxonomy_id', $term_id, $this->taxonomy );
+		$term = get_term( $term_id, $this->taxonomy );
 		$tt_ids = wp_set_object_terms( $post->ID, $term->term_id, $this->taxonomy, true );
 
 		if ( is_wp_error( $tt_ids ) ) {
 			return $tt_ids;
 		}
 
-		$term = $this->terms_controller->prepare_item_for_response( get_term_by( 'term_taxonomy_id', $term_id, $this->taxonomy ), $request );
+		$term = $this->terms_controller->prepare_item_for_response( get_term( $term_id, $this->taxonomy ), $request );
 
 		$response = rest_ensure_response( $term );
 		$response->set_status( 201 );
@@ -214,17 +216,17 @@ class WP_REST_Posts_Terms_Controller extends WP_REST_Controller {
 		$post = get_post( (int) $request['post_id'] );
 
 		if ( empty( $post ) || empty( $post->ID ) || $post->post_type !== $this->post_type ) {
-			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid post ID.' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_post_invalid_id', __( 'Invalid post id.' ), array( 'status' => 404 ) );
 		}
 
 		if ( ! $this->posts_controller->check_read_permission( $post ) ) {
-			return new WP_Error( 'rest_forbidden', __( 'Sorry, you cannot view this post.' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_forbidden', __( 'Sorry, you cannot view this post.' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		if ( ! empty( $request['term_id'] ) ) {
 			$term_id  = absint( $request['term_id'] );
 
-			$term = get_term_by( 'term_taxonomy_id', $term_id, $this->taxonomy );
+			$term = get_term( $term_id, $this->taxonomy );
 			if ( ! $term || $term->taxonomy !== $this->taxonomy ) {
 				return new WP_Error( 'rest_term_invalid', __( "Term doesn't exist." ), array( 'status' => 404 ) );
 			}
@@ -288,6 +290,7 @@ class WP_REST_Posts_Terms_Controller extends WP_REST_Controller {
 	 */
 	public function get_collection_params() {
 		$query_params = array();
+		$query_params['context'] = $this->get_context_param( array( 'default' => 'view' ) );
 		$query_params['order'] = array(
 			'description'        => 'Order sort attribute ascending or descending.',
 			'type'               => 'string',

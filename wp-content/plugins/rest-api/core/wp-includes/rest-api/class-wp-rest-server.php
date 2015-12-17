@@ -237,6 +237,20 @@ class WP_REST_Server {
 		$this->send_header( 'Access-Control-Allow-Headers', 'Authorization' );
 
 		/**
+		 * Send nocache headers on authenticated requests.
+		 *
+		 * @since 4.4.0
+		 *
+		 * @param bool $rest_send_nocache_headers Whether to send no-cache headers.
+		 */
+		$send_no_cache_headers = apply_filters( 'rest_send_nocache_headers', is_user_logged_in() );
+		if ( $send_no_cache_headers ) {
+			foreach ( wp_get_nocache_headers() as $header => $header_value ) {
+				$this->send_header( $header, $header_value );
+			}
+		}
+
+		/**
 		 * Filter whether the REST API is enabled.
 		 *
 		 * @since 4.4.0
@@ -780,7 +794,8 @@ class WP_REST_Server {
 				$callback  = $handler['callback'];
 				$response = null;
 
-				if ( empty( $handler['methods'][ $method ] ) ) {
+				$checked_method = 'HEAD' === $method ? 'GET' : $method;
+				if ( empty( $handler['methods'][ $checked_method ] ) ) {
 					continue;
 				}
 
@@ -1158,7 +1173,7 @@ class WP_REST_Server {
 	 *
 	 * @return string Raw request data.
 	 */
-	public function get_raw_data() {
+	public static function get_raw_data() {
 		global $HTTP_RAW_POST_DATA;
 
 		/*

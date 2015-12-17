@@ -136,8 +136,15 @@ class SimpleLogger {
 		$replace = array();
 		foreach ( $context as $key => $val ) {
 
-			// Both key and val must be strings
-			if ( ! is_string( $key ) || ! is_string( $val ) ) {
+			// Both key and val must be strings or number (for vals)
+			if ( is_string( $key ) || is_numeric( $key ) ) {
+				// key ok
+			}
+
+			if ( is_string( $val ) || is_numeric( $val ) ) {
+				// val ok
+			} else {
+				// not a value we can replace
 				continue;
 			}
 
@@ -151,13 +158,15 @@ class SimpleLogger {
 			echo "message:";
 			var_dump($message);exit;
 		}
+		//*/
+		/*
 		if ( ! is_string( $replace )) {
-			echo "replace";
-			var_dump($replace);exit;
+			echo "replace: \n";
+			var_dump($replace);
 		}
 		// */
-		
-		return strtr($message, $replace);
+
+		return strtr( $message, $replace );
 
 	}
 
@@ -1197,11 +1206,16 @@ class SimpleLogger {
 			$context = apply_filters("simple_history/log_insert_context", $context, $data);
 
 			// Insert all context values into db
-			foreach ($context as $key => $value) {
+			foreach ( $context as $key => $value ) {
 
 				// If value is array or object then use json_encode to store it
-				if (is_object($value) || is_array($value)) {
-					$value = simpleHistory::json_encode($value);
+				//if ( is_object( $value ) || is_array( $value ) ) {
+				//	$value = simpleHistory::json_encode($value);
+				//}
+				// Any reason why the check is not the other way around?
+				// Everything except strings should be json_encoded
+				if ( ! is_string( $value ) ) {
+					$value = simpleHistory::json_encode( $value );
 				}
 
 				$data = array(
@@ -1210,7 +1224,7 @@ class SimpleLogger {
 					"value" => $value,
 				);
 
-				$result = $wpdb->insert($db_table_contexts, $data);
+				$result = $wpdb->insert ($db_table_contexts, $data );
 
 			}
 
