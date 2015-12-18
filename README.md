@@ -14,3 +14,4 @@ This is mostly due to the huge community behind it which provides an overwhelmin
 
 ## Collaboration
 Feel free to check out the [issues](https://github.com/Integreat/cms/issues), fork this repository and send in some pull requests.
+You might want to get started by [setting up your local development environment](https://github.com/Integreat/cms/wiki/Wordpress-local).
