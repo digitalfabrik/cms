@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Integreat/cms.svg?branch=develop)](https://travis-ci.org/Integreat/cms)
+
 # Integreat
 ###### ehemals Refguide+ 
 
