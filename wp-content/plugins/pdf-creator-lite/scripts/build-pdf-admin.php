@@ -22,13 +22,13 @@ function SSAPDFadminBuildPDF ()
 	$link_hex = '#3333ff';
 
 	//swap in custom options if needed
-	if ( $_POST['useCSS'] == 'custom' )
-	{
+	//if ( $_POST['useCSS'] == 'custom' )
+	//{
 		$bg_rgb = SSAPDF_hex2RGB( $_POST['bg_cpicker'] );
 		$text_font = $_POST['fontFamily'];
 		$text_hex = $_POST['font_cpicker'];
 		$link_hex = $_POST['link_cpicker'];
-	}
+	//}
 
 	$text_rgb = SSAPDF_hex2RGB( $text_hex );
 	$link_rgb = SSAPDF_hex2RGB( $link_hex );
@@ -98,8 +98,8 @@ function SSAPDFadminBuildPDF ()
 		array( $text_rgb['red'], $text_rgb['green'], $text_rgb['blue'] ),
 		false
 	);
-		
-	
+
+	apply_filters('fox_modify_pdf',$pdf);
 	//--- build the contents ---------------------------------------
 	$blogID = get_current_blog_id();
 	
@@ -108,7 +108,7 @@ function SSAPDFadminBuildPDF ()
 		switch_to_blog( $blogID );
 	}
 	
-	if ( current_user_can( 'manage_options' ) ) //Only let them download the file if they are admin
+	if ( current_user_can( 'create_and_download_pdf' ) ) //Only let them download the file if they are admin
 	{ 
 		//get the WP pages
 		$args = array(
