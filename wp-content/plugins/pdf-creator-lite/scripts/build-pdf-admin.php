@@ -1,4 +1,21 @@
 <?php
+
+
+/**
+ * @param $string
+ * @param $start
+ * @param $end
+ * @return string
+ */
+function get_string_between($string, $start, $end){
+	$string = ' ' . $string;
+	$ini = strpos($string, $start);
+	if ($ini == 0) return '';
+	$ini += strlen($start);
+	$len = strpos($string, $end, $ini) - $ini;
+	return substr($string, $ini, $len);
+}
+
 /**
 *	Generates a pdf and saves it to server,
 *	used admin-side from plugin screen to generate 
@@ -209,7 +226,14 @@ function SSAPDFadminBuildPDF ()
 					
 					$pdf->AddPage();				
 					$pdf->Bookmark( $title, $depth, 0, '', 'B', array($link_rgb['red'], $link_rgb['green'], $link_rgb['blue']), 0, '#TOC' );
-					
+
+					//XXX resolve bug with <p> tags within a table
+					$tableContent = get_string_between($htmlStr,'<table>','</table>');
+					$toreplace = str_replace('<p>','',$tableContent);
+					$toreplace = str_replace('</p>','',$toreplace);
+					$htmlStr = str_replace($tableContent,$toreplace, $htmlStr);
+					error_log(  '\n'.$toreplace, 3, 'C:/xampp/php/logs/test.txt' );
+
 					$pdf->writeHTML	(
 						$cssStr . $htmlStr,
 						true,
