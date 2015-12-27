@@ -232,7 +232,6 @@ function SSAPDFadminBuildPDF ()
 					$toreplace = str_replace('<p>','',$tableContent);
 					$toreplace = str_replace('</p>','',$toreplace);
 					$htmlStr = str_replace($tableContent,$toreplace, $htmlStr);
-					error_log(  '\n'.$toreplace, 3, 'C:/xampp/php/logs/test.txt' );
 
 					$pdf->writeHTML	(
 						$cssStr . $htmlStr,
