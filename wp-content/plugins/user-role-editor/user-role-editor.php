@@ -3,7 +3,7 @@
 Plugin Name: User Role Editor
 Plugin URI: https://www.role-editor.com
 Description: Change/add/delete WordPress user roles and capabilities.
-Version: 4.20.1
+Version: 4.21.1
 Author: Vladimir Garagulya
 Author URI: https://www.role-editor.com
 Text Domain: ure
@@ -23,7 +23,7 @@ if (defined('URE_PLUGIN_URL')) {
    wp_die('It seems that other version of User Role Editor is active. Please deactivate it before use this version');
 }
 
-define('URE_VERSION', '4.20.1');
+define('URE_VERSION', '4.21.1');
 define('URE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('URE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('URE_PLUGIN_BASE_NAME', plugin_basename(__FILE__));
@@ -47,17 +47,7 @@ $exit_msg = sprintf( 'User Role Editor requires WordPress %s or newer.', $ure_re
                         '<a href="http://codex.wordpress.org/Upgrading_WordPress"> ' . 'Please update!' . '</a>';
 Ure_Lib::check_version(get_bloginfo('version'), $ure_required_wp_version, $exit_msg, __FILE__ );
 
-require_once(URE_PLUGIN_DIR .'includes/define-constants.php');
-require_once(URE_PLUGIN_DIR .'includes/misc-support-stuff.php');
-require_once(URE_PLUGIN_DIR .'includes/class-role-additional-options.php');
-require_once(URE_PLUGIN_DIR .'includes/class-assign-role.php');
-require_once(URE_PLUGIN_DIR .'includes/class-user-other-roles.php');
-require_once(URE_PLUGIN_DIR .'includes/class-protect-admin.php');
-require_once(URE_PLUGIN_DIR .'includes/class-ajax-processor.php');
-require_once(URE_PLUGIN_DIR .'includes/class-ure-screen-help.php');
-require_once(URE_PLUGIN_DIR .'includes/class-known-js-css-compatibility-issues.php');
-require_once(URE_PLUGIN_DIR .'includes/class-user-role-editor.php');
-
+require_once(URE_PLUGIN_DIR .'includes/loader.php');
 
 $ure_lib = new Ure_Lib('user_role_editor');
 $GLOBALS['user_role_editor'] = new User_Role_Editor($ure_lib);

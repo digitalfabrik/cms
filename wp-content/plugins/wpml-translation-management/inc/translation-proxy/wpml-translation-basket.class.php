@@ -16,6 +16,14 @@ class WPML_Translation_Basket extends WPML_WPDB_User {
 		return $basket;
 	}
 
+	/**
+	 * @return bool|TranslationProxy_Project
+	 */
+	public function get_project() {
+
+		return TranslationProxy::get_current_project();
+	}
+
 	function get_item_types() {
 
 		return TranslationProxy_Basket::get_basket_items_types();
@@ -139,6 +147,23 @@ class WPML_Translation_Basket extends WPML_WPDB_User {
 		return $name;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function get_source_language() {
+
+		return TranslationProxy_Basket::get_source_language();
+	}
+
+	/**
+	 * @param int[]    $string_ids
+	 * @param string   $source_language
+	 * @param string[] $target_languages
+	 */
+	public function add_strings_to_basket( $string_ids, $source_language, $target_languages ) {
+		TranslationProxy_Basket::add_strings_to_basket( $string_ids, $source_language, $target_languages );
+	}
+
 	private function sanitize_basket_name( $basket_name, $max_length ) {
 		//input basket name is separated by pipes so we explode it
 		$to_trim = strlen( $basket_name ) - $max_length;
@@ -182,11 +207,6 @@ class WPML_Translation_Basket extends WPML_WPDB_User {
 		}
 
 		return array( $name_array, $to_trim );
-	}
-
-	private function get_source_language() {
-
-		return TranslationProxy_Basket::get_source_language();
 	}
 
 	/**

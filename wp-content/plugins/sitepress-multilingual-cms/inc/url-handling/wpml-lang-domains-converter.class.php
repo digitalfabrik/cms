@@ -47,18 +47,27 @@ class WPML_Lang_Domains_Converter extends WPML_URL_Converter {
 		if ( is_admin() && $this->is_url_admin( $original_source_url ) ) {
 			return $original_source_url;
 		}
-		$urls       = array();
-		$has_schema = strpos( '://', $source_url ) !== false;
-		$original_source_language_code = $this->get_language_from_url( $original_source_url );
 		$absolute_home_url = $this->get_abs_home();
-		foreach ( array( $original_source_language_code, $lang ) as $lang_code ) {
-			$fallback_url = isset( $this->domains[ $lang_code ] ) ? $this->domains[ $lang_code ] : $absolute_home_url;
-			$urls[]       = ( $has_schema ? '//' : '' ) . preg_replace( '#^(http(?:s?))://#', '', trailingslashit( $fallback_url ) );
-		}
-
-		$sanitized_source_url = strpos( $original_source_url, '?' ) !== false ? $original_source_url : trailingslashit( $original_source_url );
-		$converted_url        = str_replace( $urls[0], $urls[1], $sanitized_source_url );
+		$converted_url     = preg_replace(
+			'#^(https?://)?([^\/]*)\/?#',
+			'$1' . preg_replace(
+				'#^(http(?:s?))://#',
+				'',
+				trailingslashit(
+					isset( $this->domains[ $lang ] ) ? $this->domains[ $lang ]
+						: $absolute_home_url )
+			),
+			strpos( $original_source_url, '?' ) !== false
+				? $original_source_url
+				: trailingslashit( $original_source_url )
+		);
 
 		return untrailingslashit( $converted_url );
+	}
+
+	public function get_admin_ajax_url( $url ) {
+		global $sitepress;
+
+		return $this->convert_url( $url, $sitepress->get_current_language() );
 	}
 }

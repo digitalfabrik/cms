@@ -1,3 +1,45 @@
+#3.3.3
+
+##Fixes
+* Added backward compatibility for `__DIR__` magic constant not being supported before PHP 5.3.
+
+#3.3.2
+
+##Fixes
+* [wpmlga-96] WordPress 4.4 compatibility: pulled all html headings by one (e.g. h2 -> h1, he -> h2, etc.)
+* [wpmlcore-2318] Fixed some UI issues caused by changes in WordPress 4.4 styles
+* [wpmlcore-2089] AJAX calls when using languages in domain, now calls the correct AJAX url, rather than the url of the default language.
+* [wpmlcore-2060] Custom fields created by Types set as do nothing are now properly duplicated when duplicating a post
+
+#3.3.1
+
+##Fixes
+* [wpmlcore-2402] Fixed issue when visiting User Profile or Translation Interface page as non-admin translator when hidden languages are active
+* [wpmlcore-2177] Added constant that hides the WPML Dashboard widget: ICL_HIDE_DASHBOARD_WIDGET
+* [wpmlcore-2366] Fixed issue with admin messages not hiding
+* [wpmlcore-2027] Fixed a corner case where get_permalink() was not working when "%category%" was included in Permalink
+* [wpmlcore-2345] Fix caching of locale when using W3TC
+* [wpmlcore-2347] Fix caching of page on front and post on front when using W3TC
+* [wpmlcore-2369] Fix other caching issues when using W3TC
+* [wpmlcore-2370] Fix issue when installing WPML in multisites with different admin language set for default site
+* [wpmlcore-2364] Fix warning in WPML_Query_Parser::parse_query()
+* [wpmlcore-2274] Fixed Warning: mkdir(): No such file or directory
+* [wpmlcore-2384] Fixed loss of already active languages when activating/deactivating languages
+* [wpmlcore-2385] Fixed loss of languages order when activating/deactivating languages
+* [wpmlcore-2386] Fixed stylesheet and login urls being translated incorrectly when homeurl are siteurl different.
+* [wpmlcore-2361] Fixed post meta data set to be copied to translations, not being copied when editing the original post.
+
+##Performance
+* [wpmlcore-2349] Cache get_source_language_by_trid to improve performance
+* [wpmlcore-2363] Cache calls to add flags to post list column
+
+##API (see https://wpml.org/documentation/support/wpml-coding-api/wpml-hooks-reference/)
+* Shortcodes
+	* [wpmlcore-2371] `[wpml_language_form_field]`, like the `wpml_language_form_field` action, it will render the hidden input field, but it can be also used to get the string in PHP.
+* Filters
+	* [wpmlcore-2371] `wpml_language_form_input_field`, which changed the hidden input field rendered by the `wpml_add_language_form_field` action
+    * [wpmlcore-1626] `wpml_translation_validation_data`, which is called when validating data submitted by the translation editor (arguments: `$validation_results`, `$data_to_validate`)
+
 #3.3
 
 ##Fixes

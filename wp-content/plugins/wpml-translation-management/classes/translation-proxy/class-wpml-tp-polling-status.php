@@ -62,6 +62,7 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 			          || ( $job->job_state === 'cancelled'
 			               && $job->cms_id
 			               && $this->cms_id_helper->get_translation_id( $job->cms_id ) )
+			          || apply_filters( 'wpml_st_job_state_pending', false, $job )
 				? 1 : 0;
 		}
 
@@ -83,6 +84,11 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 			     && $this->cms_id_helper->get_translation_id( $job->cms_id )
 			) {
 				$job = null;
+			} elseif ( $job->job_state === 'delivered'
+			           && ! $job->cms_id
+			           && apply_filters( 'wpml_st_job_state_pending', false, $job )
+			) {
+				$job->job_state = 'translation_ready';
 			}
 		}
 

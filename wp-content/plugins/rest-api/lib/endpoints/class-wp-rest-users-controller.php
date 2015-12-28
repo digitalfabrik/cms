@@ -10,12 +10,11 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 	 */
 	public function register_routes() {
 
-		$query_params = $this->get_collection_params();
 		register_rest_route( 'wp/v2', '/users', array(
 			array(
 				'methods'         => WP_REST_Server::READABLE,
 				'callback'        => array( $this, 'get_items' ),
-				'args'            => $query_params,
+				'args'            => $this->get_collection_params(),
 			),
 			array(
 				'methods'         => WP_REST_Server::CREATABLE,
@@ -36,9 +35,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 				'callback'        => array( $this, 'get_item' ),
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
 				'args'            => array(
-					'context'          => array(
-						'default'      => 'embed',
-					),
+					'context'          => $this->get_context_param( array( 'default' => 'embed' ) ),
 				),
 			),
 			array(
@@ -101,6 +98,10 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			$request['context'] = 'embed';
 		}
 
+		if ( '' !== $prepared_args['search'] ) {
+			$prepared_args['search'] = '*' . $prepared_args['search'] . '*';
+		}
+
 		/**
 		 * Filter arguments, before passing to WP_User_Query, when querying users via the REST API.
 		 *
@@ -125,6 +126,8 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$response = rest_ensure_response( $users );
 		unset( $prepared_args['number'] );
 		unset( $prepared_args['offset'] );
+		$prepared_args['fields'] = 'ID';
+
 		$count_query = new WP_User_Query( $prepared_args );
 		$total_users = $count_query->get_total();
 		$response->header( 'X-WP-Total', (int) $total_users );
@@ -160,7 +163,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$user = get_userdata( $id );
 
 		if ( empty( $id ) || empty( $user->ID ) ) {
-			return new WP_Error( 'rest_user_invalid_id', __( 'Invalid user ID.' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_user_invalid_id', __( 'Invalid user id.' ), array( 'status' => 404 ) );
 		}
 
 		$user = $this->prepare_item_for_response( $user, $request );
@@ -269,7 +272,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 
 		$user = get_userdata( $id );
 		if ( ! $user ) {
-			return new WP_Error( 'rest_user_invalid_id', __( 'User ID is invalid.' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_user_invalid_id', __( 'User id is invalid.' ), array( 'status' => 400 ) );
 		}
 
 		if ( email_exists( $request['email'] ) && $request['email'] !== $user->user_email ) {
@@ -331,12 +334,12 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 
 		$user = get_userdata( $id );
 		if ( ! $user ) {
-			return new WP_Error( 'rest_user_invalid_id', __( 'Invalid user ID.' ), array( 'status' => 400 ) );
+			return new WP_Error( 'rest_user_invalid_id', __( 'Invalid user id.' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! empty( $reassign ) ) {
 			if ( $reassign === $id || ! get_userdata( $reassign ) ) {
-				return new WP_Error( 'rest_user_invalid_reassign', __( 'Invalid user ID.' ), array( 'status' => 400 ) );
+				return new WP_Error( 'rest_user_invalid_reassign', __( 'Invalid user id.' ), array( 'status' => 400 ) );
 			}
 		}
 
@@ -380,7 +383,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$user = get_userdata( $id );
 
 		if ( empty( $id ) || empty( $user->ID ) ) {
-			return new WP_Error( 'rest_user_invalid_id', __( 'Invalid user ID.' ), array( 'status' => 404 ) );
+			return new WP_Error( 'rest_user_invalid_id', __( 'Invalid user id.' ), array( 'status' => 404 ) );
 		}
 
 		if ( get_current_user_id() === $id ) {
@@ -390,11 +393,11 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$context = ! empty( $request['context'] ) && in_array( $request['context'], array( 'edit', 'view', 'embed' ) ) ? $request['context'] : 'embed';
 
 		if ( 'edit' === $context && ! current_user_can( 'edit_user', $id ) ) {
-			return new WP_Error( 'rest_user_cannot_view', __( 'Sorry, you cannot view this user with edit context' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_user_cannot_view', __( 'Sorry, you cannot view this user with edit context' ), array( 'status' => rest_authorization_required_code() ) );
 		} else if ( 'view' === $context && ! current_user_can( 'list_users' ) ) {
-			return new WP_Error( 'rest_user_cannot_view', __( 'Sorry, you cannot view this user with view context' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_user_cannot_view', __( 'Sorry, you cannot view this user with view context' ), array( 'status' => rest_authorization_required_code() ) );
 		} else if ( 'embed' === $context && ! count_user_posts( $id ) && ! current_user_can( 'edit_user', $id ) && ! current_user_can( 'list_users' ) ) {
-			return new WP_Error( 'rest_user_cannot_view', __( 'Sorry, you cannot view this user' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_user_cannot_view', __( 'Sorry, you cannot view this user' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		return true;
@@ -409,7 +412,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 	public function create_item_permissions_check( $request ) {
 
 		if ( ! current_user_can( 'create_users' ) ) {
-			return new WP_Error( 'rest_cannot_create_user', __( 'Sorry, you are not allowed to create users.' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_cannot_create_user', __( 'Sorry, you are not allowed to create users.' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		return true;
@@ -426,11 +429,11 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$id = (int) $request['id'];
 
 		if ( ! current_user_can( 'edit_user', $id ) ) {
-			return new WP_Error( 'rest_cannot_edit', __( 'Sorry, you are not allowed to edit users.' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_cannot_edit', __( 'Sorry, you are not allowed to edit users.' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		if ( ! empty( $request['role'] ) && ! current_user_can( 'edit_users' ) ) {
-			return new WP_Error( 'rest_cannot_edit_roles', __( 'Sorry, you are not allowed to edit roles of users.' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_cannot_edit_roles', __( 'Sorry, you are not allowed to edit roles of users.' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		return true;
@@ -448,7 +451,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$reassign = isset( $request['reassign'] ) ? absint( $request['reassign'] ) : null;
 
 		if ( ! current_user_can( 'delete_user', $id ) ) {
-			return new WP_Error( 'rest_user_cannot_delete', __( 'Sorry, you are not allowed to delete this user.' ), array( 'status' => 403 ) );
+			return new WP_Error( 'rest_user_cannot_delete', __( 'Sorry, you are not allowed to delete this user.' ), array( 'status' => rest_authorization_required_code() ) );
 		}
 
 		return true;
@@ -487,18 +490,18 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		$data = $this->add_additional_fields_to_object( $data, $request );
 
 		// Wrap the data in a response object
-		$data = rest_ensure_response( $data );
+		$response = rest_ensure_response( $data );
 
-		$data->add_links( $this->prepare_links( $user ) );
+		$response->add_links( $this->prepare_links( $user ) );
 
 		/**
 		 * Filter user data returned from the REST API.
 		 *
-		 * @param WP_REST_Response $data    Response data.
-		 * @param object           $user    User object used to create response.
-		 * @param WP_REST_Request  $request Request object.
+		 * @param WP_REST_Response $response  The response object.
+		 * @param object           $user      User object used to create response.
+		 * @param WP_REST_Request  $request   Request object.
 		 */
-		return apply_filters( 'rest_prepare_user', $data, $user, $request );
+		return apply_filters( 'rest_prepare_user', $response, $user, $request );
 	}
 
 	/**
@@ -606,7 +609,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			return true;
 		}
 
-		return new WP_Error( 'rest_user_invalid_role', __( 'You cannot give users that role.' ), array( 'status' => 403 ) );
+		return new WP_Error( 'rest_user_invalid_role', __( 'You cannot give users that role.' ), array( 'status' => rest_authorization_required_code() ) );
 	}
 
 	/**
@@ -764,13 +767,9 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 	 */
 	public function get_collection_params() {
 		$query_params = parent::get_collection_params();
-		$query_params['context'] = array(
-			'default'            => 'view',
-			'description'        => 'Change the response format based on request context.',
-			'enum'               => array( 'embed', 'view', 'edit' ),
-			'sanitize_callback'  => 'sanitize_key',
-			'type'               => 'string',
-		);
+
+		$query_params['context']['default'] = 'view';
+
 		$query_params['order'] = array(
 			'default'            => 'asc',
 			'description'        => 'Order sort attribute ascending or descending.',

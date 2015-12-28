@@ -72,6 +72,14 @@ if (!$license_key_only) {
                 </tr>
                 <tr>
                     <td>
+                        <input type="checkbox" name="confirm_role_update" id="confirm_role_update" value="1" 
+                               <?php echo ($confirm_role_update == 1) ? 'checked="checked"' : ''; ?> /> 
+                        <label for="confirm_role_update"><?php esc_html_e('Confirm role update', 'user-role-editor'); ?></label></td>
+                    <td>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>
                         <input type="checkbox" name="edit_user_caps" id="edit_user_caps" value="1" 
                                <?php echo ($edit_user_caps == 1) ? 'checked="checked"' : ''; ?> /> 
                         <label for="edit_user_caps"><?php esc_html_e('Edit user capabilities', 'user-role-editor'); ?></label></td>

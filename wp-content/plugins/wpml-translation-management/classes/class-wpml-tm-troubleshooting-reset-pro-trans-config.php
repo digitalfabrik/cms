@@ -2,7 +2,7 @@
 
 class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factory {
 	/**
-	 * @var WPDB
+	 * @var wpdb $wpdb
 	 */
 	private $wpdb;
 
@@ -19,7 +19,7 @@ class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factor
 	 * @param SitePress                  $sitepress
 	 * @param WPML_Translation_Proxy_API $TranslationProxy
 	 * @param WPML_WP_API                $wpml_wp_api
-	 * @param WPDB                       $wpdb
+	 * @param wpdb                       $wpdb
 	 */
 	public function __construct( &$sitepress, &$TranslationProxy, &$wpml_wp_api, &$wpdb ) {
 		parent::__construct( $wpml_wp_api );
@@ -151,5 +151,4 @@ class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factor
 
 		return $response;
 	}
-
 }

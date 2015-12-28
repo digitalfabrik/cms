@@ -1,4 +1,21 @@
 <?php
+
+
+/**
+ * @param $string
+ * @param $start
+ * @param $end
+ * @return string
+ */
+function get_string_between($string, $start, $end){
+	$string = ' ' . $string;
+	$ini = strpos($string, $start);
+	if ($ini == 0) return '';
+	$ini += strlen($start);
+	$len = strpos($string, $end, $ini) - $ini;
+	return substr($string, $ini, $len);
+}
+
 /**
 *	Generates a pdf and saves it to server,
 *	used admin-side from plugin screen to generate 
@@ -20,6 +37,7 @@ function SSAPDFadminBuildPDF ()
 	$text_font = 'helvetica';
 	$text_hex = '#363636';
 	$link_hex = '#3333ff';
+
 	//swap in custom options if needed
 	//if ( $_POST['useCSS'] == 'custom' )
 	//{
@@ -92,11 +110,12 @@ function SSAPDFadminBuildPDF ()
 	// print standard ASCII chars, you can use core fonts like
 	// helvetica or times to reduce file size.
 	//$pdf->SetFont( 'dejavusans', '', 11, '', true, true );
+	
 	$pdf->SetTextColorArray	(
 		array( $text_rgb['red'], $text_rgb['green'], $text_rgb['blue'] ),
 		false
 	);
-		
+
 	apply_filters('fox_modify_pdf',$pdf);
 	//--- build the contents ---------------------------------------
 	$blogID = get_current_blog_id();
@@ -105,8 +124,8 @@ function SSAPDFadminBuildPDF ()
 	{
 		switch_to_blog( $blogID );
 	}
-	
-	if ( current_user_can( 'create_and_download_pdf' ) ) //Only let them download the file if they are allowed to
+
+	if ( current_user_can( 'create_and_download_pdf' ) ) //--> see project-user-roles plugin
 	{ 
 		//get the WP pages
 		$args = array(
@@ -134,9 +153,8 @@ function SSAPDFadminBuildPDF ()
 		{
 			$displayTitle = get_bloginfo( 'name', 'display' );
 			//$htmlStr .= '<div class="pageBreak">';
-			$htmlStr = '&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /><h1 style="font-size:40px; text-align:center; text-decoration:underline;">' . $displayTitle. '</h1>';
-			$htmlStr .= '<p style="text-align:center;">&nbsp;<br />&nbsp;<br />PDF Created on ' . $displayDate . '<br /><a href="' . $siteURL . '">' . $siteURL. '</a></p>';
-			
+			$htmlStr = '&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br /><h1 style="font-size:40px; text-align:center; text-decoration:underline;">' . $displayTitle . '</h1>';
+			$htmlStr .= '<p style="text-align:center;">&nbsp;<br />&nbsp;<br />PDF Created on ' . $displayDate . '<br /><a href="' . $siteURL . '">' . $siteURL . '</a></p>';
 			//$htmlStr .= '</div>';
 			
 			$pdf->AddPage();
@@ -195,7 +213,7 @@ function SSAPDFadminBuildPDF ()
 					$topPage = ( $hasFrontPage ) ? '#2' : '#1';
 					
 					//build the page content
-					$htmlStr = '<h1>' . $title .'</h1>';
+					$htmlStr = '<h1>' . $title . '</h1>';
 					$htmlStr .= $PRcontent;
 					
 					//tcpdf issue linking to toc. 
@@ -208,7 +226,13 @@ function SSAPDFadminBuildPDF ()
 					
 					$pdf->AddPage();				
 					$pdf->Bookmark( $title, $depth, 0, '', 'B', array($link_rgb['red'], $link_rgb['green'], $link_rgb['blue']), 0, '#TOC' );
-					
+
+					//XXX resolve bug with <p> tags within a table
+					$tableContent = get_string_between($htmlStr,'<table>','</table>');
+					$toreplace = str_replace('<p>','',$tableContent);
+					$toreplace = str_replace('</p>','',$toreplace);
+					$htmlStr = str_replace($tableContent,$toreplace, $htmlStr);
+
 					$pdf->writeHTML	(
 						$cssStr . $htmlStr,
 						true,

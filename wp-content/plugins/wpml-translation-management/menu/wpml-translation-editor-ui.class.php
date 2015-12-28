@@ -154,7 +154,8 @@ class WPML_Translation_Editor_UI extends WPML_SP_User {
 		?>
 		<p class="updated fade">
 			<?php
-			$tm_post_link = '<a id="icl_tm_editor_orig_link" href="' . $this->job_instance->get_url( true ) . '">' . $this->job_instance->get_title() . '</a>';
+			$post_title = esc_html( $this->job_instance->get_title() );
+			$tm_post_link = '<a id="icl_tm_editor_orig_link" href="' . $this->job_instance->get_url( true ) . '">' . $post_title . '</a>';
 			printf( __( 'You are translating %s from %s to %s.', 'wpml-translation-management' ),
 			        $tm_post_link,
 			        $this->job_instance->get_source_language_code( true ),

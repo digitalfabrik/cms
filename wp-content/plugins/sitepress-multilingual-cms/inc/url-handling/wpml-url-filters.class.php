@@ -15,7 +15,7 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	 */
 	public function __construct( &$post_translation, &$url_converter, &$sitepress ) {
 		parent::__construct( $post_translation, $sitepress );
-		$this->url_converter = $url_converter;
+		$this->url_converter = &$url_converter;
 		if ( $this->frontend_uses_root() === true ) {
 			WPML_Root_Page::init();
 			add_filter( 'page_link', array( $this, 'permalink_filter_root' ), 1, 2 );
@@ -27,6 +27,15 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 		add_filter( 'post_link', array( $this, 'permalink_filter' ), 1, 2 );
 		add_filter( 'post_type_link', array( $this, 'permalink_filter' ), 1, 2 );
 		add_filter( 'get_edit_post_link', array( $this, 'get_edit_post_link' ), 1, 3 );
+		add_filter( 'admin_url', array( $this, 'admin_url_filter' ), 1, 2 );
+	}
+
+	public function admin_url_filter( $url, $path ) {
+		if ( 'admin-ajax.php' === $path ) {
+			$url  = $this->url_converter->convert_url($url, $this->sitepress->get_current_language());
+		}
+
+		return $url;
 	}
 
 	/**
@@ -98,12 +107,25 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	public function permalink_filter( $link, $post_object ) {
 		$post_object = is_object( $post_object ) ? $post_object->ID : $post_object;
 		$post_type   = isset( $post_object->post_type )
-				? $post_object->post_type : $this->sitepress->get_wp_api()->get_post_type( $post_object );
+			? $post_object->post_type : $this->sitepress->get_wp_api()->get_post_type( $post_object );
 		if ( $this->sitepress->is_translated_post_type( $post_type ) ) {
-
-			$code = $this->get_permalink_filter_lang( $post_object );
-			$link = $this->url_converter->convert_url( $link, $code );
-			$link = $this->sitepress->get_wp_api()->is_feed() ? str_replace( "&lang=", "&#038;lang=", $link ) : $link;
+			$code             = $this->get_permalink_filter_lang( $post_object );
+			$current_language = $this->sitepress->get_current_language();
+			$post_id          = isset( $post_object->ID ) ? $post_object->ID : $post_object;
+			if ( ! is_admin()
+			     && $this->sitepress->get_setting( 'auto_adjust_ids' )
+			     && $this->post_translation->get_element_lang_code(
+					$post_id
+				) !== $current_language
+			     && ( $post_id = $this->post_translation->element_id_in( $post_id,
+					$current_language ) )
+			) {
+				$link = get_permalink( $post_id );
+			} else {
+				$link = $this->url_converter->convert_url( $link, $code );
+			}
+			$link = $this->sitepress->get_wp_api()->is_feed()
+				? str_replace( "&lang=", "&#038;lang=", $link ) : $link;
 		}
 
 		return $link;
@@ -141,7 +163,7 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	 */
 	private function get_permalink_filter_lang( $post_object ) {
 		if ( isset( $_POST['action'] ) && $_POST['action'] === 'sample-permalink' ) {
-			$code = filter_var( ( isset( $_GET['lang'] ) ? $_GET['lang'] : "" ), FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+			$code = $this->get_language_from_url();
 			$code = $code
 				? $code
 				: ( ! isset( $_SERVER['HTTP_REFERER'] )
@@ -163,5 +185,23 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 		}
 
 		return http_build_query( $query_parts );
+	}
+
+	private function get_language_from_url( $return_default_language_if_missing = false ) {
+		$query_string_argument = '';
+		$language              = '';
+		if ( $return_default_language_if_missing ) {
+			$language = $this->sitepress->get_current_language();
+		}
+		if ( array_key_exists( 'wpml_lang', $_GET ) ) {
+			$query_string_argument = 'wpml_lang';
+		} elseif ( array_key_exists( 'lang', $_GET ) ) {
+			$query_string_argument = 'lang';
+		}
+		if ( '' !== $query_string_argument ) {
+			$language = filter_var( $_GET[ $query_string_argument ], FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		}
+
+		return $language;
 	}
 }

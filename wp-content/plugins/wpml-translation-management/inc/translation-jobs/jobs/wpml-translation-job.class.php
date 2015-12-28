@@ -16,12 +16,10 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	 * @param WPML_TM_Blog_Translators $blog_translators
 	 */
 	function __construct( $job_id, $batch_id = null, &$blog_translators = null ) {
-		global $wpdb;
-
 		$this->job_id           = $job_id;
 		$batch_id               = $batch_id ? $batch_id : $this->get_batch_id();
 		$this->batch_id         = $batch_id ? $batch_id : TranslationProxy_Batch::update_translation_batch();
-		$this->blog_translators = $blog_translators ? $blog_translators : new WPML_TM_Blog_Translators( $wpdb );
+		$this->blog_translators = $blog_translators ? $blog_translators : wpml_tm_load_blog_translators();
 	}
 
 	public abstract function cancel();
