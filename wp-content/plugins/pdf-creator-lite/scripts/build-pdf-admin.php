@@ -179,7 +179,7 @@ function SSAPDFadminBuildPDF ()
 			{
 				$title = $page_data->post_title; 
 				$content = $page_data->post_content;
-				
+
 				//remove any sitemap shortcodes
 				$content = preg_replace( '/\[sitemap_pages[^\]]*]/i', '', $content );
 				$content = preg_replace( '/\[pdf-lite[^\]]*]/i', '', $content );
@@ -232,6 +232,22 @@ function SSAPDFadminBuildPDF ()
 					$toreplace = str_replace('<p>','',$tableContent);
 					$toreplace = str_replace('</p>','',$toreplace);
 					$htmlStr = str_replace($tableContent,$toreplace, $htmlStr);
+
+					//error_log($htmlStr,3,'C:\xampp\php\logs\test.txt');
+
+					$doc = new DOMDocument();
+					$doc->preserveWhiteSpace = false;
+					$worked = $doc->loadHTML('<?xml version="1.0" encoding="ISO-8859-1"?>'.$htmlStr);
+					if($worked){
+						$images = $doc->getElementsByTagName('img');
+						foreach ($images as $image) {
+							$image->setAttribute('width','100');
+						}
+					}
+					else{
+						error_log('Could not load html file.');
+					}
+					//$htmlStr = $doc->saveHTML();
 
 					$pdf->writeHTML	(
 						$cssStr . $htmlStr,
