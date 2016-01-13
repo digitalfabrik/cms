@@ -8,7 +8,6 @@ Author: Blanz
 */
 
 function replace_logo() {
-	error_log(get_stylesheet_directory_uri().$path,3,'C:\xampp\php\logs\test.txt');
 	?>
 	<style type="text/css">
 		.login h1 a {
@@ -22,17 +21,6 @@ function replace_logo() {
 			border-left: 4px solid #FDDA0E !important;
 		}
 
-/*		TODO
-		input.button-primary,
-		button.button-primary,
-		a.button-primary,
-		.wp-core-ui.button-primary{
-			background: #FDDA0E !important;
-			border-color: #FDDA0E !important;
-			text-shadow: #FDDA0E !important;
-			box-shadow: #FDDA0E !important;
-		}
-*/
 	</style>
 <?php }
 add_action( 'login_enqueue_scripts', 'replace_logo' );
