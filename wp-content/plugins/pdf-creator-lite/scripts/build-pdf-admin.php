@@ -179,7 +179,8 @@ function SSAPDFadminBuildPDF ()
 			{
 				$title = $page_data->post_title; 
 				$content = $page_data->post_content;
-
+			
+			
 				//remove any sitemap shortcodes
 				$content = preg_replace( '/\[sitemap_pages[^\]]*]/i', '', $content );
 				$content = preg_replace( '/\[pdf-lite[^\]]*]/i', '', $content );
