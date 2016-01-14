@@ -7,6 +7,8 @@ Version: 1.0
 Author: Blanz
 */
 function replace_logo() {
+	$color_hex="FDDA0E";
+	$color_rgb="253, 218, 14,";
 	?>
 	<style type="text/css">
 		.login h1 a {
@@ -16,8 +18,50 @@ function replace_logo() {
 			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo.png);
 		}
 
-		.message{
-			border-left: 4px solid #FDDA0E !important;
+		.login p.message{
+			border-left: 4px solid #<?php echo($color_hex);?>;
+		}
+
+		#user_login:focus{
+			border-color: #<?php echo($color_hex);?>;
+			box-shadow: 0px 0px 2px rgba(<?php echo($color_rgb);?> 0.8);
+		}
+
+		#user_pass:focus{
+			border-color: #<?php echo($color_hex);?>;
+			box-shadow: 0px 0px 2px rgba(<?php echo($color_rgb);?> 0.8);
+		}
+
+		#rememberme:focus{
+			border-color: #<?php echo($color_hex);?>;
+			box-shadow: 0px 0px 2px rgba(<?php echo($color_rgb);?> 0.8);
+		}
+
+		#wp-submit {
+			color: #777;
+			font-weight: bold;
+			box-shadow: none;
+			background: rgba(<?php echo($color_rgb);?> 0.6);
+			border: 2px solid rgba(<?php echo($color_rgb);?> 1);
+			text-decoration: none;
+			text-shadow: none;
+		}
+
+		#wp-submit:hover{
+			background: rgba(<?php echo($color_rgb);?> 1);
+			box-shadow: none;
+		}
+
+		#backtoblog>a:hover, #nav>a:hover{
+			color: #<?php echo($color_hex);?>!important;
+			border:none!important;
+			box-shadow: none!important;
+		}
+
+		#backtoblog>a:focus, #nav>a:focus{
+			color: #<?php echo($color_hex);?>!important;
+			border:none!important;
+			box-shadow: none!important;
 		}
 
 	</style>
