@@ -7,15 +7,32 @@ Version: 1.0
 Author: Blanz
 */
 function replace_logo() {
+
 	$color_hex="FDDA0E";
 	$color_rgb="253, 218, 14,";
 	?>
 	<style type="text/css">
+
 		.login h1 a {
+			border: 2px solid #F1F1F1;
+			border-radius 15px;
 			background-size: 320px 100px;
-			width: 320px;
+			width: 316px;
 			height: 100px;
 			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo.png);
+		}
+
+		#login>h1>a:focus, #login>h1>a:hover{
+			border-radius: 15px;
+			box-shadow: none;
+			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo_yellow.png);
+		}
+
+		#login>h1>a:focus{
+			border: 2px solid rgba(<?php echo($color_rgb);?> 1);
+			border-radius: 15px;
+			box-shadow: none;
+			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo_yellow.png);
 		}
 
 		.login p.message{
