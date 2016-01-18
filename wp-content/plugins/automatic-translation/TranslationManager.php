@@ -28,7 +28,7 @@ class TranslationManager {
 		$this->wpml_helper = new TranslationWpmlHelper();
 	}
 
-	public function on_save_post($post_id) {
+	public function update_post_translation($post_id) {
 		update_post_meta($post_id, self::AUTOMATIC_TRANSLATION_META_KEY, false);
 		$post = get_post($post_id, OBJECT);
 		if (!$this->accept_post($post)) {
@@ -142,10 +142,11 @@ class TranslationManager {
 	}
 
 	public function add_save_post_hook() {
-		add_action('save_post', [$this, 'on_save_post']);
+		// temporarily disabled due to issue #229. currently using the translation button instead
+//		add_action('save_post', [$this, 'update_post_translation']);
 	}
 
 	private function remove_save_post_hook() {
-		remove_action('save_post', [$this, 'on_save_post']);
+		remove_action('save_post', [$this, 'update_post_translation']);
 	}
 }
