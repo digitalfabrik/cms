@@ -121,7 +121,7 @@ function SSAPDF_drawAdminPage ()
 				'post_status' => 'publish'
 			);
 			$pages = get_pages( $args );
-
+			
 			echo '<div style="height:30px; border-bottom:1px solid #ccc;">';
 			echo '<input type="checkbox" value="true" id="checkAll" name="checkAll" checked="checked" /><label for="checkAll">Uncheck / Check All</label>';
 			echo '</div><br />';
@@ -270,10 +270,10 @@ function SSAPDF_drawAdminPage ()
 				echo				'<div style="float:left; width:100px;">Font:</div>';
 				echo				'<input type="text" value="#333" name="font_cpicker" id="font_cpicker"/>';
 				echo 				'&nbsp; &nbsp;<select name="fontFamily" id="fontFamily">';
-				echo 					'<option value="helvetica">Arial / Helvetica</option>';
+				echo 					'<option value="helvetica" selected="selected">Arial / Helvetica</option>';
 				echo 					'<option value="times">Times New Roman</option>';
 				echo 					'<option value="courier">Courier</option>';
-				do_action('fox_add_fonts');
+										do_action('fox_add_fonts');
 				echo 				'</select>';
 				echo				'<br clear="left" /><br />';
 				
