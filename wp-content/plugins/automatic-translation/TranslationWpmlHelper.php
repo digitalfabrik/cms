@@ -14,6 +14,9 @@ class TranslationWpmlHelper {
 		global $sitepress;
 		$wpml_post_type = 'post_' . $source_post_type;
 		$source_trid = $sitepress->get_element_trid($source_post_id, $wpml_post_type);
+		if (!$source_trid) {
+			throw new RuntimeException("No source trid found for $wpml_post_type $source_post_id");
+		}
 		$sitepress->set_element_language_details($translated_post_id, $wpml_post_type, $source_trid, $language_code);
 	}
 }
