@@ -27,21 +27,6 @@
                 ) );
             }
         }
-        /*
-        if( !is_network_admin() ) {
-            // show wordpress help menu on every page
-        add_action('current_screen', 'newHelpTab');
-            function newHelpTab()
-            {
-                $screen = get_current_screen();
-                $screen->add_help_tab(array(
-                    'id' => 'integreat-help-tab',            //unique id for the tab
-                    'title' => 'Integreat Hilfe',      //unique visible title for the tab
-                    'content' => 'test'
-                ));
-            }
-        }
-        */
 
     }
 

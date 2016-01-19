@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Enhanced help menu
-Description: Shows wordpress help menu on every view and adds "Integreat Hilfe" as first tab that can be via network admin
+Description: Shows wordpress help menu on every view and adds a custom tab that can be edited via network admin
 Author:      Sascha Beele
 */
 
