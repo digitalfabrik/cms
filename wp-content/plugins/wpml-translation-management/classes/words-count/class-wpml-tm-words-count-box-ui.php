@@ -10,13 +10,16 @@ class WPML_TM_Words_Count_Box_UI extends WPML_Templates_Factory {
 	private $wpml_wp_api;
 
 	/**
-	 * @param WPML_WP_API         $wpml_wp_api
+	 * @param WPML_WP_API $wpml_wp_api
 	 */
-	function __construct( $wpml_tm_words_count, &$wpml_wp_api ) {
+	function __construct( &$wpml_wp_api ) {
 		parent::__construct();
-		$this->wpml_wp_api         = &$wpml_wp_api;
+		$this->wpml_wp_api = &$wpml_wp_api;
 
-		add_action( 'wpml_tm_dashboard_promo', array( $this, 'render_box_action' ) );
+		add_action( 'wpml_tm_dashboard_promo', array(
+			$this,
+			'render_box_action'
+		) );
 	}
 
 	public function init_twig_functions() {
@@ -41,9 +44,7 @@ class WPML_TM_Words_Count_Box_UI extends WPML_Templates_Factory {
 					'linkURL'  => 'https://wpml.org/translation-service/',
 				),
 			),
-			'nonces'  => array(
-				'wpml_words_count_panel_nonce' => wp_create_nonce( 'wpml_set_words_count_panel_default_status' ),
-			),
+			'wc_chunk_size' => WPML_TM_WC_CHUNK,
 			'dialog'  => array(
 				'strings'        => array(
 					'title'   => __( 'Translation Cost Estimate', 'wpml-translation-management' ),

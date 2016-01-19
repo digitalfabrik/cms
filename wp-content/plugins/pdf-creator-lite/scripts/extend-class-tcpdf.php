@@ -1,6 +1,9 @@
 <?php
 //--- extend TCPDF class ---------------------------------------
 
+//to check if the plugin is active
+include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
 class SSA_PDF extends TCPDF
 {
 
@@ -34,87 +37,112 @@ class SSA_PDF extends TCPDF
 	//--- custom header
 	public function Header()
 	{
-		$bMargin = $this->getBreakMargin(); 		//get the current page break margin
-		$auto_page_break = $this->AutoPageBreak; 	//get current auto-page-break mode
-		$this->SetAutoPageBreak(false, 0); 			//disable auto-page-break
-		$path = __FILE__;							// --> ...\wordpress\wp-content\plugins\pdf-creator-lite\scripts\extend-class-tcpdf.php
-		$path = str_replace('\\','/',$path);
-		$path = strtolower($path);
-		$path = dirname($path);						// --> .../wordpress/wp-content/plugins/pdf-creator-lite/scripts/
-		$path = dirname($path);						// --> .../wordpress/wp-content/plugins/pdf-creator-lite
-		if(strcasecmp(basename($path),'pdf-creator-lite')!=0){		//wrong path
-			error_log(print_r('WRONG PATH:'.$path, true));
-			return;
-		}
-		$left_shift = 0;
-		if($this->getRTL()){						//adjust style
-			$left_shift = 50;
-		}
-		$image = $path.'/images/Integreat_Logo.jpg';
-		
-		$this->Image($image, 18 + $left_shift, 3, 50, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-
-
-		
-		$this->SetAutoPageBreak( $auto_page_break, $bMargin ); 	//restore auto-page-break status
-		$this->setPageMark(); 									//set the starting point for the page content		
-		
-		$headerContent = '<p style="font-family:' . $this->text_font . '; font-size:14px; color:' . $this->text_hex . '; line-height:20px;">' . $this->siteTitle . ' - ' . $this->displayDate .'</p>';
-		
-		$this->writeHTMLCell(
-			0,
-			0,
-			PDF_MARGIN_LEFT,
-			10,
-			$headerContent,
-			0,
-			2,
-			false,
-			true,
-			'R',
-			false
-		);
-		
-		$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' => array($this->text_rgb['red'], $this->text_rgb['green'], $this->text_rgb['blue']) );
-		$this->Line( 20, 23, 188, 23, $style );
-		/* Original code
 		//set the bg colour
 		$bMargin = $this->getBreakMargin(); 		//get the current page break margin
 		$auto_page_break = $this->AutoPageBreak; 	//get current auto-page-break mode
-		$this->SetAutoPageBreak(false, 0); 			//disable auto-page-break						
-		
-		$this->Rect	( 
-			0,
-			0,
-			210,
-			297,
-			'F',
-			array(),
-			array( $this->bg_rgb['red'], $this->bg_rgb['green'], $this->bg_rgb['blue'] ) 
-		);	
+		$this->SetAutoPageBreak(false, 0); 			//disable auto-page-break
+
+		//when the plugin is active, change the header
+		if(is_plugin_active('pdf-creator-lite-font-extension/pdfcl_fox.php')){
+			$rightshift = 0;
+			$leftshift = 0;
+
+			/**
+			 * if RTL is true, the header style is messed up --> work around
+			 * the function header will be called within AddPage method of TCPDF
+			 * (thus the we get the proper RTL value)
+			 */
+			if ($this->getRTL()){
+				$rightshift = 52;
+				$leftshift = 23;
+			}
+			$image_file = __FILE__; //...wordpress\wp-content\plugins\pdf-creator-lite\scripts\extend-class-tcpdf.php
+			$image_file = str_replace('\\','/',$image_file);
+			$image_file = dirname($image_file);	//...wordpress/wp-content/plugins/pdf-creator-lite/scripts/
+			$image_file = dirname($image_file); //...wordpress/wp-content/plugins/pdf-creator-lite
+			$image_file = $image_file.'/images/integreat_trans_logo.jpg';
+			$this->Image($image_file,
+					18 + $rightshift,
+					5,
+					0,
+					15,
+					'JPG',
+					'',
+					'T',
+					false,
+					300,
+					'',
+					false,
+					false,
+					0,
+					false,
+					false,
+					false
+			);
+			// Set font
+			$title = $this->siteTitle;
+			if(strlen($title)>100){
+				$title = substr($title,0,99);
+				$title .= '...';
+			}
+		}
+		else{
+			$this->Rect	(
+					0,
+					0,
+					210,
+					297,
+					'F',
+					array(),
+					array( $this->bg_rgb['red'], $this->bg_rgb['green'], $this->bg_rgb['blue'] )
+			);
+		}
 		
 		$this->SetAutoPageBreak( $auto_page_break, $bMargin ); 	//restore auto-page-break status
 		$this->setPageMark(); 									//set the starting point for the page content
-		
-		//make header content
-		$headerContent = '<p style="font-family:' . $this->text_font . '; font-size:14px; color:' . $this->text_hex . '; line-height:20px;">' . $this->siteTitle . '&nbsp;&nbsp;<span style="font-size:11px;">- ' . $this->displayDate . '<br />View online at <a href="' . $this->siteURL . '" style="color:' . $this->link_hex . '; text-decoration:none;">' . $this->siteURL . '</a></span></p>';
-		
-		$this->writeHTMLCell(
-			0,
-			3,
-			PDF_MARGIN_LEFT,
-			5,
-			$headerContent,
-			0,
-			2,
-			false,
-			true,
-			'L',
-			false
-		);
-		
-		$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' => array($this->text_rgb['red'], $this->text_rgb['green'], $this->text_rgb['blue']) );
-		$this->Line( 20, 17, 188, 17, $style );*/
+
+		if(is_plugin_active('pdf-creator-lite-font-extension/pdfcl_fox.php')){
+			$headerContent = '<br><p style="font-family:' . $this->text_font . '; font-size:15px; color:' . $this->text_hex . '; line-height:15px;">Page: '. $title . ' -  ' . $this->displayDate .'</p>';
+			// Title
+
+			$this->writeHTMLCell(
+					0,
+					25,
+					$leftshift,
+					6,
+					$headerContent,
+					0,
+					2,
+					false,
+					true,
+					'R',
+					false
+			);
+
+			$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' =>  array('R'=>255,'G'=>215,'B'=>0) );
+			$this->Line( 20, 23, 188, 23, $style );
+		}
+		else{
+			//make header content
+			$headerContent = '<p style="font-family:' . $this->text_font . '; font-size:14px; color:' . $this->text_hex . '; line-height:20px;">' . $this->siteTitle . '&nbsp;&nbsp;<span style="font-size:11px;">- ' . $this->displayDate . '<br />View online at <a href="' . $this->siteURL . '" style="color:' . $this->link_hex . '; text-decoration:none;">' . $this->siteURL . '</a></span></p>';
+
+			$this->writeHTMLCell(
+					0,
+					3,
+					PDF_MARGIN_LEFT,
+					5,
+					$headerContent,
+					0,
+					2,
+					false,
+					true,
+					'L',
+					false
+			);
+
+			$style = array( 'width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'phase' => 1, 'color' => array($this->text_rgb['red'], $this->text_rgb['green'], $this->text_rgb['blue']) );
+			$this->Line( 20, 17, 188, 17, $style );
+		}
 	}
 	
 	
@@ -136,5 +164,3 @@ class SSA_PDF extends TCPDF
 	}
 	
 } //close class SSA_PDF
-
-?>

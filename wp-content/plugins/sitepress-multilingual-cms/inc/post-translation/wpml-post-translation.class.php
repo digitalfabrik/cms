@@ -235,9 +235,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		$this->maybe_set_elid( $trid, $post_vars['post_type'], $language_code, $post_vars['ID'], $source_language );
 		$translation_sync = $this->get_sync_helper();
 		$original_id      = $this->get_original_element( $post_vars['ID'] );
-		if ( $original_id ) {
-			$translation_sync->sync_with_translations( $original_id, $post_vars );
-		}
+		$translation_sync->sync_with_translations( $original_id ? $original_id : $post_vars['ID'], $post_vars );
 		$translation_sync->sync_with_duplicates( $post_vars['ID'] );
 		require_once ICL_PLUGIN_PATH . '/inc/cache.php';
 		icl_cache_clear( $post_vars['post_type'] . 's_per_language', true );

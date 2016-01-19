@@ -14,9 +14,9 @@ abstract class WPML_Element_Translation extends WPML_WPDB_User {
 	protected $element_trids = array();
 	/** @var String[] $element_source_langs */
 	protected $element_source_langs = array();
-	/** @var Array[] $translations */
+	/** @var array[] $translations */
 	protected $translations = array();
-	/** @var Array[] $trid_groups */
+	/** @var array[] $trid_groups */
 	protected $trid_groups = array();
 
 	/**
@@ -61,21 +61,31 @@ abstract class WPML_Element_Translation extends WPML_WPDB_User {
 		return $result;
 	}
 
+	/**
+	 * @param int  $element_id
+	 * @param bool $root if true gets the root element of the trid which itself
+	 * has no original. Otherwise returns the direct original of the given
+	 * element_id.
+	 *
+	 * @return int|null null if the element has no original
+	 */
 	public function get_original_element( $element_id, $root = false ) {
-		$source_lang = $this->maybe_populate_cache ( $element_id )
+		$element_id  = (int) $element_id;
+		$source_lang = $this->maybe_populate_cache( $element_id )
 			? $this->element_source_langs[ $element_id ] : null;
 		$res         = $source_lang === null ? $element_id : null;
-		$res         = $res === null && !$root ? $this->translations[ $element_id ][ $source_lang ] : $res;
+		$res         = $res === null && ! $root ? $this->translations[ $element_id ][ $source_lang ] : $res;
 		if ( $res === null && $root ) {
-			foreach ( $this->translations[ $element_id ] as &$trans_id ) {
-				if ( !$this->element_source_langs[ $trans_id ] ) {
+			foreach ( $this->translations[ $element_id ] as $trans_id ) {
+				if ( ! $this->element_source_langs[ $trans_id ] ) {
 					$res = $trans_id;
 					break;
 				}
 			}
 		}
+		$res = $res ? (int) $res : null;
 
-		return $res;
+		return $res !== $element_id ? $res : null;
 	}
 
 	public function get_element_id( $lang, $trid ) {

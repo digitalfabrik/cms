@@ -13,6 +13,30 @@ msgstr ""
 "Language:en\n"
 "MIME-Version: 1.0\n"
 
+msgid "WPML Update is Incomplete"
+msgstr ""
+
+msgid "You are running updated %s, but the following component is not updated:"
+msgstr ""
+
+msgid "You are running updated %s and %s, but the following components are not updated:"
+msgstr ""
+
+msgid "The following components are not updated:"
+msgstr ""
+
+msgid "WPML.org account"
+msgstr ""
+
+msgid "Your site will not work as it should in this configuration"
+msgstr ""
+
+msgid "Please update all components which you are using."
+msgstr ""
+
+msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
+msgstr ""
+
 msgid "WPML Media is enabled but not effective. It requires <a href=\"%s\">WPML</a> in order to work."
 msgstr ""
 

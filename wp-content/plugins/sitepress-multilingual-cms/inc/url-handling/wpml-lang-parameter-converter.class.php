@@ -88,4 +88,10 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 
 		return untrailingslashit ( $source_url );
 	}
+
+	public function get_admin_ajax_url( $url ) {
+		global $sitepress;
+
+		return add_query_arg( array( 'lang' => $sitepress->get_current_language() ), $url );
+	}
 }

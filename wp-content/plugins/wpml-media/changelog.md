@@ -1,3 +1,18 @@
+# 2.1.17
+
+##Fixes
+* Added backward compatibility for `__DIR__` magic constant not being supported before PHP 5.3.
+
+# 2.1.16
+
+## Fixes
+* [wpmlga-96] WordPress 4.4 compatibility: pulled all html headings by one (e.g. h2 -> h1, he -> h2, etc.)
+
+# 2.1.15
+
+## Fixes
+* [wpmlmedia-72] Fixed a potential issue which may happen when third party plugins tries to duplicate an attachment which doesn't exists
+
 # 2.1.14
 
 ## New

@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TM_Translation_Status {
+class WPML_TM_Translation_Status extends WPML_TM_Record_User {
 
 	private $element_id_cache;
 
@@ -17,34 +17,7 @@ class WPML_TM_Translation_Status {
 			1,
 			4
 		);
-		add_filter( 'wpml_job_assigned_to_after_assignment', array( $this, 'job_assigned_to_filter' ), 10, 4 );
 		add_action('wpml_cache_clear', array($this, 'reload'));
-	}
-
-	/**
-	 * This filters the check whether or not a job is assigned to a specific translator for local string jobs.
-	 * It is to be used after assigning a job, as it will update the assignment for local string jobs itself.
-	 *
-	 * @param bool       $assigned_correctly
-	 * @param string|int $job_id
-	 * @param int        $translator_id
-	 * @param string|int $service
-	 *
-	 * @return bool
-	 */
-	public function job_assigned_to_filter( $assigned_correctly, $job_id, $translator_id, $service ) {
-		if ( ( ! $service || $service === 'local' ) && strpos( $job_id, 'string|' ) !== false ) {
-			global $wpdb;
-			$job_id = preg_replace( '/[^0-9]/', '', $job_id );
-			$wpdb->update(
-				$wpdb->prefix . 'icl_string_translations',
-				array( 'translator_id' => $translator_id ),
-				array( 'id' => $job_id )
-			);
-			$assigned_correctly = true;
-		}
-
-		return $assigned_correctly;
 	}
 
 	private function is_in_basket( $element_id, $lang, $element_type_prefix ) {
@@ -65,13 +38,18 @@ class WPML_TM_Translation_Status {
 	public function filter_target_langs( $allowed_langs, $element_id, $element_type_prefix ) {
 		if ( TranslationProxy_Basket::anywhere_in_basket( $element_id, $element_type_prefix ) ) {
 			$allowed_langs = array();
-		} else {
-			$src_lang = SitePress::get_source_language_by_trid( $this->get_element_trid( $element_id,
-																						 $element_type_prefix ) );
+		} elseif ( (bool) ( $trid = $this
+				->tm_records
+				->icl_translations_by_element_id_and_type_prefix(
+					$element_id, $element_type_prefix )
+				->trid() ) === true
+		) {
 			foreach ( $allowed_langs as $key => $lang_code ) {
-				if ( $lang_code === $src_lang || $this->is_in_active_job( $element_id,
-																		  $lang_code,
-																		  $element_type_prefix )
+				$element = $this->tm_records->icl_translations_by_trid_and_lang( $trid, $lang_code );
+				if ( ( $element->element_id() && ! $element->source_language_code() )
+				     || $this->is_in_active_job( $element_id,
+						$lang_code,
+						$element_type_prefix )
 				) {
 					unset( $allowed_langs[ $key ] );
 				}
@@ -85,26 +63,29 @@ class WPML_TM_Translation_Status {
 		/** @var WPML_TM_Element_Translations $wpml_tm_element_translations */
 		global $wpml_tm_element_translations;
 
-		$element_ids         = $this->get_element_ids( $trid );
-		$element_type_prefix = $wpml_tm_element_translations->get_element_type_prefix( $trid, $target_lang_code );
-		foreach ( $element_ids as $id ) {
-			if ( $this->is_in_basket( $id, $target_lang_code, $element_type_prefix ) ) {
-				$status = ICL_TM_IN_BASKET;
-				break;
-			} elseif ( (bool) ( $job_status = $this->is_in_active_job(
-					$id,
-					$target_lang_code,
-					$element_type_prefix,
-					true
-				) ) !== false
-			) {
-				$status = $job_status;
+		if ( $trid ) {
+			$element_ids         = array_filter( $this->get_element_ids( $trid ) );
+			$element_type_prefix = $wpml_tm_element_translations->get_element_type_prefix( $trid, $target_lang_code );
+			foreach ( $element_ids as $id ) {
+				if ( $this->is_in_basket( $id, $target_lang_code, $element_type_prefix ) ) {
+					$status = ICL_TM_IN_BASKET;
+					break;
+				} elseif ( (bool) ( $job_status = $this->is_in_active_job(
+						$id,
+						$target_lang_code,
+						$element_type_prefix,
+						true
+					) ) !== false
+				) {
+					$status = $job_status;
+					break;
+				}
 			}
+			$status = $status != ICL_TM_IN_BASKET && $wpml_tm_element_translations->is_update_needed( $trid,
+				$target_lang_code )
+				? ICL_TM_NEEDS_UPDATE
+				: $status;
 		}
-		$status = $status != ICL_TM_IN_BASKET && $wpml_tm_element_translations->is_update_needed( $trid,
-																								  $target_lang_code )
-			? ICL_TM_NEEDS_UPDATE
-			: $status;
 
 		return $status;
 	}
@@ -113,56 +94,29 @@ class WPML_TM_Translation_Status {
 		$this->element_id_cache = array();
 	}
 
-	protected function get_element_trid( $element_id, $element_type_prefix ) {
-		/**
-		 * @var WPML_Post_Translation $wpml_post_translations
-		 */
-		global $wpml_post_translations;
-		global $wpdb;
-
-		if ( $element_type_prefix === 'post' ) {
-			$trid = $wpml_post_translations->get_element_trid( $element_id );
-		} elseif ( (bool) $element_type_prefix === true && (bool) $element_id === true ) {
-			$trid = $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = %d AND element_type LIKE %s",
-					$element_id,
-					$element_type_prefix . '%'
-				)
-			);
-		} else {
-			$trid = false;
-		}
-
-		return $trid;
-	}
-
-	protected function is_in_active_job(
+	private function is_in_active_job(
 		$element_id,
 		$target_lang_code,
 		$element_type_prefix,
 		$return_status = false
 	) {
-		/**
-		 * @var TranslationManagement        $iclTranslationManagement
-		 * @var WPML_TM_Element_Translations $wpml_tm_element_translations
-		 */
-		global $wpml_tm_element_translations;
-		$trid = $this->get_element_trid( $element_id, $element_type_prefix );
-		if ( $return_status && SitePress::get_source_language_by_trid( $trid ) === $target_lang_code ) {
-			$res = ICL_TM_COMPLETE;
+		$trid = $this->tm_records->icl_translations_by_element_id_and_type_prefix( $element_id, $element_type_prefix )->trid();
+		$element_translated = $this->tm_records->icl_translations_by_trid_and_lang( $trid, $target_lang_code );
+		if ( ! $element_translated->source_language_code()
+		     && $element_translated->element_id() == $element_id
+		) {
+			$res = $return_status ? ICL_TM_COMPLETE : false;
 		} else {
-			$job_id = $wpml_tm_element_translations->get_job_id( $trid, $target_lang_code );
-			$res    = false;
-			if ( $job_id > 0 ) {
-				$res = $wpml_tm_element_translations->get_translation_status( $trid, $target_lang_code );
+			$res            = false;
+			$translation_id = $element_translated->translation_id();
+			if ( $translation_id ) {
+				$res = $this->tm_records->icl_translation_status_by_translation_id( $translation_id )->status();
 				$res = $return_status
 					? $res
-					: in_array( $res, array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ), true );
-			} elseif ( $return_status && (bool) $wpml_tm_element_translations->get_element_id( $trid,
-																							   $target_lang_code ) === true
-			) {
-				$res = ICL_TM_COMPLETE;
+					: in_array( $res, array(
+						ICL_TM_IN_PROGRESS,
+						ICL_TM_WAITING_FOR_TRANSLATOR
+					), true );
 			}
 		}
 
@@ -170,24 +124,15 @@ class WPML_TM_Translation_Status {
 	}
 
 	private function get_element_ids( $trid ) {
-		global $wpdb;
-
-		if ( (bool) $trid === true ) {
-			if ( isset( $this->element_id_cache[ $trid ] ) ) {
-				$res = $this->element_id_cache[ $trid ];
-			} else {
-				$res                             = $wpdb->get_col( $wpdb->prepare( "SELECT element_id
-																					FROM {$wpdb->prefix}icl_translations
-																					WHERE trid = %d",
-																				   $trid ) );
-				$this->element_id_cache[ $trid ] = $res;
-
-			}
-		} else {
-			$res = false;
+		if ( ! isset( $this->element_id_cache[ $trid ] ) ) {
+			$wpdb = $this->tm_records->wpdb();
+			$this->element_id_cache[ $trid ] = $wpdb->get_col(
+				$wpdb->prepare( "SELECT element_id
+								 FROM {$wpdb->prefix}icl_translations
+								 WHERE trid = %d",
+					$trid ) );
 		}
 
-		return $res;
+		return $this->element_id_cache[ $trid ];
 	}
-
 }

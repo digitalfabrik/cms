@@ -29,6 +29,39 @@ class WPML_WP_API {
 	}
 
 	/**
+	 * Wrapper for \add_submenu_page
+	 *
+	 * @param              $parent_slug
+	 * @param              $page_title
+	 * @param              $menu_title
+	 * @param              $capability
+	 * @param              $menu_slug
+	 * @param array|string $function
+	 *
+	 * @return false|string
+	 */
+	public function add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function = '' ) {
+
+		return add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+	}
+
+	/**
+	 * @param              $page_title
+	 * @param              $menu_title
+	 * @param              $capability
+	 * @param              $menu_slug
+	 * @param array|string $function
+	 * @param string       $icon_url
+	 * @param null         $position
+	 *
+	 * @return string
+	 */
+	public function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function = '', $icon_url = '', $position = null ) {
+
+		return add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon_url, $position );
+	}
+
+	/**
 	 * Wrapper for \get_post_type_archive_link
 	 *
 	 * @param string $post_type
@@ -93,6 +126,30 @@ class WPML_WP_API {
 	}
 
 	/**
+	 * Wrapper for \current_user_can
+	 *
+	 * @param string $capability
+	 *
+	 * @return bool
+	 */
+	public function current_user_can( $capability ) {
+
+		return current_user_can( $capability );
+	}
+
+	/**
+	 * @param int    $user_id
+	 * @param string $key
+	 * @param bool   $single
+	 *
+	 * @return mixed
+	 */
+	public function get_user_meta( $user_id, $key = '', $single = false ) {
+
+		return get_user_meta( $user_id, $key, $single );
+	}
+
+	/**
 	 * Wrapper for \get_post_type
 	 *
 	 * @param null|int|WP_Post $post
@@ -104,7 +161,18 @@ class WPML_WP_API {
 		return get_post_type( $post );
 	}
 
-	public final function get_tm_url( $tab = null, $hash = null ) {
+	/**
+	 * @param int|WP_User $user
+	 * @param string      $capability
+	 *
+	 * @return bool
+	 */
+	public function user_can( $user, $capability ) {
+
+		return user_can( $user, $capability );
+	}
+
+	public function get_tm_url( $tab = null, $hash = null ) {
 		$tm_url = menu_page_url(WPML_TM_FOLDER . '/menu/main.php', false);
 
 		$query_vars = array();
@@ -124,11 +192,21 @@ class WPML_WP_API {
 		return $tm_url;
 	}
 
-	public final function is_jobs_tab() {
+	/**
+	 * Wrapper for \is_admin()
+	 *
+	 * @return bool
+	 */
+	public function is_admin() {
+
+		return is_admin();
+	}
+
+	public function is_jobs_tab() {
 		return $this->is_tm_page( 'jobs' );
 	}
 
-	public final function is_tm_page( $tab = null ) {
+	public function is_tm_page( $tab = null ) {
 		$result = is_admin()
 							&& isset( $_GET[ 'page' ] )
 							&& $_GET[ 'page' ] == WPML_TM_FOLDER . '/menu/main.php';
@@ -144,11 +222,11 @@ class WPML_WP_API {
 		return $result;
 	}
 
-	public final function is_troubleshooting_page() {
+	public function is_troubleshooting_page() {
 		return $this->is_core_page( 'troubleshooting.php' );
 	}
 
-	public final function is_core_page( $page ) {
+	public function is_core_page( $page ) {
 		$result = is_admin()
 							&& isset( $_GET[ 'page' ] )
 							&& $_GET[ 'page' ] == ICL_PLUGIN_FOLDER . '/menu/' . $page;
@@ -156,19 +234,20 @@ class WPML_WP_API {
 		return $result;
 	}
 
-	public final function is_back_end() {
+	public function is_back_end() {
 		return is_admin() && ! $this->is_ajax() && ! $this->is_cron_job();
 	}
 
-	public final function is_ajax() {
-		return defined( 'DOING_AJAX' ) && DOING_AJAX;
+	public function is_ajax() {
+
+		return ( defined( 'DOING_AJAX' ) && DOING_AJAX ) || wpml_is_ajax();
 	}
 
-	public final function is_cron_job() {
+	public function is_cron_job() {
 		return defined( 'DOING_CRON' ) && DOING_CRON;
 	}
 
-	public final function is_heartbeat() {
+	public function is_heartbeat() {
 		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
 		return $action == 'heartbeat';
@@ -285,6 +364,22 @@ class WPML_WP_API {
 	}
 
 	/**
+	 * Wrapper for \get_post_meta
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $key     Optional. The meta key to retrieve. By default, returns
+	 *                        data for all keys. Default empty.
+	 * @param bool   $single  Optional. Whether to return a single value. Default false.
+	 *
+	 * @return mixed Will be an array if $single is false. Will be value of meta data
+	 *               field if $single is true.
+	 */
+	function get_post_meta( $post_id, $key = '', $single = false ) {
+
+		return get_post_meta( $post_id, $key, $single );
+	}
+
+	/**
 	 * Wrapper for \get_permalink
 	 *
 	 * @param int        $id
@@ -332,5 +427,30 @@ class WPML_WP_API {
 	public function wp_safe_redirect( $redir_target, $status = 302 ) {
 		wp_safe_redirect( $redir_target, $status );
 		exit;
+	}
+
+	/**
+	 * Wrapper around PHP constant lookup
+	 *
+	 * @param string $constant_name
+	 *
+	 * @return string|int
+	 */
+	public function constant( $constant_name ) {
+
+		return defined( $constant_name ) ? constant( $constant_name ) : null;
+	}
+
+	/**
+	 * Wrapper for \load_textdomain
+	 *
+	 * @param string $domain
+	 * @param string $mofile
+	 *
+	 * @return bool
+	 */
+	public function load_textdomain( $domain, $mofile ) {
+
+		return load_textdomain( $domain, $mofile );
 	}
 }

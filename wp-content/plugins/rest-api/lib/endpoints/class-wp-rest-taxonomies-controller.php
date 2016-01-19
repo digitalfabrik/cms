@@ -11,11 +11,7 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 			array(
 				'methods'         => WP_REST_Server::READABLE,
 				'callback'        => array( $this, 'get_items' ),
-				'args'            => array(
-					'post_type'   => array(
-						'sanitize_callback' => 'sanitize_key',
-					),
-				),
+				'args'            => $this->get_collection_params(),
 			),
 			'schema' => array( $this, 'get_public_item_schema' ),
 		) );
@@ -25,6 +21,9 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 				'methods'         => WP_REST_Server::READABLE,
 				'callback'        => array( $this, 'get_item' ),
 				'permission_callback' => array( $this, 'get_item_permissions_check' ),
+				'args'            => array(
+					'context'     => $this->get_context_param( array( 'default' => 'view' ) ),
+				),
 			),
 			'schema' => array( $this, 'get_public_item_schema' ),
 		) );
@@ -37,8 +36,8 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 	 * @return array
 	 */
 	public function get_items( $request ) {
-		if ( ! empty( $request['post_type'] ) ) {
-			$taxonomies = get_object_taxonomies( $request['post_type'], 'objects' );
+		if ( ! empty( $request['type'] ) ) {
+			$taxonomies = get_object_taxonomies( $request['type'], 'objects' );
 		} else {
 			$taxonomies = get_taxonomies( '', 'objects' );
 		}
@@ -48,7 +47,8 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 			if ( is_wp_error( $tax ) ) {
 				continue;
 			}
-			$data[] = $tax;
+			$tax = $this->prepare_response_for_collection( $tax );
+			$data[ $tax_type ] = $tax;
 		}
 		return $data;
 	}
@@ -110,16 +110,29 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 		$data = $this->filter_response_by_context( $data, $context );
 		$data = $this->add_additional_fields_to_object( $data, $request );
 
+		// Wrap the data in a response object.
+		$response = rest_ensure_response( $data );
+
+		$base = ! empty( $taxonomy->rest_base ) ? $taxonomy->rest_base : $taxonomy->name;
+		$response->add_links( array(
+			'collection'     => array(
+				'href'       => rest_url( 'wp/v2/taxonomies' ),
+			),
+			'item'     => array(
+				'href'       => rest_url( sprintf( 'wp/v2/%s', $base ) ),
+			),
+		) );
+
 		/**
 		 * Filter a taxonomy returned from the API.
 		 *
 		 * Allows modification of the taxonomy data right before it is returned.
 		 *
-		 * @param array           $data     Key value array of taxonomy data.
-		 * @param object          $item     The taxonomy object.
-		 * @param WP_REST_Request $request  Request used to generate the response.
+		 * @param WP_REST_Response  $response   The response object.
+		 * @param object            $item       The original taxonomy object.
+		 * @param WP_REST_Request   $request    Request used to generate the response.
 		 */
-		return apply_filters( 'rest_prepare_taxonomy', $data, $taxonomy, $request );
+		return apply_filters( 'rest_prepare_taxonomy', $response, $taxonomy, $request );
 	}
 
 	/**
@@ -171,6 +184,21 @@ class WP_REST_Taxonomies_Controller extends WP_REST_Controller {
 				),
 			);
 		return $this->add_additional_fields_schema( $schema );
+	}
+
+	/**
+	 * Get the query params for collections
+	 *
+	 * @return array
+	 */
+	public function get_collection_params() {
+		$new_params = array();
+		$new_params['context'] = $this->get_context_param( array( 'default' => 'view' ) );
+		$new_params['type'] = array(
+			'description'  => 'Limit results to taxonomies associated with a specific post type.',
+			'type'         => 'string',
+		);
+		return $new_params;
 	}
 
 }

@@ -109,7 +109,6 @@ class TranslationProxy_Service {
 			$result['translator_id']       = $translator_id;
 		} else {
 			$translator_data = explode( '-', $translator_id );
-
 			$result                        = array();
 			$result['translation_service'] = $translator_data[1];
 			$result['translator_id']       = isset( $translator_data[2] ) ? $translator_data[2] : 0;

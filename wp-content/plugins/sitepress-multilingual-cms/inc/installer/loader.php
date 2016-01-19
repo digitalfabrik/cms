@@ -3,7 +3,7 @@
 Plugin Name: Installer
 Plugin URI: http://wp-compatibility.com/installer-plugin/
 Description: Need help buying, installing and upgrading commercial themes and plugins? **Installer** handles all this for you, right from the WordPress admin. Installer lets you find themes and plugins from different sources, then, buy them from within the WordPress admin. Instead of manually uploading and unpacking, you'll see those themes and plugins available, just like any other plugin you're getting from WordPress.org.
-Version: 1.6.8
+Version: 1.7.2
 Author: OnTheGoSystems Inc.     
 Author URI: http://www.onthegosystems.com/
 */
@@ -28,9 +28,11 @@ $wp_installer_instance = dirname(__FILE__) . '/installer.php';
 global $wp_installer_instances;
 $wp_installer_instances[$wp_installer_instance] = array(
     'bootfile'  => $wp_installer_instance,
-    'version'   => '1.6.8'
+    'version'   => '1.7.2'
 );
 
+
+/* EXCEPTIONS ********************************************************************************************/
 // Exception: When WPML prior 3.2 is used, that instance must be used regardless of another newer instance
 // Case 1: WPML loaded before Types - eliminate other instances
 if( defined('ICL_SITEPRESS_VERSION') && version_compare(ICL_SITEPRESS_VERSION, '3.2', '<') ) {
@@ -42,6 +44,42 @@ if( defined('ICL_SITEPRESS_VERSION') && version_compare(ICL_SITEPRESS_VERSION, '
         }
     }
 }
+
+// Exception: Types 1.8.9 (Installer 1.7.0) with WPML before 3.3 (Installer before 1.7.0)
+// New products file http://d2salfytceyqoe.cloudfront.net/wpml-products33.json overrides the old one
+// while the WPML's instance is being used
+// => Force using the new Installer Instance
+if( defined('ICL_SITEPRESS_VERSION') && version_compare(ICL_SITEPRESS_VERSION, '3.3.1', '<') ) {
+
+    // if Installer 1.7.0+ is present, unregister Installer from old WPML
+    // Force Installer 1.7.0+ being used over older Installer versions
+    $installer_171_plus_on = false;
+    foreach($wp_installer_instances as $key => $instance) {
+        if( version_compare( $instance['version'], '1.7.1', '>=' ) ){
+            $installer_171_plus_on = true;
+            break;
+        }
+    }
+
+    if( $installer_171_plus_on ){
+        foreach($wp_installer_instances as $key => $instance) {
+
+            if( version_compare( $instance['version'], '1.7.0', '<' ) ){
+                unset( $wp_installer_instances[$key] );
+            }
+
+        }
+    }
+
+}
+
+// Exception: When using the embedded plugins module allow the set up to run completely with the
+// Installer instance that triggers it
+if( isset( $_POST['installer_instance'] ) && isset( $wp_installer_instances[$_POST['installer_instance']] ) ){
+    $wp_installer_instances[$_POST['installer_instance']]['version'] = '999';
+}
+/* EXCEPTIONS ********************************************************************************************/
+
 
 // Only one of these in the end
 remove_action('after_setup_theme', 'wpml_installer_instance_delegator', 1);

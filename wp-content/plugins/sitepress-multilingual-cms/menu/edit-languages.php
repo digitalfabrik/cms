@@ -9,6 +9,7 @@ class SitePress_EditLanguages {
     private $built_in_languages = array();
     private $error = '';
     private $message = '';
+	private $max_file_size;
 
 	function __construct() {
 
@@ -19,6 +20,8 @@ class SitePress_EditLanguages {
             ICL_SITEPRESS_VERSION,
             true
         );
+
+		$this->max_file_size = 100000;
 
 		$lang_codes = icl_get_languages_codes();
         $this->built_in_languages = array_values($lang_codes);
@@ -31,16 +34,21 @@ class SitePress_EditLanguages {
 		// Set upload dir
 		$wp_upload_dir = wp_upload_dir();
 		$this->upload_dir = $wp_upload_dir['basedir'] . '/flags';
-		
-		if (!is_dir($this->upload_dir)) {
-			if (!mkdir($this->upload_dir)) {
-				$this->error(__('Upload directory cannot be created. Check your permissions.','sitepress'));
+
+		if ( ! is_dir( $this->upload_dir ) ) {
+			$this->is_writable = is_writable( $wp_upload_dir['basedir'] );
+			if ( $this->is_writable ) {
+				try {
+					mkdir( $this->upload_dir );
+				} catch ( Exception $ex ) {
+					$this->error( __( 'Upload directory cannot be created. Check your permissions.', 'sitepress' ) );
+				}
+			} else {
+				$this->error( __( 'Upload dir is not writable', 'sitepress' ) );
 			}
 		}
-		if (!$this->is_writable = is_writable($this->upload_dir)) {
-			$this->error(__('Upload dir is not writable','sitepress'));
-		}
-		
+		$this->is_writable = is_writable( $this->upload_dir );
+
 		$this->migrate();
 		
 		$this->get_active_languages();
@@ -140,7 +148,15 @@ For each language, you need to enter the following information:
 	<p class="submit alignleft"><a href="admin.php?page=<?php echo ICL_PLUGIN_FOLDER ?>/menu/languages.php">&laquo;&nbsp;<?php _e('Back to languages', 'sitepress'); ?></a></p>
 
 	<p class="submit alignright">
-		<input type="button" name="icl_edit_languages_add_language_button" id="icl_edit_languages_add_language_button" value="<?php _e('Add Language', 'sitepress'); ?>" class="button-secondary"<?php if ($this->add_validation_failed) { ?> style="display:none;"<?php } ?> />&nbsp;<input type="button" name="icl_edit_languages_cancel_button" id="icl_edit_languages_cancel_button" value="<?php _e('Cancel', 'sitepress'); ?>" class="button-secondary icl_edit_languages_show"<?php if (!$this->add_validation_failed) { ?> style="display:none;"<?php } ?> />&nbsp;<input disabled type="submit" class="button-primary" value="<?php _e('Save', 'sitepress'); ?>" /></p>
+		<input type="button" name="icl_edit_languages_add_language_button" id="icl_edit_languages_add_language_button"
+		       value="<?php _e( 'Add Language', 'sitepress' ); ?>"
+		       class="button-secondary"<?php if ( $this->add_validation_failed ) { ?> style="display:none;"<?php } ?> />
+		&nbsp;
+		<input type="button" name="icl_edit_languages_cancel_button" id="icl_edit_languages_cancel_button"
+		       value="<?php _e( 'Cancel', 'sitepress' ); ?>"
+		       class="button-secondary icl_edit_languages_show"<?php if ( ! $this->add_validation_failed ) { ?> style="display:none;"<?php } ?> />
+		&nbsp;
+		<input disabled type="submit" class="button-primary" value="<?php _e( 'Save', 'sitepress' ); ?>"/></p>
     <br clear="all" />
 	</form>
     
@@ -178,7 +194,41 @@ For each language, you need to enter the following information:
 					?>
 					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][translations][<?php echo $translation['code']; ?>]" value="<?php echo stripslashes_deep($value); ?>" /></td>
 					<?php } ?>
-					<td><?php if ($this->is_writable) { ?><input type="hidden" name="MAX_FILE_SIZE" value="100000" /><input name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_file]" class="icl_edit_languages_flag_upload_field file" style="display:none; float:left;" type="file"  size="10" />&nbsp;<?php } ?><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag]" value="<?php echo $lang['flag']; ?>" class="icl_edit_languages_flag_enter_field" style="width:60px; float:left;" /><?php if ($this->is_writable) { ?><div style="float:left;"><label><input type="radio" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]" value="true" class="radio icl_edit_languages_use_upload"<?php if ($lang['from_template']) { ?> checked="checked"<?php } ?> />&nbsp;<?php _e('Upload flag', 'sitepress'); ?></label><br /><label><input type="radio" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]" value="false" class="radio icl_edit_languages_use_field"<?php if (!$lang['from_template']) { ?> checked="checked"<?php } ?> />&nbsp;<?php _e('Use flag from WPML', 'sitepress'); ?></label></div><?php } ?></td>
+			<td>
+				<?php
+				if ( $this->is_writable ) {
+					?>
+					<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->max_file_size; ?>"/>
+					<input name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_file]"
+					       class="icl_edit_languages_flag_upload_field file" style="display:none; float:left;"
+					       type="file" size="10"/>&nbsp;<?php } ?>
+				<input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag]"
+				       value="<?php echo $lang['flag']; ?>" class="icl_edit_languages_flag_enter_field"
+				       style="width:60px; float:left;"/>
+				<?php
+				if ( $this->is_writable ) {
+					?>
+					<div style="float:left;">
+						<label>
+							<input type="radio" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
+							       value="true"
+							       class="radio icl_edit_languages_use_upload"<?php if ( $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
+							&nbsp;
+							<?php _e( 'Upload flag', 'sitepress' ); ?>
+						</label>
+						<br/>
+						<label>
+							<input type="radio" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
+							       value="false"
+							       class="radio icl_edit_languages_use_field"<?php if ( ! $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
+							&nbsp;
+							<?php _e( 'Use flag from WPML', 'sitepress' ); ?>
+						</label>
+					</div>
+					<?php
+				}
+				?>
+			</td>
 					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][default_locale]" value="<?php echo $lang['default_locale']; ?>" style="width:60px;" /></td>
                     
                     <td>
@@ -277,15 +327,15 @@ For each language, you need to enter the following information:
 	}
 	
 	function update() {
-        
+
 		// Basic check.
 		if (!isset($_POST['icl_edit_languages']) || !is_array($_POST['icl_edit_languages'])){
 			$this->error(__('Please, enter valid data.','sitepress'));
 			return;
 		}
-		
+
 		global $sitepress,$wpdb;
-		
+
 			// First check if add and validate it.
 		if (isset($_POST['icl_edit_languages']['add']) && $_POST['icl_edit_languages_ignore_add'] == 'false') {
 			if ($this->validate_one('add', $_POST['icl_edit_languages']['add'])) {
@@ -345,10 +395,10 @@ For each language, you need to enter the following information:
 					}
 				}
 			}
-			
-				// Handle flag.
+
+			// Handle flag.
 			if ($data['flag_upload'] == 'true' && !empty($_FILES['icl_edit_languages']['name'][$id]['flag_file'])) {
-				if ($filename = $this->upload_flag($id, $data)) {
+				if ( $filename = $this->upload_flag( $id ) ) {
 					$data['flag'] = $filename;
 					$from_template = 1;
 				} else {
@@ -448,7 +498,7 @@ For each language, you need to enter the following information:
 		
 			// Handle flag.
 		if ($data['flag_upload'] == 'true' && !empty($_FILES['icl_edit_languages']['name']['add']['flag_file'])) {
-			if ($filename = $this->upload_flag('add', $data)) {
+			if ( $filename = $this->upload_flag( 'add' ) ) {
 				$data['flag'] = $filename;
 				$from_template = 1;
 			} else {
@@ -484,8 +534,8 @@ For each language, you need to enter the following information:
         }
 		
 		foreach ($this->required_fields as $name => $type) {
-			if ($name == 'flag') {
-				if ($data['flag_upload'] == 'true') {
+			if ( $name == 'flag' ) {
+				if ( isset( $data['flag_upload'] ) && $data['flag_upload'] == 'true' ) {
 					$check =  $_FILES['icl_edit_languages']['name'][$id]['flag_file'];
 					if (empty($check)) continue;
 					if (!$this->check_extension($check)) {
@@ -612,7 +662,7 @@ For each language, you need to enter the following information:
 
 	function check_extension($file) {        
 		$extension = substr($file, strrpos($file, '.') + 1);
-		if (!in_array(strtolower($extension),array('png','gif','jpg'))) {
+		if ( ! in_array( strtolower( $extension ), array( 'png', 'gif', 'jpg', 'svg' ) ) ) {
 			$this->error(__('File extension not allowed.','sitepress'));
 			return false;
 		}
@@ -626,30 +676,63 @@ For each language, you need to enter the following information:
     function message($str = false) {
         $this->message .= $str . '<br />';
     }
-    
 
-	function upload_flag($id, $data) {
-		$filename = basename($_FILES['icl_edit_languages']['name'][$id]['flag_file']);
-		$target_path = $this->upload_dir . '/' . $filename;
-        
-        $fileinfo = getimagesize($_FILES['icl_edit_languages']['tmp_name'][$id]['flag_file']);
-        $validated = is_array($fileinfo) && in_array($fileinfo['mime'], array('image/gif', 'image/jpeg', 'image/png')) && $fileinfo['0'] > 0;
-        
-		if ($validated && move_uploaded_file($_FILES['icl_edit_languages']['tmp_name'][$id]['flag_file'], $target_path) ) {
-            
-            if(function_exists('wp_get_image_editor')){
-                $image = wp_get_image_editor( $target_path );
-                if ( ! is_wp_error( $image ) ) {
-                    $image->resize( 18, 12, true );
-                    $image->save( $target_path );
-                }                
-            }
-            
-    		return $filename;
-		} else {
-    		$this->error(__('There was an error uploading the file, please try again!','sitepress'));
-			return false;
+	function upload_flag( $id ) {
+		$result    = false;
+		$validated = ! empty( $_FILES['icl_edit_languages']['tmp_name'][ $id ]['flag_file'] );
+
+		if ( $validated ) {
+			$filename    = basename( $_FILES['icl_edit_languages']['name'][ $id ]['flag_file'] );
+			$target_path = $this->upload_dir . '/' . $filename;
+
+			$mime      = mime_content_type( $_FILES['icl_edit_languages']['tmp_name'][ $id ]['flag_file'] );
+			$validated = in_array( $mime, array( 'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml' ) );
+
+			if ( $validated && move_uploaded_file( $_FILES['icl_edit_languages']['tmp_name'][ $id ]['flag_file'], $target_path ) ) {
+
+				if ( function_exists( 'wp_get_image_editor' ) && 'image/svg+xml' !== $mime ) {
+					$image = wp_get_image_editor( $target_path );
+					if ( ! is_wp_error( $image ) ) {
+						$image->resize( 18, 12, true );
+						$image->save( $target_path );
+					}
+				}
+
+				$result = $filename;
+			}
 		}
+
+		if ( ! $validated ) {
+			$error_message = __( 'There was an error uploading the file, please try again!', 'sitepress' );
+			if ( ! empty( $_FILES['icl_edit_languages']['error'][ $id ]['flag_file'] ) ) {
+				switch ( $_FILES['icl_edit_languages']['error'][ $id ]['flag_file'] ) {
+					case UPLOAD_ERR_INI_SIZE;
+						$error_message = __( 'The uploaded file exceeds the upload_max_filesize directive in php.ini.', 'sitepress' );
+						break;
+					case UPLOAD_ERR_FORM_SIZE;
+						$error_message = sprintf( __( 'The uploaded file exceeds %s bytes.', 'sitepress' ), $this->max_file_size );
+						break;
+					case UPLOAD_ERR_PARTIAL;
+						$error_message = __( 'The uploaded file was only partially uploaded.', 'sitepress' );
+						break;
+					case UPLOAD_ERR_NO_FILE;
+						$error_message = __( 'No file was uploaded.', 'sitepress' );
+						break;
+					case UPLOAD_ERR_NO_TMP_DIR;
+						$error_message = __( 'Missing a temporary folder.', 'sitepress' );
+						break;
+					case UPLOAD_ERR_CANT_WRITE;
+						$error_message = __( 'Failed to write file to disk.', 'sitepress' );
+						break;
+					case UPLOAD_ERR_EXTENSION;
+						$error_message = __( 'A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help.', 'sitepress' );
+						break;
+				}
+			}
+			$this->error( $error_message );
+		}
+
+		return $result;
 	}
 
 	function migrate() {

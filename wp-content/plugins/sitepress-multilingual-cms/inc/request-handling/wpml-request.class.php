@@ -20,6 +20,7 @@ abstract class WPML_Request extends WPML_URL_Converter_User {
 	 * @param WPML_URL_Converter $url_converter
 	 * @param array              $active_languages
 	 * @param string             $default_language
+	 * @param WPML_Cookie        $cookie
 	 */
 	public function __construct( &$url_converter, $active_languages, $default_language, $cookie ) {
 		parent::__construct( $url_converter );
@@ -102,7 +103,7 @@ abstract class WPML_Request extends WPML_URL_Converter_User {
 	 * @param string $lang_code
 	 */
 	function set_language_cookie( $lang_code ) {
-		if ( ! $this->headers_sent() ) {
+		if ( ! $this->cookie->headers_sent() ) {
 			if ( preg_match( '@\.(css|js|png|jpg|gif|jpeg|bmp)@i',
 							 basename( preg_replace( '@\?.*$@', '', $_SERVER[ 'REQUEST_URI' ] ) ) )
 				 || isset( $_POST[ 'icl_ajx_action' ] ) || isset( $_POST[ '_ajax_nonce' ] ) || defined( 'DOING_AJAX' )
@@ -116,14 +117,29 @@ abstract class WPML_Request extends WPML_URL_Converter_User {
 		}
 	}
 	
-	public function headers_sent() {
-		return headers_sent();
-	}
-	
 	public function get_cookie_domain() {
 		$cookie_domain = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : $this->get_server_host_name();
 		return $cookie_domain;
 	}
 
-	
+	/**
+	 * Returns SERVER_NAME, or HTTP_HOST if the first is not available
+	 *
+	 * @return string
+	 */
+	public function get_server_host_name() {
+		$host = isset( $_SERVER[ 'HTTP_HOST' ] ) ? $_SERVER[ 'HTTP_HOST' ] : null;
+		$host = $host !== null
+			? $host
+			: ( isset( $_SERVER[ 'SERVER_NAME' ] )
+				? $_SERVER[ 'SERVER_NAME' ]
+				  . ( isset( $_SERVER[ 'SERVER_PORT' ] ) && ! in_array( $_SERVER[ 'SERVER_PORT' ], array( 80, 443 ) )
+					? $_SERVER[ 'SERVER_PORT' ] : '' )
+				: '' );
+
+		//Removes standard ports 443 (80 should be already omitted in all cases)
+		$result = preg_replace( "@:[443]+([/]?)@", '$1', $host );
+
+		return $result;
+	}
 }

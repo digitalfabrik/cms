@@ -49,20 +49,21 @@ class WPML_TM_Requirements {
 			);
 		}
 
-		if ( class_exists( 'ICL_AdminNotifier' ) ) {
-			if ( count( $extensions ) > 0 ) {
+		if ( class_exists( 'ICL_AdminNotifier' ) && ( !defined( 'ICL_HIDE_TRANSLATION_SERVICES' ) || !ICL_HIDE_TRANSLATION_SERVICES ) ) {
+			$wpml_wp_api_check = new WPML_WP_API();
+			if ( count($extensions) > 0 && $wpml_wp_api_check->is_tm_page() ) {
 				$message = '';
 				$message .= '<p>';
-				$message .= __( 'WPML Translation Management requires the following PHP extensions and settings:', 'wpml-translation-management' );
+				$message .= __('WPML Translation Management requires the following PHP extensions and settings:', 'wpml-translation-management');
 				$message .= '</p>';
 				$message .= '<ul>';
 
-				foreach ( $extensions as $id => $data ) {
+				foreach ($extensions as $id => $data) {
 					$message .= '<li>';
-					if ( 'setting' === $data['type'] ) {
+					if ('setting' === $data['type']) {
 						$message .= $data['type_description'] . ': <code>' . $id . '=' . $data['value'] . '</code>';
 					}
-					if ( 'extension' === $data['type'] ) {
+					if ('extension' === $data['type']) {
 						$message .= $data['type_description'] . ': <strong>' . $id . '</strong>';
 					}
 					$message .= '</li>';
@@ -70,18 +71,19 @@ class WPML_TM_Requirements {
 				$message .= '</ul>';
 
 				$args = array(
-						'id'           => 'wpml-tm-missing-extensions',
-						'group'        => 'wpml-tm-requirements',
-						'msg'          => $message,
-						'type'         => 'error',
+						'id' => 'wpml-tm-missing-extensions',
+						'group' => 'wpml-tm-requirements',
+						'msg' => $message,
+						'type' => 'error',
 						'admin_notice' => true,
-						'hide'         => true,
+						'hide' => true,
+
 				);
 
-				ICL_AdminNotifier::add_message( $args );
+				ICL_AdminNotifier::add_message($args);
 
 			} else {
-				ICL_AdminNotifier::remove_message_group( 'wpml-tm-requirements' );
+				ICL_AdminNotifier::remove_message_group('wpml-tm-requirements');
 			}
 		}
 	}

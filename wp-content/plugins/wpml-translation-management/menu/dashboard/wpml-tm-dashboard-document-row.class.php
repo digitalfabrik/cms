@@ -27,7 +27,7 @@ class WPML_TM_Dashboard_Document_Row {
 
 		$count     = 0;
 		if ( ! $this->is_external_type() ) {
-			$wpml_post = new WPML_Post( $current_document->ID, $this->sitepress, $this->wpdb );
+			$wpml_post = new WPML_TM_Post( $current_document->ID, $this->sitepress, $this->wpdb );
 			$count += $wpml_post->get_words_count();
 		}
 		$count = apply_filters( 'wpml_tm_estimated_words_count', $count, $current_document );

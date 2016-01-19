@@ -71,9 +71,12 @@ class WPML_Translation_Batch extends WPML_Abstract_Job_Collection{
 	/**
 	 * Cancels all remote translation jobs in this batch
 	 */
-	function cancel_all_remote_jobs() {
-		/** @var wpdb $wpdb */
-		/** @var TranslationManagement $iclTranslationManagement */
+	public function cancel_all_remote_jobs() {
+		/**
+		 * @var wpdb                    $wpdb
+		 * @var TranslationManagement   $iclTranslationManagement
+		 * @var WPML_String_Translation $WPML_String_Translation
+		 */
 		global $wpdb, $iclTranslationManagement, $WPML_String_Translation;
 
 		$translation_ids = $wpdb->get_col(

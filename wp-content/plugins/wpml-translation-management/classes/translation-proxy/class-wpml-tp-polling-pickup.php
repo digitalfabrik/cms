@@ -41,7 +41,9 @@ class WPML_TP_Polling_Pickup {
 				'waiting_translation'
 			) )
 		) {
-			$is_missing_in_db = ! empty( $job['cms_id'] ) && ! $this->cms_id_helper->get_translation_id( $job['cms_id'] );
+			$is_missing_in_db = ( ! empty( $job['cms_id'] )
+			                      && ! $this->cms_id_helper->get_translation_id( $job['cms_id'] ) )
+			                    || apply_filters( 'wpml_st_job_state_pending', false, $job );
 			$job_state        = in_array( $job['job_state'], array(
 				'delivered',
 				'waiting_translation'

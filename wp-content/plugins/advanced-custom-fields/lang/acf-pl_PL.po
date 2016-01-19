@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Advanced Custom Fields\n"
 "Report-Msgid-Bugs-To: http://support.advancedcustomfields.com\n"
 "POT-Creation-Date: 2015-08-21 10:24+1000\n"
-"PO-Revision-Date: 2015-08-21 10:26+1000\n"
+"PO-Revision-Date: 2015-08-23 10:09+1000\n"
 "Last-Translator: Elliot Condon <e@elliotcondon.com>\n"
 "Language-Team: Michal Lepiarz <ml@e-poka.com>\n"
 "Language: pl_PL\n"
@@ -25,7 +25,7 @@ msgstr ""
 
 #: acf.php:485
 msgid "Field&nbsp;Groups"
-msgstr "Własne pola"
+msgstr "Grupy pól"
 
 #. Plugin Name of the plugin/theme
 #: acf.php:486 core/controllers/field_groups.php:213
@@ -131,7 +131,7 @@ msgstr "Nie zaznaczona żadnej grupy"
 
 #: core/api.php:1171
 msgid "Update"
-msgstr "Aktualizuj"
+msgstr "Aktualizacja"
 
 #: core/api.php:1172
 msgid "Post updated"
@@ -143,7 +143,7 @@ msgstr "Dodatki"
 
 #: core/controllers/addons.php:130 core/controllers/field_groups.php:428
 msgid "Repeater Field"
-msgstr "Powtórz Pole"
+msgstr "Pola powtarzalne"
 
 #: core/controllers/addons.php:131
 msgid "Create infinite rows of repeatable data with this versatile interface!"
@@ -412,7 +412,7 @@ msgstr "Tytuł Grupy pól jest wymagany"
 
 #: core/controllers/field_group.php:362
 msgid "copy"
-msgstr "kopiuj"
+msgstr "kopia"
 
 #: core/controllers/field_group.php:363 core/views/meta_box_location.php:62
 #: core/views/meta_box_location.php:159
@@ -491,9 +491,8 @@ msgid "Default Template"
 msgstr "Domyślny szablon"
 
 #: core/controllers/field_group.php:727
-#, fuzzy
 msgid "Published"
-msgstr "Opublikuj"
+msgstr "Opublikowany"
 
 #: core/controllers/field_group.php:728
 msgid "Pending Review"
@@ -541,9 +540,9 @@ msgid "Changelog"
 msgstr "Log zmian"
 
 #: core/controllers/field_groups.php:216
-#, fuzzy, php-format
+#, php-format
 msgid "See what's new in %1$sversion %2$s%3$s"
-msgstr "Zobacz co nowego w"
+msgstr "Zobacz co nowego w %1$swersji %2$s%3$s"
 
 #: core/controllers/field_groups.php:218
 msgid "Resources"
@@ -590,12 +589,12 @@ msgid "Thank you for updating to the latest version!"
 msgstr "Dziękujemy za aktualizację do najnowszej wersji!"
 
 #: core/controllers/field_groups.php:244
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "ACF %s is more polished and enjoyable than ever before. We hope you like it."
 msgstr ""
-"jest bardziej dopracowana i przyjemniejsza niż kiedykolwiek. Mamy nadzieję, "
-"że Ci się spodoba."
+"ACF %s jest bardziej dobracowany i przyjemniejszy w obsłudze niż "
+"kiedykolwiek wcześniej. Mamy nadzieję, że Ci się spodoba."
 
 #: core/controllers/field_groups.php:251
 msgid "What’s New"
@@ -677,25 +676,28 @@ msgstr ""
 "wersji 3 nie są kompatybilne z wersją 4."
 
 #: core/controllers/field_groups.php:345
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Migrating your field types is easy, please %sfollow this tutorial%s to learn "
 "more."
-msgstr "Migracja typów pól jest łatwa, proszę"
+msgstr ""
+"Migracja Twoich pól jest łatwa. Proszę %spodążaj za wskazówkami%s aby "
+"dowiedzieć się więcej."
 
 #: core/controllers/field_groups.php:347
 msgid "Actions &amp; Filters"
 msgstr "Akcje &amp; Filtry"
 
 #: core/controllers/field_groups.php:348
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "All actions & filters have received a major facelift to make customizing ACF "
 "even easier! Please %sread this guide%s to find the updated naming "
 "convention."
 msgstr ""
-"Wszystkie akcje i filtry przeszły gruntowną zmianę aby dostosowywanie ACF "
-"było jeszcze łatwiejsze! Proszę"
+"Wszystkie akcje i filtry przeszły gruntowną zmianę, aby dostosowywanie ACF "
+"było jeszcze łatwiejsze! Proszę %sprzeczytaj ten przewodnik%s aby znaleźć "
+"zaktualizowane nazewnictwo."
 
 #: core/controllers/field_groups.php:350
 msgid "Preview draft is now working!"
@@ -733,28 +735,29 @@ msgid "Potential Issues"
 msgstr "Potencjalne problemy"
 
 #: core/controllers/field_groups.php:361
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "Due to the sizable changes surounding Add-ons, field types and action/"
 "filters, your website may not operate correctly. It is important that you "
 "read the full %sMigrating from v3 to v4%s guide to view the full list of "
 "changes."
 msgstr ""
-"Po dokonaniu zmian w dodatkach, typach pól i akcjach/filtrach twoja strona "
-"może nie działać poprawnie. Ważne jest zapoznanie się z pełnym"
+"Ze względu na zmian w dodatkach, typach pól i akcjach/filtrach, twoja strona "
+"może nie działać poprawnie. Ważne jest zapoznanie się z całością przewodnika "
+"%sMigracji z wersji 3 na wersję 4%s gdzie znajduje się pełna lista zmian."
 
 #: core/controllers/field_groups.php:364
 msgid "Really Important!"
 msgstr "Naprawdę ważne!"
 
 #: core/controllers/field_groups.php:364
-#, fuzzy, php-format
+#, php-format
 msgid ""
 "If you updated the ACF plugin without prior knowledge of such changes, "
 "please roll back to the latest %sversion 3%s of this plugin."
 msgstr ""
 "Jeśli zaktualizowałeś wtyczkę ACF bez wcześniejszym zapoznaniem się ze "
-"zmianami proszę wróć do ostatniej"
+"zmianami proszę wróć do ostatniej %swersji 3%s tej wtyczki. "
 
 #: core/controllers/field_groups.php:369
 msgid "Thank You"
@@ -835,9 +838,9 @@ msgid "Download the Add-on plugin (.zip file) to your desktop"
 msgstr "Pobierz wtyczkę z dodatkiem (plik .zip) na swój komputer"
 
 #: core/controllers/field_groups.php:467
-#, fuzzy, php-format
+#, php-format
 msgid "Navigate to %sPlugins > Add New > Upload%s"
-msgstr "Wtyczki > Dodaj nową > Wyślij wtyczkę na serwer"
+msgstr "Przejdź do %sWtyczki > Dodaj nową > Wyślij wtyczkę na serwer%s"
 
 #: core/controllers/field_groups.php:468
 msgid "Use the uploader to browse, select and install your Add-on (.zip file)"
@@ -886,9 +889,8 @@ msgid "Modifying field option 'taxonomy'"
 msgstr "Modyfikacja pola grupy opcji \"taksonomia\""
 
 #: core/controllers/upgrade.php:750
-#, fuzzy
 msgid "Moving user custom fields from wp_options to wp_usermeta"
-msgstr "Modyfikacja własnych pól użytkownika z wp_options na wp_usermeta"
+msgstr "Przenoszenie własnych pól użytkownika z wp_options na wp_usermeta"
 
 #: core/fields/_base.php:124 core/views/meta_box_location.php:74
 msgid "Basic"
@@ -993,7 +995,7 @@ msgstr ""
 #: core/fields/date_picker/date_picker.php:128
 msgid "\"yymmdd\" is the most versatile save format. Read more about"
 msgstr ""
-"\"rrmmdd\" to najbardziej uniwersalny format zapisu. Przeczytaj więcej o"
+"\"yymmdd\" to najbardziej uniwersalny format zapisu. Przeczytaj więcej o"
 
 #: core/fields/date_picker/date_picker.php:128
 #: core/fields/date_picker/date_picker.php:144
@@ -1014,7 +1016,7 @@ msgid ""
 "\"dd/mm/yy\" or \"mm/dd/yy\" are the most used display formats. Read more "
 "about"
 msgstr ""
-"\"dd/mm/rr\" lub \"dd/mm/rr\" to najczęściej używane formaty wyświetlania. "
+"\"dd/mm/yy\" lub \"mm/dd/yy\" to najczęściej używane formaty wyświetlania. "
 "Przeczytaj więcej o"
 
 #: core/fields/date_picker/date_picker.php:158
@@ -1092,7 +1094,6 @@ msgid "uploaded to this post"
 msgstr "wgrane do tego wpisu"
 
 #: core/fields/file.php:113
-#, fuzzy
 msgid "Size"
 msgstr "Rozmiar"
 
@@ -1302,7 +1303,6 @@ msgid "Post Object"
 msgstr "Obiekt wpis"
 
 #: core/fields/post_object.php:194 core/fields/relationship.php:170
-#, fuzzy
 msgid "(no title)"
 msgstr "(bez tytułu)"
 
@@ -1504,14 +1504,12 @@ msgid "Text Area"
 msgstr "Pole tekstowe"
 
 #: core/fields/textarea.php:148
-#, fuzzy
 msgid "Rows"
 msgstr "Wiersze"
 
 #: core/fields/textarea.php:149
-#, fuzzy
 msgid "Sets the textarea height"
-msgstr "Określa wysokość obszaru tekstowego."
+msgstr "Określa wysokość obszaru tekstowego"
 
 #: core/fields/textarea.php:175
 msgid "Convert new lines into &lt;br /&gt; tags"
@@ -1783,7 +1781,7 @@ msgstr ""
 
 #: core/views/meta_box_options.php:96
 msgid "Permalink"
-msgstr "Link bezpośderni"
+msgstr "Link bezpośredni"
 
 #: core/views/meta_box_options.php:97
 msgid "Content Editor"
@@ -1827,26 +1825,25 @@ msgstr "Tagi"
 
 #: core/views/meta_box_options.php:109
 msgid "Send Trackbacks"
-msgstr "Wyślij Trackbacks"
+msgstr "Wyślij Trackbacki"
 
 #. Plugin URI of the plugin/theme
 msgid "http://www.advancedcustomfields.com/"
-msgstr ""
+msgstr "http://www.advancedcustomfields.com/"
 
 #. Description of the plugin/theme
-#, fuzzy
 msgid "Customise WordPress with powerful, professional and intuitive fields"
 msgstr ""
-"Dostosuj WordPress'a przy pomocy potężnych, profesjonalnych i intuicyjnych "
-"własnych pól."
+"Dostosuj WordPress'a przy pomocy potężnych, profesjonalnych i łatwych w "
+"obsłudze własnych pól."
 
 #. Author of the plugin/theme
 msgid "Elliot Condon"
-msgstr ""
+msgstr "Elliot Condon"
 
 #. Author URI of the plugin/theme
 msgid "http://www.elliotcondon.com/"
-msgstr ""
+msgstr "http://www.elliotcondon.com/"
 
 #~ msgid "version"
 #~ msgstr "wersja"

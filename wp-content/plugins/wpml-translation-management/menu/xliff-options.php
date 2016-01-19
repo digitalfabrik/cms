@@ -22,7 +22,7 @@ global $sitepress;
 			        <select name="icl_xliff_version">
 				        <option value="false"><?php echo __("Please choose", "wpml-xliff"); ?></option>
 				        <?php
-				        $xliff_instance = new WPML_Translation_Management_XLIFF();
+				        $xliff_instance = setup_xliff_frontend();
 				        $available_xliff_versions = $xliff_instance->get_available_xliff_versions();
 				        foreach ($available_xliff_versions as $value => $version) {
 					        $selected = "";

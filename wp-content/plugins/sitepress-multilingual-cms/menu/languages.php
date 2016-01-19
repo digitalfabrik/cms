@@ -77,10 +77,6 @@
 
 global $language_switcher_defaults, $language_switcher_defaults_alt;
 
-if ( ! class_exists( 'WPML_Config' ) ) {
-	require ICL_PLUGIN_PATH . '/inc/wpml-config/wpml-config.class.php';
-}
-
 $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 
 
@@ -110,39 +106,11 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 
 	} /* setup wizard */
 
-	if(!$existing_content_language_verified || $setup_wizard_step <= 1 ): ?>
-    <div class="wpml-section">
-        <div class="wpml-section-header">
-            <h3><?php _e('Current content language', 'sitepress') ?></h3>
-        </div>
-
-        <div class="wpml-section-content">
-            <form id="icl_initial_language" method="post" action="<?php echo $_SERVER['REQUEST_URI'] ?>">
-
-                <?php wp_nonce_field('icl_initial_language','icl_initial_languagenonce') ?>
-                <p>
-                    <label for="icl_initial_language_code"><?php _e('Before adding other languages, please select the language existing contents are written in:', 'sitepress') ?></label>
-                </p>
-                <?php
-                    // for the wizard
-
-                    if( $default_language ){
-                        $blog_current_lang = $default_language;
-                    }
-                ?>
-                <p>
-                    <select id="icl_initial_language_code" name="icl_initial_language_code">
-                    <?php foreach($languages as $lang):?>
-                        <option <?php if($blog_current_lang==$lang['code']):?>selected<?php endif;?> value="<?php echo $lang['code']?>"><?php echo $lang['display_name']?></option>
-                    <?php endforeach; ?>
-                    </select>
-                </p>
-                <p class="buttons-wrap">
-                    <input class="button-primary" name="save" value="<?php _e('Next', 'sitepress') ?>" type="submit" />
-                </p>
-            </form>
-        </div>
-    </div> <!-- .wpml-section -->
+    if ( ! $existing_content_language_verified || $setup_wizard_step <= 1 ): ?>
+	    <?php
+	    $setup_step = new WPML_Setup_Step_One_Menu( $sitepress );
+	    echo $setup_step->render();
+	    ?>
     <?php else: ?>
         <?php
 		if(!empty( $setup_complete ) || $setup_wizard_step == 2): ?>
@@ -206,11 +174,21 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
                         <?php endif; ?>
                         <div id="icl_avail_languages_picker" class="<?php if( !empty( $setup_complete ) ) echo 'hidden'; ?>">
                             <ul class="available-languages">
-                            <?php foreach($languages as $lang): ?>
-                                <li><label><input type="checkbox" value="<?php echo $lang['code'] ?>" <?php if($lang['active']):?>checked="checked"<?php endif;?>
-                                <?php if($default_language ==$lang['code']):?>disabled="disabled"<?php endif;?>/>
-                                    <?php if($lang['major']):?><strong><?php endif;?><?php echo $lang['display_name'] ?><?php if($lang['major']):?></strong><?php endif;?></label></li>
-                            <?php endforeach ?>
+                                <?php
+                                foreach ( $languages as $lang ) {
+                                    $checked  = checked( '1', $lang['active'], false );
+                                    $disabled = disabled( $default_language, $lang['code'], false );
+                                    ?>
+                                    <li><label><input type="checkbox" value="<?php echo $lang['code'] ?>"
+                                                <?php echo $checked; ?>
+                                                <?php echo $disabled; ?>
+                                            />
+                                            <?php if ( $lang['major'] ): ?><strong><?php endif;
+                                                ?><?php echo $lang['display_name'] ?><?php if ( $lang['major'] ): ?></strong><?php endif;
+                                        ?></label></li>
+                                    <?php
+                                }
+                                ?>
                             </ul>
                             <?php if(!empty( $setup_complete )): ?>
                             <p class="buttons-wrap">

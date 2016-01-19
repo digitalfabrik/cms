@@ -124,7 +124,7 @@
             var htmlMain;
             if (self.mode === 'sync'
                 && (!self.termRowsView || self.termRowsView.getDisplayCount() === 0 ) ) {
-                htmlMain = ['<h2>', self.syncedLabel, '</h2>'].join('');
+                htmlMain = ['<h2 style="clear: both; padding-top: 10px;">', self.syncedLabel, '</h2>'].join('');
                 self.syncedLabel = labels.hieraAlreadySynced;
                 mainFragment.innerHTML = ([htmlTabs, htmlMain].join(''));
             } else {

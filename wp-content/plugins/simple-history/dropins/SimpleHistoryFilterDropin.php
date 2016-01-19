@@ -51,9 +51,9 @@ class SimpleHistoryFilterDropin {
 			$sql = $wpdb->prepare("
 				SELECT count( DISTINCT occasionsID )
 				FROM $table_name
-				WHERE DATE >= DATE_ADD(CURDATE(), INTERVAL -%d DAY) 
-			", $days);			
-		
+				WHERE date >= DATE_ADD(CURDATE(), INTERVAL -%d DAY) 
+			", $days);
+	
 			$numEvents = $wpdb->get_var($sql);
 
 			wp_cache_set( $cache_key, $numEvents, "",  DAY_IN_SECONDS);
@@ -116,6 +116,8 @@ class SimpleHistoryFilterDropin {
 
 				}
 
+				$arr_days_and_pages = array();
+
 				// Default month = current month
 				// Mainly for performance reasons, since often
 				// it's not the users intention to view all events, 
@@ -123,37 +125,73 @@ class SimpleHistoryFilterDropin {
 				$this_month = date("Y-m");
 
 				// Determine if we limit the date range by default
-				$daysToShow = 7;
+				$daysToShow = 1;
+
+				// Start with the latest day
 				$numEvents = $this->get_unique_events_for_days($daysToShow);
 				$numPages = $numEvents / $this->sh->get_pager_size();
 
-				// Example on my server with lots of brute force attacks
+				$arr_days_and_pages[] = array(
+					"daysToShow" => $daysToShow,
+					"numPages" => $numPages
+				);
+
+				// Example on my server with lots of brute force attacks (causing log to not load)
 				// 166434 / 15 = 11 000 pages for last 7 days
 				// 1 day = 3051 / 15 = 203 pages = still much but better than 11000 pages!
 
 				if ( $numPages < 20 ) {
-					
-					// Not that many things the last 7 days. Let's try to expand to 14 daysinstead.
-					$daysToShow = 14;
+
+					// Not that many things the last day. Let's try to expand to 7 days instead.
+					$daysToShow = 7;
 					$numEvents = $this->get_unique_events_for_days($daysToShow);
 					$numPages = $numEvents / $this->sh->get_pager_size();
 
-					if ( $numPages < 20 ) {
+					$arr_days_and_pages[] = array(
+						"daysToShow" => $daysToShow,
+						"numPages" => $numPages
+					);
 
-						// Not many things the last 14 days either. Let try with 30 days.
-						$daysToShow = 30;
+					if ( $numPages < 20 ) {
+					
+						// Not that many things the last 7 days. Let's try to expand to 14 days instead.
+						$daysToShow = 14;
 						$numEvents = $this->get_unique_events_for_days($daysToShow);
 						$numPages = $numEvents / $this->sh->get_pager_size();
+
+						$arr_days_and_pages[] = array(
+							"daysToShow" => $daysToShow,
+							"numPages" => $numPages
+						);
+
+						if ( $numPages < 20 ) {
+
+							// Not many things the last 14 days either. Let try with 30 days.
+							$daysToShow = 30;
+							$numEvents = $this->get_unique_events_for_days($daysToShow);
+							$numPages = $numEvents / $this->sh->get_pager_size();
+
+							$arr_days_and_pages[] = array(
+								"daysToShow" => $daysToShow,
+								"numPages" => $numPages
+							);
+
+							// If 30 days gives a big amount of pages, go back to 14 days
+							if ( $numPages > 1000 ) {
+								$daysToShow = 14;
+							}
+
+							// @TODO: for sites with very low activity,
+							// if they have no events for the last 30 days should we just show all?
+
+						}
 
 					}
 
 				}
 
-				/*echo "<br><br>" . $numEvents . " unique events the last $daysToShow days.";
-				echo "<br>" . $numEvents / $this->sh->get_pager_size() . " pages";*/
-
 				?>
-				<p>
+				<p data-debug-daysAndPages='<?php echo json_encode( $arr_days_and_pages ) ?>'>
 					<select class="SimpleHistory__filters__filter SimpleHistory__filters__filter--date"
 							name="dates"
 							placeholder="<?php echo _e("All dates", "simple-history") ?>" multiple>
