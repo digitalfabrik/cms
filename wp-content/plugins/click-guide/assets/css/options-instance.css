@@ -1,0 +1,21 @@
+.chooseTours table td {
+	padding-top: 7px;
+	padding-bottom: 7px;
+} 
+
+.chooseTours p.submit { margin-top: 0; }
+
+.optionsPageSuccess,
+.optionsPageFailure {
+	color: #ffffff;
+	padding: 5px 15px;
+	margin-bottom: 5px;
+	background-color: #ff0000;
+}
+.optionsPageSuccess { background-color: #008B00; }
+.optionsPageSuccess span,
+.optionsPageFailure span {
+	display: block;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
