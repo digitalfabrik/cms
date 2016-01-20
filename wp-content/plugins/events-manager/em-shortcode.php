@@ -44,7 +44,7 @@ function em_get_locations_map_shortcode($args){
 	return ob_get_clean();
 }
 add_shortcode('locations_map', 'em_get_locations_map_shortcode');
-add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //Depreciate this... confusing for WordPress 
+add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //deprecate this... confusing for WordPress 
 
 /**
  * Shows a list of events according to given specifications. Accepts any event query attribute.

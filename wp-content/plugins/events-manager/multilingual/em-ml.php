@@ -158,7 +158,7 @@ class EM_ML{
 	}
 
 	
-	/* START original object determining functions - These first two must be overriden via filters for any functionality to truly work. */
+	/* START original object determining functions - These first two must be overridden via filters for any functionality to truly work. */
 	public static function get_original( $object ){
 		return apply_filters('em_ml_get_original', $object );
 	}

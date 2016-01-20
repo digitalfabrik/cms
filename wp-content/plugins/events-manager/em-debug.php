@@ -15,7 +15,7 @@ $dbem_debug_options = array(
 	//Location Formatting
 	'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
 	'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
-	'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
+	'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'events-manager'),
 	'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
 	//General Settings
 		//Emails
@@ -41,6 +41,6 @@ if( get_option('dbem_debug') && !empty($_REQUEST['page']) && $_REQUEST['page'] !
 	}
 }
 if( is_admin() && get_option('dbem_debug')){
-	function em_debug_notification(){ ?><div class="error"><p><strong><?php echo sprintf(__('You are in Events Manager debug mode. To turn debug mode off, go to the <a href="%s">settings</a> page.','dbem'), em_add_get_params($_SERVER['REQUEST_URI'], array('dbem_debug_off'=>1))) ?></strong></p></div><?php }
+	function em_debug_notification(){ ?><div class="error"><p><strong><?php echo sprintf(__('You are in Events Manager debug mode. To turn debug mode off, go to the <a href="%s">settings</a> page.','events-manager'), em_add_get_params($_SERVER['REQUEST_URI'], array('dbem_debug_off'=>1))) ?></strong></p></div><?php }
 	add_action ( 'admin_notices', 'em_debug_notification' );
 }

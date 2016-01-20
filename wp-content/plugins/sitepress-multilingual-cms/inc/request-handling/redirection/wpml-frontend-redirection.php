@@ -3,28 +3,6 @@ require 'wpml-redirection.class.php';
 require ICL_PLUGIN_PATH . '/inc/request-handling/redirection/wpml-redirect-by-param.class.php';
 
 /**
- * Redirects to a URL corrected for the language information in it, in case request URI and $_REQUEST['lang'],
- * requested domain or $_SERVER['REQUEST_URI'] do not match and gives precedence to the explicit language parameter if
- * there.
- *
- * @return string The language code of the currently requested URL in case no redirection was necessary.
- */
-function wpml_maybe_frontend_redirect() {
-	global $wpml_url_converter;
-
-	$language_code = $wpml_url_converter->get_language_from_url( $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] );
-	/** @var WPML_Redirection $redirect_helper */
-	$redirect_helper = _wpml_get_redirect_helper();
-	if ( ( $target = $redirect_helper->get_redirect_target() ) !== false ) {
-		wp_safe_redirect( $target );
-		exit;
-	};
-
-	// allow forcing the current language when it can't be decoded from the URL
-	return apply_filters( 'icl_set_current_language', $language_code );
-}
-
-/**
  *
  * @return  WPML_Redirection
  *

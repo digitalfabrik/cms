@@ -92,12 +92,12 @@ class EM_Person extends WP_User{
 				<td style="padding-left:10px; vertical-align: top;">
 					<table>
 						<?php if( $no_user ): ?>
-						<tr><th><?php _e('Name','dbem'); ?> : </th><th><?php echo $this->get_name(); ?></th></tr>
+						<tr><th><?php _e('Name','events-manager'); ?> : </th><th><?php echo $this->get_name(); ?></th></tr>
 						<?php else: ?>
-						<tr><th><?php _e('Name','dbem'); ?> : </th><th><a href="<?php echo $this->get_bookings_url(); ?>"><?php echo $this->get_name(); ?></a></th></tr>
+						<tr><th><?php _e('Name','events-manager'); ?> : </th><th><a href="<?php echo $this->get_bookings_url(); ?>"><?php echo $this->get_name(); ?></a></th></tr>
 						<?php endif; ?>
-						<tr><th><?php _e('Email','dbem'); ?> : </th><td><?php echo $this->user_email; ?></td></tr>
-						<tr><th><?php _e('Phone','dbem'); ?> : </th><td><?php echo esc_html($this->phone); ?></td></tr>
+						<tr><th><?php _e('Email','events-manager'); ?> : </th><td><?php echo $this->user_email; ?></td></tr>
+						<tr><th><?php _e('Phone','events-manager'); ?> : </th><td><?php echo esc_html($this->phone); ?></td></tr>
 					</table>
 				</td>
 			</tr>

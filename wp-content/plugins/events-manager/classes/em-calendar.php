@@ -347,12 +347,12 @@ class EM_Calendar extends EM_Object {
 	public static function translate_and_trim($string, $length = 1) {
 	    if( $length > 0 ){
 			if(function_exists('mb_substr')){ //fix for diacritic calendar names
-			    return mb_substr(__($string,'dbem'), 0, $length, 'UTF-8');
+			    return mb_substr(__($string,'events-manager'), 0, $length, 'UTF-8');
 			}else{ 
-	    		return substr(__($string,'dbem'), 0, $length); 
+	    		return substr(__($string,'events-manager'), 0, $length); 
 	    	}
 	    }
-	    return __($string,'dbem');
+	    return __($string,'events-manager');
 	}  
 	
 	/**

@@ -2,9 +2,10 @@
 Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
+Text Domain: events-manager
 Requires at least: 3.5
-Tested up to: 4.3.1
-Stable tag: 5.6.1
+Tested up to: 4.4
+Stable tag: 5.6.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,6 +99,27 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.6.2 =
+* changed translation gettext domain from dbem to events-manager inline with new wordpress.org translation features
+* fixed EM_CSV_DELIMITER not being included in headers, added filter em_csv_delimiter to override EM_CSV_DELIMITER
+* added wpfc-more class to allow hiding of time on 'more' link for WP FullCalendar
+* fixed booking cut-off time not working if cut-off days is 0 or empty
+* fixed front-end event submission form permission issues for new recurring events when publish cap is enabled but not edit_others and delete_others
+* fixed Norwegian incorrectly translated placeholders
+* fixed custom decimal separator not used in tax rate display
+* minor js fix which fixes a grecaptcha related error notice
+* fixed recurrence_byday db value saving as null for weekly Sunday events (kudos @giventofly76)
+* removed _event_date_created and _event_date_modified from the postmeta table as these are inaccurate, use the records from the wp_em_meta table or directly via EM_Event->event_date_created or EM_Event->event_date_modified
+* changed settings/admin capability from list_users to manage_options
+* added EM_DISABLE_AUTO_BOOKINGSFORM which prevents booking form showing below post if format overriding disabled
+* fixed WP 4.4 error on front-end event submission form
+* fixed PHP notices in WP 4.4 when categories are disabled
+* fixed Multiple Booking Mode bug in Pro introduced by WP 4.4 allowing NULL db values
+* fixed like_escape debug warning on search form
+* fixed twenty fifteen/sixteen CSS conflict hiding confirmation messages
+* added bookings closed message
+* updated all languages included typo fixes and added Arabic, Australian and Canadian English
+
 = 5.6.1 =
 * fixed no arguments being passed onto em_get_post_meta_pre and em_get_post_pre
 * fixed minor PHP warning when viewing settings in paged tab mode

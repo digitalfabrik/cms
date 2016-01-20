@@ -1,3 +1,8 @@
+#2.1.4
+
+##Feature
+* [wpmlcore-538] Added an informative message to promote WCML when WooCoomerce is installed but WCML is not
+  
 #2.1.3
 
 ##Fixes

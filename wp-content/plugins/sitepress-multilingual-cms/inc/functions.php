@@ -54,7 +54,7 @@ function icl_get_setting( $key, $default = false ) {
  * @use \SitePress::api_hooks
  */
 function wpml_get_setting_filter( $default, $key, $deprecated = null ) {
-    $default = $deprecated !== null  && !$default ? $deprecated : $default;
+    $default = $deprecated !== null && !$default ? $deprecated : $default;
 
     return icl_get_setting($key, $default);
 }

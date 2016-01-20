@@ -289,6 +289,9 @@ var WPMLTranslationServicesDialog = function () {
 			error:    function (jqXHR, status, error) {
 				var parsedResponse = jqXHR.statusText || status || error;
 				alert(parsedResponse);
+			},
+			complete: function() {
+				self.showButtons();
 			}
 		});
 	};

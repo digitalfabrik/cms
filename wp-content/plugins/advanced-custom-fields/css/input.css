@@ -24,7 +24,7 @@
 	box-shadow: none;
 }
 
-.acf_postbox.no_box > h3,
+.acf_postbox.no_box > .hndle,
 .acf_postbox.no_box > .handlediv {
 	display: none;
 }

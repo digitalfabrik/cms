@@ -8,13 +8,8 @@
 $notice_full = get_option('dbem_booking_button_msg_full');
 $button_text = get_option('dbem_booking_button_msg_book');
 $button_already_booked = get_option('dbem_booking_button_msg_already_booked');
-$button_booking = get_option('dbem_booking_button_msg_booking');
-$button_success = get_option('dbem_booking_button_msg_booked');
-$button_fail = get_option('dbem_booking_button_msg_error');
+$button_closed = get_option('dbem_booking_button_msg_closed');
 $button_cancel = get_option('dbem_booking_button_msg_cancel');
-$button_canceling = get_option('dbem_booking_button_msg_canceling');
-$button_cancel_success = get_option('dbem_booking_button_msg_cancelled');
-$button_cancel_fail = get_option('dbem_booking_button_msg_cancel_error');
 /* @var $EM_Event EM_Event */
 ?>
 <?php 
@@ -31,6 +26,8 @@ if( is_user_logged_in() ){ //only show this to logged in users
 		}
 	}elseif( $EM_Event->get_bookings()->get_available_spaces() <= 0 ){
 		?><span class="em-full-button"><?php echo $notice_full ?></span><?php
+	}else{
+		?><span class="em-closed-button"><?php echo $button_closed ?></span><?php
 	}
 	echo apply_filters( 'em_booking_button', ob_get_clean(), $EM_Event );
 }; 

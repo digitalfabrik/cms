@@ -10,12 +10,12 @@ class EM_Widget_Calendar extends WP_Widget {
     /** constructor */
     function __construct() {
     	$this->defaults = array(
-    		'title' => __('Calendar','dbem'),
+    		'title' => __('Calendar','events-manager'),
     		'long_events' => 0,
     		'category' => 0
     	);
-    	$widget_ops = array('description' => __( "Display your events in a calendar widget.", 'dbem') );
-        parent::__construct(false, $name = __('Events Calendar','dbem'), $widget_ops);	
+    	$widget_ops = array('description' => __( "Display your events in a calendar widget.", 'events-manager') );
+        parent::__construct(false, $name = __('Events Calendar','events-manager'), $widget_ops);	
     }
 
     /** @see WP_Widget::widget */
@@ -57,17 +57,17 @@ class EM_Widget_Calendar extends WP_Widget {
     	$instance = array_merge($this->defaults, $instance);
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('long_events'); ?>"><?php _e('Show Long Events?', 'dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('long_events'); ?>"><?php _e('Show Long Events?', 'events-manager'); ?>: </label>
 			<input type="checkbox" id="<?php echo $this->get_field_id('long_events'); ?>" name="<?php echo $this->get_field_name('long_events'); ?>" value="1" <?php echo ($instance['long_events'] == '1') ? 'checked="checked"':''; ?>/>
 		</p>
 		<p>
-            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category IDs','dbem'); ?>: </label>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category IDs','events-manager'); ?>: </label>
             <input type="text" id="<?php echo $this->get_field_id('category'); ?>" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo esc_attr($instance['category']); ?>" /><br />
-            <em><?php _e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
+            <em><?php _e('1,2,3 or 2 (0 = all)','events-manager'); ?> </em>
         </p>
         <?php 
     }

@@ -35,9 +35,9 @@ function em_bookings_cancelled_table(){
 					</li>
 				</ul>
 				<p class="search-box">
-					<label class="screen-reader-text" for="post-search-input"><?php _e('Search', 'dbem'); ?>:</label>
+					<label class="screen-reader-text" for="post-search-input"><?php _e('Search', 'events-manager'); ?>:</label>
 					<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? esc_attr($_GET['em_search']):''; ?>" />
-					<input type="submit" value="<?php _e('Search', 'dbem'); ?>" class="button" />
+					<input type="submit" value="<?php _e('Search', 'events-manager'); ?>" class="button" />
 				</p>
 				-->
 				<?php if ( $bookings_count >= $limit ) : ?>
@@ -46,13 +46,13 @@ function em_bookings_cancelled_table(){
 					<div class="alignleft actions">
 						<select name="action">
 							<option value="-1" selected="selected">
-								<?php _e('Bulk Actions', 'dbem'); ?>
+								<?php _e('Bulk Actions', 'events-manager'); ?>
 							</option>
 							<option value="approve">
-								<?php _e('Approve', 'dbem'); ?>
+								<?php _e('Approve', 'events-manager'); ?>
 							</option>
 							<option value="decline">
-								<?php _e('Decline', 'dbem'); ?>
+								<?php _e('Decline', 'events-manager'); ?>
 							</option>
 						</select> 
 						<input type="submit" id="post-query-submit" value="Filter" class="button-secondary" />
@@ -81,10 +81,10 @@ function em_bookings_cancelled_table(){
 							<th class='manage-column column-cb check-column' scope='col'>
 								<input class='select-all' type="checkbox" value='1' />
 							</th>
-							<th class='manage-column' scope='col'><?php _e('Booker', 'dbem'); ?></th>
-							<th class='manage-column' scope='col'><?php _e('E-mail', 'dbem'); ?></th>
-							<th class='manage-column' scope='col'><?php _e('Phone number', 'dbem'); ?></th>
-							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Booker', 'events-manager'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('E-mail', 'events-manager'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Phone number', 'events-manager'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'events-manager'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>
@@ -108,9 +108,9 @@ function em_bookings_cancelled_table(){
 										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->booking_id));
 										$edit_url = em_add_get_params($_SERVER['REQUEST_URI'], array('booking_id'=>$EM_Booking->booking_id, 'em_ajax'=>null, 'em_obj'=>null));
 										?>
-										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Restore','dbem'); ?></a> |
-										<a class="em-bookings-edit" href="<?php echo $edit_url; ?>"><?php _e('Edit/View','dbem'); ?></a> |
-										<a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a>
+										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Restore','events-manager'); ?></a> |
+										<a class="em-bookings-edit" href="<?php echo $edit_url; ?>"><?php _e('Edit/View','events-manager'); ?></a> |
+										<a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','events-manager'); ?></a>
 									</td>
 								</tr>
 								<?php
@@ -122,7 +122,7 @@ function em_bookings_cancelled_table(){
 				</table>
 				</div>
 				<?php else: ?>
-					<?php _e('No cancelled bookings.', 'dbem'); ?>
+					<?php _e('No cancelled bookings.', 'events-manager'); ?>
 				<?php endif; ?>
 			</form>
 			<?php if( !empty($bookings_nav) && $EM_Bookings >= $limit ) : ?>

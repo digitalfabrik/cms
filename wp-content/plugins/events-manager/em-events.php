@@ -175,20 +175,20 @@ function em_content_page_title($original_content, $id = null) {
 				if( !empty($_REQUEST['action']) && $_REQUEST['action'] = 'edit' ){
 					if( is_object($EM_Event) && $EM_Event->event_id){					
 						if($EM_Event->is_recurring()){
-							$content = __( "Reschedule Events", 'dbem' )." '{$EM_Event->event_name}'";
+							$content = __( "Reschedule Events", 'events-manager')." '{$EM_Event->event_name}'";
 						}else{
-							$content = __( "Edit Event", 'dbem' ) . " '" . $EM_Event->event_name . "'";
+							$content = __( "Edit Event", 'events-manager') . " '" . $EM_Event->event_name . "'";
 						}
 					}else{
-						$content = __( 'Add Event', 'dbem' );
+						$content = __( 'Add Event', 'events-manager');
 					}
 				}
 			}elseif( $post->ID == $edit_locations_page_id ){
 				if( !empty($_REQUEST['action']) && $_REQUEST['action'] = 'edit' ){
 					if( empty($EM_Location) || !is_object($EM_Location) ){
-						$content = __('Add Location', 'dbem');
+						$content = __('Add Location', 'events-manager');
 					}else{
-						$content = __('Edit Location', 'dbem');
+						$content = __('Edit Location', 'events-manager');
 					}
 				}
 			}elseif( $post->ID == $edit_bookings_page_id){ 

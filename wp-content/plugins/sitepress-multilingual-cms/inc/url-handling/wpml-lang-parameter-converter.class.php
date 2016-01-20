@@ -2,8 +2,8 @@
 
 class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 
-	public function __construct( $default_language, $hidden_languages ) {
-		parent::__construct( $default_language, $hidden_languages );
+	public function __construct( $default_language, $hidden_languages, &$wpml_wp_api ) {
+		parent::__construct( $default_language, $hidden_languages, $wpml_wp_api );
 		add_filter( 'request', array( $this, 'request_filter' ) );
 		add_filter( 'get_pagenum_link', array( $this, 'paginated_url_filter' ) );
 		add_filter( 'wp_link_pages_link', array( $this, 'paginated_link_filter' ) );
@@ -87,11 +87,5 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 		$source_url = str_replace ( '//?', '/?', $source_url );
 
 		return untrailingslashit ( $source_url );
-	}
-
-	public function get_admin_ajax_url( $url ) {
-		global $sitepress;
-
-		return add_query_arg( array( 'lang' => $sitepress->get_current_language() ), $url );
 	}
 }

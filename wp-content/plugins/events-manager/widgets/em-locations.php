@@ -10,19 +10,19 @@ class EM_Locations_Widget extends WP_Widget {
     /** constructor */
     function __construct() {
     	$this->defaults = array(
-    		'title' => __('Event Locations','dbem'),
+    		'title' => __('Event Locations','events-manager'),
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
     		'format' => '<li>#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul></li>',
-    	    'no_locations_text' => '<li>'.__('No locations', 'dbem').'</li>',
+    	    'no_locations_text' => '<li>'.__('No locations', 'events-manager').'</li>',
     		'orderby' => 'event_start_date,event_start_time,location_name'
     	);
     	$this->em_orderby_options = array(
-    		'event_start_date, event_start_time, location_name' => __('Event start date/time, location name','dbem'),
-    		'location_name' => __('Location name','dbem')
+    		'event_start_date, event_start_time, location_name' => __('Event start date/time, location name','events-manager'),
+    		'location_name' => __('Location name','events-manager')
     	);
-    	$widget_ops = array('description' => __( "Display a list of event locations on Events Manager.", 'dbem') );
+    	$widget_ops = array('description' => __( "Display a list of event locations on Events Manager.", 'events-manager') );
         parent::__construct(false, $name = 'Event Locations', $widget_ops);	
     }
 
@@ -81,15 +81,15 @@ class EM_Locations_Widget extends WP_Widget {
     	$instance = array_merge($this->defaults, $instance);
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_html_e('Title', 'dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_html_e('Title', 'events-manager'); ?>: </label>
 			<input class="widefat" type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php esc_html_e('Show number of locations','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php esc_html_e('Show number of locations','events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" value="<?php echo esc_attr($instance['limit']); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php esc_html_e('Scope of the locations','dbem'); ?>:</label><br/>
+			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php esc_html_e('Scope of the locations','events-manager'); ?>:</label><br/>
 			<select class="widefat" id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
 				<?php foreach( em_get_scopes() as $key => $value) : ?>   
 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == $instance['scope']) ? "selected='selected'" : ''; ?>>
@@ -99,7 +99,7 @@ class EM_Locations_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order By','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order By','events-manager'); ?>: </label>
 			<select class="widefat" id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
 				<?php foreach($this->em_orderby_options as $key => $value) : ?>   
 	 			<option value='<?php echo esc_attr($key); ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
@@ -109,19 +109,19 @@ class EM_Locations_Widget extends WP_Widget {
 			</select> 
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order of the locations','dbem'); ?>:</label><br/>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order of the locations','events-manager'); ?>:</label><br/>
 			<select class="widefat" id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>" >
-				<option value="ASC" <?php echo ($instance['order'] == 'ASC') ? 'selected="selected"':''; ?>><?php esc_html_e('Ascending','dbem'); ?></option>
-				<option value="DESC" <?php echo ($instance['order'] == 'DESC') ? 'selected="selected"':''; ?>><?php esc_html_e('Descending','dbem'); ?></option>
+				<option value="ASC" <?php echo ($instance['order'] == 'ASC') ? 'selected="selected"':''; ?>><?php esc_html_e('Ascending','events-manager'); ?></option>
+				<option value="DESC" <?php echo ($instance['order'] == 'DESC') ? 'selected="selected"':''; ?>><?php esc_html_e('Descending','events-manager'); ?></option>
 			</select>
 		</p>
-		<em><?php echo sprintf( esc_html__('The list is wrapped in a %s tag, so if an %s tag is not wrapping the formats below it will be added automatically.','dbem'), '<code>&lt;ul&gt;</code>', '<code>&lt;li&gt;</code>'); ?></em>
+		<em><?php echo sprintf( esc_html__('The list is wrapped in a %s tag, so if an %s tag is not wrapping the formats below it will be added automatically.','events-manager'), '<code>&lt;ul&gt;</code>', '<code>&lt;li&gt;</code>'); ?></em>
 		<p>
-			<label for="<?php echo $this->get_field_id('format'); ?>"><?php esc_html_e('List item format','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('format'); ?>"><?php esc_html_e('List item format','events-manager'); ?>: </label>
 			<textarea rows="10" cols="20" class="widefat" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo esc_textarea($instance['format']); ?></textarea>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('no_locations_text'); ?>"><?php esc_html_e('No Locations message','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('no_locations_text'); ?>"><?php esc_html_e('No Locations message','events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('no_locations_text'); ?>" name="<?php echo $this->get_field_name('no_locations_text'); ?>" value="<?php echo esc_attr( $instance['no_locations_text'] ); ?>" >
 		</p>
         <?php 

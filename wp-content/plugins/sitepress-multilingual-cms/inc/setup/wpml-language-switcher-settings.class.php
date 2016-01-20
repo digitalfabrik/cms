@@ -15,15 +15,18 @@ class WPML_Language_Switcher_Settings {
 		$language_switcher_prefix = 'icl_lang_sel_widget-';
 		$active_widgets           = get_option ( 'sidebars_widgets' );
 		foreach ( $this->ls_sidebars as $target_sidebar_id => $add_widget ) {
-			$active_sidebar_widgets = $active_widgets[ $target_sidebar_id ];
-			$widget_exists = $this->widget_exists ( $language_switcher_prefix, $active_sidebar_widgets );
+			$widget_exists = false;
+			if ( isset( $active_widgets[ $target_sidebar_id ] ) ) {
+				$active_sidebar_widgets = $active_widgets[ $target_sidebar_id ];
+				$widget_exists          = $this->widget_exists( $language_switcher_prefix, $active_sidebar_widgets );
+			}
 			if ( $add_widget && !$widget_exists ) {
 				$active_widgets = $this->add_to_sidebar ( $active_widgets,
 				                                          $target_sidebar_id,
 				                                          $language_switcher_prefix,
 				                                          $counter );
 				$counter = $this->update_widget_options ( $counter );
-			} elseif ( !$add_widget && $widget_exists ) {
+			} elseif ( !$add_widget && $widget_exists && isset($active_sidebar_widgets) ) {
 				$active_widgets = $this->remove_widget ( $active_sidebar_widgets,
 				                                         $language_switcher_prefix,
 				                                         $active_widgets,

@@ -31,8 +31,6 @@ class URE_User_Other_Roles {
             add_action( 'admin_enqueue_scripts', array($this, 'load_js' ) );
             add_action( 'edit_user_profile', array($this, 'edit_user_profile_html'), 10, 1 );
             add_action( 'user_new_form', array($this, 'user_new_form'), 10, 1 );
-            add_filter( 'manage_users_columns', array($this, 'user_role_column'), 10, 1 );
-            add_filter( 'manage_users_custom_column', array($this, 'user_role_row'), 10, 3 );
             add_action( 'profile_update', array($this, 'update'), 10 );
         }
         if ($this->lib->multisite) {          
@@ -211,6 +209,10 @@ class URE_User_Other_Roles {
         if (!$this->lib->is_user_profile_extention_allowed()) {  
             return;
         }
+        $show = apply_filters('ure_show_additional_capabilities_section', true);
+        if (empty($show)) {
+            return;
+        }
 ?>
         <h3><?php esc_html_e('Additional Capabilities', 'user-role-editor'); ?></h3>
 <?php
@@ -220,6 +222,11 @@ class URE_User_Other_Roles {
 
     
     public function user_new_form($context) {
+        $show = apply_filters('ure_show_additional_capabilities_section', true);
+        if (empty($show)) {
+            return;
+        }
+        
         $user = new WP_User();
 ?>
         <table>
@@ -231,47 +238,7 @@ class URE_User_Other_Roles {
     }
     // end of edit_user_profile_html()
     
-
-    /**
-     *  add 'Other Roles' column to WordPress users list table
-     * 
-     * @param array $columns WordPress users list table columns list
-     * @return array
-     */
-    public function user_role_column($columns = array()) {
-
-        $columns['ure_roles'] = esc_html__('Other Roles', 'user-role-editor');
-
-        return $columns;
-    }
-    // end of user_role_column()
-
     
-    /**
-     * Return user's roles list for display in the WordPress Users list table
-     *
-     * @param string $retval
-     * @param string $column_name
-     * @param int $user_id
-     *
-     * @return string all user roles
-     */
-    public function user_role_row($retval = '', $column_name = '', $user_id = 0) {
-
-        // Only looking for User Role Editor other user roles column
-        if ('ure_roles' == $column_name) {
-            $user = get_userdata($user_id);
-            // Get the users roles
-            $roles = $this->get_roles_array($user);
-            $retval = $this->lib->roles_text($roles);
-        }
-
-        // Pass retval through
-        return $retval;
-    }
-    // end of user_role_row()
-    
-
     // save additional user roles when user profile is updated, as WordPress itself doesn't know about them
     public function update($user_id) {
 

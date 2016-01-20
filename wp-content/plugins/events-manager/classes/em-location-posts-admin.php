@@ -35,7 +35,7 @@ class EM_Location_Posts_Admin{
 		global $menu, $submenu;
 	  	// Add a submenu to the custom top-level menu:
    		$plugin_pages = array(); 
-		$plugin_pages[] = add_submenu_page('edit.php?post_type='.EM_POST_TYPE_EVENT, __('Locations', 'dbem'), __('Locations', 'dbem'), 'edit_locations', 'events-manager-locations', "edit.php?post_type=event");
+		$plugin_pages[] = add_submenu_page('edit.php?post_type='.EM_POST_TYPE_EVENT, __('Locations', 'events-manager'), __('Locations', 'events-manager'), 'edit_locations', 'events-manager-locations', "edit.php?post_type=event");
 		$plugin_pages = apply_filters('em_create_locationss_submenu',$plugin_pages);
 	}
 	
@@ -44,18 +44,18 @@ class EM_Location_Posts_Admin{
 		if( array_key_exists('cb', $columns) ){
 			$cb = $columns['cb'];
 	    	unset($columns['cb']);
-	    	$id_array = array('cb'=>$cb, 'location-id' => sprintf(__('%s ID','dbem'),__('Location','dbem')));
+	    	$id_array = array('cb'=>$cb, 'location-id' => sprintf(__('%s ID','events-manager'),__('Location','events-manager')));
 		}else{
-	    	$id_array = array('location-id' => sprintf(__('%s ID','dbem'),__('Location','dbem')));
+	    	$id_array = array('location-id' => sprintf(__('%s ID','events-manager'),__('Location','events-manager')));
 		}
 	    unset($columns['author']);
 	    unset($columns['date']);
 	    unset($columns['comments']);
 	    return array_merge($id_array, $columns, array(
-	    	'address' => __('Address','dbem'), 
-	    	'town' => __('Town','dbem'),
-	    	'state' => __('State','dbem'),
-	    	'country' => __('Country','dbem') 
+	    	'address' => __('Address','events-manager'), 
+	    	'town' => __('Town','events-manager'),
+	    	'state' => __('State','events-manager'),
+	    	'country' => __('Country','events-manager') 
 	    ));
 	}
 	
