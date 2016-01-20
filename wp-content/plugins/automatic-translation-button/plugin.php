@@ -32,8 +32,12 @@ class AutomaticTranslationButtonPlugin {
 		foreach (['automatic-translation-button.js'] as $scriptName) {
 			wp_enqueue_script($scriptName, plugin_dir_url(__FILE__) . 'js/' . $scriptName, ['jquery']);
 		}
-		$callback_url = wp_nonce_url(admin_url('admin-ajax.php'), $this->get_nonce_action($post->ID));
-		wp_localize_script('automatic-translation-button.js', 'automatic_translation_button_vars', ['post' => $post->ID, 'ajaxurl' => $callback_url]);
+		$nonce_field = wp_nonce_field($this->get_nonce_action($post->ID));
+		wp_localize_script('automatic-translation-button.js', 'automatic_translation_button_vars',
+			[
+				'post' => $post->ID,
+				'nonce_field' => $nonce_field
+			]);
 	}
 
 	/**
