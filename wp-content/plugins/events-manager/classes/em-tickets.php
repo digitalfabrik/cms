@@ -113,7 +113,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 			$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
 			if( $bookings > 0 ){
 				$result = false;
-				$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','dbem'));
+				$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','events-manager'));
 			}else{
 				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id IN (".implode(',',$ticket_ids).")");
 			}
@@ -144,7 +144,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 			//we create a blank standard ticket
 			$EM_Ticket = new EM_Ticket(array(
 				'event_id' => $this->event_id,
-				'ticket_name' => __('Standard','dbem')
+				'ticket_name' => __('Standard','events-manager')
 			));
 			$this->tickets[] = $EM_Ticket;
 		}
@@ -212,7 +212,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 	 */
 	function get_ticket_collumns($EM_Event = false){
 		if( !$EM_Event ) $EM_Event = $this->get_event();
-		$collumns = array( 'type' => __('Ticket Type','dbem'), 'price' => __('Price','dbem'), 'spaces' => __('Spaces','dbem'));
+		$collumns = array( 'type' => __('Ticket Type','events-manager'), 'price' => __('Price','events-manager'), 'spaces' => __('Spaces','events-manager'));
 		if( $EM_Event->is_free() ) unset($collumns['price']); //add event price
 		return apply_filters('em_booking_form_tickets_cols', $collumns, $EM_Event );
 	}

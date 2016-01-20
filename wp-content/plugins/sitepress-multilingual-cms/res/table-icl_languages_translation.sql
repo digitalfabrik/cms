@@ -577,7 +577,7 @@ INSERT INTO %s (id, language_code, display_language_code, name) VALUES
 (576, 'cs', 'ms', 'Czech'),
 (577, 'sk', 'en', 'Slovak'),
 (578, 'sk', 'es', 'Eslavo'),
-(579, 'sk', 'de', 'Slawisch'),
+(579, 'sk', 'de', 'Slowakisch'),
 (580, 'sk', 'fr', 'Slave'),
 (581, 'sk', 'ar', 'السلافية'),
 (582, 'sk', 'bs', 'Slovak'),

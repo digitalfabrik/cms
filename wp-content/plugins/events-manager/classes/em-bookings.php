@@ -121,7 +121,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 			if($result){
 				$result = $EM_Booking;
 			}
-			$this->feedback_message = sprintf(__('%s created.','dbem'),__('Booking','dbem'));
+			$this->feedback_message = sprintf(__('%s created.','events-manager'),__('Booking','events-manager'));
 		}else{
 			$this->errors = array_merge($this->errors, $EM_Booking->errors);
 		}
@@ -308,17 +308,17 @@ class EM_Bookings extends EM_Object implements Iterator{
 			foreach( $booking_ids as $booking_id ){
 				$EM_Booking = em_get_booking($booking_id);
 				if( !$EM_Booking->can_manage() ){
-					$this->feedback_message = __('Bookings %s. Mails Sent.', 'dbem');
+					$this->feedback_message = __('Bookings %s. Mails Sent.', 'events-manager');
 					return false;
 				}
 				$results[] = $EM_Booking->set_status($status);
 			}
 			if( !in_array('false',$results) ){
-				$this->feedback_message = __('Bookings %s. Mails Sent.', 'dbem');
+				$this->feedback_message = __('Bookings %s. Mails Sent.', 'events-manager');
 				return true;
 			}else{
 				//TODO Better error handling needed if some bookings fail approval/failure
-				$this->feedback_message = __('An error occurred.', 'dbem');
+				$this->feedback_message = __('An error occurred.', 'events-manager');
 				return false;
 			}
 		}elseif( is_numeric($booking_ids) || is_object($booking_ids) ){

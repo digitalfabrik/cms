@@ -29,7 +29,7 @@ function bp_em_my_locations() {
 }
 
 function bp_em_my_locations_title() {
-	_e( 'My Locations', 'dbem' );
+	_e( 'My Locations', 'events-manager');
 }
 
 /**
@@ -43,9 +43,9 @@ function bp_em_my_locations_content() {
 function bp_em_my_locations_editor_title() {
 	global $EM_Location;
 	if( empty($EM_Location) || !is_object($EM_Location) ){
-		$title = __('Add Location', 'dbem');
+		$title = __('Add Location', 'events-manager');
 	}else{
-		$title = __('Edit Location', 'dbem');
+		$title = __('Edit Location', 'events-manager');
 	}
 }
 ?>

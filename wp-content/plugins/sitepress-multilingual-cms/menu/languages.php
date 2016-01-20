@@ -577,6 +577,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
                                     </label>
                                 </li>
                             </ul>
+	                        <div class="wpml-form-message" style="display:none;"></div>
                             <p class="buttons-wrap">
                                 <span class="icl_ajx_response" id="icl_ajx_response2"></span>
                                 <input class="button button-primary" name="save" value="<?php _e('Save','sitepress') ?>" type="submit" />

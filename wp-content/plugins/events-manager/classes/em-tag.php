@@ -142,13 +142,13 @@ class EM_Tag extends EM_Object {
 				case '#_TAGNOTES':
 					$replace = $this->description;
 					break;
-				case '#_TAGEVENTSPAST': //depreciated, erroneous documentation, left for compatability
-				case '#_TAGEVENTSNEXT': //depreciated, erroneous documentation, left for compatability
-				case '#_TAGEVENTSALL': //depreciated, erroneous documentation, left for compatability
+				case '#_TAGEVENTSPAST': //deprecated, erroneous documentation, left for compatability
+				case '#_TAGEVENTSNEXT': //deprecated, erroneous documentation, left for compatability
+				case '#_TAGEVENTSALL': //deprecated, erroneous documentation, left for compatability
 				case '#_TAGPASTEVENTS':
 				case '#_TAGNEXTEVENTS':
 				case '#_TAGALLEVENTS':
-					//convert depreciated placeholders for compatability
+					//convert deprecated placeholders for compatability
 					$result = ($result == '#_TAGEVENTSPAST') ? '#_TAGPASTEVENTS':$result; 
 					$result = ($result == '#_TAGEVENTSNEXT') ? '#_TAGNEXTEVENTS':$result;
 					$result = ($result == '#_TAGEVENTSALL') ? '#_TAGALLEVENTS':$result;

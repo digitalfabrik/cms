@@ -59,7 +59,7 @@ class EM_Mailer {
 			$headers .= get_option('dbem_mail_sender_name') ? 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>':'From: '.$from;
 			$send = mail($receiver, $subject, $body, $headers);
 			if(!$send){
-				$this->errors[] = __('Could not send email.', 'dbem');
+				$this->errors[] = __('Could not send email.', 'events-manager');
 			}
 			return $send;
 		}elseif( $emails_ok ){
@@ -120,7 +120,7 @@ class EM_Mailer {
 			do_action('em_mailer_sent', $mail, $send); //$mail can still be modified
 			return $send;
 		}else{
-			$this->errors[] = __('Please supply a valid email format.', 'dbem');
+			$this->errors[] = __('Please supply a valid email format.', 'events-manager');
 			return false;
 		}
 	}

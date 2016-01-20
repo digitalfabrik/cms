@@ -1,6 +1,5 @@
 <?php
 require 'wpml-slug-resolution.class.php';
-require 'wpml-404-guess.class.php';
 require 'wpml-name-query-filter.class.php';
 require 'wpml-name-query-filter-translated.class.php';
 require 'wpml-name-query-filter-untranslated.class.php';

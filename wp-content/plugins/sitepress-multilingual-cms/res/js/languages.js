@@ -645,7 +645,14 @@ function iclUseDirectoryToggle() {
 				if (response.success) {
 					fadeInAjxResp('#' + ajxResponse, icl_ajx_saved);
 
-					if (jQuery('input[name=show_on_root]').length) {
+                    if(response.data) {
+                        var formMessage = jQuery('form[name="' + formName + '"]').find('.wpml-form-message');
+                        formMessage.addClass('updated');
+                        formMessage.html(response.data);
+                        formMessage.fadeIn();
+                    }
+
+                    if (jQuery('input[name=show_on_root]').length) {
 						rootHtmlFile = jQuery('#wpml_show_on_root_html_file');
 						rootPage = jQuery('#wpml_show_on_root_page');
 						if (rootHtmlFile.prop('checked')) {

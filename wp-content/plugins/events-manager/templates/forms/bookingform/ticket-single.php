@@ -8,7 +8,7 @@
 global $allowedposttags;
 do_action('em_booking_form_ticket_header', $EM_Ticket); //do not delete
 /*
- * This variable can be overriden, by hooking into the em_booking_form_tickets_cols filter and adding your collumns into this array.
+ * This variable can be overridden, by hooking into the em_booking_form_tickets_cols filter and adding your collumns into this array.
  * Then, you should create a em_booking_form_ticket_field_arraykey action for your collumn data, which will pass a ticket and event object.
  */
 $collumns = $EM_Event->get_tickets()->get_ticket_collumns(); //array of collumn type => title
@@ -34,7 +34,7 @@ foreach( $collumns as $type => $name ): ?>
 						if( $spaces_options ){
 							echo $spaces_options;
 						}else{
-							echo "<strong>".__('N/A','dbem')."</strong>";
+							echo "<strong>".__('N/A','events-manager')."</strong>";
 						}
 					?>
 				</p>

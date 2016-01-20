@@ -77,7 +77,7 @@ function em_geo_search_init(){
 			wrapper.data('last-coords', geo_coords.val() );
 		}
 		input.keypress( function(e) {
-			//if enter is pressed once during 'near' input, don't do anything so Google can select location, otherwise let behaviour (form submittal) proceed 
+			//if enter is pressed once during 'near' input, don't do anything so Google can select location, otherwise let behavior (form submittal) proceed 
 			if( e.which == 13 ) {
 				if( input.data('last-key') != 13 || wrapper.data('status') != 'on' ){
 					e.preventDefault();

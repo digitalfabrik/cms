@@ -14,7 +14,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	 *
 	 * @return array
 	 */
-	function create_translation_package( $post ) {
+	public function create_translation_package( $post ) {
 		global $sitepress;
 
 		$package   = array();
@@ -220,6 +220,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 				);
 			}
 		} else {
+			$custom_field_val = array_filter( $custom_field_val );
 			foreach ( $custom_field_val as $ind => $value ) {
 				$package = $this->add_single_field_content( $package, $key, $custom_field_index . '-' . $ind, $value );
 			}

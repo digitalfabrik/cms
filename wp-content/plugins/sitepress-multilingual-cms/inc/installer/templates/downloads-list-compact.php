@@ -32,8 +32,7 @@
                                                     (
                                                         $this->plugin_is_installed($download['name'], $download['slug'], $download['version']) &&
                                                         !$this->plugin_is_embedded_version($download['name'], $download['slug'])
-                                                    )||
-                                                    !WP_Installer()->is_uploading_allowed();
+                                                    ) || WP_Installer()->dependencies->cant_download( $repository_id );
 
                                     ?>
                                     <input type="checkbox" name="downloads[]" value="<?php echo base64_encode(json_encode($download_data)); ?>" <?php 
@@ -44,7 +43,8 @@
                                 <td class="installer_plugin_name"><?php echo $download['name'] ?></td>
                                 <td><?php echo $download['version'] ?></td>
                                 <td class="installer_version_installed">
-                                    <?php if($v = $this->plugin_is_installed($download['name'], $download['slug'])): $class = version_compare($v, $download['version'], '>=') ? 'installer-green-text' : 'installer-red-text'; ?>
+                                    <?php if($v = $this->plugin_is_installed($download['name'], $download['slug'])):
+                                            $class = version_compare($v, $download['version'], '>=') ? 'installer-green-text' : 'installer-red-text'; ?>
                                     <span class="<?php echo $class ?>"><?php echo $v; ?></span>
                                     <?php endif; ?>
                                 </td>
@@ -61,8 +61,11 @@
                         </tbody>
                     </table>
 
-                    <?php if(!WP_Installer()->is_uploading_allowed()): ?>
-                        <p class="installer-error-box"><?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'), '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?></p>
+                    <?php if( !WP_Installer()->dependencies->is_uploading_allowed() ): ?>
+                        <p class="installer-error-box"><?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'),
+                                '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?></p>
+                    <?php elseif( WP_Installer()->dependencies->is_win_paths_exception($repository_id) ): ?>
+                        <p><?php echo WP_Installer()->dependencies->win_paths_exception_message() ?></p>
                     <?php endif;?>
 
                     <br />

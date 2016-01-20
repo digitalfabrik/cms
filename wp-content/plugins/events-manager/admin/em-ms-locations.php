@@ -23,7 +23,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 				<br/>
 			</div>
  	 		<h2>
- 	 			<?php _e('Locations', 'dbem'); ?>
+ 	 			<?php _e('Locations', 'events-manager'); ?>
  	 		</h2>   
 			<?php em_locations_admin(array('url' => $_SERVER['REQUEST_URI'])); ?>
 		</div>
@@ -33,10 +33,10 @@ function em_admin_locations($message='', $fill_fields = false) {
 function em_admin_location($message = "") {
 	global $EM_Location;
 	if( empty($EM_Location) || !is_object($EM_Location) ){
-		$title = __('Add location', 'dbem');
+		$title = __('Add location', 'events-manager');
 		$EM_Location = new EM_Location();
 	}else{
-		$title = __('Edit location', 'dbem');
+		$title = __('Edit location', 'events-manager');
 	}
 	?>
 	<div class='wrap'>

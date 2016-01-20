@@ -205,7 +205,7 @@ class EM_ML_Options {
 	 */
 	public function __call($filter_name, $value){
 		if( strstr($filter_name, 'pre_option_') !== false ){
-		    //we're calling an option to be overriden by the default language
+		    //we're calling an option to be overridden by the default language
 		    $option_name = str_replace('pre_option_','',$filter_name);
 		    //don't use EM_ML::get_option as it creates an endless loop for options without a translation
 			$option_langs = get_option($option_name.'_ml', array());

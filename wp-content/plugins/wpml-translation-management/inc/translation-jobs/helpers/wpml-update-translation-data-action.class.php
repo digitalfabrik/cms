@@ -44,7 +44,7 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 			'rid' => $rid,
 			'translator_id' => $translator_id,
 			'translated' => 0,
-			'manager_id' => $manager_id
+			'manager_id' => (int)$manager_id
 		);
 		$wpdb->insert( $wpdb->prefix . 'icl_translate_job', $translate_job_insert_data );
 		$job_id = $wpdb->insert_id;

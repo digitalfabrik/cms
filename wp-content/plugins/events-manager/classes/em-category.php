@@ -127,7 +127,7 @@ class EM_Category extends EM_Object {
 	}
 	
 	/**
-	 * Depreciated, don't use.
+	 * deprecated, don't use.
 	 * @return mixed
 	 */
 	function has_events(){
@@ -232,13 +232,13 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYSLUG':
 					$replace = $this->slug;
 					break;
-				case '#_CATEGORYEVENTSPAST': //depreciated, erroneous documentation, left for compatability
-				case '#_CATEGORYEVENTSNEXT': //depreciated, erroneous documentation, left for compatability
-				case '#_CATEGORYEVENTSALL': //depreciated, erroneous documentation, left for compatability
+				case '#_CATEGORYEVENTSPAST': //deprecated, erroneous documentation, left for compatability
+				case '#_CATEGORYEVENTSNEXT': //deprecated, erroneous documentation, left for compatability
+				case '#_CATEGORYEVENTSALL': //deprecated, erroneous documentation, left for compatability
 				case '#_CATEGORYPASTEVENTS':
 				case '#_CATEGORYNEXTEVENTS':
 				case '#_CATEGORYALLEVENTS':
-					//convert depreciated placeholders for compatability
+					//convert deprecated placeholders for compatability
 					$result = ($result == '#_CATEGORYEVENTSPAST') ? '#_CATEGORYPASTEVENTS':$result; 
 					$result = ($result == '#_CATEGORYEVENTSNEXT') ? '#_CATEGORYNEXTEVENTS':$result;
 					$result = ($result == '#_CATEGORYEVENTSALL') ? '#_CATEGORYALLEVENTS':$result;
