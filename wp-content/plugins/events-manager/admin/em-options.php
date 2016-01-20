@@ -7,18 +7,18 @@ function em_options_save(){
 	 * Here's the idea, we have an array of all options that need super admin approval if in multi-site mode
 	 * since options are only updated here, its one place fit all
 	 */
-	if( current_user_can('list_users') && !empty($_POST['em-submitted']) && check_admin_referer('events-manager-options','_wpnonce') ){
+	if( current_user_can('manage_options') && !empty($_POST['em-submitted']) && check_admin_referer('events-manager-options','_wpnonce') ){
 		//Build the array of options here
 		$post = $_POST;
 		foreach ($_POST as $postKey => $postValue){
 			if( substr($postKey, 0, 5) == 'dbem_' ){
 				//TODO some more validation/reporting
 				$numeric_options = array('dbem_locations_default_limit','dbem_events_default_limit');
-				if( in_array($postKey, array('dbem_bookings_notify_admin','dbem_event_submitted_email_admin','dbem_js_limit_events_form','dbem_js_limit_search','dbem_js_limit_general','dbem_css_limit_include','dbem_css_limit_exclude','dbem_search_form_geo_distance_options')) ){ $postValue = str_replace(' ', '', $postValue); } //clean up comma seperated emails, no spaces needed
+				if( in_array($postKey, array('dbem_bookings_notify_admin','dbem_event_submitted_email_admin','dbem_js_limit_events_form','dbem_js_limit_search','dbem_js_limit_general','dbem_css_limit_include','dbem_css_limit_exclude','dbem_search_form_geo_distance_options')) ){ $postValue = str_replace(' ', '', $postValue); } //clean up comma separated emails, no spaces needed
 				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
 					//Do nothing, keep old setting.
 				}elseif( $postKey == 'dbem_category_default_color' && !preg_match("/^#([abcdef0-9]{3}){1,2}?$/i",$postValue)){
-					$EM_Notices->add_error( sprintf(esc_html_x('Colors must be in a valid %s format, such as #FF00EE.', 'hex format', 'dbem'), '<a href="http://en.wikipedia.org/wiki/Web_colors">hex</a>').' '. esc_html__('This setting was not changed.', 'dbem'), true);					
+					$EM_Notices->add_error( sprintf(esc_html_x('Colors must be in a valid %s format, such as #FF00EE.', 'hex format', 'events-manager'), '<a href="http://en.wikipedia.org/wiki/Web_colors">hex</a>').' '. esc_html__('This setting was not changed.', 'events-manager'), true);					
 				}else{
 					//TODO slashes being added?
 					if( is_array($postValue) ){
@@ -66,7 +66,7 @@ function em_options_save(){
 		}
 		update_option('dbem_flush_needed',1);
 		do_action('em_options_save');
-		$EM_Notices->add_confirm('<strong>'.__('Changes saved.', 'dbem').'</strong>', true);
+		$EM_Notices->add_confirm('<strong>'.__('Changes saved.', 'events-manager').'</strong>', true);
 		wp_redirect(wp_get_referer());
 		exit();
 	}
@@ -138,7 +138,7 @@ function em_options_save(){
 				}
 			}
 			//go back to plugin options page
-			$EM_Notices->add_confirm(__('Settings have been reset back to default. Your events, locations and categories have not been modified.','dbem'), true);
+			$EM_Notices->add_confirm(__('Settings have been reset back to default. Your events, locations and categories have not been modified.','events-manager'), true);
 			wp_redirect(EM_ADMIN_URL.'&page=events-manager-options');
 			exit();
 		}
@@ -148,7 +148,7 @@ function em_options_save(){
 		//force recheck of plugin updates, to refresh dl links
 		delete_transient('update_plugins');
 		delete_site_transient('update_plugins');
-		$EM_Notices->add_confirm(__('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','dbem'), true);
+		$EM_Notices->add_confirm(__('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','events-manager'), true);
 		wp_redirect(wp_get_referer());
 		exit();
 	}
@@ -158,7 +158,7 @@ function em_options_save(){
 		delete_transient('update_plugins');
 		delete_site_transient('update_plugins');
 		update_option('em_check_dev_version', true);
-		$EM_Notices->add_confirm(__('Checking for dev versions.','dbem').' '. __('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','dbem'), true);
+		$EM_Notices->add_confirm(__('Checking for dev versions.','events-manager').' '. __('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','events-manager'), true);
 		wp_redirect(wp_get_referer());
 		exit();
 	}
@@ -168,8 +168,8 @@ add_action('admin_init', 'em_options_save');
 
 function em_admin_email_test_ajax(){
     if( wp_verify_nonce($_REQUEST['_check_email_nonce'],'check_email') && current_user_can('activate_plugins') ){
-        $subject = __("Events Manager Test Email",'dbem');
-        $content = __('Congratulations! Your email settings work.','dbem');
+        $subject = __("Events Manager Test Email",'events-manager');
+        $content = __('Congratulations! Your email settings work.','events-manager');
         $current_user = get_user_by('id', get_current_user_id());
         //add filters for options used in EM_Mailer so the current supplied ones are used
         ob_start();
@@ -194,12 +194,12 @@ function em_admin_email_test_ajax(){
         if( $EM_Event->email_send($subject,$content,$current_user->user_email) ){
         	$result = array(
         		'result' => true,
-        		'message' => sprintf(__('Email sent succesfully to %s','dbem'),$current_user->user_email)
+        		'message' => sprintf(__('Email sent successfully to %s','events-manager'),$current_user->user_email)
         	);
         }else{
             $result = array(
             	'result' => false,
-            	'message' => __('Email not sent.','dbem')." <ul><li>".implode('</li><li>',$EM_Event->get_errors()).'</li></ul>'
+            	'message' => __('Email not sent.','events-manager')." <ul><li>".implode('</li><li>',$EM_Event->get_errors()).'</li></ul>'
             );
         }
         echo EM_Object::json_encode($result);
@@ -213,12 +213,12 @@ function em_admin_options_reset_page(){
 		?>
 		<div class="wrap">		
 			<div id='icon-options-general' class='icon32'><br /></div>
-			<h2><?php _e('Reset Events Manager','dbem'); ?></h2>
-			<p style="color:red; font-weight:bold;"><?php _e('Are you sure you want to reset Events Manager?','dbem')?></p>
-			<p style="font-weight:bold;"><?php _e('All your settings, including email templates and template formats for Events Manager will be deleted.','dbem')?></p>
+			<h2><?php _e('Reset Events Manager','events-manager'); ?></h2>
+			<p style="color:red; font-weight:bold;"><?php _e('Are you sure you want to reset Events Manager?','events-manager')?></p>
+			<p style="font-weight:bold;"><?php _e('All your settings, including email templates and template formats for Events Manager will be deleted.','events-manager')?></p>
 			<p>
-				<a href="<?php echo esc_url(add_query_arg(array('_wpnonce2' => wp_create_nonce('em_reset_'.get_current_user_id().'_confirmed'), 'confirmed'=>1))); ?>" class="button-primary"><?php _e('Reset Events Manager','dbem'); ?></a>
-				<a href="<?php echo wp_get_referer(); ?>" class="button-secondary"><?php _e('Cancel','dbem'); ?></a>
+				<a href="<?php echo esc_url(add_query_arg(array('_wpnonce2' => wp_create_nonce('em_reset_'.get_current_user_id().'_confirmed'), 'confirmed'=>1))); ?>" class="button-primary"><?php _e('Reset Events Manager','events-manager'); ?></a>
+				<a href="<?php echo wp_get_referer(); ?>" class="button-secondary"><?php _e('Cancel','events-manager'); ?></a>
 			</p>
 		</div>		
 		<?php
@@ -229,13 +229,13 @@ function em_admin_options_uninstall_page(){
 		?>
 		<div class="wrap">		
 			<div id='icon-options-general' class='icon32'><br /></div>
-			<h2><?php _e('Uninstall Events Manager','dbem'); ?></h2>
-			<p style="color:red; font-weight:bold;"><?php _e('Are you sure you want to uninstall Events Manager?','dbem')?></p>
-			<p style="font-weight:bold;"><?php _e('All your settings and events will be permanently deleted. This cannot be undone.','dbem')?></p>
-			<p><?php echo sprintf(__('If you just want to deactivate the plugin, <a href="%s">go to your plugins page</a>.','dbem'), wp_nonce_url(admin_url('plugins.php'))); ?></p>
+			<h2><?php _e('Uninstall Events Manager','events-manager'); ?></h2>
+			<p style="color:red; font-weight:bold;"><?php _e('Are you sure you want to uninstall Events Manager?','events-manager')?></p>
+			<p style="font-weight:bold;"><?php _e('All your settings and events will be permanently deleted. This cannot be undone.','events-manager')?></p>
+			<p><?php echo sprintf(__('If you just want to deactivate the plugin, <a href="%s">go to your plugins page</a>.','events-manager'), wp_nonce_url(admin_url('plugins.php'))); ?></p>
 			<p>
-				<a href="<?php echo esc_url(add_query_arg(array('_wpnonce2' => wp_create_nonce('em_uninstall_'.get_current_user_id().'_confirmed'), 'confirmed'=>1))); ?>" class="button-primary"><?php _e('Uninstall and Deactivate','dbem'); ?></a>
-				<a href="<?php echo wp_get_referer(); ?>" class="button-secondary"><?php _e('Cancel','dbem'); ?></a>
+				<a href="<?php echo esc_url(add_query_arg(array('_wpnonce2' => wp_create_nonce('em_uninstall_'.get_current_user_id().'_confirmed'), 'confirmed'=>1))); ?>" class="button-primary"><?php _e('Uninstall and Deactivate','events-manager'); ?></a>
+				<a href="<?php echo wp_get_referer(); ?>" class="button-secondary"><?php _e('Cancel','events-manager'); ?></a>
 			</p>
 		</div>		
 		<?php
@@ -260,17 +260,17 @@ function em_admin_options_page() {
 	if( $total_locations > 100 && !defined('EM_OPTIMIZE_SETTINGS_PAGE_LOCATIONS') ){ define('EM_OPTIMIZE_SETTINGS_PAGE_LOCATIONS',true); }
 	//TODO place all options into an array
 	global $events_placeholder_tip, $locations_placeholder_tip, $categories_placeholder_tip, $bookings_placeholder_tip;
-	$events_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#event-placeholders">'. __('Event Related Placeholders','dbem') .'</a>';
-	$locations_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#location-placeholders">'. __('Location Related Placeholders','dbem') .'</a>';
-	$bookings_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#booking-placeholders">'. __('Booking Related Placeholders','dbem') .'</a>';
-	$categories_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#category-placeholders">'. __('Category Related Placeholders','dbem') .'</a>';
-	$events_placeholder_tip = " ". sprintf(__('This accepts %s and %s placeholders.','dbem'),$events_placeholders, $locations_placeholders);
-	$locations_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $locations_placeholders);
-	$categories_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $categories_placeholders);
-	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
+	$events_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#event-placeholders">'. __('Event Related Placeholders','events-manager') .'</a>';
+	$locations_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#location-placeholders">'. __('Location Related Placeholders','events-manager') .'</a>';
+	$bookings_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#booking-placeholders">'. __('Booking Related Placeholders','events-manager') .'</a>';
+	$categories_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#category-placeholders">'. __('Category Related Placeholders','events-manager') .'</a>';
+	$events_placeholder_tip = " ". sprintf(__('This accepts %s and %s placeholders.','events-manager'),$events_placeholders, $locations_placeholders);
+	$locations_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','events-manager'), $locations_placeholders);
+	$categories_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','events-manager'), $categories_placeholders);
+	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','events-manager'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
 	global $save_button;
-	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" class="button-primary" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'dbem') .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
+	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" class="button-primary" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'events-manager') .' ('. __('All','events-manager') .')" /></p></ts></td></tr>';
 	
 	if( defined('EM_SETTINGS_TABS') && EM_SETTINGS_TABS ){
 	    $tabs_enabled = true;
@@ -288,15 +288,15 @@ function em_admin_options_page() {
 	<div class="wrap <?php if(empty($tabs_enabled)) echo 'tabs-active' ?>">		
 		<div id='icon-options-general' class='icon32'><br /></div>
 		<h2 class="nav-tab-wrapper">
-			<a href="<?php echo $general_tab_link; ?>#general" id="em-menu-general" class="nav-tab nav-tab-active"><?php _e('General','dbem'); ?></a>
-			<a href="<?php echo $pages_tab_link; ?>#pages" id="em-menu-pages" class="nav-tab"><?php _e('Pages','dbem'); ?></a>
-			<a href="<?php echo $formats_tab_link; ?>#formats" id="em-menu-formats" class="nav-tab"><?php _e('Formatting','dbem'); ?></a>
+			<a href="<?php echo $general_tab_link; ?>#general" id="em-menu-general" class="nav-tab nav-tab-active"><?php _e('General','events-manager'); ?></a>
+			<a href="<?php echo $pages_tab_link; ?>#pages" id="em-menu-pages" class="nav-tab"><?php _e('Pages','events-manager'); ?></a>
+			<a href="<?php echo $formats_tab_link; ?>#formats" id="em-menu-formats" class="nav-tab"><?php _e('Formatting','events-manager'); ?></a>
 			<?php if( get_option('dbem_rsvp_enabled') ): ?>
-			<a href="<?php echo $bookings_tab_link; ?>#bookings" id="em-menu-bookings" class="nav-tab"><?php _e('Bookings','dbem'); ?></a>
+			<a href="<?php echo $bookings_tab_link; ?>#bookings" id="em-menu-bookings" class="nav-tab"><?php _e('Bookings','events-manager'); ?></a>
 			<?php endif; ?>
-			<a href="<?php echo $emails_tab_link; ?>#emails" id="em-menu-emails" class="nav-tab"><?php _e('Emails','dbem'); ?></a>
+			<a href="<?php echo $emails_tab_link; ?>#emails" id="em-menu-emails" class="nav-tab"><?php _e('Emails','events-manager'); ?></a>
 		</h2>
-		<h3 id="em-options-title"><?php _e ( 'Event Manager Options', 'dbem' ); ?></h3>
+		<h3 id="em-options-title"><?php _e ( 'Event Manager Options', 'events-manager'); ?></h3>
 		<form id="em-options-form" method="post" action="">
 			<div class="metabox-holder">         
 			<!-- // TODO Move style in css -->
@@ -328,12 +328,12 @@ function em_admin_options_page() {
 			
 			<?php /*
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Debug Modes', 'events-manager'); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
-					em_options_radio_binary ( __( 'EM Debug Mode?', 'dbem' ), 'dbem_debug', __( 'Setting this to yes will display different content to admins for event pages and emails so you can see all the available placeholders and their values.', 'dbem' ) );
-					em_options_radio_binary ( __( 'WP Debug Mode?', 'dbem' ), 'dbem_wp_debug', __( 'This will turn WP_DEBUG mode on. Useful if you want to troubleshoot php errors without looking at your logs.', 'dbem' ) );
+					em_options_radio_binary ( __( 'EM Debug Mode?', 'events-manager'), 'dbem_debug', __( 'Setting this to yes will display different content to admins for event pages and emails so you can see all the available placeholders and their values.', 'events-manager') );
+					em_options_radio_binary ( __( 'WP Debug Mode?', 'events-manager'), 'dbem_wp_debug', __( 'This will turn WP_DEBUG mode on. Useful if you want to troubleshoot php errors without looking at your logs.', 'events-manager') );
 					?>
 				</table>
 			</div> <!-- . inside -->
@@ -341,7 +341,7 @@ function em_admin_options_page() {
 			*/ ?>
 
 			<p class="submit">
-				<input type="submit" id="dbem_options_submit" class="button-primary" name="Submit" value="<?php esc_attr_e( 'Save Changes', 'dbem' ); ?>" />
+				<input type="submit" id="dbem_options_submit" class="button-primary" name="Submit" value="<?php esc_attr_e( 'Save Changes', 'events-manager'); ?>" />
 				<input type="hidden" name="em-submitted" value="1" />
 				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('events-manager-options'); ?>" />
 			</p>  
@@ -362,16 +362,16 @@ function em_admin_option_box_image_sizes(){
 	global $save_button;
 	?>
 	<div  class="postbox " id="em-opt-image-sizes" >
-	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Image Sizes', 'dbem' ); ?> </span></h3>
+	<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Image Sizes', 'events-manager'); ?> </span></h3>
 	<div class="inside">
-	    <p class="em-boxheader"><?php _e('These settings will only apply to the image uploading if using our front-end forms. In your WP admin area, images are handled by WordPress.','dbem'); ?></p>
+	    <p class="em-boxheader"><?php _e('These settings will only apply to the image uploading if using our front-end forms. In your WP admin area, images are handled by WordPress.','events-manager'); ?></p>
 		<table class='form-table'>
 			<?php
-			em_options_input_text ( __( 'Maximum width (px)', 'dbem' ), 'dbem_image_max_width', __( 'The maximum allowed width for images uploads', 'dbem' ) );
-			em_options_input_text ( __( 'Minimum width (px)', 'dbem' ), 'dbem_image_min_width', __( 'The minimum allowed width for images uploads', 'dbem' ) );
-			em_options_input_text ( __( 'Maximum height (px)', 'dbem' ), 'dbem_image_max_height', __( "The maximum allowed height for images uploaded, in pixels", 'dbem' ) );
-			em_options_input_text ( __( 'Minimum height (px)', 'dbem' ), 'dbem_image_min_height', __( "The minimum allowed height for images uploaded, in pixels", 'dbem' ) );
-			em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in bytes", 'dbem' ) );
+			em_options_input_text ( __( 'Maximum width (px)', 'events-manager'), 'dbem_image_max_width', __( 'The maximum allowed width for images uploads', 'events-manager') );
+			em_options_input_text ( __( 'Minimum width (px)', 'events-manager'), 'dbem_image_min_width', __( 'The minimum allowed width for images uploads', 'events-manager') );
+			em_options_input_text ( __( 'Maximum height (px)', 'events-manager'), 'dbem_image_max_height', __( "The maximum allowed height for images uploaded, in pixels", 'events-manager') );
+			em_options_input_text ( __( 'Minimum height (px)', 'events-manager'), 'dbem_image_min_height', __( "The minimum allowed height for images uploaded, in pixels", 'events-manager') );
+			em_options_input_text ( __( 'Maximum size (bytes)', 'events-manager'), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in bytes", 'events-manager') );
 			echo $save_button;
 			?>
 		</table>
@@ -388,30 +388,30 @@ function em_admin_option_box_email(){
 	$current_user = get_user_by('id', get_current_user_id());
 	?>
 	<div  class="postbox "  id="em-opt-email-settings">
-	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Email Settings', 'dbem' ); ?></span></h3>
+	<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Email Settings', 'events-manager'); ?></span></h3>
 	<div class="inside em-email-form">
 		<p class="em-email-settings-check em-boxheader">
-			<em><?php _e('Before you save your changes, you can quickly send yourself a test email by clicking this button.','dbem'); ?>
-			<?php echo sprintf(__('A test email will be sent to your account email - %s','dbem'), $current_user->user_email . ' <a href="'.admin_url( 'profile.php' ).'">'.__('edit','dbem').'</a>'); ?></em><br />
-			<input type="button" id="em-admin-check-email" class="secondary-button" value="<?php esc_attr_e('Test Email Settings','dbem'); ?>" />
+			<em><?php _e('Before you save your changes, you can quickly send yourself a test email by clicking this button.','events-manager'); ?>
+			<?php echo sprintf(__('A test email will be sent to your account email - %s','events-manager'), $current_user->user_email . ' <a href="'.admin_url( 'profile.php' ).'">'.__('edit','events-manager').'</a>'); ?></em><br />
+			<input type="button" id="em-admin-check-email" class="secondary-button" value="<?php esc_attr_e('Test Email Settings','events-manager'); ?>" />
 			<input type="hidden" name="_check_email_nonce" value="<?php echo wp_create_nonce('check_email'); ?>" />
 			<span id="em-email-settings-check-status"></span>
 		</p>
 		<table class="form-table">
 			<?php
-			em_options_input_text ( __( 'Notification sender name', 'dbem' ), 'dbem_mail_sender_name', __( "Insert the display name of the notification sender.", 'dbem' ) );
-			em_options_input_text ( __( 'Notification sender address', 'dbem' ), 'dbem_mail_sender_address', __( "Insert the address of the notification sender.", 'dbem' ) );
-			em_options_select ( __( 'Mail sending method', 'dbem' ), 'dbem_rsvp_mail_send_method', array ('smtp' => 'SMTP', 'mail' => __( 'PHP mail function', 'dbem' ), 'sendmail' => 'Sendmail', 'qmail' => 'Qmail', 'wp_mail' => 'WP Mail' ), __( 'Select the method to send email notification.', 'dbem' ) );
-			em_options_radio_binary ( __( 'Send HTML Emails?', 'dbem' ), 'dbem_smtp_html', __( 'If set to yes, your emails will be sent in HTML format, otherwise plaintext.', 'dbem' ).' '.__( 'Depending on server settings, some sending methods may ignore this settings.', 'dbem' ) );
-			em_options_radio_binary ( __( 'Add br tags to HTML emails?', 'dbem' ), 'dbem_smtp_html_br', __( 'If HTML emails are enabled, br tags will automatically be added for new lines.', 'dbem' ) );
+			em_options_input_text ( __( 'Notification sender name', 'events-manager'), 'dbem_mail_sender_name', __( "Insert the display name of the notification sender.", 'events-manager') );
+			em_options_input_text ( __( 'Notification sender address', 'events-manager'), 'dbem_mail_sender_address', __( "Insert the address of the notification sender.", 'events-manager') );
+			em_options_select ( __( 'Mail sending method', 'events-manager'), 'dbem_rsvp_mail_send_method', array ('smtp' => 'SMTP', 'mail' => __( 'PHP mail function', 'events-manager'), 'sendmail' => 'Sendmail', 'qmail' => 'Qmail', 'wp_mail' => 'WP Mail' ), __( 'Select the method to send email notification.', 'events-manager') );
+			em_options_radio_binary ( __( 'Send HTML Emails?', 'events-manager'), 'dbem_smtp_html', __( 'If set to yes, your emails will be sent in HTML format, otherwise plaintext.', 'events-manager').' '.__( 'Depending on server settings, some sending methods may ignore this settings.', 'events-manager') );
+			em_options_radio_binary ( __( 'Add br tags to HTML emails?', 'events-manager'), 'dbem_smtp_html_br', __( 'If HTML emails are enabled, br tags will automatically be added for new lines.', 'events-manager') );
 			?>
 			<tbody class="em-email-settings-smtp">
 				<?php
-				em_options_input_text ( 'Mail sending port', 'dbem_rsvp_mail_port', __( "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port", 'dbem' ) );
-				em_options_radio_binary ( __( 'Use SMTP authentication?', 'dbem' ), 'dbem_rsvp_mail_SMTPAuth', __( 'SMTP authentication is often needed. If you use GMail, make sure to set this parameter to Yes', 'dbem' ) );
-				em_options_input_text ( 'SMTP host', 'dbem_smtp_host', __( "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set this value to 'ssl://smtp.gmail.com:465'.", 'dbem' ) );
-				em_options_input_text ( __( 'SMTP username', 'dbem' ), 'dbem_smtp_username', __( "Insert the username to be used to access your SMTP server.", 'dbem' ) );
-				em_options_input_password ( __( 'SMTP password', 'dbem' ), "dbem_smtp_password", __( "Insert the password to be used to access your SMTP server", 'dbem' ) );
+				em_options_input_text ( 'Mail sending port', 'dbem_rsvp_mail_port', __( "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port", 'events-manager') );
+				em_options_radio_binary ( __( 'Use SMTP authentication?', 'events-manager'), 'dbem_rsvp_mail_SMTPAuth', __( 'SMTP authentication is often needed. If you use Gmail, make sure to set this parameter to Yes', 'events-manager') );
+				em_options_input_text ( 'SMTP host', 'dbem_smtp_host', __( "The SMTP host. Usually it corresponds to 'localhost'. If you use Gmail, set this value to 'ssl://smtp.gmail.com:465'.", 'events-manager') );
+				em_options_input_text ( __( 'SMTP username', 'events-manager'), 'dbem_smtp_username', __( "Insert the username to be used to access your SMTP server.", 'events-manager') );
+				em_options_input_password ( __( 'SMTP password', 'events-manager'), "dbem_smtp_password", __( "Insert the password to be used to access your SMTP server", 'events-manager') );
 				?>
 			</tbody>
 			<?php
@@ -443,8 +443,8 @@ function em_admin_option_box_email(){
 							}
 						},
 						error: function(){ $('#em-email-settings-check-status').css({'color':'red','display':'block'}).html('Server Error'); },
-						beforeSend: function(){ $('input#em-admin-check-email').val('<?php _e('Checking...','dbem') ?>'); },
-						complete: function(){ $('input#em-admin-check-email').val('<?php _e('Test Email Settings','dbem'); ?>');  }
+						beforeSend: function(){ $('input#em-admin-check-email').val('<?php _e('Checking...','events-manager') ?>'); },
+						complete: function(){ $('input#em-admin-check-email').val('<?php _e('Test Email Settings','events-manager'); ?>');  }
 					});
 				});
 			});
@@ -461,59 +461,59 @@ function em_admin_option_box_caps(){
 	global $save_button, $wpdb;
 	?>
 	<div  class="postbox" id="em-opt-user-caps" >
-	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'User Capabilities', 'dbem' ); ?></span></h3>
+	<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'User Capabilities', 'events-manager'); ?></span></h3>
 	<div class="inside">
             <table class="form-table">
             <tr><td colspan="2" class="em-boxheader">
-            	<p><strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.', 'dbem')?></strong></p>
-            	<p><em><?php _e('You can now give fine grained control with regards to what your users can do with events. Each user role can have perform different sets of actions.','dbem'); ?></em></p>
+            	<p><strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.', 'events-manager')?></strong></p>
+            	<p><em><?php _e('You can now give fine grained control with regards to what your users can do with events. Each user role can have perform different sets of actions.','events-manager'); ?></em></p>
             </td></tr>
 			<?php
             global $wp_roles;
 			$cap_docs = array(
-				sprintf(__('%s Capabilities','dbem'),__('Event','dbem')) => array(
+				sprintf(__('%s Capabilities','events-manager'),__('Event','events-manager')) => array(
 					/* Event Capabilities */
-					'publish_events' => sprintf(__('Users can publish %s and skip any admin approval','dbem'),__('events','dbem')),
-					'delete_others_events' => sprintf(__('User can delete other users %s','dbem'),__('events','dbem')),
-					'edit_others_events' => sprintf(__('User can edit other users %s','dbem'),__('events','dbem')),
-					'delete_events' => sprintf(__('User can delete their own %s','dbem'),__('events','dbem')),
-					'edit_events' => sprintf(__('User can create and edit %s','dbem'),__('events','dbem')),
-					'read_private_events' => sprintf(__('User can view private %s','dbem'),__('events','dbem')),
-					/*'read_events' => sprintf(__('User can view %s','dbem'),__('events','dbem')),*/
+					'publish_events' => sprintf(__('Users can publish %s and skip any admin approval','events-manager'),__('events','events-manager')),
+					'delete_others_events' => sprintf(__('User can delete other users %s','events-manager'),__('events','events-manager')),
+					'edit_others_events' => sprintf(__('User can edit other users %s','events-manager'),__('events','events-manager')),
+					'delete_events' => sprintf(__('User can delete their own %s','events-manager'),__('events','events-manager')),
+					'edit_events' => sprintf(__('User can create and edit %s','events-manager'),__('events','events-manager')),
+					'read_private_events' => sprintf(__('User can view private %s','events-manager'),__('events','events-manager')),
+					/*'read_events' => sprintf(__('User can view %s','events-manager'),__('events','events-manager')),*/
 				),
-				sprintf(__('%s Capabilities','dbem'),__('Recurring Event','dbem')) => array(
+				sprintf(__('%s Capabilities','events-manager'),__('Recurring Event','events-manager')) => array(
 					/* Recurring Event Capabilties */
-					'publish_recurring_events' => sprintf(__('Users can publish %s and skip any admin approval','dbem'),__('recurring events','dbem')),
-					'delete_others_recurring_events' => sprintf(__('User can delete other users %s','dbem'),__('recurring events','dbem')),
-					'edit_others_recurring_events' => sprintf(__('User can edit other users %s','dbem'),__('recurring events','dbem')),
-					'delete_recurring_events' => sprintf(__('User can delete their own %s','dbem'),__('recurring events','dbem')),
-					'edit_recurring_events' => sprintf(__('User can create and edit %s','dbem'),__('recurring events','dbem'))						
+					'publish_recurring_events' => sprintf(__('Users can publish %s and skip any admin approval','events-manager'),__('recurring events','events-manager')),
+					'delete_others_recurring_events' => sprintf(__('User can delete other users %s','events-manager'),__('recurring events','events-manager')),
+					'edit_others_recurring_events' => sprintf(__('User can edit other users %s','events-manager'),__('recurring events','events-manager')),
+					'delete_recurring_events' => sprintf(__('User can delete their own %s','events-manager'),__('recurring events','events-manager')),
+					'edit_recurring_events' => sprintf(__('User can create and edit %s','events-manager'),__('recurring events','events-manager'))						
 				),
-				sprintf(__('%s Capabilities','dbem'),__('Location','dbem')) => array(
+				sprintf(__('%s Capabilities','events-manager'),__('Location','events-manager')) => array(
 					/* Location Capabilities */
-					'publish_locations' => sprintf(__('Users can publish %s and skip any admin approval','dbem'),__('locations','dbem')),
-					'delete_others_locations' => sprintf(__('User can delete other users %s','dbem'),__('locations','dbem')),
-					'edit_others_locations' => sprintf(__('User can edit other users %s','dbem'),__('locations','dbem')),
-					'delete_locations' => sprintf(__('User can delete their own %s','dbem'),__('locations','dbem')),
-					'edit_locations' => sprintf(__('User can create and edit %s','dbem'),__('locations','dbem')),
-					'read_private_locations' => sprintf(__('User can view private %s','dbem'),__('locations','dbem')),
-					'read_others_locations' => __('User can use other user locations for their events.','dbem'),
-					/*'read_locations' => sprintf(__('User can view %s','dbem'),__('locations','dbem')),*/
+					'publish_locations' => sprintf(__('Users can publish %s and skip any admin approval','events-manager'),__('locations','events-manager')),
+					'delete_others_locations' => sprintf(__('User can delete other users %s','events-manager'),__('locations','events-manager')),
+					'edit_others_locations' => sprintf(__('User can edit other users %s','events-manager'),__('locations','events-manager')),
+					'delete_locations' => sprintf(__('User can delete their own %s','events-manager'),__('locations','events-manager')),
+					'edit_locations' => sprintf(__('User can create and edit %s','events-manager'),__('locations','events-manager')),
+					'read_private_locations' => sprintf(__('User can view private %s','events-manager'),__('locations','events-manager')),
+					'read_others_locations' => __('User can use other user locations for their events.','events-manager'),
+					/*'read_locations' => sprintf(__('User can view %s','events-manager'),__('locations','events-manager')),*/
 				),
-				sprintf(__('%s Capabilities','dbem'),__('Other','dbem')) => array(
+				sprintf(__('%s Capabilities','events-manager'),__('Other','events-manager')) => array(
 					/* Category Capabilities */
-					'delete_event_categories' => sprintf(__('User can delete %s categories and tags.','dbem'),__('event','dbem')),
-					'edit_event_categories' => sprintf(__('User can edit %s categories and tags.','dbem'),__('event','dbem')),
+					'delete_event_categories' => sprintf(__('User can delete %s categories and tags.','events-manager'),__('event','events-manager')),
+					'edit_event_categories' => sprintf(__('User can edit %s categories and tags.','events-manager'),__('event','events-manager')),
 					/* Booking Capabilities */
-					'manage_others_bookings' => __('User can manage other users individual bookings and event booking settings.','dbem'),
-					'manage_bookings' => __('User can use and manage bookings with their events.','dbem'),
-					'upload_event_images' => __('User can upload images along with their events and locations.','dbem')
+					'manage_others_bookings' => __('User can manage other users individual bookings and event booking settings.','events-manager'),
+					'manage_bookings' => __('User can use and manage bookings with their events.','events-manager'),
+					'upload_event_images' => __('User can upload images along with their events and locations.','events-manager')
 				)
 			);
             ?>
             <?php 
         	if( is_multisite() && is_network_admin() ){
-	            echo em_options_radio_binary(__('Apply global capabilities?','dbem'), 'dbem_ms_global_caps', __('If set to yes the capabilities will be applied all your network blogs and you will not be able to set custom capabilities each blog. You can select no later and visit specific blog settings pages to add/remove capabilities.','dbem') );
+	            echo em_options_radio_binary(__('Apply global capabilities?','events-manager'), 'dbem_ms_global_caps', __('If set to yes the capabilities will be applied all your network blogs and you will not be able to set custom capabilities each blog. You can select no later and visit specific blog settings pages to add/remove capabilities.','events-manager') );
 	        }
 	        ?>
             <tr><td colspan="2">
@@ -576,32 +576,32 @@ function em_admin_option_box_uninstall(){
 	}
 	?>
 	<div  class="postbox" id="em-opt-admin-tools" >
-		<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Admin Tools', 'dbem' ); ?> (<?php _e ( 'Advanced', 'dbem' ); ?>)</span></h3>
+		<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Admin Tools', 'events-manager'); ?> (<?php _e ( 'Advanced', 'events-manager'); ?>)</span></h3>
 		<div class="inside">
 			<table class="form-table">
     		    <tr class="em-header"><td colspan="2">
-        			<h4><?php _e ( 'Development Versions &amp; Updates', 'dbem' ); ?></h4>
-        			<p><?php _e('We\'re always making improvements, adding features and fixing bugs between releases. We incrementally make these changes in between updates and make it available as a development version. You can download these manually, but we\'ve made it easy for you. <strong>Warning:</strong> Development versions are not always fully tested before release, use wisely!','dbem'); ?></p>
+        			<h4><?php _e ( 'Development Versions &amp; Updates', 'events-manager'); ?></h4>
+        			<p><?php _e('We\'re always making improvements, adding features and fixing bugs between releases. We incrementally make these changes in between updates and make it available as a development version. You can download these manually, but we\'ve made it easy for you. <strong>Warning:</strong> Development versions are not always fully tested before release, use wisely!','events-manager'); ?></p>
     			</td></tr>
-				<?php em_options_radio_binary ( __( 'Enable Dev Updates?', 'dbem' ), 'dbem_pro_dev_updates', __('If enabled, the latest dev version will always be checked instead of the latest stable version of the plugin.', 'dbem') ); ?>
+				<?php em_options_radio_binary ( __( 'Enable Dev Updates?', 'events-manager'), 'dbem_pro_dev_updates', __('If enabled, the latest dev version will always be checked instead of the latest stable version of the plugin.', 'events-manager') ); ?>
 				<tr>
-    			    <th style="text-align:right;"><a href="<?php echo $recheck_updates_url; ?>" class="button-secondary"><?php _e('Re-Check Updates','dbem'); ?></a></th>
-    			    <td><?php _e('If you would like to check and see if there is a new stable update.','dbem'); ?></td>
+    			    <th style="text-align:right;"><a href="<?php echo $recheck_updates_url; ?>" class="button-secondary"><?php _e('Re-Check Updates','events-manager'); ?></a></th>
+    			    <td><?php _e('If you would like to check and see if there is a new stable update.','events-manager'); ?></td>
     			</tr>
     			<tr>
-    			    <th style="text-align:right;"><a href="<?php echo $check_devs; ?>" class="button-secondary"><?php _e('Check Dev Versions','dbem'); ?></a></th>
-    			    <td><?php _e('If you would like to download a dev version, but just as a one-off, you can force a dev version check by clicking the button below. If there is one available, it should appear in your plugin updates page as a regular update.','dbem'); ?></td>
+    			    <th style="text-align:right;"><a href="<?php echo $check_devs; ?>" class="button-secondary"><?php _e('Check Dev Versions','events-manager'); ?></a></th>
+    			    <td><?php _e('If you would like to download a dev version, but just as a one-off, you can force a dev version check by clicking the button below. If there is one available, it should appear in your plugin updates page as a regular update.','events-manager'); ?></td>
 				</tr>
 			</table>
 			
 			<table class="form-table">
     		    <tr class="em-header"><td colspan="2">
-    		        <h4><?php _e ( 'Uninstall/Reset', 'dbem' ); ?></h4>
-    		        <p><?php _e('Use the buttons below to uninstall Events Manager completely from your system or reset Events Manager to original settings and keep your event data.','dbem'); ?></p>
+    		        <h4><?php _e ( 'Uninstall/Reset', 'events-manager'); ?></h4>
+    		        <p><?php _e('Use the buttons below to uninstall Events Manager completely from your system or reset Events Manager to original settings and keep your event data.','events-manager'); ?></p>
     		    </td></tr>
     		    <tr><td colspan="2">
-        			<a href="<?php echo $uninstall_url; ?>" class="button-secondary"><?php _e('Uninstall','dbem'); ?></a>
-        			<a href="<?php echo $reset_url; ?>" class="button-secondary"><?php _e('Reset','dbem'); ?></a>
+        			<a href="<?php echo $uninstall_url; ?>" class="button-secondary"><?php _e('Uninstall','events-manager'); ?></a>
+        			<a href="<?php echo $reset_url; ?>" class="button-secondary"><?php _e('Reset','events-manager'); ?></a>
     		    </td></tr>
 			</table>
 			<?php do_action('em_options_page_panel_admin_tools'); ?>

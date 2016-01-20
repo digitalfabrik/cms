@@ -7,7 +7,7 @@ function em_admin_help_page(){
 	?>
 	<div class="wrap">
 		<div id="icon-events" class="icon32"><br /></div>
-		<h2><?php _e('Getting Help for Events Manager','dbem'); ?></h2>
+		<h2><?php _e('Getting Help for Events Manager','events-manager'); ?></h2>
 		<div class="em-docs">
 			<h2>Where To Get Help</h3>
 			<p>
@@ -22,21 +22,21 @@ function em_admin_help_page(){
 			<p>
 				If you can't find what you're looking for in the documentation, you may find help on our <a href="http://wp-events-plugin.com/forums/">support forums</a>. 
 			</p>
-			<h2><?php _e('Placeholders for customizing event pages','dbem'); ?></h2>
-			<p><?php echo sprintf( __("In the <a href='%s'>settings page</a>, you'll find various textboxes where you can edit how event information looks, such as for event and location lists. Using the placeholders below, you can choose what information should be displayed.",'dbem'), EM_ADMIN_URL .'&amp;events-manager-options'); ?></p>
+			<h2><?php _e('Placeholders for customizing event pages','events-manager'); ?></h2>
+			<p><?php echo sprintf( __("In the <a href='%s'>settings page</a>, you'll find various textboxes where you can edit how event information looks, such as for event and location lists. Using the placeholders below, you can choose what information should be displayed.",'events-manager'), EM_ADMIN_URL .'&amp;events-manager-options'); ?></p>
 			<a name="event-placeholders"></a>
-			<h3 style="margin-top:20px;"><?php _e('Event Related Placeholders','dbem'); ?></h3>
+			<h3 style="margin-top:20px;"><?php _e('Event Related Placeholders','events-manager'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'events') ); ?>
 			<a name="category-placeholders"></a>
-			<h3><?php _e('Category Related Placeholders','dbem'); ?></h3>
+			<h3><?php _e('Category Related Placeholders','events-manager'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'categories') ); ?>
-			<h3><?php _e('Tag Related Placeholders','dbem'); ?></h3>
+			<h3><?php _e('Tag Related Placeholders','events-manager'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'tags') ); ?>
 			<a name="location-placeholders"></a>
-			<h3><?php _e('Location Related Placeholders','dbem'); ?></h3>
+			<h3><?php _e('Location Related Placeholders','events-manager'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'locations') ); ?>
 			<a name="booking-placeholders"></a>
-			<h3><?php _e('Booking Related Placeholders','dbem'); ?></h3>
+			<h3><?php _e('Booking Related Placeholders','events-manager'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'bookings') ); ?>
 		</div>
 		<?php

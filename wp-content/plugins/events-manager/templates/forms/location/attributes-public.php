@@ -6,7 +6,7 @@
 global $EM_Location;
 /* @var $EM_Location EM_Location */
 $attributes = em_get_attributes(true); //lattributes only
-$has_depreciated = false;
+$has_deprecated = false;
 ?>
 <?php if( count( $attributes['names'] ) > 0 ) : ?>
 	<?php foreach( $attributes['names'] as $name) : ?>

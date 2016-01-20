@@ -1,7 +1,7 @@
 div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:99998; }
 .em-search-ajax { position:relative; }
 /* Warnings */
-	.em-warning { margin:10px 0px; padding:10px; color:#333; border-radius:3px; }
+	.em-warning { margin:10px 0px; padding:10px; color:#333; border-radius:3px; display:block !important; }
 	.em-warning p { margin:10px 0px !important; padding:0px; color:#333 }
 	.em-warning-errors { background-color:#FFEBE8; border:1px solid #C00; }
 	.em-warning-confirms { background-color:#f1fff0; border:1px solid #a8d144; }

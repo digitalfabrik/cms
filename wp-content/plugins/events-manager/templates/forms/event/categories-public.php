@@ -10,7 +10,7 @@ $categories = EM_Categories::get(array('orderby'=>'name','hide_empty'=>0));
 <?php if( count($categories) > 0 ): ?>
 <div class="event-categories">
 	<!-- START Categories -->
-	<label for="event_categories[]"><?php _e ( 'Category:', 'dbem' ); ?></label>
+	<label for="event_categories[]"><?php _e ( 'Category:', 'events-manager'); ?></label>
 	<select name="event_categories[]" multiple size="10">
 	<?php
 	$selected = $EM_Event->get_categories()->get_ids();

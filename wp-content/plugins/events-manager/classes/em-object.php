@@ -11,7 +11,7 @@ class EM_Object {
 	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
 	
 	private static $taxonomies_array; //see self::get_taxonomies()
-	protected static $context = 'event'; //this should be overriden to the db table name for deciding on ambiguous fields to look up 
+	protected static $context = 'event'; //this should be overridden to the db table name for deciding on ambiguous fields to look up 
 	
 	/**
 	 * Takes the array and provides a clean array of search parameters, along with details
@@ -46,11 +46,11 @@ class EM_Object {
 			'pagination'=>false,
 			'array'=>false,
 			'owner'=>false,
-			'rsvp'=>false, //depreciated for bookings
+			'rsvp'=>false, //deprecated for bookings
 			'bookings'=>false,
 			'search'=>false,
 			'geo'=>false, //reserved for future searching via name
-			'near'=>false, //lat,lng coordinates in array or comma-seperated format
+			'near'=>false, //lat,lng coordinates in array or comma-separated format
 			'near_unit'=>get_option('dbem_search_form_geo_unit_default'), //mi or km
 			'near_distance'=>get_option('dbem_search_form_geo_distance_default'), //distance from near coordinates - currently the default is the same as for the search form
 			'ajax'=> (defined('EM_AJAX') && EM_AJAX) //considered during pagination
@@ -98,12 +98,12 @@ class EM_Object {
 				$array['near_unit'] = !empty($array['near_unit']) && in_array($array['near_unit'], array('km','mi')) ? $array['near_unit']:$defaults['near_unit']; //default is 'mi'
 				$array['near_distance'] = !empty($array['near_distance']) && is_numeric($array['near_distance']) ? absint($array['near_distance']) : $defaults['near_distance']; //default is 25
 			}
-			//Country - Turn into array for multiple search if comma-seperated 
+			//Country - Turn into array for multiple search if comma-separated 
 			if( !empty($array['country']) && is_string($array['country']) && preg_match('/^( ?.+ ?,?)+$/', $array['country']) ){
 			    $array['country'] = explode(',',$array['country']);
 			}
 			
-			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
+			//OrderBy - can be a comma-separated array of field names to order by (field names of object, not db)
 			if( array_key_exists('orderby', $array)){
 				if( !is_array($array['orderby']) && preg_match('/,/', $array['orderby']) ) {
 					$array['orderby'] = explode(',', $array['orderby']);
@@ -165,7 +165,7 @@ class EM_Object {
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = $defaults['recurring'] === 'include' ?  $defaults['recurring']:($defaults['recurring'] == true);
-		$defaults['search'] = ($defaults['search']) ? trim(esc_sql(like_escape($defaults['search']))):false;
+		$defaults['search'] = ($defaults['search']) ? trim(esc_sql($wpdb->esc_like($defaults['search']))):false;
 		//Calculate offset if event page is set
 		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
@@ -404,7 +404,7 @@ class EM_Object {
 			}
 		}
 		
-		//START TAXONOMY FILTERS - can be id, slug, name or comma seperated ids/slugs/names, if negative or prepended with a - then considered a negative filter
+		//START TAXONOMY FILTERS - can be id, slug, name or comma separated ids/slugs/names, if negative or prepended with a - then considered a negative filter
 		//convert taxonomies to arrays
 		$taxonomies = self::get_taxonomies();
 		foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
@@ -772,7 +772,7 @@ class EM_Object {
 			}
 		}
 		//Add conditions for category selection
-		//Filter by category, can be id or comma seperated ids
+		//Filter by category, can be id or comma separated ids
 		//TODO create an exclude category option
 		if ( is_numeric($category) && $category > 0 ){
 			//get the term id directly
@@ -805,7 +805,7 @@ class EM_Object {
 			}
 		}		
 		//Add conditions for tags
-		//Filter by tag, can be id or comma seperated ids
+		//Filter by tag, can be id or comma separated ids
 		if ( !empty($tag) && !is_array($tag) ){
 			//get the term id directly
 			$term = new EM_Tag($tag);
@@ -1096,7 +1096,7 @@ class EM_Object {
 		$array = array();
 		foreach ( $this->fields as $key => $val ) {
 			if($db){
-				if( !empty($this->$key) || $this->$key === 0 || empty($val['null']) ){
+				if( !empty($this->$key) || $this->$key === 0 || $this->$key === '0' || empty($val['null']) ){
 					$array[$key] = $this->$key;
 				}
 			}else{
@@ -1163,7 +1163,7 @@ class EM_Object {
 	}
 	
 	/**
-	 * Cleans arrays that contain id lists. Takes an array of items and will clean the keys passed in second argument so that if they keep numbers, explode comma-seperated numbers, and unsets the key if there's any other value
+	 * Cleans arrays that contain id lists. Takes an array of items and will clean the keys passed in second argument so that if they keep numbers, explode comma-separated numbers, and unsets the key if there's any other value
 	 * @param array $array
 	 * @param array $id_atts
 	 */
@@ -1438,7 +1438,7 @@ class EM_Object {
 				return apply_filters('em_object_image_upload', true, $this);
 			}else{
 			    //error uploading, pass error message on and return false
-			    $error_string = __('There was an error uploading the image.','dbem');
+			    $error_string = __('There was an error uploading the image.','events-manager');
 			    if( current_user_can('edit_others_events') && !empty($attachment_id->errors['upload_error']) ){
     			    $error_string .= ' <em>('. implode(' ', $attachment_id->errors['upload_error']) .')</em>';
 			    }
@@ -1459,20 +1459,20 @@ class EM_Object {
 			  		list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
 					$maximum_size = get_option('dbem_image_max_size'); 
 					if ($_FILES[$type.'_image']['size'] > $maximum_size){ 
-				     	$this->add_error( __('The image file is too big! Maximum size:', 'dbem')." $maximum_size");
+				     	$this->add_error( __('The image file is too big! Maximum size:', 'events-manager')." $maximum_size");
 					}
 					$maximum_width = get_option('dbem_image_max_width'); 
 					$maximum_height = get_option('dbem_image_max_height');
 					$minimum_width = get_option('dbem_image_min_width'); 
 					$minimum_height = get_option('dbem_image_min_height');  
 				  	if (($width > $maximum_width) || ($height > $maximum_height)) { 
-						$this->add_error( __('The image is too big! Maximum size allowed:','dbem')." $maximum_width x $maximum_height");
+						$this->add_error( __('The image is too big! Maximum size allowed:','events-manager')." $maximum_width x $maximum_height");
 				  	}
 				  	if (($width < $minimum_width) || ($height < $minimum_height)) { 
-						$this->add_error( __('The image is too small! Minimum size allowed:','dbem')." $minimum_width x $minimum_height");
+						$this->add_error( __('The image is too small! Minimum size allowed:','events-manager')." $minimum_width x $minimum_height");
 				  	}
 				  	if ( empty($mime_type) || !array_key_exists($mime_type, $this->mime_types) ){ 
-						$this->add_error(__('The image is in a wrong format!','dbem'));
+						$this->add_error(__('The image is in a wrong format!','events-manager'));
 				  	}
 		  		}
 			}

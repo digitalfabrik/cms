@@ -38,20 +38,28 @@ var WPMLBrowserRedirect = function () {
 	self.init = function () {
 
 		if (self.cookiesAreEnabled() && !self.cookieExists()) {
-			self.getBrowserLanguage(function(browserLanguage) {
+            self.getBrowserLanguage(function (browserLanguages) {
 				var redirectUrl;
 				var pageLanguage;
+                var browserLanguage;
 
 				pageLanguage = wpml_browser_redirect_params.pageLanguage;
-				self.setCookie(browserLanguage);
 
-				if (pageLanguage !== browserLanguage.substr(0, 2)) {
-					redirectUrl = self.getRedirectUrl(browserLanguage);
-					if (false !== redirectUrl) {
-						window.location = redirectUrl;
-					}
-				}
-			});
+                var browserLanguagesLength = browserLanguages.length;
+                for (var i = 0; i < browserLanguagesLength; i++) {
+                    browserLanguage = browserLanguages[i];
+
+                    if (pageLanguage !== browserLanguage.substr(0, 2)) {
+                        redirectUrl = self.getRedirectUrl(browserLanguage);
+                        if (false !== redirectUrl) {
+                            self.setCookie(browserLanguage);
+                            window.location = redirectUrl;
+                            break;
+                        }
+                    }
+                }
+
+            });
 		}
 	};
 
@@ -85,28 +93,35 @@ var WPMLBrowserRedirect = function () {
 	};
 
 	self.getBrowserLanguage = function (success) {
-		var browserLanguage = wpml_browser_redirect_params.pageLanguage;
+        var browserLanguages = [];
 
-		if(navigator.language || navigator.userLanguage) {
-			browserLanguage = navigator.language || navigator.userLanguage;
-			success(browserLanguage);
-		} else if(navigator.browserLanguage || navigator.systemLanguage) {
-			browserLanguage = navigator.browserLanguage || navigator.systemLanguage;
-			success(browserLanguage);
-		} else {
-			jQuery.ajax({
-				data:    {
-					icl_ajx_action: 'get_browser_language'
-				},
-				success: function (ret) {
-					browserLanguage = ret;
-					if (success && "function" === typeof success) {
-						success(browserLanguage);
-					}
-				}
-			});
+        if (navigator.languages) {
+            browserLanguages = navigator.languages;
+        }
+        if (0 === browserLanguages.length && (navigator.language || navigator.userLanguage)) {
+            browserLanguages.push(navigator.language || navigator.userLanguage);
+        }
+        if (0 === browserLanguages.length && (navigator.browserLanguage || navigator.systemLanguage)) {
+            browserLanguages.push(navigator.browserLanguage || navigator.systemLanguage);
 		}
-		return browserLanguage;
+
+        if (0 === browserLanguages.length) {
+            jQuery.ajax({
+                data: {
+                    icl_ajx_action: 'get_browser_language'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        browserLanguages = response.data;
+                        if (success && "function" === typeof success) {
+                            success(browserLanguages);
+                        }
+                    }
+                }
+            });
+        } else {
+            success(browserLanguages);
+        }
 	};
 
 	self.cookiesAreEnabled = function () {

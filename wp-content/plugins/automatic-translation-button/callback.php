@@ -1,9 +1,9 @@
 <?php
 
-add_action('wp_ajax_automatic-translation-button-translate', function () {
-	$post_id = $_POST['post'];
-	if(!$post_id) {
-		die("No post set");
+add_action('init', function () {
+	$post_id = $_POST['automatic_translation_post'];
+	if (!$post_id) {
+		return;
 	}
 
 	require_once __DIR__ . '/plugin.php';

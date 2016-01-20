@@ -78,7 +78,10 @@ class WPML_Global_AJAX {
 			}
 
 			if ( $response ) {
-				wp_send_json_success();
+				$permalinks_settings_url = get_admin_url(null, 'options-permalink.php');
+				$save_permalinks_link    = '<a href="' . $permalinks_settings_url . '">' . _x( 're-save the site permalinks', 'You may need to {re-save the site permalinks} - 2/2', 'sitepress' ) . '</a>';
+				$save_permalinks_message = sprintf( _x( 'You may need to %s.', 'You may need to {re-save the site permalinks} - 1/2', 'sitepress' ), $save_permalinks_link );
+				wp_send_json_success( $save_permalinks_message );
 			} else {
 				wp_send_json_error( __( 'Error', 'sitepress' ) );
 			}

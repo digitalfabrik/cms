@@ -41,9 +41,10 @@ class WPML_Root_Page_Actions {
 	 * @return bool|false|int
 	 */
 	public function get_root_page_id() {
+		$urls_in_dirs = isset($this->sp_settings['language_negotiation_type']) && (int)$this->sp_settings['language_negotiation_type'] === 1;
 		$urls = isset( $this->sp_settings['urls'] ) ? $this->sp_settings['urls'] : array();
 
-		return isset( $urls['root_page'] )
+		return $urls_in_dirs && isset( $urls['root_page'] )
 		       && ! empty( $urls['directory_for_default_language'] )
 		       && isset( $urls['show_on_root'] )
 		       && $urls['show_on_root'] === 'page'

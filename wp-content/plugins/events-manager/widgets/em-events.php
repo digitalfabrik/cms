@@ -10,7 +10,7 @@ class EM_Widget extends WP_Widget {
     /** constructor */
     function __construct() {
     	$this->defaults = array(
-    		'title' => __('Events','dbem'),
+    		'title' => __('Events','events-manager'),
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
@@ -19,16 +19,16 @@ class EM_Widget extends WP_Widget {
     		'nolistwrap' => false,
     		'orderby' => 'event_start_date,event_start_time,event_name',
 			'all_events' => 0,
-			'all_events_text' => __('all events', 'dbem'),
-			'no_events_text' => '<li>'.__('No events', 'dbem').'</li>'
+			'all_events_text' => __('all events', 'events-manager'),
+			'no_events_text' => '<li>'.__('No events', 'events-manager').'</li>'
     	);
 		$this->em_orderby_options = apply_filters('em_settings_events_default_orderby_ddm', array(
-			'event_start_date,event_start_time,event_name' => __('start date, start time, event name','dbem'),
-			'event_name,event_start_date,event_start_time' => __('name, start date, start time','dbem'),
-			'event_name,event_end_date,event_end_time' => __('name, end date, end time','dbem'),
-			'event_end_date,event_end_time,event_name' => __('end date, end time, event name','dbem'),
+			'event_start_date,event_start_time,event_name' => __('start date, start time, event name','events-manager'),
+			'event_name,event_start_date,event_start_time' => __('name, start date, start time','events-manager'),
+			'event_name,event_end_date,event_end_time' => __('name, end date, end time','events-manager'),
+			'event_end_date,event_end_time,event_name' => __('end date, end time, event name','events-manager'),
 		)); 
-    	$widget_ops = array('description' => __( "Display a list of events on Events Manager.", 'dbem') );
+    	$widget_ops = array('description' => __( "Display a list of events on Events Manager.", 'events-manager') );
         parent::__construct(false, $name = 'Events', $widget_ops);	
     }
 
@@ -78,7 +78,7 @@ class EM_Widget extends WP_Widget {
 		    echo $instance['no_events_text'];
 		}
 		if ( !empty($instance['all_events']) ){
-			$events_link = (!empty($instance['all_events_text'])) ? em_get_link($instance['all_events_text']) : em_get_link(__('all events','dbem'));
+			$events_link = (!empty($instance['all_events_text'])) ? em_get_link($instance['all_events_text']) : em_get_link(__('all events','events-manager'));
 			echo '<li class="all-events-link">'.$events_link.'</li>';
 		}
 		echo "</ul>";
@@ -110,16 +110,16 @@ class EM_Widget extends WP_Widget {
     	$instance = $this->fix_scope($instance); // depcreciate
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_html_e('Title', 'dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_html_e('Title', 'events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" class="widefat" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php esc_html_e('Number of events','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php esc_html_e('Number of events','events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo esc_attr($instance['limit']); ?>" />
 		</p>
 		<p>
 			
-			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php esc_html_e('Scope','dbem'); ?>: </label><br/>
+			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php esc_html_e('Scope','events-manager'); ?>: </label><br/>
 			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" class="widefat" >
 				<?php foreach( em_get_scopes() as $key => $value) : ?>   
 				<option value='<?php echo esc_attr($key); ?>' <?php echo ($key == $instance['scope']) ? "selected='selected'" : ''; ?>>
@@ -129,7 +129,7 @@ class EM_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order By','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order By','events-manager'); ?>: </label>
 			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>" class="widefat">
 				<?php foreach($this->em_orderby_options as $key => $value) : ?>   
 	 			<option value='<?php echo esc_attr($key); ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
@@ -139,12 +139,12 @@ class EM_Widget extends WP_Widget {
 			</select> 
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order','events-manager'); ?>: </label>
 			<select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>" class="widefat">
 				<?php 
 				$order_options = apply_filters('em_widget_order_ddm', array(
-					'ASC' => __('Ascending','dbem'),
-					'DESC' => __('Descending','dbem')
+					'ASC' => __('Ascending','events-manager'),
+					'DESC' => __('Descending','events-manager')
 				)); 
 				?>
 				<?php foreach( $order_options as $key => $value) : ?>   
@@ -155,16 +155,16 @@ class EM_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-            <label for="<?php echo $this->get_field_id('category'); ?>"><?php esc_html_e('Category IDs','dbem'); ?>: </label>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php esc_html_e('Category IDs','events-manager'); ?>: </label>
             <input type="text" id="<?php echo $this->get_field_id('category'); ?>" class="widefat" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo esc_attr($instance['category']); ?>" /><br />
-            <em><?php esc_html_e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
+            <em><?php esc_html_e('1,2,3 or 2 (0 = all)','events-manager'); ?> </em>
         </p>
         <p>
-			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php esc_html_e('Show all events link at bottom?','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php esc_html_e('Show all events link at bottom?','events-manager'); ?>: </label>
 			<input type="checkbox" id="<?php echo $this->get_field_id('all_events'); ?>" name="<?php echo $this->get_field_name('all_events'); ?>" <?php echo (!empty($instance['all_events']) && $instance['all_events']) ? 'checked':''; ?>  class="widefat">
 		</p>
 		<p id="<?php echo $this->get_field_id('all_events'); ?>-section">
-			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php esc_html_e('All events link text?','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php esc_html_e('All events link text?','events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('all_events_text'); ?>" name="<?php echo $this->get_field_name('all_events_text'); ?>" value="<?php echo esc_attr( $instance['all_events_text'] ); ?>" >
 		</p>
 		<script type="text/javascript">
@@ -176,13 +176,13 @@ class EM_Widget extends WP_Widget {
 			} 
 		}).trigger('change');
 		</script>
-		<em><?php echo sprintf( esc_html__('The list is wrapped in a %s tag, so if an %s tag is not wrapping the formats below it will be added automatically.','dbem'), '<code>&lt;ul&gt;</code>', '<code>&lt;li&gt;</code>'); ?></em>
+		<em><?php echo sprintf( esc_html__('The list is wrapped in a %s tag, so if an %s tag is not wrapping the formats below it will be added automatically.','events-manager'), '<code>&lt;ul&gt;</code>', '<code>&lt;li&gt;</code>'); ?></em>
         <p>
-			<label for="<?php echo $this->get_field_id('format'); ?>"><?php esc_html_e('List item format','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('format'); ?>"><?php esc_html_e('List item format','events-manager'); ?>: </label>
 			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>" class="widefat"><?php echo esc_textarea($instance['format']); ?></textarea>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('no_events_text'); ?>"><?php _e('No events message','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('no_events_text'); ?>"><?php _e('No events message','events-manager'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('no_events_text'); ?>" name="<?php echo $this->get_field_name('no_events_text'); ?>" value="<?php echo esc_attr( $instance['no_events_text'] ); ?>" >
 		</p>
         <?php 

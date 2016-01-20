@@ -11,9 +11,17 @@ class SitePress_EditLanguages {
     private $message = '';
 	private $max_file_size;
 
-	function __construct() {
+	private $allowed_flag_mime_types;
 
-        wp_enqueue_script(
+	function __construct() {
+		$this->allowed_flag_mime_types = array(
+			'gif'  => 'image/gif',
+			'jpeg' => 'image/jpeg',
+			'png'  => 'image/png',
+			'svg'  => 'image/svg+xml'
+		);
+
+		wp_enqueue_script(
             'edit-languages',
             ICL_PLUGIN_URL . '/res/js/languages/edit-languages.js',
             array( 'jquery', 'sitepress-scripts' ),
@@ -26,8 +34,8 @@ class SitePress_EditLanguages {
 		$lang_codes = icl_get_languages_codes();
         $this->built_in_languages = array_values($lang_codes);
         
-        if(isset($_GET['action']) && $_GET['action'] == 'delete-language' && wp_create_nonce('delete-language' . @intval($_GET['id'])) == $_GET['icl_nonce']){
-            $lang_id = @intval($_GET['id']);
+        if(isset($_GET['action']) && $_GET['action'] == 'delete-language' && wp_create_nonce('delete-language' . (int)$_GET['id']) == $_GET['icl_nonce']){
+            $lang_id = (int)$_GET['id'];
             $this->delete_language($lang_id);
         }
         
@@ -194,45 +202,58 @@ For each language, you need to enter the following information:
 					?>
 					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][translations][<?php echo $translation['code']; ?>]" value="<?php echo stripslashes_deep($value); ?>" /></td>
 					<?php } ?>
-			<td>
-				<?php
-				if ( $this->is_writable ) {
-					?>
-					<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->max_file_size; ?>"/>
-					<input name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_file]"
-					       class="icl_edit_languages_flag_upload_field file" style="display:none; float:left;"
-					       type="file" size="10"/>&nbsp;<?php } ?>
-				<input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag]"
-				       value="<?php echo $lang['flag']; ?>" class="icl_edit_languages_flag_enter_field"
-				       style="width:60px; float:left;"/>
-				<?php
-				if ( $this->is_writable ) {
-					?>
-					<div style="float:left;">
-						<label>
-							<input type="radio" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
-							       value="true"
-							       class="radio icl_edit_languages_use_upload"<?php if ( $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
-							&nbsp;
-							<?php _e( 'Upload flag', 'sitepress' ); ?>
-						</label>
-						<br/>
-						<label>
-							<input type="radio" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
-							       value="false"
-							       class="radio icl_edit_languages_use_field"<?php if ( ! $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
-							&nbsp;
-							<?php _e( 'Use flag from WPML', 'sitepress' ); ?>
-						</label>
-					</div>
-					<?php
-				}
-				?>
-			</td>
-					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][default_locale]" value="<?php echo $lang['default_locale']; ?>" style="width:60px;" /></td>
-                    
+					<td>
+						<?php
+						if ( $this->is_writable ) {
+							$allowed_types = array_keys( $this->allowed_flag_mime_types );
+							?>
+							<div style="float:left;">
+								<ul>
+									<li>
+										<input type="radio"
+										       id="wpm-edit-languages-<?php echo $lang['id']; ?>-flag-upload"
+										       name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
+										       value="true"
+										       class="radio icl_edit_languages_use_upload"<?php if ( $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
+										&nbsp;
+										<label for="wpm-edit-languages-<?php echo $lang['id']; ?>-flag-upload">
+											<?php _e( 'Upload flag', 'sitepress' ); ?>
+										</label>
+										<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->max_file_size; ?>"/>
+
+										<div class="wpml-edit-languages-flag-upload-wrapper" <?php if ( ! $lang['from_template'] ) { ?>style="display: none;"<?php } ?>>
+											<input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag]" value="<?php echo $lang['flag']; ?>" class="icl_edit_languages_flag_enter_field" style="width: auto;"/>
+											<br>
+											<input type="file" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_file]" class="icl_edit_languages_flag_upload_field file" style="width: 200px;"/>
+											<br>
+											<?php echo sprintf( __( '(allowed: %s)', 'sitepress' ), implode( ', ', $allowed_types ) ); ?>
+										</div>
+
+									</li>
+									<li>
+										<label>
+											<input type="radio"
+											       name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
+											       value="false"
+											       class="radio icl_edit_languages_use_field"<?php if ( ! $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
+											&nbsp;
+											<?php _e( 'Use flag from WPML', 'sitepress' ); ?>
+										</label>
+
+									</li>
+								</ul>
+							</div>
+							<?php
+						}
+						?>
+					</td>
                     <td>
-                        <select name="icl_edit_languages[<?php echo $lang['id']; ?>][encode_url]">  
+	                    <div class="wpml-edit-languages-flag-use-field">
+		                    <input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][default_locale]" value="<?php echo $lang['default_locale']; ?>" style="width: auto;"/>
+	                    </div>
+                    </td>
+                    <td>
+                        <select name="icl_edit_languages[<?php echo $lang['id']; ?>][encode_url]">
                             <option value="0" <?php if(empty($lang['encode_url'])): ?>selected="selected"<?php endif;?>><?php _e('No', 'sitepress') ?></option>
                             <option value="1" <?php if(!empty($lang['encode_url'])): ?>selected="selected"<?php endif;?>><?php _e('Yes', 'sitepress') ?></option>
                         </select>
@@ -685,8 +706,11 @@ For each language, you need to enter the following information:
 			$filename    = basename( $_FILES['icl_edit_languages']['name'][ $id ]['flag_file'] );
 			$target_path = $this->upload_dir . '/' . $filename;
 
-			$mime      = mime_content_type( $_FILES['icl_edit_languages']['tmp_name'][ $id ]['flag_file'] );
-			$validated = in_array( $mime, array( 'image/gif', 'image/jpeg', 'image/png', 'image/svg+xml' ) );
+			$wpml_wp_api = new WPML_WP_API();
+
+			$mime               = $wpml_wp_api->get_file_mime_type( $_FILES['icl_edit_languages']['tmp_name'][ $id ]['flag_file'] );
+			$allowed_mime_types = array_values( $this->allowed_flag_mime_types );
+			$validated          = in_array( $mime, $allowed_mime_types, true );
 
 			if ( $validated && move_uploaded_file( $_FILES['icl_edit_languages']['tmp_name'][ $id ]['flag_file'], $target_path ) ) {
 

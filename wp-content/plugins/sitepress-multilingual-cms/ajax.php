@@ -16,8 +16,7 @@ switch ( $request ) {
 		$accepted_languages              = explode( ';', $http_accept_language );
 		$default_accepted_language       = $accepted_languages[ 0 ];
 		$default_accepted_language_codes = explode( ',', $default_accepted_language );
-		echo wpml_mb_strtolower( $default_accepted_language_codes[ 0 ] );
-		exit;
+		wp_send_json_success($default_accepted_language_codes);
 }
 
 $request = wpml_get_authenticated_action();

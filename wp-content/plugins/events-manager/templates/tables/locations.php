@@ -1,16 +1,16 @@
 <?php
 	global $wpdb, $EM_Notices;
 	//add new button will only appear if called from em_location_admin template tag, or if the $show_add_new var is set	
-	if(!empty($show_add_new) && current_user_can('edit_locations')) echo '<a class="em-button button add-new-h2" href="'.em_add_get_params($_SERVER['REQUEST_URI'],array('action'=>'edit','scope'=>null,'status'=>null,'location_id'=>null)).'">'.__('Add New','dbem').'</a>';
+	if(!empty($show_add_new) && current_user_can('edit_locations')) echo '<a class="em-button button add-new-h2" href="'.em_add_get_params($_SERVER['REQUEST_URI'],array('action'=>'edit','scope'=>null,'status'=>null,'location_id'=>null)).'">'.__('Add New','events-manager').'</a>';
 ?>
 <?php if(!is_admin()) echo $EM_Notices; ?>			  
 <form id='locations-filter' method='post' action=''>
 	<input type='hidden' name='pno' value='<?php echo esc_attr($page) ?>' />
 	<div class="subsubsub">
-		<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('view'=>null, 'pno'=>null)); ?>' <?php echo ( empty($_REQUEST['view']) ) ? 'class="current"':''; ?>><?php echo sprintf( __( 'My %s', 'dbem' ), __('Locations','dbem')); ?> <span class="count">(<?php echo $locations_mine_count; ?>)</span></a>
+		<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('view'=>null, 'pno'=>null)); ?>' <?php echo ( empty($_REQUEST['view']) ) ? 'class="current"':''; ?>><?php echo sprintf( __( 'My %s', 'events-manager'), __('Locations','events-manager')); ?> <span class="count">(<?php echo $locations_mine_count; ?>)</span></a>
 		<?php if( current_user_can('read_others_locations') ): ?>
 		&nbsp;|&nbsp;
-		<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('view'=>'others', 'pno'=>null)); ?>' <?php echo ( !empty($_REQUEST['view']) && $_REQUEST['view'] == 'others' ) ? 'class="current"':''; ?>><?php echo sprintf( __( 'All %s', 'dbem' ), __('Locations','dbem')); ?><span class="count">(<?php echo $locations_all_count; ?>)</span></a>
+		<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('view'=>'others', 'pno'=>null)); ?>' <?php echo ( !empty($_REQUEST['view']) && $_REQUEST['view'] == 'others' ) ? 'class="current"':''; ?>><?php echo sprintf( __( 'All %s', 'events-manager'), __('Locations','events-manager')); ?><span class="count">(<?php echo $locations_all_count; ?>)</span></a>
 		<?php endif; ?>
 	</div>						
 	<?php if ( $locations_count > 0 ) : ?>
@@ -18,9 +18,9 @@
 		<?php if( (empty($_REQUEST['view']) && current_user_can('delete_events')) || (!empty($_REQUEST['view']) && $_REQUEST['view'] == 'others' && current_user_can('delete_others_events')) ): ?>
 		<div class="alignleft actions">
 			<select name="action">
-				<option value="" selected="selected"><?php _e ( 'Bulk Actions', 'dbem' ); ?></option>
+				<option value="" selected="selected"><?php _e ( 'Bulk Actions', 'events-manager'); ?></option>
 				<?php if( empty($_REQUEST['view']) && current_user_can('delete_events') ) : ?>
-				<option value="location_delete"><?php _e ( 'Delete selected','dbem' ); ?></option>
+				<option value="location_delete"><?php _e ( 'Delete selected','events-manager'); ?></option>
 				<?php endif; ?>
 			</select> 
 			<input type="submit" value="<?php _e ( 'Apply' ); ?>" id="doaction2" class="button-secondary action" /> 
@@ -40,10 +40,10 @@
 				<?php if(empty($hide_checkboxes)): ?>
 				<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
 				<?php endif; ?>
-				<th><?php _e('Name', 'dbem') ?></th>
-				<th><?php _e('Address', 'dbem') ?></th>
-				<th><?php _e('State', 'dbem') ?></th>  
-				<th><?php _e('Country', 'dbem') ?></th>                
+				<th><?php _e('Name', 'events-manager') ?></th>
+				<th><?php _e('Address', 'events-manager') ?></th>
+				<th><?php _e('State', 'events-manager') ?></th>  
+				<th><?php _e('Country', 'events-manager') ?></th>                
 			</tr> 
 		</thead>
 		<tfoot>
@@ -51,10 +51,10 @@
 				<?php if(empty($hide_checkboxes)): ?>
 				<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
 				<?php endif; ?>
-				<th><?php _e('Name', 'dbem') ?></th>
-				<th><?php _e('Address', 'dbem') ?></th>
-				<th><?php _e('State', 'dbem') ?></th> 
-				<th><?php _e('Country', 'dbem') ?></th>      
+				<th><?php _e('Name', 'events-manager') ?></th>
+				<th><?php _e('Address', 'events-manager') ?></th>
+				<th><?php _e('State', 'events-manager') ?></th> 
+				<th><?php _e('Country', 'events-manager') ?></th>      
 			</tr>             
 		</tfoot>
 		<tbody>
@@ -85,7 +85,7 @@
 	</table>
 	<?php else: ?>
 	<br class="clear" />
-	<p><?php esc_html_e('No locations have been inserted yet!', 'dbem') ?></p>
+	<p><?php esc_html_e('No locations have been inserted yet!', 'events-manager') ?></p>
 	<?php endif; ?>
 	
 	<?php if ( !empty($locations_nav) ) echo $locations_nav; ?>
