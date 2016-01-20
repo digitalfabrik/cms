@@ -78,7 +78,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			/* PDF */
 			'create_and_download_pdf' => true,
 			/* Disclaimer */
-			'manage_disclaimer' => true,
+			'manage_disclaimer' => true, 
 		],
 		'organizer' => [
 			/* Pages */
