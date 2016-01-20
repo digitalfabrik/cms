@@ -63,21 +63,6 @@ Author: Blanz
 		);
  */
 
-
-/*used to add buttons to the tinymce (NOT NEEDED if tinymce-advanced is activated)*/
-/*//add buttons
-function add_button( $buttons ){
-	$to_insert = array('underline');
-	$position = 0;
-	foreach($to_insert as &$value){
-		//check if the button is already in the list
-		if(!array_search(strtolower($value),array_map('strtolower',$buttons))) {
-			array_splice($buttons, 0 , 0, $value);
-		}
-	}
-	return $buttons;
-}*/
-
 /**
  * adds buttons to the options table
  * check out tadv_admin.php: e.g.: update_option( 'tadv_settings', $settings );
@@ -213,6 +198,3 @@ function remove_button(&$array,$to_remove,$menue){
 }
 
 add_filter( 'tadv_allowed_buttons', 'modify_buttons' );
-
-//hook into the first raw of buttons, NOT NEEDED if tinymce-advanced is activated
-//add_filter( 'mce_buttons','add_button' );
