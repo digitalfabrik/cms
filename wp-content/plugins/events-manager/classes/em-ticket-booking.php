@@ -66,7 +66,7 @@ class EM_Ticket_Booking extends EM_Object{
 				if($this->get_spaces() > 0){
 					$where = array( 'ticket_booking_id' => $this->ticket_booking_id );  
 					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
-					$this->feedback_message = __('Changes saved','dbem');
+					$this->feedback_message = __('Changes saved','events-manager');
 				}else{
 					$this->result = $this->delete(); 
 				}
@@ -75,21 +75,21 @@ class EM_Ticket_Booking extends EM_Object{
 					//TODO better error handling
 					$result = $wpdb->insert($table, $data, $this->get_types($data));
 				    $this->ticket_booking_id = $wpdb->insert_id;  
-					$this->feedback_message = __('Ticket booking created','dbem'); 
+					$this->feedback_message = __('Ticket booking created','events-manager'); 
 				}else{
 					//no point saving a booking with no spaces
 					$result = false;
 				}
 			}
 			if( $result === false ){
-				$this->feedback_message = __('There was a problem saving the ticket booking.', 'dbem');
-				$this->errors[] = __('There was a problem saving the ticket booking.', 'dbem');
+				$this->feedback_message = __('There was a problem saving the ticket booking.', 'events-manager');
+				$this->errors[] = __('There was a problem saving the ticket booking.', 'events-manager');
 			}
 			$this->compat_keys();
 			return apply_filters('em_ticket_booking_save', ( count($this->errors) == 0 ), $this);
 		}else{
-			$this->feedback_message = __('There was a problem saving the ticket booking.', 'dbem');
-			$this->errors[] = __('There was a problem saving the ticket booking.', 'dbem');
+			$this->feedback_message = __('There was a problem saving the ticket booking.', 'events-manager');
+			$this->errors[] = __('There was a problem saving the ticket booking.', 'events-manager');
 			return apply_filters('em_ticket_booking_save', false, $this);
 		}
 		return true;

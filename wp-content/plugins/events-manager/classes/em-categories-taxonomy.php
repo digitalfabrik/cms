@@ -16,7 +16,7 @@ class EM_Categories_Taxonomy{
 	
 	public static function columns_add($columns) {
 		//prepend ID after checkbox
-	    $columns['cat-id'] = __('ID','dbem');
+	    $columns['cat-id'] = __('ID','events-manager');
 	    return $columns;
 	}
 	
@@ -50,27 +50,27 @@ class EM_Categories_Taxonomy{
 		}
 		?>
 	    <tr class="form-field">
-	        <th scope="row" valign="top"><label for="category-bgcolor"><?php esc_html_e('Color','dbem'); ?></label></th>
+	        <th scope="row" valign="top"><label for="category-bgcolor"><?php esc_html_e('Color','events-manager'); ?></label></th>
 	        <td>
 	            <input type="text" name="category_bgcolor" id="category-bgcolor" class="colorwell" value="<?php echo esc_attr($category_color); ?>" style="width:100px;"/><br />
-	            <p class="description"><?php echo sprintf(__('Choose a color for your category. You can access this using the %s placeholder.','dbem'),'<code>#_CATEGORYCOLOR</code>'); ?></p>
+	            <p class="description"><?php echo sprintf(__('Choose a color for your category. You can access this using the %s placeholder.','events-manager'),'<code>#_CATEGORYCOLOR</code>'); ?></p>
 	            <div id="picker" style="position:absolute; display:none; background:#DEDEDE"></div>
 	        </td>
 	    </tr>
 	    <tr class="form-field">
-	        <th scope="row" valign="top"><label for="category-image"><?php esc_html_e('Image','dbem'); ?></label></th>
+	        <th scope="row" valign="top"><label for="category-image"><?php esc_html_e('Image','events-manager'); ?></label></th>
 	        <td>
 	        	<?php if( !empty($category_image) ): ?>
 	        	<p id="category-image-img"><img src="<?php echo $category_image; ?>" /></p>
 	        	<?php endif; ?>
 	            <input type="text" name="category_image" id="category-image" value="<?php echo esc_attr($category_image); ?>" style="width:300px;" />
 	            <input type="hidden" name="category_image_id" id="category-image-id" value="<?php echo esc_attr($category_image); ?>" />
-	            <input id="upload_image_button" type="button" value="<?php _e('Choose/Upload Image','dbem'); ?>" class="button-secondary" style="width:auto;" />
+	            <input id="upload_image_button" type="button" value="<?php _e('Choose/Upload Image','events-manager'); ?>" class="button-secondary" style="width:auto;" />
 	            <?php if( !empty($category_image) ): ?>
-	        	<input id="delete_image_button" type="button" value="<?php _e('Remove Image','dbem'); ?>" class="button-secondary" style="width:auto;" />
+	        	<input id="delete_image_button" type="button" value="<?php _e('Remove Image','events-manager'); ?>" class="button-secondary" style="width:auto;" />
 	        	<?php endif; ?>
 	            <br />
-	            <p class="description"><?php echo sprintf(__('Choose an image for your category, which can be displayed using the %s placeholder.','dbem'),'<code>#_CATEGORYIMAGE</code>'); ?></p>
+	            <p class="description"><?php echo sprintf(__('Choose an image for your category, which can be displayed using the %s placeholder.','events-manager'),'<code>#_CATEGORYIMAGE</code>'); ?></p>
 	        </td>
 	    </tr>
 	    <?php

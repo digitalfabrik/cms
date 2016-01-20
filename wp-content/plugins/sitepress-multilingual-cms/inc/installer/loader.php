@@ -3,7 +3,7 @@
 Plugin Name: Installer
 Plugin URI: http://wp-compatibility.com/installer-plugin/
 Description: Need help buying, installing and upgrading commercial themes and plugins? **Installer** handles all this for you, right from the WordPress admin. Installer lets you find themes and plugins from different sources, then, buy them from within the WordPress admin. Instead of manually uploading and unpacking, you'll see those themes and plugins available, just like any other plugin you're getting from WordPress.org.
-Version: 1.7.2
+Version: 1.7.3
 Author: OnTheGoSystems Inc.     
 Author URI: http://www.onthegosystems.com/
 */
@@ -28,7 +28,7 @@ $wp_installer_instance = dirname(__FILE__) . '/installer.php';
 global $wp_installer_instances;
 $wp_installer_instances[$wp_installer_instance] = array(
     'bootfile'  => $wp_installer_instance,
-    'version'   => '1.7.2'
+    'version'   => '1.7.3'
 );
 
 

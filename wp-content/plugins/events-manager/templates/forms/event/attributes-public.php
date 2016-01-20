@@ -6,7 +6,7 @@
 global $EM_Event;
 /* @var $EM_Event EM_Event */
 $attributes = em_get_attributes();
-$has_depreciated = false;
+$has_deprecated = false;
 ?>
 <?php if( count( $attributes['names'] ) > 0 ) : ?>
 	<?php foreach( $attributes['names'] as $name) : ?>

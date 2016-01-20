@@ -1,7 +1,7 @@
 <?php
 global $EM_Location;
 $attributes = em_get_attributes(true); //get Lattributes
-$has_depreciated = false;
+$has_deprecated = false;
 ?>
 <div id="location-attributes">
 	<?php if( !empty($attributes['names']) && count( $attributes['names'] ) > 0 ) : ?>
@@ -40,15 +40,15 @@ $has_depreciated = false;
 				}
 				if($count == 1){
 					?>
-					<tr><td colspan="2"><?php echo sprintf(__("You don't have any custom attributes defined in any of your Locations Manager template settings. Please add them the <a href='%s'>settings page</a>",'dbem'),EM_ADMIN_URL ."&amp;page=locations-manager-options"); ?></td></tr>
+					<tr><td colspan="2"><?php echo sprintf(__("You don't have any custom attributes defined in any of your Locations Manager template settings. Please add them the <a href='%s'>settings page</a>",'events-manager'),EM_ADMIN_URL ."&amp;page=locations-manager-options"); ?></td></tr>
 					<?php
 				}
 				?>
 			</tbody>
 		</table>
 		<?php if( count(array_diff(array_keys($EM_Location->location_attributes), $attributes['names'])) > 0 ): ?>
-		<p><strong><?php _e('Depreciated Attributes', 'dbem')?></strong></p>
-		<p><em><?php _e("If you see any attributes under here, that means they're not used in Locations Manager formats. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these depreciated attributes, give it a blank value and save.",'dbem') ?></em></p>
+		<p><strong><?php _e('Deprecated Attributes', 'events-manager')?></strong></p>
+		<p><em><?php _e("If you see any attributes under here, that means they're not used in Locations Manager formats. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these deprecated attributes, give it a blank value and save.",'events-manager') ?></em></p>
 		<table class="form-table">
 			<thead>
 				<tr valign="top">
@@ -80,7 +80,7 @@ $has_depreciated = false;
 		<?php endif; ?>
 	<?php else : ?>
 		<p>
-		<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings > General to add attribute placeholders.', 'dbem'); ?>
+		<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings > General to add attribute placeholders.', 'events-manager'); ?>
 		</p> 
 		<script>
 			jQuery(document).ready(function($){ $('#location_attributes').addClass('closed'); });

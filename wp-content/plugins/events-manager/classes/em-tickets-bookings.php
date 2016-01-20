@@ -66,8 +66,8 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			}
 		}
 		if( count($this->errors) > 0 ){
-			$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
-			$this->errors[] = __('There was a problem saving the booking.', 'dbem');
+			$this->feedback_message = __('There was a problem saving the booking.', 'events-manager');
+			$this->errors[] = __('There was a problem saving the booking.', 'events-manager');
 			return apply_filters('em_tickets_bookings_save', false, $this);
 		}
 		return apply_filters('em_tickets_bookings_save', true, $this);
@@ -162,7 +162,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 				if( $EM_Ticket_Booking->can_manage() ){
 					$tickets_bookings_ids[] = $EM_Ticket_Booking->booking_id;
 				}else{
-					$this->errors[] = sprintf(__('You do not have the rights to manage this %s.','dbem'),__('Booking','dbem'));					
+					$this->errors[] = sprintf(__('You do not have the rights to manage this %s.','events-manager'),__('Booking','events-manager'));					
 				}
 			}
 			if(count($ticket_ids) > 0){

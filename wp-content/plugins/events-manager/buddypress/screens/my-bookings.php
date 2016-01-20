@@ -33,7 +33,7 @@ function bp_em_my_bookings() {
 }
 
 function bp_em_my_bookings_title() {
-	_e( 'My Event Bookings', 'dbem' );
+	_e( 'My Event Bookings', 'events-manager');
 }
 
 function bp_em_my_bookings_content() {

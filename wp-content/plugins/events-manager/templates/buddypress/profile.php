@@ -4,7 +4,7 @@ global $bp, $EM_Notices;
 echo $EM_Notices;
 if( user_can($bp->displayed_user->id,'edit_events') ){
 	?>
-	<h4><?php _e('My Events', 'dbem'); ?></h4>
+	<h4><?php _e('My Events', 'events-manager'); ?></h4>
 	<?php
 	$args = array(
 		'owner'=>$bp->displayed_user->id, 
@@ -19,16 +19,16 @@ if( user_can($bp->displayed_user->id,'edit_events') ){
 		echo EM_Events::output($args);
 	}else{
 		?>
-		<p><?php _e('No Events', 'dbem'); ?>.
+		<p><?php _e('No Events', 'events-manager'); ?>.
 		<?php if( get_current_user_id() == $bp->displayed_user->id ): ?> 
-		<a href="<?php echo $bp->events->link . 'my-events/edit/'; ?>"><?php _e('Add Event','dbem'); ?></a>
+		<a href="<?php echo $bp->events->link . 'my-events/edit/'; ?>"><?php _e('Add Event','events-manager'); ?></a>
 		<?php endif; ?>
 		</p>
 		<?php
 	}
 }
 ?>
-<h4><?php _e("Events I'm Attending", 'dbem'); ?></h4>
+<h4><?php _e("Events I'm Attending", 'events-manager'); ?></h4>
 <?php
 $EM_Person = new EM_Person( $bp->displayed_user->id );
 $EM_Bookings = $EM_Person->get_bookings( false, apply_filters('em_bp_attending_status',1) );
@@ -41,6 +41,6 @@ if(count($EM_Bookings->bookings) > 0){
 	echo EM_Events::output(array('event'=>$event_ids));
 }else{
 	?>
-	<p><?php _e('Not attending any events yet.','dbem'); ?></p>
+	<p><?php _e('Not attending any events yet.','events-manager'); ?></p>
 	<?php
 }

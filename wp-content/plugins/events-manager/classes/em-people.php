@@ -22,7 +22,7 @@ class EM_People extends EM_Object {
 		        $EM_Booking->delete();
 		    }		    
 		}else{ //user is the no-user mode assigned user, so don't delete all the guest bookings, in case of mistake.
-			$wpdb->update(EM_BOOKINGS_TABLE, array('booking_status'=>3, 'person_id'=>0, 'booking_comment'=>__('User deleted by administrators','dbem')), array('person_id'=>$id));
+			$wpdb->update(EM_BOOKINGS_TABLE, array('booking_status'=>3, 'person_id'=>0, 'booking_comment'=>__('User deleted by administrators','events-manager')), array('person_id'=>$id));
 		}
 	}
 	
@@ -32,7 +32,7 @@ class EM_People extends EM_Object {
 	 * @return array
 	 */
 	public static function user_contactmethods($array){
-		$array['dbem_phone'] = __('Phone','dbem') . ' <span class="description">('. __('Events Manager','dbem') .')</span>';
+		$array['dbem_phone'] = __('Phone','events-manager') . ' <span class="description">('. __('Events Manager','events-manager') .')</span>';
 		return $array;
 	}	
 }

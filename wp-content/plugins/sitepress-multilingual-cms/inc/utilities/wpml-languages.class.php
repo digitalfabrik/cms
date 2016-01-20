@@ -13,9 +13,6 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	/** @var WPML_Query_Utils $query_utils */
 	private $query_utils;
 
-	/** @var  WPML_WP_API $wp_api */
-	private $wp_api;
-
 	/**
 	 * @param WPML_Term_Translation $term_translation
 	 * @param SitePress             $sitepress
@@ -23,11 +20,8 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	 */
 	public function __construct( &$term_translation, &$sitepress, &$post_translation ) {
 		parent::__construct( $post_translation, $sitepress );
-		$this->term_translation = $term_translation;
-		$this->sitepress        = $sitepress;
-		$this->post_translation = $post_translation;
+		$this->term_translation = &$term_translation;
 		$this->query_utils      = $sitepress->get_query_utils();
-		$this->wp_api           = $sitepress->get_wp_api();
 	}
 
 	/**
@@ -59,11 +53,11 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 			$trid         = $this->post_translation->get_element_trid( $wp_query->get_queried_object_id() );
 			$translations = $this->sitepress->get_element_translations( $trid, 'post_attachment' );
 		} elseif ( $wp_query->is_page()
-		           || ( 'page' === $this->wp_api->get_option( 'show_on_front' )
+		           || ( 'page' === $this->sitepress->get_wp_api()->get_option( 'show_on_front' )
 		                && ( isset( $saved_query->queried_object_id )
-		                     && $saved_query->queried_object_id == $this->wp_api->get_option( 'page_on_front' )
+		                     && $saved_query->queried_object_id == $this->sitepress->get_wp_api()->get_option( 'page_on_front' )
 		                     || ( isset( $saved_query->queried_object_id )
-		                          && $saved_query->queried_object_id == $this->wp_api->get_option( 'page_for_posts' ) ) ) )
+		                          && $saved_query->queried_object_id == $this->sitepress->get_wp_api()->get_option( 'page_for_posts' ) ) ) )
 		) {
 			$trid         = $this->sitepress->get_element_trid( $wp_query->get_queried_object_id(), 'post_page' );
 			$translations = $this->sitepress->get_element_translations( $trid, 'post_page' );
@@ -90,7 +84,7 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 		if ( isset( $translations[ $lang['code'] ] ) ) {
 			// force  the taxonomy id adjustment to not modify this
 			$taxonomy                     = is_category() ? 'category' : ( is_tag() ? 'post_tag' : get_query_var( 'taxonomy' ) );
-			$lang['translated_url']       = $this->wp_api->get_term_link( (int) $translations[ $lang['code'] ]->term_id,
+			$lang['translated_url']       = $this->sitepress->get_wp_api()->get_term_link( (int) $translations[ $lang['code'] ]->term_id,
 			                                                              $taxonomy );
 			$lang['missing']              = 0;
 		} else {
@@ -111,7 +105,7 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	public function add_author_url_to_ls_lang( $lang, $author_data, $icl_lso_link_empty, $skip_lang ) {
 		$post_type = get_query_var( 'post_type' ) ? get_query_var( 'post_type' ) : 'post';
 		if ( $this->query_utils->author_query_has_posts( $post_type, $author_data, $lang['code'] ) ) {
-			$lang['translated_url'] = $this->sitepress->convert_url( $this->wp_api->get_author_posts_url( $author_data->ID ),
+			$lang['translated_url'] = $this->sitepress->convert_url( $this->sitepress->get_wp_api()->get_author_posts_url( $author_data->ID ),
 			                                                         $lang['code'] );
 			$lang['missing']        = 0;
 		} else {
@@ -141,21 +135,21 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 		                                                                            null,
 		                                                                            $post_type )
 		) {
-			$date_archive_url = $this->wp_api->get_year_link( $year );
+			$date_archive_url = $this->sitepress->get_wp_api()->get_year_link( $year );
 		} elseif ( $current_query->is_month() && $this->query_utils->archive_query_has_posts( $lang_code,
 		                                                                                   $year,
 		                                                                                   $month,
 		                                                                                   null,
 		                                                                                   $post_type )
 		) {
-			$date_archive_url = $this->wp_api->get_month_link( $year, $month );
+			$date_archive_url = $this->sitepress->get_wp_api()->get_month_link( $year, $month );
 		} elseif ( $current_query->is_day() && $this->query_utils->archive_query_has_posts( $lang_code, $year, $month, $day, $post_type ) ) {
-			$date_archive_url = $this->wp_api->get_day_link( $year, $month, $day );
+			$date_archive_url = $this->sitepress->get_wp_api()->get_day_link( $year, $month, $day );
 		} else if ( ! empty( $current_query->query_vars['post_type'] ) ) {
 			$override     = ! $this->sitepress->is_translated_post_type( $post_type );
 			$mark_missing = true;
 			if ( ! $override && $this->query_utils->archive_query_has_posts( $lang_code, null, null, null, $post_type ) ) {
-				$url                    = $this->sitepress->convert_url( $this->wp_api->get_post_type_archive_link( $post_type ), $lang_code );
+				$url                    = $this->sitepress->convert_url( $this->sitepress->get_wp_api()->get_post_type_archive_link( $post_type ), $lang_code );
 				$lang['translated_url'] = $this->sitepress->adjust_cpt_in_url( $url, $post_type, $lang_code );
 				$mark_missing           = false;
 			}

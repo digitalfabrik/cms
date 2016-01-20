@@ -103,7 +103,7 @@ class EM_Location extends EM_Object {
 	function __construct($id = false,  $search_by = 'location_id' ) {
 		global $wpdb;
 		//Initialize
-		$this->required_fields = array("location_address" => __('The location address', 'dbem'), "location_town" => __('The location town', 'dbem'), "location_country" => __('The country', 'dbem'));
+		$this->required_fields = array("location_address" => __('The location address', 'events-manager'), "location_town" => __('The location town', 'events-manager'), "location_country" => __('The country', 'events-manager'));
 		//Get the post_id/location_id
 		$is_post = !empty($id->ID) && $id->post_type == EM_POST_TYPE_LOCATION;
 		if( $is_post || absint($id) > 0 ){ //only load info if $id is a number
@@ -254,7 +254,7 @@ class EM_Location extends EM_Object {
 		$validate_post = true;
 		if( empty($this->location_name) ){
 			$validate_post = false;
-			$this->add_error( __('Location name','dbem').__(" is required.", "dbem") );
+			$this->add_error( __('Location name','events-manager').__(" is required.", 'events-manager') );
 		}
 		$validate_image = $this->image_validate();
 		$validate_meta = $this->validate_meta();
@@ -270,9 +270,9 @@ class EM_Location extends EM_Object {
 		foreach ( $this->required_fields as $field => $description) {
 			if( $field == 'location_country' && !array_key_exists($this->location_country, em_get_countries()) ){ 
 				//country specific checking
-				$this->add_error( $this->required_fields['location_country'].__(" is required.", "dbem") );				
+				$this->add_error( $this->required_fields['location_country'].__(" is required.", 'events-manager') );				
 			}elseif ( $this->$field == "" ) {
-				$this->add_error( $description.__(" is required.", "dbem") );
+				$this->add_error( $description.__(" is required.", 'events-manager') );
 			}
 		}
 		return apply_filters('em_location_validate_meta', ( count($this->errors) == 0 ), $this);
@@ -393,25 +393,25 @@ class EM_Location extends EM_Object {
 			if( empty($this->location_id) || !$loc_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				if ( !$wpdb->insert(EM_LOCATIONS_TABLE, $location_array) ){
-					$this->add_error( sprintf(__('Something went wrong saving your %s to the index table. Please inform a site administrator about this.','dbem'),__('location','dbem')));
+					$this->add_error( sprintf(__('Something went wrong saving your %s to the index table. Please inform a site administrator about this.','events-manager'),__('location','events-manager')));
 				}else{
 					//success, so link the event with the post via an event id meta value for easy retrieval
 					$this->location_id = $wpdb->insert_id;
 					update_post_meta($this->post_id, '_location_id', $this->location_id);
-					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Location','dbem'));
+					$this->feedback_message = sprintf(__('Successfully saved %s','events-manager'),__('Location','events-manager'));
 				}	
 			}else{
 				$this->get_previous_status();
 				if ( $wpdb->update(EM_LOCATIONS_TABLE, $location_array, array('location_id'=>$this->location_id)) === false ){
-					$this->add_error( sprintf(__('Something went wrong updating your %s to the index table. Please inform a site administrator about this.','dbem'),__('location','dbem')));			
+					$this->add_error( sprintf(__('Something went wrong updating your %s to the index table. Please inform a site administrator about this.','events-manager'),__('location','events-manager')));			
 				}else{
-					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Location','dbem'));
+					$this->feedback_message = sprintf(__('Successfully saved %s','events-manager'),__('Location','events-manager'));
 					//Also set the status here if status != previous status
 					if( $this->previous_status != $this->get_status() ) $this->set_status($this->get_status());
 				}
 			}
 		}else{
-			$this->add_error( sprintf(__('You do not have permission to create/edit %s.','dbem'), __('locations','dbem')) );
+			$this->add_error( sprintf(__('You do not have permission to create/edit %s.','events-manager'), __('locations','events-manager')) );
 		}
 		$this->compat_keys();
 		return apply_filters('em_location_save_meta', count($this->errors) == 0, $this);
@@ -867,7 +867,7 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONEDITLINK':
 				    if( $this->can_manage('edit_locations','edit_others_locations') ){
 						$link = esc_url($this->get_edit_url());
-						$replace = ($result == '#_LOCATIONEDITURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->location_name).'">'.esc_html(sprintf(__('Edit Location','dbem'))).'</a>';
+						$replace = ($result == '#_LOCATIONEDITURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->location_name).'">'.esc_html(sprintf(__('Edit Location','events-manager'))).'</a>';
 				    }
 					break;
 				case '#_LOCATIONICALURL':
@@ -891,7 +891,7 @@ class EM_Location extends EM_Object {
 				case '#_ALLEVENTS': //Depricated
 				case '#_LOCATIONALLEVENTS':
 					//TODO: add limit to lists of events
-					//convert depreciated placeholders for compatability
+					//convert deprecated placeholders for compatability
 					$result = ($result == '#_PASTEVENTS') ? '#_LOCATIONPASTEVENTS':$result; 
 					$result = ($result == '#_NEXTEVENTS') ? '#_LOCATIONNEXTEVENTS':$result;
 					$result = ($result == '#_ALLEVENTS') ? '#_LOCATIONALLEVENTS':$result;

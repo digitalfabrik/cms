@@ -27,7 +27,7 @@
 	<?php
 	if (empty ( $EM_Events )) {
 		// TODO localize
-		echo "<p>". __( 'No Events','dbem' ) ."</p>";
+		echo "<p>". __( 'No Events','events-manager') ."</p>";
 	} else {
 	?>
 			
@@ -39,10 +39,10 @@
 					<input class='select-all' type="checkbox" value='1' />
 				</th>
 				*/ ?>
-				<th><?php _e ( 'Name', 'dbem' ); ?></th>
+				<th><?php _e ( 'Name', 'events-manager'); ?></th>
 				<th>&nbsp;</th>
-				<th><?php _e ( 'Location', 'dbem' ); ?></th>
-				<th colspan="2"><?php _e ( 'Date and time', 'dbem' ); ?></th>
+				<th><?php _e ( 'Location', 'events-manager'); ?></th>
+				<th colspan="2"><?php _e ( 'Date and time', 'events-manager'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -83,28 +83,28 @@
 							if( $event->can_manage('manage_bookings','manage_others_bookings') && get_option('dbem_rsvp_enabled') == 1 && $event->event_rsvp == 1 ){
 								?>
 								<br/>
-								<a href="<?php echo esc_url($event->get_bookings_url()); ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
-								<?php _e("Booked",'dbem'); ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces(); ?>
+								<a href="<?php echo esc_url($event->get_bookings_url()); ?>"><?php echo __("Bookings",'events-manager'); ?></a> &ndash;
+								<?php _e("Booked",'events-manager'); ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces(); ?>
 								<?php if( get_option('dbem_bookings_approval') == 1 ): ?>
-									| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
+									| <?php _e("Pending",'events-manager') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
 								<?php endif;
 							}
 							?>
 							<div class="row-actions">
 								<?php if( current_user_can('delete_events')) : ?>
-								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->event_id ?>" class="em-event-delete"><?php _e('Delete','dbem'); ?></a></span>
+								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->event_id ?>" class="em-event-delete"><?php _e('Delete','events-manager'); ?></a></span>
 								<?php endif; ?>
 							</div>
 						</td>
 						<td>
-							<a href="<?php echo $url ?>edit/?action=event_duplicate&amp;event_id=<?php echo $event->event_id ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+							<a href="<?php echo $url ?>edit/?action=event_duplicate&amp;event_id=<?php echo $event->event_id ?>" title="<?php _e ( 'Duplicate this event', 'events-manager'); ?>">
 								<strong>+</strong>
 							</a>
 						</td>
 						<td>
 							<?php echo $location_summary; ?>
 							<?php if( is_object($category) && !empty($category->name) ) : ?>
-							<br/><span class="category"><strong><?php _e( 'Category', 'dbem' ); ?>: </strong><?php echo $category->name ?></span>
+							<br/><span class="category"><strong><?php _e( 'Category', 'events-manager'); ?>: </strong><?php echo $category->name ?></span>
 							<?php endif; ?>
 						</td>
 				
@@ -123,13 +123,13 @@
 						<td>
 							<?php 
 							if ( $event->is_recurrence() && $event->can_manage('edit_events','edit_others_events') ) {
-								$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','dbem');
+								$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','events-manager');
 								?>
 								<strong>
 								<?php echo $event->get_recurrence_description(); ?> <br />
-								<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Edit Recurring Events', 'dbem' ); ?></a>
+								<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Edit Recurring Events', 'events-manager'); ?></a>
 								<?php if( current_user_can('delete_events')) : ?>
-								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->event_id ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
+								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->event_id ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','events-manager'); ?></a></span>
 								<?php endif; ?>										
 								</strong>
 								<?php

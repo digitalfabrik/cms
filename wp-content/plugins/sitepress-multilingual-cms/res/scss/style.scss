@@ -760,6 +760,21 @@ img.icl_als_iclflag {
 	}
 }
 
+.icl_tm_wrap {
+	padding:          10px;
+	border:           1px solid #CCCCCC;
+	background-color: #ffffff;
+	clear: both;
+
+	.form-table {
+		border-collapse: separate;
+		td, th {
+			padding: 10px;
+			border:  none;
+		}
+	}
+}
+
 .wpml-section-content-inner {
 	&:before, &:after {
 		display: table;

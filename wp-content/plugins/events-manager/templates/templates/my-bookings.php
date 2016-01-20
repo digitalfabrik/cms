@@ -36,10 +36,10 @@
 				<table id='dbem-bookings-table' class='widefat post fixed'>
 					<thead>
 						<tr>
-							<th class='manage-column' scope='col'><?php _e('Event', 'dbem'); ?></th>
-							<th class='manage-column' scope='col'><?php _e('Date', 'dbem'); ?></th>
-							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
-							<th class='manage-column' scope='col'><?php _e('Status', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Event', 'events-manager'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Date', 'events-manager'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'events-manager'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Status', 'events-manager'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>
@@ -66,7 +66,7 @@
 										$cancel_link = '';
 										if( !in_array($EM_Booking->booking_status, array(2,3)) && get_option('dbem_bookings_user_cancellation') && $EM_Event->get_bookings()->has_open_time() ){
 											$cancel_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'booking_cancel', 'booking_id'=>$EM_Booking->booking_id, '_wpnonce'=>$nonce));
-											$cancel_link = '<a class="em-bookings-cancel" href="'.$cancel_url.'" onclick="if( !confirm(EM.booking_warning_cancel) ){ return false; }">'.__('Cancel','dbem').'</a>';
+											$cancel_link = '<a class="em-bookings-cancel" href="'.$cancel_url.'" onclick="if( !confirm(EM.booking_warning_cancel) ){ return false; }">'.__('Cancel','events-manager').'</a>';
 										}
 										echo apply_filters('em_my_bookings_booking_actions', $cancel_link, $EM_Booking);
 										?>
@@ -82,7 +82,7 @@
 				</table>
 				</div>
 				<?php else: ?>
-					<?php _e('You do not have any bookings.', 'dbem'); ?>
+					<?php _e('You do not have any bookings.', 'events-manager'); ?>
 				<?php endif; ?>
 			<?php if( !empty($bookings_nav) && $bookings_count >= $limit ) : ?>
 			<div class='tablenav'>
@@ -93,5 +93,5 @@
 		</div>
 		<?php do_action('em_template_my_bookings_footer', $EM_Bookings); ?>
 <?php else: ?>
-	<p><?php echo sprintf(__('Please <a href="%s">Log In</a> to view your bookings.','dbem'),site_url('wp-login.php?redirect_to=' . urlencode(get_permalink()), 'login'))?></p>
+	<p><?php echo sprintf(__('Please <a href="%s">Log In</a> to view your bookings.','events-manager'),site_url('wp-login.php?redirect_to=' . urlencode(get_permalink()), 'login'))?></p>
 <?php endif; ?>

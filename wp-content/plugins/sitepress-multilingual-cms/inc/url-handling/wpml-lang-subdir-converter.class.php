@@ -4,8 +4,15 @@ class WPML_Lang_Subdir_Converter extends WPML_URL_Converter {
 
 	private $dir_default;
 
-	public function __construct( $dir_default, $default_language, $hidden_languages ) {
-		parent::__construct ( $default_language, $hidden_languages );
+	/**
+	 * WPML_Lang_Subdir_Converter constructor.
+	 *
+	 * @param string $dir_default
+	 * @param string $default_language
+	 * @param array  $hidden_languages
+	 */
+	public function __construct( $dir_default, $default_language, $hidden_languages, &$wpml_wp_api ) {
+		parent::__construct ( $default_language, $hidden_languages, $wpml_wp_api );
 		$this->dir_default = $dir_default;
 	}
 
@@ -60,11 +67,5 @@ class WPML_Lang_Subdir_Converter extends WPML_URL_Converter {
 		$source_url = str_replace( '/' . $code . '//', '/' . $code . '/', $source_url );
 
 		return untrailingslashit( $source_url );
-	}
-
-	public function get_admin_ajax_url( $url ) {
-		global $sitepress;
-
-		return add_query_arg( array( 'lang' => $sitepress->get_current_language() ), $url );
 	}
 }

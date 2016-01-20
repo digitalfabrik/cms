@@ -7,9 +7,9 @@ class WPML_TM_Requirements {
 	public function __construct() {
 		$this->missing     = array();
 		$this->missing_one = false;
-		$this->missing_php_extensions();
 		add_action( 'admin_notices', array( $this, 'missing_plugins_warning' ) );
 		add_action( 'plugins_loaded', array( $this, 'plugins_loaded_action' ), 999999 );
+		add_action( 'wpml_loaded', array( $this, 'missing_php_extensions' ) );
 	}
 
 	private function check_required_plugins() {
@@ -33,7 +33,7 @@ class WPML_TM_Requirements {
 		}
 	}
 
-	private function missing_php_extensions() {
+	public function missing_php_extensions() {
 		$extensions = array();
 		if ( ini_get( 'allow_url_fopen' ) !== '1' ) {
 			$extensions['allow_url_fopen'] = array(
@@ -49,8 +49,10 @@ class WPML_TM_Requirements {
 			);
 		}
 
-		if ( class_exists( 'ICL_AdminNotifier' ) && ( !defined( 'ICL_HIDE_TRANSLATION_SERVICES' ) || !ICL_HIDE_TRANSLATION_SERVICES ) ) {
+		if ( ! defined( 'ICL_HIDE_TRANSLATION_SERVICES' ) || ! ICL_HIDE_TRANSLATION_SERVICES ) {
+			
 			$wpml_wp_api_check = new WPML_WP_API();
+			
 			if ( count($extensions) > 0 && $wpml_wp_api_check->is_tm_page() ) {
 				$message = '';
 				$message .= '<p>';
