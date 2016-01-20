@@ -50,11 +50,9 @@ class WPML_Dashboard_Ajax {
 
 		global $sitepress;
 
-		$post_ids  = filter_var( $_POST['duplicate_post_ids'],FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
+		$post_ids  = filter_var( $_POST['duplicate_post_ids'], FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 		$languages = filter_var( $_POST['duplicate_target_languages'], FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
-
 		$res       = array();
-
 		foreach ( $post_ids as $pid ) {
 			foreach ( $languages as $lang_code ) {
 				if ( $sitepress->make_duplicate( $pid, $lang_code ) !== false ) {

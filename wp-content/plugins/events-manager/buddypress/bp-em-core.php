@@ -9,7 +9,7 @@ class BP_EM_Component extends BP_Component {
 	
 	function __construct() {
 		global $bp;
-		parent::start('events',	__('Events', 'dbem'), EM_DIR);
+		parent::start('events',	__('Events', 'events-manager'), EM_DIR);
 		$this->includes();
 		//TODO make BP component optional
 		$bp->active_components[$this->id] = '1';
@@ -50,7 +50,7 @@ class BP_EM_Component extends BP_Component {
 			'slug'                  => BP_EM_SLUG,
 			'has_directory'         => false, //already done by EM
 			'notification_callback' => 'bp_em_format_notifications',
-			'search_string'         => sprintf(__( 'Search %s...', 'dbem' ),__('Events','dbem')),
+			'search_string'         => sprintf(__( 'Search %s...', 'events-manager'),__('Events','events-manager')),
 		);
 
 		// Let BP_Component::setup_globals() do its work.
@@ -78,7 +78,7 @@ class BP_EM_Component extends BP_Component {
 		}
 		/* Add 'Events' to the main user profile navigation */
 		$main_nav = array(
-			'name' => __( 'Events', 'dbem' ),
+			'name' => __( 'Events', 'events-manager'),
 			'slug' => em_bp_get_slug(),
 			'position' => 80,
 			'screen_function' => 'bp_em_events',
@@ -89,7 +89,7 @@ class BP_EM_Component extends BP_Component {
 		
 		/* Create SubNav Items */
 		$sub_nav[] = array(
-			'name' => __( 'My Profile', 'dbem' ),
+			'name' => __( 'My Profile', 'events-manager'),
 			'slug' => 'profile',
 			'parent_slug' => em_bp_get_slug(),
 			'parent_url' => $em_link,
@@ -98,7 +98,7 @@ class BP_EM_Component extends BP_Component {
 		);
 		
 		$sub_nav[] = array(
-			'name' => __( 'Events I\'m Attending', 'dbem' ),
+			'name' => __( 'Events I\'m Attending', 'events-manager'),
 			'slug' => 'attending',
 			'parent_slug' => em_bp_get_slug(),
 			'parent_url' => $em_link,
@@ -109,7 +109,7 @@ class BP_EM_Component extends BP_Component {
 	
 		if( $can_manage_events ){
 			$sub_nav[] = array(
-				'name' => __( 'My Events', 'dbem' ),
+				'name' => __( 'My Events', 'events-manager'),
 				'slug' => 'my-events',
 				'parent_slug' => em_bp_get_slug(),
 				'parent_url' => $em_link,
@@ -121,7 +121,7 @@ class BP_EM_Component extends BP_Component {
 		
 		if( $can_manage_locations && get_option('dbem_locations_enabled') ){
 			$sub_nav[] = array(
-				'name' => __( 'My Locations', 'dbem' ),
+				'name' => __( 'My Locations', 'events-manager'),
 				'slug' => 'my-locations',
 				'parent_slug' => em_bp_get_slug(),
 				'parent_url' => $em_link,
@@ -133,7 +133,7 @@ class BP_EM_Component extends BP_Component {
 		
 		if( $can_manage_bookings && get_option('dbem_rsvp_enabled') ){
 			$sub_nav[] = array(
-				'name' => __( 'My Event Bookings', 'dbem' ),
+				'name' => __( 'My Event Bookings', 'events-manager'),
 				'slug' => 'my-bookings',
 				'parent_slug' => em_bp_get_slug(),
 				'parent_url' => $em_link,
@@ -146,7 +146,7 @@ class BP_EM_Component extends BP_Component {
 		if( bp_is_active('groups') ){
 			/* Create Profile Group Sub-Nav */
 			$sub_nav[] = array(
-				'name' => __( 'Events', 'dbem' ),
+				'name' => __( 'Events', 'events-manager'),
 				'slug' => 'group-events',
 				'parent_slug' => bp_get_groups_slug(),
 				'parent_url' =>trailingslashit( bp_displayed_user_domain() . bp_get_groups_slug() ),
@@ -189,7 +189,7 @@ class BP_EM_Component extends BP_Component {
 			$wp_admin_nav[] = array(
 				'parent' => $bp->my_account_menu_id,
 				'id'     => 'my-em-' . $this->id,
-				'title'  => __( 'Events', 'dbem' ),
+				'title'  => __( 'Events', 'events-manager'),
 				'href'   => $em_link
 			);
 			
@@ -197,14 +197,14 @@ class BP_EM_Component extends BP_Component {
 			$wp_admin_nav[] = array(
 				'parent' => 'my-em-' . $this->id,
 				'id'     => 'my-em-' . $this->id .'-profile',
-				'title'  => __( 'My Profile', 'dbem' ),
+				'title'  => __( 'My Profile', 'events-manager'),
 				'href'   => $em_link.'profile/'
 			);
 			
 			$wp_admin_nav[] = array(
 				'parent' => 'my-em-' . $this->id,
 				'id'     => 'my-em-' . $this->id .'-attending',
-				'title'  => __( 'Events I\'m Attending', 'dbem' ),
+				'title'  => __( 'Events I\'m Attending', 'events-manager'),
 				'href'   => $em_link.'attending/'
 			);
 			
@@ -212,7 +212,7 @@ class BP_EM_Component extends BP_Component {
 				$wp_admin_nav[] = array(
 					'parent' => 'my-em-' . $this->id,
 					'id'     => 'my-em-' . $this->id .'-my-events',
-					'title'  => __( 'My Events', 'dbem' ),
+					'title'  => __( 'My Events', 'events-manager'),
 					'href'   => $em_link.'my-events/'
 				);
 			}
@@ -221,7 +221,7 @@ class BP_EM_Component extends BP_Component {
 				$wp_admin_nav[] = array(
 					'parent' => 'my-em-' . $this->id,
 					'id'     => 'my-em-' . $this->id .'-my-locations',
-					'title'  => __( 'My Locations', 'dbem' ),
+					'title'  => __( 'My Locations', 'events-manager'),
 					'href'   => $em_link.'my-locations/'
 				);
 			}
@@ -230,7 +230,7 @@ class BP_EM_Component extends BP_Component {
 				$wp_admin_nav[] = array(
 					'parent' => 'my-em-' . $this->id,
 					'id'     => 'my-em-' . $this->id .'-my-bookings',
-					'title'  => __( 'My Event Bookings', 'dbem' ),
+					'title'  => __( 'My Event Bookings', 'events-manager'),
 					'href'   => $em_link.'my-bookings/'
 				);
 			}
@@ -240,7 +240,7 @@ class BP_EM_Component extends BP_Component {
 				$wp_admin_nav[] = array(
 					'parent' => 'my-account-groups',
 					'id'     => 'my-account-groups-' . $this->id ,
-					'title'  => __( 'Events', 'dbem' ),
+					'title'  => __( 'Events', 'events-manager'),
 					'href'   => trailingslashit( bp_loggedin_user_domain() . bp_get_groups_slug() ) . 'group-events/'
 				);
 			}			
@@ -262,7 +262,7 @@ class BP_EM_Component extends BP_Component {
 				if( empty($count) ) $count = 0;
 			}
 			bp_core_new_subnav_item( array( 
-				'name' => __( 'Events', 'dbem' ) . " <span>$count</span>",
+				'name' => __( 'Events', 'events-manager') . " <span>$count</span>",
 				'slug' => 'events', 
 				'parent_url' => $group_link, 
 				'parent_slug' => $bp->groups->current_group->slug,

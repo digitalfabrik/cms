@@ -112,7 +112,7 @@ class EM_Event_Posts_Admin{
 			$views['all'] = str_replace('edit.php?', 'edit.php?scope=all&', $views['all'] );
 			//merge new custom status into views
 			$old_views = $views;
-			$views = array('em_future' => "<a href='edit.php?post_type=$post_type'$class>" . sprintf( _nx( 'Future <span class="count">(%s)</span>', 'Future <span class="count">(%s)</span>', $num_posts->em_future, 'events', 'dbem' ), number_format_i18n( $num_posts->em_future ) ) . '</a>');
+			$views = array('em_future' => "<a href='edit.php?post_type=$post_type'$class>" . sprintf( _nx( 'Future <span class="count">(%s)</span>', 'Future <span class="count">(%s)</span>', $num_posts->em_future, 'events', 'events-manager'), number_format_i18n( $num_posts->em_future ) ) . '</a>');
 			$views = array_merge($views, $old_views);
 		}
 		
@@ -163,17 +163,17 @@ class EM_Event_Posts_Admin{
 		if( array_key_exists('cb', $columns) ){
 			$cb = $columns['cb'];
 	    	unset($columns['cb']);
-	    	$id_array = array('cb'=>$cb, 'event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+	    	$id_array = array('cb'=>$cb, 'event-id' => sprintf(__('%s ID','events-manager'),__('Event','events-manager')));
 		}else{
-	    	$id_array = array('event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+	    	$id_array = array('event-id' => sprintf(__('%s ID','events-manager'),__('Event','events-manager')));
 		}
 	    unset($columns['comments']);
 	    unset($columns['date']);
 	    unset($columns['author']);
 	    $columns = array_merge($id_array, $columns, array(
-	    	'location' => __('Location','dbem'),
-	    	'date-time' => __('Date and Time','dbem'),
-	    	'author' => __('Owner','dbem'),
+	    	'location' => __('Location','events-manager'),
+	    	'date-time' => __('Date and Time','events-manager'),
+	    	'author' => __('Owner','events-manager'),
 	    	'extra' => ''
 	    ));
 	    if( !get_option('dbem_locations_enabled') ){
@@ -196,7 +196,7 @@ class EM_Event_Posts_Admin{
 				if( !empty($EM_Location->location_id) ){
 					echo "<strong>" . $EM_Location->location_name . "</strong><br/>" . $EM_Location->location_address . " - " . $EM_Location->location_town;
 				}else{
-					echo __('None','dbem');
+					echo __('None','events-manager');
 				}
 				break;
 			case 'date-time':
@@ -215,21 +215,21 @@ class EM_Event_Posts_Admin{
 			case 'extra':
 				if( get_option('dbem_rsvp_enabled') == 1 && !empty($EM_Event->event_rsvp) && $EM_Event->can_manage('manage_bookings','manage_others_bookings')){
 					?>
-					<a href="<?php echo $EM_Event->get_bookings_url(); ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
-					<?php _e("Booked",'dbem'); ?>: <?php echo $EM_Event->get_bookings()->get_booked_spaces()."/".$EM_Event->get_spaces(); ?>
+					<a href="<?php echo $EM_Event->get_bookings_url(); ?>"><?php echo __("Bookings",'events-manager'); ?></a> &ndash;
+					<?php _e("Booked",'events-manager'); ?>: <?php echo $EM_Event->get_bookings()->get_booked_spaces()."/".$EM_Event->get_spaces(); ?>
 					<?php if( get_option('dbem_bookings_approval') == 1 ): ?>
-						| <?php _e("Pending",'dbem') ?>: <?php echo $EM_Event->get_bookings()->get_pending_spaces(); ?>
+						| <?php _e("Pending",'events-manager') ?>: <?php echo $EM_Event->get_bookings()->get_pending_spaces(); ?>
 					<?php endif;
 					echo ($EM_Event->is_recurrence()) ? '<br />':'';
 				}
 				if ( $EM_Event->is_recurrence() && $EM_Event->can_manage('edit_recurring_events','edit_others_recurring_events') ) {
-					$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','dbem');
+					$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','events-manager');
 					?>
 					<strong>
 					<?php echo $EM_Event->get_recurrence_description(); ?> <br />
 					</strong>
 					<div class="row-actions">
-						<a href="<?php echo admin_url(); ?>post.php?action=edit&amp;post=<?php echo $EM_Event->get_event_recurrence()->post_id ?>"><?php _e ( 'Edit Recurring Events', 'dbem' ); ?></a> | <span class="trash"><a class="em-delete-recurrence-link" href="<?php echo get_delete_post_link($EM_Event->get_event_recurrence()->post_id); ?>"><?php _e('Delete','dbem'); ?></a></span> | <a class="em-detach-link" href="<?php echo $EM_Event->get_detach_url(); ?>"><?php _e('Detach', 'dbem'); ?></a>
+						<a href="<?php echo admin_url(); ?>post.php?action=edit&amp;post=<?php echo $EM_Event->get_event_recurrence()->post_id ?>"><?php _e ( 'Edit Recurring Events', 'events-manager'); ?></a> | <span class="trash"><a class="em-delete-recurrence-link" href="<?php echo get_delete_post_link($EM_Event->get_event_recurrence()->post_id); ?>"><?php _e('Delete','events-manager'); ?></a></span> | <a class="em-detach-link" href="<?php echo $EM_Event->get_detach_url(); ?>"><?php _e('Detach', 'events-manager'); ?></a>
 					</div>
 					<?php
 				}
@@ -242,7 +242,7 @@ class EM_Event_Posts_Admin{
 		if($post->post_type == EM_POST_TYPE_EVENT){
 			global $post, $EM_Event;
 			$EM_Event = em_get_event($post, 'post_id');
-			$actions['duplicate'] = '<a href="'.$EM_Event->duplicate_url().'" title="'.sprintf(__('Duplicate %s','dbem'), __('Event','dbem')).'">'.__('Duplicate','dbem').'</a>';
+			$actions['duplicate'] = '<a href="'.$EM_Event->duplicate_url().'" title="'.sprintf(__('Duplicate %s','events-manager'), __('Event','events-manager')).'">'.__('Duplicate','events-manager').'</a>';
 		}
 		return $actions;
 	}
@@ -274,7 +274,7 @@ class EM_Event_Recurring_Posts_Admin{
 	}
 	
 	public static function admin_notices(){
-		$warning = sprintf(__( 'Modifications to these events will cause all recurrences of each event to be deleted and recreated and previous bookings will be deleted! You can edit individual recurrences and detach them from recurring events by visiting the <a href="%s">events page</a>.', 'dbem' ), admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT);
+		$warning = sprintf(__( 'Modifications to these events will cause all recurrences of each event to be deleted and recreated and previous bookings will be deleted! You can edit individual recurrences and detach them from recurring events by visiting the <a href="%s">events page</a>.', 'events-manager'), admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT);
 		?><div class="updated"><p><?php echo $warning; ?></p></div><?php
 	}
 	
@@ -300,17 +300,17 @@ class EM_Event_Recurring_Posts_Admin{
 		if( array_key_exists('cb', $columns) ){
 			$cb = $columns['cb'];
 	    	unset($columns['cb']);
-	    	$id_array = array('cb'=>$cb, 'event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+	    	$id_array = array('cb'=>$cb, 'event-id' => sprintf(__('%s ID','events-manager'),__('Event','events-manager')));
 		}else{
-	    	$id_array = array('event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+	    	$id_array = array('event-id' => sprintf(__('%s ID','events-manager'),__('Event','events-manager')));
 		}
 	    unset($columns['comments']);
 	    unset($columns['date']);
 	    unset($columns['author']);
 	    return array_merge($id_array, $columns, array(
-	    	'location' => __('Location','dbem'),
-	    	'date-time' => __('Date and Time','dbem'),
-	    	'author' => __('Owner','dbem'),
+	    	'location' => __('Location','events-manager'),
+	    	'date-time' => __('Date and Time','events-manager'),
+	    	'author' => __('Owner','events-manager'),
 	    ));
 	}
 
@@ -330,7 +330,7 @@ class EM_Event_Recurring_Posts_Admin{
 					if( !empty($EM_Location->location_id) ){
 						echo "<strong>" . $EM_Location->location_name . "</strong><br/>" . $EM_Location->location_address . " - " . $EM_Location->location_town;
 					}else{
-						echo __('None','dbem');
+						echo __('None','events-manager');
 					}
 					break;
 				case 'date-time':

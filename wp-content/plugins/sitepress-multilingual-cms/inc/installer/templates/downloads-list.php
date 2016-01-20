@@ -33,7 +33,7 @@
                                         );
                                     ?>
                                     <input type="checkbox" name="downloads[]" value="<?php echo base64_encode(json_encode($download_data)); ?>" <?php 
-                                        if($this->plugin_is_installed($download['name'], $download['slug'], $download['version']) && !$this->plugin_is_embedded_version($download['name'], $download['slug']) || !WP_Installer()->is_uploading_allowed()): ?>disabled="disabled"<?php endif; ?> />&nbsp;
+                                        if($this->plugin_is_installed($download['name'], $download['slug'], $download['version']) && !$this->plugin_is_embedded_version($download['name'], $download['slug']) || WP_Installer()->dependencies->cant_download($repository_id) ): ?>disabled="disabled"<?php endif; ?> />&nbsp;
                                         
                                     </label>                                
                                 </td>
@@ -65,11 +65,12 @@
                     <br />
 
                     <div class="installer-error-box">
-                    <?php if(!WP_Installer()->is_uploading_allowed()): ?>
-                        <p>
-                        <?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'), '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?>                    
-                        </p>
-                    <?php endif;?>                            
+                    <?php if( !WP_Installer()->dependencies->is_uploading_allowed() ): ?>
+                        <p><?php printf(__('Downloading is not possible because WordPress cannot write into the plugins folder. %sHow to fix%s.', 'installer'),
+                                '<a href="http://codex.wordpress.org/Changing_File_Permissions">', '</a>') ?></p>
+                    <?php elseif( WP_Installer()->dependencies->is_win_paths_exception($repository_id) ): ?>
+                        <p><?php echo WP_Installer()->dependencies->win_paths_exception_message() ?></p>
+                    <?php endif; ?>
                     </div>
 
                     <input type="submit" class="button-secondary" value="<?php esc_attr_e('Download', 'installer') ?>" disabled="disabled" />

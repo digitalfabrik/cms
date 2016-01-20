@@ -10,22 +10,22 @@ global $EM_Event;
 <html>
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-	<title><?php echo sprintf(__('Bookings for %s','dbem'), $EM_Event->name); ?></title>
+	<title><?php echo sprintf(__('Bookings for %s','events-manager'), $EM_Event->name); ?></title>
 	<link rel="stylesheet" href="<?php echo bloginfo('wpurl') ?>/wp-content/plugins/events-manager/includes/css/events_manager.css" type="text/css" media="screen" />
 </head>
 <body id="printable">
 	<div id="container">
-	<h1><?php echo sprintf(__('Bookings for %s','dbem'), $EM_Event->name); ?></h1> 
+	<h1><?php echo sprintf(__('Bookings for %s','events-manager'), $EM_Event->name); ?></h1> 
 	<p><?php echo $EM_Event->output("#d #M #Y"); ?></p>
 	<p><?php echo $EM_Event->output("#_LOCATION, #_ADDRESS, #_TOWN"); ?></p>   
-	<h2><?php _e('Bookings data', 'dbem');?></h2>
+	<h2><?php _e('Bookings data', 'events-manager');?></h2>
 	<table id="bookings-table">
 		<tr>
-			<th scope='col'><?php _e('Name', 'dbem')?></th>
-			<th scope='col'><?php _e('E-mail', 'dbem')?></th>
-			<th scope='col'><?php _e('Phone number', 'dbem')?></th> 
-			<th scope='col'><?php _e('Spaces', 'dbem')?></th>
-			<th scope='col'><?php _e('Comment', 'dbem')?></th>
+			<th scope='col'><?php _e('Name', 'events-manager')?></th>
+			<th scope='col'><?php _e('E-mail', 'events-manager')?></th>
+			<th scope='col'><?php _e('Phone number', 'events-manager')?></th> 
+			<th scope='col'><?php _e('Spaces', 'events-manager')?></th>
+			<th scope='col'><?php _e('Comment', 'events-manager')?></th>
 		</tr> 
 		<?php foreach($EM_Event->get_bookings()->bookings as $EM_Booking) {       
 			if( $EM_Booking->status == 1){
@@ -41,12 +41,12 @@ global $EM_Event;
 	   	<?php }} ?>
 	  	<tr id='booked-spaces'>
 			<td colspan='3'>&nbsp;</td>
-			<td class='total-label'><?php _e('Booked', 'dbem')?>:</td>
+			<td class='total-label'><?php _e('Booked', 'events-manager')?>:</td>
 			<td class='spaces-number'><?php echo $EM_Event->get_bookings()->get_booked_spaces(); ?></td>
 		</tr>
 		<tr id='available-spaces'>
 			<td colspan='3'>&nbsp;</td> 
-			<td class='total-label'><?php _e('Available', 'dbem')?>:</td>  
+			<td class='total-label'><?php _e('Available', 'events-manager')?>:</td>  
 			<td class='spaces-number'><?php echo $EM_Event->get_bookings()->get_available_spaces(); ?></td>
 		</tr>
 	</table>  

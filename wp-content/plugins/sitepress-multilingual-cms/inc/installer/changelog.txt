@@ -1,3 +1,7 @@
+= 1.7.3 =
+* Added a dependencies class and check for the windows paths length exception
+* Bug fix: all downloads showed up twice on the plugins list whe upgrading from WPML 3.3 
+
 = 1.7.2 =
 * Added an exception to handle the case when Types embedded is installer from Toolset Installer and its included Installer version overrides the one running the Toolset setup wizard
 

@@ -18,7 +18,7 @@
 		?>
 		<div class="em-location-map-container"  style='position:relative; background: #CDCDCD; width: <?php echo $width ?>; height: <?php echo $height ?>;'>
    			<div class='em-location-map' id='em-location-map-<?php echo $rand ?>' style="width: 100%; height: 100%;">
-   				<?php _e('Loading Map....', 'dbem'); ?>
+   				<?php _e('Loading Map....', 'events-manager'); ?>
    			</div>
 		</div>
    		<div class='em-location-map-info' id='em-location-map-info-<?php echo $rand ?>' style="display:none; visibility:hidden;">
@@ -32,5 +32,5 @@
 		</div>
 		<?php
 	}elseif( is_object($EM_Location) && $EM_Location->location_latitude == 0 && $EM_Location->location_longitude == 0 ){
-		echo '<i>'. __('Map Unavailable', 'dbem') .'</i>';
+		echo '<i>'. __('Map Unavailable', 'events-manager') .'</i>';
 	}

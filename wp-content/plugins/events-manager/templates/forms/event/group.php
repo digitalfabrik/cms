@@ -19,7 +19,7 @@ if( count($user_groups) > 0 ){
 	?>
 	<p>
 	<select name="group_id">
-		<option value=""><?php _e('Not a Group Event', 'dbem'); ?></option>
+		<option value=""><?php _e('Not a Group Event', 'events-manager'); ?></option>
 		<?php
 		//in case user isn't a group mod, but can edit other users' events
 		if( !empty($EM_Event->group_id) && !in_array($EM_Event->group_id, $group_data['groups']) ){
@@ -37,12 +37,12 @@ if( count($user_groups) > 0 ){
 		?>
 	</select>
 	<br />
-	<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking.', 'dbem' )?></em>
+	<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking.', 'events-manager')?></em>
 	</p>
 	<?php if( is_super_admin() ): ?>
-	<p><em><?php _e ( 'As a site admin, you see all group events, users will only be able to choose groups they are admins of.', 'dbem' )?></em></p>
+	<p><em><?php _e ( 'As a site admin, you see all group events, users will only be able to choose groups they are admins of.', 'events-manager')?></em></p>
 	<?php endif; 
 	
 }else{
-	?><p><em><?php _e('No groups defined yet.','dbem'); ?></em></p><?php
+	?><p><em><?php _e('No groups defined yet.','events-manager'); ?></em></p><?php
 }

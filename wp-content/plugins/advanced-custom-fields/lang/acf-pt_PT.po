@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Advanced Custom Fields\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/advanced-custom-fields\n"
 "POT-Creation-Date: 2015-07-23 11:02+0100\n"
-"PO-Revision-Date: 2015-12-09 11:26+0000\n"
+"PO-Revision-Date: 2016-01-07 08:48+0000\n"
 "Last-Translator: Pedro Mendonça <ped.gaspar@gmail.com>\n"
 "Language-Team: Pedro Mendonça <ped.gaspar@gmail.com>\n"
 "Language: pt_PT\n"
@@ -873,7 +873,7 @@ msgstr "Ocultar detalhes"
 
 #: core/controllers/input.php:67
 msgid "Validation Failed. One or more fields below are required."
-msgstr "Falha ao validar. Um ou mais campos abaixo são obrigatórios."
+msgstr "Falhou ao validar. Um ou mais campos abaixo são obrigatórios."
 
 #: core/controllers/upgrade.php:77
 msgid "Upgrade"
@@ -1278,7 +1278,7 @@ msgstr "Relacional"
 #: core/fields/relationship.php:582 core/fields/relationship.php:661
 #: core/views/meta_box_location.php:75
 msgid "Post Type"
-msgstr "Tipo de artigo"
+msgstr "Tipo de conteúdo"
 
 #: core/fields/page_link.php:127 core/fields/post_object.php:329
 #: core/fields/select.php:214 core/fields/taxonomy.php:489
@@ -1350,7 +1350,7 @@ msgstr "Pesquisar..."
 
 #: core/fields/relationship.php:468
 msgid "Filter by post type"
-msgstr "Filtrar por tipo de artigo"
+msgstr "Filtrar por tipo de conteúdo"
 
 #: core/fields/relationship.php:562
 msgid "Return Format"
@@ -1370,7 +1370,7 @@ msgstr "Pesquisa"
 
 #: core/fields/relationship.php:641
 msgid "Post Type Select"
-msgstr "Selecção de tipo de artigo"
+msgstr "Selecção de tipo de conteúdo"
 
 #: core/fields/relationship.php:649
 msgid "Elements"

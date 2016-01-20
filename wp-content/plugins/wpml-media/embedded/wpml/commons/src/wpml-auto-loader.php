@@ -152,6 +152,7 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 					$file = $possible_full_path;
 				} else {
 					$sub_folders = glob( $current_dir . '/*', GLOB_ONLYDIR );
+					$sub_folders = (bool) $sub_folders === true ? $sub_folders : array();
 					foreach ( $sub_folders as $sub_folder_path ) {
 						$found_file = $this->get_file_from_path( $file_name, $sub_folder_path, true );
 						if ( null != $found_file ) {

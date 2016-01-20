@@ -54,7 +54,7 @@ class EM_Ticket extends EM_Object{
 	 * @return null
 	 */
 	function __construct( $ticket_data = false ){
-		$this->ticket_name = __('Standard Ticket','dbem');
+		$this->ticket_name = __('Standard Ticket','events-manager');
 		$ticket = array();
 		if( $ticket_data !== false ){
 			//Load ticket data
@@ -126,22 +126,22 @@ class EM_Ticket extends EM_Object{
 				}
 				$sql = "UPDATE $table SET ".implode(', ', $set_array)." WHERE ticket_id={$this->ticket_id}";
 				$result = $wpdb->query($sql);
-				$this->feedback_message = __('Changes saved','dbem');
+				$this->feedback_message = __('Changes saved','events-manager');
 			}else{
 				//TODO better error handling
 				$result = $wpdb->insert($table, $data, $this->get_types($data));
 			    $this->ticket_id = $wpdb->insert_id;
-				$this->feedback_message = __('Ticket created','dbem'); 
+				$this->feedback_message = __('Ticket created','events-manager'); 
 			}
 			if( $result === false ){
-				$this->feedback_message = __('There was a problem saving the ticket.', 'dbem');
-				$this->errors[] = __('There was a problem saving the ticket.', 'dbem');
+				$this->feedback_message = __('There was a problem saving the ticket.', 'events-manager');
+				$this->errors[] = __('There was a problem saving the ticket.', 'events-manager');
 			}
 			$this->compat_keys();
 			return apply_filters('em_ticket_save', ( count($this->errors) == 0 ), $this);
 		}else{
-			$this->feedback_message = __('There was a problem saving the ticket.', 'dbem');
-			$this->errors[] = __('There was a problem saving the ticket.', 'dbem');
+			$this->feedback_message = __('There was a problem saving the ticket.', 'events-manager');
+			$this->errors[] = __('There was a problem saving the ticket.', 'events-manager');
 			return apply_filters('em_ticket_save', false, $this);
 		}
 		return true;
@@ -241,7 +241,7 @@ class EM_Ticket extends EM_Object{
 			}
 		}
 		if( !empty($this->ticket_price) && !is_numeric($this->ticket_price) ){
-			$this->add_error(__('Please enter a valid ticket price e.g. 10.50 (no currency signs)','dbem'));
+			$this->add_error(__('Please enter a valid ticket price e.g. 10.50 (no currency signs)','events-manager'));
 		}
 		if ( count($missing_fields) > 0){
 			// TODO Create friendly equivelant names for missing fields notice in validation 
@@ -443,7 +443,7 @@ class EM_Ticket extends EM_Object{
 				$sql = $wpdb->prepare("DELETE FROM ". EM_TICKETS_TABLE . " WHERE ticket_id=%d", $this->ticket_id);
 				$result = $wpdb->query( $sql );
 			}else{
-				$this->feedback_message = __('You cannot delete a ticket that has a booking on it.','dbem');
+				$this->feedback_message = __('You cannot delete a ticket that has a booking on it.','events-manager');
 				$this->add_error($this->feedback_message);
 				return false;
 			}
