@@ -70,7 +70,14 @@
 
 		// enable welcome box via WP Help menu
 		public function enableWelcomeBoxWPHelpMenu() {
-			$current_link = $_SERVER['REQUEST_URI'] . ( $_GET ? '&cg=sa' : '?cg=sa' );
+			// $current_link = $_SERVER['REQUEST_URI'] . ( $_GET ? '&cg=sa' : '?cg=sa' );
+
+			// current url without param 'cg'
+			$current_link = parse_url($_SERVER['REQUEST_URI']);
+			parse_str( $current_link['query'], $current_link_query );
+			unset( $current_link_query['cg'] );
+			$current_link = $current_link['path'] . ( !empty( $current_link_query ) ? '?cg=sa&' : '?cg=sa' ) . http_build_query( $current_link_query );
+
 			$content = '<h3><a href="' . $current_link . '">&raquo; ' . $this->namingClickGuide . ' aufrufen</a></h3>';
 
 			$screen = get_current_screen();

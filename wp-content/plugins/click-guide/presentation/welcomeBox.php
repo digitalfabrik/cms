@@ -54,6 +54,12 @@
 			echo $out;
 		?>
 	</div>
-	<?php $doNotShowAgainLink = $_SERVER['REQUEST_URI'] . ( $_GET ? '&cg=dnsa' : '?cg=dnsa' ); ?>
+	<?php
+		// current url without param 'cg'
+		$doNotShowAgainLink = parse_url($_SERVER['REQUEST_URI']);
+		parse_str( $doNotShowAgainLink['query'], $doNotShowAgainLinkQuery );
+		unset( $doNotShowAgainLinkQuery['cg'] );
+		$doNotShowAgainLink = $doNotShowAgainLink['path'] . ( !empty( $doNotShowAgainLinkQuery ) ? '?cg=dnsa&' : '?cg=dnsa' ) . http_build_query( $doNotShowAgainLinkQuery );
+	?>
 	<a href="<?php echo $doNotShowAgainLink; ?>" id="doNotShowAgain" class="bottomButton">Dieses Fenster nicht mehr anzeigen</a>
 </div>
