@@ -1,0 +1,836 @@
+# Copyright (C) 2010 Revisionary
+# This file is distributed under the same license as the Revisionary package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Revisionary 1.1.7-dev\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/revisionary\n"
+"POT-Creation-Date: 2011-11-10 22:15:18+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: front_rvy.php:154
+msgid "This Revision was Published on %s"
+msgstr ""
+
+#: front_rvy.php:159
+msgid "(for publication on %s)"
+msgstr ""
+
+#: front_rvy.php:160
+msgid "Schedule this Pending Revision"
+msgstr ""
+
+#: front_rvy.php:164
+msgid "Publish this Pending Revision now."
+msgstr ""
+
+#: front_rvy.php:170
+msgid "(already scheduled for publication on %s)"
+msgstr ""
+
+#: front_rvy.php:171
+msgid "Publish now."
+msgstr ""
+
+#: front_rvy.php:176
+msgid "(dated %s)"
+msgstr ""
+
+#: front_rvy.php:177
+msgid "Restore this Past Revision"
+msgstr ""
+
+#: front_rvy.php:203
+msgid "Current Revision"
+msgstr ""
+
+#: rvy_init.php:55
+msgid "Revisor"
+msgstr ""
+
+#: rvy_init.php:397
+msgid ""
+"Revisionary is not compatible with Role Scoper versions prior to %1$s.  "
+"Please upgrade or deactivate %2$s Role Scoper%3$s."
+msgstr ""
+
+#: revisionary.php:39
+msgid ""
+"Another copy of Revisionary is already activated (version %1$s in \"%2$s\")"
+msgstr ""
+
+#: admin/admin_lib-mu_rvy.php:14 admin/admin_rvy.php:332 admin/options.php:160
+msgid "Revisionary Options"
+msgstr ""
+
+#: admin/admin_lib-mu_rvy.php:27
+msgid "Revisionary Option Defaults"
+msgstr ""
+
+#: admin/admin_lib-mu_rvy.php:27
+msgid "Revisionary Defaults"
+msgstr ""
+
+#: admin/revision-action_rvy.php:134 admin/revision-action_rvy.php:155
+msgid "[%s] Revision Approval Notice"
+msgstr ""
+
+#: admin/revision-action_rvy.php:135
+msgid "A revision to your %1$s \"%2$s\" has been approved."
+msgstr ""
+
+#: admin/revision-action_rvy.php:138
+msgid "The submitter was %1$s."
+msgstr ""
+
+#: admin/revision-action_rvy.php:142 admin/revision-action_rvy.php:160
+msgid "It will be published on %s"
+msgstr ""
+
+#: admin/revision-action_rvy.php:143 admin/revision-action_rvy.php:161
+#: admin/admin_rvy.php:633
+msgid "Review it here: "
+msgstr ""
+
+#: admin/revision-action_rvy.php:145 admin/revision-action_rvy.php:163
+#: admin/revision-action_rvy.php:526 admin/revision-action_rvy.php:540
+#: admin/revision-action_rvy.php:554
+msgid "View it online: "
+msgstr ""
+
+#: admin/revision-action_rvy.php:156
+msgid "The revision you submitted for the %1$s \"%2$s\" has been approved."
+msgstr ""
+
+#: admin/revision-action_rvy.php:522 admin/revision-action_rvy.php:533
+msgid "[%s] Scheduled Revision Publication Notice"
+msgstr ""
+
+#: admin/revision-action_rvy.php:523
+msgid ""
+"The scheduled revision you submitted for the %1$s \"%2$s\" has been "
+"published."
+msgstr ""
+
+#: admin/revision-action_rvy.php:534
+msgid "A scheduled revision to your %1$s \"%2$s\" has been published."
+msgstr ""
+
+#: admin/revision-action_rvy.php:537 admin/revision-action_rvy.php:551
+#: admin/admin_rvy.php:630
+msgid "It was submitted by %1$s."
+msgstr ""
+
+#: admin/revision-action_rvy.php:547
+msgid "[%s] Scheduled Revision Publication"
+msgstr ""
+
+#: admin/revision-action_rvy.php:548
+msgid "A scheduled revision to the %1$s \"%2$s\" has been published."
+msgstr ""
+
+#. translators: revision date format, see http:php.net/date
+#: admin/revision-ui_rvy.php:211
+msgctxt "revision date format"
+msgid "j F, Y @ G:i"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:224
+msgid "%1$s (Current Revision)"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:228
+msgid "%1$s (Autosave)"
+msgstr ""
+
+#. translators: post revision: 1: when, 2: author name
+#: admin/revision-ui_rvy.php:301
+msgctxt "post revision"
+msgid "%1$s by %2$s"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:317
+msgid "The revision will be deleted. Are you sure?"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:376
+msgid "Unschedule"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:451
+msgid "Compare Selected HTML"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:470
+msgid "Modified Date (click to view/restore)"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:473
+msgid "Modified Date (click to view/approve)"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:476
+msgid "Modified Date (click to view/publish)"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:480
+msgid "Publish Date"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:483
+msgid "Actions"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:498
+msgid "Bulk Actions"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:499 admin/admin_rvy.php:449
+msgid "Delete"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:501
+msgid "Apply"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:540
+msgid "Date as:"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:541
+msgid "Schedule for:"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:542
+msgid "Published on:"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:543
+msgid "Privately Published:"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:544
+msgid "Published:"
+msgstr ""
+
+#: admin/revision-ui_rvy.php:545
+msgid "Unsaved Date Selection:"
+msgstr ""
+
+#: admin/about.php:28
+msgid "unselfish, benevolent love, born of the Spirit."
+msgstr ""
+
+#: admin/about.php:30
+msgid "Agap&eacute; discerns needs and meets them unselfishly and effectively."
+msgstr ""
+
+#: admin/about.php:33
+msgid ""
+"This WordPress plugin is part of my agap&eacute; try, a lifelong effort to "
+"love God and love people by rightly using the time and abilities He has "
+"leant me. As a husband, father, engineer, farmer and/or software developer, "
+"I have found this stewardship effort to be often fraught with contradiction. "
+"A wise and sustainable balancing of roles has seemed to elude me. Yet I want "
+"to keep trying, trusting that if God blesses and multiplies the effort, it "
+"will become agapetry, a creative arrangement motivated by benevolent love.  "
+"A fleeting childlike sketch of the beautiful %1$s chain-breaking agap&eacute;"
+"%2$s which %3$s Jesus Christ unleashed%4$s so %5$s freely%6$s and aptly on "
+"an enslaving, enslaved world."
+msgstr ""
+
+#: admin/about.php:35
+msgid ""
+"Although Role Scoper and Revisionary development was a maniacal hermit-like "
+"effort, it was only possible because of the clean and flexible %1$s "
+"WordPress code base%2$s.  My PHP programming skills grew immensely by the "
+"good examples set forth there and in plugins such as %3$s NextGen Gallery%4"
+"$s. I'm not done learning, and look forward to some real-time cooperation "
+"with these and other developers now that my all-consuming quest has reached "
+"a stable plateau."
+msgstr ""
+
+#: admin/about.php:37
+msgid ""
+"Revisionary is currently available in the following languages, thanks to "
+"volunteer translators:"
+msgstr ""
+
+#: admin/about.php:40
+msgid "Belorussian by %1$s"
+msgstr ""
+
+#: admin/about.php:42
+msgid "French by %s"
+msgstr ""
+
+#: admin/about.php:44
+msgid "Italian by %s"
+msgstr ""
+
+#: admin/about.php:46
+msgid ""
+"I do try to be translator-friendly, but any untranslated captions are likely "
+"due to a flurry of recent additions and changes by the plugin developer.  "
+"Now there must be someone else who wants Role Scoper in their language..."
+msgstr ""
+
+#: admin/about.php:48
+msgid ""
+"Revisionary is open source software released under the %1$s General Public "
+"License (GPL)%2$s. Due to limitations, obligations and non-technical "
+"aspirations common to most human beings, I will probably never again pursue "
+"uncommissioned plugin development on the scale these plugins has required. "
+"However, I do plan to provide some free support, correct bugs which emerge "
+"and revise the plugin for future WordPress versions. If it adds value to "
+"your website or saves you time and money, you can express appreciation in "
+"several ways:"
+msgstr ""
+
+#: admin/about.php:50
+msgid "%1$s Submit technical feedback%2$s, including improvement requests."
+msgstr ""
+
+#: admin/about.php:52
+msgid ""
+"%1$s Submit a case study%2$s, explaining how these plugins help you do "
+"something excellent and praiseworthy."
+msgstr ""
+
+#: admin/about.php:54
+msgid ""
+"%1$s Localize Revisionary or Role Scoper%2$s to your own language %3$s using "
+"poEdit%4$s "
+msgstr ""
+
+#: admin/about.php:58
+msgid "If the plugin has seriously broadened your CMS horizons, %s"
+msgstr ""
+
+#: admin/about.php:60
+msgid ""
+"If you are an established web developer, %1$s grant me your professional "
+"opinion%2$s on how this work stacks up. Might the skills, work ethic and "
+"values I express here fit into a development team near you?"
+msgstr ""
+
+#: admin/about.php:62
+msgid ""
+"Hire or refer my services</a> to design, redesign or enhance your site - "
+"quality care at reasonable rates."
+msgstr ""
+
+#: admin/admin_rvy.php:121
+msgid "Preview &#8220;%s&#8221;"
+msgstr ""
+
+#: admin/admin_rvy.php:121
+msgid "Preview"
+msgstr ""
+
+#: admin/admin_rvy.php:155
+msgid "save as pending revision"
+msgstr ""
+
+#: admin/admin_rvy.php:288
+msgid "%1$s Revisionary Support Forum%2$s"
+msgstr ""
+
+#: admin/admin_rvy.php:291
+msgid "%1$s About Revisionary%2$s"
+msgstr ""
+
+#: admin/admin_rvy.php:312 admin/options.php:80
+msgid "Revisions"
+msgstr ""
+
+#: admin/admin_rvy.php:319
+msgid "About Revisionary"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (Revisionary 1.1.7-dev)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: admin/admin_rvy.php:332
+msgid "Revisionary"
+msgstr ""
+
+#: admin/admin_rvy.php:483
+msgid "%s (revision)"
+msgstr ""
+
+#: admin/admin_rvy.php:598
+msgid ""
+"Your modification has been saved for editorial review.  If approved, it will "
+"be published on the date you specified."
+msgstr ""
+
+#: admin/admin_rvy.php:600
+msgid "Your modification has been saved for editorial review."
+msgstr ""
+
+#: admin/admin_rvy.php:603 admin/admin_rvy.php:761
+msgid "View it in Revisions Manager"
+msgstr ""
+
+#: admin/admin_rvy.php:607
+msgid ""
+"Go back to Submit Another revision (possibly for a different publish date)."
+msgstr ""
+
+#: admin/admin_rvy.php:614
+msgid ""
+"Sorry, an error occurred while attempting to save your modification for "
+"editorial review!"
+msgstr ""
+
+#: admin/admin_rvy.php:625
+msgid "[%s] Pending Revision Notification"
+msgstr ""
+
+#: admin/admin_rvy.php:627
+msgid "A pending revision to the %1$s \"%2$s\" has been submitted."
+msgstr ""
+
+#: admin/admin_rvy.php:699
+msgid "Pending Revision Created"
+msgstr ""
+
+#: admin/admin_rvy.php:758
+msgid "Your modification was saved as a Scheduled Revision."
+msgstr ""
+
+#: admin/admin_rvy.php:763
+msgid "Go back to Schedule Another revision."
+msgstr ""
+
+#: admin/admin_rvy.php:768
+msgid "Scheduled Revision Created"
+msgstr ""
+
+#: admin/admin_rvy.php:778
+msgid "Return to Edit Posts"
+msgstr ""
+
+#: admin/admin_rvy.php:781
+msgid "Return to Edit Pages"
+msgstr ""
+
+#: admin/admin_rvy.php:785
+msgid "Return to Edit %s"
+msgstr ""
+
+#: admin/revisions.php:53
+msgid "No revision specified."
+msgstr ""
+
+#: admin/revisions.php:58
+msgid "Past"
+msgstr ""
+
+#: admin/revisions.php:99
+msgid "%1$s Revisions for &#8220;%2$s&#8221;"
+msgstr ""
+
+#: admin/revisions.php:166
+msgid "Revision of &#8220;%1$s&#8221;"
+msgstr ""
+
+#: admin/revisions.php:168
+msgid "Past Revision of &#8220;%1$s&#8221;"
+msgstr ""
+
+#: admin/revisions.php:171
+msgid "Pending Revision of &#8220;%1$s&#8221;"
+msgstr ""
+
+#: admin/revisions.php:174
+msgid "Scheduled Revision of &#8220;%1$s&#8221;"
+msgstr ""
+
+#: admin/revisions.php:182 admin/revisions.php:189
+msgid "Publish Now"
+msgstr ""
+
+#: admin/revisions.php:187
+msgid "Schedule Now"
+msgstr ""
+
+#: admin/revisions.php:195
+msgid "Restore Now"
+msgstr ""
+
+#: admin/revisions.php:212
+msgid "&#8220;%1$s&#8221; (Current Revision)"
+msgstr ""
+
+#: admin/revisions.php:230
+msgid "The requested revision does not exist."
+msgstr ""
+
+#: admin/revisions.php:283
+msgid "The revision was deleted."
+msgstr ""
+
+#: admin/revisions.php:286
+msgid "%s revision was deleted"
+msgid_plural "%s revisions were deleted"
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin/revisions.php:289
+msgid "The revision was updated."
+msgstr ""
+
+#: admin/revisions.php:292
+msgid "The revision was restored."
+msgstr ""
+
+#: admin/revisions.php:295
+msgid "The revision was scheduled for publication."
+msgstr ""
+
+#: admin/revisions.php:298
+msgid "The revision was published."
+msgstr ""
+
+#: admin/revisions.php:303
+msgid "To delete the revision, click the link below."
+msgstr ""
+
+#: admin/revisions.php:305
+msgid "You do not have permission to delete that revision."
+msgstr ""
+
+#: admin/revisions.php:308
+msgid "The revision was unscheduled."
+msgstr ""
+
+#. translators: Publish box date formt, see http:php.net/date
+#: admin/revisions.php:327
+msgid "Published on: <strong>%1$s</strong>"
+msgstr ""
+
+#: admin/revisions.php:329
+msgid "Scheduled for: <strong>%1$s</strong>"
+msgstr ""
+
+#: admin/revisions.php:332
+msgid "Requested Publish Date: <strong>%1$s</strong>"
+msgstr ""
+
+#: admin/revisions.php:334
+msgid "Requested Publish Date: <strong>Immediate</strong>"
+msgstr ""
+
+#: admin/revisions.php:336
+msgid "Modified on: <strong>%1$s</strong>"
+msgstr ""
+
+#: admin/revisions.php:369 admin/revisions.php:414 admin/revisions.php:415
+msgid "Update Revision"
+msgstr ""
+
+#: admin/revisions.php:439
+msgid "Older: modified %s"
+msgstr ""
+
+#: admin/revisions.php:441
+msgid "Newer: modified %s"
+msgstr ""
+
+#: admin/revisions.php:496
+msgid "These revisions are identical."
+msgstr ""
+
+#: admin/revisions.php:528
+msgid "Past Revisions"
+msgstr ""
+
+#: admin/revisions.php:531 admin/filters-admin-ui-item_rvy.php:69
+#: admin/options.php:88
+msgid "Pending Revisions"
+msgstr ""
+
+#: admin/revisions.php:534 admin/filters-admin-ui-item_rvy.php:76
+#: admin/options.php:89
+msgid "Scheduled Revisions"
+msgstr ""
+
+#: admin/revisions.php:539
+msgid "%1$s <span class=\"count\"> (%2$s)</span>"
+msgstr ""
+
+#: admin/revisions.php:554
+msgid "no %s revisions available."
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:52
+msgid "Enter additional User Names or IDs (comma-separate)"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:105
+msgid "show current users (%d)"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:105
+msgid "show eligible users (%d)"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:123
+msgid "filter:"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:132
+msgid "select"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:137
+msgid "unselect"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:145
+msgid "current users (%d):"
+msgstr ""
+
+#: admin/agents_checklist_rvy.php:145
+msgid "eligible users (%d):"
+msgstr ""
+
+#: admin/filters-admin-ui-item_rvy.php:36
+msgid "Schedule Revision"
+msgstr ""
+
+#: admin/filters-admin-ui-item_rvy.php:52
+#: admin/filters-admin-ui-item_rvy.php:53
+msgid "Submit Revision"
+msgstr ""
+
+#: admin/filters-admin-ui-item_rvy.php:54
+msgid "Submit Scheduled Revision"
+msgstr ""
+
+#: admin/filters-admin-ui-item_rvy.php:70
+msgid "Publishers to Notify of Your Revision"
+msgstr ""
+
+#: admin/admin-dashboard_rvy.php:15 admin/admin-dashboard_rvy.php:17
+msgid "Pending %1$s"
+msgstr ""
+
+#: admin/options.php:75
+msgid "Features"
+msgstr ""
+
+#: admin/options.php:75
+msgid "Option Scope"
+msgstr ""
+
+#: admin/options.php:79
+msgid "Role Definition"
+msgstr ""
+
+#: admin/options.php:81
+msgid "Email Notification"
+msgstr ""
+
+#: admin/options.php:90
+msgid "Strip html tags out of difference display"
+msgstr ""
+
+#: admin/options.php:91
+msgid "Asynchronous Publishing"
+msgstr ""
+
+#: admin/options.php:92
+msgid "Email original Author when a Pending Revision is submitted"
+msgstr ""
+
+#: admin/options.php:93
+msgid "Email the original Author when a Pending Revision is approved"
+msgstr ""
+
+#: admin/options.php:94
+msgid "Email the Revisor when a Pending Revision is approved"
+msgstr ""
+
+#: admin/options.php:95
+msgid "Email the original Author when a Scheduled Revision is published"
+msgstr ""
+
+#: admin/options.php:96
+msgid "Email the Revisor when a Scheduled Revision is published"
+msgstr ""
+
+#: admin/options.php:97
+msgid ""
+"Include capabilities for all custom post types in the WordPress Revisor role"
+msgstr ""
+
+#: admin/options.php:101
+msgid "Email designated Publishers when a Pending Revision is submitted"
+msgstr ""
+
+#: admin/options.php:102
+msgid "Email designated Publishers when a Scheduled Revision is published"
+msgstr ""
+
+#: admin/options.php:104
+msgid "Email Editors and Administrators when a Pending Revision is submitted"
+msgstr ""
+
+#: admin/options.php:105
+msgid "Email Editors and Administrators when a Scheduled Revision is published"
+msgstr ""
+
+#: admin/options.php:154
+msgid "Revisionary Network Options"
+msgstr ""
+
+#: admin/options.php:156
+msgid "Revisionary Default Site Options"
+msgstr ""
+
+#: admin/options.php:158
+msgid "Revisionary Site Options"
+msgstr ""
+
+#: admin/options.php:166 admin/options.php:487
+msgid "Update &raquo;"
+msgstr ""
+
+#: admin/options.php:174
+msgid "These settings will be applied to all sites."
+msgstr ""
+
+#: admin/options.php:180
+msgid ""
+"These are the <strong>default</strong> settings for options which can be "
+"adjusted per-site."
+msgstr ""
+
+#: admin/options.php:212
+msgid ""
+"This page enables <strong>optional</strong> adjustment of Revisionary's "
+"features. For most installations, the default settings are fine."
+msgstr ""
+
+#: admin/options.php:221
+msgid "Note that %1$s site-specific options%2$s may also be available."
+msgstr ""
+
+#: admin/options.php:228
+msgid "Note that %1$s network-wide options%2$s may also be available."
+msgstr ""
+
+#: admin/options.php:271
+msgid ""
+"If a currently published post or page is edited and a future date set, the "
+"change will not be applied until the selected date."
+msgstr ""
+
+#: admin/options.php:275
+msgid ""
+"Publish scheduled revisions asynchronously, via a secondary http request "
+"from the server.  This is normally preferable as it eliminates delay, but "
+"some servers do not support it."
+msgstr ""
+
+#: admin/options.php:279
+msgid ""
+"Enable some users to submit a revision for an existing published post or "
+"page which they cannot otherwise edit.  Contributors can submit revisions to "
+"their own published content, and users who have the edit_others_ capability "
+"(but not edit_published_) can submit revisions to other user's content.<br /"
+"><br />These Pending Revisions are listed alongside regular pending content, "
+"but link to a Revisions management form.  There the pending revision can be "
+"viewed, compared to other revisions, and approved or deleted by qualified "
+"editors.  If the submitter set a future publish date, approval schedules "
+"delayed publication of the revised content."
+msgstr ""
+
+#: admin/options.php:299 admin/options.php:353
+msgid "select recipients"
+msgstr ""
+
+#: admin/options.php:308 admin/options.php:326
+msgid "Never"
+msgstr ""
+
+#: admin/options.php:308 admin/options.php:326
+msgid "By default"
+msgstr ""
+
+#: admin/options.php:308 admin/options.php:326
+msgid "Always"
+msgstr ""
+
+#: admin/options.php:371
+msgid ""
+"Note: \"by default\" means Pending Revision creators can customize email "
+"notification recipients before submitting.  Eligibile \"Publisher\" email "
+"recipients are members of the Pending Revision Monitors group who "
+"<strong>also</strong> have the ability to publish the revision."
+msgstr ""
+
+#: admin/options.php:373
+msgid ""
+"Note: \"by default\" means Pending Revision creators can customize email "
+"notification recipients before submitting.  For more flexibility in "
+"moderation and notification, install the %1$s Role Scoper%2$s plugin."
+msgstr ""
+
+#: admin/options.php:402
+msgid "Specify which Revisionary Options should be applied network-wide."
+msgstr ""
+
+#: admin/options.php:409
+msgid "sitewide control of \"%s\""
+msgstr ""
+
+#: admin/options.php:414
+msgid ""
+"Selected options will be controlled network-wide via <strong>Sites > "
+"Revisionary Options</strong>; unselected options can be set per-site via "
+"<strong>Settings > Revisionary</strong>"
+msgstr ""
+
+#: admin/options.php:423
+msgctxt "option_tabname (explanatory note)"
+msgid "<span class=\"rs-h3text\">%1$s</span> (%2$s)"
+msgstr ""
+
+#: admin/options.php:491
+msgid ""
+"All settings in this form (including those on unselected tabs) will be reset "
+"to DEFAULTS.  Are you sure?"
+msgstr ""
+
+#: admin/options.php:496
+msgid "Revert to Defaults"
+msgstr ""
+
+#: lib/debug.php:182
+msgid "%1$s queries in %2$s seconds. %3$s MB used."
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (Revisionary 1.1.7-dev)  #-#-#-#-#
+#. Plugin URI of the plugin/theme
+#. #-#-#-#-#  plugin.pot (Revisionary 1.1.7-dev)  #-#-#-#-#
+#. Author URI of the plugin/theme
+msgid "http://agapetry.net/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Enables qualified users to submit changes to currently published posts or "
+"pages.  These changes, if approved by an Editor, can be published "
+"immediately or scheduled for future publication."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Kevin Behrens"
+msgstr ""
