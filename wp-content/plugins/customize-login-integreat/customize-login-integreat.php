@@ -10,6 +10,10 @@ function replace_logo() {
 
 	$color_hex="FDDA0E";
 	$color_rgb="253, 218, 14,";
+
+	$path = get_admin_url();
+	$path .= 'wp-admin/images/';
+
 	?>
 	<style type="text/css">
 
@@ -17,22 +21,22 @@ function replace_logo() {
 			border: 2px solid #F1F1F1;
 			border-radius 15px;
 			background-size: 320px 100px;
-			width: 316px;
+			width: 320px;
 			height: 100px;
-			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo.png);
+			background-image:none, url(<?php echo $path ?>integreat_logo.png);
 		}
 
 		#login>h1>a:focus, #login>h1>a:hover{
 			border-radius: 15px;
 			box-shadow: none;
-			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo_yellow.png);
+			background-image: url(<?php echo $path; ?>integreat_logo_yellow.png);
 		}
 
 		#login>h1>a:focus{
 			border: 2px solid rgba(<?php echo($color_rgb);?> 1);
 			border-radius: 15px;
 			box-shadow: none;
-			background-image: url(<?php echo get_stylesheet_directory_uri(); ?>/images/integreat/integreat_logo_yellow.png);
+			background-image: url(<?php echo $path; ?>integreat_logo_yellow.png);
 		}
 
 		.login p.message{
