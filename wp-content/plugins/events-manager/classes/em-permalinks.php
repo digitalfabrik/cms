@@ -201,7 +201,7 @@ if( !class_exists('EM_Permalinks') ){
 		}
 		
 		/**
-		 * Depreciated, use get_post_permalink() from now on or the output function with a placeholder
+		 * deprecated, use get_post_permalink() from now on or the output function with a placeholder
 		 * Generate a URL. Pass each section of a link as a parameter, e.g. EM_Permalinks::url('event',$event_id); will create an event link.
 		 * @return string 
 		 */

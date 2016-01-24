@@ -15,7 +15,7 @@ class WPML_Cookie {
 	}
 
 	/**
-	 * simply wrapper for \headers_sent
+	 * simple wrapper for \headers_sent
 	 *
 	 * @return bool
 	 */

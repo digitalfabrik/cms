@@ -10,9 +10,9 @@ function em_bookings_events_table() {
 	global $EM_Event;
 
 	$scope_names = array (
-		'past' => __ ( 'Past events', 'dbem' ),
-		'all' => __ ( 'All events', 'dbem' ),
-		'future' => __ ( 'Future events', 'dbem' )
+		'past' => __ ( 'Past events', 'events-manager'),
+		'all' => __ ( 'All events', 'events-manager'),
+		'future' => __ ( 'Future events', 'events-manager')
 	);
 	
 	$action_scope = ( !empty($_REQUEST['em_obj']) && $_REQUEST['em_obj'] == 'em_bookings_events_table' );
@@ -26,13 +26,13 @@ function em_bookings_events_table() {
 	// No action, only showing the events list
 	switch ($scope) {
 		case "past" :
-			$title = __ ( 'Past Events', 'dbem' );
+			$title = __ ( 'Past Events', 'events-manager');
 			break;
 		case "all" :
-			$title = __ ( 'All Events', 'dbem' );
+			$title = __ ( 'All Events', 'events-manager');
 			break;
 		default :
-			$title = __ ( 'Future Events', 'dbem' );
+			$title = __ ( 'Future Events', 'events-manager');
 			$scope = "future";
 	}
 	$owner = !current_user_can('manage_others_bookings') ? get_current_user_id() : false;
@@ -52,7 +52,7 @@ function em_bookings_events_table() {
 					<!--
 					<select name="action">
 						<option value="-1" selected="selected"><?php esc_html_e( 'Bulk Actions' ); ?></option>
-						<option value="deleteEvents"><?php esc_html_e( 'Delete selected','dbem' ); ?></option>
+						<option value="deleteEvents"><?php esc_html_e( 'Delete selected','events-manager'); ?></option>
 					</select> 
 					<input type="submit" value="<?php esc_html_e( 'Apply' ); ?>" name="doaction2" id="doaction2" class="button-secondary action" />
 					 --> 
@@ -84,15 +84,15 @@ function em_bookings_events_table() {
 			<?php
 			if (empty ( $events )) {
 				// TODO localize
-				_e ( 'no events','dbem' );
+				_e ( 'no events','events-manager');
 			} else {
 			?>
 			<div class='table-wrap'>	
 			<table class="widefat">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Event', 'dbem' ); ?></th>
-						<th><?php esc_html_e( 'Date and time', 'dbem' ); ?></th>
+						<th><?php esc_html_e( 'Event', 'events-manager'); ?></th>
+						<th><?php esc_html_e( 'Date and time', 'events-manager'); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -118,9 +118,9 @@ function em_bookings_events_table() {
 									<?php echo $event->output('#_BOOKINGSLINK'); ?>
 								</strong>
 								&ndash; 
-								<?php esc_html_e("Booked Spaces",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>
+								<?php esc_html_e("Booked Spaces",'events-manager') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>
 								<?php if( get_option('dbem_bookings_approval') == 1 ) : ?>
-									| <?php esc_html_e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
+									| <?php esc_html_e("Pending",'events-manager') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
 								<?php endif; ?>
 							</td>
 					

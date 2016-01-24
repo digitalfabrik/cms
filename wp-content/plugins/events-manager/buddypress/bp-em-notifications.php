@@ -21,26 +21,26 @@ function bp_em_format_notifications( $action, $item_id, $secondary_item_id, $tot
 			//Count pending bookings
 			if( get_option('dbem_bookings_approval')){ 
 				if ( $total_items > 1 ) {
-					return '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . __('You have a pending booking','dbem'). '</a>';
+					return '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'events-manager') . '">' . __('You have a pending booking','events-manager'). '</a>';
 				} else {
-					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . sprintf(__('You have %s pending bookings','dbem'), $total_items). '</a>' );
+					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'events-manager') . '">' . sprintf(__('You have %s pending bookings','events-manager'), $total_items). '</a>' );
 				}
 			}
 		break;
 		case 'confirmed_booking':
 			//Count pending bookings
 			if ( $total_items > 1 ) {
-				return apply_filters( 'bp_em_format_confirmed_booking_notifications', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . __('You have a confirmed booking','dbem'). '</a>' );
+				return apply_filters( 'bp_em_format_confirmed_booking_notifications', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'events-manager') . '">' . __('You have a confirmed booking','events-manager'). '</a>' );
 			} else {
-				return apply_filters( 'bp_em_format_confirmed_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . sprintf(__('You have %s confirmed bookings','dbem'), $total_items). '</a>' );
+				return apply_filters( 'bp_em_format_confirmed_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'events-manager') . '">' . sprintf(__('You have %s confirmed bookings','events-manager'), $total_items). '</a>' );
 			}
 		break;
 		case 'cancelled_booking':
 			//Count pending bookings
 			if ( $total_items > 1 ) {
-				return apply_filters( 'bp_em_format_cancelled_booking_notifications', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . __('A user cancelled a booking','dbem'). '</a>' );
+				return apply_filters( 'bp_em_format_cancelled_booking_notifications', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'events-manager') . '">' . __('A user cancelled a booking','events-manager'). '</a>' );
 			} else {
-				return apply_filters( 'bp_em_format_cancelled_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . sprintf(__('%s users cancelled bookings.','dbem'), $total_items). '</a>' );
+				return apply_filters( 'bp_em_format_cancelled_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'events-manager') . '">' . sprintf(__('%s users cancelled bookings.','events-manager'), $total_items). '</a>' );
 			}
 		break;
 	}

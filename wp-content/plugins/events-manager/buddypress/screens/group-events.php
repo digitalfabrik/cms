@@ -17,7 +17,7 @@ function bp_em_group_events() {
 }
 
 function bp_em_group_events_title() {
-	_e( 'Group Events', 'dbem' );
+	_e( 'Group Events', 'events-manager');
 }
 /**
  * Determines whether to show event page or events page, and saves any updates to the event or events

@@ -29,6 +29,8 @@ final class WP_Installer{
     const SITE_KEY_VALIDATION_SOURCE_REVALIDATION       = 4;
     const SITE_KEY_VALIDATION_SOURCE_UPDATES_CHECK      = 5;
 
+    public $dependencies;
+
     public static function instance() {
         
         if ( is_null( self::$_instance ) ) {
@@ -93,6 +95,8 @@ final class WP_Installer{
     
     public function init(){
         global $pagenow;
+
+        $this->dependencies = new Installer_Dependencies;
 
         if(empty($this->settings['_pre_1_0_clean_up'])) {
             $this->_pre_1_0_clean_up();
@@ -179,9 +183,11 @@ final class WP_Installer{
 
     public function show_admin_messages(){
         if(!empty($this->admin_messages)){
+            $types = array( 'error', 'updated', 'notice' );
             foreach($this->admin_messages as $message){
+                $class = in_array( $message['type'], $types ) ? $message['type'] : 'updated';
                 ?>
-                <div class="<?php echo esc_attr($message['type']) ?>">
+                <div class="<?php echo $class ?>">
                     <p>
                         <?php echo $message['text'] ?>
                     </p>
@@ -500,7 +506,7 @@ final class WP_Installer{
     //backward compatibility - support old products list format (downloads under products instead of global downloads list)
     private function _old_products_format_backwards_compatibility($settings){
 
-        if( version_compare($this->version(), '1.8', '<') && !empty($settings['repositories']) ) {
+        if( version_compare($this->version(), '1.8', '<') && !empty($settings['repositories']) && empty($this->_old_products_format_backwards_compatibility) ) {
 
             foreach ($settings['repositories'] as $repository_id => $repository) {
 
@@ -551,6 +557,8 @@ final class WP_Installer{
                 }
 
             }
+
+            $this->_old_products_format_backwards_compatibility = true;
 
         }
 
@@ -1693,26 +1701,8 @@ final class WP_Installer{
 
     public function is_uploading_allowed(){
 
-        if(!isset($this->uploading_allowed)){
-            require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-            require_once WP_Installer()->plugin_path() . '/includes/installer-upgrader-skins.php';
-
-            $upgrader_skins = new Installer_Upgrader_Skins(); //use our custom (mute) Skin
-            $upgrader = new Plugin_Upgrader($upgrader_skins);
-
-            ob_start();
-            $res = $upgrader->fs_connect( array(WP_CONTENT_DIR, WP_PLUGIN_DIR) );
-            ob_end_clean();
-
-            if ( ! $res || is_wp_error( $res ) ) {
-                $this->uploading_allowed = false;
-            }else{
-                $this->uploading_allowed = true;
-            }
-        }
-
-
-        return $this->uploading_allowed;
+        //_deprecated_function ( __FUNCTION__, '1.7.3', 'Installer_Dependencies::' . __FUNCTION__ );
+        return $this->dependencies->is_uploading_allowed();
 
     }
 

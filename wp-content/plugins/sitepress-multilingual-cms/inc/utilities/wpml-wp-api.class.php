@@ -1,6 +1,21 @@
 <?php
 
 class WPML_WP_API {
+	public function get_file_mime_type( $filename ) {
+
+		$mime_type = 'application/octet-stream';
+		if ( file_exists( $filename ) ) {
+			if ( function_exists( 'finfo_open' ) ) {
+				$finfo     = finfo_open( FILEINFO_MIME_TYPE ); // return mime type ala mimetype extension
+				$mime_type = finfo_file( $finfo, $filename );
+				finfo_close( $finfo );
+			} else {
+				$mime_type = mime_content_type( $filename );
+			}
+		}
+
+		return $mime_type;
+	}
 
 	/**
 	 * Wrapper for \get_option
@@ -236,6 +251,10 @@ class WPML_WP_API {
 
 	public function is_back_end() {
 		return is_admin() && ! $this->is_ajax() && ! $this->is_cron_job();
+	}
+
+	public function is_front_end() {
+		return ! is_admin() && ! $this->is_ajax() && ! $this->is_cron_job();
 	}
 
 	public function is_ajax() {

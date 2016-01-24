@@ -8,7 +8,7 @@ global $EM_Location, $EM_Notices;
 //check that user can access this page
 if( is_object($EM_Location) && !$EM_Location->can_manage('edit_locations','edit_others_locations') ){
 	?>
-	<div class="wrap"><h2><?php esc_html_e('Unauthorized Access','dbem'); ?></h2><p><?php echo sprintf(__('You do not have the rights to manage this %s.','dbem'),__('location','dbem')); ?></p></div>
+	<div class="wrap"><h2><?php esc_html_e('Unauthorized Access','events-manager'); ?></h2><p><?php echo sprintf(__('You do not have the rights to manage this %s.','events-manager'),__('location','events-manager')); ?></p></div>
 	<?php
 	return false;
 }elseif( !is_object($EM_Location) ){
@@ -22,26 +22,26 @@ if(!is_admin()) echo $EM_Notices;
 	<input type='hidden' name='location_id' value='<?php echo $EM_Location->location_id ?>'/>
  	
 	<?php do_action('em_front_location_form_header'); ?>
-	<h3 class="location-form-name"><?php esc_html_e( 'Location Name', 'dbem' ); ?></h3>
+	<h3 class="location-form-name"><?php esc_html_e( 'Location Name', 'events-manager'); ?></h3>
 	<div class="inside location-form-name">
 		<input name='location_name' id='location-name' type='text' value='<?php echo esc_attr($EM_Location->location_name, ENT_QUOTES); ?>' size='40'  />
 		<br />
-		<?php esc_html_e('The name of the location', 'dbem') ?>
+		<?php esc_html_e('The name of the location', 'events-manager') ?>
 	</div>
 
-	<h3 class="location-form-where"><?php esc_html_e( 'Location', 'dbem' ); ?></h3>
+	<h3 class="location-form-where"><?php esc_html_e( 'Location', 'events-manager'); ?></h3>
 	<div class="inside location-form-where">
-		<?php em_locate_template('forms/location/where.php','dbem'); ?>
+		<?php em_locate_template('forms/location/where.php','events-manager'); ?>
 	</div>
 
-	<h3 class="location-form-details"><?php esc_html_e( 'Details', 'dbem' ); ?></h3>
+	<h3 class="location-form-details"><?php esc_html_e( 'Details', 'events-manager'); ?></h3>
 	<div class="inside location-form-details">
 		<?php if( get_option('dbem_events_form_editor') && function_exists('wp_editor') ): ?>
 			<?php wp_editor($EM_Location->post_content, 'em-editor-content', array('textarea_name'=>'content') ); ?> 
 		<?php else: ?>
 			<textarea name="content" rows="10" style="width:100%"><?php echo $EM_Location->post_content; ?></textarea>
 			<br />
-			<?php esc_html_e( 'Details about the location.', 'dbem' )?> <?php esc_html_e( 'HTML Allowed.', 'dbem' )?>
+			<?php esc_html_e( 'Details about the location.', 'events-manager')?> <?php esc_html_e( 'HTML Allowed.', 'events-manager')?>
 		<?php endif; ?>
 	</div>
 	
@@ -49,7 +49,7 @@ if(!is_admin()) echo $EM_Notices;
 	<?php if(get_option('dbem_location_attributes_enabled')){ em_locate_template('forms/location/attributes-public.php',true); } ?>
 				
 	<?php if( $EM_Location->can_manage('upload_event_images','upload_event_images') ): ?>
-	<h3 class="location-form-image"><?php esc_html_e( 'Location Image', 'dbem' ); ?></h3>
+	<h3 class="location-form-image"><?php esc_html_e( 'Location Image', 'events-manager'); ?></h3>
 	<div class="inside location-form-image" style="padding:10px;">
 		<?php em_locate_template('forms/location/featured-image-public.php',true); ?>
 	</div>
@@ -62,9 +62,9 @@ if(!is_admin()) echo $EM_Notices;
 	<?php endif; ?>
 	<p class='submit'>
 	    <?php if( empty($EM_Location->location_id) ): ?>
-	    <input type='submit' class='button-primary' value='<?php echo esc_attr(sprintf( __('Submit %s','dbem'), __('Location','dbem') )); ?>' />
+	    <input type='submit' class='button-primary' value='<?php echo esc_attr(sprintf( __('Submit %s','events-manager'), __('Location','events-manager') )); ?>' />
 	    <?php else: ?>
-	    <input type='submit' class='button-primary' value='<?php echo esc_attr(sprintf( __('Update %s','dbem'), __('Location','dbem') )); ?>' />
+	    <input type='submit' class='button-primary' value='<?php echo esc_attr(sprintf( __('Update %s','events-manager'), __('Location','events-manager') )); ?>' />
 	    <?php endif; ?>
 	</p>
 </form>

@@ -48,7 +48,7 @@ class ICLMenusSync extends WPML_Menu_Sync_Functionality {
 
 		if ( $action === 'icl_msync_preview' ) {
 			$this->is_preview = true;
-			$this->sync_data  = isset( $_POST['sync'] ) ? $_POST['sync'] : false;
+			$this->sync_data  = isset( $_POST['sync'] ) ? array_map( 'stripslashes_deep', $_POST['sync'] ) : false;
 			$previous_menu = isset( $_SESSION[ 'wpml_menu_sync_menu' ] ) ? $_SESSION[ 'wpml_menu_sync_menu' ] : null;
 		} 
 

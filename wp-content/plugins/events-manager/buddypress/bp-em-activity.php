@@ -42,18 +42,18 @@ function em_bp_register_activity_actions() {
 	bp_activity_set_action(
 		$bp->events->id,
 		'new_booking',
-		__( 'Bookings', 'dbem' ),
+		__( 'Bookings', 'events-manager'),
 		'em_bp_events_format_activity_action_bookings',
-		__( 'Bookings', 'dbem' ),
+		__( 'Bookings', 'events-manager'),
 		array( 'activity', 'member' )
 	);
 	/*
 	bp_activity_set_action(
 		$bp->events->id,
 		'booking_cancelled',
-		__( 'Booking Cancelled', 'dbem' ),
+		__( 'Booking Cancelled', 'events-manager'),
 		'em_bp_events_format_activity_action_bookings',
-		__( 'Bookings', 'dbem' ),
+		__( 'Bookings', 'events-manager'),
 		array( 'activity', 'member' )
 	);
 	*/
@@ -61,9 +61,9 @@ function em_bp_register_activity_actions() {
 	bp_activity_set_action(
 		$bp->events->id,
 		'new_event',
-		__('New Event','dbem'),
+		__('New Event','events-manager'),
 		'em_bp_events_format_activity_action_events',
-		__( 'Events', 'dbem' ),
+		__( 'Events', 'events-manager'),
 		array( 'activity', 'member' )
 	);
 }
@@ -84,16 +84,16 @@ function em_bp_events_format_activity_action_bookings( $action, $activity ) {
 	switch ($activity->type){
 	    case 'new_booking':
 	        if( $activity->component == 'groups' ){
-				$action = sprintf(__('%s is attending %s of the group %s.','dbem'), $member_link, $event_link, $group_link );
+				$action = sprintf(__('%s is attending %s of the group %s.','events-manager'), $member_link, $event_link, $group_link );
 	        }else{
-	            $action = sprintf(__('%s is attending %s.','dbem'), $member_link, $event_link );
+	            $action = sprintf(__('%s is attending %s.','events-manager'), $member_link, $event_link );
 	        }
 	        break;
 	    case 'cancelled_booking':
 	        if( $activity->component == 'groups' ){
-	            $action = sprintf(__('%s will not be attending %s of group %s anymore.','dbem'), $user_link, $event_link, $group_link );
+	            $action = sprintf(__('%s will not be attending %s of group %s anymore.','events-manager'), $user_link, $event_link, $group_link );
 	        }else{
-	            $action = sprintf(__('%s will not be attending %s anymore.','dbem'), $user_link, $event_link );
+	            $action = sprintf(__('%s will not be attending %s anymore.','events-manager'), $user_link, $event_link );
 	        }
 			break;
 	}
@@ -112,7 +112,7 @@ function em_bp_events_format_activity_action_events( $action, $activity ) {
 	$member_link = bp_core_get_userlink( $activity->user_id );
 	$EM_Event = em_get_event( $activity->item_id );
 
-	$action = sprintf(__('%s added the event %s','dbem'), $member_link, $EM_Event->output('#_EVENTLINK') );
+	$action = sprintf(__('%s added the event %s','events-manager'), $member_link, $EM_Event->output('#_EVENTLINK') );
 
 	return apply_filters( 'bp_events_format_activity_action_events', $action, $activity );
 }
@@ -130,7 +130,7 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 		if( empty($EM_Event->group_id) ){
 			bp_em_record_activity( array(
 				'user_id' => $user->ID,
-				'action' => sprintf(__('%s added the event %s','dbem'), "<a href='".$member_link."'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
+				'action' => sprintf(__('%s added the event %s','events-manager'), "<a href='".$member_link."'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
 				'primary_link' => $EM_Event->output('#_EVENTURL'),
 				'type' => 'new_event',
 				'item_id' => $EM_Event->event_id,
@@ -141,7 +141,7 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 			$group = new BP_Groups_Group($EM_Event->group_id);
 			bp_em_record_activity( array(
 				'user_id' => $user->ID,
-				'action' => sprintf(__('%s added the event %s to %s.','dbem'), "<a href='".$member_link."'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK'), '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>' ),
+				'action' => sprintf(__('%s added the event %s to %s.','events-manager'), "<a href='".$member_link."'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK'), '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>' ),
 				'component' => 'groups',
 				'type' => 'new_event',
 				'item_id' => $EM_Event->group_id,
@@ -170,18 +170,18 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 		$action_type = 'new_booking';
 		if( empty($EM_Event->group_id) ){
 			if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
-				$action = sprintf(__('%s is attending %s.','dbem'), $user_link, $event_link );
+				$action = sprintf(__('%s is attending %s.','events-manager'), $user_link, $event_link );
 			}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && in_array($status, $rejected_statuses) ){
-				$action = sprintf(__('%s will not be attending %s anymore.','dbem'), $user_link, $event_link );
+				$action = sprintf(__('%s will not be attending %s anymore.','events-manager'), $user_link, $event_link );
 				//$action_type = 'cancelled_booking';
 			}
 		}else{
 			$group = new BP_Groups_Group($EM_Event->group_id);
 			$group_link = '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>';
 			if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
-				$action = sprintf(__('%s is attending %s of the group %s.','dbem'), $user_link, $event_link, $group_link );
+				$action = sprintf(__('%s is attending %s of the group %s.','events-manager'), $user_link, $event_link, $group_link );
 			}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && in_array($status, $rejected_statuses) ){
-				$action = sprintf(__('%s will not be attending %s of group %s anymore.','dbem'), $user_link, $event_link, $group_link );
+				$action = sprintf(__('%s will not be attending %s of group %s anymore.','events-manager'), $user_link, $event_link, $group_link );
 				//$action_type = 'cancelled_booking';
 			}
 		}

@@ -92,7 +92,7 @@ class EM_Location_Post_Admin{
 				//Handle Errors by making post draft
 				if( !$get_meta || !$validate_meta || !$save_meta ){
 					$EM_Location->set_status(null, true);
-					$EM_Notices->add_error( '<strong>'.sprintf(__('Your %s details are incorrect and cannot be published, please correct these errors first:','dbem'),__('location','dbem')).'</strong>', true); //Always seems to redirect, so we make it static
+					$EM_Notices->add_error( '<strong>'.sprintf(__('Your %s details are incorrect and cannot be published, please correct these errors first:','events-manager'),__('location','events-manager')).'</strong>', true); //Always seems to redirect, so we make it static
 					$EM_Notices->add_error($EM_Location->get_errors(), true); //Always seems to redirect, so we make it static
 					apply_filters('em_location_save', false , $EM_Location);
 				}else{
@@ -156,10 +156,10 @@ class EM_Location_Post_Admin{
 		if( empty($EM_Location) && !empty($post) ){
 			$EM_Location = em_get_location($post->ID, 'post_id');
 		}
-		add_meta_box('em-location-where', __('Where','dbem'), array('EM_Location_Post_Admin','meta_box_where'),EM_POST_TYPE_LOCATION, 'normal','high');
-		//add_meta_box('em-location-metadump', __('EM_Location Meta Dump','dbem'), array('EM_Location_Post_Admin','meta_box_metadump'),EM_POST_TYPE_LOCATION, 'normal','high');
+		add_meta_box('em-location-where', __('Where','events-manager'), array('EM_Location_Post_Admin','meta_box_where'),EM_POST_TYPE_LOCATION, 'normal','high');
+		//add_meta_box('em-location-metadump', __('EM_Location Meta Dump','events-manager'), array('EM_Location_Post_Admin','meta_box_metadump'),EM_POST_TYPE_LOCATION, 'normal','high');
 		if( get_option('dbem_location_attributes_enabled') ){
-			add_meta_box('em-location-attributes', __('Attributes','dbem'), array('EM_Location_Post_Admin','meta_box_attributes'),EM_POST_TYPE_LOCATION, 'normal','default');
+			add_meta_box('em-location-attributes', __('Attributes','events-manager'), array('EM_Location_Post_Admin','meta_box_attributes'),EM_POST_TYPE_LOCATION, 'normal','default');
 		}
 	}
 	

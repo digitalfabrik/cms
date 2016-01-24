@@ -17,7 +17,7 @@ function bp_em_my_group_events() {
 }
 
 function bp_em_my_group_events_title() {
-	_e( 'Group Events', 'dbem' );
+	_e( 'Group Events', 'events-manager');
 }
 
 function bp_em_my_group_events_content(){

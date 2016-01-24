@@ -1,8 +1,4 @@
 <?php
-
-require_once ICL_PLUGIN_PATH . "/inc/taxonomy-term-translation/wpml-term-language-synchronization.class.php";
-require_once ICL_PLUGIN_PATH . "/inc/setup/wpml-tm-settings-update.class.php";
-
 class WPML_Config {
 	static $wpml_config_files = array();
     static $active_plugins = array();

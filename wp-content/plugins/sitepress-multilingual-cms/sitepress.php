@@ -5,7 +5,7 @@ Plugin URI: https://wpml.org/
 Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-3/">WPML 3.3 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 3.3.3
+Version: 3.3.5
 Plugin Slug: sitepress-multilingual-cms
 */
 
@@ -14,7 +14,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 if ( defined( 'ICL_SITEPRESS_VERSION' ) || (bool) get_option( '_wpml_inactive' ) === true ) {
 	return;
 }
-define( 'ICL_SITEPRESS_VERSION', '3.3.3' );
+define( 'ICL_SITEPRESS_VERSION', '3.3.5' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -30,6 +30,9 @@ if ( ! defined( 'FILTER_SANITIZE_FULL_SPECIAL_CHARS' ) ) {
 	define( 'FILTER_SANITIZE_FULL_SPECIAL_CHARS', FILTER_SANITIZE_STRING );
 }
 require ICL_PLUGIN_PATH . '/inc/functions-helpers.php';
+
+require_once 'lib/Twig/Autoloader.php';
+Twig_Autoloader::register();
 
 require_once 'embedded/wpml/commons/autoloader.php';
 $wpml_auto_loader_instance = WPML_Auto_Loader::get_instance();
@@ -90,7 +93,6 @@ require ICL_PLUGIN_PATH . '/inc/post-translation/wpml-admin-post-actions.class.p
 require ICL_PLUGIN_PATH . '/inc/post-translation/wpml-frontend-post-actions.class.php';
 
 require ICL_PLUGIN_PATH . '/inc/url-handling/wpml-url-filters.class.php';
-require ICL_PLUGIN_PATH . '/inc/request-handling/wpml-language-resolution.class.php';
 require ICL_PLUGIN_PATH . '/inc/url-handling/wpml-url-converter.class.php';
 require ICL_PLUGIN_PATH . '/inc/utilities/wpml-languages.class.php';
 require ICL_PLUGIN_PATH . '/inc/utilities/wpml-wp-api.class.php';

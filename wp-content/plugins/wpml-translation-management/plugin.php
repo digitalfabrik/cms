@@ -5,7 +5,7 @@ Plugin URI: https://wpml.org/
 Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-2/">WPML 3.2 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.1.3
+Version: 2.1.4
 Plugin Slug: wpml-translation-management
 */
 
@@ -26,7 +26,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
 	}
 }
 
-define( 'WPML_TM_VERSION', '2.1.3' );
+define( 'WPML_TM_VERSION', '2.1.4' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -63,6 +63,7 @@ function wpml_tm_load_ui() {
 		$TranslationProxy = new WPML_Translation_Proxy_API();
 		new WPML_TM_Troubleshooting_Reset_Pro_Trans_Config( $sitepress, $TranslationProxy, $wpml_wp_api, $wpdb );
 		new WPML_TM_Troubleshooting_Clear_TS( $wpml_wp_api );
+		new WPML_TM_Promotions( $wpml_wp_api );
 	}
 }
 

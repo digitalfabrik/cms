@@ -3,8 +3,8 @@ Contributors: shinephp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=vladimir%40shinephp%2ecom&lc=RU&item_name=ShinePHP%2ecom&item_number=User%20Role%20Editor%20WordPress%20plugin&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: user, role, editor, security, access, permission, capability
 Requires at least: 4.0
-Tested up to: 4.4
-Stable tag: 4.21.1
+Tested up to: 4.4.1
+Stable tag: 4.22
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,12 @@ If you wish to check available translations or help with plugin translation to y
 https://translate.wordpress.org/projects/wp-plugins/user-role-editor/
 
 == Changelog ==
+= [4.22] 15.01.2016 =
+* Unused 'add_users' capability was removed from the list of core capabilities as it was removed from WordPress starting from version 4.4
+* bbPress user capabilities are supported for use in the non-bbPress roles. You can not edit roles created by bbPress, as bbPress re-creates them dynamically for every request to the server. Full support for bbPress roles editing will be included into User Role Editor Pro version 4.22.
+* Self-added "Other Roles" column removed from "Users" list, as WordPress started to show all roles assigned to the user in its own "Role" column.
+* 'ure_show_additional_capabilities_section' filter allows to  hide 'Other Roles' section at the 'Add new user', 'Edit user' pages.
+
 = [4.21.1] 16.12.2015 =
 * Fix: 'Update' button did not work at User's Capabilities page due to confirmation dialog call error.
 

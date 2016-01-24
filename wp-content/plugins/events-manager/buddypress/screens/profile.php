@@ -8,7 +8,7 @@ function bp_em_events() {
 	global $bp, $EM_Notices;
 	
 	if( bp_is_my_profile() ){
-		$EM_Notices->add_info( __('You are currently viewing your public page, this is what other users will see.', 'dbem') );
+		$EM_Notices->add_info( __('You are currently viewing your public page, this is what other users will see.', 'events-manager') );
 	}
 
 	/* Add a do action here, so your component can be extended by others. */
@@ -24,7 +24,7 @@ function bp_em_events() {
 	 * display the corresponding information. The functions are presented below:
 	 */
 	function bp_em_events_title() {
-		_e( 'Events', 'dbem' );
+		_e( 'Events', 'events-manager');
 	}
 
 	function bp_em_events_content() {
