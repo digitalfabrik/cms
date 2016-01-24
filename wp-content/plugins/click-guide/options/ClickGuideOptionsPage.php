@@ -5,6 +5,7 @@ require_once __DIR__ . '/ClickGuideWaypoint.php';
 
 class ClickGuideOptionsPage {
 
+    private $clickguideStatus;
     private $welcomePopUpMessage;
     private $nameForClickGuide;
 
@@ -28,6 +29,7 @@ class ClickGuideOptionsPage {
     // Options page callback
     public function create_admin_page()
     {
+        $this->clickguideStatus = get_site_option( 'clickguide_status' );
         $this->welcomePopUpMessage = get_option( 'welcome_popup_message' );
         $this->nameForClickGuide = get_option( 'clickguide_naming' );
         ?>
@@ -54,7 +56,15 @@ class ClickGuideOptionsPage {
             'Willkommensnachricht (PopUp)', // Title
             array( $this, 'print_welcome_section_info' ), // Callback
             'clickguide-optionspage-welcomemessage' // Page
-        );  
+        );
+
+        add_settings_field(
+            'clickguide_status', // ID
+            'Status', // Title
+            array( $this, 'clickguide_status_callback' ), // Callback
+            'clickguide-optionspage-welcomemessage', // Page
+            'welcome_section' // Section
+        );
 
         add_settings_field(
             'welcome_message', // ID
@@ -77,6 +87,15 @@ class ClickGuideOptionsPage {
     // Section Description
     public function print_welcome_section_info() {
         print 'Beim Aufruf des Dashboards wird ein PopUp angezeigt, dass auf den Klick-Guide aufmerksam macht. Das PopUp wird nur angezeigt, wenn der Benutzer die Anzeige nicht durch "Diese Meldung nicht mehr anzeigen" unterbunden hat. Nachfolgend kann der einleitende Text dieses PopUps festgelegt werden. Unter diesem Text werden alle Touren in der definierten Reihenfolge aufgelistet.';
+    }
+
+    // Callback for clickguide status
+    public function clickguide_status_callback() {
+        if( $this->clickguideStatus == 1 ) {
+            print( '<input type="checkbox" id="clickguide_status" name="clickguide_status" checked />' );
+        } else {
+            print( '<input type="checkbox" id="clickguide_status" name="clickguide_status" />' );
+        }
     }
 
     // Callback for welcome message
