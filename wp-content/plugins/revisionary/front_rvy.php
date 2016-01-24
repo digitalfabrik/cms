@@ -162,7 +162,7 @@ class RevisionaryFront {
 				
 				$parent = get_post( $revision->post_parent );
 
-				if ( in_array( $revision->post_status, array( 'pending', 'future', 'inherit' ) ) )
+				if ( in_array( $revision->post_status, array( 'rvy-pending', 'future', 'inherit' ) ) )
 					$published_post_id = $revision->post_parent;
 				
 
@@ -182,13 +182,13 @@ class RevisionaryFront {
 						$class = 'published';
 						$link_caption = sprintf( __( 'This Revision was Published on %s', 'revisionary' ), $date );
 						break;
-					case 'pending' :
+					case 'rvy-pending' :
 						if ( strtotime( $revision->post_date_gmt ) > agp_time_gmt() ) {
 							$class = 'pending_future';
 							$date_msg = sprintf( __('(for publication on %s)', 'revisionary'), $date );
 							$link_caption = sprintf( __( 'Schedule this Pending Revision', 'revisionary' ), $date );
 						} else {
-							$class = 'pending';
+							$class = 'rvy-pending';
 							$date_msg = '';
 							$link_caption = __( 'Publish this Pending Revision now.', 'revisionary' );
 						}
@@ -207,7 +207,7 @@ class RevisionaryFront {
 						break;
 					}
 
-					if ( in_array( $revision->post_status, array( 'pending' ) ) && current_user_can ('publish_posts') ) {
+					if ( in_array( $revision->post_status, array( 'rvy-pending' ) ) && current_user_can ('publish_posts') ) {
 						$link = wp_nonce_url( 'wp-admin/' . "admin.php?page=rvy-revisions&amp;revision=$revision_id&amp;diff=false&amp;action=approve", "approve-post_$published_post_id|$revision_id" );
 					
 					} elseif ( in_array( $revision->post_status, array( 'inherit', 'future' ) ) && current_user_can ('publish_posts')  ) {

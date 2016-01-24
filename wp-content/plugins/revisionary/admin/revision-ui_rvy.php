@@ -442,7 +442,7 @@ function rvy_list_post_revisions( $post_id = 0, $status = '', $args = null ) {
 				$preview_link = '<a href="' . esc_url( add_query_arg( 'preview', '1', get_permalink( $revision->ID ) . '&post_type=revision' ) ) . '" title="' . esc_attr( sprintf( __( 'Preview &#8220;%s&#8221;' ), $revision->post_title ) ) . '" rel="permalink">' . __( 'Preview' ) . '</a>';
 				
 				if ( $can_edit_post 
-				|| ( ( 'pending' == $status ) && ( $revision->post_author == $current_user->ID ) )	// allow submitters to delete their own still-pending revisions
+				|| ( ( 'rvy-pending' == $status ) && ( $revision->post_author == $current_user->ID ) )	// allow submitters to delete their own still-pending revisions
 				 ) {
 					if ( 'future' == $status ) {
 						$link = "admin.php?page=rvy-revisions&amp;action=unschedule&amp;revision={$revision->ID}";
@@ -486,7 +486,7 @@ function rvy_list_post_revisions( $post_id = 0, $status = '', $args = null ) {
 			$rows .= "\t<td>$name</td>\n";
 			$rows .= "\t<td class='action-links'>$actions</td>\n";
 			if ( $post->ID != $revision->ID 
-			&& ( $can_edit_post || ( ( 'pending' == $status ) && ( $revision->post_author == $current_user->ID ) ) )	// allow submitters to delete their own still-pending revisions
+			&& ( $can_edit_post || ( ( 'rvy-pending' == $status ) && ( $revision->post_author == $current_user->ID ) ) )	// allow submitters to delete their own still-pending revisions
 			) {
 				$rows .= "\t<td><input class='rvy-rev-chk' type='checkbox' name='delete_revisions[]' value='" . $revision->ID . "' /></td>\n";
 				$can_delete_any = true;
@@ -543,7 +543,7 @@ switch( $status ) :
 case 'inherit' :
 	_e( 'Modified Date (click to view/restore)', 'revisionary' ); 
 	break;
-case 'pending' :
+case 'rvy-pending' :
 	_e( 'Modified Date (click to view/approve)', 'revisionary' ); 
 	break;
 case 'future' :

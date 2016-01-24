@@ -70,7 +70,7 @@ div.num-revisions, #post-preview{ display:none; }
 		if ( rvy_get_option( 'pending_revisions' ) ) {
 			require_once( dirname(__FILE__).'/revision-ui_rvy.php' );
 			
-			add_meta_box( 'pending_revisions', __( 'Pending Revisions', 'revisionary'), create_function( '', "rvy_metabox_revisions('pending');"), $object_type );
+			add_meta_box( 'pending_revisions', __( 'Pending Revisions', 'revisionary'), create_function( '', "rvy_metabox_revisions('rvy-pending');"), $object_type );
 			
 			$admin_notify = (string) rvy_get_option( 'pending_rev_notify_admin' );
 			$author_notify = (string) rvy_get_option( 'pending_rev_notify_author' );
@@ -116,7 +116,7 @@ div.num-revisions, #post-preview{ display:none; }
 					// Remove Scheduled / Pending Revisions metabox if none will be listed
 					// If a listing does exist, buffer it for subsequent display
 					if ( 'pending_revisions' == $box_id ) {
-						if ( ! $object_id || ! $this->pending_revisions = rvy_list_post_revisions( $object_id, 'pending', array( 'format' => 'list', 'parent' => false, 'echo' => false ) ) )
+						if ( ! $object_id || ! $this->pending_revisions = rvy_list_post_revisions( $object_id, 'rvy-pending', array( 'format' => 'list', 'parent' => false, 'echo' => false ) ) )
 							unset( $wp_meta_boxes[$object_type][$context][$priority][$box_id] );
 					
 					} elseif ( 'future_revisions' == $box_id ) {

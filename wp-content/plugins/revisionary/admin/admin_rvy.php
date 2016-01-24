@@ -281,7 +281,7 @@ class RevisionaryAdmin
 						if ( 'revision' != $revision->post_type ) // we retrieved the parent (current revision) that corresponds to requested revision
 							$read_only = true;
 
-						elseif ( ( 'pending' == $revision->post_status ) && ( $revision->post_author == $current_user->ID ) )
+						elseif ( ( 'rvy-pending' == $revision->post_status ) && ( $revision->post_author == $current_user->ID ) )
 							$read_only = false;
 						else {
 							if ( $type_obj = get_post_type_object( $post->post_type ) )
@@ -556,7 +556,7 @@ jQuery(document).ready( function($) {
 	function flt_get_post_time( $time, $format, $gmt ) {
 		if ( function_exists('get_the_ID') && $post_id = get_the_ID() ) {
 			if ( $post = get_post( $post_id ) ) {
-				if ( ( 'revision' == $post->post_type ) && ( 'pending' == $post->post_status ) ) {
+				if ( ( 'revision' == $post->post_type ) && ( 'rvy-pending' == $post->post_status ) ) {
 					if ( $gmt )
 						$time = mysql2date($format, $post->post_modified_gmt, $gmt);
 					else
@@ -591,7 +591,7 @@ jQuery(document).ready( function($) {
 		$object_type = isset($post_arr['post_type']) ? $post_arr['post_type'] : '';
 	
 		$post_arr['post_type'] = 'revision';
-		$post_arr['post_status'] = 'pending';
+		$post_arr['post_status'] = 'rvy-pending';
 		$post_arr['post_parent'] = $this->impose_pending_rev;  // side effect: don't need to filter page parent selection because parent is set to published revision
 		$post_arr['parent_id'] = $this->impose_pending_rev;
 		$post_arr['post_ID'] = 0;
@@ -617,7 +617,7 @@ jQuery(document).ready( function($) {
 		if ( $revision_id = wp_insert_post($post_arr) ) {
 			$future_date = ( ! empty($post_arr['post_date']) && ( strtotime($post_arr['post_date_gmt'] ) > agp_time_gmt() ) );
 			
-			$wpdb->query("UPDATE $wpdb->posts SET post_status = 'pending', post_parent = '$this->impose_pending_rev' $date_clause WHERE ID = '$revision_id'");
+			$wpdb->query("UPDATE $wpdb->posts SET post_status = 'rvy-pending', post_parent = '$this->impose_pending_rev' $date_clause WHERE ID = '$revision_id'");
 			
 			$manage_link = $this->get_manage_link( $object_type );
 							

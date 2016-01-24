@@ -303,7 +303,7 @@ function rvy_revision_delete() {
 			if ( ! current_user_can( $type_obj->cap->delete_post, $revision->post_parent ) ) {
 				global $current_user;
 	
-				if ( ( 'pending' != $revision->post_status ) || ( $revision->post_author != $current_user->ID ) )	// allow submitters to delete their own still-pending revisions
+				if ( ( 'rvy-pending' != $revision->post_status ) || ( $revision->post_author != $current_user->ID ) )	// allow submitters to delete their own still-pending revisions
 					break;
 			}
 		}
@@ -365,7 +365,7 @@ function rvy_revision_bulk_delete() {
 			if ( $post = get_post( $revision->post_parent ) ) {
 				if ( $type_obj = get_post_type_object( $post->post_type ) ) {
 					if ( ! current_user_can( $type_obj->cap->delete_post, $revision->post_parent ) ) {
-						if ( ( 'pending' != $revision->post_status ) || ( $revision->post_author != $current_user->ID ) )	// allow submitters to delete their own still-pending revisions
+						if ( ( 'rvy-pending' != $revision->post_status ) || ( $revision->post_author != $current_user->ID ) )	// allow submitters to delete their own still-pending revisions
 							continue;
 					}
 				}
@@ -410,7 +410,7 @@ function rvy_revision_edit() {
 				if ( isset( $GLOBALS['cap_interceptor'] ) )
 					$GLOBALS['cap_interceptor']->require_full_object_role = false;
 
-				if ( ( 'pending' != $revision->post_status ) || ( ( $revision->post_author != $current_user->ID ) && ! $can_edit_others ) )	// allow submitters to edit their own still-pending revisions
+				if ( ( 'rvy-pending' != $revision->post_status ) || ( ( $revision->post_author != $current_user->ID ) && ! $can_edit_others ) )	// allow submitters to edit their own still-pending revisions
 					break;
 			}
 
@@ -521,7 +521,7 @@ function rvy_revision_unschedule() {
 		check_admin_referer('unschedule-revision_' .  $revision_id);
 
 		global $wpdb;
-		$wpdb->query( "UPDATE $wpdb->posts SET post_status = 'pending' WHERE post_type = 'revision' AND ID = '$revision_id'" );
+		$wpdb->query( "UPDATE $wpdb->posts SET post_status = 'rvy-pending' WHERE post_type = 'revision' AND ID = '$revision_id'" );
 		
 		delete_option( 'rvy_next_rev_publish_gmt' );
 		$redirect = "admin.php?page=rvy-revisions&revision=$revision_id&action=view&unscheduled=$revision_id";

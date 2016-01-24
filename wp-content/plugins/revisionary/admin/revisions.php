@@ -57,7 +57,7 @@ if ( empty($revision_id) && ! $left && ! $right ) {
 	return;
 }
 
-$revision_status_captions = array( 'inherit' => __( 'Past', 'revisionary' ), 'pending' => __awp('Pending', 'revisionary'), 'future' => __awp( 'Scheduled', 'revisionary' ) );
+$revision_status_captions = array( 'inherit' => __( 'Past', 'revisionary' ), 'rvy-pending' => __awp('Pending', 'revisionary'), 'future' => __awp( 'Scheduled', 'revisionary' ) );
 
 if( 'edit' == $action )
 	$action = 'view';
@@ -120,7 +120,7 @@ case 'diff' :
 		} else {
 			$can_view = ( ( 'revision' == $_revision->post_type ) ) && (
 				$can_fully_edit_post || 
-				( ( $_revision->post_author == $current_user->ID || $_can_edit_others ) && ( 'pending' == $_revision->post_status ) ) 
+				( ( $_revision->post_author == $current_user->ID || $_can_edit_others ) && ( 'rvy-pending' == $_revision->post_status ) ) 
 				 );	
 		}
 				 
@@ -201,7 +201,7 @@ default :
 			else
 				$h2 = sprintf( __( 'Past Revision of &#8220;%1$s&#8221;', 'revisionary' ), $post_title);
 			break;
-		case 'pending':
+		case 'rvy-pending':
 			$h2 = sprintf( __( 'Pending Revision of &#8220;%1$s&#8221;', 'revisionary' ), $post_title);
 			break;
 		case 'future':
@@ -216,7 +216,7 @@ default :
 					$caption = str_replace( ' ', '&nbsp;', __('Publish Now', 'revisionary') );
 					$link = wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'diff' => false, 'action' => 'restore' ) ), "restore-post_$rvy_post->ID|$revision->ID" );
 					break;
-				case 'pending' :
+				case 'rvy-pending' :
 					if ( strtotime($revision->post_date_gmt) > agp_time_gmt() ) {
 						$caption = str_replace( ' ', '&nbsp;', __('Schedule Now', 'revisionary') );
 					} else {
@@ -249,7 +249,7 @@ default :
 	add_filter( 'get_edit_post_link', array($revisionary->admin, 'flt_edit_post_link'), 10, 3 );
 	
 	// pending revisions are newer than current revision
-	if ( 'pending' == $revision_status ) {
+	if ( 'rvy-pending' == $revision_status ) {
 		$buffer_left = $left;
 		$left  = $right;
 		$right = $buffer_left;
@@ -289,7 +289,7 @@ if ( ! $can_fully_edit_post = agp_user_can( $edit_cap, $rvy_post->ID, '', array(
 if ( 'diff' != $action ) {
 	$can_edit = ( 'revision' == $revision->post_type ) && (
 		$can_fully_edit_post || 
-		( ( $revision->post_author == $current_user->ID || $_can_edit_others ) && ( 'pending' == $revision->post_status ) ) 
+		( ( $revision->post_author == $current_user->ID || $_can_edit_others ) && ( 'rvy-pending' == $revision->post_status ) ) 
 		 );
 
 	if ( $can_edit ) {
@@ -339,7 +339,7 @@ if ( ! empty($restore_link) )
 
 	elseif ( ! empty($_GET['delete_request']) ) {
 		if ( current_user_can( $delete_cap, $rvy_post->ID, '', array( 'skip_revision_allowance' => true ) ) 
-		|| ( ( 'pending' == $revision->post_status ) && ( $revision->post_author == $current_user->ID ) ) )
+		|| ( ( 'rvy-pending' == $revision->post_status ) && ( $revision->post_author == $current_user->ID ) ) )
 			$msg = __('To delete the revision, click the link below.', 'revisionary');
 		else
 			$msg = __('You do not have permission to delete that revision.', 'revisionary');
@@ -367,7 +367,7 @@ echo '<td class="rvy-date-selection">';
 		$stamp = __('Published on: <strong>%1$s</strong>', 'revisionary');
 	elseif ( 'future' == $revision->post_status )
 		$stamp = __('Scheduled for: <strong>%1$s</strong>', 'revisionary');
-	elseif ( 'pending' == $revision->post_status ) {
+	elseif ( 'rvy-pending' == $revision->post_status ) {
 		if ( strtotime($revision->post_date_gmt) > agp_time_gmt() )
 			$stamp = __('Requested Publish Date: <strong>%1$s</strong>', 'revisionary');
 		else
@@ -383,7 +383,7 @@ echo '<td class="rvy-date-selection">';
 	printf($stamp, $date);
 	echo '</span>';
 	
-	if ( $can_edit && in_array( $revision->post_status, array( 'pending', 'future' ) ) ) {
+	if ( $can_edit && in_array( $revision->post_status, array( 'rvy-pending', 'future' ) ) ) {
 		echo '&nbsp;<a href="#edit_timestamp" class="edit-timestamp hide-if-no-js" tabindex="4">';
 		echo __awp('Edit');
 		echo '</a>';
@@ -393,7 +393,7 @@ echo '<td class="rvy-date-selection">';
 	echo '<span id="selected_timestamp"></span>';
 	echo '</div>';
 	
-	if ( $can_edit && in_array( $revision->post_status, array( 'pending', 'future' ) ) ) {
+	if ( $can_edit && in_array( $revision->post_status, array( 'rvy-pending', 'future' ) ) ) {
 		echo '<div id="timestampdiv" class="hide-if-js clear">';
 		
 		global $post;	// touch_time function requires this as of WP 2.8
@@ -572,7 +572,7 @@ if ( $is_administrator = is_content_administrator_rvy() ) {
 	global $wpdb;
 	$results = $wpdb->get_results( "SELECT post_status, COUNT( * ) AS num_posts FROM {$wpdb->posts} WHERE post_type = 'revision' AND post_parent = '$rvy_post->ID' GROUP BY post_status" );
 	
-	$num_revisions = array( 'inherit' => 0, 'pending' => 0, 'future' => 0 );
+	$num_revisions = array( 'inherit' => 0, 'rvy-pending' => 0, 'future' => 0 );
 	foreach( $results as $row )
 		$num_revisions[$row->post_status] = $row->num_posts;
 		
@@ -589,7 +589,7 @@ foreach ( array_keys($revision_status_captions) as $_revision_status ) {
 		case 'inherit':
 			$status_caption = __( 'Past Revisions', 'revisionary' );
 			break;
-		case 'pending':
+		case 'rvy-pending':
 			$status_caption = __( 'Pending Revisions', 'revisionary' );
 			break;
 		case 'future':

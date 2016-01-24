@@ -98,7 +98,7 @@ function rvy_add_revisor_role( $requested_blog_id = '' ) {
 function forward_to_revisionary () {
 	global $wpdb;
 	
-	$qry_rvy_revisions = "SELECT id FROM $wpdb->posts WHERE post_status = 'pending' AND post_parent = $_GET[post] AND post_type = 'revision' ORDER BY id ASC LIMIT 1";
+	$qry_rvy_revisions = "SELECT id FROM $wpdb->posts WHERE post_status = 'rvy-pending' AND post_parent = $_GET[post] AND post_type = 'revision' ORDER BY id ASC LIMIT 1";
 	$rslt_rvy_revisions = $wpdb->get_results ( $qry_rvy_revisions ) ;
 	
 	if ( is_array ($rslt_rvy_revisions) && $rslt_rvy_revisions[0]->id ) {
