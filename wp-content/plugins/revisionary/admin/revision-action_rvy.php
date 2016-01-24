@@ -76,6 +76,10 @@ function rvy_revision_diff() {
 // schedules publication of a revision ( or publishes if requested publish date has already passed )
 function rvy_revision_approve() {
 
+	if ( ! current_user_can('publish_posts') ) {
+		exit;
+	}
+
 	require_once( ABSPATH . 'wp-admin/admin.php');
 	$revision_id = $_GET['revision'];
 	$redirect = '';

@@ -188,11 +188,15 @@ class RevisionaryAdmin
 			if ( ! agp_user_can( $type_obj->cap->edit_post, $post->ID, '', array( 'skip_revision_allowance' => true ) ) )
 				return;
 		}
-
-		$caption = __( 'save as pending revision', 'revisionary' );
+		
+		if ( current_user_can ('publish_posts') ) {
+			return;
+		} 
+		
+		$caption = __( 'Die aktuelle Seite muss nach einer &Auml;nderung von einem Verwalter freigegeben werden.', 'revisionary' );
 		
 		$float = ( awp_ver('3.5') || $GLOBALS['is_IE'] ) ? '' : 'float:right; ';
-		echo "<div style='{$float}margin: 0.5em'><label for='rvy_save_as_pending_rev'><input type='checkbox' style='width: 1em; min-width: 1em; text-align: right;' name='rvy_save_as_pending_rev' value='1' id='rvy_save_as_pending_rev' /> $caption</label></div>";
+		echo "<div style='{$float}margin: 0.5em'><label for='rvy_save_as_pending_rev'><input hidden='checkbox' style='width: 1em; min-width: 1em; text-align: right;' name='rvy_save_as_pending_rev' value='1' id='rvy_save_as_pending_rev' /> $caption</label></div>";
 	}
 	
 	function act_log_revision_save() {

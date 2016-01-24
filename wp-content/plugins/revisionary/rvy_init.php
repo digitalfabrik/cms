@@ -95,7 +95,23 @@ function rvy_add_revisor_role( $requested_blog_id = '' ) {
 		switch_to_blog( $orig_blog_id );	
 }
 
+function forward_to_revisionary () {
+	global $wpdb;
+	
+	$qry_rvy_revisions = "SELECT id FROM $wpdb->posts WHERE post_status = 'pending' AND post_parent = $_GET[post] AND post_type = 'revision' ORDER BY id ASC LIMIT 1";
+	$rslt_rvy_revisions = $wpdb->get_results ( $qry_rvy_revisions ) ;
+	
+	if ( is_array ($rslt_rvy_revisions) && $rslt_rvy_revisions[0]->id ) {
+		wp_redirect ( get_bloginfo('url')."/wp-admin/admin.php?page=rvy-revisions&revision=".$rslt_rvy_revisions[0]->id."&action=view");
+	}
+}
+
 function rvy_init() {
+	
+	if ( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
+		forward_to_revisionary ();
+	}
+
 	if ( ! rvy_check_rs_version() )
 		return;
 
@@ -103,6 +119,8 @@ function rvy_init() {
 		require_once( dirname(__FILE__).'/admin/admin-init_rvy.php' );
 		rvy_load_textdomain();
 		rvy_admin_init();
+		
+
 
 	} else {
 		// fill in the missing args for Pending / Scheduled revision preview link from Edit Posts / Pages
