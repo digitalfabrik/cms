@@ -107,10 +107,6 @@ function forward_to_revisionary () {
 }
 
 function rvy_init() {
-	
-	if ( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
-		forward_to_revisionary ();
-	}
 
 	if ( ! rvy_check_rs_version() )
 		return;
@@ -120,7 +116,9 @@ function rvy_init() {
 		rvy_load_textdomain();
 		rvy_admin_init();
 		
-
+		if ( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) {
+			forward_to_revisionary ();
+		}
 
 	} else {
 		// fill in the missing args for Pending / Scheduled revision preview link from Edit Posts / Pages
