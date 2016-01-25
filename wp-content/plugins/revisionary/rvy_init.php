@@ -95,15 +95,23 @@ function rvy_add_revisor_role( $requested_blog_id = '' ) {
 		switch_to_blog( $orig_blog_id );	
 }
 
-function forward_to_revisionary () {
+function forward_to_revisionary() {
+	$rvy_id = page_has_pending_revision( $_GET['post'] );
+	if ( $rvy_id ) {
+		wp_redirect ( get_bloginfo('url')."/wp-admin/admin.php?page=rvy-revisions&revision=$rvy_id&action=view" );
+	}
+}
+
+function page_has_pending_revision( $page_id ) {
 	global $wpdb;
 	
-	$qry_rvy_revisions = "SELECT id FROM $wpdb->posts WHERE post_status = 'rvy-pending' AND post_parent = $_GET[post] AND post_type = 'revision' ORDER BY id ASC LIMIT 1";
+	$qry_rvy_revisions = "SELECT id FROM $wpdb->posts WHERE post_status = 'rvy-pending' AND post_parent = $page_id AND post_type = 'revision' ORDER BY id ASC LIMIT 1";
 	$rslt_rvy_revisions = $wpdb->get_results ( $qry_rvy_revisions ) ;
 	
-	if ( is_array ($rslt_rvy_revisions) && $rslt_rvy_revisions[0]->id ) {
-		wp_redirect ( get_bloginfo('url')."/wp-admin/admin.php?page=rvy-revisions&revision=".$rslt_rvy_revisions[0]->id."&action=view");
+	if ( is_array ($rslt_rvy_revisions) && is_int( intval( $rslt_rvy_revisions[0]->id ) ) ) {
+		return $rslt_rvy_revisions[0]->id;
 	}
+	return false;
 }
 
 function rvy_init() {

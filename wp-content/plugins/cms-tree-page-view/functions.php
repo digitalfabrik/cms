@@ -1304,6 +1304,8 @@ function cms_tpv_get_pages($args = null) {
 		// Note: get_pages filter uses orderby comma separated and with the key sort_column
 		$get_posts_args["sort_column"] = str_replace(" ", ", ", $get_posts_args["orderby"]);
 	$pages = apply_filters('get_pages', $pages, $get_posts_args);
+	
+	//var_dump($pages);
 
 	return $pages;
 
@@ -1485,7 +1487,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"id": "cms-tpv-<?php echo $onePage->ID ?>",
 					"post_id": "<?php echo $onePage->ID ?>",
 					"post_type": "<?php echo $onePage->post_type ?>",
-					"post_status": "<?php echo $onePage->post_status ?>",
+					"post_status": "<?php echo page_has_pending_revision($onePage->ID) ? 'pending' : $onePage->post_status ?>",
 					"post_status_translated": "<?php echo isset($post_statuses[$onePage->post_status]) ? $post_statuses[$onePage->post_status] : $onePage->post_status  ?>",
 					"rel": "<?php echo $rel ?>",
 					"childCount": <?php echo ( !empty( $arrChildPages ) ) ? sizeof( $arrChildPages ) : 0 ; ?>,
