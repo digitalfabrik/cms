@@ -1,0 +1,64 @@
+/* Revisionary Plus. Copyright (C) 2011-2015, Kevin Behrens.
+ * This file is licensed under the GNU GPL.
+ */
+ 
+.rvy_view_revision {
+height: 40px; 
+width: 100%; 
+text-align: right;
+padding-right: 20px;
+font-size: 120%;
+}
+
+.rvy_view_revision a, .preview_approval_rvy a:link {
+color: white; 
+font-weight: bold;
+}
+
+.rvy_view_revision a:hover {
+text-decoration: underline;
+}
+
+.rvy_rev_datemsg {
+margin-left: 0.5em;
+}
+
+.rvy_view_published {
+background-color: #0a0;
+}
+
+.rvy_view_past {
+background-color: #a44;
+}
+
+.rvy_view_pending {
+background-color: #0aa;
+}
+
+.rvy_view_future {
+color: black;
+background-color: #888;
+}
+
+.rvy_view_pending_future {
+color: black;
+background-color: #8cc;
+}
+
+.rvy_view_scheduled {
+color: black;
+background-color: #888;
+}
+
+.preview_approval_rvy {
+height: 35px;
+width: 100%;
+text-align: right;
+padding-right: 20px;
+background-color: #080;
+}
+
+.preview_approval_rvy a, .preview_approval_rvy a:link {
+color: white; 
+font-weight: bold;
+}
