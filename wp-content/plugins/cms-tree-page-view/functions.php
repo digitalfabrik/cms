@@ -1305,8 +1305,6 @@ function cms_tpv_get_pages($args = null) {
 		$get_posts_args["sort_column"] = str_replace(" ", ", ", $get_posts_args["orderby"]);
 	$pages = apply_filters('get_pages', $pages, $get_posts_args);
 	
-	//var_dump($pages);
-
 	return $pages;
 
 }
