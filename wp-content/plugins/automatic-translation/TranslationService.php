@@ -16,7 +16,8 @@ class TranslationService {
 			'post_title' => $translated_title,
 			'post_content' => $translated_content,
 			'post_type' => $post->post_type,
-			'post_status' => $post->post_status
+			'post_status' => $post->post_status,
+			'menu_order' => $post->menu_order
 		];
 		return $translated_post;
 	}
