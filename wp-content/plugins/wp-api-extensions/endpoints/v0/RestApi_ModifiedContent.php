@@ -186,6 +186,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		$content = $this->prepare_content($post);
 		$output_post = [
 			'id' => $post->ID,
+			'permalink' => get_permalink ($post->ID, false),
 			'title' => $post->post_title,
 			'type' => $post->post_type,
 			'status' => $post->post_status,
