@@ -122,6 +122,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'edit_published_pages' => true,
 			'read_private_pages' => true,
 			'delete_pages' => true,
+			'delete_others_pages' => true,
 			'delete_publishes_pages' => true,
 			'publish_pages' => true,
 			'upload_files' => true,
