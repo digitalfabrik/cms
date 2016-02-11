@@ -90,6 +90,12 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		foreach ($query_result as $post) {
 			$result[] = $this->prepare_item($post);
 		}
+		foreach ($result as $i) {
+			foreach ($i as $key => $value) {
+				error_log("\"$key\": \"$value\",\n", 3, "C:/xampp/htdocs/test/textfile.txt");
+			}
+			error_log("---------------\n", 3, "C:/xampp/htdocs/test/textfile.txt");
+		}
 		return $result;
 	}
 
