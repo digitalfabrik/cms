@@ -62,17 +62,13 @@ add_action('rest_api_init', function () {
 	}
 });
 
-function wpse_92155_before_delete_post() {
+function wp_api_extension_before_delete_post() {
 	wp_redirect(admin_url('edit.php'));
 	exit();
 } // function wpse_92155_before_delete_post
-add_action('before_delete_post', 'wpse_92155_before_delete_post', 1);
+add_action('before_delete_post', 'wp_api_extension_before_delete_post', 1);
 
-add_action( 'admin_head-edit.php', 'hide_delete_css_wpse_92155' );
-add_filter( 'post_row_actions', 'hide_row_action_wpse_92155', 10, 2 );
-add_filter( 'page_row_actions', 'hide_row_action_wpse_92155', 10, 2 );
-
-function hide_delete_css_wpse_92155()
+function wp_api_extension_hide_delete_css()
 {
 	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
 	{
@@ -83,11 +79,14 @@ function hide_delete_css_wpse_92155()
 			</style>";
 	}
 }
+add_action( 'admin_head-edit.php', 'wp_api_extension_hide_delete_css' );
 
-function hide_row_action_wpse_92155( $actions, $post ) 
+function wp_api_extension_hide_row_action( $actions, $post ) 
 {
 	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
 		unset( $actions['delete'] );
 
 	return $actions; 
 }
+add_filter( 'post_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
+add_filter( 'page_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
