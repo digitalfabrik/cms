@@ -19,6 +19,9 @@ add_filter('wp_api_extensions_output_post', function ($output_post) {
 	return $output_post;
 });
 
+/*
+ * Handling post and it's translation
+ */ 	
 class TranslationManager {
 	const AUTOMATIC_TRANSLATION_META_KEY = 'automatic_translation';
 	private $translation_service;
@@ -114,6 +117,13 @@ class TranslationManager {
 		if ($current_translation_id !== null) {
 			$translated_post['ID'] = $current_translation_id;
 		}
+		
+		// check if translation of possible parent posts exists before saving translation
+		
+		if( ! $this->translated_parent_exists( $post, $target_language_code ) ) {
+			$this->translate_parent( $post );
+		}
+		
 		$this->remove_save_post_hook(); // remove and re-add hook to avoid infinite loop
 		// potential issue: the last row's content is changed too with wp_insert_post
 		$translated_post_id = wp_insert_post($translated_post);
@@ -135,6 +145,40 @@ class TranslationManager {
 			return true;
 		}
 		return false;
+	}
+	
+	//check if translation of parent exists in target language code
+	private function translated_parent_exists( $post, $target_language_code ) {
+		//if page has post_status inherit, get post_parent
+		//we dont need the current translation. the initial translation suffices
+		if( $post->post_status == 'inherit' ) {
+			$real_post = get_post($post->post_parent);
+			$post_parent_id = $real_post->post_parent;
+		} else { //get post_parent if post_status is not inherit
+			$post_parent_id = $post->post_parent;
+		}
+		
+		if( $post_parent_id == 0 ) {
+			return true; //there is no parent that needs translation
+		}
+		
+		if( $this->wpml_helper->get_translated_post_id($post, $target_language_code) == NULL ) {
+			return false; //translation of parent is missing
+		}
+	}
+	
+	private function translate_parent( $post, $source_language_code, $target_language_code ) {
+		//if page has post_status inherit, we need to get the parent
+		if( $post->post_status == 'inherit' ) {
+			$post = get_post($post->post_parent); //and now the parent
+			
+			//get latest version of parent (inherited posts), if available
+			$post_children = get_children( array( 'post_parent' => $post->ID, 'numberposts' => -1, 'post_status' => 'inherit' ));
+			if( ! empty( $post_children )) {
+				$post = pop( $post_children );
+			}
+		}
+		$this->create_translation($post, $source_language_code, $target_language_code);
 	}
 
 	private function mark_as_automatic_translation($post_id) {
