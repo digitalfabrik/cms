@@ -1,0 +1,806 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Revisionary 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-12-12 09:35-0500\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Kevin Behrens\n"
+"Language-Team: agapetry <kevin@agapetry.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED STATES\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\\n"
+"X-Poedit-KeywordsList: __;_e;_c;__ngettext;scoper_po_trigger;_n\n"
+"X-Poedit-SearchPath-0: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\n"
+"X-Poedit-SearchPath-1: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\admin\n"
+"X-Poedit-SearchPath-2: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\hardway\n"
+"X-Poedit-SearchPath-3: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\lib\n"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:106
+#, php-format
+msgid "This Revision was Published on %s"
+msgstr "Questa revisione è stata pubblicata il %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:112
+#, php-format
+msgid "(for publication on %s)"
+msgstr "(per pubblicazioni del %s)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:113
+msgid "Schedule this Pending Revision"
+msgstr "Pianificare questa Revisione in attesa"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:117
+msgid "Publish this Pending Revision now."
+msgstr "Cliccare qui per Pubblicare ora questa Revisione in attesa."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:124
+#, fuzzy, php-format
+msgid "(already scheduled for publication on %s)"
+msgstr "(pubblicazione già pianificata per il %s)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:125
+msgid "Publish now."
+msgstr "Pubblica ora"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:130
+#, php-format
+msgid "(dated %s)"
+msgstr "(del %s)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:131
+msgid "Restore this Past Revision"
+msgstr "Cliccare qui per ripristinare questa Revisione passata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:161
+msgid "Current Revision"
+msgstr "Revisione corrente"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/revisionary.php:36
+#, fuzzy, php-format
+msgid "Another copy of Revisionary is already activated (version %1$s in \"%2$s\")"
+msgstr "Un'altra copia di Role Scoper è già attiva (versione %1$s in \"%2$s\")"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/rvy_init.php:31
+#, fuzzy
+msgid "Revisor"
+msgstr "Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/rvy_init.php:381
+#, php-format
+msgid "Revisionary is not compatible with Role Scoper versions prior to %1$s.  Please upgrade or deactivate %2$s Role Scoper%3$s."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:28
+msgid "unselfish, benevolent love, born of the Spirit."
+msgstr "disinteressato, l'amore benevole, nato dallo Spirito."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:30
+msgid "Agap&eacute; discerns needs and meets them unselfishly and effectively."
+msgstr "Agap&eacute; individua i vostri bisogni e li soddisfa disinteressatamente ed efficacemente."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:33
+#, php-format
+msgid "This WordPress plugin is part of my agap&eacute; try, a lifelong effort to love God and love people by rightly using the time and abilities He has leant me. As a husband, father, engineer, farmer and/or software developer, I have found this stewardship effort to be often fraught with contradiction. A wise and sustainable balancing of roles has seemed to elude me. Yet I want to keep trying, trusting that if God blesses and multiplies the effort, it will become agapetry, a creative arrangement motivated by benevolent love.  A fleeting childlike sketch of the beautiful %1$s chain-breaking agap&eacute;%2$s which %3$s Jesus Christ unleashed%4$s so %5$s freely%6$s and aptly on an enslaving, enslaved world."
+msgstr "Questo plugin per WordPress è parte della mia prova agap&eacute;, uno sforzo di tutta una vita che l'amore di Dio e per le persone che, giustamente, utilizzando il tempo e le mie capacità, mi Ha sempre appoggiato. Come marito, padre, ingegnere, imprenditore e / o sviluppatore software, ho trovato questo sforzo di gestione essere spesso irto di contraddizioni. Un equilibrio sapiente e sostenibile dei ruoli è sembrato sfuggirmi. Eppure io voglio continuare a provare, confidando nel fatto che se Dio benedice e moltiplica gli sforzi, diventerà agapetry, un accordo creativo motivato dalla benevole carità. Uno schizzo fugace ed infantile del bel %1$s chain-breaking agap&eacute; %2$s, che %3$s Gesù Cristo ha scatenato %4$s in modo cosi %5$s libero %6$s e giustamente in una riduzione in schiavitù, schiavo del mondo ."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:35
+#, fuzzy, php-format
+msgid "Although Role Scoper and Revisionary development was a maniacal hermit-like effort, it was only possible because of the clean and flexible %1$s WordPress code base%2$s.  My PHP programming skills grew immensely by the good examples set forth there and in plugins such as %3$s NextGen Gallery%4$s. I'm not done learning, and look forward to some real-time cooperation with these and other developers now that my all-consuming quest has reached a stable plateau."
+msgstr "Sebbene lo sviluppo di Role Scoper è stato uno sforzo maniacale da emerita, reso possibile soltanto dalla %1$s base del codice pulito e flessibile di WordPress%2$s. Le mie abilità di programmazione in PHP crescono immensamente grazie a quella buona raccolta di esempi e di plugins quali la %3$s Galleria NextGen %4$s. Non sono nato imparato, e guardo avanti a qualche cooperazioni in tempo reale con questi ed altri sviluppatori ora che tutte le mie ricerche di consumo hanno raggiunto una forma stabile."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:37
+#, php-format
+msgid "Thanks to %1$sAlberto Ramicciotti%2$s for the Italian translation.  I do try to be translator-friendly, but any untranslated captions are due to my flurry of recent additions and changes, and will no doubt be updated soon.  Now there must be someone else who wants Revisionary in their language..."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:39
+#, fuzzy, php-format
+msgid "Revisionary is open source software released under the %1$s General Public License (GPL)%2$s. Due to limitations, obligations and non-technical aspirations common to most human beings, I will probably never again pursue uncommissioned plugin development on the scale these plugins has required. However, I do plan to provide some free support, correct bugs which emerge and revise the plugin for future WordPress versions. If it adds value to your website or saves you time and money, you can express appreciation in several ways:"
+msgstr "Role Scoper è un software a sorgente aperta rilasciato sotto %1$s General Public License (GPL)%2$s.  A causa di limitazioni, obblighi e delle aspirazioni non-tecniche comuni alla maggior parte degli esseri umani, io  probabilmente non potro' mai più continuare lo sviluppo del plugin sulla scala che Role Scoper richiede. Comunque, sto pianificando di fornire un supporto libero, correzione dei bugs che vengono rilevati e rivedere il plugin per le future versioni di WordPress. Se aggiunge qualità al vostro sito web o vi fa risparmiare tempo e denaro, potete esprimere l'apprezzamento in diversi modi:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:41
+#, php-format
+msgid "%1$s Submit technical feedback%2$s, including improvement requests."
+msgstr "%1$s Inoltra un messaggio di ritorno%2$s, includendovi le richieste di miglioramento."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:43
+#, fuzzy, php-format
+msgid "%1$s Submit a case study%2$s, explaining how these plugins help you do something excellent and praiseworthy."
+msgstr "%1$s Inviare uno studio di esempi %2$s, spiegando come Role Scoper vi aiuta a creare qualcosa di eccellente e meritevole."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:45
+#, fuzzy, php-format
+msgid "%1$s Localize Revisionary or Role Scoper%2$s to your own language %3$s using poEdit%4$s "
+msgstr "%1$s Localizzare Role Scoper%2$s nella vostra lingua %3$s usando poEdit%4$s "
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:49
+#, php-format
+msgid "If the plugin has seriously broadened your CMS horizons, %s"
+msgstr "Se questo plugin ha seriamente migliorato gli orizzonti del vostro CMS, %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:51
+#, php-format
+msgid "If you are an established web developer, %1$s grant me your professional opinion%2$s on how this work stacks up. Might the skills, work ethic and values I express here fit into a development team near you?"
+msgstr "Se siete stabili sviluppatori web, %1$s rilasciatemi le vostre opinioni professionali %2$s sui progressi di questo lavoro. Potrebbero interessarvi le competenze, l'etica del lavoro e dei valori qua espressi, per essere inserite in un gruppo di sviluppo vicino a voi?"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:53
+msgid "Hire or refer my services</a> to design, redesign or enhance your site - quality care at reasonable rates."
+msgstr "Assumermi o parlarmi dei miei servizi</a> per lavori di design, re-design o miglioria del vostro sito - mantenendo un equilibrio fra qualita ed un giusto prezzo."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:10
+msgid "Pending Post"
+msgstr "Articolo in attesa"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:28
+msgid "Pending Page"
+msgstr "Pagina in attesa"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:225
+#, fuzzy, php-format
+msgid "%1$s Revisionary Support Forum%2$s"
+msgstr "%1$s Forum di supporto per Role Scoper%2$s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:228
+#, fuzzy, php-format
+msgid "%1$s About Revisionary%2$s"
+msgstr "%1$s Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:241
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:126
+msgid "Revisions"
+msgstr "Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:251
+#, fuzzy
+msgid "About Revisionary"
+msgstr "Revisione corrente"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:260
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:282
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:205
+#, fuzzy
+msgid "Revisionary Options"
+msgstr "Opzioni Ruolo"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:273
+#, fuzzy
+msgid "Revisionary Option Defaults"
+msgstr "Opzioni Predefinite di Role Scoper"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:273
+#, fuzzy
+msgid "Revisionary Defaults"
+msgstr "Ritorna al predefinito"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:282
+#, fuzzy
+msgid "Revisionary"
+msgstr "Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:482
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:648
+msgid "Return to Edit Pages"
+msgstr "Torna alle Pagine di Modifica"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:485
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:651
+msgid "Return to Edit Posts"
+msgstr "Torna alla Modifica degli Articoli"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:489
+msgid "Your modification has been saved for editorial review.  If approved, it will be published on the date you specified."
+msgstr "Le vostre modifiche sono state salvate per una revisione editoriale. Se approvate, saranno pubblicate nella data da voi specificata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:491
+msgid "Your modification has been saved for editorial review."
+msgstr "Le vostre modifiche sono state salvate per una revisione editoriale."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:494
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:657
+msgid "View it in Revisions Manager"
+msgstr "Visualizza in Gestore di Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:498
+msgid "Go back to Submit Another revision (possibly for a different publish date)."
+msgstr "Tornare indietro per inoltrare un'altra revisione (possibilmente con una diversa data di pubblicazione)."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:505
+msgid "Sorry, an error occurred while attempting to save your modification for editorial review!"
+msgstr "Spiacenti, è stato rilevato un errore durante l'attesa del salvataggio della vostra modifica per la revisione editoriale!"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:512
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:126
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:167
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:549
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:567
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:589
+msgid "page"
+msgstr "pagina"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:512
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:126
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:167
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:549
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:567
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:589
+msgid "post"
+msgstr "articolo"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:514
+#, php-format
+msgid "[%s] Pending Revision Notification"
+msgstr "[%s] Notifica di Revisione in attesa"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:516
+#, php-format
+msgid "A pending revision to the %1$s \"%2$s\" has been submitted."
+msgstr "Una revisione in attesa per il %1$s \"%2$s\" è stata inoltrata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:520
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:523
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:574
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:596
+#, php-format
+msgid "It was submitted by %1$s."
+msgstr "E' stato inoltrato da %1$s."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:527
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:139
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:176
+msgid "Review it here: "
+msgstr "Recensito qua:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:596
+msgid "Pending Revision Created"
+msgstr "Revisione in attesa creata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:654
+msgid "Your modification was saved as a Scheduled Revision."
+msgstr "Le vostre modifiche sono state salvate per una revisione pianificata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:659
+msgid "Go back to Schedule Another revision."
+msgstr "Torna indietro per pianificare un'altra revisione."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:664
+msgid "Scheduled Revision Created"
+msgstr "Pianificazione revisione creata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:52
+msgid "Enter additional User Names or IDs (comma-separate)"
+msgstr "Inserire nomi utente o IDs (separare con una virgola)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show current users (%d)"
+msgstr "mostra utenti attuali (%d)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show eligible users (%d)"
+msgstr "mostra utenti eleggibili (%d)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:123
+msgid "filter:"
+msgstr "filtra:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:132
+msgid "select"
+msgstr "seleziona"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:137
+msgid "unselect"
+msgstr "deseleziona"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "current users (%d):"
+msgstr "utenti attuali (%d):"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "eligible users (%d):"
+msgstr "utenti eleggibili (%d):"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:40
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:41
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:134
+msgid "Pending Revisions"
+msgstr "In attesa di revisione"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:43
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:44
+msgid "Publishers to Notify of Your Revision"
+msgstr "I Pubblicatori notificano le vostre Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:49
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:50
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:135
+msgid "Scheduled Revisions"
+msgstr "Revisioni pianificate"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:122
+msgid "Features"
+msgstr "Caratteristiche"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:122
+msgid "Option Scope"
+msgstr "Opzioni dello Scope"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:127
+msgid "Email Notification"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:136
+msgid "Strip html tags out of difference display"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:137
+msgid "Asynchronous Publishing"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:138
+#, fuzzy
+msgid "Email original Author when a Pending Revision is submitted"
+msgstr "Invia una e-mail ai Pubblicatori / Amministratori quando una Revisione in attesa è stata inoltrata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:139
+#, fuzzy
+msgid "Email the original Author when a Pending Revision is approved"
+msgstr "Invia una e-mail al revisore quando una Revisione in attesa sia stata approvata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:140
+#, fuzzy
+msgid "Email the Revisor when a Pending Revision is approved"
+msgstr "Invia una e-mail al revisore quando una Revisione in attesa sia stata approvata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:141
+#, fuzzy
+msgid "Email the original Author when a Scheduled Revision is published"
+msgstr "Inviare una e-mail al revisore quando una Revisione Pianificata sia stata pubblicata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:142
+#, fuzzy
+msgid "Email the Revisor when a Scheduled Revision is published"
+msgstr "Inviare una e-mail al revisore quando una Revisione Pianificata sia stata pubblicata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:143
+msgid "Asynchronous Email Processing"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:147
+#, fuzzy
+msgid "Email designated Publishers when a Pending Revision is submitted"
+msgstr "Invia una e-mail ai Pubblicatori / Amministratori quando una Revisione in attesa è stata inoltrata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:148
+#, fuzzy
+msgid "Email designated Publishers when a Scheduled Revision is published"
+msgstr "Inviare una e-mail al revisore quando una Revisione Pianificata sia stata pubblicata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:150
+#, fuzzy
+msgid "Email Editors and Administrators when a Pending Revision is submitted"
+msgstr "Invia una e-mail ai Pubblicatori / Amministratori quando una Revisione in attesa è stata inoltrata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:151
+#, fuzzy
+msgid "Email Editors and Administrators when a Scheduled Revision is published"
+msgstr "Invia una e-mail ai Pubblicatori / Amministratori quando una Revisione pianificata sia stata pubblicata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:199
+#, fuzzy
+msgid "Revisionary Site Options"
+msgstr "Opzioni Sito Role Scoper"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:201
+#, fuzzy
+msgid "Revisionary Default Blog Options"
+msgstr "Opzioni Blog Predefinito Role Scoper"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:203
+#, fuzzy
+msgid "Revisionary Blog Options"
+msgstr "Opzioni Blog Role Scoper"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:211
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:522
+msgid "Update &raquo;"
+msgstr "Aggiorna &raquo;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:219
+msgid "These settings will be applied to all blogs."
+msgstr "Queste impostazioni saranno applicate a tutti i blogs."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:225
+msgid "These are the <strong>default</strong> settings for options which can be adjusted per-blog."
+msgstr "Queste sono le impostazioni <strong>predefinite</strong> per le opzioni che possono essere aggiustate singolarmente per ogni blog."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:257
+#, fuzzy
+msgid "This page enables <strong>optional</strong> adjustment of Revisionary's features. For most installations, the default settings are fine."
+msgstr "Questa pagina attivale le opzioni <b>facoltative</b> di aggiustamento delle caratteristiche di Role Scoper. Per un'istallazione generica, le impostazioni predefinite sono sufficienti."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:266
+#, php-format
+msgid "Note that %1$s blog-specific options%2$s may also be available."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:273
+#, php-format
+msgid "Note that %1$s site-wide options%2$s may also be available."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:302
+msgid "If a currently published post or page is edited and a future date set, the change will not be applied until the selected date."
+msgstr "Se l'attuale pubblicazione di un articolo o pagina è modificata ed ha impostato una data futura, il cambiamento non sarà applicato fino a tale data selezionata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:306
+msgid "Publish scheduled revisions asynchronously, via a secondary http request from the server.  This is normally preferable as it eliminates delay, but some servers do not support it."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:310
+#, fuzzy
+msgid "Enable some users to submit a revision for an existing published post or page which they cannot otherwise edit.  Contributors can submit revisions to their own published content, and users who have the edit_others_ capability (but not edit_published_) can submit revisions to other user's content.<br /><br />These Pending Revisions are listed alongside regular pending content, but link to a Revisions management form.  There the pending revision can be viewed, compared to other revisions, and approved or deleted by qualified editors.  If the submitter set a future publish date, approval schedules delayed publication of the revised content."
+msgstr "Gli utenti che non hanno le capacità di edit_published_ per un articolo o pagina pubblicato può salvare le revisioni per la moderazione. Gli Amministratori di Contentuti vedono queste Revisioni in Attesa elencate a fianco del regolare contenuto in attesa, ma il collegamento al modulo di Gestione delle Revisioni. C'è la revisione in attesa che può essere visualizzata, rispetto ad altre revisioni, e approvata o cancellata. Se il mittente imposta una data futura di pubblicazione, la approvazione pianificata ritarda la pubblicazione del contenuto da revisionare."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:330
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:384
+msgid "select recipients"
+msgstr "Seleziona i destinatari"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:339
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:357
+msgid "Never"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:339
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:357
+msgid "By default"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:339
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:357
+msgid "Always"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:397
+msgid "Send all revision notification emails asynchronously, via a secondary http request from the server."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:406
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  Eligibile \"Publisher\" email recipients are members of the Pending Revision Monitors group who <strong>also</strong> have the ability to publish the revision."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:408
+#, php-format
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  For more flexibility in moderation and notification, install the %1$s Role Scoper%2$s plugin."
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:437
+#, fuzzy
+msgid "Specify which Revisionary Options should be applied site-wide."
+msgstr "Specificare quali Opzioni di Role Scoper dovrebbero essere applicate al livello di site-wide."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:444
+#, php-format
+msgid "sitewide control of \"%s\""
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:449
+msgid "Selected options will be controlled site-wide via <strong>Site Admin > Role Options</strong>; unselected options can be set per-blog via <strong>Roles > Options</strong>"
+msgstr "Le opzioni selezionate saranno controllate a livello di sito tramite <strong> Amministrazione del Sito > Opzioni del Ruolo </ strong>, le opzioni non selezionate possono essere impostate singolarmente per ogni blog tramite <strong> Ruoli> Opzioni </ strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:526
+msgid "All settings in this form (including those on unselected tabs) will be reset to DEFAULTS.  Are you sure?"
+msgstr "Tutte le impostazioni in questo modulo (incluse quelle nelle schede non selezionate) saranno azzerate alle impostazioni predefinite. Siete sicuri?"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:531
+msgid "Revert to Defaults"
+msgstr "Ritorna al predefinito"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:128
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:169
+#, php-format
+msgid "[%s] Revision Approval Notice"
+msgstr "[%s] Notifica di Approvazione di Revisione"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:130
+#, fuzzy, php-format
+msgid "A revision to your %1$s \"%2$s\" has been approved."
+msgstr "La revisione che hai inoltrato per il %1$s \"%2$s\" è stata approvata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:133
+#, fuzzy, php-format
+msgid "The submitter was %1$s."
+msgstr "E' stato inoltrato da %1$s."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:137
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:174
+#, php-format
+msgid "It will be published on %s"
+msgstr "Sarà pubblicato il %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:141
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:178
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:556
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:577
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:599
+msgid "View it online: "
+msgstr "Visualizza in linea:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:171
+#, php-format
+msgid "The revision you submitted for the %1$s \"%2$s\" has been approved."
+msgstr "La revisione che hai inoltrato per il %1$s \"%2$s\" è stata approvata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:551
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:569
+#, php-format
+msgid "[%s] Scheduled Revision Publication Notice"
+msgstr "[%s] Notifica di Pubblicazione della Revisione pianificata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:553
+#, php-format
+msgid "The scheduled revision you submitted for the %1$s \"%2$s\" has been published."
+msgstr "La revisione pianificata da voi inoltrata per il %1$s \"%2$s\" è stata pubblicata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:571
+#, fuzzy, php-format
+msgid "A scheduled revision to your %1$s \"%2$s\" has been published."
+msgstr "Una revisione pianificata per il %1$s \"%2$s\" è stata pubblicata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:591
+#, php-format
+msgid "[%s] Scheduled Revision Publication"
+msgstr "[%s] Pubblicazione di Revisione pianificata"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:593
+#, php-format
+msgid "A scheduled revision to the %1$s \"%2$s\" has been published."
+msgstr "Una revisione pianificata per il %1$s \"%2$s\" è stata pubblicata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:279
+msgid "The revision will be deleted. Are you sure?"
+msgstr "Questa revisione sarà cancellata. Siete sicuri?"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:338
+msgid "Unschedule"
+msgstr "Non pianificato"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:432
+msgid "Modified Date (click to view/restore)"
+msgstr "Data della modifica (cliccare per visualizzare/ripristinare)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:435
+msgid "Modified Date (click to view/approve)"
+msgstr "Data della modifica (cliccare per visualizzare/approvare)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:438
+msgid "Modified Date (click to view/publish)"
+msgstr "Data della modifica (cliccare per visualizzare/pubblicare)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:442
+msgid "Publish Date"
+msgstr "Data di pubblicazione"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:445
+msgid "Actions"
+msgstr "Azioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:460
+#, fuzzy
+msgid "Bulk Actions"
+msgstr "Azioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:461
+#, fuzzy
+msgid "Delete"
+msgstr "seleziona"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:463
+msgid "Apply"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:502
+msgid "Date as:"
+msgstr "Data a:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:503
+msgid "Schedule for:"
+msgstr "Pianificato per il:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:504
+msgid "Published on:"
+msgstr "Pubblicato il:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:505
+msgid "Privately Published:"
+msgstr "Pubblicato privatamente:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:506
+msgid "Published:"
+msgstr "Pubblicato:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:507
+msgid "Unsaved Date Selection:"
+msgstr ""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:48
+msgid "No revision specified."
+msgstr "Nessuna revisione specificata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:53
+msgid "Past"
+msgstr "Articolo"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:91
+#, php-format
+msgid "%1$s Revisions for &#8220;%2$s&#8221;"
+msgstr "%1$s Revisioni per &#8220;%2$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:150
+#, php-format
+msgid "Revision of &#8220;%1$s&#8221;"
+msgstr "Revisioni di &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:152
+#, php-format
+msgid "Past Revision of &#8220;%1$s&#8221;"
+msgstr "Revisioni passate di &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:155
+#, php-format
+msgid "Pending Revision of &#8220;%1$s&#8221;"
+msgstr "Revisione in attesa di &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:158
+#, php-format
+msgid "Scheduled Revision of &#8220;%1$s&#8221;"
+msgstr "Revisione pianificata del &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:166
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:173
+msgid "Publish Now"
+msgstr "Pubblica ora"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:171
+msgid "Schedule Now"
+msgstr "Pianifica ora"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:179
+msgid "Restore Now"
+msgstr "Ripristina ora"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:196
+#, php-format
+msgid "&#8220;%1$s&#8221; (Current Revision)"
+msgstr "&#8220;%1$s&#8221; (Revisione attuale)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:214
+msgid "The requested revision does not exist."
+msgstr "La revisione richiesta non esiste."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:253
+msgid "The revision was deleted."
+msgstr "La revisione è stata cancellata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:256
+#, fuzzy, php-format
+msgid "%s revision was deleted"
+msgstr "La revisione è stata cancellata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:259
+msgid "The revision was updated."
+msgstr "La revisione è stata aggiornata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:262
+msgid "The revision was restored."
+msgstr "La revisione è stata ripristinata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:265
+msgid "The revision was scheduled for publication."
+msgstr "La revisione è stata prevista per la sua pubblicazione."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:268
+msgid "The revision was published."
+msgstr "La revisione è stata pubblicata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:272
+msgid "To delete the revision, click the link below."
+msgstr "Per cancellare la revisione, cliccare il collegamento sottostante."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:274
+msgid "You do not have permission to delete that revision."
+msgstr "Non avete permessi per cancellare quella revisione."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:277
+msgid "The revision was unscheduled."
+msgstr "La revisione è stata de-pianificata."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:296
+#, php-format
+msgid "Published on: <strong>%1$s</strong>"
+msgstr "Pubblicato il: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:298
+#, php-format
+msgid "Scheduled for: <strong>%1$s</strong>"
+msgstr "Pianificato per il: <b>%1$s</b>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:301
+#, php-format
+msgid "Requested Publish Date: <strong>%1$s</strong>"
+msgstr "Data di pubblicazione richiesta: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:303
+msgid "Requested Publish Date: <strong>Immediate</strong>"
+msgstr "Data di pubblicazione richiesta: <strong>Immediata</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:305
+#, php-format
+msgid "Modified on: <strong>%1$s</strong>"
+msgstr "Modificato il: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:406
+#, fuzzy, php-format
+msgid "Older: modified %s"
+msgstr "Più vecchi: %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:408
+#, fuzzy, php-format
+msgid "Newer: modified %s"
+msgstr "Più recenti: %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:462
+msgid "These revisions are identical."
+msgstr "Queste revisioni sono identiche."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:493
+#, php-format
+msgid "%1$s Revisions<span class=\"count\"> (%2$s)</span>"
+msgstr "%1$s Revisioni<span class=\"count\"> (%2$s)</span>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:496
+#, php-format
+msgid "%1$s Revisions"
+msgstr "%1$s Revisioni"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:512
+#, php-format
+msgid "no %s revisions available."
+msgstr "Nessuna %s revisione è disponibile"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/lib/debug.php:182
+#, php-format
+msgid "%1$s queries in %2$s seconds. %3$s MB used."
+msgstr "%1$s richieste al database effettuate in %2$s. %3$s MB usati."
+
+#~ msgid "%s (revision)|post_title (revision)"
+#~ msgstr "%s (revisione)|post_title (revision)"
+#~ msgid ""
+#~ "Pending Revision creators can customize e-mail notification recipients "
+#~ "before submitting.  Default recipients will include those selected via "
+#~ "the link above, plus users who are publishers for the post/page/category "
+#~ "but have a lesser blog-wide role."
+#~ msgstr ""
+#~ "I creatori di Revisioni in Attesa possono personalizzare i destinatari "
+#~ "delle notificazioni via e-mail prima di inoltrare. I destinatari "
+#~ "predefiniti includeranno quelli selezionati attraverso il collegamento di "
+#~ "cui sopra, in più agli utenti che sono pubblicatori per articolo/pagina/"
+#~ "categoria ma hanno un ruolo minore di ampio-blog."
+#~ msgid ""
+#~ "<span class=\"rs-h3text rs-blue\">%1$s</span> (%2$s)|option_tabname "
+#~ "(explanatory note)"
+#~ msgstr ""
+#~ "<span class=\"rs-h3text rs-blue\">%1$s</span> (%2$s)|option_tabname "
+#~ "(explanatory note)"
+#~ msgid "%1$s [Current Revision]|date"
+#~ msgstr "%1$s [Revisione attuale]|date"
+#~ msgid "%1$s [Autosave]|date"
+#~ msgstr "%1$s [Salvato automaticamente]|date"
+

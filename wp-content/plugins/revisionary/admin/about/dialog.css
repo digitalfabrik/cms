@@ -1,0 +1,37 @@
+/* 
+  -- Even more rounded corners with CSS: Base stylesheet --
+  by Scott Schiller
+    http://www.schillmania.com/content/projects/even-more-rounded-corners/
+   
+  (extensive modifications by Kevin Behrens - original used a single large png)
+*/
+
+.rc-dialog {
+ margin: 0 0.1em 0.5em 0.1em;
+ min-width: 8em;
+ max-width: 760px;
+ color: #fff;
+}
+
+.rc-dialog .rc-content {
+ background:transparent url(dialog2-green-mid5d.png) repeat-y top right;
+ opacity: .92; 
+ -moz-opacity: .92; 
+ margin: -1px 0 -1px 0;
+ height: 100%;
+ border-bottom: 1px solid transparent; /* Opera fix (otherwise background is not painted through entire height) */
+}
+
+.rc-dialog .rc-content {
+ 	padding: 0 1em 0 0.5em;
+}
+
+.rc-dialog h1,
+.rc-dialog p {
+ margin: 0;
+ padding: 0.5em 0 0.5em 0;
+}
+
+.rc-dialog h1 {
+ padding-bottom: 0;
+}

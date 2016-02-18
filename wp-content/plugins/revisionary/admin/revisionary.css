@@ -1,0 +1,428 @@
+/* Revisionary. Copyright (C) 2009-2011, Kevin Behrens.
+ * This file is licensed under the GNU GPL.
+ */
+/* marker class used to trigger element hiding by javascript */
+.agp_js_hide {
+padding: default;
+}
+
+.agp_js_show {
+padding: default;
+}
+
+.agp-vspaced_input {
+margin-top: 0.2em;
+margin-bottom: 0.6em;
+}
+
+.rs-list_horiz {
+width: 100%;
+clear: both;
+float: left;
+margin: 0;
+padding: 0;
+}
+
+.rs-list_horiz li {
+list-style: none;
+float: left;
+margin: 0;
+}
+
+.rs-form-table th {
+padding-left: 10px;
+}
+
+.rs-form-table input {
+vertical-align: text-bottom;
+}
+
+.rs-blue, .rs-blue a, .rs-blue a:link, .rs-blue a:visited {
+color: blue;	
+}
+
+.rs-backtan {
+background-color: #FFFEEB;
+}
+
+.rs-backgray {
+background-color: #E8E8E8;
+}
+
+.rs-backgreen {
+background-color: #E8FFE8;
+}
+
+.rs-options {
+padding: 0 0.5em 1em 0.5em;
+border: 1px solid #ccc;
+margin-top:0;
+}
+
+.rs-agents {
+background-color: #FFFEEB;
+padding: 0 0 0.2em 0.3em;
+border: 1px solid #ccc;
+margin-top:0;
+}
+
+.rs-agents input {
+vertical-align: text-bottom;
+}
+
+.agp-agent {
+padding: 0.2em 0.5em 0.2em 0.5em;
+}
+
+.agp-unselected_agent {
+border: none;	
+}
+
+.agp-selected_agent {
+border-left: 1px solid #ccc;
+border-right: 1px solid #ccc;
+border-top: 1px solid #ccc;
+}
+	
+.agp-selected_agent a{
+color: black;
+text-decoration: none;
+font-weight: bold;
+}
+
+.agp-unselected_agent a{
+color: #00019b;
+text-decoration: default;
+font-weight: normal;
+}
+
+.agp-selected_agent_colorized {
+background-color: #FFFEEB;
+border-bottom: 1px solid #FFFEEB;
+}
+
+.agp-unselected_agent_colorized {
+background: none;
+}
+
+.rs-agents_caption {
+margin: 0 0 0 0.75em;
+clear:both;
+}
+
+.rs-agents_checkbox {
+margin-left: 0;
+}
+
+.rs-agents_filter {
+margin: 0 0 0.5em 0;
+}
+
+.rs-agents_list_auto {
+margin: 0.5em 0 1em 0;
+padding: 0;
+clear: both;
+float: left;
+width: 100%;
+}
+
+.rs-agents_list_auto li { 
+list-style: none;
+float: left;
+margin: 0.3em 1.5em 0.3em 0;
+}
+
+.rs-agents_list_auto input {
+margin: 0;
+font-size: auto;
+padding: 0;
+}
+ 
+.rs-agents_emsized {
+clear: both;
+width: 100%;
+}
+ 
+.rs-agents_emsized ul {
+margin: 0 0 1em 0;
+padding: 0;
+clear: both;
+float: left;
+width: 100%;
+}
+
+.rs-agents_emsized ul li {
+margin: 0.3em 0 0.3em 0;
+list-style: none;
+float: left;
+}
+
+.rs-agents_emsized ul input {
+margin: 0;
+font-size: auto;
+padding: 0;
+}
+
+.rs-agents_list_7 li { width: 7em; }
+.rs-agents_list_8 li { width: 8em; }
+.rs-agents_list_9 li { width: 9em; }
+.rs-agents_list_10 li { width: 10em; }
+.rs-agents_list_11 li { width: 11em; }
+.rs-agents_list_12 li { width: 12em; }
+.rs-agents_list_13 li { width: 13em; }
+.rs-agents_list_14 li { width: 14em; }
+.rs-agents_list_15 li { width: 15em; }
+.rs-agents_list_16 li { width: 16em; }
+.rs-agents_list_17 li { width: 17em; }
+.rs-agents_list_18 li { width: 18em; }
+.rs-agents_list_19 li { width: 19em; }
+.rs-agents_list_20 li { width: 20em; }
+.rs-agents_list_21 li { width: 21em; }
+.rs-agents_list_22 li { width: 22em; }
+.rs-agents_list_23 li { width: 23em; }
+.rs-agents_list_24 li { width: 24em; }
+.rs-agents_list_25 li { width: 25em; }
+.rs-agents_list_26 li { width: 26em; }
+.rs-agents_list_27 li { width: 27em; }
+.rs-agents_list_28 li { width: 28em; }
+.rs-agents_list_29 li { width: 29em; }
+.rs-agents_list_30 li { width: 30em; }
+
+.rs-agents_list_7_5 li { width: 7.5em; }
+.rs-agents_list_8_5 li { width: 8.5em; }
+.rs-agents_list_9_5 li { width: 9.5em; }
+.rs-agents_list_10_5 li { width: 10.5em; }
+.rs-agents_list_11_5 li { width: 11.5em; }
+.rs-agents_list_12_5 li { width: 12.5em; }
+.rs-agents_list_13_5 li { width: 13.5em; }
+.rs-agents_list_14_5 li { width: 14.5em; }
+.rs-agents_list_15_5 li { width: 15.5em; }
+.rs-agents_list_16_5 li { width: 16.5em; }
+.rs-agents_list_17_5 li { width: 17.5em; }
+.rs-agents_list_18_5 li { width: 18.5em; }
+.rs-agents_list_19_5 li { width: 19.5em; }
+.rs-agents_list_20_5 li { width: 20.5em; }
+.rs-agents_list_21_5 li { width: 21.5em; }
+.rs-agents_list_22_5 li { width: 22.5em; }
+.rs-agents_list_23_5 li { width: 23.5em; }
+.rs-agents_list_24_5 li { width: 24.5em; }
+.rs-agents_list_25_5 li { width: 25.5em; }
+.rs-agents_list_26_5 li { width: 26.5em; }
+.rs-agents_list_27_5 li { width: 27.5em; }
+.rs-agents_list_28_5 li { width: 28.5em; }
+.rs-agents_list_29_5 li { width: 29.5em; }
+.rs-agents_list_30_5 li { width: 30.5em; }
+
+.rs-subtext {
+color: #393;
+}
+
+.rs-warning {
+color: #b00;
+}
+
+.rs-optiontable {
+width: 100%;
+}
+
+#rs-admin_table tr, #rs-realm_table tr, #realm_adjustments tr, #rs-advanced_table tr {
+background-color: #CFEBF7;
+border-bottom: 4px solid #FFFEEB;
+}
+
+#rs-admin_table tr td, #rs-realm_table tr td, #realm_adjustments tr td, #rs-advanced_table tr td {
+padding: 1em 0 1em 0;
+}
+
+#rs-admin_table th, #rs-realm_table th, #realm_adjustments th, #rs-advanced_table th {
+font-weight: bold;
+}
+
+.rs-form-table tr th span a {
+color: #333;
+background-color: #CFEBF7;
+}
+
+.rs-optionhint {
+margin-top: 0.5em;
+}
+
+.rs-notes {
+margin-top: 0.2em;
+list-style-type: circle;
+}
+
+.rs-notes li {
+margin-bottom: 1em;
+margin-left: 1.5em;
+}
+
+.rs-revision_top_action {
+font-family: Verdana, Arial, Helvetica, sans-serif; 
+font-size: 24px;
+font-style: normal;
+}
+
+.rs-revision_top_action a, .rs-revision_top_action a:visited, .rs-revision_top_action a:link {
+color: #080;
+}
+
+.rs-revision_top_action a:hover {
+color: #0c0;
+}
+
+.rs-h3text {
+font-size: 1.5em;
+font-weight: bold;
+}
+
+.rvy_select_status a {
+margin-right: 1em;	
+}
+
+.rvy_current_status a {
+font-size: 150%;
+}
+
+.rvy-agents-checklist {
+padding:0.5em 0 0.5em 0.5em;	
+}
+
+#rvy-agents-checklist-spacer {
+clear: both;
+height: 1px;	
+}
+
+.rvy-list-horiz {
+margin:0.3em 0 0 0;
+}
+
+.rvy-available-agents {
+clear: both;
+margin-top: 0.1em;
+}
+
+.rvy-cclist {
+margin-bottom:0;
+}
+
+.rvy-current-revision {
+background-color: #ff8;
+}
+
+.rvy-revision-row {
+white-space: nowrap;	
+}
+
+.rvy-col1 {
+width: 35%;	
+}
+.rvy-col2 {
+width: 25%;	
+}
+.rvy-col3 {
+width: 10%;	
+}
+.rvy-col4 {
+width: 15%;	
+}
+.rvy-col5 {
+width: 15%;	
+}
+
+.rvy-editor-table {
+width: 100%;
+clear: both;
+margin: 0 0 1em 0;
+padding: 0;
+}
+
+.rvy-editor-table h2 {
+margin: 0;
+}
+
+.rvy-restore-link {
+margin-left: 2em;	
+}
+
+.rvy-message {
+margin-bottom: 0;	
+}
+
+.rvy-date-selection {
+text-align: right;
+padding-top: 1em;
+}
+
+.rvy_revision_edit_secondary_div {
+float: right;
+margin: 0.5em 0 1em 0;
+}
+
+.rvy-editor {
+margin-top: -2em;
+}
+
+.rvy-title-div {
+clear: both;
+}
+
+.rvy-postarea {
+clear: both;
+}
+
+.rvy-revision-field {
+margin: 2em 0 0 0;	
+}
+
+.rvy-agents-filter {
+width: 99%;
+}
+
+.rvy-editor-table-top {
+vertical-align: top;
+}
+
+body.admin_page_rvy-revisions table.diff td, table.diff th {
+max-width: 400px;
+}
+
+body.admin_page_rvy-revisions #title {
+    font-size: 1.7em;
+    height: 1.7em;
+    line-height: 100%;
+    margin: 1px 0;
+    outline: medium none;
+    padding: 3px 8px;
+    width: 100%;
+}
+
+body.admin_page_rvy-revisions #commentsdiv {
+display: none;
+}
+
+table.diff {
+	width: 100%;
+}
+
+table.diff col.content {
+	width: 50%;
+}
+
+table.diff tr {
+	background-color: transparent;
+}
+
+table.diff td, table.diff th {
+	padding: .5em;
+	font-family: Consolas, Monaco, monospace;
+	border: none;
+}
+
+table.diff .diff-deletedline del, table.diff .diff-addedline ins {
+	text-decoration: none;
+}
+
+div.rvy-glance-pending {
+padding-bottom: 6px;
+}

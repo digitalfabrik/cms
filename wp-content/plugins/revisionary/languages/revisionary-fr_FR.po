@@ -1,0 +1,817 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Revisionary 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-11 15:15-0500\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Kevin Behrens\n"
+"Language-Team: agapetry <kevin@agapetry.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED STATES\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: E:\\www\\mu28\\wp-content\\plugins\\revisionary\\\n"
+"X-Poedit-KeywordsList: __;_e;_c;__ngettext;_n;rvy_po_trigger;esc_attr_e;_x\n"
+"Plural-Forms: nplurals=2; plural=n>1\n"
+"X-Poedit-SearchPath-0: E:\\www\\mu28\\wp-content\\plugins\\revisionary\n"
+"X-Poedit-SearchPath-1: E:\\www\\mu28\\wp-content\\plugins\\revisionary\\admin\n"
+"X-Poedit-SearchPath-2: E:\\www\\mu28\\wp-content\\plugins\\revisionary\\hardway\n"
+"X-Poedit-SearchPath-3: E:\\www\\mu28\\wp-content\\plugins\\revisionary\\lib\n"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:106
+#, php-format
+msgid "This Revision was Published on %s"
+msgstr "Cette révision a été publiée le %s"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:112
+#, php-format
+msgid "(for publication on %s)"
+msgstr "(pour publication le %s)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:113
+msgid "Schedule this Pending Revision"
+msgstr "Planifier cette révision en attente"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:117
+msgid "Publish this Pending Revision now."
+msgstr "Publier cette révision maintenant"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:124
+#, php-format
+msgid "(already scheduled for publication on %s)"
+msgstr "(déjà planifié pour publication le %s)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:125
+msgid "Publish now."
+msgstr "Publier maintenant."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:130
+#, php-format
+msgid "(dated %s)"
+msgstr "(daté le %s)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:131
+msgid "Restore this Past Revision"
+msgstr "Restaurer cette révision antérieure"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/front_rvy.php:161
+msgid "Current Revision"
+msgstr "Révision courante"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/revisionary.php:36
+#, php-format
+msgid "Another copy of Revisionary is already activated (version %1$s in \"%2$s\")"
+msgstr "Une autre fois de Revisionary est déjà activée (version %1$s dans \"%2$s\")"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/rvy_init.php:31
+msgid "Revisor"
+msgstr "Réviseur"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/rvy_init.php:381
+#, php-format
+msgid "Revisionary is not compatible with Role Scoper versions prior to %1$s.  Please upgrade or deactivate %2$s Role Scoper%3$s."
+msgstr "Revisionary n'est pas compatible avec les versions antérieures à %1$s de Role Scoper.  SVP mettre à jour ou désactiver %2$s Role Scoper%3$s."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:28
+msgid "unselfish, benevolent love, born of the Spirit."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:30
+msgid "Agap&eacute; discerns needs and meets them unselfishly and effectively."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:33
+#, php-format
+msgid "This WordPress plugin is part of my agap&eacute; try, a lifelong effort to love God and love people by rightly using the time and abilities He has leant me. As a husband, father, engineer, farmer and/or software developer, I have found this stewardship effort to be often fraught with contradiction. A wise and sustainable balancing of roles has seemed to elude me. Yet I want to keep trying, trusting that if God blesses and multiplies the effort, it will become agapetry, a creative arrangement motivated by benevolent love.  A fleeting childlike sketch of the beautiful %1$s chain-breaking agap&eacute;%2$s which %3$s Jesus Christ unleashed%4$s so %5$s freely%6$s and aptly on an enslaving, enslaved world."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:35
+#, php-format
+msgid "Although Role Scoper and Revisionary development was a maniacal hermit-like effort, it was only possible because of the clean and flexible %1$s WordPress code base%2$s.  My PHP programming skills grew immensely by the good examples set forth there and in plugins such as %3$s NextGen Gallery%4$s. I'm not done learning, and look forward to some real-time cooperation with these and other developers now that my all-consuming quest has reached a stable plateau."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:37
+#, php-format
+msgid "Thanks to %1$sAlberto Ramicciotti%2$s for the Italian translation.  I do try to be translator-friendly, but any untranslated captions are due to my flurry of recent additions and changes, and will no doubt be updated soon.  Now there must be someone else who wants Revisionary in their language..."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:39
+#, php-format
+msgid "Revisionary is open source software released under the %1$s General Public License (GPL)%2$s. Due to limitations, obligations and non-technical aspirations common to most human beings, I will probably never again pursue uncommissioned plugin development on the scale these plugins has required. However, I do plan to provide some free support, correct bugs which emerge and revise the plugin for future WordPress versions. If it adds value to your website or saves you time and money, you can express appreciation in several ways:"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:41
+#, php-format
+msgid "%1$s Submit technical feedback%2$s, including improvement requests."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:43
+#, php-format
+msgid "%1$s Submit a case study%2$s, explaining how these plugins help you do something excellent and praiseworthy."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:45
+#, php-format
+msgid "%1$s Localize Revisionary or Role Scoper%2$s to your own language %3$s using poEdit%4$s "
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:49
+#, php-format
+msgid "If the plugin has seriously broadened your CMS horizons, %s"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:51
+#, php-format
+msgid "If you are an established web developer, %1$s grant me your professional opinion%2$s on how this work stacks up. Might the skills, work ethic and values I express here fit into a development team near you?"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/about.php:53
+msgid "Hire or refer my services</a> to design, redesign or enhance your site - quality care at reasonable rates."
+msgstr ""
+
+#: E:\www\mu28\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:10
+msgid "Pending Post"
+msgid_plural "Pending Posts"
+msgstr[0] "Article en attente de révision"
+msgstr[1] "Articles en attente de révision"
+
+#: E:\www\mu28\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:28
+msgid "Pending Page"
+msgid_plural "Pending Pages"
+msgstr[0] "Page en attente de révision"
+msgstr[1] "Pages en attente de révision"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:225
+#, php-format
+msgid "%1$s Revisionary Support Forum%2$s"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:228
+#, php-format
+msgid "%1$s About Revisionary%2$s"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:241
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:126
+msgid "Revisions"
+msgstr "Révisions"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:251
+msgid "About Revisionary"
+msgstr "À propos de Revisionary"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:260
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:282
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:205
+msgid "Revisionary Options"
+msgstr "Options de Revisionary"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:273
+msgid "Revisionary Option Defaults"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:273
+msgid "Revisionary Defaults"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:282
+msgid "Revisionary"
+msgstr "Revisionary"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:388
+#, php-format
+msgid "%s (revision)"
+msgstr "%s (révision)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:482
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:644
+msgid "Return to Edit Pages"
+msgstr "Retour à la modification des pages"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:485
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:647
+msgid "Return to Edit Posts"
+msgstr "Retour à la modification des articles"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:489
+msgid "Your modification has been saved for editorial review.  If approved, it will be published on the date you specified."
+msgstr "Votre modification a été enregistrée pour révision.  Si elle est approuvée, elle sera publiée à la date spécifiée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:491
+msgid "Your modification has been saved for editorial review."
+msgstr "Votre modification a été enregistrée pour révision."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:494
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:653
+msgid "View it in Revisions Manager"
+msgstr "Voir votre modification dans le gestionnaire de révisions"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:498
+msgid "Go back to Submit Another revision (possibly for a different publish date)."
+msgstr "Retour pour soumettre une autre révision."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:505
+msgid "Sorry, an error occurred while attempting to save your modification for editorial review!"
+msgstr "Désolé, une erreur est survenue en tentant d'enregistrer votre modification pour révision!"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:512
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:126
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:163
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:541
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:555
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:573
+msgid "page"
+msgstr "page"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:512
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:126
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:163
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:541
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:555
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:573
+msgid "post"
+msgstr "article"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:514
+#, php-format
+msgid "[%s] Pending Revision Notification"
+msgstr "[%s] Notification pour révision en attente"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:516
+#, php-format
+msgid "A pending revision to the %1$s \"%2$s\" has been submitted."
+msgstr "Une demande de révision pour %1$s \"%2$s\" a été envoyée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:520
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:523
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:562
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:580
+#, php-format
+msgid "It was submitted by %1$s."
+msgstr "Envoyé par %1$s."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:527
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:139
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:172
+msgid "Review it here: "
+msgstr "Réviser cette demande ici:"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:592
+msgid "Pending Revision Created"
+msgstr "Demande de révision créée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:650
+msgid "Your modification was saved as a Scheduled Revision."
+msgstr "Votre modification a été enregistrée en tant que Révision planifiée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:655
+msgid "Go back to Schedule Another revision."
+msgstr "Retour pour planifier une autre révision"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/admin_rvy.php:660
+msgid "Scheduled Revision Created"
+msgstr "Révision planifiée créée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:52
+msgid "Enter additional User Names or IDs (comma-separate)"
+msgstr "Entrez les noms d'utilisateur additionnels ou leurs ID (séparé par une virgule)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show current users (%d)"
+msgstr "afficher les utilisateurs courants (%d)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show eligible users (%d)"
+msgstr "afficher les utilisateurs admissibles (%d)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:123
+msgid "filter:"
+msgstr "filtrer:"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:132
+msgid "select"
+msgstr "sélectionner"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:137
+msgid "unselect"
+msgstr "déselectionner"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "current users (%d):"
+msgstr "utilisateurs courants (%d)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "eligible users (%d):"
+msgstr "utilisateurs admissibles (%d)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:30
+msgid "Submit Revision"
+msgstr "Soumettre les changements"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:499
+msgid "Past Revisions"
+msgstr "Révisions antérieures"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:40
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:41
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:134
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:502
+msgid "Pending Revisions"
+msgstr "Révisions en attente"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:43
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:44
+msgid "Publishers to Notify of Your Revision"
+msgstr "Éditeurs à avertir pour votre demande de révision"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:49
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:50
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:135
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:505
+msgid "Scheduled Revisions"
+msgstr "Révisions programmées"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:122
+msgid "Features"
+msgstr "Fonctionnalités"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:122
+msgid "Option Scope"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:127
+msgid "Email Notification"
+msgstr "Notification par courriel"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:136
+msgid "Strip html tags out of difference display"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:137
+msgid "Asynchronous Publishing"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:138
+msgid "Email original Author when a Pending Revision is submitted"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:139
+msgid "Email the original Author when a Pending Revision is approved"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:140
+msgid "Email the Revisor when a Pending Revision is approved"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:141
+msgid "Email the original Author when a Scheduled Revision is published"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:142
+msgid "Email the Revisor when a Scheduled Revision is published"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:143
+msgid "Asynchronous Email Processing"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:147
+msgid "Email designated Publishers when a Pending Revision is submitted"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:148
+msgid "Email designated Publishers when a Scheduled Revision is published"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:150
+msgid "Email Editors and Administrators when a Pending Revision is submitted"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:151
+msgid "Email Editors and Administrators when a Scheduled Revision is published"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:199
+msgid "Revisionary Site Options"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:201
+msgid "Revisionary Default Blog Options"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:203
+msgid "Revisionary Blog Options"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:211
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:522
+msgid "Update &raquo;"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:219
+msgid "These settings will be applied to all blogs."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:225
+msgid "These are the <strong>default</strong> settings for options which can be adjusted per-blog."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:257
+msgid "This page enables <strong>optional</strong> adjustment of Revisionary's features. For most installations, the default settings are fine."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:266
+#, php-format
+msgid "Note that %1$s blog-specific options%2$s may also be available."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:273
+#, php-format
+msgid "Note that %1$s site-wide options%2$s may also be available."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:302
+msgid "If a currently published post or page is edited and a future date set, the change will not be applied until the selected date."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:306
+msgid "Publish scheduled revisions asynchronously, via a secondary http request from the server.  This is normally preferable as it eliminates delay, but some servers do not support it."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:310
+msgid "Enable some users to submit a revision for an existing published post or page which they cannot otherwise edit.  Contributors can submit revisions to their own published content, and users who have the edit_others_ capability (but not edit_published_) can submit revisions to other user's content.<br /><br />These Pending Revisions are listed alongside regular pending content, but link to a Revisions management form.  There the pending revision can be viewed, compared to other revisions, and approved or deleted by qualified editors.  If the submitter set a future publish date, approval schedules delayed publication of the revised content."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:330
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:384
+msgid "select recipients"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:339
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:357
+msgid "Never"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:339
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:357
+msgid "By default"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:339
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:357
+msgid "Always"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:397
+msgid "Send all revision notification emails asynchronously, via a secondary http request from the server."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:406
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  Eligibile \"Publisher\" email recipients are members of the Pending Revision Monitors group who <strong>also</strong> have the ability to publish the revision."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:408
+#, php-format
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  For more flexibility in moderation and notification, install the %1$s Role Scoper%2$s plugin."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:437
+msgid "Specify which Revisionary Options should be applied site-wide."
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:444
+#, php-format
+msgid "sitewide control of \"%s\""
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:449
+msgid "Selected options will be controlled site-wide via <strong>Site Admin > Role Options</strong>; unselected options can be set per-blog via <strong>Roles > Options</strong>"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:458
+#, php-format
+msgid "<span class=\"rs-h3text rs-blue\">%1$s</span> (%2$s)"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:526
+msgid "All settings in this form (including those on unselected tabs) will be reset to DEFAULTS.  Are you sure?"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/options.php:531
+msgid "Revert to Defaults"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:128
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:165
+#, php-format
+msgid "[%s] Revision Approval Notice"
+msgstr "[%s] Notification concernant votre demande de révision"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:130
+#, php-format
+msgid "A revision to your %1$s \"%2$s\" has been approved."
+msgstr "Votre demande de révision pour %1$s \"%2$s\" a été traitée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:133
+#, php-format
+msgid "The submitter was %1$s."
+msgstr "Le demandeur était %1$s."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:137
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:170
+#, php-format
+msgid "It will be published on %s"
+msgstr "Elle sera publiée le %s"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:141
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:174
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:548
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:565
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:583
+msgid "View it online: "
+msgstr "Visualiser la demande en ligne: "
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:167
+#, php-format
+msgid "The revision you submitted for the %1$s \"%2$s\" has been approved."
+msgstr "La demande de révision pour %1$s \"%2$s\" a été traitée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:543
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:557
+#, php-format
+msgid "[%s] Scheduled Revision Publication Notice"
+msgstr "[%s] Notification concernant votre demande de révision planifiée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:545
+#, php-format
+msgid "The scheduled revision you submitted for the %1$s \"%2$s\" has been published."
+msgstr "Votre demande de révision planifiée pour %1$s \"%2$s\" a été publiée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:559
+#, php-format
+msgid "A scheduled revision to your %1$s \"%2$s\" has been published."
+msgstr "Une demande de révision planifiée pour votre %1$s \"%2$s\" a été publiée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:575
+#, php-format
+msgid "[%s] Scheduled Revision Publication"
+msgstr "[%s] Notification concernant votre demande de révision planifiée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-action_rvy.php:577
+#, php-format
+msgid "A scheduled revision to the %1$s \"%2$s\" has been published."
+msgstr "Une demande de révision planifiée pour %1$s \"%2$s\" a été publiée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:174
+msgid "j F, Y @ G:i"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:187
+#, php-format
+msgid "%1$s [Current Revision]"
+msgstr "%1$s [Révision courante]"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:191
+#, php-format
+msgid "%1$s [Autosave]"
+msgstr "%1$s [Auto-enregistrement]"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:264
+#, php-format
+msgid "%1$s by %2$s"
+msgstr "%1$s par %2$s"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:279
+msgid "The revision will be deleted. Are you sure?"
+msgstr "La demande de révision sera suppirmée.  Continuer?"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:338
+msgid "Unschedule"
+msgstr "Déplanifier"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:413
+msgid "Compare Selected HTML"
+msgstr "Comparer les révisions"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:432
+msgid "Modified Date (click to view/restore)"
+msgstr "Date modifiée (cliquez pour voir/restaurer)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:435
+msgid "Modified Date (click to view/approve)"
+msgstr "Date modifiée (cliquer pour voir/approuver)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:438
+msgid "Modified Date (click to view/publish)"
+msgstr "Date modifiée (cliquer pour voir/publier)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:442
+msgid "Publish Date"
+msgstr "Date de publication"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:445
+msgid "Actions"
+msgstr "Actions"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:460
+msgid "Bulk Actions"
+msgstr "Actions globales"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:461
+msgid "Delete"
+msgstr "Supprimer"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:463
+msgid "Apply"
+msgstr "Appliquer"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:502
+msgid "Date as:"
+msgstr "Date:"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:503
+msgid "Schedule for:"
+msgstr "Planifié pour: "
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:504
+msgid "Published on:"
+msgstr "Publié le: "
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:505
+msgid "Privately Published:"
+msgstr "Publié en privé: "
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:506
+msgid "Published:"
+msgstr "Publié: "
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:507
+msgid "Unsaved Date Selection:"
+msgstr "Date sélectionnée (non enregistrée):"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:20
+msgid "<strong>Note:</strong> For visual display of revisions, add the following code to foliopress-wysiwyg.php:<br />&nbsp;&nbsp;if ( strpos( $_SERVER['REQUEST_URI'], 'admin.php?page=rvy-revisions' ) ) return;"
+msgstr ""
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:53
+msgid "No revision specified."
+msgstr "Aucune révision spécifié."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:58
+msgid "Past"
+msgstr "antérieure"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:96
+#, php-format
+msgid "%1$s Revisions for &#8220;%2$s&#8221;"
+msgstr "Révisions %1$s pour &#8220;%2$s&#8221;"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:155
+#, php-format
+msgid "Revision of &#8220;%1$s&#8221;"
+msgstr "Révision de &#8220;%1$s&#8221;"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:157
+#, php-format
+msgid "Past Revision of &#8220;%1$s&#8221;"
+msgstr "Révision antérieure de &#8220;%1$s&#8221;"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:160
+#, php-format
+msgid "Pending Revision of &#8220;%1$s&#8221;"
+msgstr "Demande de révision de &#8220;%1$s&#8221;"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:163
+#, php-format
+msgid "Scheduled Revision of &#8220;%1$s&#8221;"
+msgstr "Révision planifiée de &#8220;%1$s&#8221;"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:171
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:178
+msgid "Publish Now"
+msgstr "Publier maintenant"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:176
+msgid "Schedule Now"
+msgstr "Planifier maintenant"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:184
+msgid "Restore Now"
+msgstr "Restaurer maintenant"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:201
+#, php-format
+msgid "&#8220;%1$s&#8221; (Current Revision)"
+msgstr "&#8220;%1$s&#8221; (Révision courante)"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:219
+msgid "The requested revision does not exist."
+msgstr "La révision demandée n'existe pas."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:258
+msgid "The revision was deleted."
+msgstr "Cette demande de révision a été supprimée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:261
+#, php-format
+msgid "%s revision was deleted"
+msgstr "%s révision a été supprimée"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:264
+msgid "The revision was updated."
+msgstr "La demande de révision a été mise à jour."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:267
+msgid "The revision was restored."
+msgstr "La demande de révision a été restaurée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:270
+msgid "The revision was scheduled for publication."
+msgstr "Cette demande de révision a été planifiée pour publication."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:273
+msgid "The revision was published."
+msgstr "Cette demande de révision a été publiée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:277
+msgid "To delete the revision, click the link below."
+msgstr "Pour supprimer cette demande de révision, cliquer sur le lien ici-bas."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:279
+msgid "You do not have permission to delete that revision."
+msgstr "Vous n'avez pas les droits de supprimer cette demande de révision."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:282
+msgid "The revision was unscheduled."
+msgstr "Cette demande de révision a été déplanifiée."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:301
+#, php-format
+msgid "Published on: <strong>%1$s</strong>"
+msgstr "Publiée le: <strong>%1$s</strong>"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:303
+#, php-format
+msgid "Scheduled for: <strong>%1$s</strong>"
+msgstr "Planifiée pour le: <strong>%1$s</strong>"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:306
+#, php-format
+msgid "Requested Publish Date: <strong>%1$s</strong>"
+msgstr "Date de publication demandée: <strong>%1$s</strong>"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:308
+msgid "Requested Publish Date: <strong>Immediate</strong>"
+msgstr "Date de publication demandée: <strong>Immédiatement</strong>"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:310
+#, php-format
+msgid "Modified on: <strong>%1$s</strong>"
+msgstr "Modifiée le: <strong>%1$s</strong>"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:343
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:382
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:383
+msgid "Update Revision"
+msgstr "Mettre à jour la révision"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:408
+#, php-format
+msgid "Older: modified %s"
+msgstr "Ancien: modifiée %s"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:410
+#, php-format
+msgid "Newer: modified %s"
+msgstr "Nouvelle: modifiée %s"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:464
+msgid "These revisions are identical."
+msgstr "Ces demandes de révision sont identiques."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:495
+#, php-format
+msgid "%1$s Revisions<span class=\"count\"> (%2$s)</span>"
+msgstr "Révisions %1$ss<span class=\"count\"> (%2$s)</span>"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:498
+#, php-format
+msgid "%1$s Revisions"
+msgstr "Révisions %1$s"
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/admin/revisions.php:514
+#, php-format
+msgid "no %s revisions available."
+msgstr "aucune révision %s disponible."
+
+#: C:\web\cegepsl.dev\wp-content\plugins\revisionary/lib/debug.php:182
+#, php-format
+msgid "%1$s queries in %2$s seconds. %3$s MB used."
+msgstr ""
+

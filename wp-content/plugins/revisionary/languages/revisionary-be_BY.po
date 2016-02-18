@@ -1,0 +1,759 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Revisionary\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-12-12 09:35-0500\n"
+"PO-Revision-Date: \n"
+"Last-Translator: FatCow <zhr@tut.by>\n"
+"Language-Team: Marcis G. <by.marcis@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Belarusian\n"
+"X-Poedit-Country: BELARUS\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\\n"
+"X-Poedit-KeywordsList: __;_e;_c;__ngettext;_n;rvy_po_trigger\n"
+"X-Poedit-SearchPath-0: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\n"
+"X-Poedit-SearchPath-1: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\admin\n"
+"X-Poedit-SearchPath-2: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\hardway\n"
+"X-Poedit-SearchPath-3: E:\\www\\wp29c\\wp-content\\plugins\\revisionary\\lib\n"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:106
+#, php-format
+msgid "This Revision was Published on %s"
+msgstr "Гэты перагляд быў апублікаваны %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:112
+#, php-format
+msgid "(for publication on %s)"
+msgstr "(lkz ge,kbrfwbb %s)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:113
+msgid "Schedule this Pending Revision"
+msgstr "Расклад чакае праверкі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:117
+msgid "Publish this Pending Revision now."
+msgstr "Да публікацыі гэтага Рэдакцыя цяпер."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:124
+#, php-format
+msgid "(already scheduled for publication on %s)"
+msgstr "(ужо запланаваны да публікацыі на %s)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:125
+msgid "Publish now."
+msgstr "Публікаваць."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:130
+#, php-format
+msgid "(dated %s)"
+msgstr "(датуецца %s)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:131
+msgid "Restore this Past Revision"
+msgstr "Воостановлено з прошл. рэдакцыі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/front_rvy.php:161
+msgid "Current Revision"
+msgstr "Бягучая рэдакцыя"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/revisionary.php:36
+#, php-format
+msgid "Another copy of Revisionary is already activated (version %1$s in \"%2$s\")"
+msgstr "Іншая копія Revisionary ужо актывавана (версія %1$s in \"%2$s\")"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/rvy_init.php:31
+msgid "Revisor"
+msgstr "Рэвізор"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/rvy_init.php:381
+#, php-format
+msgid "Revisionary is not compatible with Role Scoper versions prior to %1$s.  Please upgrade or deactivate %2$s Role Scoper%3$s."
+msgstr "Revisionary не сумяшчальны з версіямі ролі Scoper да%1$s.  Абнавіце ці дэактывуйце %2$s Role Scoper%3$s."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:28
+msgid "unselfish, benevolent love, born of the Spirit."
+msgstr "бескарыслівая, добразычлівая каханні, народжаным ад Духу."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:30
+msgid "Agap&eacute; discerns needs and meets them unselfishly and effectively."
+msgstr "Agape выяўляе запатрабаванні і задавальняе іх бескарысліва і эфектыўна."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:33
+#, php-format
+msgid "This WordPress plugin is part of my agap&eacute; try, a lifelong effort to love God and love people by rightly using the time and abilities He has leant me. As a husband, father, engineer, farmer and/or software developer, I have found this stewardship effort to be often fraught with contradiction. A wise and sustainable balancing of roles has seemed to elude me. Yet I want to keep trying, trusting that if God blesses and multiplies the effort, it will become agapetry, a creative arrangement motivated by benevolent love.  A fleeting childlike sketch of the beautiful %1$s chain-breaking agap&eacute;%2$s which %3$s Jesus Christ unleashed%4$s so %5$s freely%6$s and aptly on an enslaving, enslaved world."
+msgstr "Гэта ўбудова WordPress, гэта частка маёй агапе паспрабаваць, на працягу ўсяго жыцця высілкаў кахаць Бога і кахаць людзей па праве выкарыстання часу і здольнасцяў ён нахіліўся мяне. Як муж, бацька, інжынерам, фермерам і / ці распрацоўніка праграмнага забеспячэння, я знайшоў гэта кіраўніцтва высілкамі, часцяком багатая супярэчнасці. Разумнага і ўстойлівага збалансавання роляў здалося выслізгваць ад мяне. Але я жадаю, каб імкнуцца, мяркуючы, што калі Бог багаслаўляе і памнажае высілкі, яна стане agapetry, творчая кампазіцыя матываваныя добразычлівыя каханні. Мімалётны накід па-дзіцячаму прыгожая%1$s chain-breaking agap&eacute;%2$s which %3$s Jesus Christ unleashed%4$s so %5$s freely%6$s and aptly on an enslaving, enslaved world."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:35
+#, php-format
+msgid "Although Role Scoper and Revisionary development was a maniacal hermit-like effort, it was only possible because of the clean and flexible %1$s WordPress code base%2$s.  My PHP programming skills grew immensely by the good examples set forth there and in plugins such as %3$s NextGen Gallery%4$s. I'm not done learning, and look forward to some real-time cooperation with these and other developers now that my all-consuming quest has reached a stable plateau."
+msgstr "Хоць роля Scoper і Revisionary развіцці маніякальна-пустэльнікаў, як высілкі, можна было толькі з-за чыстай і гнуткай %1$s WordPress code base%2$s.  My PHP programming skills grew immensely by the good examples set forth there and in plugins such as %3$s NextGen Gallery%4$s. I'm not done learning, and look forward to some real-time cooperation with these and other developers now that my all-consuming quest has reached a stable plateau."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:37
+#, php-format
+msgid "Thanks to %1$sAlberto Ramicciotti%2$s for the Italian translation.  I do try to be translator-friendly, but any untranslated captions are due to my flurry of recent additions and changes, and will no doubt be updated soon.  Now there must be someone else who wants Revisionary in their language..."
+msgstr "Дзякуй %1$sAlberto Ramicciotti%2$s на італьянскі пераклад. Я імкнуся быць перакладнікам зразумелы, але любы неперакладзеныя подпісах з-за майго шквал апошніх даданняў і змен, і, несумнеўна, будзе абноўлена хуткім часам. Зараз павінна быць кімсьці яшчэ, хто жадае Revisionary на іх роднай мове ..."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:39
+#, php-format
+msgid "Revisionary is open source software released under the %1$s General Public License (GPL)%2$s. Due to limitations, obligations and non-technical aspirations common to most human beings, I will probably never again pursue uncommissioned plugin development on the scale these plugins has required. However, I do plan to provide some free support, correct bugs which emerge and revise the plugin for future WordPress versions. If it adds value to your website or saves you time and money, you can express appreciation in several ways:"
+msgstr "Revisionary гэта адкрытае праграмнае забеспячэнне, якое распаўсюджваецца па %1$s General Public License (GPL)%2$s. З-за абмежаванняў, абавязанняў і нетехнических памкненняў, характэрных для большасці чалавечай істоты, я, напэўна, ніколі больш не праводзіць, даручэнні распрацоўкі ўбудоў на маштаб гэтых убудоў патрабуецца. Аднак, я планую забяспечыць вольнае падтрымку, правільныя памылкі, якія ўзнікаюць і перагледзець убудову для будучых версіях WordPress. Калі гэта павялічвае каштоўнасць вашага сайта ці эканоміць Ваш час і грошы, вы можаце выказаць удзячнасць некалькімі спосабамі:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:41
+#, php-format
+msgid "%1$s Submit technical feedback%2$s, including improvement requests."
+msgstr "%1$s Тэхнічная зваротная сувязі %2$s, у тым ліку просьбы пра паляпшэнні."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:43
+#, php-format
+msgid "%1$s Submit a case study%2$s, explaining how these plugins help you do something excellent and praiseworthy."
+msgstr "%1$s Submit a case study%2$s, растлумачыўшы, якім чынам гэтыя ўбудовы дапамогуць вам зрабіць нешта выдатнае і пахвальна."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:45
+#, php-format
+msgid "%1$s Localize Revisionary or Role Scoper%2$s to your own language %3$s using poEdit%4$s "
+msgstr "%1$s дял лакалізацыі Revisionary ці Role Scoper%2$sна ваша мова %3$s выкарыстоўвайце poEdit%4$s "
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:49
+#, php-format
+msgid "If the plugin has seriously broadened your CMS horizons, %s"
+msgstr "Калі ўбудова мае сур'ёзныя пашырана сістэма кіравання гарызонтаў,%s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:51
+#, php-format
+msgid "If you are an established web developer, %1$s grant me your professional opinion%2$s on how this work stacks up. Might the skills, work ethic and values I express here fit into a development team near you?"
+msgstr "Калі Вы вэб-распрацоўнік,%1$s дайце мне ваша меркаванне як адмыслоўца%2$s пра тое, як гэта праца стэкі ўгару. Ці можа навыкі, працоўная этыка і каштоўнасці, я жадаў бы выказаць тут упісваецца ў каманду распрацоўнікаў побач з вамі?"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/about.php:53
+msgid "Hire or refer my services</a> to design, redesign or enhance your site - quality care at reasonable rates."
+msgstr "Арэнду ці перадаць свае паслугі</a> для праектавання, рэдызайну ці пашырэнні вашага сайта - якасць абслугоўвання па ўмераных коштах."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:10
+msgid "Pending Post"
+msgstr "Разгляданы пост"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:28
+msgid "Pending Page"
+msgstr "Разгляданая старонка"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:225
+#, php-format
+msgid "%1$s Revisionary Support Forum%2$s"
+msgstr "%1$s форум падтрымкі Revisionary%2$s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:228
+#, php-format
+msgid "%1$s About Revisionary%2$s"
+msgstr "%1$s О Revisionary%2$s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:241
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:126
+msgid "Revisions"
+msgstr "Рэдакцыі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:251
+msgid "About Revisionary"
+msgstr "О Revisionary"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:260
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:282
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:205
+msgid "Revisionary Options"
+msgstr "Опцыі Revisionary"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:273
+msgid "Revisionary Option Defaults"
+msgstr "Змаўчанні Revisionary"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:273
+msgid "Revisionary Defaults"
+msgstr "Налады Revisionary"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:282
+msgid "Revisionary"
+msgstr "Revisionary"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:482
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:648
+msgid "Return to Edit Pages"
+msgstr "Вярнуцца да рэдагавання старонак"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:485
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:651
+msgid "Return to Edit Posts"
+msgstr "Вярнуцца да рэдагавання пастоў"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:489
+msgid "Your modification has been saved for editorial review.  If approved, it will be published on the date you specified."
+msgstr "Вашы змены былі захаваны для рэдакцыйнага агляду. У выпадку сцвярджэння, ён будзе апублікаваны ў дзень, паказаны Вамі."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:491
+msgid "Your modification has been saved for editorial review."
+msgstr "Вашы змены былі захаваны для рэдакцыйнага агляду. "
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:494
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:657
+msgid "View it in Revisions Manager"
+msgstr "Глядзець гэта ў мэнэджару версій"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:498
+msgid "Go back to Submit Another revision (possibly for a different publish date)."
+msgstr "Вярнуцца Адправіць Іншая версія (магчыма, з іншай датай публікацыі)."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:505
+msgid "Sorry, an error occurred while attempting to save your modification for editorial review!"
+msgstr "Выбачыце, адбылася памылка пры спробе захаваць змены рэдакцыйнага агляду!"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:512
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:126
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:167
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:549
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:567
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:589
+msgid "page"
+msgstr "старонка"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:512
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:126
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:167
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:549
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:567
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:589
+msgid "post"
+msgstr "пост"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:514
+#, php-format
+msgid "[%s] Pending Revision Notification"
+msgstr "[%s] Pending Revision Апавяшчэнне"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:516
+#, php-format
+msgid "A pending revision to the %1$s \"%2$s\" has been submitted."
+msgstr "Якая чакае версія на %1$s \"%2$s\" была адпраўлена."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:520
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:523
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:574
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:596
+#, php-format
+msgid "It was submitted by %1$s."
+msgstr "Было адпраўлена %1$s."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:527
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:139
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:176
+msgid "Review it here: "
+msgstr "Глядзець гэта тут:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:596
+msgid "Pending Revision Created"
+msgstr "Якая чакае версія створана"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:654
+msgid "Your modification was saved as a Scheduled Revision."
+msgstr "Ваша мадыфікацыя была захавана ў планоўшчыку версій."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:659
+msgid "Go back to Schedule Another revision."
+msgstr "Вярнуцца ў спіс іншых версій."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/admin_rvy.php:664
+msgid "Scheduled Revision Created"
+msgstr "Планавальная версія створана."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:52
+msgid "Enter additional User Names or IDs (comma-separate)"
+msgstr "Увядзіце дадатковыя імёны карыстачоў ці ідэнтыфікатары (адлучаныя коскі)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show current users (%d)"
+msgstr "паказаць бягучых карыстачоў (%d)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show eligible users (%d)"
+msgstr "паказаць правы карыстачоў (%d)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:123
+msgid "filter:"
+msgstr "фільтр:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:132
+msgid "select"
+msgstr "абраць"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:137
+msgid "unselect"
+msgstr "не выбіраць"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "current users (%d):"
+msgstr "бягучыя карыстачы (%d):"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "eligible users (%d):"
+msgstr "правы карыстачоў (%d):"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:40
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:41
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:134
+msgid "Pending Revisions"
+msgstr "Pending Revisions"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:43
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:44
+msgid "Publishers to Notify of Your Revision"
+msgstr "Выдаўцы будуць апавешчаны пра вашу рэдакцыю"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:49
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:50
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:135
+msgid "Scheduled Revisions"
+msgstr "Запланаваныя рэдакцыі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:122
+msgid "Features"
+msgstr "Функцыі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:122
+msgid "Option Scope"
+msgstr "Опцыя вобласці"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:127
+msgid "Email Notification"
+msgstr "Email апавяшчэнне"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:136
+msgid "Strip html tags out of difference display"
+msgstr "Выдаляе HTML-тэгі з розніцы адлюстравання"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:137
+msgid "Asynchronous Publishing"
+msgstr "Асінхронная публікацыя"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:138
+msgid "Email original Author when a Pending Revision is submitted"
+msgstr "Пісаць аўтару, калі версія рэдакцыі адпраўлена"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:139
+msgid "Email the original Author when a Pending Revision is approved"
+msgstr "Пісаць аўтару, калі версія рэдакцыі зацверджана"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:140
+msgid "Email the Revisor when a Pending Revision is approved"
+msgstr "Email Рэвізор пры чаканні рэдакцыі зацверджаны"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:141
+msgid "Email the original Author when a Scheduled Revision is published"
+msgstr "Email аўтара арыгінальнай калі раскладу рэдакцыя публікуецца"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:142
+msgid "Email the Revisor when a Scheduled Revision is published"
+msgstr "Email аўтара арыгінальнай калі раскладу публікуецца"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:143
+msgid "Asynchronous Email Processing"
+msgstr "Асінхронны email працэс"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:147
+msgid "Email designated Publishers when a Pending Revision is submitted"
+msgstr "Email, прызначаны выдавецтву, калі рэдакцыя ўяўляецца"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:148
+msgid "Email designated Publishers when a Scheduled Revision is published"
+msgstr "Email, прызначаны выдавецтву, калі запланаваная рэдакцыя публікуецца"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:150
+msgid "Email Editors and Administrators when a Pending Revision is submitted"
+msgstr "Адпраўляць email рэдактарам і адміністратарам, калі рэдакцыя адпраўляецца"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:151
+msgid "Email Editors and Administrators when a Scheduled Revision is published"
+msgstr "Адпраўляць email рэдактарам і адміністратарам, калі запланаваная рэдакцыя публікуецца"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:199
+msgid "Revisionary Site Options"
+msgstr "Revisionary налады сайта"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:201
+msgid "Revisionary Default Blog Options"
+msgstr "Revisionary стандартныя налады блога"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:203
+msgid "Revisionary Blog Options"
+msgstr "Revisionary налады блога"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:211
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:522
+msgid "Update &raquo;"
+msgstr "Абнавіць &raquo;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:219
+msgid "These settings will be applied to all blogs."
+msgstr "Налады будуць ужыты да ўсіх блогаў"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:225
+msgid "These are the <strong>default</strong> settings for options which can be adjusted per-blog."
+msgstr "Гэта <strong>default</strong>налады для опцый, якія могуць быць скарэктаваны за блог."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:257
+msgid "This page enables <strong>optional</strong> adjustment of Revisionary's features. For most installations, the default settings are fine."
+msgstr "Гэта старонка ўключае <апцыянальна>optional</strong> карэктоўку функцый Revisionary. Для большасці ўсталёўкі, налады па змаўчанні ў норме."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:266
+#, php-format
+msgid "Note that %1$s blog-specific options%2$s may also be available."
+msgstr "Запомніце, што %1$s налады %2$s таксама даступныя."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:273
+#, php-format
+msgid "Note that %1$s site-wide options%2$s may also be available."
+msgstr "Запомніце, што %1$s налады %2$s таксама даступныя."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:302
+msgid "If a currently published post or page is edited and a future date set, the change will not be applied until the selected date."
+msgstr "Калі ў наш час публікуецца паведамленне ці старонка рэдагуецца і будучым усталяваць дату, змены не будуць ужывацца да абранай даты."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:306
+msgid "Publish scheduled revisions asynchronously, via a secondary http request from the server.  This is normally preferable as it eliminates delay, but some servers do not support it."
+msgstr "Апублікаваць запланаваныя змены ў асінхронным рэжыме, праз другі запыт HTTP ад сервера. Гэта, як правіла, пераважней, бо ўхіляе затрымкі, але некаторыя серверы не падтрымліваюць яго."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:310
+msgid "Enable some users to submit a revision for an existing published post or page which they cannot otherwise edit.  Contributors can submit revisions to their own published content, and users who have the edit_others_ capability (but not edit_published_) can submit revisions to other user's content.<br /><br />These Pending Revisions are listed alongside regular pending content, but link to a Revisions management form.  There the pending revision can be viewed, compared to other revisions, and approved or deleted by qualified editors.  If the submitter set a future publish date, approval schedules delayed publication of the revised content."
+msgstr "Уключыць некаторым карыстачам прадставіць перагледжаны варыянт для існых апублікаваў пост ці старонка, на якой яны не могуць інакш кіраваць. Аўтары могуць прадставіць змены ў свае апублікаваныя ўтрыманні, і карыстачоў, якія edit_others_ магчымасць (але не edit_published_) можа прадставіць прапановы пра змены да ўтрымання іншых карыстачоў. <br /><br /> Гэтыя Да Змены адлюстроўваюцца ў спісе рэгулярных да ўтрымання, але спасылка на форму кіравання рэвізіі. Там у чаканні перагляду могуць быць прагледжаны, у параўнанні з іншымі зменамі, а таксама зацверджаны ці выдалены кваліфікаваных рэдактараў. Калі падавец усталяваць будучым даце публікацыі, сцвярджэнне графікаў затрымку з публікацыяй перагледжаных утрыманне."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:330
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:384
+msgid "select recipients"
+msgstr "абраць атрымальнікаў"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:339
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:357
+msgid "Never"
+msgstr "Ніколі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:339
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:357
+msgid "By default"
+msgstr "Па змаўчанні"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:339
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:357
+msgid "Always"
+msgstr "Заўсёды"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:397
+msgid "Send all revision notification emails asynchronously, via a secondary http request from the server."
+msgstr "Дасылайце ўсе электронныя апавяшчэнні перагляду асінхронна, з дапамогай другі запыт HTTP ад сервера."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:406
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  Eligibile \"Publisher\" email recipients are members of the Pending Revision Monitors group who <strong>also</strong> have the ability to publish the revision."
+msgstr "Нататка:\"by default\" Рэдакцыя сродку Да стваральнікаў могуць наладзіць апавяшчэнні атрымальнікаў перад адпраўкай. Eligibile \"Publisher\" атрымальнікаў уваходных у чаканні Рэдакцыя Маніторы групы, якія <strong>таксама</strong> маюць магчымасць публікаваць змены."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:408
+#, php-format
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  For more flexibility in moderation and notification, install the %1$s Role Scoper%2$s plugin."
+msgstr "Нататка: \"па змаўчанні\" Рэдакцыя сродку Да стваральнікаў могуць наладзіць апавяшчэнні атрымальнікаў перад адпраўкай. Для большай гнуткасці ва ўмеранасці і абвесткі, усталёўку%1$s Role Scoper%2$s убудовы."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:437
+msgid "Specify which Revisionary Options should be applied site-wide."
+msgstr "Пакажыце, якія Revisionary Функцыі павінны ўжывацца на вэб-вузле."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:444
+#, php-format
+msgid "sitewide control of \"%s\""
+msgstr "па ўсім сайце кантроль \"%s\""
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:449
+msgid "Selected options will be controlled site-wide via <strong>Site Admin > Role Options</strong>; unselected options can be set per-blog via <strong>Roles > Options</strong>"
+msgstr "Абраныя параметры будуць кантралявацца на вэб-вузле з дапамогай <strong>Site Admin > Role Options</strong> невылучаныя параметры могуць быць усталяваны за блог з дапамогай <strong>Roles > Options</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:526
+msgid "All settings in this form (including those on unselected tabs) will be reset to DEFAULTS.  Are you sure?"
+msgstr "Усе налады ў гэтай форме (у тым ліку па абраных укладках) будзе Аднавіць значэнні па змаўчанні. Вы ўпэўнены?"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/options.php:531
+msgid "Revert to Defaults"
+msgstr "Вярнуць да пачатковых"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:128
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:169
+#, php-format
+msgid "[%s] Revision Approval Notice"
+msgstr "[%s] Рэдакцыя сцвярджэнні Апавяшчэнне"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:130
+#, php-format
+msgid "A revision to your %1$s \"%2$s\" has been approved."
+msgstr "Перагляд вашага %1$s \"%2$s\" быў ухвалены."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:133
+#, php-format
+msgid "The submitter was %1$s."
+msgstr "Адпраўнік быў %1$s."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:137
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:174
+#, php-format
+msgid "It will be published on %s"
+msgstr "Гэта было апублікавана %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:141
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:178
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:556
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:577
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:599
+msgid "View it online: "
+msgstr "Глядзець гэта анлайн:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:171
+#, php-format
+msgid "The revision you submitted for the %1$s \"%2$s\" has been approved."
+msgstr "Рэвізіі, якую вы, прадстаўленую на %1$s \"%2$s\",  была ўхвалена."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:551
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:569
+#, php-format
+msgid "[%s] Scheduled Revision Publication Notice"
+msgstr "[%s] Запланаваныя Апавяшчэнне публікацыі Рэдакцыя"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:553
+#, php-format
+msgid "The scheduled revision you submitted for the %1$s \"%2$s\" has been published."
+msgstr "Запланаваны перагляд вы, прадстаўленых на %1$s \"%2$s\" быў апублікаваны."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:571
+#, php-format
+msgid "A scheduled revision to your %1$s \"%2$s\" has been published."
+msgstr "Запланаваны перагляд вашага%1$s \"%2$s\" быў апублікаваны."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:591
+#, php-format
+msgid "[%s] Scheduled Revision Publication"
+msgstr "[%s]Запланаваныя публікацыі Рэдакцыя"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-action_rvy.php:593
+#, php-format
+msgid "A scheduled revision to the %1$s \"%2$s\" has been published."
+msgstr "Запланаваны перагляд %1$s \"%2$s\" быў апублікаваны."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:279
+msgid "The revision will be deleted. Are you sure?"
+msgstr "Рэдакцыя будзе выдалена. Вы ўпэўнены?"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:338
+msgid "Unschedule"
+msgstr "Не планаваць"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:432
+msgid "Modified Date (click to view/restore)"
+msgstr "Даце апошняй змены (націсніце, каб прагледзець / аднавіць)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:435
+msgid "Modified Date (click to view/approve)"
+msgstr "Дата змены (націсніце, каб прагледзець / прыняць)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:438
+msgid "Modified Date (click to view/publish)"
+msgstr "Дата змены (націсніце, каб прагледзець / апублікаваць)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:442
+msgid "Publish Date"
+msgstr "Дата публікацыі"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:445
+msgid "Actions"
+msgstr "Дзеянні"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:460
+msgid "Bulk Actions"
+msgstr "Масавыя дзеянні"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:461
+msgid "Delete"
+msgstr "Выдаліць"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:463
+msgid "Apply"
+msgstr "Ужыць"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:502
+msgid "Date as:"
+msgstr "Датавана:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:503
+msgid "Schedule for:"
+msgstr "Запланавана для:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:504
+msgid "Published on:"
+msgstr "Апублікавана:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:505
+msgid "Privately Published:"
+msgstr "Прыватна апублікавана:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:506
+msgid "Published:"
+msgstr "Апублікавана:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:507
+msgid "Unsaved Date Selection:"
+msgstr "Незахаваныя Выбар даты:"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:48
+msgid "No revision specified."
+msgstr "Не прызначана версія"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:53
+msgid "Past"
+msgstr "Уставіць"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:91
+#, php-format
+msgid "%1$s Revisions for &#8220;%2$s&#8221;"
+msgstr "%1$s Рэдакцыя для &#8220;%2$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:150
+#, php-format
+msgid "Revision of &#8220;%1$s&#8221;"
+msgstr "Рэдакцыя &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:152
+#, php-format
+msgid "Past Revision of &#8220;%1$s&#8221;"
+msgstr "Апошняя рэдакцыя &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:155
+#, php-format
+msgid "Pending Revision of &#8220;%1$s&#8221;"
+msgstr "Да перагляду &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:158
+#, php-format
+msgid "Scheduled Revision of &#8220;%1$s&#8221;"
+msgstr "Запланаваная рэдакцыя &#8220;%1$s&#8221;"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:166
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:173
+msgid "Publish Now"
+msgstr "Публікаваць цяпер"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:171
+msgid "Schedule Now"
+msgstr "Запланаваць цяпер"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:179
+msgid "Restore Now"
+msgstr "Аднавіць цяпер"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:196
+#, php-format
+msgid "&#8220;%1$s&#8221; (Current Revision)"
+msgstr "&#8220;%1$s&#8221; (Бягучая рэдакцыя)"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:214
+msgid "The requested revision does not exist."
+msgstr "З просьбай пра перагляд не існуе."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:253
+msgid "The revision was deleted."
+msgstr "Версія была выдалена."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:256
+#, php-format
+msgid "%s revision was deleted"
+msgstr "%s  версія была выдалена."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:259
+msgid "The revision was updated."
+msgstr "Версія была обнавлена."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:262
+msgid "The revision was restored."
+msgstr "Версія была адноўлена."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:265
+msgid "The revision was scheduled for publication."
+msgstr "Рэдакцыя была запланавана для публікацыі."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:268
+msgid "The revision was published."
+msgstr "Рэдакцыя была апублікавана."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:272
+msgid "To delete the revision, click the link below."
+msgstr "Для выдалення рэдакцыі, націсніце ніжэй."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:274
+msgid "You do not have permission to delete that revision."
+msgstr "У вас няма правоў для выдалення рэдакцыі."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:277
+msgid "The revision was unscheduled."
+msgstr "Рэдакцыя была знята з планавання."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:296
+#, php-format
+msgid "Published on: <strong>%1$s</strong>"
+msgstr "Апублікавана: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:298
+#, php-format
+msgid "Scheduled for: <strong>%1$s</strong>"
+msgstr "Запланавана: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:301
+#, php-format
+msgid "Requested Publish Date: <strong>%1$s</strong>"
+msgstr "Запытаная дата публікацыі: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:303
+msgid "Requested Publish Date: <strong>Immediate</strong>"
+msgstr "Запытаная дата публікацыі: <strong>Неадкладна</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:305
+#, php-format
+msgid "Modified on: <strong>%1$s</strong>"
+msgstr "Зменена: <strong>%1$s</strong>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:406
+#, php-format
+msgid "Older: modified %s"
+msgstr "Старэй: зменена %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:408
+#, php-format
+msgid "Newer: modified %s"
+msgstr "Навей: зменена %s"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:462
+msgid "These revisions are identical."
+msgstr "Гэтыя змены з'яўляюцца ідэнтычнымі."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:493
+#, php-format
+msgid "%1$s Revisions<span class=\"count\"> (%2$s)</span>"
+msgstr "%1$s Рэдакцыі<span class=\"count\"> (%2$s)</span>"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:496
+#, php-format
+msgid "%1$s Revisions"
+msgstr "%1$s рэдакцый"
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/admin/revisions.php:512
+#, php-format
+msgid "no %s revisions available."
+msgstr "не %s даступных рэдакцый."
+
+#: E:\www\wp29c\wp-content\plugins\revisionary/lib/debug.php:182
+#, php-format
+msgid "%1$s queries in %2$s seconds. %3$s MB used."
+msgstr "%1$s запытаў у %2$s секунд. %3$s MB выкарыстоўваецца."
+
