@@ -96,6 +96,7 @@ class TranslationManager {
 	 * @throws Exception when the translation failed
 	 */
 	private function create_translation($post, $source_language_code, $target_language_code) {
+
 		if (!is_object($post)) {
 			throw new RuntimeException("Given post is not an object");
 		}
@@ -118,10 +119,17 @@ class TranslationManager {
 			$translated_post['ID'] = $current_translation_id;
 		}
 		
-		// check if translation of possible parent posts exists before saving translation
-		
-		if( ! $this->translated_parent_exists( $post, $target_language_code ) ) {
-			$this->translate_parent( $post );
+		// check if translation of possible parent posts exists before creating translation
+		$parent_id = $this->translated_parent_exists( $post, $target_language_code );
+		if( ! $parent_id ) {
+
+			
+			$parent_post = get_post( $this->get_post_parent($post->ID) );
+
+			$this->translate_parent( $parent_post, $source_language_code, $target_language_code );
+			$post = get_post($post->ID);
+		} else {
+
 		}
 		
 		$this->remove_save_post_hook(); // remove and re-add hook to avoid infinite loop
@@ -131,6 +139,15 @@ class TranslationManager {
 		$this->add_save_post_hook();
 		$this->wpml_helper->link_wpml($post->ID, $post->post_type, $translated_post_id, $target_language_code);
 		$this->mark_as_automatic_translation($translated_post_id);
+		
+		//fixes wrong post_parent for autotranslation
+		wp_update_post( $translated_post );
+
+		$translated_post['post_parent'] = $this->wpml_helper->get_translation_post_parent( $translated_post['ID'], $source_language_code, $target_language_code );
+
+		wp_update_post( $translated_post );
+		// end fix wrong post_parent
+		
 		return $translated_post;
 	}
 
@@ -151,34 +168,47 @@ class TranslationManager {
 	private function translated_parent_exists( $post, $target_language_code ) {
 		//if page has post_status inherit, get post_parent
 		//we dont need the current translation. the initial translation suffices
+		$post = get_post($post->ID);
+		$post_main_id = $post->ID;
 		if( $post->post_status == 'inherit' ) {
-			$real_post = get_post($post->post_parent);
-			$post_parent_id = $real_post->post_parent;
-		} else { //get post_parent if post_status is not inherit
-			$post_parent_id = $post->post_parent;
-		}
-		
+			$post_main_id = $this->get_post_parent ( $post->ID );
+		} 
+		//get post_parent if post_status is not inherit
+		$post_parent_id = $this->get_post_parent ( $post_main_id );
+				
 		if( $post_parent_id == 0 ) {
 			return true; //there is no parent that needs translation
 		}
 		
+		$post->ID = $post_parent_id;
+		$post = get_post($post->ID);
+		
 		if( $this->wpml_helper->get_translated_post_id($post, $target_language_code) == NULL ) {
 			return false; //translation of parent is missing
+		} else {
+			return $post->ID;
 		}
 	}
 	
+	private function get_post_parent ( $post_id ) {
+		global $wpdb;
+		
+		$query = "SELECT post_parent FROM $wpdb->posts WHERE ID = '$post_id' AND post_status = 'inherit'";
+		$parent = $wpdb->get_results($query, OBJECT);
+		if( $parent[0]->post_parent )
+			$post_id = $parent[0]->post_parent;
+		
+		$query = "SELECT post_parent FROM $wpdb->posts WHERE ID = '$post_id'";
+		$parent = $wpdb->get_results($query, OBJECT);
+		return $parent[0]->post_parent;
+	}
+	
+	//parameters: post object of child, wpml source language code and target language code
 	private function translate_parent( $post, $source_language_code, $target_language_code ) {
-		//if page has post_status inherit, we need to get the parent
-		if( $post->post_status == 'inherit' ) {
-			$post = get_post($post->post_parent); //and now the parent
-			
-			//get latest version of parent (inherited posts), if available
-			$post_children = get_children( array( 'post_parent' => $post->ID, 'numberposts' => -1, 'post_status' => 'inherit' ));
-			if( ! empty( $post_children )) {
-				$post = pop( $post_children );
-			}
-		}
-		$this->create_translation($post, $source_language_code, $target_language_code);
+		$post_translate = get_post( $parent->post_parent );			
+		$SubTranslation = new TranslationManager();
+
+		$SubTranslation->create_translation($post, $source_language_code, $target_language_code);
 	}
 
 	private function mark_as_automatic_translation($post_id) {
