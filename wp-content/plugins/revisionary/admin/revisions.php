@@ -210,7 +210,7 @@ default :
 		endswitch;
 
 		if ( ('diff' != $action) && ($rvy_post->ID != $revision->ID) ) {
-			if ( agp_user_can( $edit_cap, $rvy_post->ID, '', array( 'skip_revision_allowance' => true ) ) && current_user_can ('publish_posts') ) {
+			if ( agp_user_can( $edit_cap, $rvy_post->ID, '', array( 'skip_revision_allowance' => true ) ) && current_user_can ('publish_pages') ) {
 				switch( $revision->post_status ) :
 				case 'future' :
 					$caption = str_replace( ' ', '&nbsp;', __('Publish Now', 'revisionary') );
