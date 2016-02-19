@@ -189,7 +189,7 @@ class RevisionaryAdmin
 				return;
 		}
 		
-		if ( current_user_can ('publish_posts') ) {
+		if ( current_user_can ('publish_pages') ) {
 			return;
 		} 
 		

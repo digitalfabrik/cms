@@ -76,7 +76,7 @@ function rvy_revision_diff() {
 // schedules publication of a revision ( or publishes if requested publish date has already passed )
 function rvy_revision_approve() {
 
-	if ( ! current_user_can('publish_posts') ) {
+	if ( ! current_user_can('publish_pages') ) {
 		exit;
 	}
 

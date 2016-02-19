@@ -207,10 +207,10 @@ class RevisionaryFront {
 						break;
 					}
 
-					if ( in_array( $revision->post_status, array( 'rvy-pending' ) ) && current_user_can ('publish_posts') ) {
+					if ( in_array( $revision->post_status, array( 'rvy-pending' ) ) && current_user_can ('publish_pages') ) {
 						$link = wp_nonce_url( 'wp-admin/' . "admin.php?page=rvy-revisions&amp;revision=$revision_id&amp;diff=false&amp;action=approve", "approve-post_$published_post_id|$revision_id" );
 					
-					} elseif ( in_array( $revision->post_status, array( 'inherit', 'future' ) ) && current_user_can ('publish_posts')  ) {
+					} elseif ( in_array( $revision->post_status, array( 'inherit', 'future' ) ) && current_user_can ('publish_pages')  ) {
 						$link = wp_nonce_url( 'wp-admin/' . "admin.php?page=rvy-revisions&amp;revision=$revision_id&amp;diff=false&amp;action=restore", "restore-post_$published_post_id|$revision_id" );
 					
 					} else
