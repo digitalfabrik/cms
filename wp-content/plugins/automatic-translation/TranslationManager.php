@@ -122,8 +122,6 @@ class TranslationManager {
 		// check if translation of possible parent posts exists before creating translation
 		$parent_id = $this->translated_parent_exists( $post, $target_language_code );
 		if( ! $parent_id ) {
-
-			
 			$parent_post = get_post( $this->get_post_parent($post->ID) );
 
 			$this->translate_parent( $parent_post, $source_language_code, $target_language_code );
@@ -141,7 +139,6 @@ class TranslationManager {
 		$this->mark_as_automatic_translation($translated_post_id);
 		
 		//fixes wrong post_parent for autotranslation
-		//wp_update_post( $translated_post );
 		$translated_post['post_parent'] = $this->wpml_helper->get_translation_post_parent( $translated_post['ID'], $source_language_code, $target_language_code );
 		wp_update_post( $translated_post );
 		// end fix wrong post_parent
