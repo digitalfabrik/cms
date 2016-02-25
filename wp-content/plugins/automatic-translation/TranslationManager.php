@@ -141,10 +141,8 @@ class TranslationManager {
 		$this->mark_as_automatic_translation($translated_post_id);
 		
 		//fixes wrong post_parent for autotranslation
-		wp_update_post( $translated_post );
-
+		//wp_update_post( $translated_post );
 		$translated_post['post_parent'] = $this->wpml_helper->get_translation_post_parent( $translated_post['ID'], $source_language_code, $target_language_code );
-
 		wp_update_post( $translated_post );
 		// end fix wrong post_parent
 		
