@@ -63,8 +63,10 @@ add_action('rest_api_init', function () {
 });
 
 function wp_api_extension_before_delete_post() {
-	wp_redirect(admin_url('edit.php'));
-	exit();
+	if( $_GET['action'] == "delete" ) {
+		wp_redirect(admin_url('edit.php?post_type=page'));
+		exit();
+	}
 } // function wpse_92155_before_delete_post
 add_action('before_delete_post', 'wp_api_extension_before_delete_post', 1);
 
