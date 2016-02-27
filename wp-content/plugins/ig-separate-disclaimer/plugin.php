@@ -31,4 +31,18 @@ add_action('init', function () {
 			]
 		]
 	);
+	global $iclTranslationManagement;
+//	print_r($iclTranslationManagement->settings['custom-types_readonly_config']);
+//	exit;
+});
+
+register_activation_hook(__FILE__, function () {
+	$mu_blogs = wp_get_sites();
+	foreach ($mu_blogs as $mu_blog) {
+		switch_to_blog($mu_blog['blog_id']);
+
+		WPML_Config::load_config_run();
+	}
+
+	restore_current_blog();
 });

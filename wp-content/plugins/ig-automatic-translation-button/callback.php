@@ -11,7 +11,7 @@ add_action('init', function () {
 	$nonce_action = $automaticTranslationButtonPlugin->get_nonce_action($post_id);
 	check_admin_referer($nonce_action);
 
-	require_once __DIR__ . '/../automatic-translation/plugin.php';
+	require_once __DIR__ . '/../ig-automatic-translation/plugin.php';
 	$translator = new TranslationManager();
 	$translator->update_post_translation($post_id);
 });

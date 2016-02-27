@@ -193,7 +193,7 @@ register_deactivation_hook(__FILE__,
 );
 
 /**
- * @param $role
+ * @param string $role
  * @return bool
  */
 function role_exists($role) {
