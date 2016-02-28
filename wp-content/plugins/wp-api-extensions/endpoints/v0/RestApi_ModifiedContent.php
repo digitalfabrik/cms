@@ -127,7 +127,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	 */
 	protected function build_query_select() {
 		return "posts.ID, posts.post_title, posts.post_type, posts.post_status, posts.post_modified_gmt,
-					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order,
+					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order, posts.guid,
 					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
 	}
 
@@ -186,6 +186,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		$content = $this->prepare_content($post);
 		$output_post = [
 			'id' => $post->ID,
+			'permalink' => $this->prepare_url($post),
 			'title' => $post->post_title,
 			'type' => $post->post_type,
 			'status' => $post->post_status,
@@ -239,6 +240,31 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			'last_name' => $post->author_lastname
 		];
 	}
+
+	protected function prepare_url($post){
+		$page_id = $post->ID;
+		$date = $post->post_modified_gmt;
+		$date_1 = get_date_from_gmt($date,'Y/m/d');
+		$date_2 = get_date_from_gmt($date,'Y/m');
+																// EXAMPLES
+		$url = get_permalink ($page_id, false);					// http://localhost/wordpress/muenchen/de/gesundheit/aerzte-und-ueberweisungen/
+		$url_site = get_site_url();								// http://localhost/wordpress/muenchen
+		$url_page = get_page_uri($page_id);						// 									      gesundheit/aerzte-und-ueberweisungen/
+		$url_page_id = $post->guid;								// http://localhost/wordpress/muenchen/?page_id=67
+		$url_date_1_name = $url_site.'/'.$date_1.'/'.$url_page;	// http://localhost/wordpress/muenchen/2015/10/14/gesundheit/aerzte-und-ueberweisungen
+		$url_date_2_name = $url_site.'/'.$date_2.'/'.$url_page;	// http://localhost/wordpress/muenchen/2015/10/gesundheit/aerzte-und-ueberweisungen
+
+		return [
+			'url' => $url,
+			'url_site' => $url_site,
+			'url_page' => $url_page,
+			'url_page_id' => $url_page_id,
+			'url_date_1_name' => $url_date_1_name,
+			'url_date_2_name' => $url_date_2_name,
+		];
+	}
+
+
 
 	private function remove_read_more_link() {
 		add_filter('excerpt_more', [$this, 'excerpt_no_read_more_link']);

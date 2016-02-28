@@ -62,10 +62,14 @@ add_action('rest_api_init', function () {
 	}
 });
 
-function wp_api_extension_before_delete_post() {
-	wp_redirect(admin_url('edit.php'));
-	exit();
-} // function wpse_92155_before_delete_post
+function wp_api_extension_before_delete_post($postid) {
+	$post = get_post( $postid );
+	//if( $_GET['action'] == "delete" ) { //can be used instead of following line, depends on GET
+	if ( 'page' == $post->post_type ) { //we can delete everything but the initial page, independent from loaded page
+		wp_redirect(admin_url('edit.php?post_type=page'));
+		exit();
+	}
+}
 add_action('before_delete_post', 'wp_api_extension_before_delete_post', 1);
 
 function wp_api_extension_hide_delete_css()
