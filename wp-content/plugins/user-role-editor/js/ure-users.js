@@ -1,40 +1,47 @@
 /* User Role Editor for users.php */
 
-function ure_move_users_from_no_role_dialog() {
-    jQuery('#move_from_no_role_dialog').dialog({                   
-        dialogClass: 'wp-dialog',           
+jQuery(document).ready(function() {
+    var options = jQuery("#new_role > option").clone();
+    jQuery('#ure_new_role').empty().append(options);
+    if (jQuery('#ure_new_role option[value="no_rights"]').length === 0) {
+        jQuery('#ure_new_role').append('<option value="no_rights">' + ure_users_data.no_rights_caption + '</option>');
+    }
+
+    // Exclude change role to
+    jQuery('#selectBox option[value=""]').remove();
+    var new_role = jQuery('#new_role').find(":selected").val();
+    if (new_role.length > 0) {
+        jQuery("#ure_new_role").val(new_role);
+    }
+    jQuery('#ure_new_role').trigger('updated');
+});
+
+
+
+function ure_move_users_from_no_role_dialog() {    
+
+    jQuery('#move_from_no_role_dialog').dialog({
+        dialogClass: 'wp-dialog',
         modal: true,
-        autoOpen: true, 
-        closeOnEscape: true,      
+        autoOpen: true,
+        closeOnEscape: true,
         width: 400,
         height: 200,
         resizable: false,
         title: ure_users_data.move_from_no_role_title,
-        'buttons'       : {
-            'OK': function () {              
-                ure_move_users_from_no_role();                
-                              
+        'buttons': {
+            'OK': function () {
+                ure_move_users_from_no_role();
+
             },
-            Cancel: function() {
+            Cancel: function () {
                 jQuery(this).dialog('close');
                 return false;
             }
-          }
-      });       
-            
-      var options = jQuery("#new_role > option").clone();      
-      jQuery('#ure_new_role').empty().append(options);
-      if (jQuery('#ure_new_role option[value="no_rights"]').length===0) {
-          jQuery('#ure_new_role').append('<option value="no_rights">'+ ure_users_data.no_rights_caption +'</option>');
-      }
-      
-      // Exclude change role to
-      jQuery('#selectBox option[value=""]').remove();
-      var new_role = jQuery('#new_role').find(":selected").val();
-      if (new_role.length>0) {
-          jQuery("#ure_new_role").val(new_role);
-      }
-  }    
+        }
+    });
+        
+}
   
   
 function ure_move_users_from_no_role() {
