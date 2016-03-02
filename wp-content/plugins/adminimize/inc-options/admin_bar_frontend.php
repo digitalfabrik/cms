@@ -1,15 +1,14 @@
 <?php
 /**
  * @package    Adminimize
- * @subpackage Admin Bar Options, settings page
+ * @subpackage Admin Bar Front end Options, settings page
  * @author     Frank Bültge
- * @since      1.8.1  01/10/2013
+ * @since      2015-07-03
  */
 if ( ! function_exists( 'add_action' ) ) {
 	die( "Hi there!  I'm just a part of plugin, not much I can do when called directly." );
 }
 
-/** @var $wp_admin_bar WP_Admin_Bar */
 if ( ! isset( $wp_admin_bar ) ) {
 	$wp_admin_bar = '';
 }
@@ -25,8 +24,8 @@ if ( ! isset( $user_roles_names ) ) {
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div class="postbox">
 		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
-		<h3 class="hndle" id="admin_bar_options" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><?php
-			esc_attr_e( 'Admin Bar Back end options', 'adminimize' ); ?></h3>
+		<h3 class="hndle" id="admin_bar_frontend_options" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><?php
+			esc_attr_e( 'Admin Bar Front end Options', 'adminimize' ); ?></h3>
 
 		<div class="inside">
 			<br class="clear" />
@@ -55,8 +54,8 @@ if ( ! isset( $user_roles_names ) ) {
 					<?php
 					foreach ( $user_roles as $role_slug ) {
 						echo '<td class="num">';
-						echo '<input id="select_all" class="admin_bar_' . $role_slug
-								. '" type="checkbox" name="" value="" />';
+						echo '<input id="select_all" class="admin_bar_frontend_' . $role_slug
+							. '" type="checkbox" value="" />';
 						echo '</td>' . "\n";
 					} ?>
 				</tr>
@@ -65,21 +64,22 @@ if ( ! isset( $user_roles_names ) ) {
 				<tbody>
 				<?php
 				foreach ( $user_roles as $role ) {
-					$disabled_admin_bar_option_[ $role ] = _mw_adminimize_get_option_value(
-						'mw_adminimize_disabled_admin_bar_' . $role . '_items'
+					$disabled_admin_bar_frontend_option_[ $role ] = _mw_adminimize_get_option_value(
+						'mw_adminimize_disabled_admin_bar_frontend_' . $role . '_items'
 					);
 				}
 
 				$x = 0;
 				// add items to array for select
-				// Use the hook to enhance for custom items, there are not in the list
-				$admin_bar_items = apply_filters(
-					'adminimize_admin_bar_items', _mw_adminimize_get_option_value( 'mw_adminimize_admin_bar_nodes' )
+				// Use the hook to enhance for custom items, there was not in the list
+				$admin_bar_frontend_items = apply_filters(
+					'adminimize_admin_bar_frontend_items',
+					_mw_adminimize_get_option_value( 'mw_adminimize_admin_bar_frontend_nodes' )
 				);
 
 				$message = '';
-				if ( ! empty( $admin_bar_items ) && is_array( $admin_bar_items ) ) {
-					foreach ( $admin_bar_items as $key => $value ) {
+				if ( ! empty( $admin_bar_frontend_items ) && is_array( $admin_bar_frontend_items ) ) {
+					foreach ( $admin_bar_frontend_items as $key => $value ) {
 
 						$is_parent = ! empty( $value->parent );
 						$has_link  = ! empty( $value->href );
@@ -99,20 +99,20 @@ if ( ! isset( $user_roles_names ) ) {
 
 						$checked_user_role_ = array();
 						foreach ( $user_roles as $role ) {
-							$checked_user_role_[ $role ] = ( isset( $disabled_admin_bar_option_[ $role ] )
+							$checked_user_role_[ $role ] = ( isset( $disabled_admin_bar_frontend_option_[ $role ] )
 								&& in_array(
-									$key, $disabled_admin_bar_option_[ $role ], FALSE
+									$key, $disabled_admin_bar_frontend_option_[ $role ]
 								)
 							) ? ' checked="checked"' : '';
 						}
 
 						echo '<tr>' . "\n";
 						echo '<td>'. $before_title . $item_string . strip_tags( $value->title, '<strong><b><em><i>' )
-								. $after_title . ' <span>(' . $key . ')</span> </td>' . "\n";
+							. $after_title . ' <span>(' . $key . ')</span> </td>' . "\n";
 						foreach ( $user_roles as $role ) {
-							echo '<td class="num"><input id="check_post' . $role . $x . '" class="admin_bar_'
-									. $role . '" type="checkbox"'
-								. $checked_user_role_[ $role ] . ' name="mw_adminimize_disabled_admin_bar_'
+							echo '<td class="num"><input id="check_post' . $role . $x
+								. '" class="admin_bar_frontend_' . $role . '" type="checkbox"'
+								. $checked_user_role_[ $role ] . ' name="mw_adminimize_disabled_admin_bar_frontend_'
 								. $role . '_items[]" value="' . $key . '" /></td>' . "\n";
 						}
 						echo '</tr>' . "\n";
@@ -120,12 +120,17 @@ if ( ! isset( $user_roles_names ) ) {
 					}
 				}
 				$message = '<span style="font-size: 35px;">&#x261D;</span>'
-					. esc_attr__( 'Switch to another back-end page and come back to update the options to get all items of the admin bar in the back end area.', 'adminimize' );
+					. esc_attr__(
+						'You must open the front end of the site in this browser in order for the plugin to discover the Admin Bar items that are currently not visible.',
+						'adminimize'
+					);
+
 				?>
 				</tbody>
 			</table>
 
 			<p><?php echo $message; ?></p>
+
 			<p id="submitbutton">
 				<input type="hidden" name="_mw_adminimize_action" value="_mw_adminimize_insert" />
 				<input class="button button-primary" type="submit" name="_mw_adminimize_save" value="<?php esc_attr_e(
@@ -135,7 +140,7 @@ if ( ! isset( $user_roles_names ) ) {
 
 			<p>
 				<a class="alignright button" href="javascript:void(0);" onclick="window.scrollTo(0,0);"
-						style="margin:3px 0 0 30px;"><?php esc_attr_e(
+					style="margin:3px 0 0 30px;"><?php esc_attr_e(
 						'scroll to top', 'adminimize'
 					); ?></a>
 				<br class="clear" />
