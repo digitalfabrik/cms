@@ -1,0 +1,74 @@
+/* default alignment for rounded corner boxes (dialog.css)  */
+
+.rc-topper .rc-t,
+.rc-topper .rc-t-left {
+ background:transparent url(dialog2-green-top5d.png) no-repeat top right;
+ opacity:.85; 
+ -moz-opacity:.85;
+}
+
+.rc-bottomer .rc-b,
+.rc-bottomer .rc-b-left {
+ background:transparent url(dialog2-green-bottom5d.png) no-repeat top right;
+ opacity:.85; 
+ -moz-opacity:.85; 
+}
+
+.rc-topper .rc-t,
+.rc-bottomer .rc-b {
+	border-right: 1px solid transparent; /* otherwise td runs beyond table bounds. same effect as nbsp, but without messing height */
+}
+
+.rc-topper,
+.rc-bottomer {
+	border: none;
+}
+
+.rc-topper tr,
+.rc-bottomer tr {
+	padding: 0;
+	margin: 0;
+}
+
+.rc-topper tr td,
+.rc-bottomer tr td{
+	padding: 0;
+	margin: 0;
+}
+
+.rc-topper .rc-t,
+.rc-bottomer .rc-b {
+ background-position:bottom right;
+}
+
+.rc-topper .rc-t-left,
+.rc-bottomer .rc-b-left {
+ width:20px; /* bottom corner width */
+ background-position:bottom left;
+}
+
+
+/* the rest was non-IE specific when we attempted to round IE corners */
+.rc-topper .rc-t,
+.rc-topper .rc-t-left,
+.rc-topper .rc-b,
+.rc-topper .rc-b-left {
+	height:12px; /* height of bottom cap/shade */
+}
+
+.rc-topper {
+	margin: 0;
+}
+
+.rc-topper,
+.rc-bottomer {
+	width: 100%
+}
+
+#wrap {
+	margin-top: -25px;	
+}
+
+#leftside {
+	margin-top: 5px;	
+}

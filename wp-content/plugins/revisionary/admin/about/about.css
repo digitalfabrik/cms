@@ -1,0 +1,109 @@
+#wpbody-content, #wrap {
+	background-color: #7E7B68;
+	background: url(img/field6b.jpg);
+	background-repeat: repeat;
+	padding-top:0;
+}
+
+#wrap {
+	height: 100%;
+	margin: 0;
+}
+
+/* for WP < 2.7 */
+#wpcontent, #wpwrap {
+	padding-bottom: 0;
+}
+
+#screen-meta-links {
+	display: none;
+}
+
+#masthead-main {
+	background: url(img/agapetry-header_finalG.jpg);
+	background-repeat: no-repeat;
+  	width: 525px;
+}
+
+.masthead {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	height: 149px;
+	color: white;
+	background-color: #7E7B68;
+	background: url(img/agapetry-header-repeatE.jpg);
+	background-repeat: repeat-x;
+}
+
+.masthead li {
+	list-style: none;
+  	margin: 0;
+  	height: 149px;
+}
+
+.masthead li a {
+	display: block;
+	width: 525px;
+  	height: 149px;
+  	text-decoration: none;
+}
+
+a.agp-toplink, a.agp-toplink:hover {
+	text-decoration: none;	
+}
+
+#wpbody-content a img {border:0;}
+
+.donate {
+	opacity: 0.75;
+	margin: 0 0 0 0.5em;
+}
+
+.donate:hover {
+	opacity: 1.0;	
+}
+
+/* Links */
+#wrap a {color:#87c0fc; font-weight:700; text-decoration:none;}
+#wrap a:hover {color:#fcd987; font-weight:700; text-decoration:underline;}
+
+/* Headers */
+#wrap h2 {font-size:1.8em;}
+#wrap h3 {font-size:1.5em;}
+
+#wrap p {
+	line-height: 1.5em;
+	margin-bottom: 1.3em;
+}
+
+#agp-thanks li {
+	line-height: 1.5em;
+}
+
+.small {font-size:0.8em;}
+
+.madein {
+	background: url(img/madein_mich_logo_40.png) no-repeat;
+	width: 110px;
+	height: 132px;
+	margin: 1.5em 0 0 2em;
+}
+
+.madein a {
+	display: block;
+	width: 110px;
+	height: 132px;
+}
+
+.rc-about-dialog {
+	min-width: 8em;
+	max-width: 760px;
+	color: #fff;
+	background-color: #1A4C1A;
+	opacity:.85; 
+ 	-moz-opacity:.85;
+	margin: 0 0.5em 0 0.5em;
+	padding: 0.05em 0.5em 0.2em 0.5em;
+	border: 1px solid #aaa;
+}

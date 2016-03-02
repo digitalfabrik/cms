@@ -21,32 +21,34 @@ function closeBox() {
 
 function waypointBoxPosition() {
 	if( jQuery('#waypointBox').length ) {
-		var waypointBox = jQuery('#waypointBox');
+		setTimeout(function() {
+			var waypointBox = jQuery('#waypointBox');
 
-		var waypointPosition = waypointBox.data('position');
+			var waypointPosition = waypointBox.data('position');
 
-		var top = jQuery( waypointPosition ).offset().top;
-		var left = jQuery( waypointPosition ).offset().left;
-		var right = left + jQuery( waypointPosition).outerWidth();
+			var top = jQuery(waypointPosition).offset().top;
+			var left = jQuery(waypointPosition).offset().left;
+			var right = left + jQuery(waypointPosition).outerWidth();
 
-		if( left + waypointBox.width() > jQuery(document).width() ) {
-			waypointBox.css( 'left', left - waypointBox.width() - 25 );
-			jQuery('.waypointBoxArrow.right').show();
-		} else {
-			waypointBox.css( 'left', right + 25 );
-			jQuery('.waypointBoxArrow.left').show();
-		}
+			if (left + waypointBox.width() > jQuery(document).width()) {
+				waypointBox.css('left', left - waypointBox.width() - 25);
+				jQuery('.waypointBoxArrow.right').show();
+			} else {
+				waypointBox.css('left', right + 25);
+				jQuery('.waypointBoxArrow.left').show();
+			}
 
-		if (top == 0) {
-			waypointBox.css('top', 5);
-		} else {
-			waypointBox.css('top', top);
-		}
+			if (top == 0) {
+				waypointBox.css('top', 5);
+			} else {
+				waypointBox.css('top', top);
+			}
 
-		if( waypointBox.offset().top > jQuery(window).height() ) {
-			jQuery('html,body').animate({
-				scrollTop: waypointBox.offset().top
-			}, 600);
-		}
+			if (waypointBox.offset().top > jQuery(window).height() - waypointBox.height()) {
+				jQuery('html,body').animate({
+					scrollTop: waypointBox.offset().top + waypointBox.height()
+				}, 600);
+			}
+		}, 100);
 	}
 }

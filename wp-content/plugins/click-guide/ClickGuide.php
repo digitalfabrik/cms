@@ -21,9 +21,16 @@ class ClickGuide {
 	public function showPresentation() {
 		if( !is_network_admin() ) {
 			$option_table_name = CLICKGUIDE_INSTANCE_OPTIONS_TABLE;
-			$tours_option_name = CLICKGUIDE_INSTANCE_OPTION_NAME;	
+			$tours_option_name = CLICKGUIDE_INSTANCE_OPTION_NAME;
 
-			$this->ClickGuideOptionsPageInstance = new ClickGuidePresentation();
+			global $wpdb;
+			$chosenTours = $wpdb->get_row( "SELECT * FROM $option_table_name WHERE option_name = '$tours_option_name'" );
+
+			if( $chosenTours and $chosenTours->option_value != none ) {
+				if( get_site_option('clickguide_status') == 1 ) {
+					$this->ClickGuidePresentation = new ClickGuidePresentation();
+				}
+			}
 		}
 	}
 
