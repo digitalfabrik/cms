@@ -1,5 +1,8 @@
 <?php
 
+/*
+ * Handling translation provider
+ */
 class TranslationService {
 	private $clientId;
 	private $clientSecret;
