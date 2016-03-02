@@ -74,7 +74,7 @@ class WPML_Taxonomy_Translation_Table_Display {
 
 	public static function enqueue_taxonomy_table_js() {
 
-		$core_dependencies = array( "underscore", "jquery", "backbone" );
+		$core_dependencies = array( "jquery", "backbone", 'wpml-underscore-template-compiler' );
 		wp_register_script( "templates",
 		                    ICL_PLUGIN_URL . '/res/js/taxonomy-translation/templates.js',
 		                    $core_dependencies );
@@ -224,11 +224,12 @@ class WPML_Taxonomy_Translation_Table_Display {
 		do_action( 'wpml_st_load_label_menu' );
 
 		if ( $taxonomy ) {
-			$terms    = WPML_Taxonomy_Translation::get_terms_for_taxonomy_translation_screen( $taxonomy );
+			$terms_data = new WPML_Taxonomy_Translation_Screen_Data( $sitepress,
+				$taxonomy );
 			$labels   = apply_filters( 'wpml_label_translation_data', false, $taxonomy );
 			$def_lang = $sitepress->get_default_language();
 			wp_send_json( array(
-							  "terms"                => $terms,
+							  "terms"                => $terms_data->terms(),
 							  "taxLabelTranslations" => $labels,
 							  "defaultLanguage"      => $def_lang
 						  ) );

@@ -32,9 +32,9 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	/**
 	 * Filters the link to a post's edit screen by appending the language query argument
 	 *
-	 * @param  string $link
-	 * @param    int  $id
-	 * @param string  $context
+	 * @param string $link
+	 * @param int    $id
+	 * @param string $context
 	 *
 	 * @return string
 	 *
@@ -43,6 +43,11 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	public function get_edit_post_link( $link, $id, $context = 'display' ) {
 		if ( $id && (bool) ( $lang = $this->post_translation->get_element_lang_code( $id ) ) === true ) {
 			$link .= ( 'display' === $context ? '&amp;' : '&' ) . 'lang=' . $lang;
+			if ( ! did_action( 'wpml_pre_status_icon_display' ) ) {
+				do_action( 'wpml_pre_status_icon_display' );
+			}
+			$link = apply_filters( 'wpml_link_to_translation', $link, $id,
+				$lang, $this->post_translation->get_element_trid( $id ) );
 		}
 
 		return $link;

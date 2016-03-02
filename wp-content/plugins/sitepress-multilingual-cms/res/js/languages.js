@@ -387,34 +387,6 @@ function saveLanguageSelection() {
     hideLanguagePicker();
 }
 
-function validateDomain(){
-    /*jshint validthis: true */
-    var domainInputs = jQuery('#icl_lnt_domains_box').find('.language_domains').find('input').filter('[type="text"]');
-    var valid = true;
-    domainInputs.each(function(){
-        var domain = jQuery(this).val();
-        var parser = document.createElement('a');
-        parser.href = domain;
-
-        valid = valid && (parser.protocol === 'http:' || parser.protocol === 'https:')
-            && domain.indexOf(parser.protocol + '//') === 0
-            && parser.hostname.length > 0;
-    });
-
-    var language_negotiation_type = jQuery('#icl_save_language_negotiation_type').find('input[type="submit"]');
-    language_negotiation_type.prop('disabled', !valid);
-}
-
-function setDomainInputEvents() {
-    var domainInputs = jQuery('#icl_lnt_domains_box').find('.language_domains').find('input').filter('[type="text"]');
-    if (domainInputs.length !== 0) {
-        domainInputs.blur(validateDomain);
-        domainInputs.keyup(validateDomain);
-        domainInputs.click(validateDomain);
-        domainInputs.focus(validateDomain);
-    }
-}
-
 function iclLntDomains() {
     var language_negotiation_type, icl_lnt_domains_box, icl_lnt_domains_options, icl_lnt_xdomain_options;
     icl_lnt_domains_box = jQuery('#icl_lnt_domains_box');
@@ -422,8 +394,6 @@ function iclLntDomains() {
     icl_lnt_xdomain_options = jQuery('#language_domain_xdomain_options');
 
     if (icl_lnt_domains_options.attr('checked')) {
-
-        setDomainInputEvents();
         icl_lnt_domains_box.html(icl_ajxloaderimg);
         icl_lnt_domains_box.show();
         language_negotiation_type = jQuery('#icl_save_language_negotiation_type').find('input[type="submit"]');
@@ -435,7 +405,6 @@ function iclLntDomains() {
             success: function (resp) {
                 icl_lnt_domains_box.html(resp);
                 language_negotiation_type.prop('disabled', false);
-                setDomainInputEvents();
                 icl_lnt_xdomain_options.show();
             }
         });
@@ -532,14 +501,14 @@ function iclUseDirectoryToggle() {
 				domainsToValidate.filter(':visible').each(function (index, element) {
 					var languageDomainURL;
 					var domainValidationCheckbox = jQuery(element);
-
 					var langDomainInput, lang, languageDomain;
-
 					lang = domainValidationCheckbox.attr('value');
 					languageDomain = jQuery('.spinner.spinner-' + lang);
 					langDomainInput = jQuery('#language_domain_' + lang);
-					languageDomainURL = langDomainInput.attr('value');
-
+                    var validation = new WpmlDomainValidation(langDomainInput, domainValidationCheckbox);
+                    validation.run();
+                    var subdirMatches = langDomainInput.parent().html().match(/<code>\/(.+)<\/code>/);
+                    languageDomainURL = langDomainInput.parent().html().match(/<code>(.+)<\/code>/)[1] + langDomainInput.val()  + '/' + ( subdirMatches !== null ? subdirMatches[1] : '' );
 					if (domainValidationCheckbox.prop('checked')) {
 						languageDomain.addClass('is-active');
 						if (-1 !== usedUrls.indexOf(languageDomainURL)) {
@@ -548,7 +517,6 @@ function iclUseDirectoryToggle() {
 						} else {
 							usedUrls.push(languageDomainURL);
 							langDomainInput.css('color', '#000');
-
 							jQuery.ajax({
 								method:   "POST",
 								url:      ajaxurl,
@@ -559,7 +527,6 @@ function iclUseDirectoryToggle() {
 								},
 								success:  function (resp) {
 									var ajaxLanguagePlaceholder = jQuery('#ajx_ld_' + lang);
-
 									ajaxLanguagePlaceholder.html(resp.data);
 									ajaxLanguagePlaceholder.removeClass('icl_error_text');
 									ajaxLanguagePlaceholder.removeClass('icl_valid_text');
@@ -571,12 +538,9 @@ function iclUseDirectoryToggle() {
 									}
 									validatedDomains++;
 								},
-								error:    function (jqXHR, textStatus, errorThrown) {
-									console.log(jqXHR);
-									console.log(textStatus);
-									console.log(errorThrown);
+								error:    function (jqXHR, textStatus) {
 									jQuery('#ajx_ld_' + lang).html('');
-									if ('0' === resp) {
+									if ('0' === jqXHR) {
 										fadeInAjxResp('#' + textStatus, icl_ajx_error, true);
 									}
 								},

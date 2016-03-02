@@ -5,7 +5,7 @@ Plugin URI: https://wpml.org/
 Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-2/">WPML 3.2 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.1.4
+Version: 2.1.5
 Plugin Slug: wpml-translation-management
 */
 
@@ -26,7 +26,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
 	}
 }
 
-define( 'WPML_TM_VERSION', '2.1.4' );
+define( 'WPML_TM_VERSION', '2.1.5' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -59,11 +59,13 @@ function wpml_tm_load_ui() {
 			$sitepress, $tm_loader, $core_translation_management );
 		$WPML_Translation_Management->load();
 
-		$wpml_wp_api      = new WPML_WP_API();
-		$TranslationProxy = new WPML_Translation_Proxy_API();
-		new WPML_TM_Troubleshooting_Reset_Pro_Trans_Config( $sitepress, $TranslationProxy, $wpml_wp_api, $wpdb );
-		new WPML_TM_Troubleshooting_Clear_TS( $wpml_wp_api );
-		new WPML_TM_Promotions( $wpml_wp_api );
+		if ( is_admin() ) {
+			$wpml_wp_api      = new WPML_WP_API();
+			$TranslationProxy = new WPML_Translation_Proxy_API();
+			new WPML_TM_Troubleshooting_Reset_Pro_Trans_Config( $sitepress, $TranslationProxy, $wpml_wp_api, $wpdb );
+			new WPML_TM_Troubleshooting_Clear_TS( $wpml_wp_api );
+			new WPML_TM_Promotions( $wpml_wp_api );
+		}
 	}
 }
 
@@ -81,4 +83,6 @@ function wpml_tm_word_count_init() {
 	new WPML_TM_Words_Count_AJAX( $wpml_tm_words_count, $wpml_tm_words_count_summary, $wpml_wp_api );
 }
 
-add_action( 'wpml_tm_loaded', 'wpml_tm_word_count_init' );
+if ( is_admin() ) {
+	add_action( 'wpml_tm_loaded', 'wpml_tm_word_count_init' );
+}

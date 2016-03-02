@@ -14,7 +14,7 @@ TaxonomyTranslation.data.syncData = {};
 
 
 (function () {
-    TaxonomyTranslation.data.Templates = {
+    var templates = {
         main: [
             "<label for=\"icl_tt_tax_switch\">",
                 "<%=labels.taxToTranslate%>",
@@ -251,14 +251,12 @@ TaxonomyTranslation.data.syncData = {};
 
     };
 
+    TaxonomyTranslation.templateCompiler = Object.create(WpmlTemplateCompiler);
+    TaxonomyTranslation.templateCompiler.init(_, templates);
+
     TaxonomyTranslation.getTemplate = function (temp) {
 
-        if (TaxonomyTranslation.data.Templates.hasOwnProperty(temp)) {
-            if (TaxonomyTranslation.data.compiledTemplates[temp] === undefined) {
-                TaxonomyTranslation.data.compiledTemplates[temp] = _.template(TaxonomyTranslation.data.Templates[temp].join("\n"))
-            }
-            return TaxonomyTranslation.data.compiledTemplates[temp];
-        }
+        return TaxonomyTranslation.templateCompiler.getTemplate(temp);
     };
 
 })(TaxonomyTranslation);
