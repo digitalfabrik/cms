@@ -61,3 +61,36 @@ add_action('rest_api_init', function () {
 		$endpoint->register_routes(API_NAMESPACE);
 	}
 });
+
+function wp_api_extension_before_delete_post($postid) {
+	$post = get_post( $postid );
+	//if( $_GET['action'] == "delete" ) { //can be used instead of following line, depends on GET
+	if ( 'page' == $post->post_type ) { //we can delete everything but the initial page, independent from loaded page
+		wp_redirect(admin_url('edit.php?post_type=page'));
+		exit();
+	}
+}
+add_action('before_delete_post', 'wp_api_extension_before_delete_post', 1);
+
+function wp_api_extension_hide_delete_css()
+{
+	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
+	{
+		echo "<style>
+			.alignleft.actions:first-child, #delete_all {
+				display: none;
+			}
+			</style>";
+	}
+}
+add_action( 'admin_head-edit.php', 'wp_api_extension_hide_delete_css' );
+
+function wp_api_extension_hide_row_action( $actions, $post ) 
+{
+	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
+		unset( $actions['delete'] );
+
+	return $actions; 
+}
+add_filter( 'post_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
+add_filter( 'page_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
