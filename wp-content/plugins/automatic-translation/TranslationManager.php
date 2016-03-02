@@ -139,6 +139,7 @@ class TranslationManager {
 		$this->mark_as_automatic_translation($translated_post_id);
 		
 		//fixes wrong post_parent for autotranslation
+		//after being saved for the first time, the parent of the translated page can be determined by looking at the parent in the source language
 		$translated_post['post_parent'] = $this->wpml_helper->get_translation_post_parent( $translated_post['ID'], $source_language_code, $target_language_code );
 		wp_update_post( $translated_post );
 		// end fix wrong post_parent
