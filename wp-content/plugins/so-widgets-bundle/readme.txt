@@ -1,8 +1,9 @@
 === SiteOrigin Widgets Bundle ===
 Tags: bundle, widget, button, slider, image, carousel, price table, google maps, tinymce, social links
 Requires at least: 3.9
-Tested up to: 4.3
-Stable tag: 1.5.2
+Tested up to: 4.4.2
+Stable tag: 1.5.7
+Build time: 2016-02-29T21:10:05+02:00
 License: GPLv3 or later
 Contributors: gpriday, braam-genis
 
@@ -49,6 +50,56 @@ The SiteOrigin Widgets Bundle is the perfect platform to build widgets for your 
 3. An example of the button widget.
 
 == Changelog ==
+
+= 1.5.8 - February 26 2016 =
+* Skip empty sidebars when loading widget scripts.
+* Changes to cache clearing.
+* Typo corrections.
+* Fixed conflict with Child Theme Configurator.
+* Image Grid widget: Using correct field and image size names to determine image sizes.
+* Editor widget: Added shortcode unautop to Editor widget.
+* Contact Form widget: Added check to prevent email resends in contact form widget.
+* Masonry widget: properly handles full width rows in Page Builder.
+* Hero Image widget: Fix backgrounds URL.
+* Price Table widget: Skip empty buttons.
+* Maps Widget: Allow clicking markers to reopen info windows if closed.
+
+= 1.5.7 - February 4 2016 =
+* Restored old class name for Image Grid Widget.
+
+= 1.5.6 - January 23 2016 =
+* Fixed widget name migration
+* Fixed hero image height issue.
+* Fixed admin page layout.
+
+= 1.5.5 - January 21 2016 =
+* Changed widget folder names to make them less verbose.
+* Properly handle LESS compile errors.
+* Fixed regex causing only the first 10 TinyMCE fields to be initialized.
+* Fixed sanitization in the contact form.
+* Fixed Google webfont function.
+* Fixed image output for slider base.
+* Image Widget: Added alignment options.
+* Contact Form: Use anchor to return to form after submit
+* Change default caps to manage options.
+* Contact form widget: fixed - form in customizer doesn't resize.
+* Price Table: Added image alt tags.
+* Editor Widget: Fixed issue where only admins can view unfiltered content.
+* Editor Widget: Fixed issue where Editor Widget was removing new lines in code.
+* Post Selector Field: Support for date fields.
+* Maps Widget: Fixed Lat/Long coordinate handling.
+* Masonry widget: fixed layout and sizing.
+* Image Widget: Allow display of image title above or below image.
+* Added more relative measurement units to base.
+* Hero Image Widget: Added height setting.
+* Testimonial widget: Prevent outputting related image HTML if no image is set.
+* Testimonial Widget: Use testimonial URLs to link location and optionally link names and images.
+* Contact Form: Prevent multiple submit button clicks.
+* Image Widget: Add support for srcset to Image widget
+* Contact Form: Allow user to set field label position.
+* Contact Form: Allow user to set field label font styles.
+* Contact Form: Allow user setting focussed field outline styles.
+* Contact Form: Don't do recaptcha validation in admin preview.
 
 = 1.5.4 - November 18 2015 =
 * Fixed compatibility with PHP 5.2

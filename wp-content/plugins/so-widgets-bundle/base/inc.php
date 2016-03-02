@@ -235,6 +235,7 @@ function sow_esc_url( $url ) {
 	if( preg_match('/^post: *([0-9]+)/', $url, $matches) ) {
 		// Convert the special post URL into a permalink
 		$url = get_the_permalink( intval($matches[1]) );
+		if( empty($url) ) return '';
 	}
 
 	$protocols = wp_allowed_protocols();
@@ -266,11 +267,10 @@ function sow_esc_url_raw( $url ) {
  * @return mixed|void
  */
 function siteorigin_widgets_fonts_google_webfonts( ) {
-	$fonts = include plugin_dir_path(__FILE__) . 'inc/fonts.php';
-	$fonts = apply_filters( '', $fonts );
-	return $fonts;
+	$fonts = include plugin_dir_path( __FILE__ ) . 'inc/fonts.php';
+	$fonts = apply_filters( 'siteorigin_widgets_google_webfonts', $fonts );
+	return !empty( $fonts ) ? $fonts : array();
 }
-add_filter('siteorigin_widgets_fonts_google_webfonts', 'siteorigin_widgets_fonts_google_webfonts_filter');
 
 function siteorigin_widgets_is_google_webfont( $font_value ) {
 	$google_webfonts = siteorigin_widgets_fonts_google_webfonts();
@@ -323,9 +323,15 @@ function siteorigin_widgets_get_measurements_list() {
 		'cm',
 		'mm',
 		'em',
-		'ex',
+		'rem',
 		'pt',
 		'pc',
+		'ex',
+		'ch',
+		'vw',
+		'vh',
+		'vmin',
+		'vmax',
 	);
 
 	// Allow themes and plugins to trim or enhance the list.
