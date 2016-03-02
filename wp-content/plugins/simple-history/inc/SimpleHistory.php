@@ -68,6 +68,15 @@ class SimpleHistory {
 
 	function __construct() {
 
+		$this->init();
+
+	} // construct
+
+	/**
+	 * @since 2.5.2
+	 */
+	public function init() {
+
 		/**
 		 * Fires before Simple History does it's init stuff
 		 *
@@ -96,30 +105,17 @@ class SimpleHistory {
 
 		add_action( 'after_setup_theme', array( $this, 'setup_cron' ) );
 
-		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
-		add_action( 'admin_menu', array( $this, 'add_settings' ) );
-
-		add_action( 'admin_footer', array( $this, "add_js_templates" ) );
-
-		add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget' ) );
-
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
-
-		add_action( 'admin_head', array( $this, "onAdminHead" ) );
-		add_action( 'admin_footer', array( $this, "onAdminFooter" ) );
-
 		// Filters and actions not called during regular boot
 		add_filter( "gettext", array( $this, 'filter_gettext' ), 20, 3 );
 		add_filter( "gettext_with_context", array( $this, 'filter_gettext_with_context' ), 20, 4 );
 
 		add_filter( 'gettext', array( $this, "filter_gettext_storeLatestTranslations" ), 10, 3 );
 
-		add_action( 'simple_history/history_page/before_gui', array( $this, "output_quick_stats" ) );
-		add_action( 'simple_history/dashboard/before_gui', array( $this, "output_quick_stats" ) );
+		if ( is_admin() ) {
+			
+			$this->add_admin_actions();
 
-		add_action( 'wp_ajax_simple_history_api', array( $this, 'api' ) );
-
-		add_filter( 'plugin_action_links_simple-history/index.php', array( $this, 'plugin_action_links' ), 10, 4 );
+		}
 
 		/**
 		 * Fires after Simple History has done it's init stuff
@@ -157,6 +153,32 @@ class SimpleHistory {
 			}, 10, 4 );
 
 		}
+
+	}
+
+	/**
+	 * @since 2.5.2
+	 */
+	private function add_admin_actions() {
+
+		add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
+		add_action( 'admin_menu', array( $this, 'add_settings' ) );
+
+		add_action( 'admin_footer', array( $this, "add_js_templates" ) );
+
+		add_action( 'wp_dashboard_setup', array( $this, 'add_dashboard_widget' ) );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+
+		add_action( 'admin_head', array( $this, "onAdminHead" ) );
+		add_action( 'admin_footer', array( $this, "onAdminFooter" ) );
+	
+		add_action( 'simple_history/history_page/before_gui', array( $this, "output_quick_stats" ) );
+		add_action( 'simple_history/dashboard/before_gui', array( $this, "output_quick_stats" ) );
+
+		add_action( 'wp_ajax_simple_history_api', array( $this, 'api' ) );
+
+		add_filter( 'plugin_action_links_simple-history/index.php', array( $this, 'plugin_action_links' ), 10, 4 );
 
 	}
 
@@ -1102,6 +1124,22 @@ class SimpleHistory {
 				}
 			}
 
+			// Add timeago.js
+			wp_enqueue_script( 'timeago', SIMPLE_HISTORY_DIR_URL . 'js/timeago/jquery.timeago.js', array("jquery"), '1.5.2', true );
+
+			// Determine current locale to load timeago locale
+			$locale      = strtolower( substr( get_locale(), 0, 2 ) );
+			$locale_url_path = SIMPLE_HISTORY_DIR_URL . 'js/timeago/locales/jquery.timeago.%s.js';
+			$locale_dir_path = SIMPLE_HISTORY_PATH . 'js/timeago/locales/jquery.timeago.%s.js';
+
+			// Only enqueue if locale-file exists on file system
+			if ( file_exists( sprintf( $locale_dir_path, $locale ) ) ) {
+				wp_enqueue_script( 'timeago-locale', sprintf( $locale_url_path, $locale ), array("jquery"), '1.5.2', true );
+			} else {
+				wp_enqueue_script( 'timeago-locale', sprintf( $locale_url_path, "en" ), array("jquery"), '1.5.2', true );
+			}
+			// end add timeago
+
 			/**
 			 * Fires when the admin scripts have been enqueued.
 			 * Only fires on any of the pages where Simple History is used
@@ -1537,7 +1575,7 @@ Because Simple History was just recently installed, this feed does not contain m
 			if ( $show_dashboard_page ) {
 
 				add_dashboard_page(
-					SimpleHistory::NAME,
+					_x( "Simple History", 'dashboard title name', 'simple-history' ),
 					_x( "Simple History", 'dashboard menu name', 'simple-history' ),
 					$this->get_view_history_capability(),
 					"simple_history_page",
@@ -1557,7 +1595,7 @@ Because Simple History was just recently installed, this feed does not contain m
 
 			add_options_page(
 				__( 'Simple History Settings', "simple-history" ),
-				SimpleHistory::NAME,
+				_x( 'Simple History', "Options page menu title", "simple-history" ),
 				$this->get_view_settings_capability(),
 				SimpleHistory::SETTINGS_MENU_SLUG,
 				array( $this, 'settings_page_output' )
@@ -1900,7 +1938,7 @@ Because Simple History was just recently installed, this feed does not contain m
 		}
 
 		$days = $this->get_clear_history_interval();
-
+		
 		// Never clear log if days = 0
 		if ( 0 == $days ) {
 			return;
@@ -1912,7 +1950,10 @@ Because Simple History was just recently installed, this feed does not contain m
 		$table_name_contexts = $wpdb->prefix . SimpleHistory::DBTABLE_CONTEXTS;
 
 		// Get id of rows to delete
-		$sql = "SELECT id FROM {$table_name} WHERE DATE_ADD(date, INTERVAL $days DAY) < now()";
+		$sql = $wpdb->prepare(
+			"SELECT id FROM $table_name WHERE DATE_ADD(date, INTERVAL %d DAY) < now()",
+			$days
+		);
 
 		$ids_to_delete = $wpdb->get_col( $sql );
 
@@ -2553,7 +2594,7 @@ Because Simple History was just recently installed, this feed does not contain m
 
 					$str_return .= sprintf(
 						'"%1$s", ',
-						$one_logger["instance"]->slug
+						esc_sql( $one_logger["instance"]->slug )
 					);
 
 				}

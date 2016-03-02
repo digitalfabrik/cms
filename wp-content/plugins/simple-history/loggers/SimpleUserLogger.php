@@ -29,7 +29,7 @@ class SimpleUserLogger extends SimpleLogger {
 				'user_updated_profile' => __("Edited the profile for user {edited_user_login} ({edited_user_email})", "simple-history"),
 				'user_created' => __("Created user {created_user_login} ({created_user_email}) with role {created_user_role}", "simple-history"),
 				'user_deleted' => __("Deleted user {deleted_user_login} ({deleted_user_email})", "simple-history"),
-				"user_password_reseted" => __("Reseted their password", "simple-history"),
+				"user_password_reseted" => __("Reset their password", "simple-history"),
 				"user_requested_password_reset_link" => __("Requested a password reset link for user with login '{user_login}' and email '{user_email}'", "simple-history"),
 
 				/*
@@ -306,20 +306,22 @@ class SimpleUserLogger extends SimpleLogger {
 		$output = parent::getLogRowPlainTextOutput($row);
 		$current_user_id = get_current_user_id();
 
-		if ("user_updated_profile" == $context["_message_key"]) {
+		if ( "user_updated_profile" == $context["_message_key"] ) {
 
-			$wp_user = get_user_by("id", $context["edited_user_id"]);
+			$wp_user = get_user_by( "id", $context["edited_user_id"] );
 
 			// If edited_user_id and _user_id is the same then a user edited their own profile
 			// Note: it's not the same thing as the currently logged in user (but.. it can be!)
-			if ($context["edited_user_id"] === $context["_user_id"]) {
+			if ( ! empty( $context["_user_id"] ) && $context["edited_user_id"] === $context["_user_id"] ) {
 
-				if ($wp_user) {
+				if ( $wp_user ) {
 
 					$context["edit_profile_link"] = get_edit_user_link($wp_user->ID);
 
+					$use_you = apply_filters("simple_history/user_logger/plain_text_output_use_you", true);
+
 					// User still exist, so link to their profile
-					if ($current_user_id === $context["_user_id"]) {
+					if ( $current_user_id === $context["_user_id"] && $use_you ) {
 
 						// User that is viewing the log is the same as the edited user
 						$msg = __('Edited <a href="{edit_profile_link}">your profile</a>', "simple-history");
