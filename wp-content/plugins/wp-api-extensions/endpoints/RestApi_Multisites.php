@@ -20,7 +20,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	public function get_multisites() {
 		$multisites = wp_get_sites();
-		
+
 		$result = [];
 		foreach ($multisites as $blog) {
 			$result[] = $this->prepare_item($blog);
