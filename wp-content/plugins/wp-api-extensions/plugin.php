@@ -64,8 +64,8 @@ add_action('rest_api_init', function () {
 
 function wp_api_extension_before_delete_post($postid) {
 	$post = get_post( $postid );
-	//if( $_GET['action'] == "delete" ) { //can be used instead of following line
-	if ( 'page' == $post->post_type ) { //we can delete everything but the initial page
+	//if( $_GET['action'] == "delete" ) { //can be used instead of following line, depends on GET
+	if ( 'page' == $post->post_type ) { //we can delete everything but the initial page, independent from loaded page
 		wp_redirect(admin_url('edit.php?post_type=page'));
 		exit();
 	}
