@@ -32,8 +32,4 @@ before_script:
   - sed -i "s|C:\\xampp\\htdocs\\wordpress|$working_dir|g" database.sql
   - mysql -u root wordpress < database.sql
   ## activate wordpress plugins
-  - source ./build/wp-activate-plugins.sh
-
-script:
-  - phpunit
-  - sudo cat /var/log/apache2/error.log
+  - source ./wp-activate-plugins.sh

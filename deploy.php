@@ -18,7 +18,7 @@
 		'git submodule status',
 		'composer self-update',
 		'composer install --no-interaction',
-		file_get_contents(__DIR__ . '/build/wp-activate-plugins.sh'),
+		file_get_contents(__DIR__ . '/wp-activate-plugins.sh'),
 	);
 
 	// Run the commands for output
