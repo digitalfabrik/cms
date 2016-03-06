@@ -7,7 +7,7 @@ before_script:
   - composer install --no-interaction
   # Set up website
   - sudo apt-get update
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  - sudo apt-get install apache2 libapache2-mod-fastcgi mysql-server
   ## enable php-fpm
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo a2enmod rewrite actions fastcgi alias
@@ -17,5 +17,13 @@ before_script:
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
+  - sudo service mysql restart
+  ## set up database
+  - mysql -e "CREATE DATABASE wordpress;"
+  - mysql -e "CREATE USER wordpress@localhost IDENTIFIED BY 'dummy';"
+  - mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO wordpress@localhost;"
+  - mysql -e "FLUSH PRIVILEGES;"
+  - sed -i "s|C:\\xampp\\htdocs\\wordpress|$(pwd)|g" database.sql
+  - mysql wordpress < database.sql
   ## activate wordpress plugins
   - source ./build/wp-activate-plugins.sh
