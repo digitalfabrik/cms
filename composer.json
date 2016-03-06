@@ -1,0 +1,10 @@
+{
+    "require-dev": {
+        "10up/wp_mock": "dev-master",
+        "phpunit/phpunit": "5.2.*",
+        "mockery/mockery": "^0.9.4",
+        "guzzlehttp/guzzle": "^6.1"
+    },
+    "require": {
+    }
+}
