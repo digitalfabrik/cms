@@ -22,6 +22,7 @@ class RestApi_MultisitesTest extends TestCase {
 		$this->assertEquals(200, $response->getStatusCode());
 
 		$body = $response->getBody();
+		echo $body;
 		$this->assertNotNull($body);
 
 		$data = json_decode($body, true);
