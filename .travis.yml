@@ -17,7 +17,6 @@ before_script:
   - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
-  - sudo service mysql restart
   ## set up database
   - mysql -u root -e "CREATE DATABASE wordpress;"
   - mysql -u root -e "CREATE USER wordpress@localhost IDENTIFIED BY 'dummy';"
@@ -27,3 +26,7 @@ before_script:
   - mysql -u root wordpress < database.sql
   ## activate wordpress plugins
   - source ./build/wp-activate-plugins.sh
+
+script:
+  - phpunit
+  - cat /var/log/apache2/error.log
