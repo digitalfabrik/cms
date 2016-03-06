@@ -18,5 +18,4 @@ before_script:
   - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
   - sudo service apache2 restart
   ## activate wordpress plugins
-  - chmod +x ./build/wp-activate-plugins.sh
-  - ./build/wp-activate-plugins.sh
+  - source ./build/wp-activate-plugins.sh
