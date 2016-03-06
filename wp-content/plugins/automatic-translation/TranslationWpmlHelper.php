@@ -22,18 +22,10 @@ class TranslationWpmlHelper {
 	
 	public function get_translation_post_parent( $post_id, $source_language_code, $target_language_code ) {
 		global $wpdb;
-		
-		//convert single querys to join!
-		$query = "SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = '$post_id'";
+
+		$query = "SELECT post_parent, post_status FROM $wpdb->posts p LEFT JOIN {$wpdb->prefix}icl_translations t ON t.element_id = p.ID WHERE t.trid IN (SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = '$post_id') AND t.language_code = '$source_language_code'";
 		$result = $wpdb->get_results($query);
-		$trid = $result[0]->trid;
 		
-		$query = "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid = '$trid' AND language_code = '$source_language_code'";
-		$result = $wpdb->get_results($query);
-		$source_id = $result[0]->element_id;
-		
-		$query = "SELECT post_parent, post_status FROM $wpdb->posts WHERE ID = '$source_id'";
-		$result = $wpdb->get_results($query);
 		if($result[0]->post_status == 'inherit')
 		{
 			$source_id = $result[0]->post_parent;
@@ -42,11 +34,8 @@ class TranslationWpmlHelper {
 		}
 		
 		$source_parent_id = $result[0]->post_parent;
-		$query = "SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = '$source_parent_id'";
-		$result = $wpdb->get_results($query);
-		$trid = $result[0]->trid;
 		
-		$query = "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid = '$trid' AND language_code = '$target_language_code'";
+		$query = "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid IN (SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = '$source_parent_id') AND language_code = '$target_language_code'";
 		$result = $wpdb->get_results($query);
 		$translation_parent_id = $result[0]->element_id;
 
