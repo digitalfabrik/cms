@@ -4,6 +4,8 @@ php:
   - '5.6'
 
 before_script:
+  - pwd
+  - ls -l
   # install dependencies
   - composer install --no-interaction
   # move contents to directory 'wordpress'
