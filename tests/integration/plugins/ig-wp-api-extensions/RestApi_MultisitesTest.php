@@ -18,7 +18,13 @@ class RestApi_MultisitesTest extends TestCase {
 	}
 
 	public function testResult() {
-		$response = $this->client->get('/wordpress/wp-json/extensions/v1/multisites/');
+		try {
+			$response = $this->client->get('/wordpress/wp-json/extensions/v1/multisites/');
+		} catch(\Exception $e) {
+			print_r($e);
+			echo file_get_contents("/var/log/apache2/error.log");
+			throw $e;
+		}
 		$this->assertEquals(200, $response->getStatusCode());
 
 		$body = $response->getBody();
