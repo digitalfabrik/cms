@@ -16,6 +16,7 @@
 		'git submodule sync',
 		'git submodule update',
 		'git submodule status',
+		'composer self-update',
 		'composer install',
 	);
 
