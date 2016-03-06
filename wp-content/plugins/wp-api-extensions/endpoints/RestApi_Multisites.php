@@ -40,7 +40,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'cover_image' => get_header_image(),
 			'color' => '#FFA000',
 			'path' => $blog['path'],
-			'description' => get_bloginfo($blog),
+			'description' => get_bloginfo($blog['path']),
 			'live' => in_array($id, $this->included_site_ids)
 		];
 		restore_current_blog();
