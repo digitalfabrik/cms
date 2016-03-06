@@ -1,7 +1,9 @@
 <?php
 
-class Dummy extends PHPUnit_Framework_TestCase {
-	public function testNothing() {
+use WP_Mock\Tools\TestCase;
+
+class Dummy extends TestCase {
+	public function testTrueIsTrue() {
 		$this->assertTrue(true);
 	}
 }
