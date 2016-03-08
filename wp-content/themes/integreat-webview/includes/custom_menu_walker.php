@@ -71,7 +71,7 @@
 
             /** This filter is documented in wp-includes/post-template.php */
             $output .= $indent . sprintf(
-                    '<li class="%s"><a href="%s"><span class="menu-icon">%s</span><span class="linkText"><span>%s%s%s</span></span><span class="childrenToggle"><i class="fa fa-plus"></i><span class="borderBottom"></span></span></a>',
+                    '<li class="%s"><a href="%s"><span class="menu-icon"><span>%s</span></span><span class="linkText"><span>%s%s%s</span></span><span class="childrenToggle"><i class="fa fa-plus"></i><span class="borderBottom"></span></span></a>',
                     $css_classes,
                     get_permalink( $page->ID ),
                     $thumb,
