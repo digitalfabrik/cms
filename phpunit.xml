@@ -1,5 +1,10 @@
-<testsuites>
-	<testsuite name="Project">
-		<directory>tests</directory>
-	</testsuite>
-</testsuites>
+<phpunit bootstrap="tests/bootstrap.php">
+	<testsuites>
+		<testsuite name="Unit">
+			<directory>tests/unit</directory>
+		</testsuite>
+		<testsuite name="Integration">
+			<directory>tests/integration</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
