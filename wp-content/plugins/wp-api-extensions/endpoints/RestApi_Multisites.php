@@ -20,7 +20,6 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 
 	public function get_multisites() {
 		$multisites = wp_get_sites();
-		$this->load_included_site_ids();
 
 		$result = [];
 		foreach ($multisites as $blog) {
@@ -40,46 +39,11 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'cover_image' => get_header_image(),
 			'color' => '#FFA000',
 			'path' => $blog['path'],
-			'description' => get_bloginfo($blog),
-			'live' => in_array($id, $this->included_site_ids)
+			'description' => get_bloginfo($blog['path']),
+			'live' => $blog['public']
 		];
 		restore_current_blog();
 		return $result;
-	}
-
-	private function get_live_instances() {
-		$filepath = __DIR__ . '/' . self::LIVEINSTANCES_FILENAME;
-		$handle = fopen($filepath, "r");
-		if (!$handle) {
-			throw new RuntimeException("Could not open live instances file '" . $filepath . "'");
-		}
-		try {
-			$ids = [];
-			while (($line = fgets($handle)) !== false) {
-				$id_length = strpos($line, " ");
-				if ($id_length > 0) {
-					$id = substr($line, 0, $id_length);
-				} else {
-					$id = $line;
-				}
-				$ids[] = $id;
-			}
-		} finally {
-			fclose($handle);
-		}
-		return $ids;
-	}
-
-	/**
-	 * If the included site ids are not already loaded,
-	 * retrieves them and stores them in #included_site_ids.
-	 */
-	private function load_included_site_ids() {
-		if ($this->included_site_ids !== false) {
-			// already loaded
-			return;
-		}
-		$this->included_site_ids = $this->get_live_instances();
 	}
 }
 
