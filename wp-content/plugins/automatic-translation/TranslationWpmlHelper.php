@@ -23,32 +23,20 @@ class TranslationWpmlHelper {
 	public function get_translation_post_parent( $post_id, $source_language_code, $target_language_code ) {
 		global $wpdb;
 
-		$query = "SELECT parent_target_translations.element_id
-                    FROM {$wpdb->prefix}icl_translations parent_target_translations
-                        JOIN {$wpdb->prefix}icl_translations post_translations
-                                ON post_translations.element_id = '$post_id'
-                        JOIN {$wpdb->prefix}icl_translations source_translations
-                                ON source_translations.trid = post_translations.trid
-                                AND source_translations.language_code = '$source_language_code'
-                        JOIN {$wpdb->posts} posts
-                                ON posts.ID = source_translations.element_id
-                        JOIN {$wpdb->prefix}icl_translations parent_source_translations
-                                ON parent_source_translations.element_id = posts.post_parent
-                                ON parent_source_translations.trid = parent_target_translations.trid
-                    WHERE parent_target_translations.language_code = '$target_language_code'";
-
+		//first get the post parent of the page in the source language
 		$query = "SELECT post_parent, post_status FROM $wpdb->posts p LEFT JOIN {$wpdb->prefix}icl_translations t ON t.element_id = p.ID WHERE t.trid IN (SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = '$post_id') AND t.language_code = '$source_language_code'";
 		$result = $wpdb->get_results($query);
 		
+		//if the source language page id is a revision (post_status=='inherit', we need the post_parent
 		if($result[0]->post_status == 'inherit')
 		{
 			$source_id = $result[0]->post_parent;
 			$query = "SELECT post_parent, post_status FROM $wpdb->posts WHERE ID = '$source_id'";
 			$result = $wpdb->get_results($query);
 		}
-		
 		$source_parent_id = $result[0]->post_parent;
 		
+		//get the translation of the post_parent
 		$query = "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid IN (SELECT trid FROM {$wpdb->prefix}icl_translations WHERE element_id = '$source_parent_id') AND language_code = '$target_language_code'";
 		$result = $wpdb->get_results($query);
 		$translation_parent_id = $result[0]->element_id;
