@@ -7,8 +7,9 @@
 	 *		https://gist.github.com/1809044
 	 */
 
+	ini_set('max_execution_time', 600); // deployment is potentially time-costly when updates occur
 	// The commands
-	$commands = array(
+	$commands = [
 		'echo $PWD',
 		'whoami',
 		'git pull',
@@ -18,8 +19,9 @@
 		'git submodule status',
 		'composer self-update',
 		'composer install --no-interaction',
-		file_get_contents(__DIR__ . '/wp-activate-plugins.sh'),
-	);
+	];
+	$commands = array_merge($commands, file(__DIR__ . '/wp-activate-plugins.sh'), FILE_SKIP_EMPTY_LINES);
+	$commands = array_merge($commands, file(__DIR__ . '/wp-activate-themes.sh'), FILE_SKIP_EMPTY_LINES);
 
 	// Run the commands for output
 	$output = '';
