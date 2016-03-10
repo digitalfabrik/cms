@@ -40,7 +40,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'color' => '#FFA000',
 			'path' => $blog['path'],
 			'description' => get_bloginfo($blog['path']),
-			'live' => $blog['public']
+			'live' => $blog['public'] and !$blog['spam'] and !$blog['deleted'] and !$blog['archived'] and !$blog['mature']
 		];
 		restore_current_blog();
 		return $result;
