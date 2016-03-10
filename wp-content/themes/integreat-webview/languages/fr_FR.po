@@ -1,0 +1,94 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2016-03-07 21:46+0100\n"
+"PO-Revision-Date: 2016-03-07 21:54+0100\n"
+"Last-Translator: Sascha Beele\n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: js/jquery.hideseek.js\n"
+
+#: 404.php:8
+msgid "The page you were requesting could not be found."
+msgstr "La page que vous demandez est introuvable."
+
+#: 404.php:9
+msgid "Back to homepage"
+msgstr "retour à la page d'accueil"
+
+#: footer.php:6 includes/customizer.php:53
+msgid "Imprint"
+msgstr "Imprimer"
+
+#: footer.php:9 includes/customizer.php:70
+msgid "Privacy"
+msgstr "Intimité"
+
+#: footer.php:12
+msgid "Contact"
+msgstr "Contact"
+
+#: header.php:12
+msgid "Search for"
+msgstr "Rechercher"
+
+#: header.php:60
+msgid "Change location"
+msgstr "Changer de lieu"
+
+#: header.php:75 includes/breadcrumb.php:24
+msgid "Events"
+msgstr "Événements"
+
+#: includes/breadcrumb.php:127
+msgid "Page"
+msgstr "Page"
+
+#: includes/breadcrumb.php:133 templates/contentHeader.php:13
+msgid "Search results for:"
+msgstr "Résultats de recherche pour:"
+
+#: includes/custom_menu_walker.php:60
+#, php-format
+msgid "#%d (no title)"
+msgstr ""
+
+#: includes/customizer.php:25
+msgid "Header Image"
+msgstr "Header image"
+
+#: includes/customizer.php:36
+msgid "Imprint, Privacy and Contact"
+msgstr "Mentions légales, confidentialité et Contact"
+
+#: includes/customizer.php:89
+msgid "Contact link"
+msgstr "contact lien"
+
+#: searchform.php:3 searchform.php:20
+msgid "Search on this site"
+msgstr "Recherche sur ce site"
+
+#: searchform.php:3 searchform.php:16
+msgid "Search everywhere"
+msgstr "Rechercher partout"
+
+#: searchform.php:14
+msgid "Previous"
+msgstr "précédent"
+
+#: searchform.php:15
+msgid "Next"
+msgstr "prochain"
+
+#: templates/pageListing.php:13
+msgid "Event"
+msgstr "un événement"
