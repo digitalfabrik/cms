@@ -73,66 +73,38 @@ function modify_buttons($buttons)
 {
 	/*
 	 * set to true in order to get the default settings, than do
-	 * 1)logout
-	 * 2) login
-	 * 3) refresh et voilà
+	 * refresh 2 times
 	 */
 	$restore_defaults = false;
 	$settings = get_option('tadv_settings', false);
+	clear_toolbars($settings);
+	set_op($settings);
 	if ($settings && !$restore_defaults) {
-		//add buttons
 		//first toolbar
-		insert_button($settings, 'underline', 'toolbar_1', 2);
-		insert_button($settings, 'alignjustify', 'toolbar_1', 6);
+		insert_button($settings, 'bold', 'toolbar_1', 1);
+		insert_button($settings, 'italic', 'toolbar_1', 2);
+		insert_button($settings, 'underline', 'toolbar_1', 3);
+		insert_button($settings, 'forecolor', 'toolbar_1', 4);
+		insert_button($settings, 'bullist', 'toolbar_1', 5);
+		insert_button($settings, 'numlist', 'toolbar_1', 6);
+		insert_button($settings, 'table', 'toolbar_1', 7);
+		insert_button($settings, 'formatselect', 'toolbar_1', 8);
+		insert_button($settings, 'undo', 'toolbar_1', 9);
+		insert_button($settings, 'redo', 'toolbar_1', 10);
+		insert_button($settings, 'wp_adv', 'toolbar_1', 11);
+
 		//second toolbar
-		insert_button($settings, 'blockquote', 'toolbar_2', 1);
+		insert_button($settings, 'alignleft', 'toolbar_2', 1);
 		insert_button($settings, 'aligncenter', 'toolbar_2', 2);
 		insert_button($settings, 'alignright', 'toolbar_2', 3);
-		insert_button($settings, 'fullscreen', 'toolbar_2', 999);
+		insert_button($settings, 'alignjustify', 'toolbar_2', 4);
+		insert_button($settings, 'strikethrough', 'toolbar_2', 5);
+		insert_button($settings, 'indent', 'toolbar_2', 6);
+		insert_button($settings, 'outdent', 'toolbar_2', 7);
+		insert_button($settings, 'link', 'toolbar_2', 8);
 
-		//remove buttons
-		//first toolbar
-		remove_button($settings, 'blockquote', 'toolbar_1');
-		remove_button($settings, 'unlink', 'toolbar_1');    //completely removed
-		remove_button($settings, 'aligncenter', 'toolbar_1');
-		remove_button($settings, 'alignright', 'toolbar_1');
-		remove_button($settings, 'fullscreen', 'toolbar_1');
-		//second toolbar
-		remove_button($settings, 'alignjustify', 'toolbar_2');
-		//upload to DB
 		update_option('tadv_settings', $settings);
 	} elseif ($settings && $restore_defaults) {
-		//remove buttons
-		//first toolbar
-		remove_button($settings, 'formatselect', 'toolbar_1');
-		remove_button($settings, 'alignjustify', 'toolbar_1');
-		remove_button($settings, 'strikethrough', 'toolbar_1');
-		remove_button($settings, 'outdent', 'toolbar_1');
-		remove_button($settings, 'indent', 'toolbar_1');
-		remove_button($settings, 'pastetext', 'toolbar_1');
-		remove_button($settings, 'removeformat', 'toolbar_1');
-		remove_button($settings, 'charmap', 'toolbar_1');
-		remove_button($settings, 'emoticons', 'toolbar_1');
-		remove_button($settings, 'forecolor', 'toolbar_1');
-		remove_button($settings, 'wp_help', 'toolbar_1');
-		//second toolbar
-		remove_button($settings, 'bold', 'toolbar_2');
-		remove_button($settings, 'italic', 'toolbar_2');
-		remove_button($settings, 'underline', 'toolbar_2');
-		remove_button($settings, 'bullist', 'toolbar_2');
-		remove_button($settings, 'numlist', 'toolbar_2');
-		remove_button($settings, 'alignleft', 'toolbar_2');
-		remove_button($settings, 'aligncenter', 'toolbar_2');
-		remove_button($settings, 'alignright', 'toolbar_2');
-		remove_button($settings, 'table', 'toolbar_2');
-		remove_button($settings, 'link', 'toolbar_2');
-		remove_button($settings, 'unlink', 'toolbar_2');
-		remove_button($settings, 'undo', 'toolbar_2');
-		remove_button($settings, 'redo', 'toolbar_2');
-		remove_button($settings, 'wp_adv', 'toolbar_2');
-		remove_button($settings, 'wp_adv', 'toolbar_2');
-		remove_button($settings, 'blockquote', 'toolbar_1');
-		//add buttons
 		//first toolbar
 		insert_button($settings, 'bold', 'toolbar_1', 1);
 		insert_button($settings, 'italic', 'toolbar_1', 2);
@@ -167,6 +139,25 @@ function modify_buttons($buttons)
 		update_option('tadv_settings', $settings);
 	}
 	return $buttons;
+}
+
+// sample entry
+// a:6:{s:9:"toolbar_1";s:84:"bold,italic,...,,redo";s:9:"toolbar_2";...s:9:"toolbar_4";s:0:"";s:7:"options";s:25:"advlist,contextmenu,image";s:7:"plugins";s:25:"table,advlist,contextmenu";}
+function clear_toolbars(&$array){
+	$toolbar = 'toolbar_';
+	for($i=1;$i<=4;$i++){
+		$help = $toolbar.$i;
+		$array[$help]='';
+	}
+}
+
+/**
+ * options to, e.g.: add the menu bar
+ * @param $array
+ */
+function set_op(&$array){
+	$array['options'] = 'menubar,advlist,contextmenu,image';
+	$array['plugins'] = 'table,advlist,contextmenu';
 }
 
 function insert_button(&$array,$to_insert,$menue,$position){
