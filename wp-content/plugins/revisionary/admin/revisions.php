@@ -213,14 +213,14 @@ default :
 			if ( agp_user_can( $edit_cap, $rvy_post->ID, '', array( 'skip_revision_allowance' => true ) ) && current_user_can ('publish_pages') ) {
 				switch( $revision->post_status ) :
 				case 'future' :
-					$caption = str_replace( ' ', '&nbsp;', __('Publish') );
+					$caption = str_replace( ' ', '&nbsp;', __('Publish Now', 'revisionary') );
 					$link = wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'diff' => false, 'action' => 'restore' ) ), "restore-post_$rvy_post->ID|$revision->ID" );
 					break;
 				case 'rvy-pending' :
 					if ( strtotime($revision->post_date_gmt) > agp_time_gmt() ) {
 						$caption = str_replace( ' ', '&nbsp;', __('Schedule Now', 'revisionary') );
 					} else {
-						$caption = str_replace( ' ', '&nbsp;', __('Publish') );
+						$caption = str_replace( ' ', '&nbsp;', __('Publish Now', 'revisionary') );
 					}
 					
 					$link = wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'diff' => false, 'action' => 'approve' ) ), "approve-post_$rvy_post->ID|$revision->ID" );
