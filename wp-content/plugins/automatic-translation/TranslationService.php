@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Handling translation provider
+ * Handling translation provider (Bing translate)
  */
 class TranslationService {
 	private $clientId;
