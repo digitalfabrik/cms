@@ -20,7 +20,7 @@ add_filter('wp_api_extensions_output_post', function ($output_post) {
 });
 
 /*
- * Handling post and it's translation
+ * Handling post and its translation
  */ 	
 class TranslationManager {
 	const AUTOMATIC_TRANSLATION_META_KEY = 'automatic_translation';
