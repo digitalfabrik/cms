@@ -169,6 +169,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		remove_role('author');
 		remove_role('contributor');
 		remove_role('administrator');
+		remove_role('revisor');
 	}
 
 	restore_current_blog();
