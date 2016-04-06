@@ -1,5 +1,0 @@
-2 // Augsburg
-8 // Duesseldorf
-11 // Bad Toelz
-15 // Main-Taunus-Kreis
-25 // Kiel

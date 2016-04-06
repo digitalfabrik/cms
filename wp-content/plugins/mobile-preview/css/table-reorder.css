@@ -1,7 +1,0 @@
-.desktop tbody tr:nth-child(odd) {
-    background: #eee;
-}
-
-.generated_for_mobile tr.odd {
-    background: #eee;
-}
