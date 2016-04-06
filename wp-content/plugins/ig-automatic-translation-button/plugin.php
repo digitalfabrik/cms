@@ -12,6 +12,12 @@ require_once __DIR__ . '/callback.php';
  */
 class AutomaticTranslationButtonPlugin {
 	public function enqueue_styles_and_scripts() {
+		
+		//dont show autotranslate button if user is organisation
+		if( ! current_user_can( 'publish_pages' ) ) {
+			return;
+		}		
+
 		$post = get_post(null, OBJECT);
 		if (!$post || $post->post_status == 'auto-draft') {
 			// page has not been saved yet
