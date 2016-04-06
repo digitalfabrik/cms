@@ -15,7 +15,7 @@ class AutomaticTranslationButtonPlugin {
 		
 		//dont show autotranslate button if user is organisation
 		if( ! current_user_can( 'publish_pages' ) ) {
-			return false;
+			return;
 		}		
 
 		$post = get_post(null, OBJECT);
