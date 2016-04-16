@@ -89,6 +89,31 @@ class WPML_WP_API {
 	}
 
 	/**
+	 * Wrapper for \get_edit_post_link
+	 *
+	 * @param int    $id
+	 * @param string $context
+	 *
+	 * @return null|string|void
+	 */
+	public function get_edit_post_link( $id = 0, $context = 'display' ) {
+
+		return get_edit_post_link( $id, $context );
+	}
+
+	/**
+	 * Wrapper for get_the_title
+	 *
+	 * @param int|WP_Post $post
+	 *
+	 * @return string
+	 */
+	public function get_the_title( $post ) {
+
+		return get_the_title( $post );
+	}
+
+	/**
 	 * Wrapper for \get_day_link
 	 *
 	 * @param int $year
@@ -188,11 +213,11 @@ class WPML_WP_API {
 	}
 
 	public function get_tm_url( $tab = null, $hash = null ) {
-		$tm_url = menu_page_url(WPML_TM_FOLDER . '/menu/main.php', false);
+		$tm_url = menu_page_url( WPML_TM_FOLDER . '/menu/main.php', false );
 
 		$query_vars = array();
 		if ( $tab ) {
-			$query_vars[ 'sm' ] = $tab;
+			$query_vars['sm'] = $tab;
 		}
 
 		$tm_url = add_query_arg( $query_vars, $tm_url );
@@ -223,14 +248,14 @@ class WPML_WP_API {
 
 	public function is_tm_page( $tab = null ) {
 		$result = is_admin()
-							&& isset( $_GET[ 'page' ] )
-							&& $_GET[ 'page' ] == WPML_TM_FOLDER . '/menu/main.php';
+		          && isset( $_GET['page'] )
+		          && $_GET['page'] == WPML_TM_FOLDER . '/menu/main.php';
 
 		if ( $tab ) {
-			if ( $tab == 'dashboard' && ! isset( $_GET[ 'sm' ] ) ) {
+			if ( $tab == 'dashboard' && ! isset( $_GET['sm'] ) ) {
 				$result = $result && true;
 			} else {
-				$result = $result && isset( $_GET[ 'sm' ] ) && $_GET[ 'sm' ] == $tab;
+				$result = $result && isset( $_GET['sm'] ) && $_GET['sm'] == $tab;
 			}
 		}
 
@@ -243,8 +268,8 @@ class WPML_WP_API {
 
 	public function is_core_page( $page ) {
 		$result = is_admin()
-							&& isset( $_GET[ 'page' ] )
-							&& $_GET[ 'page' ] == ICL_PLUGIN_FOLDER . '/menu/' . $page;
+		          && isset( $_GET['page'] )
+		          && $_GET['page'] == ICL_PLUGIN_FOLDER . '/menu/' . $page;
 
 		return $result;
 	}
@@ -315,10 +340,10 @@ class WPML_WP_API {
 	 * Wrapper for \wp_set_object_terms
 	 *
 	 * @param int              $object_id The object to relate to.
-	 * @param array|int|string $terms     A single term slug, single term id, or array of either term slugs or ids.
+	 * @param array|int|string $terms A single term slug, single term id, or array of either term slugs or ids.
 	 *                                    Will replace all existing related terms in this taxonomy.
-	 * @param string           $taxonomy  The context in which to relate the term to the object.
-	 * @param bool             $append    Optional. If false will delete difference of terms. Default false.
+	 * @param string           $taxonomy The context in which to relate the term to the object.
+	 * @param bool             $append Optional. If false will delete difference of terms. Default false.
 	 *
 	 * @return array|WP_Error Affected Term IDs.
 	 */
@@ -386,16 +411,50 @@ class WPML_WP_API {
 	 * Wrapper for \get_post_meta
 	 *
 	 * @param int    $post_id Post ID.
-	 * @param string $key     Optional. The meta key to retrieve. By default, returns
+	 * @param string $key Optional. The meta key to retrieve. By default, returns
 	 *                        data for all keys. Default empty.
-	 * @param bool   $single  Optional. Whether to return a single value. Default false.
+	 * @param bool   $single Optional. Whether to return a single value. Default false.
 	 *
 	 * @return mixed Will be an array if $single is false. Will be value of meta data
 	 *               field if $single is true.
 	 */
-	function get_post_meta( $post_id, $key = '', $single = false ) {
+	public function get_post_meta( $post_id, $key = '', $single = false ) {
 
 		return get_post_meta( $post_id, $key, $single );
+	}
+
+	/**
+	 * Wrapper for \update_post_meta
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $key
+	 * @param mixed  $value
+	 * @param mixed  $prev_value
+	 *
+	 * @return int|bool
+	 */
+	public function update_post_meta(
+		$post_id,
+		$key,
+		$value,
+		$prev_value = ''
+	) {
+
+		return update_post_meta( $post_id, $key, $value, $prev_value );
+	}
+
+	/**
+	 * Wrapper for \get_term_meta
+	 *
+	 * @param int    $term_id
+	 * @param string $key
+	 * @param bool   $single
+	 *
+	 * @return mixed
+	 */
+	function get_term_meta( $term_id, $key = '', $single = false ) {
+
+		return get_term_meta( $term_id, $key, $single );
 	}
 
 	/**
@@ -471,5 +530,248 @@ class WPML_WP_API {
 	public function load_textdomain( $domain, $mofile ) {
 
 		return load_textdomain( $domain, $mofile );
+	}
+
+	/**
+	 * Wrapper for \get_home_url
+	 *
+	 * @param null|int    $blog_id
+	 * @param string      $path
+	 * @param null|string $scheme
+	 *
+	 * @return string
+	 */
+	public function get_home_url(
+		$blog_id = null,
+		$path = '',
+		$scheme = null
+	) {
+
+		return get_home_url( $blog_id, $path, $scheme );
+	}
+
+	/**
+	 * Wrapper for \get_site_url
+	 *
+	 * @param null|int    $blog_id
+	 * @param string      $path
+	 * @param null|string $scheme
+	 *
+	 * @return string
+	 */
+	public function get_site_url(
+		$blog_id = null,
+		$path = '',
+		$scheme = null
+	) {
+
+		return get_site_url( $blog_id, $path, $scheme );
+	}
+
+	/**
+	 * Wrapper for \is_multisite
+	 *
+	 * @return bool
+	 */
+	public function is_multisite() {
+
+		return is_multisite();
+	}
+
+	/**
+	 * Wrapper for \ms_is_switched
+	 *
+	 * @return bool
+	 */
+	public function ms_is_switched() {
+
+		return ms_is_switched();
+	}
+
+	/**
+	 * Wrapper for \get_current_blog_id
+	 *
+	 * @return int
+	 */
+	public function get_current_blog_id() {
+
+		return get_current_blog_id();
+	}
+
+	/**
+	 * Wrapper for wp_get_post_terms
+	 *
+	 * @param int $post_id
+	 * @param string $taxonomy
+	 * @param array $args
+	 *
+	 * @return array|WP_Error
+	 */
+	public function wp_get_post_terms(
+		$post_id = 0,
+		$taxonomy = 'post_tag',
+		$args = array()
+	) {
+
+		return wp_get_post_terms( $post_id, $taxonomy, $args );
+	}
+
+	/**
+	 * Wrapper for get_taxonomies
+	 *
+	 * @param array  $args
+	 * @param string $output
+	 * @param string $operator
+	 *
+	 * @return array
+	 */
+	public function get_taxonomies(
+		$args = array(),
+		$output = 'names',
+		$operator = 'and'
+	) {
+
+		return get_taxonomies( $args, $output, $operator );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme
+	 *
+	 * @param string $stylesheet
+	 * @param string $theme_root
+	 *
+	 * @return WP_Theme
+	 */
+	public function wp_get_theme( $stylesheet = null, $theme_root = null ) {
+
+		return wp_get_theme( $stylesheet, $theme_root );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('Name')
+	 *
+	 * @return string
+	 */
+	public function get_theme_name() {
+
+		return wp_get_theme()->get( 'Name' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('URI')
+	 *
+	 * @return string
+	 */
+	public function get_theme_URI() {
+
+		return wp_get_theme()->get( 'URI' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('Author')
+	 *
+	 * @return string
+	 */
+	public function get_theme_author() {
+
+		return wp_get_theme()->get( 'Author' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('AuthorURI')
+	 *
+	 * @return string
+	 */
+	public function get_theme_authorURI() {
+
+		return wp_get_theme()->get( 'AuthorURI' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('Template')
+	 *
+	 * @return string
+	 */
+	public function get_theme_template() {
+
+		return wp_get_theme()->get( 'Template' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('Version')
+	 *
+	 * @return string
+	 */
+	public function get_theme_version() {
+
+		return wp_get_theme()->get( 'Version' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('TextDomain')
+	 *
+	 * @return string
+	 */
+	public function get_theme_textdomain() {
+
+		return wp_get_theme()->get( 'TextDomain' );
+	}
+
+	/**
+	 * Wrapper for \wp_get_theme->get('DomainPath')
+	 *
+	 * @return string
+	 */
+	public function get_theme_domainpath() {
+
+		return wp_get_theme()->get( 'DomainPath' );
+	}
+
+	/**
+	 * Wrapper for \get_plugins()
+	 *
+	 * @return array
+	 */
+	public function get_plugins() {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+
+		return get_plugins();
+	}
+
+	/**
+	 * Wrapper for \get_post_custom_keys
+	 *
+	 * @param int $post_id
+	 *
+	 * @return array|void
+	 */
+	public function get_post_custom_keys( $post_id ) {
+
+		return get_post_custom_keys( $post_id );
+	}
+
+	/**
+	 * Wrapper for \get_bloginfo
+	 *
+	 * @param string $show (optional)
+	 * @param string $filter (optional)
+	 *
+	 * @return string
+	 */
+	function get_bloginfo( $show = '', $filter = 'raw' ) {
+
+		return get_bloginfo( $show, $filter );
+	}
+
+	/**
+	 * Wrapper for \phpversion()
+	 *
+	 * * @param string $extension (optional)
+	 *
+	 * @return string
+	 */
+	function phpversion( $extension = '' ) {
+
+		return phpversion( $extension );
 	}
 }

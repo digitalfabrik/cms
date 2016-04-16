@@ -123,7 +123,7 @@ class WPML_Installation extends WPML_WPDB_And_SP_User {
 	private function updated_active_languages() {
 		wp_cache_init();
 		icl_cache_clear();
-		$this->refresh_active_lang_cache( wpml_get_setting_filter( false, 'default_language' ) );
+		$this->refresh_active_lang_cache( wpml_get_setting_filter( false, 'default_language' ), true );
 		$this->update_languages_order();
 		wpml_reload_active_languages_setting( true );
 		$active_langs = $this->sitepress->get_active_languages( true );
@@ -220,7 +220,7 @@ class WPML_Installation extends WPML_WPDB_And_SP_User {
 		if ( '' === $current_order ) {
 			$current_order = array();
 		}
-		$languages = $this->sitepress->get_languages();
+		$languages = $this->sitepress->get_languages( false, false, true );
 		$new_order = $current_order;
 		foreach ( $languages as $language_code => $language ) {
 			if ( ! in_array( $language_code, $new_order ) && '1' === $language['active'] ) {

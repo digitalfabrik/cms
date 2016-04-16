@@ -1,0 +1,12 @@
+/* line 1, ../scss/analytics.scss */
+#iframe-bottom {
+  margin-top: 6px;
+}
+
+/* line 5, ../scss/analytics.scss */
+iframe {
+  display: block;
+  width: 100%;
+  border: none;
+  overflow: hidden;
+}

@@ -31,8 +31,6 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 	private $sync_password;
 	/** @var $sync_private_flag bool */
 	private $sync_private_flag;
-	/** @var $language_order string[] */
-	private $language_order;
 
 	/**
 	 * @param array                 $settings
@@ -52,7 +50,6 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 		$this->sync_password        = isset( $settings[ 'sync_password' ] ) ? $settings[ 'sync_password' ] : false;
 		$this->sync_private_flag    = isset( $settings[ 'sync_private_flag' ] ) ? $settings[ 'sync_private_flag' ] : false;
 		$this->sync_document_status = isset( $settings[ 'translated_document_status' ] ) ? $settings[ 'translated_document_status' ] : 1;
-		$this->language_order       = isset( $settings[ 'languages_order' ] ) && $settings[ 'languages_order' ] ? $settings[ 'languages_order' ] : wpml_get_setting_filter( false, 'active_languages' );
 		$this->sync_menu_order      = isset( $settings[ 'sync_page_ordering' ] ) ? $settings[ 'sync_page_ordering' ] : array();
 	}
 
@@ -132,8 +129,9 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 
 	public function sync_with_translations( $post_id, $post_vars = false ) {
 		global $wpdb;
-		
-		$term_count_update = new WPML_Update_Term_Count();
+
+		$wp_api            = $this->sitepress->get_wp_api();
+		$term_count_update = new WPML_Update_Term_Count( $wp_api );
 		
 		$post           = get_post ( $post_id );
 		$translated_ids = $this->post_translation->get_element_translations( $post_id, false, true );
@@ -161,10 +159,10 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 				$now = gmdate('Y-m-d H:i:59');
 				if ( mysql2date('U', $post_date_gmt, false) > mysql2date('U', $now, false) ) {
 					$post_status = 'future';
+					$data[ 'post_status' ] = $post_status;
 				} else {
-					$post_status = 'publish';
+					$post_status = get_post_status( $translated_pid );
 				}
-				$data[ 'post_status' ] = $post_status;
 				$wpdb->update ( $wpdb->posts, $data, array( 'ID' => $translated_pid ) );
 			}
 			if ( $post_password !== null ) {
@@ -235,7 +233,7 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 
 	private function set_new_original( $trid, $removed_lang_code ) {
 		if ( $trid && $removed_lang_code ) {
-			$priorities           = $this->language_order;
+			$priorities = $this->sitepress->get_setting( 'languages_order' );
 			$this->post_translation->reload();
 			$translations         = $this->post_translation->get_element_translations( false, $trid );
 			$new_source_lang_code = false;

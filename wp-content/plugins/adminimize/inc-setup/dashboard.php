@@ -13,28 +13,17 @@ if ( ! is_admin() ) {
 	return NULL;
 }
 
-// retrun registered widgets; only on page index/dashboard :(
+// Return registered widgets; only on page index/dashboard :(
 add_action( 'wp_dashboard_setup', '_mw_adminimize_dashboard_setup', 99 );
 
 function _mw_adminimize_dashboard_setup() {
 
-	if ( is_multisite() && is_plugin_active_for_network( MW_ADMIN_FILE ) ) {
-		$adminimizeoptions = get_site_option( 'mw_adminimize' );
-	} else {
-		$adminimizeoptions = get_option( 'mw_adminimize' );
-	}
+	$adminimizeoptions = _mw_adminimize_get_option_value();
 
 	$widgets                                                = _mw_adminimize_get_dashboard_widgets();
 	$adminimizeoptions[ 'mw_adminimize_dashboard_widgets' ] = $widgets;
 
-	if ( current_user_can( 'manage_options' ) ) {
-
-		if ( is_multisite() && is_plugin_active_for_network( MW_ADMIN_FILE ) ) {
-			update_site_option( 'mw_adminimize', $adminimizeoptions );
-		} else {
-			update_option( 'mw_adminimize', $adminimizeoptions );
-		}
-	}
+	_mw_adminimize_update_option( $adminimizeoptions );
 
 	// exclude super admin
 	if ( _mw_adminimize_exclude_super_admin() ) {
@@ -59,7 +48,7 @@ function _mw_adminimize_dashboard_setup() {
 		$user = wp_get_current_user();
 
 		if ( is_array( $user->roles ) && in_array( $role, $user->roles ) ) {
-			if ( current_user_can( $role ) && is_array( $disabled_dashboard_option_[ $role ] ) ) {
+			if ( _mw_adminimize_current_user_has_role( $role ) && is_array( $disabled_dashboard_option_[ $role ] ) ) {
 				foreach ( $disabled_dashboard_option_[ $role ] as $widget ) {
 					if ( isset( $widgets[ $widget ][ 'context' ] ) ) {
 						remove_meta_box( $widget, 'dashboard', $widgets[ $widget ][ 'context' ] );

@@ -5,8 +5,6 @@ WPML_Translate_taxonomy = {};
 WPML_Translate_taxonomy.callbacks = jQuery.Callbacks();
 
 (function () {
-
-
     jQuery(document).ready(function () {
         jQuery('.icl_tt_main_bottom').hide();
         jQuery.ajax({

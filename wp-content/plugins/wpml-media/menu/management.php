@@ -8,7 +8,6 @@
 
 <div class="wrap">
 
-	<div id="icon-wpml" class="icon32"><br/></div>
 	<h2><?php echo __('Media translation', 'wpml-media') ?></h2>
 
 	<?php if ($orphan_attachments): ?>

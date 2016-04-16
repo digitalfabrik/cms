@@ -1,4 +1,4 @@
-/*globals wpml_browser_redirect_params, jQuery, ajaxurl */
+/*globals wpml_browser_redirect_params, jQuery, ajaxurl, window */
 
 /** @namespace wpml_browser_redirect_params.pageLanguage */
 /** @namespace wpml_browser_redirect_params.expiration */
@@ -49,7 +49,9 @@ var WPMLBrowserRedirect = function () {
                 for (var i = 0; i < browserLanguagesLength; i++) {
                     browserLanguage = browserLanguages[i];
 
-                    if (pageLanguage !== browserLanguage.substr(0, 2)) {
+					if (pageLanguage === browserLanguage.substr(0, 2)) {
+						break;
+					} else if (pageLanguage !== browserLanguage.substr(0, 2)) {
                         redirectUrl = self.getRedirectUrl(browserLanguage);
                         if (false !== redirectUrl) {
                             self.setCookie(browserLanguage);

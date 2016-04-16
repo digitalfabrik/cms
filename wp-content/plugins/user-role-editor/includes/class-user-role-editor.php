@@ -26,9 +26,12 @@ class User_Role_Editor {
     /**
      * class constructor
      */
-    function __construct($library) {
+    public function __construct() {
 
-        $this->lib = $library;               
+        if (empty($this->lib)) {
+            $this->lib = URE_Lib::get_instance('user_role_editor');
+        }
+
         $this->user_other_roles = new URE_User_Other_Roles($this->lib);
         
         if ($this->lib->is_pro()) {
@@ -45,7 +48,18 @@ class User_Role_Editor {
         		
         // Who can use this plugin
         $this->key_capability = $this->lib->get_key_capability();
+                
+        // Process URE's internal tasks queue
+        $task_queue = URE_Task_Queue::get_instance();
+        $task_queue->process();
         
+        $this->set_hooks();        
+        
+    }
+    // end of __construct()
+            
+    
+    private function set_hooks() {
         if ($this->lib->multisite) {
             // new blog may be registered not at admin back-end only but automatically after new user registration, e.g. 
             // Gravity Forms User Registration Addon does
@@ -76,10 +90,9 @@ class User_Role_Editor {
         // add a Settings link in the installed plugins page
         add_filter('plugin_action_links_'. URE_PLUGIN_BASE_NAME, array($this, 'plugin_action_links'), 10, 1);
         add_filter('plugin_row_meta', array($this, 'plugin_row_meta'), 10, 2);    
-                
     }
-    // end of __construct()
-
+    // end of set_hooks()
+    
     
     /**
      * True - if it's an instance of Pro version, false - for free version
@@ -210,6 +223,10 @@ class User_Role_Editor {
       if ( stripos($_SERVER['REQUEST_URI'], 'wp-admin/users.php')===false ) {
             return;
       }
+      if (isset($_GET['page'])) {
+          return;
+      }
+
       wp_enqueue_style('wp-jquery-ui-dialog');
       wp_enqueue_style('ure-admin-css', URE_PLUGIN_URL . 'css/ure-admin.css', array(), false, 'screen');
       
@@ -221,6 +238,9 @@ class User_Role_Editor {
   
       if ( stripos($_SERVER['REQUEST_URI'], 'wp-admin/users.php')===false ) {
             return;
+      }      
+      if (isset($_GET['page'])) {
+          return;
       }
       
       wp_enqueue_script('jquery-ui-dialog', false, array('jquery-ui-core','jquery-ui-button', 'jquery') );
@@ -716,34 +736,21 @@ class User_Role_Editor {
     }
     // end of edit_roles()
 	
-   
-	// move old version option to the new storage 'user_role_editor' option, array, containing all URE options
-	private function convert_option($option_name) {
-		
-		$option_value = get_option($option_name, 0);
-		delete_option($option_name);
-		$this->lib->put_option( $option_name, $option_value );
-		
-	}
 
     /**
      *  execute on plugin activation
      */
     function setup() {
 
-        $this->convert_option('ure_caps_readable');
-        $this->convert_option('ure_show_deprecated_caps');
-        $this->convert_option('ure_hide_pro_banner');
-        $this->lib->flush_options();
-
         $this->lib->make_roles_backup();
         $this->lib->init_ure_caps();
-
-
-        do_action('ure_activation');
+        
+        $task_queue = URE_Task_Queue::get_instance();
+        $task_queue->add('on_activation');
+                
     }
     // end of setup()
-            
+                
 
     /**
      * Load plugin javascript stuff
