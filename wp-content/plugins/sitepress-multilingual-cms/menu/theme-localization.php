@@ -10,8 +10,7 @@ $locales = $sitepress->get_locale_file_names();
 ?>
 
 <div class="wrap">
-    <div id="icon-wpml" class="icon32"><br /></div>
-    <h2><?php _e('Theme and plugins localization', 'sitepress') ?></h2>    
+    <h2><?php _e('Theme and plugins localization', 'sitepress') ?></h2>
 
     <h3><?php _e('Select how to translate strings in the theme and plugins','sitepress'); ?></h3>
     <p><?php _e("If your theme and plugins include .mo files with translations, these translations will always be used. This option allows you to provide new and alternative translations for texts in the theme and in plugins using WPML's String Translation.",'sitepress'); ?></p>

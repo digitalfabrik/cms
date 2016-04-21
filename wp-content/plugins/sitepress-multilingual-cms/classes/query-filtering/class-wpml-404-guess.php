@@ -20,7 +20,7 @@ class WPML_404_Guess extends WPML_Slug_Resolution {
 	 */
 	public function __construct( &$wpdb, &$sitepress, &$query_filter ) {
 		parent::__construct( $wpdb, $sitepress );
-		$this->query_filter = $query_filter;
+		$this->query_filter = &$query_filter;
 	}
 
 	/**
@@ -31,13 +31,13 @@ class WPML_404_Guess extends WPML_Slug_Resolution {
 	 * @param string   $name
 	 * @param WP_Query $query
 	 *
-	 * @return array The most likely name, type and whether or not a match was found
+	 * @return array containing most likely name, type and whether or not a match was found
 	 */
 	public function guess_cpt_by_name( $name, $query ) {
 		$type  = $query->get( 'post_type' );
 		$ret   = array( $name, $type, false );
 		$types = (bool) $type === false
-			? ( $query->get( 'pagename' ) ? array( 'page' ) : $this->sitepress->get_wp_api()->get_post_types( array( 'public' => true ) ) )
+			? $this->sitepress->get_wp_api()->get_post_types( array( 'public' => true ) )
 			: (array) $type;
 		if ( (bool) $types === true ) {
 			$where = $this->wpdb->prepare( "post_name = %s ", $name );
@@ -52,7 +52,9 @@ class WPML_404_Guess extends WPML_Slug_Resolution {
 										 	AND CONCAT('post_', p.post_type) = t.element_type
 									 		AND " . $this->query_filter->in_translated_types_snippet( false, 'p' ) . "
 									 WHERE $where
-									 	AND post_status = 'publish'
+									 	AND ( post_status = 'publish'
+									 	    OR ( post_type = 'attachment'
+									 	         AND post_status = 'inherit' ) )
 									 	" . $this->order_by_language_snippet( (bool) $date_snippet) . "
 								     LIMIT 1" );
 			if ( (bool) $res === true ) {

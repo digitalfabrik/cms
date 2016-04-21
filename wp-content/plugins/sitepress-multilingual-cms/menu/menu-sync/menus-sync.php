@@ -16,7 +16,6 @@ foreach ( $active_languages as $code => $lang ) {
 ?>
 <!--suppress HtmlFormInputWithoutLabel --><!--suppress HtmlUnknownAttribute -->
 <div class="wrap">
-<div id="icon-wpml" class="icon32"><br/></div>
 <h2><?php echo __( 'WP Menus Sync', 'sitepress' ) ?></h2>
 <p><?php echo sprintf( __( 'Menu synchronization will sync the menu structure from the default language of %s to the secondary languages.', 'sitepress' ), $def_lang[ 'display_name' ] ); ?></p>
 

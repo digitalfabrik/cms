@@ -286,7 +286,7 @@ class SitePressLanguageSwitcher {
 			<p>
 				<a href="#icl_lang_preview_config_footer_editor_wrapper" id="icl_lang_sel_footer_preview_link" class="js-toggle-colors-edit">
 					<?php _e( 'Edit the footer language switcher colors', 'sitepress' ) ?>
-					<i class="icon-caret-down js-arrow-toggle"></i>
+					<span class="dashicons dashicons-arrow-down js-arrow-toggle"></span>
 				</a>
 			</p>
 			<div class="hidden" id="icl_lang_preview_config_footer_editor_wrapper">
@@ -840,7 +840,7 @@ class SitePressLanguageSwitcher {
 		<p>
 			<a href="#icl_lang_preview_config_wrapper" class="js-toggle-colors-edit">
 				<?php _e( 'Edit the language switcher widget colors', 'sitepress' ) ?>
-				<i class="icon-caret-down js-arrow-toggle"></i>
+				<span class="dashicons dashicons-arrow-down js-arrow-toggle"></span>
 			</a>
 		</p>
 		<div id="icl_lang_preview_config_wrapper" class="hidden">

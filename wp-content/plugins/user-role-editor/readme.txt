@@ -3,8 +3,8 @@ Contributors: shinephp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=vladimir%40shinephp%2ecom&lc=RU&item_name=ShinePHP%2ecom&item_number=User%20Role%20Editor%20WordPress%20plugin&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: user, role, editor, security, access, permission, capability
 Requires at least: 4.0
-Tested up to: 4.4.1
-Stable tag: 4.22
+Tested up to: 4.4.2
+Stable tag: 4.23.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ Multi-site support is provided.
 To read more about 'User Role Editor' visit [this page](http://www.shinephp.com/user-role-editor-wordpress-plugin/) at [shinephp.com](http://shinephp.com)
 
 Short demo about 1st steps with User Role Editor:
-https://youtu.be/UmMtOmWGGxY
+https://www.youtube.com/watch?v=UmMtOmWGGxY
 
 Do you need more functionality with quality support in the real time? Do you wish to remove advertisements from User Role Editor pages? 
 [Buy Pro version](https://www.role-editor.com). 
@@ -76,6 +76,20 @@ If you wish to check available translations or help with plugin translation to y
 https://translate.wordpress.org/projects/wp-plugins/user-role-editor/
 
 == Changelog ==
+= [4.23.2] 03.02.2016 =
+* Fix: PHP warning "Strict Standards: Static function URE_Base_Lib::get_instance() should not be abstract" was generated
+
+= [4.23.1] 01.02.2016 =
+* Fix: 'get_called_class()' function call was excluded for the compatibility with PHP 5.2.*
+* Fix: ure-users.js was loaded not only to the 'Users' page.
+
+= [4.23] 31.01.2016 =
+* Fix: "Users - Without Role" button showed empty roles drop down list on the 1st call. 
+* Update: Own task queue was added, so code which should executed once after plugin activation is executed by the next request to WP and may use a selected WordPress action to fire with a needed priority.
+* Update: Call of deprecated mysql_server_info() is replaced with $wpdb->db_version().
+* Update: Singleton patern is applied to the URE_Lib class.
+* Minor code enhancements
+
 = [4.22] 15.01.2016 =
 * Unused 'add_users' capability was removed from the list of core capabilities as it was removed from WordPress starting from version 4.4
 * bbPress user capabilities are supported for use in the non-bbPress roles. You can not edit roles created by bbPress, as bbPress re-creates them dynamically for every request to the server. Full support for bbPress roles editing will be included into User Role Editor Pro version 4.22.

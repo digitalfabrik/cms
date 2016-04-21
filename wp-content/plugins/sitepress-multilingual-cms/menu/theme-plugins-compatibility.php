@@ -1,5 +1,4 @@
 <div class="wrap">
-    <div id="icon-wpml" class="icon32"><br /></div>
     <h3><?php _e('Theme and Plugins compatibility with WPML', 'sitepress') ?></h3>
 
     <p><?php _e('Configuration for compatibility between your active plugins and theme is updated automatically on daily basis.','sitepress'); ?></p>

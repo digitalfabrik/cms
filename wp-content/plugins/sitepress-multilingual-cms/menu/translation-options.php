@@ -1,5 +1,4 @@
 <div class="wrap">
-    <div id="icon-wpml" class="icon32"><br /></div>
     <h2><?php echo __('Translation options', 'sitepress') ?></h2>
     <br />
     <?php include dirname(__FILE__) . '/_posts_sync_options.php'; ?>

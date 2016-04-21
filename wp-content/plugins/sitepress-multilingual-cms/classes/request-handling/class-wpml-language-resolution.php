@@ -9,41 +9,32 @@
 class WPML_Language_Resolution {
 
 	private $active_language_codes = array();
-	private $current_request_lang  = null;
-	private $default_lang          = null;
-	private $hidden_lang_codes     = null;
-
-	public function __construct( $active_language_codes, $default_lang ) {
-		add_filter( 'icl_set_current_language', array( $this, 'current_lang_filter' ), 10, 2 );
-		add_filter( 'icl_current_language', array( $this, 'current_lang_filter' ), 10, 2 );
-		add_action( 'wpml_cache_clear', array( $this, 'reload' ), 11, 0 );
-		$this->active_language_codes = array_fill_keys( $active_language_codes, 1 );
-		$this->default_lang          = $default_lang;
-		$this->hidden_lang_codes     = array_fill_keys( wpml_get_setting_filter( array(), 'hidden_languages' ), 1 );
-	}
+	private $current_request_lang = null;
+	private $default_lang = null;
+	/**
+	 * @var array|null $hidden_lang_codes if set to null,
+	 * indicates that the cache needs to be reloaded due to changing settings
+	 * or current user within the request
+	 */
+	private $hidden_lang_codes = null;
 
 	/**
-	 * Returns the language_code of the http referrer's location from which a request originated.
-	 * Used to correctly determine the language code on ajax link lists for the post edit screen or
-	 * the flat taxonomy auto-suggest.
+	 * WPML_Language_Resolution constructor.
 	 *
-	 * @param bool $return_default
-	 *
-	 * @return string|null
+	 * @param string[] $active_language_codes
+	 * @param string   $default_lang
 	 */
-	public function get_referrer_language_code( $return_default = false ) {
-		if ( ! empty( $_SERVER[ 'HTTP_REFERER' ] ) ) {
-			$query_string = parse_url( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_QUERY );
-			$query        = array();
-			parse_str( strval( $query_string ), $query );
-			$language_code = isset( $query[ 'lang' ] ) ? $query[ 'lang' ] : null;
-		}
-
-		return isset( $language_code ) ? $language_code : ( $return_default ? $this->default_lang : null );
+	public function __construct( $active_language_codes, $default_lang ) {
+		add_action( 'wpml_cache_clear', array( $this, 'reload' ), 11, 0 );
+		$this->active_language_codes = array_fill_keys( $active_language_codes,
+			1 );
+		$this->default_lang          = $default_lang;
+		$this->hidden_lang_codes     = array_fill_keys( wpml_get_setting_filter( array(),
+			'hidden_languages' ), 1 );
 	}
 
 	public function reload() {
-		$this->active_language_codes = null;
+		$this->active_language_codes = array();
 		$this->hidden_lang_codes     = null;
 		$this->default_lang          = null;
 		$this->maybe_reload();
@@ -92,6 +83,25 @@ class WPML_Language_Resolution {
 	}
 
 	/**
+	 * Returns the language_code of the http referrer's location from which a request originated.
+	 * Used to correctly determine the language code on ajax link lists for the post edit screen or
+	 * the flat taxonomy auto-suggest.
+	 *
+	 * @return string|null
+	 */
+	private function get_referrer_language_code() {
+		if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
+			$query_string = parse_url( $_SERVER['HTTP_REFERER'],
+				PHP_URL_QUERY );
+			$query        = array();
+			parse_str( strval( $query_string ), $query );
+			$language_code = isset( $query['lang'] ) ? $query['lang'] : null;
+		}
+
+		return isset( $language_code ) ? $language_code : null;
+	}
+
+	/**
 	 *
 	 * Sets the language of frontend requests to false, if they are not for
 	 * a hidden or active language code. The handling of permissions in case of
@@ -99,7 +109,7 @@ class WPML_Language_Resolution {
 	 *
 	 * @param string $lang
 	 *
-	 * @return bool|string
+	 * @return string
 	 */
 	private function filter_for_legal_langs( $lang ) {
 
@@ -116,13 +126,15 @@ class WPML_Language_Resolution {
 		return $lang;
 	}
 
+	/**
+	 * @return bool true if the current request requires determining the
+	 * request language from the HTTP referer
+	 */
 	private function use_referrer_language() {
-		$get_action  = filter_input( INPUT_GET, 'action' );
-		$post_action = filter_input( INPUT_POST, 'action' );
 
-		return $get_action === 'ajax-tag-search'
-			   || $post_action === 'get-tagcloud'
-			   || $post_action === 'wp-link-ajax';
+		return ( isset( $_GET['action'] ) && $_GET['action'] === 'ajax-tag-search' )
+		       || ( isset( $_POST['action'] ) && in_array( $_POST['action'],
+				array( 'get-tagcloud', 'wp-link-ajax' ), true ) );
 	}
 
 	/**
