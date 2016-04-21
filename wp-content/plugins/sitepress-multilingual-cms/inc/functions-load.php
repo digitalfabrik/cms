@@ -123,27 +123,30 @@ function wpml_load_query_filter( $installed ) {
 	}
 }
 
-function load_wpml_url_converter($settings, $domain_validation, $default_lang_code){
-	global $wpml_url_converter;
+function load_wpml_url_converter(
+	$settings,
+	$domain_validation,
+	$default_lang_code
+) {
+	global $wpml_url_converter, $wpml_language_resolution;
 
-	$wpml_wp_api        = new WPML_WP_API();
-
-	$url_type          = isset( $settings[ 'language_negotiation_type' ] ) ? $settings[ 'language_negotiation_type' ]
+	$url_type     = isset( $settings['language_negotiation_type'] ) ? $settings['language_negotiation_type']
 		: false;
-	$url_type          = $domain_validation ? $domain_validation : $url_type;
-	$hidden_langs = isset( $settings[ 'hidden_languages' ] ) ? $settings[ 'hidden_languages' ] : array();
+	$url_type     = $domain_validation ? $domain_validation : $url_type;
+	$active_language_codes = $wpml_language_resolution->get_active_language_codes();
 	if ( $url_type == 1 ) {
-		require ICL_PLUGIN_PATH . '/inc/url-handling/wpml-lang-subdir-converter.class.php';
-		$dir_default        = isset( $settings[ 'urls' ] ) && isset( $settings[ 'urls' ][ 'directory_for_default_language' ] )
-			? $settings[ 'urls' ][ 'directory_for_default_language' ] : false;
-		$wpml_url_converter = new WPML_Lang_Subdir_Converter( $dir_default, $default_lang_code, $hidden_langs, $wpml_wp_api );
+		$dir_default        = isset( $settings['urls'] ) && isset( $settings['urls']['directory_for_default_language'] )
+			? $settings['urls']['directory_for_default_language'] : false;
+		$wpml_url_converter = new WPML_Lang_Subdir_Converter( $dir_default,
+			$default_lang_code, $active_language_codes );
 	} elseif ( $url_type == 2 ) {
-		require ICL_PLUGIN_PATH . '/inc/url-handling/wpml-lang-domains-converter.class.php';
-		$domains            = isset( $settings[ 'language_domains' ] ) ? $settings[ 'language_domains' ] : array();
-		$wpml_url_converter = new WPML_Lang_Domains_Converter( $domains, $default_lang_code, $hidden_langs, $wpml_wp_api );
+		$domains            = isset( $settings['language_domains'] ) ? $settings['language_domains'] : array();
+		$wpml_wp_api        = new WPML_WP_API();
+		$wpml_url_converter = new WPML_Lang_Domains_Converter( $domains,
+			$default_lang_code, $active_language_codes, $wpml_wp_api );
 	} else {
-		require ICL_PLUGIN_PATH . '/inc/url-handling/wpml-lang-parameter-converter.class.php';
-		$wpml_url_converter = new WPML_Lang_Parameter_Converter( $default_lang_code, $hidden_langs, $wpml_wp_api );
+		$wpml_url_converter = new WPML_Lang_Parameter_Converter( $default_lang_code,
+			$active_language_codes );
 	}
 
 	return $wpml_url_converter;

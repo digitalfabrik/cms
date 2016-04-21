@@ -69,7 +69,6 @@ class SitePress_EditLanguages {
 		}
 ?>
 <div class="wrap">
-    <div id="icon-wpml" class="icon32"><br /></div>
     <h2><?php _e('Edit Languages', 'sitepress') ?></h2>
 	<div id="icl_edit_languages_info">
 <?php
@@ -193,7 +192,8 @@ For each language, you need to enter the following information:
 					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][english_name]" value="<?php echo $lang['english_name']; ?>"<?php if (!$add) { ?> readonly="readonly"<?php } ?> /></td>
 					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][code]" value="<?php echo $lang['code']; ?>" style="width:30px;"<?php if (!$add) { ?> readonly="readonly"<?php } ?> /></td>
 					<td <?php if (!$this->add_validation_failed) echo 'style="display:none;" ';?>class="icl_edit_languages_show"><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][translations][add]" value="<?php echo isset($_POST['icl_edit_languages'][$lang['id']]['translations']['add']) ? stripslashes_deep($_POST['icl_edit_languages'][$lang['id']]['translations']['add']) : ''; ?>" /></td>
-					<?php foreach($this->active_languages as $translation){ 
+			<?php
+			foreach ( $this->active_languages as $translation ) {
 						if ($lang['id'] == 'add') {
 							$value = isset($_POST['icl_edit_languages']['add']['translations'][$translation['code']]) ? $_POST['icl_edit_languages']['add']['translations'][$translation['code']] : '';
 						} else {
@@ -201,25 +201,27 @@ For each language, you need to enter the following information:
 						}
 					?>
 					<td><input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][translations][<?php echo $translation['code']; ?>]" value="<?php echo stripslashes_deep($value); ?>" /></td>
-					<?php } ?>
-					<td>
-						<?php
-						if ( $this->is_writable ) {
-							$allowed_types = array_keys( $this->allowed_flag_mime_types );
-							?>
-							<div style="float:left;">
-								<ul>
-									<li>
-										<input type="radio"
-										       id="wpm-edit-languages-<?php echo $lang['id']; ?>-flag-upload"
-										       name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
-										       value="true"
-										       class="radio icl_edit_languages_use_upload"<?php if ( $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
-										&nbsp;
-										<label for="wpm-edit-languages-<?php echo $lang['id']; ?>-flag-upload">
-											<?php _e( 'Upload flag', 'sitepress' ); ?>
-										</label>
-										<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->max_file_size; ?>"/>
+				<?php
+			}
+			?>
+			<td>
+				<?php
+				if ( $this->is_writable ) {
+					$allowed_types = array_keys( $this->allowed_flag_mime_types );
+					?>
+					<div style="float:left;">
+						<ul>
+							<li>
+								<input type="radio"
+								       id="wpm-edit-languages-<?php echo $lang['id']; ?>-flag-upload"
+								       name="icl_edit_languages[<?php echo $lang['id']; ?>][flag_upload]"
+								       value="true"
+								       class="radio icl_edit_languages_use_upload"<?php if ( $lang['from_template'] ) { ?> checked="checked"<?php } ?> />
+								&nbsp;
+								<label for="wpm-edit-languages-<?php echo $lang['id']; ?>-flag-upload">
+									<?php _e( 'Upload flag', 'sitepress' ); ?>
+								</label>
+								<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->max_file_size; ?>"/>
 
 										<div class="wpml-edit-languages-flag-upload-wrapper" <?php if ( ! $lang['from_template'] ) { ?>style="display: none;"<?php } ?>>
 											<input type="text" name="icl_edit_languages[<?php echo $lang['id']; ?>][flag]" value="<?php echo $lang['flag']; ?>" class="icl_edit_languages_flag_enter_field" style="width: auto;"/>

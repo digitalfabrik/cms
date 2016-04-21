@@ -36,7 +36,6 @@ $text = isset($text) ? $text : '';
 ?>
 
 <div class="wrap">
-    <div id="icon-wpml" class="icon32" ><br /></div>
     <h2><?php echo __('WPML Network Setup', 'sitepress') ?>
     <?php if ( isset( $_REQUEST['s'] ) && $_REQUEST['s'] ) {
         printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', esc_html( $s ) );

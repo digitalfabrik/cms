@@ -1,6 +1,5 @@
 
 <div class="wrap">    
-    <div id="icon-wpml" class="icon32" style="clear:both" ><br /></div>    
     <h2><?php _e('Support', 'sitepress') ?></h2>
     
     <p style="margin-top: 20px;">
@@ -33,9 +32,9 @@
 		echo '<td><i class="icon18 '. $plugin_data['slug'] . '"></i>' . $plugin_name . '</td>';
 		echo '<td align="right">';
 		if ( empty( $plugin_data['plugin'] ) ) {
-            echo __( 'Not installed' );
+            echo __( 'Not installed', 'sitepress' );
 		} else {
-            echo __( 'Installed' );
+            echo __( 'Installed', 'sitepress' );
 		}
 		echo '</td>';
 		echo '<td align="center">';

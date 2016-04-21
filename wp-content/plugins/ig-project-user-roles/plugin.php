@@ -36,6 +36,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'edit_published_pages' => true,
 			'read_private_pages' => true,
 			'delete_pages' => true,
+			'delete_posts' => true,
 			'delete_others_pages' => true,
 			'delete_published_pages' => true,
 			'publish_pages' => true,
@@ -169,6 +170,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		remove_role('author');
 		remove_role('contributor');
 		remove_role('administrator');
+		remove_role('revisor');
 	}
 
 	restore_current_blog();

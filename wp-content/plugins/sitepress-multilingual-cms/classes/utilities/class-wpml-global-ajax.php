@@ -1,6 +1,6 @@
 <?php
 
-class WPML_Global_AJAX {
+class WPML_Global_AJAX extends WPML_SP_User {
 
 	/**
 	 * WPML_Global_AJAX constructor.
@@ -8,33 +8,8 @@ class WPML_Global_AJAX {
 	 * @param SitePress $sitepress
 	 */
 	public function __construct( &$sitepress ) {
-		$this->sitepress = &$sitepress;
-		add_action( 'wp_ajax_validate_language_domain', array( $this, 'validate_language_domain_action' ) );
+		parent::__construct( $sitepress );
 		add_action( 'wp_ajax_save_language_negotiation_type', array( $this, 'save_language_negotiation_type_action' ) );
-	}
-
-	public function validate_language_domain_action() {
-		$response                = false;
-		$language_domains_helper = new WPML_Language_Domains( $this->sitepress );
-		$posted_url              = filter_input( INPUT_POST, 'url' );
-		$nonce                   = filter_input( INPUT_POST, 'nonce' );
-		$action                  = filter_input( INPUT_POST, 'action' );
-		$is_valid_nonce          = wp_verify_nonce( $nonce, $action );
-
-		if ( $is_valid_nonce ) {
-			$is_valid = $language_domains_helper->validate_domain_networking( $posted_url );
-			$response = json_encode( $is_valid );
-		}
-
-		if ( $response ) {
-			wp_send_json_success( __( 'Valid', 'sitepress' ) );
-		} else {
-			wp_send_json_error( __( 'Not valid', 'sitepress' ) );
-		}
-		//		header( 'content-type: text/javascript; charset=utf-8' );
-		//		header( 'access-control-allow-origin: *' );
-		//		echo htmlspecialchars( $_GET['callback'] ) . '(' . $response . ')';
-		//		exit;
 	}
 
 	public function save_language_negotiation_type_action() {
