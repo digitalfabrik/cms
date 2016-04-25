@@ -50,28 +50,18 @@ class WPML_User_Options_Menu extends WPML_SP_User {
 							&nbsp;</option>
 						<?php
 						$admin_language = $this->sitepress->get_admin_language();
-						foreach ( $all_languages as $lang_code => $al ) {
-							if ( $al['active'] ) {
-								?>
-								<option
-									value="<?php echo $lang_code ?>"<?php if ( $user_language === $lang_code )
-									echo ' selected="selected"' ?>><?php echo $al['display_name'];
-									if ( $admin_language !== $lang_code ) {
-										echo ' (' . $al['native_name'] . ')';
-									} ?>&nbsp;</option>
-								<?php
-							}
-						}
-						foreach ( $all_languages as $lang_code => $al ) {
-							if ( ! $al['active'] ) {
-								?>
-								<option
-									value="<?php echo $lang_code ?>"<?php if ( $user_language === $lang_code )
-									echo ' selected="selected"' ?>><?php echo $al['display_name'];
-									if ( $admin_language !== $lang_code ) {
-										echo ' (' . $al['native_name'] . ')';
-									} ?>&nbsp;</option>
-								<?php
+						foreach ( array( true, false ) as $active ) {
+							foreach ( $all_languages as $lang_code => $al ) {
+								if ( (bool) $al['active'] === $active ) {
+									?>
+									<option
+										value="<?php echo $lang_code ?>"<?php if ( $user_language === $lang_code )
+										echo ' selected="selected"' ?>><?php echo $al['display_name'];
+										if ( $admin_language !== $lang_code ) {
+											echo ' (' . $al['native_name'] . ')';
+										} ?>&nbsp;</option>
+									<?php
+								}
 							}
 						}
 						?>
@@ -86,7 +76,7 @@ class WPML_User_Options_Menu extends WPML_SP_User {
 				</td>
 			</tr>
 			<?php
-			if ( $wp_api->current_user_can( 'manage_options' ) ): ?>
+			if ( $wp_api->current_user_can( 'translate' ) || $wp_api->current_user_can( 'manage_options' ) ): ?>
 				<tr>
 					<th><?php _e( 'Hidden languages:', 'sitepress' ) ?></th>
 					<?php $hidden_language_setting = $this->sitepress->get_setting( 'hidden_languages' ); ?>

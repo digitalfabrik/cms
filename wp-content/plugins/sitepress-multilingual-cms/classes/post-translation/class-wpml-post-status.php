@@ -59,11 +59,18 @@ class WPML_Post_Status extends WPML_WPDB_User {
 		return isset( $res );
 	}
 
+	/**
+	 * @param int $post_id
+	 * @param int $status
+	 *
+	 * @return bool
+	 */
 	public function set_status( $post_id, $status ) {
 		global $wpml_post_translations;
 
-		if ( !$post_id ) {
-			return false;
+		if ( ! $post_id ) {
+			throw new InvalidArgumentException(
+				'Tried to set status' . $status . ' for falsy post_id ' . serialize( $post_id ) );
 		}
 
 		$translation_id = $this->wpdb->get_row (
