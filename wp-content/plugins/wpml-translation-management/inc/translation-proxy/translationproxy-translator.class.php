@@ -53,7 +53,7 @@ class TranslationProxy_Translator {
 			foreach ( $translation_languages as $lang ) {
 				$translators = $_tr = array();
 				$max_rate    = false;
-				if ( isset( $lang['translators'] ) && ! empty( $lang['translators'] ) ) {
+				if ( isset( $lang['translators'], $lang['translators']['translator'] ) && ! empty( $lang['translators'] ) ) {
 					if ( ! isset( $lang['translators']['translator'][0] ) ) {
 						$_tr[0] = $lang['translators']['translator'];
 					} else {
@@ -161,7 +161,7 @@ class TranslationProxy_Translator {
 	private static function get_website_details( $project ) {
 
 		require_once ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
-		require_once ICL_PLUGIN_PATH . '/lib/xml2array.php';
+		require_once ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
 		require_once ICL_PLUGIN_PATH . '/lib/icl_api.php';
 
 		$site_id    = $project->ts_id;
@@ -303,7 +303,7 @@ class TranslationProxy_Translator {
 		}
 
 		require_once ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
-		require_once ICL_PLUGIN_PATH . '/lib/xml2array.php';
+		require_once ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
 		require_once ICL_PLUGIN_PATH . '/lib/icl_api.php';
 		$icl_query = new ICanLocalizeQuery();
 		$icl_query->updateAccount( $params );

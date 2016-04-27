@@ -56,7 +56,7 @@ class WPML_Basket_Tab_Ajax {
 		list( $has_error, $data, $error ) = $this->networking->commit_basket_chunk( $batch, $basket_name, $translators );
 
 		if ( $has_error === true ) {
-			wp_send_json_error( $error );
+			wp_send_json_error( self::sanitize_errors( $error ) );
 		} else {
 			wp_send_json_success( $data );
 		}
@@ -118,6 +118,25 @@ class WPML_Basket_Tab_Ajax {
 		wp_send_json_success( $this->basket->check_basket_name( $basket_name, $basket_name_max_length ) );
 	}
 
+	private static function sanitize_errors( $source ) {
+		if ( is_array( $source ) ) {
+			if ( $source && array_key_exists( 'errors', $source ) ) {
+				foreach ( $source['errors'] as &$error ) {
+					if ( is_array( $error ) ) {
+						$error = self::sanitize_errors( $error );
+					} else {
+						$error = ICL_AdminNotifier::sanitize_and_format_message( $error );
+					}
+				}
+				unset( $error );
+			}
+		} else {
+			$source = ICL_AdminNotifier::sanitize_and_format_message( $source );
+		}
+
+		return $source;
+	}
+
 	/**
 	 * Sends the response to the ajax for \WPML_Basket_Tab_Ajax::send_basket_commit and rolls back the commit
 	 * in case of any errors.
@@ -139,7 +158,7 @@ class WPML_Basket_Tab_Ajax {
 			$this->networking->rollback_basket_commit( filter_input( INPUT_POST,
 			                                                         'basket_name',
 			                                                         FILTER_SANITIZE_STRING ) );
-			wp_send_json_error( $result );
+			wp_send_json_error( self::sanitize_errors( $result ) );
 		} else {
 			$this->basket->delete_all_items();
 

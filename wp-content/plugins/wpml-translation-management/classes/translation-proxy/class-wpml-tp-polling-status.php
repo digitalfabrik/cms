@@ -36,19 +36,19 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 			throw new Exception( 'Got the following error when trying to load status data from Translation Proxy via polling: ' . $e->getMessage(),
 				0, $e );
 		}
-		$button_text = __( 'Get completed translations', 'sitepress' );
+		$button_text = __( 'Get completed translations', 'wpml-translation-management' );
 		if ( ( $job_in_progress = $this->in_progress_count( $data ) ) == 1 ) {
 			$jobs_in_progress_text = __( '1 job has been sent to the translation service.',
-				'sitepress' );
+				'wpml-translation-management' );
 		} else {
 			$jobs_in_progress_text = sprintf( __( '%d jobs have been sent to the translation service.',
-				'sitepress' ), $job_in_progress );
+				'wpml-translation-management' ), $job_in_progress );
 		}
 		$last_picked_up      = $this->sitepress->get_setting( 'last_picked_up' );
 		$last_time_picked_up = ! empty( $last_picked_up ) ? date_i18n( 'Y, F jS @g:i a',
-			$last_picked_up ) : __( 'never', 'sitepress' );
+			$last_picked_up ) : __( 'never', 'wpml-translation-management' );
 		$last_pickup_text    = sprintf( __( 'Last time translations were picked up: %s',
-			'sitepress' ), $last_time_picked_up );
+			'wpml-translation-management' ), $last_time_picked_up );
 
 		return array(
 			'jobs_in_progress_text' => $jobs_in_progress_text,
@@ -68,7 +68,8 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 		foreach ( $data as $job ) {
 			$count += in_array( $job->job_state, array(
 				'waiting_translation',
-				'translation_ready'
+				'translation_ready',
+				'received'
 			), true )
 			          || ( $job->job_state === 'cancelled'
 			               && $job->cms_id

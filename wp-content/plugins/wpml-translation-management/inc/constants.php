@@ -3,8 +3,6 @@ define('WPML_TM_FOLDER', basename(WPML_TM_PATH));
 
 define('WPML_TM_URL', plugins_url('', dirname(__FILE__)));
 
-define('WPML_TM_ICON_FILE', 'icon-wpml-translation-management.png');
-
 define('TP_MIGRATION_NOT_STARTED', 0);
 define('TP_MIGRATION_REQUESTED', 2);
 define('TP_MIGRATION_IN_PROGRESS', 3);

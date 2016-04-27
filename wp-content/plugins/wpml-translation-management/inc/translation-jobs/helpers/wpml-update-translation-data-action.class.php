@@ -28,11 +28,8 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 	function add_translation_job( $rid, $translator_id, array $translation_package ) {
 		global $wpdb, $current_user;
 
-		$translation_status = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}icl_translation_status WHERE rid=%d",
-		                                                      $rid ) );
+		$translation_status = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}icl_translation_status WHERE rid=%d", $rid ) );
 		$prev_translation   = $this->get_translated_field_values( $rid, $translation_package );
-
-		get_currentuserinfo();
 		if ( ! $current_user->ID ) {
 			$manager_id = $wpdb->get_var( $wpdb->prepare( "SELECT manager_id FROM {$wpdb->prefix}icl_translate_job WHERE rid=%d ORDER BY job_id DESC LIMIT 1",
 			                                              $rid ) );
