@@ -23,6 +23,9 @@ class WPSEO_XML_Sitemaps_Filter {
 			add_filter( 'wpseo_posts_where', array( $wpml_query_filter, 'filter_single_type_where' ), 10, 2 );
 			add_filter( 'wpseo_typecount_join', array( $wpml_query_filter, 'filter_single_type_join' ), 10, 2 );
 			add_filter( 'wpseo_typecount_where', array( $wpml_query_filter, 'filter_single_type_where' ), 10, 2 );
+		} else {
+			// Remove posts under hidden language.
+			add_filter( 'wpseo_xml_sitemap_post_url', array( $this, 'exclude_hidden_language_posts' ), 10, 2 );
 		}
 
 		add_filter( 'wpseo_enable_xml_sitemap_transient_caching', array( $this, 'transient_cache_filter' ), 10, 0 );
@@ -104,6 +107,39 @@ class WPSEO_XML_Sitemaps_Filter {
 
 	private function has_root_page() {
 		return $this->sitepress->get_root_page_utils()->get_root_page_id();
+	}
+
+	/**
+	 * Exclude posts under hidden language.
+	 *
+	 * @param  string $url   Post URL.
+	 * @param  object $post  Object with some post information.
+	 *
+	 * @return string
+	 */
+	public function exclude_hidden_language_posts( $url, $post ) {
+		// Check that at least ID is set in post object.
+		if ( ! isset( $post->ID ) ) {
+			return $url;
+		}
+
+		// Get list of hidden languages.
+		$hidden_languages = $this->sitepress->get_setting( 'hidden_languages', array() );
+
+		// If there are no hidden languages return original URL.
+		if ( empty( $hidden_languages ) ) {
+			return $url;
+		}
+
+		// Get language information for post.
+		$language_info = $this->sitepress->post_translations()->get_element_lang_code( $post->ID );
+
+		// If language code is one of the hidden languages return empty string to skip the post.
+		if ( in_array( $language_info, $hidden_languages ) ) {
+			return '';
+		}
+
+		return $url;
 	}
 }
 

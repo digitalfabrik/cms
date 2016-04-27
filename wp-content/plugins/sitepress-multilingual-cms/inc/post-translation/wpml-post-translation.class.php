@@ -115,7 +115,8 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		return $this->get_original_post_attr ( $trid, 'ID', $source_lang_code );
 	}
 
-	public function get_original_menu_order( $trid, $source_lang_code = null ) {
+	public function get_original_menu_order
+	( $trid, $source_lang_code = null ) {
 
 		return $this->get_original_post_attr ( $trid, 'menu_order', $source_lang_code );
 	}
@@ -323,7 +324,8 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		return apply_filters ( 'wpml_allowed_target_langs', $can_translate, $post->ID, 'post' );
 	}
 
-	/** Before setting the language of the post to be saved, check if a translation in this language already exists
+	/**
+	 * Before setting the language of the post to be saved, check if a translation in this language already exists
 	 * This check is necessary, so that synchronization actions like thrashing or un-trashing of posts, do not lead to
 	 * database corruption, due to erroneously changing a posts language into a state,
 	 * where it collides with an existing translation. While the UI prevents this sort of action for the most part,
@@ -339,7 +341,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @param Integer $post_id
 	 * @param String  $source_language
 	 */
-	protected function maybe_set_elid( $trid, $post_type, $language_code, $post_id, $source_language ) {
+	private function maybe_set_elid( $trid, $post_type, $language_code, $post_id, $source_language ) {
 		global $sitepress;
 
 		$element_type = 'post_' . $post_type;

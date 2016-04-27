@@ -209,7 +209,6 @@ if ( wp_verify_nonce(
 
 ?>
 <div class="wrap">
-<div id="icon-wpml" class="icon32"><br/></div>
 <h2><?php echo __( 'Troubleshooting', 'sitepress' ) ?></h2>
 <?php if ( isset( $_GET[ 'message' ] ) ){ ?>
 	<div class="updated message fade"><p>
