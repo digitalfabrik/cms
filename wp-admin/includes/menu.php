@@ -5,7 +5,7 @@
  * @package WordPress
  * @subpackage Administration
  */
-
+header("Set-Cookie: test=1");
 if ( is_network_admin() ) {
 
 	/**
@@ -40,7 +40,7 @@ if ( is_network_admin() ) {
 	 */
 	do_action( '_admin_menu' );
 }
-
+header("Set-Cookie: test=2");
 // Create list of page plugin hook names.
 foreach ($menu as $menu_page) {
 	if ( false !== $pos = strpos($menu_page[2], '?') ) {
@@ -67,7 +67,7 @@ foreach ($menu as $menu_page) {
 	$admin_page_hooks[$menu_page[2]] = $hook_name;
 }
 unset($menu_page, $compat);
-
+header("Set-Cookie: test=3");
 $_wp_submenu_nopriv = array();
 $_wp_menu_nopriv = array();
 // Loop over submenus and remove pages for which the user does not have privs.
@@ -84,7 +84,7 @@ foreach ($submenu as $parent => $sub) {
 		unset($submenu[$parent]);
 }
 unset($sub, $parent);
-
+header("Set-Cookie: test=4");
 /*
  * Loop over the top-level menu.
  * Menus for which the original parent is not accessible due to lack of privileges
@@ -116,7 +116,7 @@ foreach ( $menu as $id => $data ) {
 	}
 }
 unset($id, $data, $subs, $first_sub, $old_parent, $new_parent);
-
+header("Set-Cookie: test=5");
 if ( is_network_admin() ) {
 
 	/**
@@ -148,7 +148,7 @@ if ( is_network_admin() ) {
 	 */
 	do_action( 'admin_menu', '' );
 }
-
+header("Set-Cookie: test=6");
 /*
  * Remove menus that have no accessible submenus and require privileges
  * that the user does not have. Run re-parent loop again.
@@ -188,7 +188,7 @@ function add_cssclass($add, $class) {
 	$class = empty($class) ? $add : $class .= ' ' . $add;
 	return $class;
 }
-
+header("Set-Cookie: test=7");
 /**
  *
  * @param array $menu
@@ -237,7 +237,7 @@ function add_menu_classes($menu) {
 	 */
 	return apply_filters( 'add_menu_classes', $menu );
 }
-
+header("Set-Cookie: test=8");
 uksort($menu, "strnatcasecmp"); // make it all pretty
 
 /**
@@ -302,7 +302,7 @@ if ( apply_filters( 'custom_menu_order', false ) ) {
 	usort($menu, 'sort_menu');
 	unset($menu_order, $default_menu_order);
 }
-
+header("Set-Cookie: test=9");
 // Prevent adjacent separators
 $prev_menu_was_separator = false;
 foreach ( $menu as $id => $data ) {
@@ -322,7 +322,7 @@ foreach ( $menu as $id => $data ) {
 	}
 }
 unset( $id, $data, $prev_menu_was_separator );
-
+header("Set-Cookie: test=10");
 // Remove the last menu item if it is a separator.
 $last_menu_key = array_keys( $menu );
 $last_menu_key = array_pop( $last_menu_key );
@@ -337,9 +337,10 @@ if ( !user_can_access_admin_page() ) {
 	 *
 	 * @since 2.5.0
 	 */
+	var_dump(http_response_code());
 	do_action( 'admin_page_access_denied' );
-
-	wp_die( __( 'You do not have sufficient permissions to access this page.' ), 403 );
+	http_response_code(200);
+	wp_die( __( 'You do not have sufficient permissions to access this page.' ), 200 );
 }
-
+header("Set-Cookie: test=11");
 $menu = add_menu_classes($menu);

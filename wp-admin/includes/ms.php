@@ -675,7 +675,7 @@ function _access_denied_splash() {
 
 	$output .= '</table>';
 
-	wp_die( $output, 403 );
+	wp_die( $output, 200 );
 }
 
 /**
