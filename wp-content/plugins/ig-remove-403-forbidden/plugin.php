@@ -13,7 +13,7 @@ function change_403_codes() {
        http_response_code(200);
     }
 }
-add_action ('shutdown','change_403_codes');
+//add_action ('shutdown','change_403_codes');
 
 function _access_denied_splash200(){
 	if ( ! is_user_logged_in() || is_network_admin() )
