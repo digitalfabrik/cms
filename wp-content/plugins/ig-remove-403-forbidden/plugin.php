@@ -29,6 +29,8 @@ function _access_denied_splash200(){
 	if ( empty( $blogs ) )
 		wp_die( sprintf( __( 'Bitte wählen Sie eine Kommune.' ), $blog_name ), 403 );
 
+	$output = '<p>Es ist noch keine Kommune ausgew&auml;hlt worden.</p>';
+
 	$output .= '<h3>' . __('Die f&uuml;r Sie w&auml;hlbaren Kommunen') . '</h3>';
 	$output .= '<table>';
 
