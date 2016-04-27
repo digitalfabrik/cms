@@ -13,7 +13,7 @@ function change_403_codes() {
        http_response_code(200);
     }
 }
-add_action ('shutdown','change_403_codes');
+//add_action ('shutdown','change_403_codes');
 
 function _access_denied_splash200(){
 	if ( ! is_user_logged_in() || is_network_admin() )
@@ -27,19 +27,17 @@ function _access_denied_splash200(){
 	$blog_name = get_bloginfo( 'name' );
 
 	if ( empty( $blogs ) )
-		wp_die( sprintf( __( 'You attempted to access the "%1$s" dashboard, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.' ), $blog_name ), 403 );
+		wp_die( sprintf( __( 'Bitte wählen Sie eine Kommune.' ), $blog_name ), 403 );
 
-	$output = '<p>' . sprintf( __( 'You attempted to access the "%1$s" dashboard, but you do not currently have privileges on this site. If you believe you should be able to access the "%1$s" dashboard, please contact your network administrator.' ), $blog_name ) . '</p>';
-	$output .= '<p>' . __( 'If you reached this screen by accident and meant to visit one of your own sites, here are some shortcuts to help you find your way.' ) . '</p>';
+	$output = '<p>Es ist noch keine Kommune ausgew&auml;hlt worden.</p>';
 
-	$output .= '<h3>' . __('Your Sites') . '</h3>';
+	$output .= '<h3>' . __('Die f&uuml;r Sie w&auml;hlbaren Kommunen') . '</h3>';
 	$output .= '<table>';
 
 	foreach ( $blogs as $blog ) {
 		$output .= '<tr>';
 		$output .= "<td>{$blog->blogname}</td>";
-		$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . __( 'Visit Dashboard' ) . '</a> | ' .
-			'<a href="' . esc_url( get_home_url( $blog->userblog_id ) ). '">' . __( 'View Site' ) . '</a></td>';
+		$output .= '<td><a href="' . esc_url( get_admin_url( $blog->userblog_id ) ) . '">' . __( 'Dashboard besuchen' ) . '</a>';
 		$output .= '</tr>';
 	}
 
