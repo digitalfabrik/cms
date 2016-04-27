@@ -230,7 +230,7 @@ default :
 					$link = wp_nonce_url( add_query_arg( array( 'revision' => $revision->ID, 'diff' => false, 'action' => 'restore' ) ), "restore-post_$rvy_post->ID|$revision->ID" );
 				endswitch;
 		
-				$restore_link = '<a href="' . $link . '">' .$caption . "</a> ";
+				$restore_link = '<a href="' . $link . '" class="button-primary">' .$caption . "</a> ";
 			} else
 				$restore_link = '';
 		}
