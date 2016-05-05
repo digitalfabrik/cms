@@ -151,15 +151,14 @@ jQuery(document).ready(function($){
 
         var $target = $( $(this).attr('href') );
         var $caret = $(this).find('.js-arrow-toggle');
-        console.log($caret);
 
         if ( $target.is(':visible') ) {
             $target.slideUp();
-            $caret.removeClass('icon-caret-up').addClass('icon-caret-down');
+            $caret.removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
         }
         else {
             $target.slideDown();
-            $caret.removeClass('icon-caret-down').addClass('icon-caret-up');
+            $caret.removeClass('dashicons-arrow-down').addClass('dashicons-arrow-up');
         }
 
         return false;

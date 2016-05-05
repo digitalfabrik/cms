@@ -88,11 +88,14 @@ function icl_reset_wpml( $blog_id = false ) {
 	}
 }
 
+/**
+ * Ajax handler for type assignment fix troubleshoot action
+ */
 function icl_repair_broken_type_and_language_assignments() {
 	global $sitepress;
 
-	$lang_setter = $sitepress->get_language_setter();
-	$rows_fixed  = $lang_setter->repair_broken_assignments();
+	$lang_setter = new WPML_Fix_Type_Assignments( $sitepress );
+	$rows_fixed  = $lang_setter->run();
 
 	wp_send_json_success( $rows_fixed );
 }

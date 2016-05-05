@@ -4,6 +4,7 @@
  * @used-by Sitepress::ajax_setup
  */
 global $wpdb, $sitepress, $sitepress_settings;
+/** @var SitePress $this */
 
 $request = filter_input( INPUT_POST, 'icl_ajx_action' );
 $request = $request ? $request : filter_input( INPUT_GET, 'icl_ajx_action' );
@@ -115,23 +116,11 @@ switch($request){
 		    )
 	    );
 
-        if ( ! $this->get_setting( 'setup_complete' ) ) {
-            if ( isset( $iclsettings['setup_reset'] ) ) {
-                unset( $iclsettings['setup_reset'] );
-            }
-            /** @var WPML_Language_Resolution $wpml_language_resolution */
-            global $wpml_language_resolution;
-            $active_languages        = $wpml_language_resolution->get_active_language_codes();
-            $language_domains_helper = new WPML_Language_Domains( $this );
-            foreach ( $active_languages as $language_code ) {
-                if ( $language_code !== $default_language ) {
-                    if ( $language_domains_helper->validate_language_per_directory( $language_code ) ) {
-                        $iclsettings['language_negotiation_type'] = 1;
-                    }
-                    break;
-                }
-            }
-        }
+	    if ( ! $this->get_setting( 'setup_complete' ) ) {
+		    if ( isset( $iclsettings['setup_reset'] ) ) {
+			    unset( $iclsettings['setup_reset'] );
+		    }
+	    }
 
         if(isset($_POST['icl_lang_sel_config'])){
             $iclsettings['icl_lang_sel_config'] = $_POST['icl_lang_sel_config'];
@@ -245,8 +234,8 @@ switch($request){
         echo 1;
         break;
     case 'language_domains':
-        $language_domains_helper = new WPML_Language_Domains( $this );
-        echo $language_domains_helper->render_domains_options();
+        $language_domains_helper = new WPML_Lang_Domains_Box( $this );
+        echo $language_domains_helper->render();
         break;
     case 'icl_theme_localization_type':
         $icl_tl_type = @intval($_POST['icl_theme_localization_type']);
@@ -506,35 +495,35 @@ switch($request){
 	    $this->save_user_preferences();
 	    break;
     case 'wpml_cf_translation_preferences':
-        if (empty($_POST['custom_field'])) {
-            echo '<span style="color:#FF0000;">'
-            . __('Error: No custom field', 'sitepress') . '</span>';
-            die();
-        }
-        $_POST['custom_field'] = @strval($_POST['custom_field']);
-        if (!isset($_POST['translate_action'])) {
-            echo '<span style="color:#FF0000;">'
-            . __('Error: Please provide translation action', 'sitepress') . '</span>';
-            die();
-        }
-        $_POST['translate_action'] = @intval($_POST['translate_action']);
-        if (defined('WPML_TM_VERSION')) {
-            global $iclTranslationManagement;
-            if (!empty($iclTranslationManagement)) {
-                $iclTranslationManagement->settings['custom_fields_translation'][$_POST['custom_field']] = $_POST['translate_action'];
-                $iclTranslationManagement->save_settings();
-                echo '<strong><em>' . __('Settings updated', 'sitepress') . '</em></strong>';
-            } else {
-                echo '<span style="color:#FF0000;">'
-                . __('Error: WPML Translation Management plugin not initiated', 'sitepress')
-                . '</span>';
-            }
-        } else {
-            echo '<span style="color:#FF0000;">'
-            . __('Error: Please activate WPML Translation Management plugin', 'sitepress')
-                    . '</span>';
-        }
-        break;
+	    if ( empty( $_POST[ WPML_POST_META_SETTING_INDEX_SINGULAR ] ) ) {
+		    echo '<span style="color:#FF0000;">'
+		         . __( 'Error: No custom field', 'sitepress' ) . '</span>';
+		    die();
+	    }
+	    $_POST[WPML_POST_META_SETTING_INDEX_SINGULAR] = @strval( $_POST[ WPML_POST_META_SETTING_INDEX_SINGULAR ] );
+	    if ( ! isset( $_POST['translate_action'] ) ) {
+		    echo '<span style="color:#FF0000;">'
+		         . __( 'Error: Please provide translation action', 'sitepress' ) . '</span>';
+		    die();
+	    }
+	    $_POST['translate_action'] = @intval( $_POST['translate_action'] );
+	    if ( defined( 'WPML_TM_VERSION' ) ) {
+		    global $iclTranslationManagement;
+		    if ( ! empty( $iclTranslationManagement ) ) {
+			    $iclTranslationManagement->settings[ WPML_POST_META_SETTING_INDEX_PLURAL ][ $_POST[ WPML_POST_META_SETTING_INDEX_SINGULAR ] ] = $_POST['translate_action'];
+			    $iclTranslationManagement->save_settings();
+			    echo '<strong><em>' . __( 'Settings updated', 'sitepress' ) . '</em></strong>';
+		    } else {
+			    echo '<span style="color:#FF0000;">'
+			         . __( 'Error: WPML Translation Management plugin not initiated', 'sitepress' )
+			         . '</span>';
+		    }
+	    } else {
+		    echo '<span style="color:#FF0000;">'
+		         . __( 'Error: Please activate WPML Translation Management plugin', 'sitepress' )
+		         . '</span>';
+	    }
+	    break;
     case 'icl_seo_options':
         $iclsettings['seo']['head_langs'] = isset($_POST['icl_seo_head_langs']) ? intval($_POST['icl_seo_head_langs']) : 0;
         $iclsettings['seo']['canonicalization_duplicates'] = isset($_POST['icl_seo_canonicalization_duplicates']) ? intval($_POST['icl_seo_canonicalization_duplicates']) : 0;

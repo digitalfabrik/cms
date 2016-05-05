@@ -15,9 +15,40 @@ class WPML_Term_Translation extends WPML_Element_Translation {
 	private $ttids;
 	private $term_ids;
 
+	/**
+	 * @param int $term_id
+	 *
+	 * @return null|string
+	 */
 	public function lang_code_by_termid( $term_id ) {
 
 		return $this->get_element_lang_code( $this->adjust_ttid_for_term_id( $term_id ) );
+	}
+
+	/**
+	 * Converts term_id into term_taxonomy_id
+	 *
+	 * @param int $term_id
+	 *
+	 * @return int
+	 */
+	public function adjust_ttid_for_term_id( $term_id ) {
+		$this->maybe_warm_term_id_cache();
+
+		return $term_id && isset( $this->ttids[ $term_id ] ) ? end( $this->ttids[ $term_id ] ) : $term_id;
+	}
+
+	/**
+	 * Converts term_taxonomy_id into term_id
+	 *
+	 * @param int $ttid term_taxonomy_id
+	 *
+	 * @return int
+	 */
+	public function adjust_term_id_for_ttid( $ttid ) {
+		$this->maybe_warm_term_id_cache();
+
+		return $ttid && isset( $this->term_ids[ $ttid ] ) ? $this->term_ids[ $ttid ] : $ttid;
 	}
 
 	public function reload() {
@@ -102,17 +133,5 @@ class WPML_Term_Translation extends WPML_Element_Translation {
 				$this->term_ids[ $row['element_id'] ]               = $row['term_id'];
 			}
 		}
-	}
-
-	private function adjust_ttid_for_term_id( $term_id ) {
-		$this->maybe_warm_term_id_cache();
-
-		return $term_id && isset( $this->ttids[ $term_id ] ) ? end( $this->ttids[ $term_id ] ) : $term_id;
-	}
-
-	private function adjust_term_id_for_ttid( $ttid ) {
-		$this->maybe_warm_term_id_cache();
-
-		return $ttid && isset( $this->term_ids[ $ttid ] ) ? $this->term_ids[ $ttid ] : $ttid;
 	}
 }

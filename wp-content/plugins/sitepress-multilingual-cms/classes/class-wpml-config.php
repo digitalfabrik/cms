@@ -62,21 +62,21 @@ class WPML_Config {
 	static function parse_wpml_config( $config ) {
 		global $sitepress, $sitepress_settings, $iclTranslationManagement;
 
-		// custom fields
 		self::parse_custom_fields( $config );
 		$settings_helper = wpml_load_settings_helper();
-		$tm_settings_tax = new WPML_TM_Settings_Update( 'taxonomy',
-		                                                'taxonomies',
-		                                                $iclTranslationManagement,
-		                                                $sitepress,
-		                                                $settings_helper );
-		$tm_settings_cpt = new WPML_TM_Settings_Update( 'custom-type',
-		                                                'custom-types',
-		                                                $iclTranslationManagement,
-		                                                $sitepress,
-		                                                $settings_helper );
-		$tm_settings_tax->update_from_config( $config['wpml-config'] );
-		$tm_settings_cpt->update_from_config( $config['wpml-config'] );
+		foreach (
+			array(
+				array( 'taxonomy', 'taxonomies' ),
+				array( 'custom-type', 'custom-types' )
+			) as $indexes
+		) {
+			$tm_settings = new WPML_TM_Settings_Update( $indexes[0],
+				$indexes[1],
+				$iclTranslationManagement,
+				$sitepress,
+				$settings_helper );
+			$tm_settings->update_from_config( $config['wpml-config'] );
+		}
 
 		// language-switcher-settings
 		if ( empty( $sitepress_settings[ 'language_selector_initialized' ] ) || ( isset( $_GET[ 'restore_ls_settings' ] ) && $_GET[ 'restore_ls_settings' ] == 1 ) ) {
@@ -103,42 +103,8 @@ class WPML_Config {
 	static function load_config_post_process() {
 		global $iclTranslationManagement;
 
-		$changed = false;
-		if ( isset( $iclTranslationManagement->settings[ '__custom_types_readonly_config_prev' ] ) ) {
-			foreach ( $iclTranslationManagement->settings[ '__custom_types_readonly_config_prev' ] as $pk => $pv ) {
-				if ( !isset( $iclTranslationManagement->settings[ 'custom_types_readonly_config' ][ $pk ] ) || $iclTranslationManagement->settings[ 'custom_types_readonly_config' ][ $pk ] != $pv ) {
-					$changed = true;
-					break;
-				}
-			}
-		}
-		if ( isset( $iclTranslationManagement->settings[ 'custom_types_readonly_config' ] ) ) {
-			foreach ( $iclTranslationManagement->settings[ 'custom_types_readonly_config' ] as $pk => $pv ) {
-				if ( !isset( $iclTranslationManagement->settings[ '__custom_types_readonly_config_prev' ][ $pk ] ) || $iclTranslationManagement->settings[ '__custom_types_readonly_config_prev' ][ $pk ] != $pv ) {
-					$changed = true;
-					break;
-				}
-			}
-		}
-		if ( isset( $iclTranslationManagement->settings[ 'custom_fields_readonly_config' ]  ) && isset($iclTranslationManagement->settings[ '__custom_fields_readonly_config_prev' ]) ) {
-			foreach ( $iclTranslationManagement->settings[ '__custom_fields_readonly_config_prev' ] as $cf ) {
-				if ( !in_array( $cf, $iclTranslationManagement->settings[ 'custom_fields_readonly_config' ] ) ) {
-					$changed = true;
-					break;
-				}
-			}
-
-			foreach ( $iclTranslationManagement->settings[ 'custom_fields_readonly_config' ] as $cf ) {
-				if ( !in_array( $cf, $iclTranslationManagement->settings[ '__custom_fields_readonly_config_prev' ] ) ) {
-					$changed = true;
-					break;
-				}
-			}
-		}
-
-		if ( $changed ) {
-			$iclTranslationManagement->save_settings();
-		}
+		$post_process = new WPML_TM_Settings_Post_Process( $iclTranslationManagement );
+		$post_process->run();
 	}
 
 	static function load_config_pre_process() {
@@ -158,6 +124,14 @@ class WPML_Config {
 			$iclTranslationManagement->settings[ '__custom_fields_readonly_config_prev' ] = array();
 		}
 		$iclTranslationManagement->settings[ 'custom_fields_readonly_config' ] = array();
+
+
+		if ( ( isset( $tm_settings[ 'custom_term_fields_readonly_config' ] ) && is_array( $tm_settings[ 'custom_term_fields_readonly_config' ] ) ) ) {
+			$iclTranslationManagement->settings[ '__custom_term_fields_readonly_config_prev' ] = $tm_settings[ 'custom_term_fields_readonly_config' ];
+		} else {
+			$iclTranslationManagement->settings[ '__custom_term_fields_readonly_config_prev' ] = array();
+		}
+		$iclTranslationManagement->settings[ 'custom_term_fields_readonly_config' ] = array();
 	}
 
 	static function load_plugins_wpml_config() {
@@ -307,8 +281,9 @@ class WPML_Config {
 	}
 
 	static function parse_wpml_config_files() {
-		$config_all[ 'wpml-config' ] = array(
+		$config_all['wpml-config'] = array(
 			'custom-fields'              => array(),
+			'custom-term-fields'         => array(),
 			'custom-types'               => array(),
 			'taxonomies'                 => array(),
 			'admin-texts'                => array(),
@@ -323,6 +298,7 @@ class WPML_Config {
                     $wpml_config     = $config[ 'wpml-config' ];
                     $wpml_config_all = $config_all[ 'wpml-config' ];
                     $wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'custom-field', 'custom-fields');
+                    $wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'custom-term-field', 'custom-term-fields');
 					$wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'custom-type', 'custom-types');
                     $wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'taxonomy', 'taxonomies');
 
@@ -353,28 +329,13 @@ class WPML_Config {
 	 * @return mixed
 	 */
 	protected static function parse_custom_fields( $config ) {
-		global $iclTranslationManagement;
-		if ( ! empty( $config['wpml-config']['custom-fields'] ) ) {
-			$field = $config['wpml-config']['custom-fields']['custom-field'];
-			$cf    = ! is_numeric( key( current( $config['wpml-config']['custom-fields'] ) ) ) ? array( $field ) : $field;
-			foreach ( $cf as $c ) {
-				if ( $c['attr']['action'] == 'translate' ) {
-					$action = 2;
-				} elseif ( $c['attr']['action'] == 'copy' ) {
-					$action = 1;
-				} else {
-					$action = 0;
-				}
-				$iclTranslationManagement->settings['custom_fields_translation'][ $c['value'] ] = $action;
-				$custom_fields_readonly_config_set                                              = isset( $iclTranslationManagement->settings['custom_fields_readonly_config'] ) && is_array( $iclTranslationManagement->settings['custom_fields_readonly_config'] );
-				if ( ! $custom_fields_readonly_config_set ) {
-					$iclTranslationManagement->settings['custom_fields_readonly_config'] = array();
-				}
-				if ( ! in_array( $c['value'], $iclTranslationManagement->settings['custom_fields_readonly_config'] ) ) {
-					$iclTranslationManagement->settings['custom_fields_readonly_config'][] = $c['value'];
-				}
-			}
-		}
+		/** @var TranslationManagement $iclTranslationManagement */
+		global $iclTranslationManagement, $wpdb;
+
+		$setting_factory = $iclTranslationManagement->settings_factory();
+		$import          = new WPML_Custom_Field_XML_Settings_Import( $wpdb,
+			$setting_factory, $config['wpml-config'] );
+		$import->run();
 	}
 
 	private static function parse_config_index( $config_all, $wpml_config, $index_sing, $index_plur ) {

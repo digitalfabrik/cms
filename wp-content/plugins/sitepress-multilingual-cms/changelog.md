@@ -1,6 +1,28 @@
-#3.3.4
+#3.3.6
 
-#Fixes
+##Fixes
+* [wpmlcore-2463, wpmlcore-2546, wcml-867]  Resolved issue that lead to database corruption and fatal error `InvalidArgumentException: element_id and type do not match`
+* [wpmlcore-1954] Added constant that disables automatic update of wpml-config.xml configurations: ICL_REMOTE_WPML_CONFIG_DISABLED
+* [wpmlcore-2505] Fixed URL handling when using Domains per languages in an installation under a sub-folder
+* [wpmlcore-2562] Resolved issue when re-activating WPML in sites having corrupted databases
+* [wpmlcore-2511] Inject "hreflang" arguments higher in the head.
+* [wpmlcore-2518] Show "Display hidden languages" option to admins and users users with "translate" capability
+* [wpmlcore-2536] Improve Yoast SEO compatibility by filtering out hidden language posts from sitemap
+* [wpmlcore-2571] Fix browser redirect so redirect only happens if the current page language is not one of the preferred browser languages
+* [wpmlcore-2351] Fixed different results produced in non default languages by queries with mixed post type and taxonomies in filter
+* [wpmlcore-1104] Improve TM notice handling in core.
+* [wpmlcore-2407] Fixed issue with post status when post date sync is enabled
+
+##Performances
+* [wpmlcore-2528] Cached calls to `glob()` function when auto loading classes
+
+##Cleanup
+* [wpmlcore-1616] Removed references to Font Awesome library and replaced usage with Dashicons
+* [wpmlcore-2541] Removal of "icon-32" usage
+
+##3.3.4
+
+##Fixes
 * [wpmlcore-2465] Fixed AJAX loading of Media in WP-Admin when domains per languages are used 
 * [wpmlcore-2433] Fixed compatibility issues with W3 Total Cache when Object caching is used
 * [wpmlcore-2420] Fix menu synchronization when menu item has quotes in its title

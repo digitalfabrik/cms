@@ -9,21 +9,14 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 	 * @package wpml-auto-loader
 	 */
 	class WPML_Auto_Loader {
-		private        $accepted_prefixes;
-		private        $base_dirs;
+		private        $accepted_prefixes    = array();
+		private        $base_dirs            = array();
 		private        $classes_base_folder;
 		private        $include_root;
 		private static $instance;
-		private        $known_classes;
+		private        $known_classes        = array();
+		private        $glob_cache           = array();
 
-		/**
-		 * WPML_Auto_Loader constructor.
-		 */
-		private function __construct() {
-			$this->base_dirs          = array();
-			$this->accepted_predfixes = array();
-			$this->known_classes      = array();
-		}
 
 		/**
 		 * @return WPML_Auto_Loader
@@ -59,9 +52,12 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 			if ( $this->is_accepted_class( $class ) ) {
 				$file = $this->get_file_from_known_classes( $class );
 				if ( null === $file ) {
-					$file = $this->get_file_from_class_name( $class );
+					$file = $this->get_file_from_name( $class, 'class' );
 				}
 			}
+			if ( self::is_accepted_interface( $class ) ) {
+				$file = self::get_file_from_name( $class, 'interface' );
+			}			
 
 			return $file;
 		}
@@ -75,6 +71,16 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 
 			return false;
 		}
+		
+		private function is_accepted_interface( $class ) {
+			foreach ( $this->accepted_prefixes as $accepted_prefix ) {
+				if ( 0 === strpos( $class, 'I' . $accepted_prefix ) ) {
+					return true;
+				}
+			}
+	
+			return false;
+		}		
 
 		/**
 		 * @param string $class
@@ -95,9 +101,9 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 		 *
 		 * @return string|null
 		 */
-		private function get_file_from_class_name( $class ) {
+		private function get_file_from_name( $class, $prefix ) {
 			$file      = null;
-			$file_name = 'class-' . strtolower( str_replace( array( '_', "\0" ), array( '-', '' ), $class ) . '.php' );
+			$file_name = $prefix . '-' . strtolower( str_replace( array( '_', "\0" ), array( '-', '' ), $class ) . '.php' );
 
 			if ( $this->include_root ) {
 				$base_dirs = $this->get_base_dirs();
@@ -119,7 +125,7 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 
 			return $file;
 		}
-
+		
 		private function build_dir( $base_dir, $path = null, $with_base_folder = true ) {
 			if ( $with_base_folder ) {
 				$base_dir .= $this->classes_base_folder;
@@ -151,11 +157,13 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 				if ( is_file( $possible_full_path ) ) {
 					$file = $possible_full_path;
 				} else {
-					$sub_folders = glob( $current_dir . '/*', GLOB_ONLYDIR );
-					$sub_folders = (bool) $sub_folders === true ? $sub_folders : array();
-					foreach ( $sub_folders as $sub_folder_path ) {
+					if ( ! isset( $this->glob_cache[ $current_dir ] ) ) {
+						$this->glob_cache[ $current_dir ] = glob( $current_dir . '/*', GLOB_ONLYDIR );
+						$this->glob_cache[ $current_dir ] = false === $this->glob_cache[ $current_dir ] ? array() : $this->glob_cache[ $current_dir ];
+					}
+					foreach ( $this->glob_cache[ $current_dir ] as $sub_folder_path ) {
 						$found_file = $this->get_file_from_path( $file_name, $sub_folder_path, true );
-						if ( null != $found_file ) {
+						if ( null !== $found_file ) {
 							$file = $found_file;
 							break;
 						}
