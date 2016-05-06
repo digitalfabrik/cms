@@ -102,24 +102,29 @@ abstract class WPML_Request extends WPML_URL_Converter_User {
 	 *
 	 * @param string $lang_code
 	 */
-	function set_language_cookie( $lang_code ) {
+	public function set_language_cookie( $lang_code ) {
+		$cookie_name = $this->get_cookie_name();
 		if ( ! $this->cookie->headers_sent() ) {
 			if ( preg_match( '@\.(css|js|png|jpg|gif|jpeg|bmp)@i',
-							 basename( preg_replace( '@\?.*$@', '', $_SERVER[ 'REQUEST_URI' ] ) ) )
-				 || isset( $_POST[ 'icl_ajx_action' ] ) || isset( $_POST[ '_ajax_nonce' ] ) || defined( 'DOING_AJAX' )
+					basename( preg_replace( '@\?.*$@', '', $_SERVER['REQUEST_URI'] ) ) )
+			     || isset( $_POST['icl_ajx_action'] ) || isset( $_POST['_ajax_nonce'] ) || defined( 'DOING_AJAX' )
 			) {
 				return;
 			}
 
-			$cookie_domain    = $this->get_cookie_domain();
-			$cookie_path      = defined( 'COOKIEPATH' ) ? COOKIEPATH : '/';
-			$this->cookie->set_cookie( $this->get_cookie_name(), $lang_code, time() + 86400, $cookie_path, $cookie_domain );
+			$cookie_domain = $this->get_cookie_domain();
+			$cookie_path   = defined( 'COOKIEPATH' ) ? COOKIEPATH : '/';
+			$this->cookie->set_cookie( $cookie_name, $lang_code, time() + 86400, $cookie_path, $cookie_domain );
 		}
+		$_COOKIE[ $cookie_name ] = $lang_code;
 	}
-	
+
+	/**
+	 * @return bool|string
+	 */
 	public function get_cookie_domain() {
-		$cookie_domain = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : $this->get_server_host_name();
-		return $cookie_domain;
+
+		return defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : $this->get_server_host_name();
 	}
 
 	/**

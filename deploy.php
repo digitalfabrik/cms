@@ -16,11 +16,15 @@
 		'git submodule sync',
 		'git submodule update',
 		'git submodule status',
+		'composer self-update',
+		'composer install --no-interaction',
+		file_get_contents(__DIR__ . '/wp-activate-plugins.sh'),
 	);
 
 	// Run the commands for output
 	$output = '';
 	foreach($commands AS $command){
+		$command .= ' 2>&1';
 		// Run it
 		$tmp = shell_exec($command);
 		// Output

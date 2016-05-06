@@ -7,7 +7,7 @@
  * @subpackage post-translation
  */
 
-class WPML_Admin_Post_Actions extends  WPML_Post_Translation{
+class WPML_Admin_Post_Actions extends  WPML_Post_Translation {
 
 	public function init() {
 		parent::init ();

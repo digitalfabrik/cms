@@ -8,11 +8,11 @@
  */
 
 abstract class WPML_Element_Translation extends WPML_WPDB_User {
-	/** @var String[] $element_langs */
+	/** @var string[] $element_langs */
 	protected $element_langs = array();
-	/** @var Int[] $element_trids */
+	/** @var int[] $element_trids */
 	protected $element_trids = array();
-	/** @var String[] $element_source_langs */
+	/** @var string[] $element_source_langs */
 	protected $element_source_langs = array();
 	/** @var array[] $translations */
 	protected $translations = array();
@@ -94,6 +94,11 @@ abstract class WPML_Element_Translation extends WPML_WPDB_User {
 		return isset( $this->trid_groups [ $trid ][ $lang ] ) ? $this->trid_groups [ $trid ][ $lang ] : null;
 	}
 
+	/**
+	 * @param $element_id
+	 *
+	 * @return null|string
+	 */
 	public function get_element_lang_code( $element_id ) {
 		$result = null;
 

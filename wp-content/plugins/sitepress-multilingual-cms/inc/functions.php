@@ -160,17 +160,6 @@ if ( ! function_exists( 'icl_js_escape' ) ) {
 	}
 }
 
-function icl_nobreak( $str ) {
-	return preg_replace( "# #", '&nbsp;', $str );
-}
-
-function icl_strip_control_chars( $string ) {
-	// strip out control characters (all but LF, NL and TAB)
-	$string = preg_replace( '/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/', '', $string );
-
-	return $string;
-}
-
 function _icl_tax_has_objects_recursive( $id, $term_id = - 1, $rec = 0 ) {
 	// based on the case where two categories were one the parent of another
 	// eliminating the chance of infinite loops by letting this function calling itself too many times
@@ -208,40 +197,6 @@ function _icl_tax_has_objects_recursive( $id, $term_id = - 1, $rec = 0 ) {
 	}
 
 	return false;
-}
-
-function icl_get_post_children_recursive( $post, $type = 'page' ) {
-	global $wpdb;
-
-	$post = (array) $post;
-
-	$children = $wpdb->get_col( $wpdb->prepare( "SELECT ID
-                                               FROM {$wpdb->posts}
-                                               WHERE post_type=%s
-                                                AND post_parent IN (" . wpml_prepare_in( $post, '%d' ) . ")", $type ) );
-
-	if ( ! empty( $children ) ) {
-		$children = array_merge( $children, icl_get_post_children_recursive( $children ) );
-	}
-
-	return $children;
-}
-
-function icl_get_tax_children_recursive( $id, $taxonomy = 'category' ) {
-	global $wpdb;
-
-	$id = (array) $id;
-
-	$children = $wpdb->get_col( $wpdb->prepare( "SELECT term_id
-                                               FROM {$wpdb->term_taxonomy} x
-                                               WHERE x.taxonomy=%s
-                                                AND parent IN (" . wpml_prepare_in( $id, '%d' ) . ")", $taxonomy ) );
-
-	if ( ! empty( $children ) ) {
-		$children = array_merge( $children, icl_get_tax_children_recursive( $children ) );
-	}
-
-	return $children;
 }
 
 function _icl_trash_restore_prompt() {
@@ -574,14 +529,6 @@ function wpml_mb_strpos( $haystack, $needle, $offset = 0 ) {
 	}
 
 	return strpos( $haystack, $needle, $offset );
-}
-
-function wpml_mb_strlen( $str ) {
-	if ( function_exists( 'mb_strlen' ) ) {
-		return mb_strlen( $str );
-	}
-
-	return strlen( $str );
 }
 
 function wpml_set_plugin_as_inactive() {

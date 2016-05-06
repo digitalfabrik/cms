@@ -1,13 +1,142 @@
 @import "mixins";
+@import "_variables";
+@import "wpml-icons";
+
+/***********************************************************
+	Helper classes
+*************************************************************/
+.text-center {
+	text-align: center;
+}
+.text-left {
+	text-align: left;
+}
+.text-right {
+	text-align: right;
+}
+.wpml-margin-top-lg {
+	margin-top: $margin-lg;
+}
+.wpml-margin-bottom-lg {
+	margin-bottom: $margin-lg;
+}
+.wpml-margin-top-base {
+	margin-top: $margin-base;
+}
+.wpml-margin-bottom-base {
+	margin-bottom: $margin-base;
+}
+.wpml-margin-top-sm {
+	margin-top: $margin-sm;
+}
+.wpml-margin-bottom-sm {
+	margin-bottom: $margin-sm;
+}
+.clearfix {
+	@include clearfix();
+}
+.truncate {
+	@extend %truncate;
+}
+/***********************************************************
+	WPML Boxes and Tables
+*************************************************************/
+.wpml-wrap {
+	@extend %wpml-wrap;
+}
+
+.widefat .wpml-col-ico {
+	width: 26px;
+	text-align: center;
+}
+
+.wpml-col-title {
+	width: 30%;
+	strong {
+		font-size: 1.05em;
+	}
+	.row-actions {
+		font-size: .9em;
+	}
+	@media(max-width: $wp-breakpoint-max) {
+		width: 40%;
+	}
+}
+
+.wpml-col-title-flag {
+	.row-actions {
+		margin-left: 20px+5px;
+	}
+}
+.wpml-title-flag {
+	margin-right: 5px;
+	position: relative;
+	top: 1px;
+	width: 20px;
+	.wpml-header-translation &,
+	.wpml-header-original & {
+		margin-left: 5px;
+	}
+	img {
+		margin: 0;
+		max-width: 100%;
+		height: auto;
+	}
+}
+
+.wpml-col-languages {
+	img {
+		max-width: 100%;
+		height: auto;
+	}
+	a, span {
+		display: inline-block;
+		width: 20px;
+		text-align: center;
+		padding: 2px 1px;
+	}
+	div {
+		display: none;
+	}
+}
+
+.wpml-col-url {
+	white-space: nowrap
+}
+
+.wpml-list-table {
+	a {
+		cursor: pointer;
+	}
+	th, td {
+		&:not(.check-column):first-child {
+			padding-left: $margin-sm;
+		}
+		&:last-child {
+			padding-right: $margin-sm;
+		}
+	}
+	//Overwrite WP styling for small screens
+	@media screen and (max-width: 782px) {
+		tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
+			display: auto;
+		}
+	}
+
+}
+
+.wpml-table-info {
+	font-size: 1.2em;
+}
 
 .wpml-section {
-	clear:         both;
-	overflow:      hidden;
-	margin:        30px 0 0 0;
-	padding:       20px;
-	max-width:     900px;
+	clear: both;
+	overflow: hidden;
+	margin: 30px 0 0 0;
+	padding: 20px;
+	max-width: 900px;
 	border-bottom: 1px solid #ededed;
-	background:    #fff;
+	background: #fff;
 
 	&:first-child {
 		margin-top: 0;
@@ -40,9 +169,9 @@
 	}
 
 	.icl_languages_order_ajx_resp {
-		display:     inline-block;
+		display: inline-block;
 		padding-top: 5px;
-		color:       #E68A00;
+		color: #E68A00;
 	}
 
 	input[type="radio"] {
@@ -51,12 +180,30 @@
 	/* Sections general styles END */
 }
 
+.wpml-tabs {
+	margin-top: $margin-base;
+	@extend .clearfix;
+	@media (max-width: 1280px) {
+		.nav-tab {
+			margin-left: .2em;
+			padding: 5px;
+			margin-top: 5px;
+		}
+	}
+	.nav-tab-active, .nav-tab-active:focus, .nav-tab-active:focus:active, .nav-tab-active:hover {
+		background: #fff;
+		border-bottom: #fff;
+		padding-bottom: 6px;
+	}
+}
+
 .icl-admin-message {
 	border-left:      4px solid #9bc8f0;
 	background-color: #fff;
 	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
 	padding:          1em;
-	margin:           3em 20px 0 0;
+	margin-top: 3em;
+	margin-bottom: 5px;
 	&:first-child {
 		margin-top: 0;
 	}
@@ -167,6 +314,7 @@
 }
 
 .icl-admin-message-information-inline {
+	clear: both;
 	border-left:      4px solid #d5e8f9;
 	padding:          1px 12px;
 	margin-top:       5px;
@@ -176,6 +324,7 @@
 
 .icl-admin-message-warning,
 .icl-admin-message-error {
+	clear: both;
 	border-left:      4px solid #fff366;
 	padding:          1px 12px;
 	background-color: #fff;
@@ -213,6 +362,14 @@
 .icl-admin-message-error {
 	border-color:     #dd3d36;
 	background-color: #FFE6E5;
+}
+
+.wpml-is-dismissible {
+	position: relative;
+	padding-right: 38px;
+	p [class*="button-"] {
+		margin: -5px 5px;
+	}
 }
 
 .icl-account-setup {
@@ -287,8 +444,12 @@
 	}
 }
 
-.icl_advanced_feature {
-	/*display:none;*/
+
+td.icl_translations a {
+	display: inline-block;
+	width: 20px;
+	text-align: center;
+	padding: 2px 1px;
 }
 
 .icl_translations_table {
@@ -311,6 +472,8 @@
 		color:        #fff;
 	}
 }
+
+
 
 #icl_post_add_notes {
 	h4 {
@@ -344,7 +507,7 @@
 		width:     100%;
 		font-size: 90%;
 	}
-}
+} 
 
 .icl_sidebar {
 	display:          block;
@@ -407,55 +570,6 @@
 .icl_hot_link {
 	color:       #dd0000;
 	font-weight: bold;
-}
-
-
-.wpml-tab-controls {
-	.nav-tab {
-		background-color: #efefef;
-		color:            #000;
-		&:hover {
-			background-color: #fff;
-		}
-	}
-
-	.nav-tab-active {
-		border-bottom-color: #fff;
-		background-color:    #fff;
-		font-weight:         bold;
-	}
-}
-
-#icon-wpml {
-	background: transparent url(../img/icon.png) no-repeat;
-}
-
-.wpml-translation-management-menu-main-php .icon32, .wpml_page_wpml-sticky-links .icon32, .wpml-string-translation-menu-string-translation-php .icon32, .wpml-translation-analytics-menu-main-php .icon32, .wpml-cms-nav-menu-navigation-php .icon32, .wpml_page_wpml-media .icon32 {
-	width: 42px;
-}
-
-.wpml-translation-management-menu-main-php #icon-wpml {
-	background-image: url(../img/icon-wpml-translation-management.png);
-}
-
-.wpml_page_wpml-sticky-links #icon-wpml {
-	background-image: url(../img/icon-wpml-sticky-links.png);
-}
-
-.wpml-string-translation-menu-string-translation-php #icon-wpml {
-	background-image: url(../img/icon-wpml-string-translation.png);
-}
-
-.wpml-translation-analytics-menu-main-php #icon-wpml {
-	background-image: url(../img/icon-wpml-translation-analytics.png);
-}
-
-.wpml-cms-nav-menu-navigation-php #icon-wpml {
-	background-image: url(../img/icon-cms-navigation.png);
-}
-
-.wpml_page_wpml-media #icon-wpml {
-	background-image: url(../img/icon-wpml-media.png);
 }
 
 .icon18 {
@@ -711,7 +825,7 @@ img.icl_als_iclflag {
 		color:          #ccc;
 		vertical-align: middle;
 		font-size:      12px;
-		cursor:         pointer;
+		cursor: help;
 
 		&:hover {
 			color:      #007cbd;
@@ -724,21 +838,12 @@ img.icl_als_iclflag {
 	float:       left;
 	margin-left: 30px;
 	width:       570px;
+  	@extend .clearfix;
 
 	[dir="rtl"] & {
 		float:        right;
 		margin-left:  0;
 		margin-right: 30px;
-	}
-
-	&:before,
-	&:after {
-		display: table;
-		content: " ";
-	}
-
-	&:after {
-		clear: both
 	}
 
 	.buttons-wrap {
@@ -764,7 +869,8 @@ img.icl_als_iclflag {
 	padding:          10px;
 	border:           1px solid #CCCCCC;
 	background-color: #ffffff;
-	clear: both;
+	clear:            both;
+	overflow:         hidden;
 
 	.form-table {
 		border-collapse: separate;
@@ -776,14 +882,7 @@ img.icl_als_iclflag {
 }
 
 .wpml-section-content-inner {
-	&:before, &:after {
-		display: table;
-		content: " ";
-	}
-
-	&:after {
-		clear: both
-	}
+	@extend .clearfix;
 }
 
 .wpml-section-content, .wpml-section-content-inner {
@@ -810,6 +909,13 @@ img.icl_als_iclflag {
 
 #icl_additional_css, #copy_parameters {
 	direction: ltr;
+}
+
+.wp-core-ui .button-lg {
+  font-size: 15px;
+  line-height: 38px;
+  height: 40px;
+  padding: 0 15px 1px;
 }
 
 @import 'jquery-ui/style';
