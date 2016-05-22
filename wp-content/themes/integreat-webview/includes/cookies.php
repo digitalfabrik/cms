@@ -3,7 +3,7 @@
     // set lang cookie
     function set_lang_cookie() {
         if( $_GET['sc'] == 1 or !isset($_COOKIE['integreat_lang']) ) {
-            if( !is_admin() ) {
+            if( !is_admin() && !strpos($_SERVER['REQUEST_URI'])) {
                 // set language cookie
                 setcookie( 'integreat_lang', ICL_LANGUAGE_CODE, time()+3600*24*100, '/', $_SERVER['SERVER_NAME'], false);
 
