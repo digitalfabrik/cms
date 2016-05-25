@@ -30,7 +30,7 @@ function edit_link( $link_id = 0 ) {
 		wp_die(
 			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
 			'<p>' . __( 'You do not have sufficient permissions to edit the links for this site.' ) . '</p>',
-			200
+			403
 		);
 	}
 

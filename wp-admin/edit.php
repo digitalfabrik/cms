@@ -38,7 +38,7 @@ if ( ! current_user_can( $post_type_object->cap->edit_posts ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
 		'<p>' . __( 'You are not allowed to edit posts in this post type.' ) . '</p>',
-		200
+		403
 	);
 }
 
