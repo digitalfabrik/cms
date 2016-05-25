@@ -157,7 +157,14 @@ abstract class WP_REST_Controller {
 		}
 
 		$data = (array) $response->get_data();
-		$links = WP_REST_Server::get_response_links( $response );
+		$server = rest_get_server();
+
+		if ( method_exists( $server, 'get_compact_response_links' ) ) {
+			$links = call_user_func( array( $server, 'get_compact_response_links' ), $response );
+		} else {
+			$links = call_user_func( array( $server, 'get_response_links' ), $response );
+		}
+
 		if ( ! empty( $links ) ) {
 			$data['_links'] = $links;
 		}
@@ -190,7 +197,9 @@ abstract class WP_REST_Controller {
 						continue;
 					}
 					if ( ! in_array( $context, $details['context'] ) ) {
-						unset( $data[ $key ][ $attribute ] );
+						if ( isset( $data[ $key ][ $attribute ] ) ) {
+							unset( $data[ $key ][ $attribute ] );
+						}
 					}
 				}
 			}
@@ -437,6 +446,10 @@ abstract class WP_REST_Controller {
 				'validate_callback' => 'rest_validate_request_arg',
 				'sanitize_callback' => 'rest_sanitize_request_arg',
 			);
+
+			if ( isset( $params['description'] ) ) {
+				$endpoint_args[ $field_id ]['description'] = $params['description'];
+			}
 
 			if ( WP_REST_Server::CREATABLE === $method && isset( $params['default'] ) ) {
 				$endpoint_args[ $field_id ]['default'] = $params['default'];

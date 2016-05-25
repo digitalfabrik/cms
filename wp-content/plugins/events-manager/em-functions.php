@@ -269,6 +269,20 @@ function em_verify_nonce($action, $nonce_name='_wpnonce'){
 }
 
 /**
+ * Since WP 4.5 em_wp_get_referer() returns false if URL is the same. We use it to get a safe referrer url, so we use the new wp_get_raw_referer() argument instead.
+ * @since 5.6.3
+ * @return string 
+ */
+function em_wp_get_referer(){
+	if( function_exists('wp_get_raw_referer') ){
+		//do essentially what em_wp_get_referer does, but potentially returning the same url as before
+		return wp_validate_redirect(wp_get_raw_referer(), false );
+	}else{
+		return wp_get_referer();
+	}
+}
+
+/**
  * Gets all WP users
  * @return array
  */
@@ -340,14 +354,15 @@ function em_booking_add_registration( $EM_Booking ){
     $registration = true;
     if( ((!is_user_logged_in() && get_option('dbem_bookings_anonymous')) || EM_Bookings::is_registration_forced()) && !get_option('dbem_bookings_registration_disable') ){
     	//find random username - less options for user, less things go wrong
-    	$username_root = explode('@', wp_kses_data($_REQUEST['user_email']));
+    	$user_email = stripslashes($_REQUEST['user_email']); //otherwise may fail validation
+    	$username_root = explode('@', wp_kses_data($user_email));
     	$username_root = $username_rand = sanitize_user($username_root[0], true);
     	while( username_exists($username_rand) ) {
     		$username_rand = $username_root.rand(1,1000);
     	}
     	$_REQUEST['dbem_phone'] = (!empty($_REQUEST['dbem_phone'])) ? wp_kses_data($_REQUEST['dbem_phone']):''; //fix to prevent warnings
     	$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? wp_kses_data($_REQUEST['user_name']):''; //fix to prevent warnings
-    	$user_data = array('user_login' => $username_rand, 'user_email'=> $_REQUEST['user_email'], 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
+    	$user_data = array('user_login' => $username_rand, 'user_email'=> $user_email, 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
     	$id = em_register_new_user($user_data);
     	if( is_numeric($id) ){
     		$EM_Person = new EM_Person($id);
@@ -492,7 +507,13 @@ function em_new_user_notification() {
 		em_locate_template('emails/new-user.php', true);
 		$message = ob_get_clean();
 	}
-    $message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
+	//for WP 4.4, regenerate password link can be used
+	$set_password_url = '';
+	if( function_exists('get_password_reset_key')){
+	    $key = get_password_reset_key( $user );
+	    $set_password_url = network_site_url("wp-login.php?action=rp&key=$key&login=" . rawurlencode($user_login), 'login');
+	}
+    $message  = str_replace(array('%password%','%username%','%passwordurl%'), array($plaintext_pass, $user_login, $set_password_url), $message);
 	global $EM_Mailer;
 	return $EM_Mailer->send(get_option('dbem_bookings_email_registration_subject'), $message, $user_email);
 }

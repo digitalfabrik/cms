@@ -209,7 +209,7 @@ if( !isset($_POST['acf_nonce']) || !wp_verify_nonce($_POST['acf_nonce'], 'input'
 		
 		
 		// validate page
-		if( in_array( $pagenow, array( 'edit-tags.php', 'profile.php', 'user-new.php', 'user-edit.php', 'media.php' ) ) )
+		if( in_array( $pagenow, array( 'edit-tags.php', 'term.php', 'profile.php', 'user-new.php', 'user-edit.php', 'media.php' ) ) )
 		{
 			$return = true;
 		}
@@ -275,26 +275,43 @@ if( !isset($_POST['acf_nonce']) || !wp_verify_nonce($_POST['acf_nonce'], 'input'
 				$this->data['option_name'] = "shopp_category_" . $_GET['id'];
 			}
 			
-		}
-		if( $pagenow == "edit-tags.php" && isset($_GET['taxonomy']) )
-		{
-			// filter
-			$_GET['taxonomy'] = filter_var($_GET['taxonomy'], FILTER_SANITIZE_STRING);
+		} elseif( $pagenow == "edit-tags.php" || $pagenow == "term.php" ) {
+			
+			// vars
+			$taxonomy = 'post_tag';
+			$term_id = 0;
 			
 			
+			// $_GET
+			if( !empty($_GET['taxonomy']) ) {
+				
+				$taxonomy = filter_var($_GET['taxonomy'], FILTER_SANITIZE_STRING);
+				
+			}
+			
+			if( !empty($_GET['tag_ID']) ) {
+				
+				$term_id = filter_var($_GET['tag_ID'], FILTER_SANITIZE_NUMBER_INT);
+				
+			}
+			
+			
+			// update filter
+			$filter['ef_taxonomy'] = $taxonomy;
+			
+			
+			// add
 			$this->data['page_type'] = "taxonomy";
-			$filter['ef_taxonomy'] = $_GET['taxonomy'];
-			
 			$this->data['page_action'] = "add";
 			$this->data['option_name'] = "";
 			
-			if( isset($_GET['action']) && $_GET['action'] == "edit" )
-			{
-				// filter
-				$_GET['tag_ID'] = filter_var($_GET['tag_ID'], FILTER_SANITIZE_NUMBER_INT);
 			
+			// edit
+			if( $term_id ) {
+				
 				$this->data['page_action'] = "edit";
-				$this->data['option_name'] = $_GET['taxonomy'] . "_" . $_GET['tag_ID'];
+				$this->data['option_name'] = $taxonomy . "_" . $term_id;
+				
 			}
 			
 		}

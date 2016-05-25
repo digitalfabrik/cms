@@ -1,0 +1,18 @@
+/* line 1, ../scss/wp-nav-menus.scss */
+.icl_nav_menu_text {
+  font-size: 11px;
+  font-style: normal;
+}
+
+/* line 6, ../scss/wp-nav-menus.scss */
+.icl_lang_menu a {
+  text-decoration: none;
+}
+/* line 8, ../scss/wp-nav-menus.scss */
+.icl_lang_menu a:hover {
+  text-decoration: underline;
+}
+/* line 11, ../scss/wp-nav-menus.scss */
+.icl_lang_menu a.current {
+  font-weight: bold;
+}

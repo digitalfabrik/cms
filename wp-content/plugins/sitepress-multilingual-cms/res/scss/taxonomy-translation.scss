@@ -1,0 +1,38 @@
+.icl_tt_form td, .icl_tt_labels_form td {
+  border: none;
+}
+
+#wpml_tt_filters, #wpml_tt_search {
+  display: inline;
+}
+
+.wpml_tt_spinner {
+  margin-right: 15px;
+  display: none;
+}
+
+.icl_tt_form .wpml_tt_spinner, .icl_tt_labels_form .wpml_tt_spinner {
+  float: right;
+}
+
+#wpml_tt_clear_search {
+  cursor: pointer;
+}
+
+#wpml_tt_taxonomy_translation_wrap .lowlight {
+  color: #A04060;
+  font-style: italic;
+}
+
+.icl_tt_sync_row {
+  margin-top: 10px;
+}
+
+.icl_tt_popup {
+  position: absolute;
+  z-index: 1;
+	background: rgba(255, 255, 255, 0.9);
+	box-shadow: 10px 10px 5px #888888;
+  border: 1px solid #777;
+  border-radius: 5px;
+}

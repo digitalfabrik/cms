@@ -734,7 +734,9 @@ function em_setup_datepicker(wrap){
 					//get corresponding end date input, we expect ranges to be contained in .em-date-range with a start/end input element
 					var startDate = jQuery(this);
 					var endDate = startDate.parents('.em-date-range').find('.em-date-end').first();
-					if( startDate.val() > endDate.val() && endDate.val() != '' ){
+					var startValue = startDate.nextAll('input.em-date-input').first().val();
+					var endValue = endDate.nextAll('input.em-date-input').first().val();
+					if( startValue > endValue && endValue != '' ){
 						endDate.datepicker( "setDate" , selectedDate );
 						endDate.trigger('change');
 					}
@@ -824,7 +826,7 @@ function em_maps_load(){
 			script.type = "text/javascript";
 			script.id = "google-maps";
 			var proto = (EM.is_ssl) ? 'https:' : 'http:';
-			script.src = proto + '//maps.google.com/maps/api/js?v=3.12&sensor=false&libraries=places&callback=em_maps';
+			script.src = proto + '//maps.google.com/maps/api/js?v=3.23&libraries=places&callback=em_maps';
 			document.body.appendChild(script);
 		}else if( typeof google === 'object' && typeof google.maps === 'object' && !em_maps_loaded ){
 			em_maps();

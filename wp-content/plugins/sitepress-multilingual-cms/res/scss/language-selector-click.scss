@@ -1,0 +1,127 @@
+#lang_sel_click {
+	height: 32px;
+	position: relative;
+	z-index: 99;
+	font-family: verdana, arial, sans-serif;
+
+	/* hack to correct IE5.5 faulty box model */
+	* html & {
+		width: 12em;
+
+		a {
+			width: 149px;
+			&:visited {
+				width: 149px;
+			}
+		}
+
+		ul ul {
+			top: 18px;
+
+			a {
+				width: 150px;
+				&:visited {
+					width: 150px;
+				}
+			}
+		}
+	}
+
+	ul {
+		padding: 0 !important;
+		margin: 0 !important;
+		list-style-type: none !important;
+
+		ul {
+			width: 149px;
+			visibility: hidden;
+			position: absolute;
+			height: 0;
+			top: 25px;
+			left: 0;
+			border-top: 1px solid #cdcdcd;
+
+			a {
+				background: #ffffff;
+				color: #444444;
+				height: auto;
+				line-height: 1em;
+				padding: 5px 10px;
+				border-width: 0 1px 1px 1px;
+
+				&:visited {
+					background: #ffffff;
+					color: #444444;
+					height: auto;
+					line-height: 1em;
+					padding: 5px 10px;
+					border-width: 0 1px 1px 1px;
+				}
+			}
+		}
+	}
+
+	li {
+		float: left;
+		width: 149px;
+		position: relative;
+
+		&:before {
+			content: '' !important;
+		}
+	}
+
+	a {
+		display: block;
+		font-size: 11px;
+		text-decoration: none !important;
+		color: #444444;
+		border: 1px solid #cdcdcd;
+		background: #fff;
+		padding-left: 10px;
+		line-height: 24px;
+
+		&:visited {
+			display: block;
+			font-size: 11px;
+			text-decoration: none !important;
+			color: #444444;
+			border: 1px solid #cdcdcd;
+			background: #fff;
+			padding-left: 10px;
+			line-height: 24px;
+		}
+
+		&.lang_sel_sel {
+			background: url(../img/nav-arrow-down.png) #fff right no-repeat;
+			color: #444;
+			&:hover {
+				text-decoration: none;
+				color: #000;
+			}
+		}
+	}
+
+	a:hover, ul ul a:hover, :hover > a, ul ul :hover > a {
+		color: #000;
+		background: #eee;
+	}
+
+	img.iclflag {
+		width: 18px;
+		height: 12px;
+		position: relative;
+		top: 1px;
+	}
+
+	/* style the table so that it takes no ppart in the layout - required for IE to work */
+	table {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border-collapse: collapse;
+	}
+}
+
+/* make the second level visible when hover on first level list OR link */
+/* #lang_sel_click ul li:hover ul, #lang_sel_click ul a:hover ul{visibility:visible; } */

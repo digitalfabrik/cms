@@ -1,9 +1,9 @@
 === TinyMCE Advanced ===
 Contributors: azaozz
 Tags: wysiwyg, formatting, tinymce, write, editor
-Requires at least: 4.4
-Tested up to: 4.4
-Stable tag: 4.2.5
+Requires at least: 4.5
+Tested up to: 4.5
+Stable tag: 4.3.10
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,8 +30,23 @@ Best is to install directly from WordPress. If manual installation is required, 
 
 == Changelog ==
 
+= 4.3.10.1 =
+* Fixed adding paragraph tags when loading posts that were saved before turning autop off.
+* Disabled the (new) inline toolbar for tables as it was overlapping the table in some cases.
+
+= 4.3.10 =
+* Updated for WordPress 4.5.1 and TinyMCE 4.3.10.
+* Fixed support for adding editor-style.css to themes that don't have it.
+
+= 4.3.8 =
+* Updated for WordPress 4.5 and TinyMCE 4.3.8.
+* Separated standard options and admin options.
+* Added settings that can disable the plugin for the main editor, other editors in wp-admin or editors on the front-end.
+* Korean translation by Josh Kim and Greek translation by Stathis Mellios.
+
 = 4.2.8 =
 * Updated for WordPress 4.4 and TinyMCE 4.2.8.
+* Japanese translation by Manabu Miwa.
 
 = 4.2.5 =
 * Updated for WordPress 4.3.1 and TinyMCE 4.2.5.
@@ -43,6 +58,7 @@ Best is to install directly from WordPress. If manual installation is required, 
 = 4.2.3 =
 * Updated for WordPress 4.3 and TinyMCE 4.2.3.
 * Removed the 'textpattern' plugin as WordPress 4.3 includes similar functionality by default.
+* French translation by Nicolas Schneider.
 
 = 4.1.9 =
 * Updated for WordPress 4.2 and TinyMCE 4.1.9.

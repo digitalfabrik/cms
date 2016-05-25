@@ -48,7 +48,18 @@ class EM_ML_IO {
                 $event = EM_ML::get_translation($EM_Event, $lang_code); /* @var $EM_Event EM_Event */
                 if( $event->event_id != $EM_Event->event_id ){
                     self::event_merge_original_meta($event, $EM_Event);
+                    //if we execute a meta save here, we will screw up the current em_event_save_meta $wp_filter pointer executed in do_action()
+                    //therefore, we save the current pointer position (priority) and set it back after saving the location further down
+                    global $wp_filter, $wp_current_filter;
+                    $wp_filter_priority = key($wp_filter['em_event_save_meta']);
+                    $tag = end($wp_current_filter);
+                    //save the event meta
                     $event->save_meta();
+                    //reset save_post pointer in $wp_filter to its original position
+                    reset( $wp_filter[$tag] );
+                    do{
+                        if( key($wp_filter[$tag]) == $wp_filter_priority ) break;
+                    }while ( next($wp_filter[$tag]) !== false );
                 }
             }
         }

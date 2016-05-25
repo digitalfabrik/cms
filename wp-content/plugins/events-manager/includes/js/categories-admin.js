@@ -40,6 +40,7 @@ jQuery(document).ready(function($) {
 		if (formfield != null) {
 			fileurl = $('img',html).attr('src');
 			$('#category-image').val(fileurl);
+			$('#category-image-img img').attr('src', fileurl);
 			//get the attachment id if possible
 			var fileIdClass = $('img',html).attr('class');
 			var pattern = /wp\-image\-[0-9]+/;

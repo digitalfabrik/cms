@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Advanced Custom Fields\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/advanced-custom-fields\n"
-"POT-Creation-Date: 2015-07-23 11:02+0100\n"
-"PO-Revision-Date: 2016-01-07 08:48+0000\n"
+"POT-Creation-Date: 2016-04-06 12:26+0100\n"
+"PO-Revision-Date: 2016-04-06 16:28+0100\n"
 "Last-Translator: Pedro Mendonça <ped.gaspar@gmail.com>\n"
 "Language-Team: Pedro Mendonça <ped.gaspar@gmail.com>\n"
 "Language: pt_PT\n"
@@ -13,110 +13,112 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;"
 "esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-WPHeader: acf.php\n"
 "X-Textdomain-Support: yes\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: acf.php:485
+#: acf.php:490
 msgid "Field&nbsp;Groups"
 msgstr "Grupos&nbsp;de&nbsp;campos"
 
-#: acf.php:486 core/controllers/field_groups.php:214
+#. Plugin Name of the plugin/theme
+#: acf.php:491 core/controllers/field_groups.php:213
 msgid "Advanced Custom Fields"
 msgstr "Advanced Custom Fields"
 
-#: acf.php:487
+#: acf.php:492
 msgid "Add New"
 msgstr "Adicionar novo"
 
-#: acf.php:488
+#: acf.php:493
 msgid "Add New Field Group"
 msgstr "Adicionar novo grupo de campos"
 
-#: acf.php:489
+#: acf.php:494
 msgid "Edit Field Group"
 msgstr "Editar grupo de campos"
 
-#: acf.php:490
+#: acf.php:495
 msgid "New Field Group"
 msgstr "Novo grupo de campos"
 
-#: acf.php:491
+#: acf.php:496
 msgid "View Field Group"
 msgstr "Ver grupo de campos"
 
-#: acf.php:492
+#: acf.php:497
 msgid "Search Field Groups"
 msgstr "Pesquisar grupos de campos"
 
-#: acf.php:493
+#: acf.php:498
 msgid "No Field Groups found"
 msgstr "Nenhum grupo de campos encontrado"
 
-#: acf.php:494
+#: acf.php:499
 msgid "No Field Groups found in Trash"
-msgstr "Nenhum grupo de campos encontrado no lixo"
+msgstr "Nenhum grupo de campos encontrado no Lixo"
 
-#: acf.php:579 core/views/meta_box_options.php:99
+#: acf.php:584 core/views/meta_box_options.php:99
 msgid "Custom Fields"
 msgstr "Campos personalizados"
 
-#: acf.php:597 acf.php:600
+#: acf.php:602 acf.php:605
 msgid "Field group updated."
 msgstr "Grupo de campos actualizado."
 
-#: acf.php:598
+#: acf.php:603
 msgid "Custom field updated."
 msgstr "Campo personalizado actualizado."
 
-#: acf.php:599
+#: acf.php:604
 msgid "Custom field deleted."
-msgstr "Campo personalizado apagado."
+msgstr "Campo personalizado eliminado."
 
 #. translators: %s: date and time of the revision
-#: acf.php:602
+#: acf.php:607
 #, php-format
 msgid "Field group restored to revision from %s"
 msgstr "Grupo de campos restaurado para revisão de %s"
 
-#: acf.php:603
+#: acf.php:608
 msgid "Field group published."
 msgstr "Grupo de campos publicado."
 
-#: acf.php:604
+#: acf.php:609
 msgid "Field group saved."
 msgstr "Grupo de campos guardado."
 
-#: acf.php:605
+#: acf.php:610
 msgid "Field group submitted."
 msgstr "Grupo de campos enviado."
 
-#: acf.php:606
+#: acf.php:611
 msgid "Field group scheduled for."
 msgstr "Grupo de campos agendado."
 
-#: acf.php:607
+#: acf.php:612
 msgid "Field group draft updated."
 msgstr "Rascunho de grupo de campos actualizado."
 
-#: acf.php:742
+#: acf.php:747
 msgid "Thumbnail"
 msgstr "Miniatura"
 
-#: acf.php:743
+#: acf.php:748
 msgid "Medium"
 msgstr "Média"
 
-#: acf.php:744
+#: acf.php:749
 msgid "Large"
 msgstr "Grande"
 
-#: acf.php:745
+#: acf.php:750
 msgid "Full"
 msgstr "Completo"
 
@@ -136,19 +138,19 @@ msgstr "Actualizar"
 msgid "Post updated"
 msgstr "Artigo actualizado"
 
-#: core/controllers/addons.php:42 core/controllers/field_groups.php:307
+#: core/controllers/addons.php:42 core/controllers/field_groups.php:306
 msgid "Add-ons"
 msgstr "Add-ons"
 
-#: core/controllers/addons.php:130 core/controllers/field_groups.php:429
+#: core/controllers/addons.php:130 core/controllers/field_groups.php:428
 msgid "Repeater Field"
-msgstr "Campo repetitivo"
+msgstr "Campo repetidor"
 
 #: core/controllers/addons.php:131
 msgid "Create infinite rows of repeatable data with this versatile interface!"
 msgstr "Cria infinitas linhas de dados repetíveis com um interfácil versátil!"
 
-#: core/controllers/addons.php:137 core/controllers/field_groups.php:437
+#: core/controllers/addons.php:137 core/controllers/field_groups.php:436
 msgid "Gallery Field"
 msgstr "Campo de galeria"
 
@@ -156,7 +158,7 @@ msgstr "Campo de galeria"
 msgid "Create image galleries in a simple and intuitive interface!"
 msgstr "Cria galerias de imagens num interface simples e intuitivo!"
 
-#: core/controllers/addons.php:144 core/controllers/field_groups.php:445
+#: core/controllers/addons.php:144 core/controllers/field_groups.php:444
 msgid "Options Page"
 msgstr "Página de opções"
 
@@ -189,8 +191,8 @@ msgid "jQuery date & time picker"
 msgstr "Selector jQuery de data e hora"
 
 #: core/controllers/addons.php:175
-msgid "Location Field"
-msgstr "Campo de localização"
+msgid "Google Map Extended"
+msgstr "Google Map Extended"
 
 #: core/controllers/addons.php:176
 msgid "Find addresses and coordinates of a desired location"
@@ -232,9 +234,9 @@ msgstr "Instalado"
 msgid "Purchase & Install"
 msgstr "Comprar e instalar"
 
-#: core/controllers/addons.php:242 core/controllers/field_groups.php:422
-#: core/controllers/field_groups.php:431 core/controllers/field_groups.php:439
-#: core/controllers/field_groups.php:447 core/controllers/field_groups.php:455
+#: core/controllers/addons.php:242 core/controllers/field_groups.php:421
+#: core/controllers/field_groups.php:430 core/controllers/field_groups.php:438
+#: core/controllers/field_groups.php:446 core/controllers/field_groups.php:454
 msgid "Download"
 msgstr "Descarregar"
 
@@ -394,136 +396,136 @@ msgstr "Voltar para a exportação"
 msgid "No field groups were selected"
 msgstr "Nenhum grupo de campos foi seleccionado"
 
-#: core/controllers/field_group.php:358
+#: core/controllers/field_group.php:359
 msgid "Move to trash. Are you sure?"
 msgstr "Mover para o lixo. Tem certeza?"
 
-#: core/controllers/field_group.php:359
+#: core/controllers/field_group.php:360
 msgid "checked"
 msgstr "seleccionado"
 
-#: core/controllers/field_group.php:360
+#: core/controllers/field_group.php:361
 msgid "No toggle fields available"
 msgstr "Nenhum campo de opções disponível"
 
-#: core/controllers/field_group.php:361
+#: core/controllers/field_group.php:362
 msgid "Field group title is required"
 msgstr "O título do grupo de campos é obrigatório"
 
-#: core/controllers/field_group.php:362
+#: core/controllers/field_group.php:363
 msgid "copy"
-msgstr "copiar"
+msgstr "cópia"
 
-#: core/controllers/field_group.php:363 core/views/meta_box_location.php:62
+#: core/controllers/field_group.php:364 core/views/meta_box_location.php:62
 #: core/views/meta_box_location.php:159
 msgid "or"
 msgstr "ou"
 
-#: core/controllers/field_group.php:364 core/controllers/field_group.php:395
-#: core/controllers/field_group.php:457 core/controllers/field_groups.php:148
+#: core/controllers/field_group.php:365 core/controllers/field_group.php:397
+#: core/controllers/field_group.php:459 core/controllers/field_groups.php:148
 msgid "Fields"
 msgstr "Campos"
 
-#: core/controllers/field_group.php:365
+#: core/controllers/field_group.php:366
 msgid "Parent fields"
 msgstr "Campos superiores"
 
-#: core/controllers/field_group.php:366
+#: core/controllers/field_group.php:367
 msgid "Sibling fields"
 msgstr "Campos do grupo"
 
-#: core/controllers/field_group.php:367
+#: core/controllers/field_group.php:368
 msgid "Hide / Show All"
 msgstr "Esconder / Mostrar tudo"
 
-#: core/controllers/field_group.php:396
+#: core/controllers/field_group.php:398
 msgid "Location"
 msgstr "Localização"
 
-#: core/controllers/field_group.php:397
+#: core/controllers/field_group.php:399
 msgid "Options"
 msgstr "Opções"
 
-#: core/controllers/field_group.php:459
+#: core/controllers/field_group.php:461
 msgid "Show Field Key:"
 msgstr "Mostrar campo chave"
 
-#: core/controllers/field_group.php:460 core/fields/page_link.php:138
+#: core/controllers/field_group.php:462 core/fields/page_link.php:138
 #: core/fields/page_link.php:159 core/fields/post_object.php:340
 #: core/fields/post_object.php:361 core/fields/select.php:224
 #: core/fields/select.php:243 core/fields/taxonomy.php:499
-#: core/fields/user.php:332 core/fields/wysiwyg.php:335
+#: core/fields/user.php:332 core/fields/wysiwyg.php:344
 #: core/views/meta_box_fields.php:195 core/views/meta_box_fields.php:218
 msgid "No"
 msgstr "Não"
 
-#: core/controllers/field_group.php:461 core/fields/page_link.php:137
+#: core/controllers/field_group.php:463 core/fields/page_link.php:137
 #: core/fields/page_link.php:158 core/fields/post_object.php:339
 #: core/fields/post_object.php:360 core/fields/select.php:223
 #: core/fields/select.php:242 core/fields/taxonomy.php:498
-#: core/fields/user.php:331 core/fields/wysiwyg.php:334
+#: core/fields/user.php:331 core/fields/wysiwyg.php:343
 #: core/views/meta_box_fields.php:194 core/views/meta_box_fields.php:217
 msgid "Yes"
 msgstr "Sim"
 
-#: core/controllers/field_group.php:633
+#: core/controllers/field_group.php:635
 msgid "Front Page"
 msgstr "Página inicial"
 
-#: core/controllers/field_group.php:634
+#: core/controllers/field_group.php:636
 msgid "Posts Page"
 msgstr "Página de artigos"
 
-#: core/controllers/field_group.php:635
+#: core/controllers/field_group.php:637
 msgid "Top Level Page (parent of 0)"
-msgstr "Página de topo (sem dependentes)"
+msgstr "Página de topo (sem superior)"
 
-#: core/controllers/field_group.php:636
+#: core/controllers/field_group.php:638
 msgid "Parent Page (has children)"
 msgstr "Página superior (tem dependentes)"
 
-#: core/controllers/field_group.php:637
+#: core/controllers/field_group.php:639
 msgid "Child Page (has parent)"
 msgstr "Página dependente (tem superior)"
 
-#: core/controllers/field_group.php:645
+#: core/controllers/field_group.php:647
 msgid "Default Template"
 msgstr "Modelo por omissão"
 
-#: core/controllers/field_group.php:727
+#: core/controllers/field_group.php:729
 msgid "Published"
 msgstr "Publicado"
 
-#: core/controllers/field_group.php:728
+#: core/controllers/field_group.php:730
 msgid "Pending Review"
 msgstr "Pendente de revisão"
 
-#: core/controllers/field_group.php:729
+#: core/controllers/field_group.php:731
 msgid "Draft"
 msgstr "Rascunho"
 
-#: core/controllers/field_group.php:730
+#: core/controllers/field_group.php:732
 msgid "Future"
 msgstr "Futuro"
 
-#: core/controllers/field_group.php:731
+#: core/controllers/field_group.php:733
 msgid "Private"
 msgstr "Privado"
 
-#: core/controllers/field_group.php:732
+#: core/controllers/field_group.php:734
 msgid "Revision"
 msgstr "Revisão"
 
-#: core/controllers/field_group.php:733
+#: core/controllers/field_group.php:735
 msgid "Trash"
 msgstr "Lixo"
 
-#: core/controllers/field_group.php:746
+#: core/controllers/field_group.php:748
 msgid "Super Admin"
 msgstr "Super Administrador"
 
-#: core/controllers/field_group.php:761 core/controllers/field_group.php:782
-#: core/controllers/field_group.php:789 core/fields/file.php:186
+#: core/controllers/field_group.php:763 core/controllers/field_group.php:784
+#: core/controllers/field_group.php:791 core/fields/file.php:186
 #: core/fields/image.php:177 core/fields/page_link.php:109
 #: core/fields/post_object.php:286 core/fields/post_object.php:310
 #: core/fields/relationship.php:588 core/fields/relationship.php:612
@@ -535,79 +537,79 @@ msgstr "Todos"
 msgid "Title"
 msgstr "Título"
 
-#: core/controllers/field_groups.php:216 core/controllers/field_groups.php:253
+#: core/controllers/field_groups.php:215 core/controllers/field_groups.php:252
 msgid "Changelog"
-msgstr "Changelog"
+msgstr "Registo de alterações"
 
-#: core/controllers/field_groups.php:217
+#: core/controllers/field_groups.php:216
 #, php-format
 msgid "See what's new in %1$sversion %2$s%3$s"
 msgstr "Veja o que há de novo na %1$sversão %2$s%3$s"
 
-#: core/controllers/field_groups.php:219
+#: core/controllers/field_groups.php:218
 msgid "Resources"
 msgstr "Recursos"
 
-#: core/controllers/field_groups.php:221
+#: core/controllers/field_groups.php:220
 msgid "Getting Started"
 msgstr "Primeiros passos"
 
-#: core/controllers/field_groups.php:222
+#: core/controllers/field_groups.php:221
 msgid "Field Types"
 msgstr "Tipos de campos"
 
-#: core/controllers/field_groups.php:223
+#: core/controllers/field_groups.php:222
 msgid "Functions"
 msgstr "Funções"
 
-#: core/controllers/field_groups.php:224
+#: core/controllers/field_groups.php:223
 msgid "Actions"
 msgstr "Acções"
 
-#: core/controllers/field_groups.php:225 core/fields/relationship.php:631
+#: core/controllers/field_groups.php:224 core/fields/relationship.php:631
 msgid "Filters"
 msgstr "Filtros"
 
-#: core/controllers/field_groups.php:226
+#: core/controllers/field_groups.php:225
 msgid "'How to' guides"
 msgstr "Guias práticos"
 
-#: core/controllers/field_groups.php:227
+#: core/controllers/field_groups.php:226
 msgid "Tutorials"
 msgstr "Tutoriais"
 
-#: core/controllers/field_groups.php:232
+#: core/controllers/field_groups.php:231
 msgid "Created by"
 msgstr "Criado por"
 
-#: core/controllers/field_groups.php:244
+#: core/controllers/field_groups.php:243
 msgid "Welcome to Advanced Custom Fields"
 msgstr "Bem vindo ao Advanced Custom Fields"
 
-#: core/controllers/field_groups.php:245
+#: core/controllers/field_groups.php:244
 msgid "Thank you for updating to the latest version!"
 msgstr "Obrigado por atualizar para a última versão!"
 
-#: core/controllers/field_groups.php:245
+#: core/controllers/field_groups.php:244
 #, php-format
 msgid ""
 "ACF %s is more polished and enjoyable than ever before. We hope you like it."
 msgstr ""
 "O ACF %s está mais elegante e agradável que nunca. Esperamos que goste."
 
-#: core/controllers/field_groups.php:252
+#: core/controllers/field_groups.php:251
 msgid "What’s New"
 msgstr "O que há de novo"
 
-#: core/controllers/field_groups.php:255
+#: core/controllers/field_groups.php:254
 msgid "Download Add-ons"
 msgstr "Descarregar add-ons"
 
-#: core/controllers/field_groups.php:309
+#: core/controllers/field_groups.php:308
 msgid "Activation codes have grown into plugins!"
 msgstr "Os códigos de activação transformaram-se em plugins!"
 
-#: core/controllers/field_groups.php:310
+#: core/controllers/field_groups.php:309
 msgid ""
 "Add-ons are now activated by downloading and installing individual plugins. "
 "Although these plugins will not be hosted on the wordpress.org repository, "
@@ -618,19 +620,19 @@ msgstr ""
 "wordpress.org, cada add-on continuará a receber as actualizações de modo "
 "habitual."
 
-#: core/controllers/field_groups.php:316
+#: core/controllers/field_groups.php:315
 msgid "All previous Add-ons have been successfully installed"
 msgstr "Todos os add-ons anteriores foram instalados com sucesso"
 
-#: core/controllers/field_groups.php:320
+#: core/controllers/field_groups.php:319
 msgid "This website uses premium Add-ons which need to be downloaded"
 msgstr "Este site utiliza Add-ons premium que têm que ser descarregados"
 
-#: core/controllers/field_groups.php:320
+#: core/controllers/field_groups.php:319
 msgid "Download your activated Add-ons"
 msgstr "Descarregue os seus Add-ons activados"
 
-#: core/controllers/field_groups.php:325
+#: core/controllers/field_groups.php:324
 msgid ""
 "This website does not use premium Add-ons and will not be affected by this "
 "change."
@@ -638,35 +640,35 @@ msgstr ""
 "Este site não utiliza nenhum Add-on premium e não será afetado por esta "
 "mudança."
 
-#: core/controllers/field_groups.php:335
+#: core/controllers/field_groups.php:334
 msgid "Easier Development"
 msgstr "Desenvolvimento mais fácil"
 
-#: core/controllers/field_groups.php:337
+#: core/controllers/field_groups.php:336
 msgid "New Field Types"
 msgstr "Novos tipos de campos"
 
-#: core/controllers/field_groups.php:339
+#: core/controllers/field_groups.php:338
 msgid "Taxonomy Field"
 msgstr "Campo de taxonomia"
 
-#: core/controllers/field_groups.php:340
+#: core/controllers/field_groups.php:339
 msgid "User Field"
 msgstr "Campo de utilizador"
 
-#: core/controllers/field_groups.php:341
+#: core/controllers/field_groups.php:340
 msgid "Email Field"
 msgstr "Campo de email"
 
-#: core/controllers/field_groups.php:342
+#: core/controllers/field_groups.php:341
 msgid "Password Field"
 msgstr "Campo de senha"
 
-#: core/controllers/field_groups.php:344
+#: core/controllers/field_groups.php:343
 msgid "Custom Field Types"
 msgstr "Tipos de campos personalizados"
 
-#: core/controllers/field_groups.php:345
+#: core/controllers/field_groups.php:344
 msgid ""
 "Creating your own field type has never been easier! Unfortunately, version 3 "
 "field types are not compatible with version 4."
@@ -674,7 +676,7 @@ msgstr ""
 "Criar o seu próprio tipo de campo nunca foi tão fácil! Infelizmente os tipos "
 "de campos da versão 3 não são compatíveis com a versão 4."
 
-#: core/controllers/field_groups.php:346
+#: core/controllers/field_groups.php:345
 #, php-format
 msgid ""
 "Migrating your field types is easy, please %sfollow this tutorial%s to learn "
@@ -683,11 +685,11 @@ msgstr ""
 "Migrar os seus tipos de campos é fácil, por favor %ssiga este tutorial%s "
 "para saber mais."
 
-#: core/controllers/field_groups.php:348
+#: core/controllers/field_groups.php:347
 msgid "Actions &amp; Filters"
 msgstr "Acções e filtros"
 
-#: core/controllers/field_groups.php:349
+#: core/controllers/field_groups.php:348
 #, php-format
 msgid ""
 "All actions & filters have received a major facelift to make customizing ACF "
@@ -698,27 +700,27 @@ msgstr ""
 "personalização do ACF ainda mais fácil! Por favor %sleia este guia%s para "
 "conhecer as alterações às convenção de nomenclaturas."
 
-#: core/controllers/field_groups.php:351
+#: core/controllers/field_groups.php:350
 msgid "Preview draft is now working!"
 msgstr "A visualização de rascunhos agora está a funcionar!"
 
-#: core/controllers/field_groups.php:352
+#: core/controllers/field_groups.php:351
 msgid "This bug has been squashed along with many other little critters!"
 msgstr "Este problema foi eliminado juntamente com muitos outros!"
 
-#: core/controllers/field_groups.php:352
+#: core/controllers/field_groups.php:351
 msgid "See the full changelog"
 msgstr "Ver o changelog completo"
 
-#: core/controllers/field_groups.php:356
+#: core/controllers/field_groups.php:355
 msgid "Important"
 msgstr "Importante"
 
-#: core/controllers/field_groups.php:358
+#: core/controllers/field_groups.php:357
 msgid "Database Changes"
 msgstr "Alterações à base de dados"
 
-#: core/controllers/field_groups.php:359
+#: core/controllers/field_groups.php:358
 msgid ""
 "Absolutely <strong>no</strong> changes have been made to the database "
 "between versions 3 and 4. This means you can roll back to version 3 without "
@@ -728,14 +730,14 @@ msgstr ""
 "dados entre as versões 3 e 4. Isso significa que você pode reverter para a "
 "versão 3 sem quaisquer problemas."
 
-#: core/controllers/field_groups.php:361
+#: core/controllers/field_groups.php:360
 msgid "Potential Issues"
 msgstr "Possíveis problemas"
 
-#: core/controllers/field_groups.php:362
+#: core/controllers/field_groups.php:361
 #, php-format
 msgid ""
-"Due to the sizable changes surounding Add-ons, field types and action/"
+"Due to the sizable changes surrounding Add-ons, field types and action/"
 "filters, your website may not operate correctly. It is important that you "
 "read the full %sMigrating from v3 to v4%s guide to view the full list of "
 "changes."
@@ -745,11 +747,11 @@ msgstr ""
 "importante que leia todo o guia sobre %sMigrar de v3 para v4%s para ver a "
 "lista completa de alterações."
 
-#: core/controllers/field_groups.php:365
+#: core/controllers/field_groups.php:364
 msgid "Really Important!"
 msgstr "Muito importante!"
 
-#: core/controllers/field_groups.php:365
+#: core/controllers/field_groups.php:364
 #, php-format
 msgid ""
 "If you updated the ACF plugin without prior knowledge of such changes, "
@@ -758,11 +760,11 @@ msgstr ""
 "Se actualizou o plugin ACF sem conhecimento prévio destas alterações, por "
 "favor reverta para a última %sversão 3%s deste plugin."
 
-#: core/controllers/field_groups.php:370
+#: core/controllers/field_groups.php:369
 msgid "Thank You"
 msgstr "Obrigado"
 
-#: core/controllers/field_groups.php:371
+#: core/controllers/field_groups.php:370
 msgid ""
 "A <strong>BIG</strong> thank you to everyone who has helped test the version "
 "4 beta and for all the support I have received."
@@ -770,23 +772,23 @@ msgstr ""
 "Um <strong>ENORME</strong> obrigado a todos que ajudaram a testar a versão 4 "
 "beta e por todo o apoio que recebi."
 
-#: core/controllers/field_groups.php:372
+#: core/controllers/field_groups.php:371
 msgid "Without you all, this release would not have been possible!"
 msgstr "Sem vocês este lançamento não teria sido possível!"
 
-#: core/controllers/field_groups.php:376
+#: core/controllers/field_groups.php:375
 msgid "Changelog for"
 msgstr "Changelog da versão"
 
-#: core/controllers/field_groups.php:393
+#: core/controllers/field_groups.php:392
 msgid "Learn more"
 msgstr "Saiba mais"
 
-#: core/controllers/field_groups.php:399
+#: core/controllers/field_groups.php:398
 msgid "Overview"
 msgstr "Visão geral"
 
-#: core/controllers/field_groups.php:401
+#: core/controllers/field_groups.php:400
 msgid ""
 "Previously, all Add-ons were unlocked via an activation code (purchased from "
 "the ACF Add-ons store). New to v4, all Add-ons act as separate plugins which "
@@ -797,57 +799,57 @@ msgstr ""
 "todos os add-ons funcionam como plugins que têm que ser descarregados, "
 "instalados e actualizados separadamente."
 
-#: core/controllers/field_groups.php:403
+#: core/controllers/field_groups.php:402
 msgid ""
 "This page will assist you in downloading and installing each available Add-"
 "on."
 msgstr ""
 "Esta página vai ajudá-lo a descarregar e instalar cada add-on disponível."
 
-#: core/controllers/field_groups.php:405
+#: core/controllers/field_groups.php:404
 msgid "Available Add-ons"
 msgstr "Add-ons disponíveis"
 
-#: core/controllers/field_groups.php:407
+#: core/controllers/field_groups.php:406
 msgid "The following Add-ons have been detected as activated on this website."
 msgstr "Os seguintes Add-ons foram detectados como activos neste site."
 
-#: core/controllers/field_groups.php:420 core/fields/file.php:109
+#: core/controllers/field_groups.php:419 core/fields/file.php:109
 msgid "Name"
 msgstr "Nome"
 
-#: core/controllers/field_groups.php:421
+#: core/controllers/field_groups.php:420
 msgid "Activation Code"
 msgstr "Código de activação"
 
-#: core/controllers/field_groups.php:453
+#: core/controllers/field_groups.php:452
 msgid "Flexible Content"
 msgstr "Conteúdo flexível"
 
-#: core/controllers/field_groups.php:463
+#: core/controllers/field_groups.php:462
 msgid "Installation"
 msgstr "Instalação"
 
-#: core/controllers/field_groups.php:465
+#: core/controllers/field_groups.php:464
 msgid "For each Add-on available, please perform the following:"
 msgstr "Para cada add-on disponível, por favor aça o seguinte:"
 
-#: core/controllers/field_groups.php:467
+#: core/controllers/field_groups.php:466
 msgid "Download the Add-on plugin (.zip file) to your desktop"
 msgstr "Descarregue o plugin add-on (ficheiro .zip) para o seu computador"
 
-#: core/controllers/field_groups.php:468
+#: core/controllers/field_groups.php:467
 #, php-format
 msgid "Navigate to %sPlugins > Add New > Upload%s"
 msgstr "Navegue até %sPlugins > Adicionar novo > Carregar plugin%s"
 
-#: core/controllers/field_groups.php:469
+#: core/controllers/field_groups.php:468
 msgid "Use the uploader to browse, select and install your Add-on (.zip file)"
 msgstr ""
 "Utilize o carregador para procurar, seleccionar e instalar o seu add-on "
 "(ficheiro .zip)"
 
-#: core/controllers/field_groups.php:470
+#: core/controllers/field_groups.php:469
 msgid ""
 "Once the plugin has been uploaded and installed, click the 'Activate Plugin' "
 "link"
@@ -855,11 +857,11 @@ msgstr ""
 "Assim que o plugin estiver carregado e instalado, clique na ligação 'Activar "
 "plugin'"
 
-#: core/controllers/field_groups.php:471
+#: core/controllers/field_groups.php:470
 msgid "The Add-on is now installed and activated!"
 msgstr "O add-on está agora instalado e activado!"
 
-#: core/controllers/field_groups.php:485
+#: core/controllers/field_groups.php:484
 msgid "Awesome. Let's get to work"
 msgstr "Incrível. Vamos começar a trabalhar"
 
@@ -933,7 +935,7 @@ msgstr "azul : Azul"
 #: core/fields/email.php:106 core/fields/number.php:116
 #: core/fields/radio.php:196 core/fields/select.php:197
 #: core/fields/text.php:116 core/fields/textarea.php:103
-#: core/fields/true_false.php:94 core/fields/wysiwyg.php:277
+#: core/fields/true_false.php:94 core/fields/wysiwyg.php:286
 msgid "Default Value"
 msgstr "Valor por omissão"
 
@@ -1002,7 +1004,7 @@ msgstr "Formatos de data jQuery"
 
 #: core/fields/date_picker/date_picker.php:142
 msgid "Display format"
-msgstr "Formato de exibição"
+msgstr "Formato de apresentação"
 
 #: core/fields/date_picker/date_picker.php:143
 msgid "This format will be seen by the user when entering a value"
@@ -1013,8 +1015,8 @@ msgid ""
 "\"dd/mm/yy\" or \"mm/dd/yy\" are the most used display formats. Read more "
 "about"
 msgstr ""
-"\"dd/mm/yy\" ou \"mm/dd/yy\" são os formatos de exibição mais utilizados. "
-"Leia mais sobre"
+"\"dd/mm/yy\" ou \"mm/dd/yy\" são os formatos de apresentação mais "
+"utilizados. Leia mais sobre"
 
 #: core/fields/date_picker/date_picker.php:158
 msgid "Week Starts On"
@@ -1030,7 +1032,7 @@ msgstr "Email"
 
 #: core/fields/email.php:107 core/fields/number.php:117
 #: core/fields/text.php:117 core/fields/textarea.php:104
-#: core/fields/wysiwyg.php:278
+#: core/fields/wysiwyg.php:287
 msgid "Appears when creating a new post"
 msgstr "Aparece quando é criado um novo artigo"
 
@@ -1070,7 +1072,7 @@ msgstr "Aparece depois do campo"
 msgid "File"
 msgstr "Ficheiro"
 
-#: core/fields/file.php:20 core/fields/image.php:20 core/fields/wysiwyg.php:37
+#: core/fields/file.php:20 core/fields/image.php:20 core/fields/wysiwyg.php:20
 msgid "Content"
 msgstr "Conteúdo"
 
@@ -1087,8 +1089,8 @@ msgid "Update File"
 msgstr "Actualizar ficheiro"
 
 #: core/fields/file.php:29 core/fields/image.php:30
-msgid "uploaded to this post"
-msgstr "anexada a este artigo"
+msgid "Uploaded to this post"
+msgstr "Carregados neste artigo"
 
 #: core/fields/file.php:113
 msgid "Size"
@@ -1125,7 +1127,7 @@ msgstr "Biblioteca"
 
 #: core/fields/file.php:187 core/fields/image.php:178
 msgid "Uploaded to post"
-msgstr "Anexado ao artigo"
+msgstr "Carregados no artigo"
 
 #: core/fields/google-map.php:18
 msgid "Google Map"
@@ -1133,7 +1135,7 @@ msgstr "Mapa do Google"
 
 #: core/fields/google-map.php:33
 msgid "Locating"
-msgstr "Localizando"
+msgstr "A obter localização"
 
 #: core/fields/google-map.php:34
 msgid "Sorry, this browser does not support geolocation"
@@ -1165,7 +1167,7 @@ msgstr "Zoom"
 
 #: core/fields/google-map.php:200
 msgid "Set the initial zoom level"
-msgstr "Definie o nível de zoom inicial"
+msgstr "Definir o nível de zoom inicial"
 
 #: core/fields/google-map.php:217
 msgid "Height"
@@ -1354,7 +1356,7 @@ msgstr "Filtrar por tipo de conteúdo"
 
 #: core/fields/relationship.php:562
 msgid "Return Format"
-msgstr "Valor a mostrar"
+msgstr "Formato a mostrar"
 
 #: core/fields/relationship.php:573
 msgid "Post Objects"
@@ -1366,7 +1368,7 @@ msgstr "IDs dos artigos"
 
 #: core/fields/relationship.php:640
 msgid "Search"
-msgstr "Pesquisa"
+msgstr "Pesquisar"
 
 #: core/fields/relationship.php:641
 msgid "Post Type Select"
@@ -1395,7 +1397,7 @@ msgstr "Máximo de artigos"
 #: core/fields/select.php:18 core/fields/select.php:109
 #: core/fields/taxonomy.php:480 core/fields/user.php:313
 msgid "Select"
-msgstr "Seleccione"
+msgstr "Selector"
 
 #: core/fields/tab.php:19
 msgid "Tab"
@@ -1478,7 +1480,7 @@ msgid "Formatting"
 msgstr "Formatação"
 
 #: core/fields/text.php:177 core/fields/textarea.php:165
-msgid "Effects value on front end"
+msgid "Affects value on front end"
 msgstr "Define o formato do conteúdo na frente do site"
 
 #: core/fields/text.php:186 core/fields/textarea.php:174
@@ -1527,17 +1529,17 @@ msgstr "Utilizador"
 
 #: core/fields/user.php:271
 msgid "Filter by role"
-msgstr "Filtrar por função"
+msgstr "Filtrar por perfil"
 
-#: core/fields/wysiwyg.php:36
+#: core/fields/wysiwyg.php:19
 msgid "Wysiwyg Editor"
 msgstr "Editor wysiwyg"
 
-#: core/fields/wysiwyg.php:292
+#: core/fields/wysiwyg.php:301
 msgid "Toolbar"
 msgstr "Barra de ferramentas"
 
-#: core/fields/wysiwyg.php:324
+#: core/fields/wysiwyg.php:333
 msgid "Show Media Upload Buttons?"
 msgstr "Mostrar botões de carregar multimédia?"
 
@@ -1587,11 +1589,11 @@ msgstr "Duplicar"
 
 #: core/views/meta_box_fields.php:110
 msgid "Delete this Field"
-msgstr "Apagar este campo"
+msgstr "Eliminar este campo"
 
 #: core/views/meta_box_fields.php:110
 msgid "Delete"
-msgstr "Apagar"
+msgstr "Eliminar"
 
 #: core/views/meta_box_fields.php:127
 msgid "This is the name which will appear on the EDIT page"
@@ -1768,15 +1770,15 @@ msgstr "Esconder no ecrã"
 
 #: core/views/meta_box_options.php:85
 msgid "<b>Select</b> items to <b>hide</b> them from the edit screen"
-msgstr "<b>Seleccione</b> os itens para os <b>esconder</b> do ecrã de edição"
+msgstr "<b>Seleccione</b> os itens a <b>esconder</b> do ecrã de edição."
 
 #: core/views/meta_box_options.php:86
 msgid ""
 "If multiple field groups appear on an edit screen, the first field group's "
 "options will be used. (the one with the lowest order number)"
 msgstr ""
-"Se vários grupos de campos aparecem num ecrã de edição, serão utilizadas as "
-"opções do primeiro grupo de campos. (o que tiver menor número de ordem)"
+"Se aparecerem vários grupos de campos num ecrã de edição, serão utilizadas "
+"as opções do primeiro grupo de campos. (o que tiver menor número de ordem)"
 
 #: core/views/meta_box_options.php:96
 msgid "Permalink"
@@ -1826,6 +1828,26 @@ msgstr "Etiquetas"
 msgid "Send Trackbacks"
 msgstr "Enviar trackbacks"
 
+#. Plugin URI of the plugin/theme
+msgid "http://www.advancedcustomfields.com/"
+msgstr "http://www.advancedcustomfields.com/"
+
+#. Description of the plugin/theme
+msgid "Customise WordPress with powerful, professional and intuitive fields"
+msgstr ""
+"Personalize o WordPress com campos intuitivos, poderosos e profissionais."
+
+#. Author of the plugin/theme
+msgid "Elliot Condon"
+msgstr "Elliot Condon"
+
+#. Author URI of the plugin/theme
+msgid "http://www.elliotcondon.com/"
+msgstr "http://www.elliotcondon.com/"
+
+#~ msgid "Location Field"
+#~ msgstr "Campo de localização"
+
 #~ msgid "Publish"
 #~ msgstr "Publicado"
 
@@ -1867,16 +1889,6 @@ msgstr "Enviar trackbacks"
 #, fuzzy
 #~ msgid "to find the updated naming convention."
 #~ msgstr "para encontrar convenção de nomenclaturas atualizada."
-
-#, fuzzy
-#~ msgid ""
-#~ "Do to the sizable changes surounding Add-ons, field types and action/"
-#~ "filters, your website may not operate correctly. It is important that you "
-#~ "read the full"
-#~ msgstr ""
-#~ "Em virtude das mudanças significativas que ocorreram com os Complementos, "
-#~ "nos tipos de campos e nas ações/filtros, seu site poderá não funcionar "
-#~ "corretamente. É importante que você leia todo o guia"
 
 #~ msgid "Migrating from v3 to v4"
 #~ msgstr "Migrar da v3 para v4"
