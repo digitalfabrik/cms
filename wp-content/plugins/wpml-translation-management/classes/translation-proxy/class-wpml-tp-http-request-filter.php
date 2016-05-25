@@ -44,7 +44,7 @@ class WPML_TP_HTTP_Request_Filter {
 	}
 
 	private function _prepare_multipart_request( $params ) {
-		$boundary = '----' . microtime( true );
+		$boundary = '----' . microtime();
 		$header   = "Content-Type: multipart/form-data; boundary=$boundary";
 		$content  = self::_add_multipart_contents( $boundary, $params );
 		$content .= "--$boundary--\r\n";

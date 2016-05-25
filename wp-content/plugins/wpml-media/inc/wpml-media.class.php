@@ -7,9 +7,20 @@ class WPML_Media
 	public $languages;
 	public $parents;
 	public $unattached;
+	/**
+	 * @var wpdb
+	 */
+	private $wpdb;
 
-	function __construct( $ext = false )
+	/**
+	 * @var SitePress
+	 */
+	private $sitepress;
+
+	function __construct( $ext = false, &$sitepress, &$wpdb )
 	{
+		$this->sitepress = &$sitepress;
+		$this->wpdb      = &$wpdb;
 		add_action( 'wpml_loaded', array( $this, 'loaded' ), 2 );
 		add_action( 'init', array($this, 'verify_wpml') );
 		
@@ -99,8 +110,10 @@ class WPML_Media
 
 				if ( $pagenow == 'media-upload.php' ) {
 					//Add the language filter to the media library
-					add_action( 'media_upload_library', array( $this, 'language_filter' ), 99 );
+					add_action( 'media_upload_library', array( $this, 'language_filter' ), 1 );
+					add_action( 'pre_get_posts', array( $this, 'filter_media_upload_items' ), 10, 1 );
 				}
+				add_action( 'wpml_media_create_duplicate_attachment', array( $this, 'invalidate_cache' ) );
 
 				if ( $pagenow == 'media.php' ) {
 					add_action( 'admin_footer', array( $this, 'media_language_options' ) );
@@ -1554,10 +1567,10 @@ class WPML_Media
 		foreach ( $active_languages as $lang ) {
 			if ( $lang[ 'code' ] == $lang_code ) {
 				$px = '<strong>';
-				$sx = ' <span class="count">(' . $lang[ 'code' ] . ')<\/span><\/strong>';
+				$sx = ' <span class="count">(' . $lang[ 'code' ] . ')</span></strong>';
 			} else {
 				$px = '<a href="' . $_SERVER[ 'REQUEST_URI' ] . '&lang=' . $lang[ 'code' ] . '">';
-				$sx = '<\/a> <span class="count">(' . $lang[ 'code' ] . ')<\/span>';
+				$sx = '</a> <span class="count">(' . $lang[ 'code' ] . ')</span>';
 			}
 			$language_items[ ] = $px . $lang[ 'display_name' ] . $sx;
 		}
@@ -1798,4 +1811,47 @@ class WPML_Media
 		return $source_id;
 	}
 
+	/**
+	 * Update query for media-upload.php page.
+	 *
+	 * @param object $query  WP_Query
+	 */
+	public function filter_media_upload_items( $query ) {
+		$current_lang = $this->sitepress->get_current_language();
+		$ids = icl_cache_get( '_media_upload_attachments' . $current_lang );
+
+		if ( false === $ids  ) {
+			$tbl = $this->wpdb->prefix . 'icl_translations';
+			$db_query = "
+				SELECT posts.ID
+				FROM {$this->wpdb->posts} as posts, $tbl as icl_translations
+				WHERE posts.post_type = 'attachment'
+				AND icl_translations.element_id = posts.ID
+				AND icl_translations.language_code = %s
+				";
+
+			$posts = $this->wpdb->get_results( $this->wpdb->prepare( $db_query, $current_lang ) );
+			$ids = array();
+			if ( ! empty( $posts ) ) {
+				foreach ( $posts as $post ) {
+					$ids[] = absint( $post->ID );
+				}
+			}
+
+			icl_cache_set( '_media_upload_attachments' . $current_lang, $ids );
+		}
+
+		$query->set( 'post__in', $ids );
+	}
+
+	/**
+	 * Invalidate cache when new attachment is created.
+	 */
+	public function invalidate_cache() {
+		global $sitepress;
+		$active_languages = $sitepress->get_active_languages();
+		foreach ( $active_languages as $active_language ) {
+			icl_cache_clear( '_media_upload_attachments' . $active_language['code'] );
+		}
+	}
 }

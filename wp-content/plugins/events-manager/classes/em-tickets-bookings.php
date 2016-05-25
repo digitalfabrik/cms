@@ -152,6 +152,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	 */
 	function delete(){
 		global $wpdb;
+		$result = false;
 		if( $this->get_booking()->can_manage() ){
 			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->get_booking_id()}'");
 			//echo "<pre>";print_r($this->get_booking());echo "</pre>";

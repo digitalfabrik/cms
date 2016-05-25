@@ -187,6 +187,9 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 			$ldt = $sitepress->get_language_details( $job->language_code );
 
 			$jobs[ $job_index ]->lang_text            = $ldf[ 'display_name' ] . ' &raquo; ' . $ldt[ 'display_name' ];
+			$jobs[ $job_index ]->lang_text_with_flags = '<span class="wpml-title-flag">' . $sitepress->get_flag_img( $ldf[ 'code' ]) . '</span> ' . $ldf[ 'display_name' ] .
+															' &raquo; <span class="wpml-title-flag">' .
+															$sitepress->get_flag_img( $ldt[ 'code' ]) . '</span> ' . $ldt[ 'display_name' ];
 			$jobs[ $job_index ]->language_text_source = $ldf[ 'display_name' ];
 			$jobs[ $job_index ]->language_text_target = $ldt[ 'display_name' ];
 			$jobs[ $job_index ]->language_code_target = $job->language_code;

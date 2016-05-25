@@ -21,7 +21,7 @@ abstract class WPML_TM_Post_Link_Anchor extends WPML_TM_Post_Link {
 		            && $opost->post_author != $this->sitepress->get_wp_api()
 		                                                      ->get_current_user_id() )
 			? '' : sprintf( '<a href="%s">%s</a>',
-				$this->link_target(),
+				esc_url( $this->link_target() ),
 				esc_html( $this->anchor ) );
 	}
 

@@ -9,7 +9,7 @@
 }
 
 .advanced-options {
-	margin-bottom: 20px;
+	margin: 20px 0;
 	border: 1px solid #ccc;
 	padding: 0 15px;
 }
@@ -275,4 +275,9 @@ div.tadv-error {
 
 .tadvdropzone .tadv-placeholder {
 	height: 28px;
+}
+
+.tadv-error {
+	color: #d54e21;
+	font-weight: bold;
 }

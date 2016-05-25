@@ -16,8 +16,19 @@ class EM_Calendar extends EM_Object {
 		$original_args = $args;
 		$args = self::get_default_search($args);
 		$full = $args['full']; //For ZDE, don't delete pls
-		$month = $args['month']; 
-		$year = $args['year'];
+		//figure out what month to look for, if we need to
+		if( empty($args['month']) && is_array($args['scope']) ){
+			//if a scope is supplied, figure out the month/year we're after, which will be between these two dates.
+			$scope_start = strtotime($args['scope'][0]);
+			$scope_end = strtotime($args['scope'][1]);
+			$scope_middle = $scope_start + ($scope_end - $scope_start)/2;
+			$month = $args['month'] = date('n', $scope_middle);
+			$year = $args['year'] = date('Y', $scope_middle);
+		}else{
+			//if month/year supplied, we use those or later on default to current month/year
+			$month = $args['month']; 
+			$year = $args['year'];
+		}
 		$long_events = $args['long_events'];
 		$limit = $args['limit']; //limit arg will be used per day and not for events search
 		

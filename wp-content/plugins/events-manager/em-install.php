@@ -93,8 +93,7 @@ function em_sort_out_table_nu_keys($table_name, $clean_keys = array()){
 }
 
 function em_create_events_table() {
-	global  $wpdb, $user_level, $user_ID;
-	get_currentuserinfo();
+	global  $wpdb;
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	$table_name = $wpdb->prefix.'em_events';

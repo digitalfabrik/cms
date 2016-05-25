@@ -67,7 +67,6 @@ class WPML_TP_Service_Authentication extends WPML_TP_Service_Action {
 	/**
 	 * @param object $service
 	 *
-	 * @throw TranslationProxy_Project
 	 * @return TranslationProxy_Project
 	 */
 	private function create_project( $service ) {

@@ -113,29 +113,38 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 		$this->maybe_load_stats( $trid );
 		$is_remote               = $this->is_remote( $trid, $lang );
 		$is_in_progress          = $this->is_in_progress( $trid, $lang );
-		$tm_editor_link_base_url = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php';
 		$use_tm_editor           = $this->sitepress->get_setting( 'doc_translation_method' );
+		$source_lang_code = $this->post_translations->get_element_lang_code( $post_id );
 		if ( ( $is_remote && $is_in_progress ) || $this->is_in_basket( $trid,
 				$lang ) || ! $this->is_lang_pair_allowed( $lang )
 		) {
 			$link = '###';
-		} elseif (
-			( $source_lang_code = $this->post_translations->get_source_lang_code( $translated_element_id ) )
-			&& $source_lang_code !== $lang
-		) {
-			if ( ( $is_in_progress && ! $is_remote ) || ( $use_tm_editor
-			                                              && $translated_element_id )
-			) {
-				$link = $tm_editor_link_base_url . '&job_id=' . $this->job_factory->job_id_by_trid_and_lang( $trid,
-						$lang );
+		} elseif ( $source_lang_code !== $lang ) {
+			if ( ( $is_in_progress && ! $is_remote ) || ( $use_tm_editor && $translated_element_id ) ) {
+				$job_id = $this->job_factory->job_id_by_trid_and_lang( $trid, $lang );
+				if ( $job_id ) {
+					$link = $this->get_link_for_existing_job( $job_id );
+				} else {
+					$link = $this->get_link_for_new_job( $trid, $lang, $source_lang_code );
+				}
 			} elseif ( $use_tm_editor && ! $translated_element_id ) {
-				$link = $tm_editor_link_base_url . '&trid=' . $trid . '&language_code=' . $lang . '&source_language_code=' . $source_lang_code;
+				$link = $this->get_link_for_new_job( $trid, $lang, $source_lang_code );
 			}
 		}
 
 		return $link;
 	}
+	
+	private function get_link_for_new_job( $trid, $lang, $source_lang_code ) {
+		$tm_editor_link_base_url = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php';
+		return $tm_editor_link_base_url . '&trid=' . $trid . '&language_code=' . $lang . '&source_language_code=' . $source_lang_code;
+	}
 
+	private function get_link_for_existing_job( $job_id ) {
+		$tm_editor_link_base_url = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php';
+		return $tm_editor_link_base_url . '&job_id=' . $job_id;
+	}
+	
 	/**
 	 * @param string $lang
 	 *

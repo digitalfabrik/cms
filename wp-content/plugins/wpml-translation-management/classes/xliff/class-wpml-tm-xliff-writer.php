@@ -38,6 +38,7 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	 * @return string XLIFF representation of the job
 	 */
 	public function generate_job_xliff( $job_id ) {
+		/** @var TranslationManagement $iclTranslationManagement */
 		global $iclTranslationManagement;
 
 		// don't include not-translatable and don't auto-assign
@@ -45,10 +46,12 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		$translation_units = $this->get_job_translation_units( $job );
 		$original          = $job_id . '-' . md5( $job_id . $job->original_doc_id );
 
+		$external_file_url = $this->get_external_url( $job );
+
 		$xliff = $this->generate_xliff( $original,
 			$job->source_language_code,
 			$job->language_code,
-			$translation_units );
+			$translation_units, $external_file_url );
 
 		return $xliff;
 	}
@@ -73,17 +76,12 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		);
 	}
 
-	private function generate_xliff( $original_id, $source_language, $target_language, $translation_units ) {
+	private function generate_xliff( $original_id, $source_language, $target_language, $translation_units, $external_file_url = null ) {
 		// Keep unindented to generate a pretty printed xml
 		$xliff = "";
 		$xliff .= '<?xml version="1.0" encoding="utf-8" standalone="no"?>';
 		$xliff .= $this->get_xliff_opening( $this->xliff_version );
-		$xliff .= "\t" . '<file original="' . $original_id . '" source-language="' . $source_language . '" target-language="' . $target_language . '" datatype="plaintext">';
-		$xliff .= "\t" . "\t" . '<header />' . "\n";
-		$xliff .= "\t" . "\t" . '<body>' . "\n";
-		$xliff .= "\t" . "\t" . "\t" . $translation_units . "\n";
-		$xliff .= "\t" . "\t" . '</body>' . "\n";
-		$xliff .= "\t" . '</file>' . "\n";
+		$xliff .= $this->get_file_element( $original_id, $source_language, $target_language, $translation_units, $external_file_url );;
 		$xliff .= "</xliff>" . "\n";
 
 		return $xliff;
@@ -190,5 +188,92 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		rewind( $file );
 
 		return $file;
+	}
+
+	/**
+	 * @param $job
+	 *
+	 * @return false|null|string
+	 */
+	private function get_external_url( $job ) {
+		$external_file_url = null;
+		if ( isset( $job->original_doc_id ) && 'post' === $job->element_type_prefix ) {
+			$external_file_url = get_permalink( $job->original_doc_id );
+
+			return $external_file_url;
+		}
+
+		return $external_file_url;
+	}
+
+	/**
+	 * The <header> element contains metadata relating to the <file> element.
+	 * @link http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html#header
+	 *
+	 * @param array $args
+	 *
+	 * @return string
+	 */
+	private function get_file_element_header( $args ) {
+		$file_element_header = '<header />';
+
+		if ( $args ) {
+			$file_element_header = '<header>';
+			if ( array_key_exists( 'reference', $args ) ) {
+				$file_element_header .= $this->get_file_element_header_reference( $args['reference'] );
+			}
+			$file_element_header .= '</header>';
+		}
+
+		return $file_element_header;
+	}
+
+	/**
+	 * A description of the reference material and either exactly one <internal-file> or one <external-file> element.
+	 * @link http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html#reference
+	 *
+	 * @param $reference
+	 *
+	 * @return string
+	 */
+	private function get_file_element_header_reference( $reference ) {
+		$file_element_header_reference = '<reference>';
+		if ( array_key_exists( 'external-file', $reference ) ) {
+			$file_element_header_reference .= '<external-file href="' . esc_attr( $reference['external-file'] ) . '"/>';
+		} elseif ( array_key_exists( 'internal-file', $reference ) ) {
+			$file_element_header_reference .= '<internal-file href="' . esc_attr( $reference['internal-file'] ) . '"/>';
+		}
+		$file_element_header_reference .= '</reference>';
+
+		return $file_element_header_reference;
+	}
+
+	/**
+	 * The <file> element corresponds to a single extracted original document.
+	 * @link http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html#file
+	 *
+	 * @param $original_id
+	 * @param $source_language
+	 * @param $target_language
+	 * @param $translation_units
+	 * @param $external_file_url
+	 *
+	 * @return string
+	 */
+	private function get_file_element( $original_id, $source_language, $target_language, $translation_units, $external_file_url ) {
+		$header_args = array(
+			'reference' => array(
+				'external-file' => $external_file_url,
+			),
+		);
+
+		$xliff_file     = "\t" . '<file original="' . $original_id . '" source-language="' . $source_language . '" target-language="' . $target_language . '" datatype="plaintext">';
+		$xliff_file .= "\t" . "\t" . $this->get_file_element_header( $header_args ) . "\n";
+		$xliff_file .= "\t" . "\t" . '<body>' . "\n";
+		$xliff_file .= "\t" . "\t" . "\t" . $translation_units . "\n";
+		$xliff_file .= "\t" . "\t" . '</body>' . "\n";
+		$xliff_file .= "\t" . '</file>' . "\n";
+
+		return $xliff_file;
 	}
 }

@@ -17,7 +17,7 @@ class WPML_TM_String_Xliff_Reader extends WPML_TM_Xliff_Reader {
 		foreach ( $xliff->{'file'}->{'body'}->children() as $node ) {
 			$target = $this->get_xliff_node_target( $node );
 
-			if ( ! $target ) {
+			if ( ! $target  && $target !== "0" ) {
 				return $this->invalid_xliff_error();
 			}
 			$target                       = str_replace( '<br class="xliff-newline" />', "\n", $target );
