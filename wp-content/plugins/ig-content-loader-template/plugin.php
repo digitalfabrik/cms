@@ -3,8 +3,8 @@
  * Plugin Name: Content Loader Template
  * Description: Template for plugin to include external data into integreat
  * Version: 0.1
- * Author: Sven Seeberg
- * Author URI: https://github.com/sven15
+ * Author: Julian Orth, Sven Seeberg
+ * Author URI: https://github.com/Integreat
  * License: MIT
  */
 
@@ -90,7 +90,7 @@ add_action('rest_api_print_post', 'modify_post', 1);
 
 function cl_update () {
 	// wird regelmäßig durch cronjob gestartet
-	do_action('cl_get_updated_content');
+	do_action('cl_get_update_content');
 }
 
 // do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
