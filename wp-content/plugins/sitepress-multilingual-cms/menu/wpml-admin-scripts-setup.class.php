@@ -78,14 +78,15 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 		} elseif ( in_array( $pagenow, array(
 				'categories.php',
 				'edit-tags.php',
-				'edit.php'
+				'edit.php',
+				'term.php'
 			), true )
 		           && $current_language !== $default_language
 		) {
 			$this->correct_status_links_js( $current_language );
 		}
 
-		if ( 'edit-tags.php' === $pagenow ) {
+		if ( 'edit-tags.php' === $pagenow || 'term.php' === $pagenow ) {
 			?>
 			<script type="text/javascript">
 				addLoadEvent(function () {
@@ -409,6 +410,7 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_style( 'translate-taxonomy', ICL_PLUGIN_URL . '/res/css/taxonomy-translation.css', array(), ICL_SITEPRESS_VERSION );
+		wp_enqueue_style( 'onthegosystems-icon', ICL_PLUGIN_URL . '/res/css/otgs-ico.css' );
 
 	}
 

@@ -13,6 +13,9 @@ class SitePress_Table_Basket extends SitePress_Table {
             WPML_TM_VERSION
         );
 
+	    $message = esc_html_x( 'You are about to translate duplicated posts.', '1/2 Confirm to disconnect duplicates', 'sitepress' ) . "\n";
+	    $message .= esc_html_x( 'These items will be automatically disconnected from originals, so translation is not lost when you update the originals.', '2/2 Confirm to disconnect duplicates', 'sitepress' );
+
         $tm_basket_data = array(
             'nonce' => array(),
             'strings' => array(
@@ -33,6 +36,7 @@ class SitePress_Table_Basket extends SitePress_Table {
                 'rolled' => __( 'Batch rolled back', 'wpml-translation-management' ),
                 'errors' => __( 'Errors:', 'wpml-translation-management' ),
             ),
+	        'tmi_message' => $message,
         );
 
         $tm_basket_data = apply_filters( 'translation_basket_and_options_js_data', $tm_basket_data );

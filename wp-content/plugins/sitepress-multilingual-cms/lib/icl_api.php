@@ -100,9 +100,9 @@ class ICanLocalizeQuery{
         
         if($gzipped){
             $c->results = $this->_gzdecode($c->results);
-        }        
-        $results = icl_xml2array($c->results,1);                        
-        
+        }
+        $results = icl_xml2array($c->results,1);
+
         if(isset($results['info']) && $results['info']['status']['attr']['err_code']=='-1'){
             $this->error = $results['info']['status']['value'];            
             return false;
@@ -114,21 +114,6 @@ class ICanLocalizeQuery{
     function _gzdecode($data){
         
         return icl_gzdecode($data);
-    }
-    
-    function cms_create_message($body, $from_language, $to_language){
-        $request_url = ICL_API_ENDPOINT . '/websites/'. $this->site_id . '/create_message.xml';    
-        $parameters['accesskey'] = $this->access_key;
-        $parameters['body'] = base64_encode($body);
-        $parameters['from_language'] = $from_language;
-        $parameters['to_language'] = $to_language;
-        $parameters['signature'] = md5($body.$from_language.$to_language);
-        $res = $this->_request($request_url, 'POST' , $parameters);        
-        if($res['info']['status']['attr']['err_code']=='0'){
-            return $res['info']['result']['attr']['id'];
-        }else{
-            return isset($res['info']['status']['attr']['err_code'])?-1*$res['info']['status']['attr']['err_code']:0;
-        }
     }
 }
   

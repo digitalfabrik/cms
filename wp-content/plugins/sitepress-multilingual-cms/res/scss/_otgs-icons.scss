@@ -1,0 +1,181 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "otgs-icons";
+  src:url("../fonts/otgs-icons.eot");
+  src:url("../fonts/otgs-icons.eot?#iefix") format("embedded-opentype"),
+    url("../fonts/otgs-icons.woff") format("woff"),
+    url("../fonts/otgs-icons.ttf") format("truetype"),
+    url("../fonts/otgs-icons.svg#otgs-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+	font-family: "otgs-icons" !important;
+	content: attr(data-icon);
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-variant: normal !important;
+	text-transform: none !important;
+	speak: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+[class^="otgs-ico-"]:before,
+[class*=" otgs-ico-"]:before {
+	font-family: "otgs-icons" !important;
+	font-style: normal !important;
+	font-weight: normal !important;
+	font-variant: normal !important;
+	text-transform: none !important;
+	speak: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.otgs-ico-note-add:before {
+	content: "a";
+}
+.otgs-ico-note-add-o:before {
+	content: "b";
+}
+.otgs-ico-translated:before {
+	content: "c";
+}
+.otgs-ico-yes:before {
+	content: "d";
+}
+.otgs-ico-in-progress:before {
+	content: "e";
+}
+.otgs-ico-copy:before {
+	content: "f";
+}
+.otgs-ico-copy-o:before {
+	content: "g";
+}
+.otgs-ico-note-edit:before {
+	content: "i";
+}
+.otgs-ico-note-edit-o:before {
+	content: "j";
+}
+.otgs-ico-add:before {
+	content: "k";
+}
+.otgs-ico-refresh:before {
+	content: "l";
+}
+.otgs-ico-no:before {
+	content: "n";
+}
+.otgs-ico-not-translated:before {
+	content: "o";
+}
+.otgs-ico-delete:before {
+	content: "p";
+}
+.otgs-ico-waiting:before {
+	content: "q";
+}
+.otgs-ico-warning:before {
+	content: "s";
+}
+.otgs-ico-original:before {
+	content: "t";
+}
+.otgs-ico-needs-update:before {
+	content: "u";
+}
+.otgs-ico-access:before {
+	content: "v";
+}
+.otgs-ico-cred:before {
+	content: "w";
+}
+.otgs-ico-layouts:before {
+	content: "x";
+}
+.otgs-ico-module-manager:before {
+	content: "y";
+}
+.otgs-ico-toolset:before {
+	content: "z";
+}
+.otgs-ico-types:before {
+	content: "A";
+}
+.otgs-ico-views:before {
+	content: "B";
+}
+.otgs-ico-edit:before {
+	content: "h";
+}
+.otgs-ico-duplicate:before {
+	content: "m";
+}
+.otgs-ico-basket:before {
+	content: "r";
+}
+.otgs-ico-discoverwp:before {
+	content: "C";
+}
+.otgs-ico-wpml:before {
+	content: "D";
+}
+.otgs-ico-otgs:before {
+	content: "E";
+}
+.otgs-ico-wrench:before {
+	content: "F";
+}
+.otgs-ico-link:before {
+	content: "G";
+}
+.otgs-ico-envelope-o:before {
+	content: "H";
+}
+.otgs-ico-user:before {
+	content: "I";
+}
+.otgs-ico-wpml-cms-nav:before {
+	content: "J";
+}
+.otgs-ico-wpml-media:before {
+	content: "K";
+}
+.otgs-ico-wpml-string-translation:before {
+	content: "L";
+}
+.otgs-ico-wpml-translation-management:before {
+	content: "M";
+}
+.otgs-ico-picture:before {
+	content: "N";
+}
+.otgs-ico-toolset-training:before {
+	content: "O";
+}
+.otgs-ico-access-title:before {
+	content: "P";
+}
+.otgs-ico-views-title:before {
+	content: "Q";
+}
+.otgs-ico-cred-title:before {
+	content: "R";
+}
+.otgs-ico-layouts-title:before {
+	content: "S";
+}
+.otgs-ico-types-title:before {
+	content: "T";
+}
+.otgs-ico-module-manager-title:before {
+	content: "U";
+}

@@ -125,7 +125,8 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	 */
 	public function add_date_or_cpt_url_to_ls_lang( $lang, $current_query, $icl_lso_link_empty, $skip_lang ) {
 		list( $year, $month, $day ) = $this->extract_date_data_from_query( $current_query );
-		$post_type    = ( $_type = $current_query->get( 'post_type' ) ) ? $_type : 'post';
+		$query_helper = new WPML_WP_Query_API( $current_query );
+		$post_type    = ( $_type = $query_helper->get_post_type_if_single() ) ? $_type : 'post';
 		$lang_code    = $lang['code'];
 		$mark_missing = false;
 		$override     = false;

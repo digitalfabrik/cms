@@ -1,15 +1,16 @@
 <?php
 
-class WPML_Translation_Selector {
+class WPML_Translation_Selector extends WPML_SP_User {
 
     private $default_language_code;
     private $source_language_code;
     private $element_id;
 
-    public function __construct( $default_language, $source_language, $element_id ) {
+    public function __construct( &$sitepress, $default_language, $source_language, $element_id ) {
         $this->default_language_code = $default_language;
         $this->source_language_code = $source_language;
         $this->element_id = $element_id;
+        parent::__construct( $sitepress );
     }
 
     function add_translation_of_selector_to_page( $trid, $current_language, $selected_language, $untranslated_ids ) {
@@ -24,7 +25,7 @@ class WPML_Translation_Selector {
             <br/><br/>
             <?php echo __ ( 'This is a translation of', 'sitepress' ); ?><br/>
             <select name="icl_translation_of"
-                    id="icl_translation_of"<?php if ( filter_input ( INPUT_GET, 'action' ) !== 'edit' && $trid ) {
+                    id="icl_translation_of"<?php if ( ! $this->sitepress->get_wp_api()->is_term_edit_page() && $trid ) {
                 echo " disabled";
             } ?>>
                 <?php

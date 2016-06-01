@@ -86,7 +86,7 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 		if ( ! is_wp_error( $id ) ) {
 			$ret = $this->run_wpml_actions( $master_post, $trid, $lang, $id, $post_array );
 		} else {
-			$ret = false;
+			throw new Exception( $id->get_error_message() );
 		}
 
 		return $ret;
@@ -101,12 +101,12 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 
 		// make sure post name is copied
 		$this->wpdb->update( $this->wpdb->posts, array( 'post_name' => $master_post->post_name ), array( 'ID' => $id ) );
-		update_post_meta( $id, '_icl_lang_duplicate_of', $master_post->ID );
 
 		if ( $this->sitepress->get_option( 'sync_post_taxonomies' ) ) {
 			$this->duplicate_taxonomies( $master_post_id, $lang );
 		}
 		$this->duplicate_custom_fields( $master_post_id, $lang );
+		update_post_meta( $id, '_icl_lang_duplicate_of', $master_post->ID );
 
 		// Duplicate post format after the taxonomies because post format is stored
 		// as a taxonomy by WP.
@@ -156,10 +156,10 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 
 	private function save_duplicate( $post_array, $lang ) {
 		if ( isset( $post_array[ 'ID' ] ) ) {
-			$id = wp_update_post( $post_array );
+			$id = wp_update_post( $post_array, true );
 		} else {
 			$create_post_helper = wpml_get_create_post_helper();
-			$id                 = $create_post_helper->icl_insert_post( $post_array, $lang );
+			$id                 = $create_post_helper->icl_insert_post( $post_array, $lang, true );
 		}
 
 		return $id;

@@ -18,7 +18,8 @@ class WPML_Fix_Type_Assignments extends WPML_WPDB_And_SP_User {
 	 * @return int Number of rows in icl_translations that were fixed
 	 */
 	public function run() {
-		$rows_fixed = $this->fix_missing_original();
+		$rows_fixed = $this->fix_broken_duplicate_rows();
+		$rows_fixed += $this->fix_missing_original();
 		$rows_fixed += $this->fix_wrong_source_language();
 		$rows_fixed += $this->fix_broken_taxonomy_assignments();
 		$rows_fixed += $this->fix_broken_post_assignments();
@@ -27,6 +28,37 @@ class WPML_Fix_Type_Assignments extends WPML_WPDB_And_SP_User {
 		wp_cache_init();
 
 		return $rows_fixed;
+	}
+
+	/**
+	 * Deletes rows from icl_translations that are duplicated in terms of their
+	 * element id and within their meta type ( post,taxonomy,package ...),
+	 * with the duplicate actually being of the correct type.
+	 *
+	 * @return int number of rows fixed
+	 */
+	private function fix_broken_duplicate_rows() {
+
+		return $this->wpdb->query( "
+			DELETE t
+			FROM {$this->wpdb->prefix}icl_translations i
+			  JOIN {$this->wpdb->prefix}icl_translations t
+			    ON i.element_id = t.element_id
+			       AND SUBSTRING_INDEX(i.element_type, '_', 1) =
+			           SUBSTRING_INDEX(t.element_type, '_', 1)
+			       AND i.element_type != t.element_type
+			       AND i.translation_id != t.translation_id
+			  JOIN (SELECT
+			          CONCAT('post_', p.post_type) AS element_type,
+			          p.ID                         AS element_id
+			        FROM {$this->wpdb->posts} p
+			        UNION ALL
+			        SELECT
+			          CONCAT('tax_', tt.taxonomy) AS element_type,
+			          tt.term_taxonomy_id         AS element_id
+			        FROM {$this->wpdb->term_taxonomy} tt) AS data
+			    ON data.element_id = i.element_id
+			       AND data.element_type = i.element_type" );
 	}
 
 	/**

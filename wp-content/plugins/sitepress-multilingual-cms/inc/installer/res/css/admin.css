@@ -60,7 +60,15 @@
     color: #333;
     padding: 5px;
 }
+.installer-warn-box span.details{
+    font-style: italic;
+    color:#777;
+}
 
+.installer-error-box{
+    color:#962722;
+    margin-top: 10px;
+}
 .installer-error-box p{
     margin: 10px 0 10px 0;
     -webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;border:1px solid #962722;background-color:#F5C8C6;
@@ -69,10 +77,10 @@
     text-align: center;
 }
 
-
 .spinner-inline{
     float: none;
     display: inline-block;
+    visibility: visible;
 }
 
 .installer-q-icon:before{

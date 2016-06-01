@@ -30,7 +30,7 @@ if ( $icl_menus_sync->is_preview ) {
 	<table id="icl_msync_confirm" class="widefat icl_msync">
 	<thead>
 	<tr>
-		<th scope="row" class="check-column"><input type="checkbox"/></th>
+		<th scope="row" class="menu-check-all"><input type="checkbox"/></th>
 		<th><?php _e( 'Language', 'sitepress' ) ?></th>
 		<th><?php _e( 'Action', 'sitepress' ) ?></th>
 	</tr>

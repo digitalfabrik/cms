@@ -275,6 +275,49 @@ jQuery(document).ready(function ($) {
 		} );
 	}
 	/* HOTFIX END */
+
+	var $submit_post_form = $('#post');
+	$submit_post_form.find(':input').on('change', function(e) {
+		edit_form_change();
+	});
+
+	window.edit_form_change = function() {
+		$('#icl-duplicate-post').attr( 'data-changed', 'true' );
+	}
+
+	$submit_post_form.on('submit', function (e) {
+		var $trigger  = $('#icl-duplicate-post');
+		if ($trigger.length > 0 && $trigger.data('changed') === true ) {
+			e.preventDefault();
+			var $answer = window.confirm(icl_duplicate_data.icl_duplicate_message);
+			var $spinner = $('#publishing-action .spinner');
+			if ($answer) {
+				$spinner.toggleClass('is-active');
+				$.ajax({
+					method: "POST",
+					url: ajaxurl,
+					data: {
+						action: 'check_duplicate',
+						post_id: $trigger.val(),
+						icl_duplciate_nonce: $('#icl-duplicate-post-nonce').val()
+					}
+				})
+					.success(function ($resp) {
+						$spinner.toggleClass('is-active');
+						if ($resp.data) {
+							$('#icl-duplicate-post').remove();
+							$submit_post_form.submit();
+						} else {
+							alert(icl_duplicate_data.icl_duplicate_fail);
+						}
+					})
+					.error(function () {
+						$spinner.toggleClass('is-active');
+						alert(icl_duplicate_data.icl_duplicate_fail);
+					});
+			}
+		}
+	});
 });
 
 function setupCopyButtons() {

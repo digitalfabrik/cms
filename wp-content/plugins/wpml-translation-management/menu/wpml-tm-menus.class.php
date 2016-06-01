@@ -53,7 +53,6 @@ class WPML_TM_Menus
     {
         ?>
         <div class="wrap">
-            <div id="icon-wpml" class="icon32"><br/></div>
             <h2><?php echo __('Translation management', 'wpml-translation-management') ?></h2>
 
             <?php do_action('icl_tm_messages');
@@ -276,13 +275,13 @@ class WPML_TM_Menus
         ?>
 
 		<a href="#your_translators"><?php _e( 'Your Translators', 'wpml-translation-management' ); ?></a> &nbsp;&nbsp;
-		
+
 		<?php
 			if ( !defined( 'ICL_HIDE_TRANSLATION_SERVICES' ) || !ICL_HIDE_TRANSLATION_SERVICES ) { ?>
 				<a href='#translation_services'> <?php _e( 'Translation Services', 'wpml-translation-management' ) ?> </a>
 			<?php } ?>
-		
-				
+
+
 		<a id="your_translators"><h3><?php _e( 'Your Translators', 'wpml-translation-management' ); ?></h3></a><?php
 
         $translator_settings->build_content_translators();
@@ -299,31 +298,31 @@ class WPML_TM_Menus
             }
         }
     }
-	
+
 	private function site_key_exist(){
-				
+
 		if(class_exists('WP_Installer')){
 			$repository_id 	= 'wpml';
-			$site_key 		= WP_Installer()->get_site_key($repository_id); 
-		}			
-			
+			$site_key 		= WP_Installer()->get_site_key($repository_id);
+		}
+
 	return $does_exist = ($site_key !== false ? true : false );
 	}
-	
+
 	private function is_any_translation_service_active(){
-		
-		$is_active = TranslationProxy::get_current_service();		
-		
+
+		$is_active = TranslationProxy::get_current_service();
+
 	return $feedback = ( $is_active !== false ? true : false );
-	}	
-	
+	}
+
 	private function build_link_to_register_plugin(){
-		
+
 		$link = sprintf( '<a class="button-secondary" href="%s">' . __( 'Please register WPML to enable the professional translation option', 'wpml-translation-management') . '</a>',
 						admin_url('plugin-install.php?tab=commercial#repository-wpml') );
 
 	return $link;
-	}		
+	}
 
 	public function build_content_basket() {
 		$basket_table = new SitePress_Table_Basket();
@@ -444,7 +443,7 @@ class WPML_TM_Menus
             </form>
         <?php
         }
-		
+
 		do_action( 'wpml_translation_basket_page_after' );
     }
 
@@ -685,14 +684,14 @@ class WPML_TM_Menus
                             <li>
                                 <label>
                                     <input type="radio" name="icl_translated_document_status" value="0"
-                                           <?php checked(icl_get_setting('translated_document_status'), false); ?> />
+	                                    <?php checked( (bool) icl_get_setting( 'translated_document_status' ), false ); ?> />
                                     <?php _e('Draft', 'wpml-translation-management') ?>
                                 </label>
                             </li>
                             <li>
                                 <label>
                                     <input type="radio" name="icl_translated_document_status" value="1"
-                                           <?php checked(icl_get_setting('translated_document_status'), true); ?> />
+	                                    <?php checked( (bool) icl_get_setting( 'translated_document_status' ), true ); ?> />
                                     <?php _e('Same as the original document', 'wpml-translation-management') ?>
                                 </label>
                             </li>
@@ -843,135 +842,21 @@ class WPML_TM_Menus
     <?php
 
     endif;
+	    wp_enqueue_script( 'wpml-tm-mcs' );
     }
 
 	private function build_content_mcs_custom_fields() {
-		global $wpdb, $iclTranslationManagement;
-		?>
+		global $iclTranslationManagement, $wpdb;
 
-		<div class="wpml-section wpml-section-cf-translation" id="ml-content-setup-sec-6">
+		$settings_factory = new WPML_Custom_Field_Setting_Factory( $iclTranslationManagement );
+		$settings_factory->show_system_fields = array_key_exists( 'show_system_fields', $_GET ) ? (bool) $_GET['show_system_fields'] : false;
+		$menu_item        = new WPML_TM_MCS_Post_Custom_Field_Settings_Menu( $settings_factory );
+		echo $menu_item->render();
 
-			<div class="wpml-section-header">
-				<h3><?php _e( 'Custom fields translation', 'wpml-translation-management' ); ?></h3>
-			</div>
-
-			<div class="wpml-section-content">
-
-				<form id="icl_cf_translation" name="icl_cf_translation" action="">
-
-					<?php
-
-					$custom_fields_settings_name                 = $iclTranslationManagement->get_translation_setting_name( 'custom_fields' );
-					$custom_fields_readonly_settings_name        = $iclTranslationManagement->get_readonly_translation_setting_name( 'custom_fields' );
-					$custom_fields_readonly_custom_settings_name = $iclTranslationManagement->get_custom_readonly_translation_setting_name( 'custom_fields' );
-
-					$custom_fields_settings                 = $iclTranslationManagement->settings[ $custom_fields_settings_name ];
-					$custom_fields_settings                 = isset( $custom_fields_settings ) ? $custom_fields_settings : array();
-					$custom_fields_readonly_settings        = $iclTranslationManagement->settings[ $custom_fields_readonly_settings_name ];
-					$custom_fields_readonly_settings        = isset( $custom_fields_readonly_settings ) ? $custom_fields_readonly_settings : array();
-					$custom_fields_readonly_custom_settings = $iclTranslationManagement->settings[ $custom_fields_readonly_custom_settings_name ];
-					$custom_fields_readonly_custom_settings = isset( $custom_fields_readonly_custom_settings ) ? $custom_fields_readonly_custom_settings : array();
-
-					$custom_fields_keys = $wpdb->get_col( "SELECT DISTINCT meta_key FROM $wpdb->postmeta" );
-
-					$custom_fields_keys = array_unique( array_merge( $custom_fields_keys, $custom_fields_readonly_settings ) );
-					$custom_fields_keys = array_unique( array_merge( $custom_fields_keys, $custom_fields_readonly_custom_settings ) );
-
-					if ( $custom_fields_keys ) {
-						natcasesort( $custom_fields_keys );
-					}
-
-					?>
-					<?php wp_nonce_field( 'icl_cf_translation_nonce', '_icl_nonce' ); ?>
-					<?php if ( empty( $custom_fields_keys ) ): ?>
-						<p>
-							<?php _e( 'No custom fields found. It is possible that they will only show up here after you add more posts after installing a new plugin.', 'wpml-translation-management' ); ?>
-						</p>
-					<?php else: ?>
-						<table class="widefat fixed">
-							<thead>
-							<tr>
-								<th>
-									<?php _e( 'Custom fields', 'wpml-translation-management' ); ?>
-								</th>
-								<th>
-									<?php _e( "Don't translate", 'wpml-translation-management' ) ?>
-								</th>
-								<th>
-									<?php _e( "Copy from original to translation", 'wpml-translation-management' ) ?>
-								</th>
-								<th>
-									<?php _e( "Translate", 'wpml-translation-management' ) ?>
-								</th>
-							</tr>
-							</thead>
-							<tfoot>
-							<tr>
-								<th>
-									<?php _e( 'Custom fields', 'wpml-translation-management' ); ?>
-								</th>
-								<th>
-									<?php _e( "Don't translate", 'wpml-translation-management' ) ?>
-								</th>
-								<th>
-									<?php _e( "Copy from original to translation", 'wpml-translation-management' ) ?>
-								</th>
-								<th>
-									<?php _e( "Translate", 'wpml-translation-management' ) ?>
-								</th>
-							</tr>
-							</tfoot>
-							<tbody>
-							<?php foreach ( $custom_fields_keys as $cf_index => $cf_key ): ?>
-								<?php
-								if ( ! is_numeric( $cf_index ) ) {
-									continue;
-								}
-
-								$is_readonly = in_array( $cf_key, $custom_fields_readonly_settings ) || in_array( $cf_key, $custom_fields_readonly_custom_settings );
-								$is_hidden   = false;
-								if ($is_readonly && array_key_exists( $cf_key, $custom_fields_settings ) ) {
-									$is_hidden = in_array( $custom_fields_settings[ $cf_key ], array( 0, 3 ) );
-								}
-								$html_disabled = $is_readonly ? 'disabled="disabled"' : '';
-
-								if ( $is_hidden ) {
-									continue;
-								}
-								?>
-								<tr>
-									<td><?php echo $cf_key ?></td>
-									<td title="<?php _e( "Don't translate", 'wpml-translation-management' ) ?>">
-										<input type="radio" name="cf[<?php echo base64_encode( $cf_key ) ?>]" value="0" <?php echo $html_disabled ?>
-										       <?php if (isset( $custom_fields_settings[ $cf_key ] ) && $custom_fields_settings[ $cf_key ] == 0): ?>checked<?php endif; ?> />
-									</td>
-									<td title="<?php _e( "Copy from original to translation", 'wpml-translation-management' ) ?>">
-										<input type="radio" name="cf[<?php echo base64_encode( $cf_key ) ?>]" value="1" <?php echo $html_disabled ?>
-										       <?php if (isset( $custom_fields_settings[ $cf_key ] ) && $custom_fields_settings[ $cf_key ] == 1): ?>checked<?php endif; ?> />
-									</td>
-									<td title="<?php _e( "Translate", 'wpml-translation-management' ) ?>">
-										<input type="radio" name="cf[<?php echo base64_encode( $cf_key ) ?>]" value="2" <?php echo $html_disabled ?>
-										       <?php if (isset( $custom_fields_settings[ $cf_key ] ) && $custom_fields_settings[ $cf_key ] == 2): ?>checked<?php endif; ?> />
-									</td>
-								</tr>
-							<?php endforeach; ?>
-							</tbody>
-						</table>
-
-						<p class="buttons-wrap">
-							<span class="icl_ajx_response" id="icl_ajx_response_cf"></span>
-							<input type="submit" class="button-primary" value="<?php _e( 'Save', 'wpml-translation-management' ) ?>"/>
-						</p>
-					<?php endif; ?>
-
-				</form>
-
-			</div>
-			<!-- .wpml-section-content -->
-
-		</div> <!-- .wpml-section -->
-
-	<?php
+		if ( ! empty( $wpdb->termmeta ) ) {
+			$menu_item_terms = new WPML_TM_MCS_Term_Custom_Field_Settings_Menu( $settings_factory );
+			echo $menu_item_terms->render();
+		}
 	}
 
     public function build_content_translation_notifications()
@@ -1124,7 +1009,7 @@ class WPML_TM_Menus
         $sort_order_next = $this->translation_filter['sort_order'] == 'ASC' ? 'DESC' : 'ASC';
         $this->dashboard_title_sort_link = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=dashboard&icl_tm_action=sort&sort_by=title&sort_order=' . $sort_order_next;
         $this->dashboard_date_sort_link = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=dashboard&icl_tm_action=sort&sort_by=date&sort_order=' . $sort_order_next;
-                
+
         $this->post_statuses = array(
             'publish' => __('Published', 'wpml-translation-management'),
             'draft' => __('Draft', 'wpml-translation-management'),
@@ -1133,12 +1018,12 @@ class WPML_TM_Menus
             'private' => __('Private', 'wpml-translation-management')
         );
         $this->post_statuses = apply_filters('wpml_tm_dashboard_post_statuses', $this->post_statuses);
-    
+
         // Get the document types that we can translate
         $this->post_types = $sitepress->get_translatable_documents();
         $this->post_types = apply_filters('wpml_tm_dashboard_translatable_types', $this->post_types);
         $this->build_external_types();
-       
+
         $this->translation_filter['limit_no'] = isset($_GET['show_all']) && $_GET['show_all'] ? 10000 : ICL_TM_DOCS_PER_PAGE;
         if (!isset($this->translation_filter['parent_type'])) {
             $this->translation_filter['parent_type'] = 'any';
@@ -1313,28 +1198,12 @@ class WPML_TM_Menus
         <?php // pagination - end
     }
 
-    public function build_content_dashboard_fetch_translations_box()
-    {
-        if (TranslationProxy::is_current_service_active_and_authenticated()) {
-            ?>
-            <div id="icl_tm_pickup_wrap">
-                <div class="icl_cyan_box">
-                    <div id="icl_tm_pickup_wrap_errors" class="icl_tm_pickup_wrap" style="display:none"><p></p></div>
-                    <div id="icl_tm_pickup_wrap_completed" class="icl_tm_pickup_wrap" style="display:none"><p></p></div>
-                    <div id="icl_tm_pickup_wrap_cancelled" class="icl_tm_pickup_wrap" style="display:none"><p></p></div>
-	                <div id="icl_tm_pickup_wrap_error_submitting" class="icl_tm_pickup_wrap" style="display:none"><p></p></div>
-	                <p id="icl_pickup_nof_jobs"></p>
-	                <p><input type="button" class="button-secondary" data-reloading-text="<?php _e( 'Reloading:', 'wpml-translation-management' ) ?>" value="" id="icl_tm_get_translations"/></p>
-	                <p id="icl_pickup_last_pickup"></p>
-                </div>
-                <div id="tp_polling_job" style="display:none"></div>
-            </div>
-	        <br clear="all"/>
-            <?php
-            wp_nonce_field('icl_pickup_translations_nonce', '_icl_nonce_pickup_t');
-            wp_nonce_field('icl_populate_translations_pickup_box_nonce', '_icl_nonce_populate_t');
-        }
-    }
+	public function build_content_dashboard_fetch_translations_box() {
+		if ( TranslationProxy::is_current_service_active_and_authenticated() ) {
+			$tp_polling_box = new WPML_TP_Polling_Box();
+			echo $tp_polling_box->render();
+		}
+	}
 
 	private function build_external_types() {
 		$this->post_types = apply_filters( 'wpml_get_translatable_types', $this->post_types );
@@ -1575,18 +1444,18 @@ class WPML_TM_Menus
             }
         }
     }
-	
+
 	private function build_tp_com_log_item( ) {
-		
+
         if ( isset( $_GET[ 'sm' ] ) && $_GET[ 'sm' ] == 'com-log' ) {
 			$this->tab_items['com-log']['caption'] = __('Communication Log', 'wpml-translation-management');
 			$this->tab_items['com-log']['callback'] = array($this, 'build_tp_com_log');
 		}
 	}
-	
+
 	public function build_tp_com_log( ) {
 		require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-com-log.class.php';
-		
+
 		if ( isset( $_POST[ 'tp-com-clear-log' ] ) ) {
 			TranslationProxy_Com_Log::clear_log( );
 		}
@@ -1598,18 +1467,18 @@ class WPML_TM_Menus
 		if ( isset( $_POST[ 'tp-com-enable-log' ] ) ) {
 			TranslationProxy_Com_Log::set_logging_state( true );
 		}
-		
+
 		$action_url = esc_attr( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=' . $_GET[ 'sm' ] );
 		$com_log = TranslationProxy_Com_Log::get_log( );
 
 		?>
 
 		<form method="post" id="tp-com-log-form" name="tp-com-log-form" action="<?php echo $action_url; ?>">
-		
+
 			<?php if ( TranslationProxy_Com_Log::is_logging_enabled( ) ): ?>
-			
+
 				<?php _e("This is a log of the communication between your site and the translation system. It doesn't include any private information and allows WPML support to help with problems related to sending content to translation.", 'wpml-translation-management'); ?>
-	
+
 				<br />
 				<br />
 				<?php if ( $com_log != '' ): ?>
@@ -1622,20 +1491,20 @@ class WPML_TM_Menus
 					<br />
 					<br />
 				<?php endif; ?>
-				
+
 				<input class="button-secondary" type="submit" name="tp-com-disable-log" value="<?php _e( 'Disable logging', 'wpml-translation-management' ); ?>">
-				
+
 			<?php else: ?>
 				<?php _e("Communication logging is currently disabled. To allow WPML support to help you with issues related to sending content to translation, you need to enable the communication logging.", 'wpml-translation-management'); ?>
-	
+
 				<br />
 				<br />
 				<input class="button-secondary" type="submit" name="tp-com-enable-log" value="<?php _e( 'Enable logging', 'wpml-translation-management' ); ?>">
-			
+
 			<?php endif; ?>
 
-		</form>		
+		</form>
 		<?php
-		
+
 	}
 }

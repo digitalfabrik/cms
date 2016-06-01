@@ -105,7 +105,7 @@ class WPML_Installation extends WPML_WPDB_And_SP_User {
 	}
 
 	public function finish_step3( $ls_sidebars, $ls_options ) {
-		$ls_setup = new WPML_Language_Switcher_Settings( $ls_sidebars, $ls_options );
+		$ls_setup = new WPML_Setup_Language_Switcher_Settings( $ls_sidebars, $ls_options );
 		if ( $ls_sidebars ) {
 			$ls_setup->set_ls_sidebar();
 		}
@@ -173,7 +173,8 @@ class WPML_Installation extends WPML_WPDB_And_SP_User {
 							= "
             SELECT
               l.code,
-              l.id, english_name,
+              l.id,
+              english_name,
               nt.name AS native_name,
               major,
               active,
