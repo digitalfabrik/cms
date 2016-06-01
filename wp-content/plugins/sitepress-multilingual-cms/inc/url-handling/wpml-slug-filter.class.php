@@ -66,6 +66,8 @@ class WPML_Slug_Filter extends WPML_Full_PT_API {
 			$post_language       = $post_id
 				? $this->post_translations->get_element_lang_code( $post_id )
 				: $this->sitepress->get_current_language();
+			$post_language       = $post_language
+				? $post_language : $this->sitepress->post_translations()->get_save_post_lang( $post_id, $this->sitepress );
 			$parent              = is_post_type_hierarchical( $post_type ) ? (int) $post_parent : false;
 			$slug_suggested_wpml = $this->find_unique_slug_post( $post_id, $post_type, $post_language, $parent, $slug );
 		}

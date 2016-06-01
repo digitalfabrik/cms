@@ -516,7 +516,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
      * @return mixed
      */
     private function icl_local_edit_translator_form( $action = 'add', $selected_translator = 0 ) {
-        $blog_users_nt = TranslationManagement::get_blog_not_translators();
+        $blog_users_nt = $this->tm_instance->get_blog_not_translators();
         $output = '';
         $return[ 'name' ] = __( 'Local', 'wpml-translation-management' );
         $return[ 'description' ] = __( 'Your own translators', 'wpml-translation-management' );

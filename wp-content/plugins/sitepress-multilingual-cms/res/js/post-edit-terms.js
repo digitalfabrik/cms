@@ -11,7 +11,6 @@ jQuery(document).ready(
 
 		if (language_selector.length !== 0) {
 			language_selector.on('change', iclPostLanguageAskConfirmation);
-			iclSetPostLang();
 			iclSwitchPostLanguage();
 		} else {
 			// just add a hidden field with the information and the same id as the language switcher to the dom
@@ -27,7 +26,6 @@ jQuery(document).ready(
 						var hidden_language_field = jQuery('<input id="icl_post_language" type="hidden"/>');
 						hidden_language_field.val(response.data);
 						jQuery(".wrap").append(hidden_language_field);
-						iclSetPostLang();
 						iclSwitchPostLanguage();
 					}
 				}
@@ -127,24 +125,4 @@ function iclSwitchPostLanguage() {
 			}
 		);
 	}
-}
-
-function iclSetPostLang() {
-
-	var lang = jQuery('#icl_post_language').attr('value');
-
-	jQuery.ajax(
-		{
-			type:     "POST",
-			url:      ajaxurl,
-			dataType: 'json',
-			data:     {
-				wpml_post_lang: lang,
-				action:         'wpml_set_post_edit_lang'
-			},
-			success:  function (response) {
-
-			}
-		}
-	);
 }

@@ -68,8 +68,6 @@ class TranslationManagement {
 		add_action( 'added_existing_user', array( $this, 'clear_cache' ) );
 		add_action( 'remove_user_from_blog', array( $this, 'clear_cache' ) );
 
-		add_action( 'wp_ajax_icl_tm_user_search', array( $this, '_user_search' ) );
-
 		add_action( 'wp_ajax_icl_tm_abort_translation', array( $this, 'abort_translation' ) );
 
 		add_action( 'display_basket_notification', array( $this, 'display_basket_notification' ), 10, 1 );
@@ -156,10 +154,24 @@ class TranslationManagement {
 				add_action( 'icl_tm_messages', array( $this, 'show_messages' ) );
 			}
 
+			// Add duplicate identifier actions.
+			$this->wpml_add_duplicate_check_actions();
+
 			// default settings
 			if ( empty( $this->settings[ 'doc_translation_method' ] ) || ! defined( 'WPML_TM_VERSION' ) ) {
 				$this->settings[ 'doc_translation_method' ] = ICL_TM_TMETHOD_MANUAL;
 			}
+		}
+	}
+
+	public function wpml_add_duplicate_check_actions() {
+		global $pagenow;
+		if (
+			'post.php' === $pagenow
+			||
+			( isset( $_POST['action'] ) && 'check_duplicate' === $_POST['action'] && DOING_AJAX )
+		) {
+			return new WPML_Translate_Independently();
 		}
 	}
 
@@ -274,11 +286,11 @@ class TranslationManagement {
 		$icl_settings[ 'translation-management' ] = $this->settings;
 		$cpt_sync_option                          = $sitepress->get_setting( 'custom_posts_sync_option', array() );
 		$cpt_sync_option                          = (bool) $cpt_sync_option === false ? $sitepress->get_setting( 'custom-types_sync_option', array() ) : $cpt_sync_option;
-		
+
 		if ( ! isset( $icl_settings[ 'custom_posts_sync_option' ] ) ) {
 			$icl_settings[ 'custom_posts_sync_option' ] = array( );
 		}
-		
+
 		foreach ( $cpt_sync_option as $k => $v ) {
 			$icl_settings[ 'custom_posts_sync_option' ][ $k ] = $v;
 		}
@@ -564,12 +576,20 @@ class TranslationManagement {
 		$_user = new WP_User( $user_id );
 		if ( empty( $language_pairs ) ) {
 			$this->remove_translator( $user_id );
+			if ( $user_id == $this->current_translator->ID ) {
+				$this->current_translator = null;
+			}
 		} else {
 			if ( ! $_user->has_cap( 'translate' ) ) {
 				$_user->add_cap( 'translate' );
 			}
 			update_user_meta( $user_id, $wpdb->prefix . 'language_pairs', $language_pairs );
 			$result = true;
+
+			if ( $user_id == $this->current_translator->ID ) {
+				$this->current_translator->language_pairs = get_user_meta( $user_id, $wpdb->prefix . 'language_pairs', true );
+			}
+
 		}
 		return $result;
 	}
@@ -600,26 +620,22 @@ class TranslationManagement {
 		return $dt;
 	}
 
-	public static function get_blog_not_translators() {
+	public function get_blog_not_translators() {
 		global $wpdb;
-		$cached_translators = get_option( $wpdb->prefix . 'icl_non_translators_cached', array() );
-		if ( ! empty( $cached_translators ) ) {
-			return $cached_translators;
-		}
-		$sql = "SELECT u.ID, u.user_login, u.display_name, m.meta_value AS caps
-			FROM {$wpdb->users} u JOIN {$wpdb->usermeta} m ON u.id=m.user_id AND m.meta_key = '{$wpdb->prefix}capabilities' ORDER BY u.display_name";
-		$res = $wpdb->get_results( $sql );
 
-		$users = array();
-		foreach ( $res as $row ) {
-			$caps = @unserialize( $row->caps );
-			if ( ! isset( $caps[ 'translate' ] ) ) {
-				$users[ ] = $row;
-			}
-		}
-		update_option( $wpdb->prefix . 'icl_non_translators_cached', $users );
+		$args = array(
+			'fields'     => array( 'user_login', 'display_name', 'ID' ),
+			'meta_query' => array(
+				array(
+					'key'     => "{$wpdb->prefix}capabilities",
+					'value'   => 'translate',
+					'compare' => 'NOT LIKE'
+				),
+			)
+		);
+		$users = new WP_User_Query( $args );
 
-		return $users;
+		return $users->get_results();
 	}
 
 	public static function get_blog_translators( $args = array() ) {
@@ -995,6 +1011,48 @@ class TranslationManagement {
 		}
 
 		return $img_file;
+	}
+
+	/**
+	 * returns icon class according to status code
+	 *
+	 * @param int $status
+	 * @param int $needs_update
+	 *
+	 * @return string
+	 */
+	public function status2icon_class( $status, $needs_update = 0 ) {
+		if ( $needs_update ) {
+			$icon_class = 'otgs-ico-needs-update';
+		} else {
+			switch ( $status ) {
+				case ICL_TM_NOT_TRANSLATED:
+					$icon_class = 'otgs-ico-not-translated';
+					break;
+				case ICL_TM_WAITING_FOR_TRANSLATOR:
+					$icon_class = 'otgs-ico-waiting';
+					break;
+				case ICL_TM_IN_PROGRESS:
+					$icon_class = 'otgs-ico-in-progress';
+					break;
+				case ICL_TM_IN_BASKET:
+					$icon_class = 'otgs-ico-basket';
+					break;
+				case ICL_TM_NEEDS_UPDATE:
+					$icon_class = 'otgs-ico-needs-update';
+					break;
+				case ICL_TM_DUPLICATE:
+					$icon_class = 'otgs-ico-duplicate';
+					break;
+				case ICL_TM_COMPLETE:
+					$icon_class = 'otgs-ico-translated';
+					break;
+				default:
+					$icon_class = 'otgs-ico-not-translated';
+			}
+		}
+
+		return $icon_class;
 	}
 
 	public static function status2text( $status ) {
@@ -1710,37 +1768,6 @@ class TranslationManagement {
 		global $wpdb;
 		delete_option( $wpdb->prefix . 'icl_translators_cached' );
 		delete_option( $wpdb->prefix . 'icl_non_translators_cached' );
-	}
-
-	function _user_search() {
-		$q = $_POST[ 'q' ];
-
-		$non_translators = self::get_blog_not_translators();
-
-		$matched_users = array();
-		foreach ( $non_translators as $t ) {
-			if ( false !== stripos( $t->user_login, $q ) || false !== stripos( $t->display_name, $q ) ) {
-				$matched_users[ ] = $t;
-			}
-			if ( count( $matched_users ) == 100 ) {
-				break;
-			}
-		}
-
-		if ( ! empty( $matched_users ) ) {
-			$cssheight = count( $matched_users ) > 10 ? '200' : 20 * count( $matched_users ) + 5;
-			echo '<select size="10" class="icl_tm_auto_suggest_dd" style="height:' . $cssheight . 'px">';
-			foreach ( $matched_users as $u ) {
-				echo '<option value="' . $u->ID . '|' . esc_attr( $u->display_name ) . '">' . $u->display_name . ' (' . $u->user_login . ')' . '</option>';
-			}
-			echo '</select>';
-		} else {
-			echo '&nbsp;<span id="icl_user_src_nf">';
-			_e( 'No matches', 'sitepress' );
-			echo '</span>';
-		}
-
-		exit;
 	}
 
 	// set slug according to user preference

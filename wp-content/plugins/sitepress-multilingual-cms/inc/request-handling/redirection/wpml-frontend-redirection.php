@@ -8,7 +8,7 @@ require ICL_PLUGIN_PATH . '/inc/request-handling/redirection/wpml-redirect-by-pa
  *
  */
 function _wpml_get_redirect_helper() {
-	global $wpml_url_converter, $wpml_request_handler, $wpml_language_resolution;
+	global $wpml_url_converter, $wpml_request_handler, $wpml_language_resolution, $sitepress;
 
 	$lang_neg_type = wpml_get_setting_filter( false, 'language_negotiation_type' );
 	switch ( $lang_neg_type ) {
@@ -32,9 +32,11 @@ function _wpml_get_redirect_helper() {
 			}
 			break;
 		case 2:
-			require ICL_PLUGIN_PATH . '/inc/request-handling/redirection/wpml-redirect-by-domain.class.php';
+			require_once ICL_PLUGIN_PATH . '/inc/request-handling/redirection/wpml-redirect-by-domain.class.php';
+			$wp_api = new WPML_WP_API();
 			$redirect_helper = new WPML_Redirect_By_Domain(
 					icl_get_setting( 'language_domains' ),
+					$wp_api,
 					$wpml_request_handler,
 					$wpml_url_converter,
 					$wpml_language_resolution
@@ -46,8 +48,10 @@ function _wpml_get_redirect_helper() {
 					icl_get_setting( 'taxonomies_sync_option', array() ),
 					$wpml_url_converter,
 					$wpml_request_handler,
-					$wpml_language_resolution
+					$wpml_language_resolution,
+					$sitepress
 			);
+			$redirect_helper->init_hooks();
 	}
 
 	return $redirect_helper;

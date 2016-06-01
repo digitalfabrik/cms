@@ -60,6 +60,7 @@ class WPML_Config {
 	}
 
 	static function parse_wpml_config( $config ) {
+		/* @var TranslationManagement $iclTranslationManagement */
 		global $sitepress, $sitepress_settings, $iclTranslationManagement;
 
 		self::parse_custom_fields( $config );
@@ -92,7 +93,7 @@ class WPML_Config {
 				$sitepress->save_settings( $iclsettings );
 
 				if ( !empty( $sitepress_settings[ 'setup_complete' ] ) && !empty( $_GET[ 'page' ] ) ) {
-					wp_redirect( admin_url( 'admin.php?page=' . $_GET[ 'page' ] . '&icl_ls_reset=default#icl_save_language_switcher_options' ) );
+					wp_redirect( admin_url( 'admin.php?page=' . urlencode( $_GET['page'] ) . '&icl_ls_reset=default#icl_save_language_switcher_options' ) );
 				}
 			}
 		}

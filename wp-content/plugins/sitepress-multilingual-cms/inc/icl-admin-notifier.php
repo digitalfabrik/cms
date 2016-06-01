@@ -14,7 +14,6 @@
 add_action ( 'init', array('ICL_AdminNotifier', 'init') );
 
 class ICL_AdminNotifier {
-
 	public static function init() {
 		if ( is_admin() ) {
 			add_action( 'wp_ajax_icl-hide-admin-message', array( __CLASS__, 'hide_message' ) );
@@ -49,6 +48,11 @@ class ICL_AdminNotifier {
 		self::save_messages( $messages );
 	}
 
+	/**
+	 * @param $message_id
+	 *
+	 * @return bool|array
+	 */
 	public static function get_message($message_id) {
 		$messages = self::get_messages();
 
@@ -443,7 +447,7 @@ class ICL_AdminNotifier {
 		}
 		$result .= '>';
 
-		$result .= '<div class="icl-admin-message-wrapper">' . stripslashes( $message );
+		$result .= '<div class="icl-admin-message-wrapper">' . self::sanitize_and_format_message( $message );
 		if ( $hide ) {
 			$result .= ' <a href="#" class="icl-admin-message-hide">' . __( 'Hide', 'sitepress' ) . '</a>';
 		}
@@ -492,7 +496,7 @@ class ICL_AdminNotifier {
 		}
 
 		$result = '<div class="' . implode( ' ', $classes ) . '">';
-		$result .= stripslashes( $message );
+		$result .= self::sanitize_and_format_message( $message );
 		$result .= '</div>';
 
 		if ( !$return ) {
@@ -745,5 +749,29 @@ class ICL_AdminNotifier {
 		return self::display_instant_message($message , $type, $class, $return);
 	}
 
+	/**
+	 * @param $message
+	 *
+	 * @return string
+	 */
+	public static function sanitize_and_format_message( $message ) {
+		//		return preg_replace( '/`(.*?)`/s', '<pre>$1</pre>', stripslashes( $message ) );
+		$backticks_pattern = '|`(.*)`|U';
+		preg_match_all( $backticks_pattern, $message, $matches );
+
+		$sanitized_message = $message;
+		if ( 2 === count( $matches ) ) {
+			$matches_to_sanitize = $matches[1];
+
+			foreach ( $matches_to_sanitize as &$match_to_sanitize ) {
+				$match_to_sanitize = '<pre>' . esc_html( $match_to_sanitize ) . '</pre>';
+			}
+			unset( $match_to_sanitize );
+
+			$sanitized_message = str_replace( $matches[0], $matches_to_sanitize, $sanitized_message );
+		}
+
+		return stripslashes($sanitized_message);
+	}
 }
 

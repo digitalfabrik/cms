@@ -137,10 +137,8 @@ function icl_get_languages( $a = '' ) {
 function wpml_get_active_languages_filter( $empty_value, $args = '' ) {
 	global $sitepress;
 
-	$args = wp_parse_args( $args );
-	$langs = $sitepress->get_ls_languages( $args );
-
-	return $langs;
+	$args  = wp_parse_args( $args );
+	return $sitepress->get_ls_languages( $args );
 }
 
 /**
@@ -934,71 +932,6 @@ function wpml_custom_post_translation_options() {
 
 	return $out;
 }
-
-/**
- * @todo  : [WPML 3.3] refactor in 3.3
- * Choose appropriate template file when paged and not default language
- * Some fix when somebody uses 'page_on_front', set page with custom Template,
- * this page has Loop of posts. Before that, when you changed language to
- * non-default and paged, WPML looses page Template and uses index.php from theme
- * @since 3.1.5
- *
- * @param string $template Template path retrieved from @see wp-includes/template-loader.php
- *
- * @return string New template path (or default)
- */
-function icl_template_paged( $template ) {
-	global $wp_query, $sitepress;
-
-	// we don't want to run this on default language
-	if ( ICL_LANGUAGE_CODE == icl_get_default_language() ) {
-		return $template;
-	}
-
-	// seems WPML overwrite 'page' param too early, let's fix this
-	if ( ( is_home() || is_front_page() ) && $sitepress->get_setting( 'language_negotiation_type' ) == 3 ) {
-		set_query_var( 'page', get_query_var( 'paged' ) );
-	}
-
-	// if template is chosen correctly there is no need to change it
-	if ( $template != get_home_template() ) {
-		return $template;
-	}
-
-	// this is a place where real error occurs. on paged page result we loose
-	// $wp_query->queried_object. so if it set correctly, there is no need to
-	// change template
-	if ( $wp_query->get_queried_object() != null ) {
-		return $template;
-	}
-
-	// does our site really use custom page as front page?
-	if ( 1 > intval( get_option( 'page_on_front' ) ) ) {
-		return $template;
-	}
-
-	// get template slug for custom page chosen as front page
-	$template_slug = get_page_template_slug( get_option( 'page_on_front' ) );
-
-	// "The function get_page_template_slug() returns an empty string when the value of '_wp_page_template' is either empty or 'default'."
-	if ( ! $template_slug ) {
-		return $template;
-	}
-
-	$templates = array();
-
-	$templates[ ] = $template_slug;
-
-	$template = get_query_template( 'page', $templates );
-
-	return $template;
-}
-
-/**
- * @todo: [WPML 3.3] refactor in 3.3
- * apply this filter only on non default language
- */
-add_filter( 'template_include', 'icl_template_paged' );
 
 /**
  * @since      unknown

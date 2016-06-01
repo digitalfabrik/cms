@@ -70,7 +70,7 @@ class WPML_TM_Translators_Dropdown {
 			if ( isset( $translation_service->id ) && ! TranslationProxy::translator_selection_available() && $is_service_authenticated ) {
 				$translators[] = (object) array(
 					'ID'           => TranslationProxy_Service::get_wpml_translator_id( $translation_service->id ),
-					'display_name' => __( 'First available', 'sitepress' ),
+					'display_name' => __( 'First available', 'wpml-translation-management' ),
 					'service'      => $translation_service_name
 				);
 			} elseif ( in_array( $translation_service_id, $services ) && $is_service_authenticated ) {
@@ -90,7 +90,7 @@ class WPML_TM_Translators_Dropdown {
 						if ( 1 < count( $language_pair['translators'] ) ) {
 							$translators[] = (object) array(
 								'ID'           => TranslationProxy_Service::get_wpml_translator_id( $translation_service->id ),
-								'display_name' => __( 'First available', 'sitepress' ),
+								'display_name' => __( 'First available', 'wpml-translation-management' ),
 								'service'      => $translation_service_name
 							);
 						}
@@ -110,7 +110,7 @@ class WPML_TM_Translators_Dropdown {
 			if ( in_array( 'local', $services ) ) {
 				$translators[] = (object) array(
 					'ID'           => 0,
-					'display_name' => __( 'First available', 'sitepress' ),
+					'display_name' => __( 'First available', 'wpml-translation-management' ),
 				);
 				$translators   = array_merge( $translators, TranslationManagement::get_blog_translators( array(
 					'from' => $from,
@@ -139,16 +139,16 @@ class WPML_TM_Translators_Dropdown {
 				$dropdown .= esc_html( $t->display_name );
 				if ( $show_service ) {
 					$dropdown .= ' (';
-					$dropdown .= isset( $t->service ) ? $t->service : __( 'Local', 'sitepress' );
+					$dropdown .= isset( $t->service ) ? $t->service : __( 'Local', 'wpml-translation-management' );
 					$dropdown .= ')';
 				}
 				$dropdown .= '</option>';
 			}
 			$dropdown .= '</select>';
 		} catch ( TranslationProxy_Api_Error $ex ) {
-			$dropdown .= __( 'Translation Proxy error', 'sitepress' ) . ': ' . $ex->getMessage();
+			$dropdown .= __( 'Translation Proxy error', 'wpml-translation-management' ) . ': ' . $ex->getMessage();
 		} catch ( Exception $ex ) {
-			$dropdown .= __( 'Error', 'sitepress' ) . ': ' . $ex->getMessage();
+			$dropdown .= __( 'Error', 'wpml-translation-management' ) . ': ' . $ex->getMessage();
 		}
 
 		if ( $add_label ) {

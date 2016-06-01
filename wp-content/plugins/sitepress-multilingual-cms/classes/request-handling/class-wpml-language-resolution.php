@@ -43,7 +43,7 @@ class WPML_Language_Resolution {
 	public function current_lang_filter( $lang ) {
 
 		if ( $this->current_request_lang !== $lang ) {
-			if ( ( $preview_lang = $this->filter_preview_language_code() ) ) {
+			if ( $preview_lang = $this->filter_preview_language_code() ) {
 				$lang = $preview_lang;
 			} elseif ( $this->use_referrer_language() === true ) {
 				$lang = $this->get_referrer_language_code();
@@ -89,12 +89,11 @@ class WPML_Language_Resolution {
 	 *
 	 * @return string|null
 	 */
-	private function get_referrer_language_code() {
+	public function get_referrer_language_code() {
 		if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-			$query_string = parse_url( $_SERVER['HTTP_REFERER'],
-				PHP_URL_QUERY );
+			$query_string = parse_url( $_SERVER['HTTP_REFERER'], PHP_URL_QUERY );
 			$query        = array();
-			parse_str( strval( $query_string ), $query );
+			parse_str( (string) $query_string, $query );
 			$language_code = isset( $query['lang'] ) ? $query['lang'] : null;
 		}
 

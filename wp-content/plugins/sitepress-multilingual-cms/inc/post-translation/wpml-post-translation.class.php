@@ -203,7 +203,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @param SitePress $sitepress
 	 * @return bool|mixed|null|string|void
 	 */
-	protected function get_save_post_lang( $post_id, $sitepress ) {
+	public function get_save_post_lang( $post_id, $sitepress ) {
 		$language_code = $this->get_element_lang_code ( $post_id );
 		$language_code = $language_code ? $language_code : $sitepress->get_current_language ();
 		$language_code = $sitepress->is_active_language ( $language_code ) ? $language_code
