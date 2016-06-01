@@ -1,0 +1,8 @@
+.mce-i-ltr:before {
+	content:"\e02f" !important;
+	font-family: tinymce;
+}
+
+.mce-i-rtl:before {
+	font-size: 20px;
+} 
