@@ -13,15 +13,14 @@ class WPML_Setup_Step_One_Menu extends WPML_SP_User {
 		?>
 		<div class="wpml-section">
 			<div class="wpml-section-header">
-				<h3><?php _e( 'Current content language', 'sitepress' ) ?></h3>
+				<h3><?php esc_html_e( 'Current content language', 'sitepress' ) ?></h3>
 			</div>
 
 			<div class="wpml-section-content">
 				<form id="icl_initial_language" method="post">
 					<?php wp_nonce_field( 'icl_initial_language', 'icl_initial_languagenonce' ) ?>
 					<p>
-						<label
-							for="icl_initial_language_code"><?php _e( 'Before adding other languages, please select the language existing contents are written in:', 'sitepress' ) ?></label>
+						<label for="icl_initial_language_code"><?php esc_html_e( 'Before adding other languages, please select the language existing contents are written in:', 'sitepress' ) ?></label>
 					</p>
 					<?php
 					$def_lang = $this->default_lang_preset();
@@ -31,15 +30,13 @@ class WPML_Setup_Step_One_Menu extends WPML_SP_User {
 						        name="icl_initial_language_code">
 							<?php $languages = $this->sitepress->get_languages( $def_lang ); ?>
 							<?php foreach ( $languages as $lang ): ?>
-								<option
-									<?php if ( $def_lang === $lang['code'] ): ?>selected<?php endif; ?>
-									value="<?php echo $lang['code'] ?>"><?php echo $lang['display_name'] ?></option>
+								<option <?php if ( $def_lang === $lang['code'] ): ?>selected="selected"<?php endif; ?>
+								        value="<?php echo esc_attr( $lang['code'] ) ?>"><?php echo esc_html( $lang['display_name'] ) ?></option>
 							<?php endforeach; ?>
 						</select>
 					</p>
 					<p class="buttons-wrap">
-						<input class="button-primary" name="save"
-						       value="<?php _e( 'Next', 'sitepress' ) ?>"
+						<input class="button-primary" name="save" value="<?php esc_html_e( 'Next', 'sitepress' ) ?>"
 						       type="submit"/>
 					</p>
 				</form>

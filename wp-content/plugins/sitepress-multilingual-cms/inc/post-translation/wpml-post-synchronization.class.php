@@ -139,16 +139,22 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 		$ping_status = $this->sync_ping_status ? ( pings_open( $post_id ) ? 'open' : 'closed' ) : null;
 		$comment_status = $this->sync_comment_status ? ( comments_open( $post_id ) ? 'open' : 'closed' ) : null;
 		$post_password = $this->sync_password ? $post->post_password : null;
-		$post_status = $this->sync_private_flag && get_post_status( $post_id ) === 'private' ? 'private' : null;
+		$sync_parent_private = $this->sync_private_flag && get_post_status( $post_id ) === 'private' ? 'private' : null;
 		$menu_order = $this->sync_menu_order && ! empty( $post->menu_order ) ? $post->menu_order : null;
 		$page_template = $this->sync_page_template && get_post_type( $post_id ) === 'page' ? get_page_template_slug( $post_id ) : null;
 		$post_date = $this->sync_post_date ? $wpdb->get_var( $wpdb->prepare( "SELECT post_date FROM {$wpdb->posts} WHERE ID=%d LIMIT 1", $post_id ) ) : null;
+
 
 		if ( (bool) $post_vars === true ) {
 			$this->sync_sticky_flag ( $this->post_translation->get_element_trid ( $post_id ), $post_vars );
 		}
 
 		foreach ( $translated_ids as $lang_code => $translated_pid ) {
+			if ( 'private' === $sync_parent_private ) {
+				$post_status = 'private';
+			} else {
+				$post_status = get_post_status( $translated_pid );
+			}
 			$this->sync_custom_fields ( $post_id, $translated_pid );
 			if ( $post_format !== null ) {
 				set_post_format ( $translated_pid, $post_format );
@@ -157,12 +163,13 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 				$post_date_gmt = get_gmt_from_date ( $post_date );
 				$data = array( 'post_date' => $post_date, 'post_date_gmt' => $post_date_gmt );
 				$now = gmdate('Y-m-d H:i:59');
+				$allow_post_statuses = array( 'private', 'pending', 'draft' );
 				if ( mysql2date('U', $post_date_gmt, false) > mysql2date('U', $now, false) ) {
-					$post_status = 'future';
-					$data[ 'post_status' ] = $post_status;
-				} else {
-					$post_status = get_post_status( $translated_pid );
+					if ( ! in_array( $post_status, $allow_post_statuses ) ) {
+						$post_status = 'future';
+					}
 				}
+				$data[ 'post_status' ] = $post_status;
 				$wpdb->update ( $wpdb->posts, $data, array( 'ID' => $translated_pid ) );
 			}
 			if ( $post_password !== null ) {

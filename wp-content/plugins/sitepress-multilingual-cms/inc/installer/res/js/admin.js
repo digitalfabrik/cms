@@ -71,6 +71,7 @@
         form.parent().find('.enter_site_key_js').prev().show();
         
         form.closest('.otgsi_register_product_wrap').removeClass('otgsi_yellow_bg');
+        otgs_wp_installer.reset_errors();
         return false;
     },
     
@@ -114,7 +115,7 @@
         
         if(confirm(jQuery(this).data('confirmation'))){
             
-            jQuery('<span class="spinner"></span>').css({display: 'inline-block', float: 'none'}).prependTo(jQuery(this).parent());
+            jQuery('<span class="spinner"></span>').css({visibility: 'visible', float: 'none'}).prependTo(jQuery(this).parent());
             data = {action: 'remove_site_key', repository_id: jQuery(this).data('repository'), nonce: jQuery(this).data('nonce')}
             jQuery.ajax({url: ajaxurl, type: 'POST', data: data, success: otgs_wp_installer.removed_site_key});
         }
@@ -127,21 +128,36 @@
     },
     
     update_site_key: function(){
-        
+        var error_wrap = jQuery(this).closest('.otgsi_register_product_wrap').find('.installer-error-box');
+        error_wrap.html('');
+
         var spinner = jQuery('<span class="spinner"></span>');
-        spinner.css({display: 'inline-block', float: 'none'}).prependTo(jQuery(this).parent());
+
+        spinner.css({visibility: 'visible', float: 'none'}).prependTo(jQuery(this).parent());
         data = {action: 'update_site_key', repository_id: jQuery(this).data('repository'), nonce: jQuery(this).data('nonce')}
         jQuery.ajax({
             url: ajaxurl, 
             type: 'POST', 
             data: data, 
-            dataType: 'json', 
-            success: function(ret){
-                if(ret.error){
-                    alert(ret.error);
+            dataType: 'json',
+            complete: function( event, xhr, settings ){
+                var error = '';
+                if(xhr == 'success') {
+                    var ret = event.responseJSON;
+                    if(ret.error){
+                        error = ret.error;
+                    }else{
+                        otgs_wp_installer.updated_site_key(ret);
+                    }
+                }else{
+                    error = 'Error processing request (' + xhr + '). Please try again!';
+                }
+
+                if( error ){
+                    error_wrap.html('<p>' + error + '</p>').show();
                     spinner.remove();
                 }
-                otgs_wp_installer.updated_site_key(ret);
+
             }
         });
 

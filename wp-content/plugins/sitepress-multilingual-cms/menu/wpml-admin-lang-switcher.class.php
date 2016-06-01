@@ -46,8 +46,9 @@ class WPML_Admin_Language_Switcher {
                 }
                 break;
             case 'edit-tags.php':
+			case 'term.php':
                 $is_tax = true;
-                if ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'edit' ) {
+                if ( $sitepress->get_wp_api()->is_term_edit_page() ) {
                     $all_languages_enabled = false;
                 }
     

@@ -70,10 +70,10 @@ function load_essential_globals() {
 	}
 }
 
-function wpml_load_post_translation( $admin, $settings ) {
+function wpml_load_post_translation( $is_admin, $settings ) {
 	global $wpml_post_translations, $wpdb;
 
-	if ( $admin === true ) {
+	if ( $is_admin === true ) {
 		$wpml_post_translations = new WPML_Admin_Post_Actions( $settings, $wpdb );
 	} else {
 		$wpml_post_translations = new WPML_Frontend_Post_Actions( $settings, $wpdb );
@@ -83,7 +83,7 @@ function wpml_load_post_translation( $admin, $settings ) {
 	$wpml_post_translations->init ();
 }
 
-function wpml_load_request_handler( $admin, $active_language_codes, $default_language ) {
+function wpml_load_request_handler( $is_admin, $active_language_codes, $default_language ) {
 	global $wpml_request_handler, $wpml_url_converter;
 
 	if ( ! isset( $wpml_request_handler ) ) {
@@ -91,7 +91,7 @@ function wpml_load_request_handler( $admin, $active_language_codes, $default_lan
 		require ICL_PLUGIN_PATH . '/inc/request-handling/wpml-backend-request.class.php';
 	}
 
-	if ( $admin === true ) {
+	if ( $is_admin === true ) {
 		$wpml_request_handler = new WPML_Backend_Request(
 			$wpml_url_converter,
 			$active_language_codes,
@@ -209,7 +209,7 @@ function is_post_type_translated( $post_type ) {
 function setup_admin_menus() {
 	global $pagenow;
 
-	if ( $pagenow === 'edit-tags.php' ) {
+	if ( $pagenow === 'edit-tags.php' || $pagenow === 'term.php' ) {
 		maybe_load_translated_tax_screen ();
 	}
 }

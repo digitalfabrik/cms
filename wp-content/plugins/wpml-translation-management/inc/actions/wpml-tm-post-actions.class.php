@@ -54,7 +54,6 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 				$translation_id   = $this->tm_records
 					->icl_translations_by_trid_and_lang( $trid, $lang )
 					->translation_id();
-				get_currentuserinfo();
 				$user_id = $current_user->ID;
 				$this->maybe_add_as_translator( $user_id, $lang, $from_lang );
 				if ( $translation_id ) {

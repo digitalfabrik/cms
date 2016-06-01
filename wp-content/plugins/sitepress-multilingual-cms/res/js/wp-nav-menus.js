@@ -19,16 +19,21 @@ WPML_core.wp_nav_language_change = function() {
             thiss.removeAttr('disabled');
         }
     });
-}
+};
 
 WPML_core.wp_nav_align_inputs = function() {
+    
+    WPML_core.wp_nav_fix_spacing_for_wp45();
+    
     var inputs = ['#menu-name', '#icl_menu_language', '#icl_menu_translation_of'];
     
     var right_max = 0;
+    var element;
+    var position;
     for (var i = 0; i < 3; i++) {
-        var element = jQuery(inputs[i])
+        element = jQuery(inputs[i]);
         if (element.length) {
-            var position = jQuery(inputs[i]).offset().left;
+            position = jQuery(inputs[i]).offset().left;
             if (position > right_max) {
                 right_max = position;
             }
@@ -36,10 +41,17 @@ WPML_core.wp_nav_align_inputs = function() {
     }
     
     for ( i= 0; i < 3; i++) {
-        var element = jQuery(inputs[i])
+        element = jQuery(inputs[i]);
         if (element.length) {
-            var position = jQuery(inputs[i]).offset().left;
+            position = jQuery(inputs[i]).offset().left;
             jQuery(inputs[i]).css('margin-left', right_max - position);
         }
     }
-}
+};
+
+WPML_core.wp_nav_fix_spacing_for_wp45 = function() {
+    var wrapper = jQuery('#icl_menu_language').parent();
+    if (wrapper.css('display') !== 'block') {
+        wrapper.css({display: 'block'});
+    }
+};

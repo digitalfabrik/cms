@@ -37,7 +37,7 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 		/** @var WP_Query $q */
 		if ( $q->is_main_query() && (bool) $redir_pid === true ) {
 			if ( (bool) ( $redir_target = $this->is_redirected( $redir_pid ) ) ) {
-				$this->sitepress->get_wp_api()->wp_safe_redirect( $redir_target );
+				$this->sitepress->get_wp_api()->wp_safe_redirect( $redir_target, 301 );
 			}
 		}
 
@@ -403,20 +403,21 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 	 * @return false|string redirect target url if redirect is needed, false otherwise
 	 */
 	private function is_redirected( $post_id ) {
-		$request_uri = $_SERVER['REQUEST_URI'];
-		$post        = $this->sitepress->get_wp_api()->get_post( $post_id );
-		$parent      = $post->post_parent;
+		$request_uri = explode( '?', $_SERVER['REQUEST_URI'] );
 		$redirect    = false;
-		if ( $parent ) {
-			if ( strpos( $request_uri,
-					parse_url(
-						$this->sitepress->get_wp_api()->get_permalink( $post_id ),
-						PHP_URL_PATH ) ) === false
-			) {
-				$redirect = $this->sitepress->get_wp_api()->get_permalink( $post_id );
+		$permalink   = $this->sitepress->get_wp_api()->get_permalink( $post_id );
+		if ( ! $this->is_permalink_part_of_request( $permalink, $request_uri[0] ) ) {
+			if ( isset( $request_uri[1] ) ) {
+				$permalink .= '?' . $request_uri[1];
 			}
+			$redirect = $permalink;
 		}
-
 		return $redirect;
+	}
+
+	private function is_permalink_part_of_request( $permalink, $request_uri ) {
+		$permalink_path = trailingslashit( urldecode( parse_url( $permalink, PHP_URL_PATH ) ) );
+		$request_uri    = trailingslashit( urldecode( $request_uri ) );
+		return 0 === strcasecmp( substr( $request_uri, 0, strlen( $permalink_path ) ), $permalink_path );
 	}
 }

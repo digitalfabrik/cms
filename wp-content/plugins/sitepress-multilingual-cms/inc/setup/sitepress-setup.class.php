@@ -71,8 +71,8 @@ class SitePress_Setup {
 					  `english_name` VARCHAR( 128 ) NOT NULL ,
 					  `major` TINYINT NOT NULL DEFAULT '0',
 					  `active` TINYINT NOT NULL ,
-					  `default_locale` VARCHAR( 8 ),
-					  `tag` VARCHAR( 8 ),
+					  `default_locale` VARCHAR( 35 ),
+					  `tag` VARCHAR( 35 ),
 					  `encode_url` TINYINT( 1 ) NOT NULL DEFAULT 0,
 					  UNIQUE KEY `code` (`code`),
 					  UNIQUE KEY `english_name` (`english_name`)
@@ -152,7 +152,7 @@ class SitePress_Setup {
 						'major'          => $val[ 'major' ],
 						'active'         => isset($active_languages[ $language_code ]) ? 1 : 0,
 						'default_locale' => $default_locale,
-						'tag'            => str_replace( '_', '-', $default_locale )
+						'tag'            => $language_code
 					);
 					if ( $wpdb->insert( $table_name, $args )  === false) {
 						return false;
@@ -303,14 +303,20 @@ class SitePress_Setup {
     public static function insert_default_category( $lang_code ) {
         global $sitepress;
 
-        $default_language = $sitepress->get_default_language ();
-        if($lang_code === $default_language){
+        $default_language = $sitepress->get_default_language();
+        if ( $lang_code === $default_language ) {
             return;
         }
-		
+
+	    // Get default categories.
+	    $default_categories = $sitepress->get_setting ( 'default_categories', array() );
+	    if ( isset( $default_categories[ $lang_code ] ) ) {
+		    return;
+	    }
+
         $sitepress->switch_locale ( $lang_code );
-        $tr_cat = __ ( 'Uncategorized', 'sitepress' );
-        $tr_cat = $tr_cat === 'Uncategorized' && $lang_code !== 'en' ? 'Uncategorized @' . $lang_code : $tr_cat;
+	    $tr_cat = __ ( 'Uncategorized', 'sitepress' );
+	    $tr_cat = $tr_cat === 'Uncategorized' && $lang_code !== 'en' ? 'Uncategorized @' . $lang_code : $tr_cat;
         $tr_term = term_exists ( $tr_cat, 'category' );
         $sitepress->switch_locale ();
 		
@@ -322,7 +328,6 @@ class SitePress_Setup {
         }
 
         // add it to settings['default_categories']
-        $default_categories = $sitepress->get_setting ( 'default_categories', array() );
         $default_categories[ $lang_code ] = $tmp[ 'term_taxonomy_id' ];
 
         $sitepress->set_default_categories ( $default_categories );

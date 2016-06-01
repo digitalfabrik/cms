@@ -27,11 +27,8 @@
                 <input class="button-secondary cancel_site_key_js" type="button" value="<?php esc_attr_e('Cancel', 'installer') ?>" />
                 
                 <div class="alignleft" style="margin-top:6px;"><?php printf(__('1. Go to your %s%s account%s and add this site URL: %s', 'installer'), 
-                    '<a href="' . $this->settings['repositories'][$repository_id]['data']['site_keys_management_url'] . '?add='.urlencode($this->get_installer_site_url()).'">',
-                      $generic_product_name, '</a>', $this->get_installer_site_url()); ?></div>
-                      
-                <div class="installer-error-box hidden" style="margin-top:10px;"></div>
-                    
+                    '<a href="' . $this->settings['repositories'][$repository_id]['data']['site_keys_management_url'] . '?add='.urlencode($this->get_installer_site_url( $repository_id )).'">',
+                      $generic_product_name, '</a>', $this->get_installer_site_url( $repository_id )); ?></div>
                 </form>
                 
                 
@@ -52,14 +49,27 @@
             ?>
             
             <?php if($this->repository_has_expired_subscription($repository_id)): $expired = true; ?>
-                <div><p class="installer-warn-box"><?php _e('Subscription is expired. You need to either purchase a new subscription or upgrade if available.', 'installer') ?></p></div>
+                <div>
+                    <p class="installer-warn-box">
+                        <?php _e('Subscription expired. You need to either purchase a new subscription or upgrade if available.', 'installer') ?>
+                        <span class="alignright">
+                            <a class="update_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?> data-nonce="<?php echo wp_create_nonce('update_site_key_' . $repository_id) ?>">
+                                <?php  _e('Revalidate subscription', 'installer'); ?>
+                            </a>
+                        </span>
+                        <br />
+                        <span class="details"><?php _e("If you have already purchased or renewed your subscription and you can still see this message, please revalidate your subscription", 'installer') ?></span>
+                    </p>
+                </div>
             <?php else: ?>
                 <?php $this->show_subscription_renew_warning($repository_id, $subscription_type); ?>
             <?php endif; ?>
             
             <div class="alignright">
                 <a class="remove_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?> data-confirmation="<?php esc_attr_e('Are you sure you want to unregister?', 'installer') ?>" data-nonce="<?php echo wp_create_nonce('remove_site_key_' . $repository_id) ?>"><?php printf(__("Unregister %s from this site", 'installer'), $generic_product_name) ?></a>&nbsp;            
-                <a class="update_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?> data-nonce="<?php echo wp_create_nonce('update_site_key_' . $repository_id) ?>"><?php _e('Check for updates', 'installer') ?></a>
+                <a class="update_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?> data-nonce="<?php echo wp_create_nonce('update_site_key_' . $repository_id) ?>">
+                    <?php _e('Check for updates', 'installer'); ?>
+                </a>
             </div>
             
             <?php if(empty($expired)): ?>
@@ -73,6 +83,8 @@
             <?php endif; //if(empty($expired)) ?>
             
             <?php endif; // if(!repository_has_subscription) ?>
+            <br clear="all" />
+            <div class="installer-error-box hidden"></div>
             
         </td>        
     </tr>

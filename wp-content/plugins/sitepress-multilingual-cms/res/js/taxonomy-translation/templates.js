@@ -250,9 +250,7 @@ TaxonomyTranslation.data.syncData = {};
                 "</div>"]
 
     };
-
-    TaxonomyTranslation.templateCompiler = Object.create(WpmlTemplateCompiler);
-    TaxonomyTranslation.templateCompiler.init(_, templates);
+    TaxonomyTranslation.templateCompiler = new WpmlTemplateCompiler(_, templates);
 
     TaxonomyTranslation.getTemplate = function (temp) {
 

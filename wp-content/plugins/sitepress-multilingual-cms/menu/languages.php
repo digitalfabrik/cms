@@ -14,7 +14,9 @@
 
 	if ( isset( $_GET[ 'trop' ] ) ) {
 		require_once dirname( __FILE__ ) . '/edit-languages.php';
-
+		global $icl_edit_languages;
+		$icl_edit_languages = new SitePress_EditLanguages();
+		$icl_edit_languages->render();
 		return;
 	}
 
@@ -1025,6 +1027,14 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
                                 <?php endif; ?>
                             </label></li>
                         </ul>
+                        <div class="wpml-form-message update-nag js-redirect-warning"<?php if( empty( $automatic_redirect ) ) : ?> style="display: none;"<?php endif; ?>>
+                            <?php
+                                $redirect_warning_1 = __( "Browser language redirect may affect your site's indexing", 'sitepress');
+                                $redirect_warning_2 = __( "learn more", 'sitepress');
+                                $url = 'https://wpml.org/documentation/getting-started-guide/language-setup/automatic-redirect-based-on-browser-language/how-browser-language-redirect-affects-google-indexing/';
+                                echo $redirect_warning_1 . '- <a href="' . $url . '" target="_blank">' . $redirect_warning_2 . '</a>';
+                            ?>
+                        </div>
                         <p class="buttons-wrap">
                             <span class="icl_ajx_response" id="icl_ajx_response_ar"></span>
                             <input class="button button-primary" name="save" value="<?php _e('Save','sitepress') ?>" type="submit" />
@@ -1040,27 +1050,11 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 
         <?php
 				$request_get_page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-				do_action('icl_extra_options_' . $request_get_page); ?>
+				do_action('icl_extra_options_' . $request_get_page);
 
-        <div class="wpml-section wpml-section-seo-options" id="lang-sec-9-5">
-            <div class="wpml-section-header">
-                <h3><?php _e('SEO Options', 'sitepress') ?></h3>
-            </div>
-            <div class="wpml-section-content">
-                <form id="icl_seo_options" name="icl_seo_options" action="">
-                    <?php wp_nonce_field('icl_seo_options_nonce', '_icl_nonce'); ?>
-                    <p>
-                        <label><input type="checkbox" name="icl_seo_head_langs" <?php if( $seo['head_langs']) echo 'checked="checked"' ?> value="1" />
-                        <?php _e("Display alternative languages in the HEAD section.", 'sitepress'); ?></label>
-                    </p>
-                    <p class="buttons-wrap">
-                        <span class="icl_ajx_response" id="icl_ajx_response_seo"></span>
-                        <input class="button button-primary" name="save" value="<?php _e('Save','sitepress') ?>" type="submit" />
-                    </p>
-                </form>
-            </div>
-        </div>
-
+	    $seo_ui = new WPML_SEO_HeadLangs($sitepress);
+	    $seo_ui->render_menu();
+	    ?>
         <div class="wpml-section wpml-section-wpml-love" id="lang-sec-10">
             <div class="wpml-section-header">
                 <h3><?php _e('WPML love', 'sitepress') ?></h3>

@@ -1,3 +1,8 @@
+#2.1.20
+
+##Fixes
+* [wpmlmedia-81] Fixed language filter issue in Media Library section.
+
 #2.1.19
 
 ##Fixes
@@ -9,7 +14,6 @@
 
 ##Cleanup
 * [wpmlcore-2541] Removal of "icon-32" usage
-
 
 # 2.1.17
 

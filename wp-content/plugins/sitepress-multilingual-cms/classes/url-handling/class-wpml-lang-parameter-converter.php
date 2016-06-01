@@ -18,18 +18,9 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 	}
 
 	function request_filter( $request ) {
+		// This is required so that home page detection works for other languages.
 		if ( !defined( 'WP_ADMIN' ) && isset( $request[ 'lang' ] ) ) {
-			// Count the parameters that have settings and remove our 'lang ' setting it's the only one.
-			// This is required so that home page detection works for other languages.
-			$count = 0;
-			foreach ( $request as $data ) {
-				if ( $data !== '' ) {
-					$count += 1;
-				}
-			}
-			if ( $count == 1 ) {
-				unset( $request[ 'lang' ] );
-			}
+			unset( $request[ 'lang' ] );
 		}
 
 		return $request;
@@ -43,13 +34,24 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 	 * @return string
 	 */
 	function paginated_url_filter( $url ) {
+		$url       = urldecode( $url );
 		$parts     = explode( '?', $url );
 		$last_part = count( $parts ) > 2 ? array_pop( $parts ) : "";
 		$url       = join( '?', $parts );
-		$url       = preg_replace( '#(.+?)(/\?|\?)(.*?)(/.+?[/$|$])$#', '$1$4$5?$3', $url );
+		$url       = preg_replace( '#(.+?)(/\?|\?)(.*?)(/.+?$)$#', '$1$4$5?$3', $url );
 		$url       = preg_replace( '#(\?.+)(%2F|\/)$#', '$1', $url );
 
-		return $url . ( $last_part !== "" && strpos( $url, '?' . $last_part ) === false ? '&' . $last_part : '' );
+		$url       = $url . ( $last_part !== "" && strpos( $url, '?' . $last_part ) === false ? '&' . $last_part : '' );
+		$parts     = explode( '?', $url );
+
+		if ( isset( $parts[1] ) ) {
+			// Maybe remove duplicated lang param
+			$params = array();
+			parse_str( $parts[1], $params );
+			$url = $parts[0] . '?' . build_query( $params );
+		}
+
+		return $url;
 	}
 
 	/**
@@ -63,8 +65,7 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 	 * @hook wp_link_pages_link
 	 */
 	function paginated_link_filter( $link_html ) {
-
-		return preg_replace('#"([^"].+?)(/\?|\?)(.+)(/\d/)"#', '"$1$4?$3"', $link_html);
+		return preg_replace( '#"([^"].+?)(/\?|\?)([^/]+)(/[^"]+)"#', '"$1$4?$3"', $link_html );
 	}
 
 	protected function get_lang_from_url_string( $url ) {

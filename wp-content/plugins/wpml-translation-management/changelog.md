@@ -1,6 +1,27 @@
+#2.1.7
+
+##Fixes
+* [wpmltm-1348] JS syntax error in WP 4.5 (related to new jQuery version)
+
+#2.1.6
+
+##Fixes
+* [wpmltm-1166] Replaced issue of deprecated function get_currentuserinfo for compatibility with WordPress 4.5
+* [wpmltm-1177] Fixed issue where translated XLIFFs with '0' as content were not accepted from Translation Management
+* [wpmlst-736] Fixed `Fatal error: Uncaught exception 'InvalidArgumentException' with message 'Tried to load a string filter for a non-existent language'`
+* [wpmltm-1098] Handle exception raised when trying to enable XML-RPC but it is unavailable
+* [wpmltm-1138] Added option to disconnect multiple duplicates (bulk mode) in TM Basket before sending for translation.
+* [wpmltm-1160] Fix links to translation editor.
+* [wpmltm-1213] Fixed issue with incorrect redirections after translation save/update and wrong post/page edit links.
+* [wpmltm-1257] Reduce number of DB queries on listing pages.
+
+##Features
+* [wpmltm-1215] Hide system fields when displaying custom fields and terms meta
+* [wpmltm-1026] Added `external-file` in XLIFF files, to allow third party services to access the original URL.
+
 #2.1.5
 
-##Fix
+##Fixes
 * [wpmltm-1154] Fixed issues in possible database inconsistencies when choosing to cancel all local translation jobs after activating a translation service
 
 ##Performances
@@ -106,7 +127,7 @@
 * Improved performances
 * General improvements in the quality of the JavaScript and PHP code
 
-##Fix
+##Fixes
 * Fixed PHP warning on the Add translator screen when no Translation Service was set yet
 * Fixed checkbox validation in Translation Editor
 * Fixed issues with translations when switching from Translation editor to WordPress editor
@@ -115,7 +136,7 @@
 
 #1.9.8
 
-##Fix
+##Fixes
 * Fixed a style issue with the "View Original" link of Translation Jobs table
 
 #1.9.7
@@ -124,7 +145,7 @@
 * Support for string translation packages 
 * Removed PHP warning when in Translation Dashboard and only one language is defined. Replaced with an admin notice
 
-##Fix
+##Fixes
 * Fixed issue with in proper notices in Translation Editor when user tries to translate document which was assigned to another user before
 * Fixed issue with "Copy from" in Translation Editor 
 * Fixed multiple issues with translation of hierarchical taxonomies
@@ -140,7 +161,7 @@
 * New way to define plugin url is now tolerant for different server settings
 * Support for different formats of new lines in XLIFF files
 
-##Fix
+##Fixes
 * Fixed possible SQL injections
 * When you preselect posts with status "Translation Complete" on WPML > Translation Management dashboard, it show wrong results. This is fixed now
 
