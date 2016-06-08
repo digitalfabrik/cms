@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Name: Content Loader Template
+ * Plugin Name: Content Loader Sprungbrett
  * Description: Template for plugin to include external data into integreat
  * Version: 0.1
  * Author: Julian Orth, Sven Seeberg
@@ -9,14 +9,12 @@
  * License: MIT
  */
 
-function sb_update() {
+function cl_sb_update_content() {
 	// get stuff from sprungbrett api
-	
-	// build html from json
-	
-	if(function_exists("cl_save_content")) 
-		// save html to wordpress with cl_save_content($html)
-	else
-		//throw error
+	$json = file_get_contents('http://localhost/json.txt');
+    $json = json_decode($json);
+    
+    var_dump($json);
+
 }
-add_action('cl_get_update_content','sb_update');
+add_action('cl_update_content','cl_sb_update_content');

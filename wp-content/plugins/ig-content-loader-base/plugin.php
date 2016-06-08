@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Content Loader Template
+ * Plugin Name: Content Loader Base
  * Description: Template for plugin to include external data into integreat
  * Version: 0.1
  * Author: Julian Orth, Sven Seeberg
@@ -64,7 +64,7 @@ function cl_generate_selection_box () {
 	
 	
 }
-add_action('wenn eine seite bearbeitet wird','cl_generate_selection_box')
+add_action('wenn eine seite bearbeitet wird','cl_generate_selection_box');
 
 
 function cl_save_page () {
@@ -78,7 +78,7 @@ add_action('save_page','cl_save_page');
 function cl_save_content() {
 	do_action('cl_save_content');
 	
-	save_post($posttype='attachment',$title,$content,$parent_id)
+	save_post($posttype='attachment',$title,$content,$parent_id);
 	// eigene datenstruktur oder wp_posts und eigenen datentypen definieren bzw attachment(!!!) benutzen?
 }
 
@@ -88,11 +88,33 @@ function cl_modify_post() {
 }
 add_action('rest_api_print_post', 'modify_post', 1);
 
-function cl_update () {
-	// wird regelmäßig durch cronjob gestartet
-	do_action('cl_get_update_content');
-}
+
 
 // do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
+function cl_update () {
+    global $wp_query;
+    // wird regelmäßig durch cronjob gestartet
+    $cl_action = $wp_query->query_vars['content-loader'];
+    
+    if( $cl_action == "update" ) {
+        
+        do_action('cl_update_content');
+        
+        exit();
+    }
+}
+add_action( 'template_redirect', 'cl_update' );
+
+
+// do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
+
+function cl_rewrite() {
+
+    add_rewrite_tag( '%content-loader%', '([^&]+)' );
+    //add_rewrite_rule( 'content-loader/([^/]*)/?', 'index.php?content-loader=$matches[1]', 'top');
+
+}
+add_action( 'init', 'cl_rewrite' );
+
 
 ?>
