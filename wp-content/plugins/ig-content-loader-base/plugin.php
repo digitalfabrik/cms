@@ -77,18 +77,12 @@ function cl_my_display_callback( $post ) {
  */
 function cl_save_meta_box( $post_id ) {
     // Save logic goes here. Don't forget to include nonce checks!
-}
-add_action( 'save_post', 'cl_save_meta_box' );
-
-
-// maybe remove previous function as save_page is more specific than save post
-function cl_save_page () {
 	//wenn element aus cl_generate_selection_box ausgewählt wurde, irgendwie in postmeta speichern
 	$cl_content = $_GET['cl_content'];
 	
 	//save in postmeta
 }
-add_action('save_page','cl_save_page');
+add_action( 'save_page', 'cl_save_meta_box' );
 
 function cl_save_content() {
 	do_action('cl_save_content');
