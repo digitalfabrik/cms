@@ -53,10 +53,10 @@ function jal_install_data() {
 }
 
 /**
- * Register meta box(es) at the bottom of edit page.
+ *  Meta Box registrieren und an Hook binden
  */
 function cl_generate_selection_box() {
-    add_meta_box( 'meta-box-id', __( 'My Meta Box', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
+    add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
  
@@ -67,7 +67,50 @@ add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
  */
 function cl_my_display_callback( $post ) {
     // Display code/markup goes here. Don't forget to include nonces!
-    echo "Some displayed text.";
+    wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
+    $prfx_stored_meta = get_post_meta( $post->ID );
+    ?>
+
+    <!-- Fremdinhalt Dropdown-select -->
+    <p>
+        <label style="font-weight:600" for="meta-select" class="prfx-row-title">
+            <?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
+        </label>
+        <select name="meta-select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
+            <option value="select-one" <?php if ( isset ( $prfx_stored_meta[ 'meta-select'] ) ) selected( $prfx_stored_meta[ 'meta-select'][0], 'select-one' ); ?>>
+                <?php _e( 'Sprungbrett into work', 'prfx-textdomain' )?>
+            </option>';
+            <option value="select-two">
+                <?php _e( 'Sprungbrett bayern', 'prfx-textdomain' )?>
+            </option>';
+
+        </select>
+    </p>
+
+
+    <!-- Inhalt position Radios -->
+    <p>
+        <span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
+        <div class="prfx-row-content">
+            <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
+                <input type="radio" name="meta-radio" id="meta-radio-one" value="radio-one">
+                <?php _e( 'Am Anfang', 'prfx-textdomain' )?>
+            </label>
+            <label for="meta-radio-two">
+                <input checked type="radio" name="meta-radio" id="meta-radio-two" value="radio-two">
+                <?php _e( 'Am Ende', 'prfx-textdomain' )?>
+            </label>
+        </div>
+    </p>
+
+
+    <!-- Inhalt laden und einfügen -->
+    <div>
+        <hr style="margin-bottom:10px;">
+        <input style="width:100%;" name="loadandinsert" type="submit" class="button button-primary button-large" id="s" value="Einfügen">
+    </div>
+
+    <?php
 }
  
 /**
