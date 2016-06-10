@@ -52,21 +52,36 @@ function jal_install_data() {
 	);
 }
 
-// generiert box im editor fenster, in der alle content loader ausgewählt werden können
-function cl_generate_selection_box () {
-	//apply_filters ( 'cl_content_list', array() );
-	$list = array('ig-cl-sprungbrett'=>'Sprungbrett','plugin-name'=>'description');
-	//list zu html drop down verwurtschteln
-	
-	
-	
-	echo "<select name='cl_content'></select>";
-	
-	
+/**
+ * Register meta box(es) at the bottom of edit page.
+ */
+function cl_generate_selection_box() {
+    add_meta_box( 'meta-box-id', __( 'My Meta Box', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
 }
-add_action('wenn eine seite bearbeitet wird','cl_generate_selection_box');
+add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
+ 
+/**
+ * Meta box display callback.
+ *
+ * @param WP_Post $post Current post object.
+ */
+function cl_my_display_callback( $post ) {
+    // Display code/markup goes here. Don't forget to include nonces!
+    echo "Some displayed text.";
+}
+ 
+/**
+ * Save meta box content.
+ *
+ * @param int $post_id Post ID
+ */
+function cl_save_meta_box( $post_id ) {
+    // Save logic goes here. Don't forget to include nonce checks!
+}
+add_action( 'save_post', 'cl_save_meta_box' );
 
 
+// maybe remove previous function as save_page is more specific than save post
 function cl_save_page () {
 	//wenn element aus cl_generate_selection_box ausgewählt wurde, irgendwie in postmeta speichern
 	$cl_content = $_GET['cl_content'];
