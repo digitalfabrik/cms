@@ -52,6 +52,43 @@ function jal_install_data() {
 	);
 }
 
+/* debugging function for testing purposes 
+* src: https://www.itsupportguides.com/wordpress/wordpress-how-to-debug-php-to-console/ 
+*/
+function debug_to_console( $data ) {
+if ( is_array( $data ) )
+ $output = "<script>console.log( 'Debug Objects: " . implode( ',', $data) . "' );</script>";
+ else
+ $output = "<script>console.log( 'Debug Objects: " . $data . "' );</script>";
+echo $output;
+}
+
+/*
+* generate select items from plugin list which contain the name prefix 'cl-content-loader'
+* src: http://wordpress.stackexchange.com/questions/52144/what-wordpress-api-function-lists-active-inactive-plugins
+*/
+function cl_generate_select_list() {
+    // get all plugins and store them in array
+    $cl_plugin_stack = array();
+    $cl_plugin_names = array();
+    $cl_plugins = get_plugins();
+    foreach ( $cl_plugins as $cl_plugin ) {
+        array_push($cl_plugin_stack, $cl_plugin);
+    }
+    
+    //loop through plugin array and get all plugin names
+    for ($x = 0; $x < count($cl_plugin_stack); $x++) {  
+      array_push($cl_plugin_names, $cl_plugin_stack[$x][Name]);    
+    }
+    //debug_to_console($cl_plugin_names);
+    
+    $cl_matches = preg_grep('/Content Loader/', $cl_plugin_names); 
+    $cl_keys    = array_keys($cl_matches); 
+    
+    debug_to_console($cl_matches);
+}
+
+
 /**
  *  Meta Box registrieren und an Hook binden
  */
@@ -59,6 +96,7 @@ function cl_generate_selection_box() {
     add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
+//add_action( 'add_meta_boxes_page', 'cl_generate_select_list' );
  
 /**
  * Meta box display callback.
@@ -69,26 +107,54 @@ function cl_my_display_callback( $post ) {
     // Display code/markup goes here. Don't forget to include nonces!
     wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
     $prfx_stored_meta = get_post_meta( $post->ID );
-    ?>
+    
 
-    <!-- Fremdinhalt Dropdown-select -->
+    // get all plugins and store them in array
+    $cl_plugin_stack = array();
+    $cl_plugin_names = array();
+    $cl_plugins = get_plugins();
+    foreach ( $cl_plugins as $cl_plugin ) {
+        array_push($cl_plugin_stack, $cl_plugin);
+    }
+    
+    //loop through plugin array and get all plugin names
+    for ($x = 0; $x < count($cl_plugin_stack); $x++) {  
+      array_push($cl_plugin_names, $cl_plugin_stack[$x][Name]);    
+    }
+    //debug_to_console($cl_plugin_names);
+    
+    $cl_matches = preg_grep('/Content Loader/', $cl_plugin_names); 
+    //$cl_keys    = array_keys($cl_matches); 
+    
+    debug_to_console($cl_matches);
+
+    
+
+?>
+
+    
+
+
+
+
+    <!-- foreign content: Dropdown-select -->
     <p>
         <label style="font-weight:600" for="meta-select" class="prfx-row-title">
             <?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
         </label>
         <select name="meta-select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
-            <option value="select-one" <?php if ( isset ( $prfx_stored_meta[ 'meta-select'] ) ) selected( $prfx_stored_meta[ 'meta-select'][0], 'select-one' ); ?>>
-                <?php _e( 'Sprungbrett into work', 'prfx-textdomain' )?>
-            </option>';
-            <option value="select-two">
-                <?php _e( 'Sprungbrett bayern', 'prfx-textdomain' )?>
-            </option>';
-
+            <!-- build select items from filtered plugin list -->
+            <?php 
+                foreach($cl_matches as $cl_plugin_name_option) {
+                    print('<option value="'.$cl_plugin_name_option.'">'.$cl_plugin_name_option.'</option>'."\n");  
+                }
+            ?>
+            
         </select>
     </p>
 
 
-    <!-- Inhalt position Radios -->
+    <!-- content position: Radios -->
     <p>
         <span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
         <div class="prfx-row-content">
@@ -104,7 +170,7 @@ function cl_my_display_callback( $post ) {
     </p>
 
 
-    <!-- Inhalt laden und einfügen -->
+    <!-- load and insert content: Button -->
     <div>
         <hr style="margin-bottom:10px;">
         <input style="width:100%;" name="loadandinsert" type="submit" class="button button-primary button-large" id="s" value="Einfügen">
