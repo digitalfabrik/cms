@@ -122,13 +122,13 @@ function cl_my_display_callback( $post ) {
         <label style="font-weight:600" for="meta-select" class="prfx-row-title">
             <?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
         </label>
-        <select name="cl_content_select2" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
+        <select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
             <!-- build select items from filtered plugin list -->
-            
+            <option>Plugin picken</option>
             <?php 
                 foreach($dropdown_items as $cl_plugin_name_option) {
 //                    print('<option name="cl_content_select" value="'.$cl_plugin_name_option[id].'">'.$cl_plugin_name_option[id].'</option>'."\n");  
-                    print('<option name="cl_content_select">'.$cl_plugin_name_option->name.'</option>');
+                    print('<option name="cl_content_select_item">'.$cl_plugin_name_option->name.'</option>');
                 }
             ?>
             
@@ -158,94 +158,51 @@ function cl_my_display_callback( $post ) {
         <input style="width:100%;" name="loadandinsert" type="submit" class="button button-primary button-large" id="s" value="Einfügen">
     </div>
 
-   
-    <?php
-       
+    <?php       
    
 }
  
-/* Save post meta on the 'save_post' hook. */
-  //add_action( 'pre_post_update', 'smashing_save_post_class_meta', 10, 2 );
-
-/* Save the meta box's post metadata. */
-function smashing_save_post_class_meta( $post_id, $post ) {
-
-  /* Verify the nonce before proceeding. */
-//  if ( !isset( $_POST['smashing_post_class_nonce'] ) || !wp_verify_nonce( $_POST['smashing_post_class_nonce'], basename( __FILE__ ) ) )
-//    return $post_id;
-    debug_to_console("ok");
-
-  /* Get the post type object. */
-  $post_type = get_post_type_object( $post->post_type );
-
-  /* Check if the current user has permission to edit the post. */
-  if ( !current_user_can( $post_type->cap->edit_post, $post_id ) )
-    return $post_id;
-
-  /* Get the posted data and sanitize it for use as an HTML class. */
-  $new_meta_value = ( isset( $_POST['cl_content_select'] ) ? sanitize_html_class( $_POST['cl_content_select'] ) : '' );
-
-  /* Get the meta key. */
-  $meta_key = 'smashing_post_class';
-
-  /* Get the meta value of the custom field key. */
-  $meta_value = get_post_meta( $post_id, $meta_key, true );
-
-  /* If a new meta value was added and there was no previous value, add it. */
-  if ( $new_meta_value && '' == $meta_value )
-    add_post_meta( $post_id, $meta_key, $new_meta_value, true );
-    
-  /* If the new meta value does not match the old value, update it. */
-  elseif ( $new_meta_value && $new_meta_value != $meta_value )
-    update_post_meta( $post_id, $meta_key, $new_meta_value );
-
-  /* If there is no new meta value but an old value exists, delete it. */
-  elseif ( '' == $new_meta_value && $meta_value )
-    delete_post_meta( $post_id, $meta_key, $meta_value );
-}
 
 
-
-//add_action( 'save_post', 'cl_save_meta_box' );
-
-/**
- * Save meta box content.
- *
- * @param int $post_id Post ID
- */
 add_action('save_post', 'cl_save_meta_box');
 add_action('edit_post', 'cl_save_meta_box');
 add_action('publish_post', 'cl_save_meta_box');
 add_action('edit_page_form', 'cl_save_meta_box');
+/**
+* Save meta box content.
+*
+* @param int $post_id Post ID
+*/
+
 //save in postmeta
 function cl_save_meta_box($post_id) {
-    // Save logic goes here. Don't forget to include nonce checks!
-	//wenn element aus cl_generate_selection_box ausgewählt wurde, irgendwie in postmeta speichern
-	//$cl_content = $_GET['cl_content_select'];
-    /* Get the meta key. */
+
+    // the key for the content-loader-base plugin in the wp_postmeta is
     $meta_key = 'ig-content-loader-base';
-    $meta_value = $_REQUEST['cl_content_select2'];
-//    var_dump("leck michaksldjfasjkldfjklasdfjkasdjkfjaklsdfkljasdjfklalsjkdfjlkasdfkljasdlkjf");
-    var_dump($meta_value);
+  
+    //get the selected value from the meta box select
+   $meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
+
     
-//    var_dump($_POST);
-    if ($meta_value) {
-        
-    /* Get the meta value of the custom field key. */
-        $meta_value = get_post_meta( $post_id, $meta_key, true );
+//    update_post_meta( $post_id, $meta_key, $meta_value );
+    //read old post meta setting
+    $old_meta_value = get_post_meta( $post_id, $meta_key, true );
+  
+    // wenn select nicht leer ist
+    if ($meta_value != '') {
+      
+    //if there was no old post meta entry, add it
+    if ( '' == $old_meta_value )
+        add_post_meta( $post_id, $meta_key, $meta_value, true );
 
-    /* If a new meta value was added and there was no previous value, add it. */
-    if ( $new_meta_value && '' == $meta_value )
-        add_post_meta( $post_id, $meta_key, $new_meta_value, true );
-
-    /* If the new meta value does not match the old value, update it. */
-    elseif ( $new_meta_value && $new_meta_value != $meta_value )
-        update_post_meta( $post_id, $meta_key, $new_meta_value );
-
-    /* If there is no new meta value but an old value exists, delete it. */
-    elseif ( '' == $new_meta_value && $meta_value )
+    //if the old post meta value is different from the posted one,change it
+    elseif ( $old_meta_value != $meta_value )
+        update_post_meta( $post_id, $meta_key, $meta_value );
+    }
+  
+    //if there is an old meta value but now new meta value, remve metavalue from wp_postmeta
+    elseif ( '' == $meta_value && $old_meta_value ) {
         delete_post_meta( $post_id, $meta_key, $meta_value );
-
     }
 }
    
@@ -256,14 +213,16 @@ function cl_save_meta_box($post_id) {
 // wird aufgerufen mit id und html code, welcher als attach gespeichert wird
 function cl_save_content( $parent_id, $attachement) {
 	// noch mal prüfen:
-	save_post($posttype='attachment',$title,$attachement,$parent_id);
-    
+	//save_post($posttype='attachment',$title,$attachement,$parent_id);
+    var_dump($attachement);
+   
 	// eigene datenstruktur oder wp_posts und eigenen datentypen definieren bzw attachment(!!!) benutzen?
 }
+add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 2);
 
 function cl_modify_post() {
 	//lädt aus datenbank den zwischengespeicherten fremdcontent
-	echo "";
+	
 }
 add_action('rest_api_print_post', 'modify_post', 1);
 
@@ -273,16 +232,27 @@ add_action('rest_api_print_post', 'modify_post', 1);
 function cl_update () {
     global $wp_query;
     global $wpdb;
+
     // query alle objekte in db mit meta_key = ig-content-loader-base
-    $result = $wpdb->get_results("select post_id from ".$wpdb->prefix."_postmeta where meta_key = 'ig-content-loader-base'");
+    // .$wpdb->prefix. anstatt wp_2
+    $result = $wpdb->get_results("select * from wp_2_postmeta where meta_key = 'ig-content-loader-base'");
+//    var_dump($result[0]->meta_value);
     
+    // ist leerer string obwohl result pointer stimmt ... irgendwie result typ zu string umwandeln
+    $parent_id = "".$result[0]->meta_value;
+    $meta_val = "".$result[0]->meta_value;
+    
+//    $meta_value = implode ( array $result[0]->mata_value );
+    
+//    var_dump($meta_val);
+
     // wird regelmäßig durch cronjob gestartet
     // parse var content-loader aus url
     $cl_action = $wp_query->query_vars['content-loader'];
     
     if( $cl_action == "update" ) {
-        
-        do_action('cl_update_content', $parent_id, $meta_value );
+//        var_dump($meta_value);
+        do_action('cl_update_content', $parent_id, $meta_val);
         
         exit();
     }
