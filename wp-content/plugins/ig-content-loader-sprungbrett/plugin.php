@@ -9,35 +9,42 @@
  * License: MIT
  */
 
-function cl_sb_update_content($parent_id, $meta_value) {
+function cl_sb_update_content($parent_id, $meta_value, $blog_id) {
 	// get stuff from sprungbrett api
-    
+//    var_dump($meta_value);
     if($meta_value == "Sprungbrett Praktika") {
         
-	$json = file_get_contents('http://localhost/json.txt');
-    $json = json_decode($json);
-    $html = cl_sb_json_to_html($json);
-//    var_dump($html);
-    do_action('cl_save_html_as_attachement', $parent_id, $html);
-        
-    exit();
-//    cl_save_content( $parent_id, $html );
+        $json = file_get_contents('http://localhost/json.txt');
+        $json = json_decode($json, TRUE);
+        $html = cl_sb_json_to_html($json);
+//        var_dump("HAALLLLLOOOOOOOOO");
+    //    var_dump($html);
+        cl_save_content( $parent_id, $html, $blog_id);
+        //do_action('cl_save_html_as_attachement', $parent_id, $html);
+
+        return;
+    //    
         
     }
 
 }
-add_action('cl_update_content','cl_sb_update_content', 10, 2);
+add_action('cl_update_content','cl_sb_update_content', 10, 3);
+
 
 // get json data and transform them to html list
+// geht nicht mehr mit 2 json objects
 function cl_sb_json_to_html($json) {
-    // aus json html liste erstellen
-    $htmlstring = '';
-    $arr = json_decode('[{"var1":"9","var2":"16","var3":"16"},{"var1":"8","var2":"15","var3":"15"}]');
-    foreach($json as $jobitem) { //foreach element in $arr
-        $htmlstring .= $jobitem;
-        $htmlstringarr = objectToArray($htmlstring);
- 
+
+    $html_table_prefix = '<table>';
+    $html_table_suffix = '</table>';
+    
+    foreach($json as $jobitem) {
+        $htmlstring .= '<tr><td><b>'.$jobitem['title'].'</b></td></tr>'.
+                       '<tr><td>'.$jobitem['description'].'</td></tr>'.
+                       '<tr><td>'.$jobitem['zip'].'</td></tr>';
     }
+    
+    $htmlstring = $html_table_prefix.$htmlstring.$html_table_suffix;
 
     return $htmlstring;
 }
@@ -48,29 +55,5 @@ function cl_sb_metabox_item($array) {
     return $array;
 }
 add_filter('cl_metabox_item', 'cl_sb_metabox_item');
-
-
-// HIER
-// http://www.if-not-true-then-false.com/2009/php-tip-convert-stdclass-object-to-multidimensional-array-and-convert-multidimensional-array-to-stdclass-object/
-function objectToArray($d) {
-        if (is_object($d)) {
-            // Gets the properties of the given object
-            // with get_object_vars function
-            $d = get_object_vars($d);
-        }
- 
-        if (is_array($d)) {
-            /*
-            * Return array converted to object
-            * Using __FUNCTION__ (Magic constant)
-            * for recursive call
-            */
-            return array_map(__FUNCTION__, $d);
-        }
-        else {
-            // Return array
-            return $d;
-        }
-}
 
 ?>

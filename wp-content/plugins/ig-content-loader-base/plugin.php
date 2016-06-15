@@ -131,7 +131,7 @@ function cl_my_display_callback( $post ) {
                     print('<option name="cl_content_select_item">'.$cl_plugin_name_option->name.'</option>');
                 }
             ?>
-            
+
         </select>
     </p>
 
@@ -211,64 +211,117 @@ function cl_save_meta_box($post_id) {
 
 
 // wird aufgerufen mit id und html code, welcher als attach gespeichert wird
-function cl_save_content( $parent_id, $attachement) {
+function cl_save_content( $parent_id, $attachment, $blog_id) {
+    global $wpdb;
 	// noch mal prüfen:
 	//save_post($posttype='attachment',$title,$attachement,$parent_id);
-    var_dump($attachement);
+//    var_dump($attachment);
+    // wenn resulst kommt, gibt es bereits einen -> update, wenn keins kommt dann insert
+    $sql = "SELECT * FROM ".$wpdb->prefix.$blog_id."_posts WHERE parent_id =".$parent_id." AND post_type = 'cl_html'";
+    $sql_results = $wpdb->get_results($sql);
+    
+    if(count($sql_results) > 0) {
+        $wpdb->query("UPDATE ".$wpdb->prefix.$blog_id."_posts SET post_content = '$attachment' WHERE ID = ".$sql_results[0]->ID);
+//        var_dump($update);
+        //update
+        
+    } else {
+        //insert
+        $wpdb->query("INSERT INTO ".$wpdb->prefix.$blog_id."_posts(post_content, post_type, post_mime_type, post_parent, post_status) VALUES('$attachment','cl_html', 'text/html', '$parent_id', 'inherit')");
+//        var_dump($insert);
+    }
+    
    
 	// eigene datenstruktur oder wp_posts und eigenen datentypen definieren bzw attachment(!!!) benutzen?
 }
-add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 2);
+add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 
-function cl_modify_post() {
-	//lädt aus datenbank den zwischengespeicherten fremdcontent
+function cl_modify_post($post) {
+    global $wpdb;
+    global $check_alreay_posted;
+
+    // quick and dirty, so the fnc will get called only once 
+    if(in_array("Irix", $array)) 
+        
+    if(count($array) < 1) {
+        
+      //lädt aus datenbank den zwischengespeicherten fremdcontent
+    //läd attachment aus db und fügt es an beitrag an.
+	$result = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent =".$post->ID." AND post_type = 'cl_html'");
+    $array[] = $result[0]->post_parent;
+    var_dump($array);
+
+    $post->post_content = $result[0]->post_content.$post->post_content;  
+        
+        
+    } else {}
+
 	
-}
-add_action('rest_api_print_post', 'modify_post', 1);
 
+}
+add_action('rest_api_print_post', 'cl_modify_post', 1);
+add_action('the_post', 'cl_modify_post');
 
 
 // do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
 function cl_update () {
     global $wp_query;
     global $wpdb;
-
-    // query alle objekte in db mit meta_key = ig-content-loader-base
-    // .$wpdb->prefix. anstatt wp_2
-    $result = $wpdb->get_results("select * from wp_2_postmeta where meta_key = 'ig-content-loader-base'");
-//    var_dump($result[0]->meta_value);
     
-    // ist leerer string obwohl result pointer stimmt ... irgendwie result typ zu string umwandeln
-    $parent_id = "".$result[0]->meta_value;
-    $meta_val = "".$result[0]->meta_value;
-    
-//    $meta_value = implode ( array $result[0]->mata_value );
-    
-//    var_dump($meta_val);
-
     // wird regelmäßig durch cronjob gestartet
     // parse var content-loader aus url
     $cl_action = $wp_query->query_vars['content-loader'];
-    
+    //update content loader content?
     if( $cl_action == "update" ) {
-//        var_dump($meta_value);
-        do_action('cl_update_content', $parent_id, $meta_val);
-        
-        exit();
+
+        // get all blogs / instances (augsburg, regensburg, etc)
+        // geh durch alle blogs und schaue nach plugin um prefix id zu bekommen 
+        $query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
+        $all_blogs = $wpdb->get_results($query);
+//        var_dump($all_blogs);
+        foreach( $all_blogs as $blog ){
+            $blog_id = $blog->blog_id;
+            $bla = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
+//            var_dump($bla);
+            // query alle objekte in db mit meta_key = ig-content-loader-base
+            // .$wpdb->prefix. anstatt wp_2
+            //get all posts from instance where content-loader provides additonal content
+            $result = $wpdb->get_results("select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'");
+   
+
+            // ist leerer string obwohl result pointer stimmt ... irgendwie result typ zu string umwandeln
+            $parent_id = "".$result[0]->post_id;
+            $meta_val = "".$result[0]->meta_value;
+//            var_dump($result);
+
+            do_action('cl_update_content', $parent_id, $meta_val, $blog_id);
+
+        }
+        exit;
     }
+    else{}
+
 }
 add_action( 'template_redirect', 'cl_update' );
 
 
 // do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
-
-function cl_rewrite() {
+// post type für attachement
+function cl_init() {
     // es gibt var content-loader
     add_rewrite_tag( '%content-loader%', '([^&]+)' );
     //add_rewrite_rule( 'content-loader/([^/]*)/?', 'index.php?content-loader=$matches[1]', 'top');
+    register_post_type( 'cl_html',
+    array(
+      'labels' => array(
+        'name' => __( 'Content-loader HTML' ),
+        'singular_name' => __( 'Content-loader HTML' )
+      )
+    )
+  );
 
 }
-add_action( 'init', 'cl_rewrite' );
+add_action( 'init', 'cl_init' );
 
 
 ?>
