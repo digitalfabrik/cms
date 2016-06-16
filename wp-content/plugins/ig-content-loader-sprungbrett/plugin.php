@@ -11,14 +11,13 @@
 
 function cl_sb_update_content($parent_id, $meta_value, $blog_id) {
 	// get stuff from sprungbrett api
-//    var_dump($meta_value);
+    // sprungbrett praktika -> ig-content-loader-sprungbrett
     if($meta_value == "Sprungbrett Praktika") {
         
         $json = file_get_contents('http://localhost/json.txt');
         $json = json_decode($json, TRUE);
         $html = cl_sb_json_to_html($json);
-//        var_dump("HAALLLLLOOOOOOOOO");
-    //    var_dump($html);
+
         cl_save_content( $parent_id, $html, $blog_id);
         //do_action('cl_save_html_as_attachement', $parent_id, $html);
 
@@ -39,9 +38,9 @@ function cl_sb_json_to_html($json) {
     $html_table_suffix = '</table>';
     
     foreach($json as $jobitem) {
-        $htmlstring .= '<tr><td><b>'.$jobitem['title'].'</b></td></tr>'.
-                       '<tr><td>'.$jobitem['description'].'</td></tr>'.
-                       '<tr><td>'.$jobitem['zip'].'</td></tr>';
+        $htmlstring .= '<tr><td><b>'.$jobitem['title'].'</b></td>'.
+                       '<td>'.$jobitem['description'].'</td>'.
+                       '<td>'.$jobitem['zip'].'</td></tr>';
     }
     
     $htmlstring = $html_table_prefix.$htmlstring.$html_table_suffix;
@@ -55,5 +54,14 @@ function cl_sb_metabox_item($array) {
     return $array;
 }
 add_filter('cl_metabox_item', 'cl_sb_metabox_item');
+
+// stylesheet
+// load css into the website's front-end
+function mytheme_enqueue_style() {
+    wp_enqueue_style( 'mytheme-style', get_stylesheet_uri() ); 
+}
+add_action( 'wp_enqueue_scripts', 'mytheme_enqueue_style' );
+
+
 
 ?>

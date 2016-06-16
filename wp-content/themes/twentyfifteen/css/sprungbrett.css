@@ -1,0 +1,49 @@
+/*
+Description: Styles for Sprungbrett Plugin
+Author: Julian Orth
+*/
+
+/* table styles*/
+td {
+/*color:red;*/
+    display:block;
+    margin-left:10px;
+}
+/* keep the last child without brake */
+tr td:last-child {
+ display:table-cell;   
+}
+
+tr, td {
+   font-family: 'Noto Sans';
+/*    border-bottom: 1px solid #ddd;*/
+    padding: 0;
+}
+/*
+table, tr, td {
+    border: none;
+}
+*/
+
+table {
+    border-collapse: collapse;
+}
+
+table, td, tr {
+    border: none;
+}
+tr {
+border-bottom: 1px solid black;
+/*    display:block;*/
+}
+
+
+/* display count of available inters */
+#praktika_count_text {
+    color: rgb(74, 74, 74);
+    font-family: 'Noto Sans';
+}
+#count_text_wrapper {
+    text-align: center;
+    background-color: rgb(239, 239, 239);
+}

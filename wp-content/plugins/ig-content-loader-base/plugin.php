@@ -141,22 +141,16 @@ function cl_my_display_callback( $post ) {
         <span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
         <div class="prfx-row-content">
             <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-                <input type="radio" name="meta-radio" id="meta-radio-one" value="radio-one">
+                <input type="radio" name="meta-radio" id="insert-pre-radio" value="Am Anfang">
                 <?php _e( 'Am Anfang', 'prfx-textdomain' )?>
             </label>
             <label for="meta-radio-two">
-                <input checked type="radio" name="meta-radio" id="meta-radio-two" value="radio-two">
+                <input checked type="radio" name="meta-radio" id="insert-suf-radio" value="Am Ende">
                 <?php _e( 'Am Ende', 'prfx-textdomain' )?>
             </label>
         </div>
     </p>
 
-
-    <!-- load and insert content: Button -->
-    <div>
-        <hr style="margin-bottom:10px;">
-        <input style="width:100%;" name="loadandinsert" type="submit" class="button button-primary button-large" id="s" value="Einfügen">
-    </div>
 
     <?php       
    
@@ -238,32 +232,33 @@ add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 
 function cl_modify_post($post) {
     global $wpdb;
-    global $check_alreay_posted;
-
-    // quick and dirty, so the fnc will get called only once 
-    if(in_array("Irix", $array)) 
+    global $array;
+    // quick and dirty, so the fnc will get called only once
+    if(!$array)
+        $array = array();
+    if(!in_array($post->ID,$array)) {
+        $array[] = $post->ID;
         
-    if(count($array) < 1) {
+        //lädt aus datenbank den zwischengespeicherten fremdcontent
+        //läd attachment aus db und fügt es an beitrag an.
+        $query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent
+=".$post->ID." AND post_type = 'cl_html'";
         
-      //lädt aus datenbank den zwischengespeicherten fremdcontent
-    //läd attachment aus db und fügt es an beitrag an.
-	$result = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent =".$post->ID." AND post_type = 'cl_html'");
-    $array[] = $result[0]->post_parent;
-    var_dump($array);
+        $result = $wpdb->get_results($query);
 
-    $post->post_content = $result[0]->post_content.$post->post_content;  
-        
-        
-    } else {}
-
-	
-
+        $post->post_content = $post->post_content.$result[0]->post_content;
+        return $post;
+    }
 }
+
 add_action('rest_api_print_post', 'cl_modify_post', 1);
 add_action('the_post', 'cl_modify_post');
 
 
 // do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
+// do_action in der rest api: bei ausgabe von posts muss bei
+//entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen
+//werden
 function cl_update () {
     global $wp_query;
     global $wpdb;
@@ -275,27 +270,30 @@ function cl_update () {
     if( $cl_action == "update" ) {
 
         // get all blogs / instances (augsburg, regensburg, etc)
-        // geh durch alle blogs und schaue nach plugin um prefix id zu bekommen 
+        // geh durch alle blogs und schaue nach plugin um prefix id zu
+//bekommen
         $query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
         $all_blogs = $wpdb->get_results($query);
-//        var_dump($all_blogs);
         foreach( $all_blogs as $blog ){
             $blog_id = $blog->blog_id;
-            $bla = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
-//            var_dump($bla);
-            // query alle objekte in db mit meta_key = ig-content-loader-base
+            $bla = "select * from
+".$wpdb->base_prefix.$blog_id."_postmeta where meta_key =
+'ig-content-loader-base'";
+            // query alle objekte in db mit meta_key =ig-content-loader-base
             // .$wpdb->prefix. anstatt wp_2
             //get all posts from instance where content-loader provides additonal content
-            $result = $wpdb->get_results("select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'");
-   
-
+            $result = $wpdb->get_results("select * from
+".$wpdb->base_prefix.$blog_id."_postmeta where meta_key =
+'ig-content-loader-base'");
+  
             // ist leerer string obwohl result pointer stimmt ... irgendwie result typ zu string umwandeln
-            $parent_id = "".$result[0]->post_id;
-            $meta_val = "".$result[0]->meta_value;
-//            var_dump($result);
-
-            do_action('cl_update_content', $parent_id, $meta_val, $blog_id);
-
+            foreach($result as $item) {
+                $parent_id = "".$item->post_id;
+                $meta_val = "".$item->meta_value;
+                
+                do_action('cl_update_content', $parent_id, $meta_val,
+$blog_id);
+            }
         }
         exit;
     }
