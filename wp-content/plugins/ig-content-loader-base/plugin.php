@@ -13,8 +13,6 @@
  */
 function cl_generate_selection_box() {
 	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
-	
-	
 }
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
 //add_action( 'add_meta_boxes_page', 'cl_generate_select_list' );
@@ -27,7 +25,7 @@ add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
 function cl_my_display_callback( $post ) {
 
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
-    
+	
 	$prfx_stored_meta = get_post_meta( $post->ID );
 	
 	$dropdown_items = apply_filters('cl_metabox_item', $array);
@@ -35,46 +33,44 @@ function cl_my_display_callback( $post ) {
 ?>
 
 
-    <!-- Dropdown-select for foreign contents -->
-    <p>
-        <label style="font-weight:600" for="meta-select" class="prfx-row-title">
-            <?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
-        </label>
-        <select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
-            <!-- build select items from filtered plugin list -->
-            <option>Plugin picken</option>
-            <?php 
+	<!-- Dropdown-select for foreign contents -->
+	<p>
+		<label style="font-weight:600" for="meta-select" class="prfx-row-title">
+			<?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
+		</label>
+		<select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
+			<!-- build select items from filtered plugin list -->
+			<option>Plugin picken</option>
+			<?php 
 				foreach($dropdown_items as $cl_plugin_name_option) {
 //					print('<option name="cl_content_select" value="'.$cl_plugin_name_option[id].'">'.$cl_plugin_name_option[id].'</option>'."\n");  
 					print('<option name="cl_content_select_item">'.$cl_plugin_name_option->name.'</option>');
 				}
 			?>
 
-        </select>
-    </p>
+		</select>
+	</p>
 
 
-    <!-- Radio-button: Insert foreign content before or after page -->
-    <p>
-        <span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
-        <div class="prfx-row-content">
-            <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-                <input type="radio" name="meta-radio" id="insert-pre-radio" value="Am Anfang">
-                <?php _e( 'Am Anfang', 'prfx-textdomain' )?>
-            </label>
-            <label for="meta-radio-two">
-                <input checked type="radio" name="meta-radio" id="insert-suf-radio" value="Am Ende">
-                <?php _e( 'Am Ende', 'prfx-textdomain' )?>
-            </label>
-        </div>
-    </p>
+	<!-- Radio-button: Insert foreign content before or after page -->
+	<p>
+		<span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
+		<div class="prfx-row-content">
+			<label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
+				<input type="radio" name="meta-radio" id="insert-pre-radio" value="Am Anfang">
+				<?php _e( 'Am Anfang', 'prfx-textdomain' )?>
+			</label>
+			<label for="meta-radio-two">
+				<input checked type="radio" name="meta-radio" id="insert-suf-radio" value="Am Ende">
+				<?php _e( 'Am Ende', 'prfx-textdomain' )?>
+			</label>
+		</div>
+	</p>
 
 
-    <?php	   
+	<?php	   
    
 }
- 
-
 
 add_action('save_post', 'cl_save_meta_box');
 add_action('edit_post', 'cl_save_meta_box');
@@ -92,8 +88,8 @@ function cl_save_meta_box($post_id) {
 	$meta_key = 'ig-content-loader-base';
   
 	//get the selected value from the meta box dropdown-select
-    $meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
-    
+	$meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
+	
 	//read old post meta setting
 	$old_meta_value = get_post_meta( $post_id, $meta_key, true );
   
@@ -127,8 +123,8 @@ function cl_save_content( $parent_id, $attachment, $blog_id) {
 	$sql = "SELECT * FROM ".$wpdb->prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'cl_html'";
 	$sql_results = $wpdb->get_results($sql);
 	echo "<br><br>";
-    
-    // if there is already an value in the db, update it, else insert it
+	
+	// if there is already an value in the db, update it, else insert it
 	if(count($sql_results) > 0) {
 		$update = "UPDATE ".$wpdb->prefix.$blog_id."_posts SET post_content = '$attachment' WHERE ID = ".$sql_results[0]->ID;
 		$wpdb->query($update);
