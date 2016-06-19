@@ -8,45 +8,72 @@
  * License: MIT
  */
 
+/**
+ * Register Cron Job Hook to update data every 12 hour 
+ */
+//register_activation_hook(__FILE__, 'cl_update_content');
+//
+//function cl_update_content() {
+//    if (! wp_next_scheduled ( 'cl_update_contents' )) {
+//	wp_schedule_event(time(), 'twicedaily', 'cl_update_contents');
+//    }
+//}
+//
+//add_action('cl_update_contents', 'cl_update_content');
+
+
+
+/**
+ * Initiate Rewrite Tag for Cron Job and Register custom Post Type for HTML Atachement
+ */
+function cl_init() {
+	add_rewrite_tag( '%content-loader%', '([^&]+)' );
+
+	register_post_type( 'cl_html',
+	array(
+	  'labels' => array(
+		'name' => __( 'Content-loader HTML' ),
+		'singular_name' => __( 'Content-loader HTML' )
+	  )
+	)
+  );
+
+}
+add_action( 'init', 'cl_init' );
+
 
 /**
  *  Register Meta box Hook
  */
 function cl_generate_selection_box() {
 	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
-	
-	
 }
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
-//add_action( 'add_meta_boxes_page', 'cl_generate_select_list' );
+
  
 /**
- * Meta box display callback.
+ * Meta Box display Callback.
  *
  * @param WP_Post $post Current post object.
  */
 function cl_my_display_callback( $post ) {
 
-	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
+	wp_nonce_field( basename( __FILE__ ), 'cl_nonce' );
     
-	$prfx_stored_meta = get_post_meta( $post->ID );
-	
 	$dropdown_items = apply_filters('cl_metabox_item', $array);
 
 ?>
 
-
     <!-- Dropdown-select for foreign contents -->
     <p>
-        <label style="font-weight:600" for="meta-select" class="prfx-row-title">
-            <?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
+        <label style="font-weight:600" for="meta-select" class="cl-row-title">
+            <?php _e( 'Inhalt wählen', 'cl-textdomain' )?>
         </label>
         <select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
             <!-- build select items from filtered plugin list -->
             <option>Plugin picken</option>
             <?php 
 				foreach($dropdown_items as $cl_plugin_name_option) {
-//					print('<option name="cl_content_select" value="'.$cl_plugin_name_option[id].'">'.$cl_plugin_name_option[id].'</option>'."\n");  
 					print('<option name="cl_content_select_item">'.$cl_plugin_name_option->name.'</option>');
 				}
 			?>
@@ -56,15 +83,15 @@ function cl_my_display_callback( $post ) {
 
     <!-- Radio-button: Insert foreign content before or after page -->
     <p>
-        <span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
-        <div class="prfx-row-content">
+        <span style="font-weight:600" class="cl-row-title"><?php _e( 'Inhalt Einfügen', 'cl-textdomain' )?></span>
+        <div class="cl-row-content">
             <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
                 <input type="radio" name="meta-radio" id="insert-pre-radio" value="Am Anfang">
-                <?php _e( 'Am Anfang', 'prfx-textdomain' )?>
+                <?php _e( 'Am Anfang', 'cl-textdomain' )?>
             </label>
             <label for="meta-radio-two">
                 <input checked type="radio" name="meta-radio" id="insert-suf-radio" value="Am Ende">
-                <?php _e( 'Am Ende', 'prfx-textdomain' )?>
+                <?php _e( 'Am Ende', 'cl-textdomain' )?>
             </label>
         </div>
     </p>
@@ -75,14 +102,13 @@ function cl_my_display_callback( $post ) {
 }
  
 
-
 add_action('save_post', 'cl_save_meta_box');
 add_action('edit_post', 'cl_save_meta_box');
 add_action('publish_post', 'cl_save_meta_box');
 add_action('edit_page_form', 'cl_save_meta_box');
 
 /**
-* Save meta box contents in post_meta db-table
+* Save Meta Box contents in post_meta database
 *
 * @param int $post_id Post ID
 */
@@ -104,30 +130,28 @@ function cl_save_meta_box($post_id) {
 	if ( '' == $old_meta_value )
 		add_post_meta( $post_id, $meta_key, $meta_value, true );
 
-	//if the old post meta value is different from the posted one,change it
+	//if the old post meta value is different from the posted one, change it
 	elseif ( $old_meta_value != $meta_value )
 		update_post_meta( $post_id, $meta_key, $meta_value );
 	}
   
-	//if there is no plugin selected but there is one in the db, remvoe meta value from wp_postmeta
-    //-> remove content-loader plugin from page
+	//if there is no plugin selected but there is one in the db, remvoe meta value from wp_postmeta and deactive content-loader plugin
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
 	}
 }
 
 /**
-* Safe foreign content in db as html code
+* Safe foreign content in database as html code
 * 
-* @param
+* @param int $parent_id, string $attachment, int $blog_id
 */
 function cl_save_content( $parent_id, $attachment, $blog_id) {
 	global $wpdb;
-
-
+    
+    // get content item from database
 	$sql = "SELECT * FROM ".$wpdb->prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'cl_html'";
 	$sql_results = $wpdb->get_results($sql);
-	echo "<br><br>";
     
     // if there is already an value in the db, update it, else insert it
 	if(count($sql_results) > 0) {
@@ -141,6 +165,12 @@ function cl_save_content( $parent_id, $attachment, $blog_id) {
 }
 add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 
+
+/**
+ * Modify Post by getting foreign content form database and adding it to the page
+ *
+ * @param $post current post object
+ */
 function cl_modify_post($post) {
 	global $wpdb;
 	global $array;
@@ -150,10 +180,10 @@ function cl_modify_post($post) {
 	if(!in_array($post->ID,$array)) {
 		$array[] = $post->ID;
 		
-		//lädt aus datenbank den zwischengespeicherten fremdcontent
-		//läd attachment aus db und fügt es an beitrag an.
+		// get foreign cotennt from database
 		$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
 		
+        // execute sql statement in $query
 		$result = $wpdb->get_results($query);
 
         // add foreign content from db to post
@@ -166,39 +196,31 @@ add_action('rest_api_print_post', 'cl_modify_post', 1);
 add_action('the_post', 'cl_modify_post');
 
 
-// do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
+/**
+ * Update Contents by parsing update-url, gets called twice daily by Cron Job
+ *
+ */
 function cl_update () {
 	global $wp_query;
 	global $wpdb;
 	
-    
-	// wird regelmäßig durch cronjob gestartet
-	// parse var content-loader aus url
+    // query url for 'content-loader'
 	$cl_action = $wp_query->query_vars['content-loader'];
-	//update content loader content?
+	//if url contains ...=update
 	if( $cl_action == "update" ) {
-//$blog_name = get_blog_details()->blogname;
         
 		// get all blogs / instances (augsburg, regensburg, etc)
-		// geh durch alle blogs und schaue nach plugin um prefix id zu
-		//bekommen
 		$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 		$all_blogs = $wpdb->get_results($query);
 		foreach( $all_blogs as $blog ){
 			$blog_id = $blog->blog_id;
-//			echo "current blog $blog_id<br>";
-//            echo "blog id:$wpdb->base_prefix";
+            // query all objects in db with meta_key = ig-content-loader-base
 			$results = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
-			// query alle objekte in db mit meta_key =ig-content-loader-base
-			// .$wpdb->prefix. anstatt wp_2
-			//get all posts from instance where content-loader provides additonal content
 
 			$result = $wpdb->get_results($results);
-  
 
 			foreach($result as $item) {
 				$parent_id = "".$item->post_id;
-//				echo "current post_parent $parent_id<br>";
 				$meta_val = "".$item->meta_value;
                 $blog_name = get_blog_details($blog_id)->blogname;
 
@@ -210,25 +232,7 @@ function cl_update () {
 	else{}
 
 }
+
 add_action( 'template_redirect', 'cl_update' );
-
-
-// post type für attachement
-function cl_init() {
-	// es gibt var content-loader
-	add_rewrite_tag( '%content-loader%', '([^&]+)' );
-	//add_rewrite_rule( 'content-loader/([^/]*)/?', 'index.php?content-loader=$matches[1]', 'top');
-	register_post_type( 'cl_html',
-	array(
-	  'labels' => array(
-		'name' => __( 'Content-loader HTML' ),
-		'singular_name' => __( 'Content-loader HTML' )
-	  )
-	)
-  );
-
-}
-add_action( 'init', 'cl_init' );
-
 
 ?>
