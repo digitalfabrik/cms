@@ -8,49 +8,6 @@
  * License: MIT
  */
 
-global $cl_template_db_version;
-$cl_template_db_version = '1.0';
-
-function cl_template_install() {
-	global $wpdb;
-	global $cl_template_db_version;
-
-	$table_name = $wpdb->prefix . '_template_content';
-	
-	$charset_collate = $wpdb->get_charset_collate();
-
-	$sql = "CREATE TABLE $table_name (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-		name tinytext NOT NULL,
-		text text NOT NULL,
-		url varchar(55) DEFAULT '' NOT NULL,
-		UNIQUE KEY id (id)
-	) $charset_collate;";
-
-	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-	dbDelta( $sql );
-
-	add_option( 'cl_template_db_version', $cl_template_db_version );
-}
-
-function jal_install_data() {
-	global $wpdb;
-	
-	$welcome_name = 'Mr. WordPress';
-	$welcome_text = 'Congratulations, you just completed the installation!';
-	
-	$table_name = $wpdb->prefix . 'liveshoutbox';
-	
-	$wpdb->insert( 
-		$table_name, 
-		array( 
-			'time' => current_time( 'mysql' ), 
-			'name' => $welcome_name, 
-			'text' => $welcome_text, 
-		) 
-	);
-}
 
 /**
  *  Register Meta box Hook
@@ -96,7 +53,6 @@ function cl_my_display_callback( $post ) {
 
         </select>
     </p>
-
 
     <!-- Radio-button: Insert foreign content before or after page -->
     <p>
@@ -153,7 +109,8 @@ function cl_save_meta_box($post_id) {
 		update_post_meta( $post_id, $meta_key, $meta_value );
 	}
   
-	//if there is an old meta value but now new meta value, remve meta value from wp_postmeta
+	//if there is no plugin selected but there is one in the db, remvoe meta value from wp_postmeta
+    //-> remove content-loader plugin from page
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
 	}
@@ -162,7 +119,7 @@ function cl_save_meta_box($post_id) {
 /**
 * Safe foreign content in db as html code
 * 
-*
+* @param
 */
 function cl_save_content( $parent_id, $attachment, $blog_id) {
 	global $wpdb;
@@ -187,7 +144,7 @@ add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 function cl_modify_post($post) {
 	global $wpdb;
 	global $array;
-	// quick and dirty, so the fnc will get called only once
+
 	if(!$array)
 		$array = array();
 	if(!in_array($post->ID,$array)) {
@@ -199,6 +156,7 @@ function cl_modify_post($post) {
 		
 		$result = $wpdb->get_results($query);
 
+        // add foreign content from db to post
 		$post->post_content = $post->post_content.$result[0]->post_content;
 		return $post;
 	}
@@ -209,19 +167,18 @@ add_action('the_post', 'cl_modify_post');
 
 
 // do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
-// do_action in der rest api: bei ausgabe von posts muss bei
-//entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen
-//werden
 function cl_update () {
 	global $wp_query;
 	global $wpdb;
 	
+    
 	// wird regelmäßig durch cronjob gestartet
 	// parse var content-loader aus url
 	$cl_action = $wp_query->query_vars['content-loader'];
 	//update content loader content?
 	if( $cl_action == "update" ) {
-
+//$blog_name = get_blog_details()->blogname;
+        
 		// get all blogs / instances (augsburg, regensburg, etc)
 		// geh durch alle blogs und schaue nach plugin um prefix id zu
 		//bekommen
@@ -229,20 +186,23 @@ function cl_update () {
 		$all_blogs = $wpdb->get_results($query);
 		foreach( $all_blogs as $blog ){
 			$blog_id = $blog->blog_id;
-			echo "current blog $blog_id<br>";
-			$bla = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
+//			echo "current blog $blog_id<br>";
+//            echo "blog id:$wpdb->base_prefix";
+			$results = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
 			// query alle objekte in db mit meta_key =ig-content-loader-base
 			// .$wpdb->prefix. anstatt wp_2
 			//get all posts from instance where content-loader provides additonal content
-			//var_dump($bla);
-			$result = $wpdb->get_results($bla);
+
+			$result = $wpdb->get_results($results);
   
-			// ist leerer string obwohl result pointer stimmt ... irgendwie result typ zu string umwandeln
+
 			foreach($result as $item) {
 				$parent_id = "".$item->post_id;
-				echo "current post_parent $parent_id<br>";
-				$meta_val = "".$item->meta_value;;
-				do_action('cl_update_content', $parent_id, $meta_val,$blog_id);
+//				echo "current post_parent $parent_id<br>";
+				$meta_val = "".$item->meta_value;
+                $blog_name = get_blog_details($blog_id)->blogname;
+
+				do_action('cl_update_content', $parent_id, $meta_val, $blog_id, $blog_name);
 			}
 		}
 		exit;
@@ -253,7 +213,6 @@ function cl_update () {
 add_action( 'template_redirect', 'cl_update' );
 
 
-// do_action in der rest api: bei ausgabe von posts muss bei entsprechendem meta tag ein do_action('rest_api_print_post') aufgerufen werden
 // post type für attachement
 function cl_init() {
 	// es gibt var content-loader

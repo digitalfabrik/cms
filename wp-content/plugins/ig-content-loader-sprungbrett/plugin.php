@@ -10,17 +10,17 @@
 
 
 /**
- * Get Sprungbrett JSON-DATA, transform it to html code (cl_sb_json_to_html()) and send it to base-plugin (cl_save_content) with Parameters $parent_id , $html and $blog_id
+ * Get Sprungbrett JSON-DATA, transform it to html code (cl_sb_json_to_html()) and call cl_save_content in the base plugin
  *
  */
-function cl_sb_update_content($parent_id, $meta_value, $blog_id) {
+function cl_sb_update_content($parent_id, $meta_value, $blog_id, $blog_name) {
 
     // sprungbrett praktika -> ig-content-loader-sprungbrett
     if($meta_value == "Sprungbrett Praktika") {
         
         $json = file_get_contents('http://localhost/json.txt');
         $json = json_decode($json, TRUE);
-        $html = cl_sb_json_to_html($json);
+        $html = cl_sb_json_to_html($json, $blog_name);
 
         cl_save_content( $parent_id, $html, $blog_id);
 
@@ -29,14 +29,18 @@ function cl_sb_update_content($parent_id, $meta_value, $blog_id) {
     }
 
 }
-add_action('cl_update_content','cl_sb_update_content', 10, 3);
+add_action('cl_update_content','cl_sb_update_content', 10, 4);
 
 
 // get json data and transform it to html table
-function cl_sb_json_to_html($json) {
+function cl_sb_json_to_html($json, $blog_name) {
 
+//    
+    $html_job_count_text = '<div id="count_text_wrapper"><p id="praktika_count_text">Zeige <strong>'.count($json).'</strong>'.
+                           ' Praktika in <strong>'.$blog_name.'</strong></p></div>';
     $html_table_prefix = '<table>';
     $html_table_suffix = '</table>';
+    var_dump(count($json));
     
     foreach($json as $jobitem) {
         $htmlstring .= '<tr><td><b>'.$jobitem['title'].'</b></td>'.
@@ -44,7 +48,7 @@ function cl_sb_json_to_html($json) {
                        '<td><span class="dashicons dashicons-yes"></span></td></tr>';
     }
     
-    $htmlstring = $html_table_prefix.$htmlstring.$html_table_suffix;
+    $htmlstring = $html_job_count_text.$html_table_prefix.$htmlstring.$html_table_suffix;
 
     return $htmlstring;
 }
