@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Content Loader Base
- * Description: Template-base to include any foreign content into integreat
+ * Description: Base to include any foreign content into integreat
  * Version: 0.1
  * Author: Julian Orth, Sven Seeberg
  * Author URI: https://github.com/Integreat
@@ -11,10 +11,10 @@
 /**
  *  Register Meta box Hook
  */
-function cl_generate_selection_box() {
-	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
+function cl_add_meta_box() {
+	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_create_metabox', 'page', 'side' );
 }
-add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
+add_action( 'add_meta_boxes_page', 'cl_add_meta_box' );
 //add_action( 'add_meta_boxes_page', 'cl_generate_select_list' );
  
 /**
@@ -22,36 +22,40 @@ add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
  *
  * @param WP_Post $post Current post object.
  */
-function cl_my_display_callback( $post ) {
+function cl_create_metabox( $post ) {
 
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
 	
-	$prfx_stored_meta = get_post_meta( $post->ID );
+	$old_meta_value = get_post_meta( $post->ID, "ig-content-loader-base" )[0];
 	
-	$dropdown_items = apply_filters('cl_metabox_item', $array);
+	$dropdown_items = apply_filters('cl_metabox_item', array(json_decode('{"id": "", "name": "Bitte ausw&auml;hlen"}')));
+	
+	$options = "";
 
-?>
+	foreach($dropdown_items as $item) {
+		$json = '{"id": "'.$item->id.'", "ajax_callback": "'.$item->ajax_callback.'"}';
+		$options .= "<option value='$json'";
+		if( $old_meta_value == $item->id) {
+			$options .= ' selected';
+		}
+		$options .= '>'.$item->name.'</option>';
+	}
+	cl_meta_box_html( $options );
+   
+}
 
-
+function cl_meta_box_html( $options ) {
+	?>
 	<!-- Dropdown-select for foreign contents -->
 	<p>
 		<label style="font-weight:600" for="meta-select" class="prfx-row-title">
-			<?php _e( 'Inhalt wählen', 'prfx-textdomain' )?>
+			<?php _e( 'Inhalt wählen', 'prfx-textdomain' ) ?>
 		</label>
 		<select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
 			<!-- build select items from filtered plugin list -->
-			<option>Plugin picken</option>
-			<?php 
-				foreach($dropdown_items as $cl_plugin_name_option) {
-//					print('<option name="cl_content_select" value="'.$cl_plugin_name_option[id].'">'.$cl_plugin_name_option[id].'</option>'."\n");  
-					print('<option name="cl_content_select_item">'.$cl_plugin_name_option->name.'</option>');
-				}
-			?>
-
+			<?php echo $options; ?>
 		</select>
 	</p>
-
-
 	<!-- Radio-button: Insert foreign content before or after page -->
 	<p>
 		<span style="font-weight:600" class="prfx-row-title"><?php _e( 'Inhalt Einfügen', 'prfx-textdomain' )?></span>
@@ -66,10 +70,7 @@ function cl_my_display_callback( $post ) {
 			</label>
 		</div>
 	</p>
-
-
 	<?php	   
-   
 }
 
 add_action('save_post', 'cl_save_meta_box');
@@ -88,26 +89,29 @@ function cl_save_meta_box($post_id) {
 	$meta_key = 'ig-content-loader-base';
   
 	//get the selected value from the meta box dropdown-select
-	$meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
+	if( isset( $_POST['cl_content_select'] ) ) {
+		$select_value = json_decode( str_replace( "\\", "", $_POST['cl_content_select'] ) );
+		$meta_value = $select_value->id;
+	}
 	
 	//read old post meta setting
 	$old_meta_value = get_post_meta( $post_id, $meta_key, true );
-  
 	
 	if ($meta_value != '') {
 	  
-	//if there was no old post meta entry, add it
-	if ( '' == $old_meta_value )
-		add_post_meta( $post_id, $meta_key, $meta_value, true );
+		//if there was no old post meta entry, add it
+		if ( '' == $old_meta_value ) {
+			add_post_meta( $post_id, $meta_key, $meta_value, true );
+		}
 
-	//if the old post meta value is different from the posted one,change it
-	elseif ( $old_meta_value != $meta_value )
-		update_post_meta( $post_id, $meta_key, $meta_value );
+		//if the old post meta value is different from the posted one,change it
+		elseif ( $old_meta_value != $meta_value ) {
+			update_post_meta( $post_id, $meta_key, $meta_value );
+		}
 	}
-  
 	//if there is an old meta value but now new meta value, remve meta value from wp_postmeta
 	elseif ( '' == $meta_value && $old_meta_value ) {
-		delete_post_meta( $post_id, $meta_key, $meta_value );
+		delete_post_meta( $post_id, $meta_key, $old_meta_value );
 	}
 }
 
@@ -151,7 +155,7 @@ function cl_modify_post($post) {
 		
 		$result = $wpdb->get_results($query);
 
-		$post->post_content = $post->post_content.$result[0]->post_content;
+		$post->post_content = $post->post_content.get_blog_details()->blogname.$result[0]->post_content;
 		return $post;
 	}
 }

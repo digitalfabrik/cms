@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Content Loader Sprungbrett
- * Description: Template for plugin to include external data into integreat
+ * Description: Load content from Sprungbrett API
  * Version: 0.1
  * Author: Julian Orth, Sven Seeberg
  * Author URI: https://github.com/Integreat
@@ -16,7 +16,7 @@
 function cl_sb_update_content($parent_id, $meta_value, $blog_id) {
 
     // sprungbrett praktika -> ig-content-loader-sprungbrett
-    if($meta_value == "Sprungbrett Praktika") {
+    if($meta_value == "ig-content-loader-sprungbrett") {
         
         $json = file_get_contents('http://localhost/json.txt');
         $json = json_decode($json, TRUE);
@@ -55,8 +55,6 @@ function cl_sb_metabox_item($array) {
     return $array;
 }
 add_filter('cl_metabox_item', 'cl_sb_metabox_item');
-
-
 
 // inline-styles for frontend output
 function myStyleSheet() {
