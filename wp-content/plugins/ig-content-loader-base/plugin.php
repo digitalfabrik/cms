@@ -188,6 +188,7 @@ add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 
 /**
  * Modify Post by getting foreign content form database and adding it to the page
+ * Also check post_meta value for radio group to concatenate content before or after page-contents
  *
  * @param $post current post object
  */
@@ -207,12 +208,11 @@ function cl_modify_post($post) {
 		
         // execute sql statement in $query
 		$result = $wpdb->get_results($query);
-        
-        $meta_value = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
 
-        
+        /* get saved post meta for radio group from db */
+        $option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
         // get post meta from db and compare
-        if($meta_value == '') {
+        if($option_value == 'ende') {
         // add foreign content from db to the end of the post
 		$post->post_content = $post->post_content.$result[0]->post_content."ok";
         } else {
