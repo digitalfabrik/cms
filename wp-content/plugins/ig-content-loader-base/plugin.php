@@ -61,7 +61,10 @@ function cl_my_display_callback( $post ) {
 	wp_nonce_field( basename( __FILE__ ), 'cl_nonce' );
     
 	$dropdown_items = apply_filters('cl_metabox_item', $array);
-
+    
+    // get post meta for radio group and option-select to preselect the saved value
+    $radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
+    $option_value = get_post_meta( $post->ID, 'ig-content-loader-base', true );
 ?>
 
     <!-- Dropdown-select for foreign contents -->
@@ -70,27 +73,27 @@ function cl_my_display_callback( $post ) {
             <?php _e( 'Inhalt wählen', 'cl-textdomain' )?>
         </label>
         <select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
-            <!-- build select items from filtered plugin list -->
-            <option>Plugin picken</option>
+            <!-- build select items from filtered plugin list and preselect saved item, if there was any -->
+            <option>--Plugin picken--</option>
             <?php 
 				foreach($dropdown_items as $cl_plugin_name_option) {
-					print('<option name="cl_content_select_item">'.$cl_plugin_name_option->name.'</option>');
+					print('<option name="cl_content_select_item" value="'.$cl_plugin_name_option->id.'"'.selected( $option_value, $cl_plugin_name_option->id ).'>'.$cl_plugin_name_option->name.'</option>');
 				}
 			?>
 
         </select>
     </p>
 
-    <!-- Radio-button: Insert foreign content before or after page -->
+    <!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
     <p>
         <span style="font-weight:600" class="cl-row-title"><?php _e( 'Inhalt Einfügen', 'cl-textdomain' )?></span>
         <div class="cl-row-content">
             <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-                <input type="radio" name="meta-radio" id="insert-pre-radio" value="Am Anfang">
+                <input type="radio" name="meta-radio" id="insert-pre-radio" value="anfang" <?php checked( $radio_value, 'anfang' ); ?>>
                 <?php _e( 'Am Anfang', 'cl-textdomain' )?>
             </label>
             <label for="meta-radio-two">
-                <input checked type="radio" name="meta-radio" id="insert-suf-radio" value="Am Ende">
+                <input type="radio" name="meta-radio" id="insert-suf-radio" value="ende" <?php checked( $radio_value, 'ende' ); ?>>
                 <?php _e( 'Am Ende', 'cl-textdomain' )?>
             </label>
         </div>
@@ -108,7 +111,7 @@ add_action('publish_post', 'cl_save_meta_box');
 add_action('edit_page_form', 'cl_save_meta_box');
 
 /**
-* Save Meta Box contents in post_meta database
+* Save Meta Box contents (content dropdown + append before or after radiogroup) in post_meta database
 *
 * @param int $post_id Post ID
 */
@@ -116,14 +119,17 @@ function cl_save_meta_box($post_id) {
 
 	// key for base-plugin in wp_postmeta
 	$meta_key = 'ig-content-loader-base';
+    $meta_key_position = 'ig-content-loader-base-position';
   
-	//get the selected value from the meta box dropdown-select
+	//get the selected value from the meta box dropdown-select and the radio group
     $meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
+    $meta_value_position = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
     
-	//read old post meta setting
+	//read old post meta settings
 	$old_meta_value = get_post_meta( $post_id, $meta_key, true );
-  
+    $old_meta_value_position = get_post_meta ($post_id, $meta_key_position, true);
 	
+    /* meta value for dropdown select */
 	if ($meta_value != '') {
 	  
 	//if there was no old post meta entry, add it
@@ -138,6 +144,20 @@ function cl_save_meta_box($post_id) {
 	//if there is no plugin selected but there is one in the db, remvoe meta value from wp_postmeta and deactive content-loader plugin
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
+	}
+    
+    /* meta value for radio buttons */
+    if($meta_value_position != '') {
+        
+    if( '' == $old_meta_value_position) 
+        add_post_meta($post_id, $meta_key_position, $meta_value_position, true);
+        
+	elseif ( $old_meta_value_position != $meta_value_position )
+		update_post_meta( $post_id, $meta_key_position, $meta_value_position );
+	}
+
+	elseif ( '' == $meta_value_position && $old_meta_value_position ) {
+		delete_post_meta( $post_id, $meta_key_position, $meta_value_position );
 	}
 }
 
@@ -174,6 +194,8 @@ add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 function cl_modify_post($post) {
 	global $wpdb;
 	global $array;
+    
+    
 
 	if(!$array)
 		$array = array();
@@ -185,10 +207,19 @@ function cl_modify_post($post) {
 		
         // execute sql statement in $query
 		$result = $wpdb->get_results($query);
+        
+        $meta_value = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
 
-        // add foreign content from db to post
-		$post->post_content = $post->post_content.$result[0]->post_content;
-		return $post;
+        
+        // get post meta from db and compare
+        if($meta_value == '') {
+        // add foreign content from db to the end of the post
+		$post->post_content = $post->post_content.$result[0]->post_content."ok";
+        } else {
+        // add foreign content from db to the front of the post
+        $post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
+        }
+        return $post;
 	}
 }
 
