@@ -74,7 +74,7 @@ function cl_my_display_callback( $post ) {
         </label>
         <select name="cl_content_select" id="meta-select" style="width:100%; margin-top:10px; margin-bottom:10px">
             <!-- build select items from filtered plugin list and preselect saved item, if there was any -->
-            <option>--Plugin picken--</option>
+            <option name="cl_content_select_no_item" value="">(Kein Inhalt)</option>
             <?php 
 				foreach($dropdown_items as $cl_plugin_name_option) {
 					print('<option name="cl_content_select_item" value="'.$cl_plugin_name_option->id.'"'.selected( $option_value, $cl_plugin_name_option->id ).'>'.$cl_plugin_name_option->name.'</option>');
@@ -141,7 +141,7 @@ function cl_save_meta_box($post_id) {
 		update_post_meta( $post_id, $meta_key, $meta_value );
 	}
   
-	//if there is no plugin selected but there is one in the db, remvoe meta value from wp_postmeta and deactive content-loader plugin
+	//if there is no plugin selected but there is one in the db, remove meta value from wp_postmeta and deactive content-loader plugin
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
 	}
@@ -211,14 +211,22 @@ function cl_modify_post($post) {
 
         /* get saved post meta for radio group from db */
         $option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-        // get post meta from db and compare
-        if($option_value == 'ende') {
-        // add foreign content from db to the end of the post
-		$post->post_content = $post->post_content.$result[0]->post_content."ok";
-        } else {
-        // add foreign content from db to the front of the post
-        $post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
+        $select_value = get_post_meta( $post->ID, 'ig-content-loader-base');
+        
+        // if there is a selected value for the dropdown in the database
+        if(count($select_value) > 0 ) {
+            if($option_value == 'ende') {
+                // add foreign content from db to the end of the post
+                $post->post_content = $post->post_content.$result[0]->post_content;
+            } else {
+                // add foreign content from db to the front of the post
+                $post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
+            }
         }
+        
+        
+        
+        
         return $post;
 	}
 }

@@ -16,7 +16,7 @@
  */
 function cl_sb_update_content($parent_id, $meta_value, $blog_id, $blog_name) {
 
-    if($meta_value == "Sprungbrett Praktika") {
+    if($meta_value == "ig-content-loader-sprungbrett") {
         
         $json = file_get_contents('http://localhost/json.txt');
         $json = json_decode($json, TRUE);
@@ -26,7 +26,7 @@ function cl_sb_update_content($parent_id, $meta_value, $blog_id, $blog_name) {
         $json2 = json_decode($json2, TRUE);
         
         $testcomp = $json2['results'][2]['company'];
-        echo htmlspecialchars_decode($testcomp);
+        echo $testcomp;
 //        var_dump("ok ".$testcomp2);
         cl_save_content( $parent_id, $html, $blog_id);
 
