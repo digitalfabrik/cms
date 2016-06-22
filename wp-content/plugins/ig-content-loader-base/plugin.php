@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Content Loader Base
- * Description: Template-base to include any foreign content into integreat
+ * Description: Template-base to include any foreign content into Tntegreat
  * Version: 0.1
- * Author: Julian Orth, Sven Seeberg
+ * Author: Julian Orth
  * Author URI: https://github.com/Integreat
  * License: MIT
  */
@@ -197,7 +197,6 @@ function cl_modify_post($post) {
 	global $array;
     
     
-
 	if(!$array)
 		$array = array();
 	if(!in_array($post->ID,$array)) {
@@ -223,10 +222,7 @@ function cl_modify_post($post) {
                 $post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
             }
         }
-        
-        
-        
-        
+
         return $post;
 	}
 }
@@ -237,7 +233,6 @@ add_action('the_post', 'cl_modify_post');
 
 /**
  * Update Contents by parsing update-url, gets called twice daily by Cron Job
- *
  */
 function cl_update () {
 	global $wp_query;
@@ -245,7 +240,7 @@ function cl_update () {
 	
     // query url for 'content-loader'
 	$cl_action = $wp_query->query_vars['content-loader'];
-	//if url contains ...=update
+	//if url contains ?content-loader=update
 	if( $cl_action == "update" ) {
         
 		// get all blogs / instances (augsburg, regensburg, etc)

@@ -3,7 +3,7 @@
  * Plugin Name: Content Loader Sprungbrett
  * Description: Template for plugin to include external data into integreat
  * Version: 0.1
- * Author: Julian Orth, Sven Seeberg
+ * Author: Julian Orth
  * Author URI: https://github.com/Integreat
  * License: MIT
  */
