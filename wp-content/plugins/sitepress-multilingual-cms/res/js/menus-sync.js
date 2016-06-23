@@ -1,142 +1,154 @@
 var WPML_core = WPML_core || {};
 
-jQuery(document).ready(function(){
-   
-   jQuery("#icl_msync_cancel").click(function(){
-       location.href = location.href.replace(/#(.)$/, '');
-   }); 
-   
-   jQuery('#icl_msync_confirm thead :checkbox').change(function(){
-       var on = jQuery(this).attr('checked');
-       if(on){
-           jQuery('#icl_msync_confirm :checkbox').attr('checked', 'checked');           
-           if(jQuery('#icl_msync_confirm tbody .check-column :checkbox').length){
-                jQuery('#icl_msync_submit').removeAttr('disabled');
-           }
-       }else{
-           jQuery('#icl_msync_confirm :checkbox').removeAttr('checked');
-           if(!jQuery('input[name^="sync"]').length){
-                jQuery('#icl_msync_submit').attr('disabled', 'disabled');
-           }
-       }
-   })
-   
-   jQuery('#icl_msync_confirm tbody :checkbox').change(function(){
-       
-       if(jQuery(this).attr('readonly') == 'readonly'){
-           if(jQuery(this).attr('checked')){
-               jQuery(this).removeAttr('checked');
-           }else{
-               jQuery(this).attr('checked', 'checked');
-           }
-       };
-       
-       var checked = jQuery('#icl_msync_confirm tbody :checkbox:checked').length;
+(function () {
+	"use strict";
 
-       if(checked){
-           jQuery('#icl_msync_submit').removeAttr('disabled');                
-       }else{
-           jQuery('#icl_msync_submit').attr('disabled', 'disabled');
-       }
-       
-       if(checked && jQuery('#icl_msync_confirm tbody :checkbox:checked').length == jQuery('#icl_msync_confirm tbody :checkbox').length){
-           jQuery('#icl_msync_confirm thead :checkbox').attr('checked', 'checked');           
-       }else{
-           jQuery('#icl_msync_confirm thead :checkbox').removeAttr('checked');
-       }
-       
-       WPML_core.icl_msync_validation();
-       
-   });
-   
-   jQuery('#icl_msync_submit').on( 'click', function() {
-	  jQuery(this).attr('disabled', 'disabled');
+	jQuery(document).ready(function () {
 
-      var total_menus = jQuery('input[name^=sync]:checked').length;
-	  
-	  var spinner = jQuery('<span class="spinner"></span>');
-	  jQuery('#icl_msync_message').before(spinner);
-	  spinner.css({display: 'inline-block', float: 'none', 'visibility': 'visible'});
-	  
-	  WPML_core.sync_menus(total_menus);
-	  
-   });
-   
-   var max_vars_warning = jQuery('#icl_msync_max_input_vars');
-   if (max_vars_warning.length) {
-      var menu_sync_check_box_count = jQuery('input[name^=sync]').length;
-	  var max_vars_extra = 10; // Allow for a few other items as well. eg. nonce, etc
-      if (menu_sync_check_box_count + max_vars_extra > max_vars_warning.data('max_input_vars')) {
-		 var warning_text = max_vars_warning.html();
-		 warning_text = warning_text.replace('!NUM!', menu_sync_check_box_count + max_vars_extra);
-		 max_vars_warning.html(warning_text);
-		 max_vars_warning.show();
-	  }
-   }
-});
+		jQuery("#icl_msync_cancel").click(function () {
+			location.href = location.href.replace(/#(.)$/, '');
+		});
 
-WPML_core.icl_msync_validation = function(){
-    
-    jQuery('#icl_msync_confirm tbody :checkbox').each(function(){
-        var mnthis = jQuery(this);
-        
-        mnthis.removeAttr('readonly', 'readonly');
-        
-        if(jQuery(this).attr('name')=='menu_translation[]'){
-            var spl = jQuery(this).val().split('#');
-            var menu_id = spl[0];   
-            
-            jQuery('#icl_msync_confirm tbody :checkbox').each(function(){
-                
-                if(jQuery(this).val().search('newfrom-'+menu_id+'-') == 0 && jQuery(this).attr('checked')){
-                    mnthis.attr('checked', 'checked');
-                    mnthis.attr('readonly', 'readonly');
-                }
-            });
-        }
-    });
-}
+		var icl_msync_confirm = jQuery('#icl_msync_confirm');
+		var check_all = icl_msync_confirm.find('thead :checkbox');
 
-WPML_core.sync_menus = function (total_menus) {
+		//Remove already assigned events: that's what makes that this slow!
+		check_all.off('click');
+		check_all.off('change');
 
-   var data = 'action=icl_msync_confirm';
-   data += '&_icl_nonce_menu_sync=' + jQuery('#_icl_nonce_menu_sync').val();
-   
-   var number_to_send = 50;
+		check_all.on('change', function () {
+			var on = jQuery(this).attr('checked');
+			var checkboxes = icl_msync_confirm.find('tbody :checkbox');
 
-   var menus = jQuery('input[name^=sync]:checked:not(:disabled)');
-   if (menus.length) {
-	  
-	  for ( var i = 0; i < Math.min( number_to_send, menus.length); i++ ) {
-		 
-	  	  data += '&' + jQuery(menus[i]).serialize();
-		  
-		  jQuery(menus[i]).attr('disabled', 'disabled');
-	  }
-   
-	  var message = jQuery('#icl_msync_submit').data('message');
-	  message = message.replace('%1', total_menus - menus.length);
-	  message = message.replace('%2', total_menus);
-	  
-	  jQuery('#icl_msync_message').text(message);
-	  
-      jQuery.ajax({
-		 url: ajaxurl,
-		 type: "POST",
-		 data: data,
-		 success: function (response) {
-			
-			if (response == '1') {
-			   WPML_core.sync_menus(total_menus);
+			if (on) {
+				checkboxes.each( function( i, el ) {
+					jQuery( el ).prop( 'checked', 'checked' );
+				});
+				jQuery( '#icl_msync_submit' ).prop( 'disabled', false );
+			} else {
+				checkboxes.each( function( i, el ) {
+					jQuery( el ).removeProp( 'checked' );
+				});
+				jQuery( '#icl_msync_submit' ).prop( 'disabled', true );
 			}
-		 }
-      });
-   } else {
-	  jQuery('#icl_msync_message').hide();
-	  var message = jQuery('#icl_msync_submit').data('message-complete');
-	  jQuery('#icl_msync_message').text(message);
-	  jQuery('.spinner').remove();
-	  jQuery('#icl_msync_message').fadeIn('slow');
-   }
-   
-}
+		});
+
+		icl_msync_confirm.find('tbody :checkbox').on('change', function () {
+
+			if (jQuery(this).attr('readonly') == 'readonly') {
+				jQuery(this).prop('checked', !jQuery(this).prop('checked'));
+			}
+
+			var checked_items = icl_msync_confirm.find('tbody :checkbox:checked');
+			var checked_count = checked_items.length;
+
+			jQuery('#icl_msync_submit').prop('disabled', !checked_count);
+
+			if (checked_count && checked_items.length == icl_msync_confirm.find('tbody :checkbox').length) {
+				jQuery('#icl_msync_confirm').find('thead :checkbox').prop('checked', true);
+			} else {
+				jQuery('#icl_msync').find('thead :checkbox').prop('checked', false);
+			}
+
+			WPML_core.icl_msync_validation();
+
+		});
+
+		jQuery('#icl_msync_submit').on('click', function () {
+			jQuery(this).prop('disabled', true);
+
+			var total_menus = jQuery('input[name^=sync]:checked').length;
+
+			var spinner = jQuery('<span class="spinner"></span>');
+			jQuery('#icl_msync_message').before(spinner);
+			spinner.css({display:       'inline-block',
+										float:        'none',
+										'visibility': 'visible'
+									});
+
+			WPML_core.sync_menus(total_menus);
+
+		});
+
+		var max_vars_warning = jQuery('#icl_msync_max_input_vars');
+		if (max_vars_warning.length) {
+			var menu_sync_check_box_count = jQuery('input[name^=sync]').length;
+			var max_vars_extra = 10; // Allow for a few other items as well. eg. nonce, etc
+			if (menu_sync_check_box_count + max_vars_extra > max_vars_warning.data('max_input_vars')) {
+				var warning_text = max_vars_warning.html();
+				warning_text = warning_text.replace('!NUM!', menu_sync_check_box_count + max_vars_extra);
+				max_vars_warning.html(warning_text);
+				max_vars_warning.show();
+			}
+		}
+	});
+
+	WPML_core.icl_msync_validation = function () {
+
+		jQuery('#icl_msync_confirm').find('tbody :checkbox').each(function () {
+			var mnthis = jQuery(this);
+
+			mnthis.prop('readonly', false);
+
+			if (jQuery(this).attr('name') == 'menu_translation[]') {
+				var spl = jQuery(this).val().split('#');
+				var menu_id = spl[0];
+
+				jQuery('#icl_msync_confirm').find('tbody :checkbox').each(function () {
+
+					if (jQuery(this).val().search('newfrom-' + menu_id + '-') == 0 && jQuery(this).attr('checked')) {
+						mnthis.prop('checked', true);
+						mnthis.prop('readonly', true);
+					}
+				});
+			}
+		});
+	};
+
+	WPML_core.sync_menus = function (total_menus) {
+
+		var message;
+		var data = 'action=icl_msync_confirm';
+		data += '&_icl_nonce_menu_sync=' + jQuery('#_icl_nonce_menu_sync').val();
+
+		var number_to_send = 50;
+
+		var menus = jQuery('input[name^=sync]:checked:not(:disabled)');
+		var icl_msync_message = jQuery('#icl_msync_message');
+		if (menus.length) {
+
+			for (var i = 0; i < Math.min(number_to_send, menus.length); i++) {
+
+				data += '&' + jQuery(menus[i]).serialize();
+
+				jQuery(menus[i]).prop('disabled', true);
+			}
+
+			message = jQuery('#icl_msync_submit').data('message');
+			message = message.replace('%1', total_menus - menus.length);
+			message = message.replace('%2', total_menus);
+
+			icl_msync_message.text(message);
+
+			jQuery.ajax({
+										url:     ajaxurl,
+										type:    "POST",
+										data:    data,
+										success: function (response) {
+
+											if (response == '1') {
+												WPML_core.sync_menus(total_menus);
+											}
+										}
+									});
+		} else {
+			icl_msync_message.hide();
+			message = jQuery('#icl_msync_submit').data('message-complete');
+			icl_msync_message.text(message);
+			jQuery('.spinner').remove();
+			icl_msync_message.fadeIn('slow');
+		}
+
+	};
+
+}());

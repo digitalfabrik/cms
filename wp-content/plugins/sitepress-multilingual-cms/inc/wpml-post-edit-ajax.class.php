@@ -156,7 +156,6 @@ class WPML_Post_Edit_Ajax {
 
 		$result = false;
 
-		set_transient( md5( $sitepress->get_current_user()->ID . 'current_user_post_edit_lang' ), $to );
 		if ( $post_id && $to ) {
 
 			$post_type      = get_post_type( $post_id );
@@ -189,20 +188,6 @@ class WPML_Post_Edit_Ajax {
 		}
 
 		wp_send_json_success( $result );
-	}
-
-	/**
-	 * Saves the language from which a user is editing the currently edited post as a transient.
-	 * This is done so that filtering the language from which terms for the flat terms preview dropdown can be performed.
-	 */
-	public static function wpml_set_post_edit_lang() {
-		global $sitepress;
-		$lang_code = false;
-		if ( isset( $_POST[ 'wpml_post_lang' ] ) ) {
-			$lang_code = $_POST[ 'wpml_post_lang' ];
-		}
-
-		set_transient( md5( $sitepress->get_current_user()->ID . 'current_user_post_edit_lang' ), $lang_code );
 	}
 
 	public static function wpml_get_default_lang() {

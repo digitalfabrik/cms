@@ -42,8 +42,9 @@ class WPML_Taxonomy_Element_Language_Dropdown {
 	private function filter_allowed_languages( $active_languages, $selected_language ) {
 		global $sitepress;
 
-		return filter_input ( INPUT_GET, 'action' ) !== 'edit' && $sitepress->get_current_language () !== 'all'
-			? array( $active_languages[ $selected_language ] ) : $active_languages;
+		$wp_api = new WPML_WP_API();
+		$show_all = $wp_api->is_term_edit_page() || $sitepress->get_current_language() === 'all';
+		return $show_all ? $active_languages :  array( $active_languages[ $selected_language ] );
 	}
 
 	private function add_options( $active_languages, $selected_language ) {

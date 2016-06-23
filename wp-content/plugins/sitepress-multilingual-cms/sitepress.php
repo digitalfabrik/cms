@@ -5,7 +5,7 @@ Plugin URI: https://wpml.org/
 Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-3/">WPML 3.3 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 3.3.6
+Version: 3.3.8
 Plugin Slug: sitepress-multilingual-cms
 */
 
@@ -14,11 +14,11 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
 if ( defined( 'ICL_SITEPRESS_VERSION' ) || (bool) get_option( '_wpml_inactive' ) === true ) {
 	return;
 }
-define( 'ICL_SITEPRESS_VERSION', '3.3.6' );
+define( 'ICL_SITEPRESS_VERSION', '3.3.8' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
-//define('ICL_SITEPRESS_DEV_VERSION', '3.2.3-dev');
+//define('ICL_SITEPRESS_DEV_VERSION', '3.4-dev');
 
 define( 'ICL_PLUGIN_PATH', dirname( __FILE__ ) );
 define( 'ICL_PLUGIN_FILE', basename( __FILE__ ) );
@@ -31,8 +31,10 @@ if ( ! defined( 'FILTER_SANITIZE_FULL_SPECIAL_CHARS' ) ) {
 }
 require ICL_PLUGIN_PATH . '/inc/functions-helpers.php';
 
-require_once 'lib/Twig/Autoloader.php';
-Twig_Autoloader::register();
+if ( ! class_exists( 'Twig_Autoloader' ) ) {
+	require_once 'lib/Twig/Autoloader.php';
+	Twig_Autoloader::register();
+}
 
 require_once 'embedded/wpml/commons/autoloader.php';
 $wpml_auto_loader_instance = WPML_Auto_Loader::get_instance();
@@ -113,7 +115,7 @@ if(defined('WPML_UPGRADE_NOT_POSSIBLE') && WPML_UPGRADE_NOT_POSSIBLE) return;
 
 if(is_admin() || defined('XMLRPC_REQUEST')){
     require ICL_PLUGIN_PATH . '/lib/icl_api.php';
-    require ICL_PLUGIN_PATH . '/lib/xml2array.php';
+    require ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
     require ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
     if ( !defined ( 'DOING_AJAX' ) ) {
         require ICL_PLUGIN_PATH . '/menu/wpml-admin-scripts-setup.class.php';
@@ -173,7 +175,8 @@ if ( is_admin() ) {
 }
 
 if(!empty($sitepress_settings['automatic_redirect'])){
-    require ICL_PLUGIN_PATH . '/inc/browser-redirect.php';
+	$wpml_browser_redirect = new WPML_Browser_Redirect( $sitepress );
+	$wpml_browser_redirect->init_hooks();
 }
 
 // activation hook

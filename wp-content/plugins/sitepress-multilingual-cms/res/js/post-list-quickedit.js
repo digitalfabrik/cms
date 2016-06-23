@@ -9,19 +9,6 @@ jQuery(document).ready(
 				editButton = parentDiv.find('.edit').find('a');
 				postLink = editButton.attr('href');
 				lang = postLink.match(/(?=lang=).*.$/).pop().replace('lang=', '');
-				jQuery.ajax(
-					{
-						type:     "POST",
-						url:      ajaxurl,
-						dataType: 'json',
-						data:     {
-							wpml_post_lang: lang,
-							action:         'wpml_set_post_edit_lang'
-						},
-						success:  function (response) {
-						}
-					}
-				);
 				parseJSONTerms(lang);
 			}
 		);
@@ -31,8 +18,7 @@ jQuery(document).ready(
 /**
  * This is only used for hierarchical Taxonomies
  *
- * @param termsList
- * @param taxonomy
+ * @param lang String
  */
 
 function parseJSONTerms(lang) {

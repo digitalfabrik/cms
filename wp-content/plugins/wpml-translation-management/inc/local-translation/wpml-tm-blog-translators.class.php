@@ -46,10 +46,17 @@ class WPML_TM_Blog_Translators extends WPML_SP_User {
 			$is_translator = true;
 		} else {
 			if ( isset( $lang_from ) && isset( $lang_to ) ) {
-				$um            = $this->get_language_pairs( $user_id );
-				$is_translator = $is_translator && isset( $um[ $lang_from ] )
-				                 && isset( $um[ $lang_from ][ $lang_to ] )
-				                 && $um[ $lang_from ][ $lang_to ];
+				$user_language_pairs            = $this->get_language_pairs( $user_id );
+				if ( ! empty( $user_language_pairs ) ) {
+					foreach ( $user_language_pairs as $user_lang_from => $user_lang_to ) {
+						if ( array_key_exists( $lang_to, $user_lang_to ) ) {
+							$is_translator = true;
+							break;
+						}
+					}
+				} else {
+					$is_translator = false;
+				}
 			}
 			if ( isset( $job_id ) ) {
 				$job_record    = $this->tm_records->icl_translate_job_by_job_id( $job_id );

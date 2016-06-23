@@ -62,7 +62,11 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 			if ( (bool) $pages_with_name === true ) {
 				$pid = $this->select_best_match( $pages_with_name );
 				if ( isset( $pid ) ) {
-					$page_query = $this->maybe_adjust_query_by_pid( $page_query, $pid, $index );
+					if ( ! isset( $page_query->queried_object_id ) || $pid != $page_query->queried_object_id ) {
+						$page_query = $this->maybe_adjust_query_by_pid( $page_query, $pid, $index );
+					} else {
+						unset( $pid );
+					}
 				} elseif ( (bool) $page_name_for_query === true ) {
 					$page_query->query_vars[ $index ]    = $page_name_for_query;
 					$page_query->query_vars['post_type'] = $this->post_type;
@@ -87,15 +91,19 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 		         && isset( $page_query->queried_object->ID )
 		         && (int) $page_query->queried_object->ID === (int) $pid )
 		) {
-			$page_query->query[ 'page_id' ]            = null;
+			if ( isset( $page_query->query[ 'page_id' ] ) ) {
+				$page_query->query[ 'page_id' ]        = (int) $pid;
+			}
 			$page_query->query_vars[ 'page_id' ]       = null;
 			$page_query->query_vars[ $this->id_index ] = (int) $pid;
-			$page_query->query[ $this->id_index ]      = (int) $pid;
+			if ( isset( $page_query->query[ $this->id_index ] ) ) {
+				$page_query->query[ $this->id_index ]  = (int) $pid;
+			}
 			$page_query->is_page                       = false;
-			$page_query->query[ $index ]               = "";
-			if ( isset( $page_query->query_vars[ $this->post_type ] ) ) {
+			if ( isset( $page_query->query_vars[ $this->post_type ] )
+				 && $this->post_type !== 'page'
+			) {
 				unset( $page_query->query_vars[ $this->post_type ] );
-				$page_query->query[ $this->post_type ] = "";
 			}
 			unset( $page_query->query_vars[ $index ] );
 			if ( ! empty( $page_query->queried_object ) ) {

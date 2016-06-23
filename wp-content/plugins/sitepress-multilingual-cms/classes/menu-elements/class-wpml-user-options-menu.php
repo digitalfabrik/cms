@@ -36,74 +36,77 @@ class WPML_User_Options_Menu extends WPML_SP_User {
 		$admin_default_language = $lang_details['display_name'];
 		ob_start();
 		?>
-		<a name="wpml"></a>
-		<h3><?php _e( 'WPML language settings', 'sitepress' ); ?></h3>
+		<a name="wpml"></a>		<h3><?php esc_html_e( 'WPML language settings', 'sitepress' ); ?></h3>
 		<table class="form-table">
 			<tbody>
 			<tr>
-				<th><?php _e( 'Select your language:', 'sitepress' ) ?></th>
+				<th><label for="icl_user_admin_language"><?php esc_html_e( 'Select your language:', 'sitepress' ) ?></label></th>
 				<td>
-					<select name="icl_user_admin_language">
-						<option
-							value=""<?php if ( $user_language === $user_admin_def_lang )
-							echo ' selected="selected"' ?>><?php printf( __( 'Default admin language (currently %s)', 'sitepress' ), $admin_default_language ); ?>
-							&nbsp;</option>
+					<select id="icl_user_admin_language" name="icl_user_admin_language">
+						<option value=""<?php if ( $user_language === $user_admin_def_lang ) {
+							echo ' selected="selected"';
+						} ?>>
+							<?php printf( esc_html__( 'Default admin language (currently %s)', 'sitepress' ), $admin_default_language ); ?>
+						</option>
 						<?php
 						$admin_language = $this->sitepress->get_admin_language();
 						foreach ( array( true, false ) as $active ) {
 							foreach ( $all_languages as $lang_code => $al ) {
 								if ( (bool) $al['active'] === $active ) {
 									?>
-									<option
-										value="<?php echo $lang_code ?>"<?php if ( $user_language === $lang_code )
-										echo ' selected="selected"' ?>><?php echo $al['display_name'];
+									<option value="<?php echo $lang_code ?>"<?php if ( $user_language === $lang_code ) {
+										echo ' selected="selected"';
+									} ?>>
+										<?php
+										echo $al['display_name'];
 										if ( $admin_language !== $lang_code ) {
-											echo ' (' . $al['native_name'] . ')';
-										} ?>&nbsp;</option>
+											echo ' (' . esc_html( $al['native_name'] ) . ')';
+										}
+										?></option>
 									<?php
 								}
 							}
 						}
 						?>
 					</select>
-					<span
-						class="description"><?php _e( 'this will be your admin language and will also be used for translating comments.', 'sitepress' ); ?></span>
+					<span class="description">
+						<?php esc_html_e( 'this will be your admin language and will also be used for translating comments.', 'sitepress' ); ?>
+					</span>
 					<br/>
 					<label><input type="checkbox"
 					              name="icl_admin_language_for_edit" value="1"
-					              <?php if ( $wp_api->get_user_meta( $this->current_user->ID, 'icl_admin_language_for_edit', true ) ): ?>checked="checked"<?php endif; ?> />&nbsp;<?php _e( 'Set admin language as editing language.', 'sitepress' ); ?>
+					              <?php if ( $wp_api->get_user_meta( $this->current_user->ID, 'icl_admin_language_for_edit', true ) ): ?>checked="checked"<?php endif; ?> />&nbsp;<?php esc_html_e( 'Set admin language as editing language.', 'sitepress' ); ?>
 					</label>
 				</td>
 			</tr>
 			<?php
 			if ( $wp_api->current_user_can( 'translate' ) || $wp_api->current_user_can( 'manage_options' ) ): ?>
 				<tr>
-					<th><?php _e( 'Hidden languages:', 'sitepress' ) ?></th>
+					<th><?php esc_html_e( 'Hidden languages:', 'sitepress' ) ?></th>
 					<?php $hidden_language_setting = $this->sitepress->get_setting( 'hidden_languages' ); ?>
 					<td>
 						<p>
 							<?php if ( ! empty( $hidden_language_setting ) ): ?>
 								<?php
 								if ( 1 == count( $hidden_language_setting ) ) {
-									printf( __( '%s is currently hidden to visitors.', 'sitepress' ), $all_languages[ end( $hidden_language_setting ) ]['display_name'] );
+									printf( esc_html__( '%s is currently hidden to visitors.', 'sitepress' ), $all_languages[ end( $hidden_language_setting ) ]['display_name'] );
 								} else {
 									$hidden_languages_array = array();
 									foreach ( $hidden_language_setting as $l ) {
 										$hidden_languages_array[] = $all_languages[ $l ]['display_name'];
 									}
-									$hidden_languages = join( ', ', $hidden_languages_array );
-									printf( __( '%s are currently hidden to visitors.', 'sitepress' ), $hidden_languages );
+									$hidden_languages = implode( ', ', $hidden_languages_array );
+									printf( esc_html__( '%s are currently hidden to visitors.', 'sitepress' ), $hidden_languages );
 								}
 								?>
-							<?php else: ?>
-								<?php _e( 'All languages are currently displayed. Choose what to do when site languages are hidden.', 'sitepress' ); ?>
+							<?php else: ?><?php esc_html_e( 'All languages are currently displayed. Choose what to do when site languages are hidden.', 'sitepress' ); ?>
 							<?php endif; ?>
 						</p>
 						<p>
 							<label><input name="icl_show_hidden_languages"
 							              type="checkbox" value="1" <?php
 							              if ( $wp_api->get_user_meta( $this->current_user->ID, 'icl_show_hidden_languages', true ) ): ?>checked="checked"<?php endif ?> />&nbsp;<?php
-								_e( 'Display hidden languages', 'sitepress' ) ?>
+								esc_html_e( 'Display hidden languages', 'sitepress' ) ?>
 							</label>
 						</p>
 					</td>

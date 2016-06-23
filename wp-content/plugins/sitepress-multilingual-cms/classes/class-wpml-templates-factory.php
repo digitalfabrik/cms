@@ -7,8 +7,10 @@ abstract class WPML_Templates_Factory {
 	 */
 	private $twig;
 
-	public function __construct() {
+	public function __construct( $custom_functions = array(), $custom_filters = array() ) {
 		$this->init_template_base_dir();
+		$this->custom_functions = $custom_functions;
+		$this->custom_filters   = $custom_filters;
 	}
 
 	abstract protected function init_template_base_dir();
@@ -48,6 +50,16 @@ abstract class WPML_Templates_Factory {
 			}
 
 			$this->twig = new Twig_Environment( $loader, $environment_args );
+			if ( isset( $this->custom_functions ) && count( $this->custom_functions ) > 0 ) {
+				foreach ( $this->custom_functions as $custom_function ) {
+					$this->twig->addFunction( $custom_function );
+				}
+			}
+			if ( isset( $this->custom_filters ) && count( $this->custom_filters ) > 0 ) {
+				foreach ( $this->custom_filters as $custom_filter ) {
+					$this->twig->addFilter( $custom_filter );
+				}
+			}
 		}
 	}
 

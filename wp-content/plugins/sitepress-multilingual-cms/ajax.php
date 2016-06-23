@@ -525,9 +525,13 @@ switch($request){
 	    }
 	    break;
     case 'icl_seo_options':
-        $iclsettings['seo']['head_langs'] = isset($_POST['icl_seo_head_langs']) ? intval($_POST['icl_seo_head_langs']) : 0;
-        $iclsettings['seo']['canonicalization_duplicates'] = isset($_POST['icl_seo_canonicalization_duplicates']) ? intval($_POST['icl_seo_canonicalization_duplicates']) : 0;
-        $this->save_settings($iclsettings);
+	    $seo = $sitepress->get_setting( 'seo', array() );
+
+	    $seo['head_langs']                  = isset( $_POST['icl_seo_head_langs'] ) ? (int) $_POST['icl_seo_head_langs'] : 0;
+	    $seo['canonicalization_duplicates'] = isset( $_POST['icl_seo_canonicalization_duplicates'] ) ? (int) $_POST['icl_seo_canonicalization_duplicates'] : 0;
+	    $seo['head_langs_priority']         = isset( $_POST['wpml_seo_head_langs_priority'] ) ? (int) $_POST['wpml_seo_head_langs_priority'] : 1;
+
+	    $sitepress->set_setting( 'seo', $seo, true );
         echo '1|';
         break;
     case 'dismiss_object_cache_warning':
@@ -548,8 +552,11 @@ switch($request){
 		$language_details = $sitepress->get_element_language_details($post_id, 'post_' . $post_type);
 
 		if ( $set_as_source ) {
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $language_details->language_code ), array( 'trid' => $new_trid, 'element_type' => 'post_' . $post_type ) );
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => null, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ) );
+			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $language_details->language_code ), array( 'trid' => $new_trid, 'element_type' => 'post_' . $post_type ), array( '%s' ), array( '%d', '%s' ) );
+			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => null, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ), array( '%s', '%d' ), array(
+				'%d',
+				'%s'
+			) );
 		} else {
 			$original_element_language = $sitepress->get_default_language();
 			$trid_elements             = $sitepress->get_element_translations( $new_trid, 'post_' . $post_type );
@@ -561,7 +568,10 @@ switch($request){
 					}
 				}
 			}
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $original_element_language, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ) );
+			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $original_element_language, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ), array(
+				'%s',
+				'%d'
+			), array( '%d', '%s' ) );
 		}
 		echo wp_json_encode(true);
 		break;

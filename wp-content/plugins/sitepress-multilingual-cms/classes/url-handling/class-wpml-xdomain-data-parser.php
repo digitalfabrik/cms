@@ -12,8 +12,8 @@ class WPML_XDomain_Data_Parser {
 	}
 
 	public function init() {
-		add_action( 'wp_ajax_switching_language', array( $this, 'xdomain_language_data_setup' ) );
-		add_action( 'wp_ajax_nopriv_switching_language', array( $this, 'xdomain_language_data_setup' ) );
+		add_action( 'wp_ajax_switching_language', array( $this, 'send_xdomain_language_data' ) );
+		add_action( 'wp_ajax_nopriv_switching_language', array( $this, 'send_xdomain_language_data' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_scripts_action' ), 100 );
 	}
 
@@ -23,7 +23,7 @@ class WPML_XDomain_Data_Parser {
 		}
 	}
 
-	public function xdomain_language_data_setup() {
+	public function set_up_xdomain_language_data(){
 		global $sitepress_settings;
 
 		$ret = array();
@@ -40,6 +40,7 @@ class WPML_XDomain_Data_Parser {
 				$mcrypt_iv_size  = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
 				$mcrypt_iv       = mcrypt_create_iv( $mcrypt_iv_size, MCRYPT_RAND );
 				$encoded_data = mcrypt_encrypt( MCRYPT_RIJNDAEL_256, $key, $encoded_data, MCRYPT_MODE_ECB, $mcrypt_iv );
+				$encoded_data = preg_replace('/\x00/', '', $encoded_data); // strip padding added to match the block size
 			}
 
 			$base64_encoded_data = base64_encode( $encoded_data );
@@ -49,7 +50,16 @@ class WPML_XDomain_Data_Parser {
 
 		}
 
-		wp_send_json_success( $ret );
+		return $ret;
+
+	}
+
+	public function send_xdomain_language_data(){
+
+		$data = $this->set_up_xdomain_language_data();
+
+		wp_send_json_success( $data );
+
 	}
 
 	public function get_xdomain_data() {
@@ -63,7 +73,7 @@ class WPML_XDomain_Data_Parser {
 			if ( WPML_XDOMAIN_DATA_GET == $sitepress_settings['xdomain_data'] ) {
 				$xdomain_data_request = isset( $_GET['xdomain_data'] ) ? $_GET['xdomain_data'] : false;
 			} elseif ( WPML_XDOMAIN_DATA_POST == $sitepress_settings['xdomain_data'] ) {
-				$xdomain_data_request = isset( $_POST['xdomain_data'] ) ? $_POST['xdomain_data'] : false;
+				$xdomain_data_request = isset( $_POST['xdomain_data'] ) ? urldecode( $_POST['xdomain_data'] ) : false;
 			}
 
 			if ( $xdomain_data_request ) {
@@ -73,6 +83,7 @@ class WPML_XDomain_Data_Parser {
 					$mcrypt_iv_size  = mcrypt_get_iv_size( MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB );
 					$mcrypt_iv       = mcrypt_create_iv( $mcrypt_iv_size, MCRYPT_RAND );
 					$data = mcrypt_decrypt( MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_ECB, $mcrypt_iv );
+					$data = preg_replace('/\x00/', '', $data);
 				}
 				$xdomain_data = (array) json_decode( $data, JSON_OBJECT_AS_ARRAY );
 			}

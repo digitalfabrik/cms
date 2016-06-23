@@ -61,16 +61,100 @@ msgstr ""
 msgid "Error: Please activate WPML Translation Management plugin"
 msgstr ""
 
-msgid "String"
+msgid "Unable to remove relationship!"
 msgstr ""
 
-msgid "Valid"
+msgid "You are updating a duplicate post."
 msgstr ""
 
-msgid "Not valid"
+msgid "To not lose your changes, WPML will set this post to be translated independently."
+msgstr ""
+
+msgid "WPML"
+msgstr ""
+
+msgid "Sitemaps for each languages can be accessed here:"
+msgstr ""
+
+msgid "Validate on save"
+msgstr ""
+
+msgid "Current content language"
+msgstr ""
+
+msgid "Before adding other languages, please select the language existing contents are written in:"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Taxonomy Translation"
+msgstr ""
+
+msgid "Custom fields"
+msgstr ""
+
+msgid "Don't translate"
+msgstr ""
+
+msgid "Copy"
+msgstr ""
+
+msgid "Translate"
+msgstr ""
+
+msgid "Default admin language (currently %s)"
+msgstr ""
+
+msgid "WPML language settings"
+msgstr ""
+
+msgid "Select your language:"
+msgstr ""
+
+msgid "this will be your admin language and will also be used for translating comments."
+msgstr ""
+
+msgid "Set admin language as editing language."
+msgstr ""
+
+msgid "Hidden languages:"
+msgstr ""
+
+msgid "All languages are currently displayed. Choose what to do when site languages are hidden."
+msgstr ""
+
+msgid "Display hidden languages"
+msgstr ""
+
+msgid "As early as possible"
+msgstr ""
+
+msgid "Later in the head section (priority %d)"
+msgstr ""
+
+msgid "Position of hreflang links"
+msgstr ""
+
+msgid "SEO Options"
+msgstr ""
+
+msgid "Display alternative languages in the HEAD section."
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "n/a"
 msgstr ""
 
 msgid "Error"
+msgstr ""
+
+msgid "re-save the site permalinks"
+msgstr ""
+
+msgid "You may need to %s."
 msgstr ""
 
 msgid "-- Please select --"
@@ -80,12 +164,6 @@ msgid "Choose language:"
 msgstr ""
 
 msgid "This post is also available in: "
-msgstr ""
-
-msgid "n/a"
-msgstr ""
-
-msgid "WPML"
 msgstr ""
 
 msgid "Network settings"
@@ -163,6 +241,15 @@ msgstr ""
 msgid "Select Language"
 msgstr ""
 
+msgid "Downloading is not possible. WordPress cannot create required folders because of the\r\n                                        256 characters limitation of the current Windows environment."
+msgstr ""
+
+msgid "Update Plugin"
+msgstr ""
+
+msgid "Return to the updates page"
+msgstr ""
+
 msgid "To install and update %s, please %sregister%s %s for this site."
 msgstr ""
 
@@ -202,10 +289,13 @@ msgstr ""
 msgid "No repositories defined."
 msgstr ""
 
+msgid "Invalid site key for the current site."
+msgstr ""
+
 msgid "%s cannot access %s to register. Try again to see if it's a temporary problem. If the problem continues, make sure that this site has access to the Internet. You can still use the plugin without registration, but you will not receive automated updates."
 msgstr ""
 
-msgid "Invalid site key for the current site."
+msgid "Invalid site key for the current site. If the error persists, try to unregister first and then register again with the same site key."
 msgstr ""
 
 msgid "You will have to renew your subscription in order to continue getting the updates and support."
@@ -221,9 +311,6 @@ msgid "You need to have a valid subscription in order to get upgrades or support
 msgstr ""
 
 msgid "%s cannot update because your site's registration is not valid. Please %sregister %s%s again for this site first."
-msgstr ""
-
-msgid "Update Plugin"
 msgstr ""
 
 msgid "Return to the plugins page"
@@ -373,7 +460,13 @@ msgstr ""
 msgid "2. Enter your site key"
 msgstr ""
 
-msgid "Subscription is expired. You need to either purchase a new subscription or upgrade if available."
+msgid "Subscription expired. You need to either purchase a new subscription or upgrade if available."
+msgstr ""
+
+msgid "Revalidate subscription"
+msgstr ""
+
+msgid "If you have already purchased or renewed your subscription and you can still see this message, please revalidate your subscription"
 msgstr ""
 
 msgid "Check for updates"
@@ -508,48 +601,6 @@ msgstr ""
 msgid "This page does not have a language since it's the site's root page."
 msgstr ""
 
-msgid "Your site includes different kinds of content items. Choose which types to include in the quote. <br /><br />To get the word count of specific documents, use the %sTranslation Dashboard%s."
-msgstr ""
-
-msgid "Translation Languages"
-msgstr ""
-
-msgid "I need translation from"
-msgstr ""
-
-msgid "to these languages:"
-msgstr ""
-
-msgid "Continue"
-msgstr ""
-
-msgid "Content Types"
-msgstr ""
-
-msgid "Type"
-msgstr ""
-
-msgid "Number of items"
-msgstr ""
-
-msgid "Number of words"
-msgstr ""
-
-msgid "Back"
-msgstr ""
-
-msgid "Summary"
-msgstr ""
-
-msgid "You have selected the following content:"
-msgstr ""
-
-msgid "Produce Quote"
-msgstr ""
-
-msgid "Save for later"
-msgstr ""
-
 msgid "Uncategorized"
 msgstr ""
 
@@ -622,9 +673,6 @@ msgstr ""
 msgid "Copy from original"
 msgstr ""
 
-msgid "Translate"
-msgstr ""
-
 msgid "Apply"
 msgstr ""
 
@@ -655,37 +703,7 @@ msgstr ""
 msgid "%s is not translated. %sClick here to make this post type translatable.%s"
 msgstr ""
 
-msgid "Taxonomy Translation"
-msgstr ""
-
 msgid "No Batch"
-msgstr ""
-
-msgid "New - side-by-site translation editor: <a href=\"%s\">try it</a> | <a href=\"#cancel\">no thanks</a>."
-msgstr ""
-
-msgid "%s has been added as a translator for this site."
-msgstr ""
-
-msgid "Language pairs for %s have been edited."
-msgstr ""
-
-msgid "%s has been removed as a translator for this site."
-msgstr ""
-
-msgid "I can't find user ID %d: he might have been removed as a translator for this site."
-msgstr ""
-
-msgid "You can't do that."
-msgstr ""
-
-msgid "Preferences saved."
-msgstr ""
-
-msgid "Translation requests cancelled."
-msgstr ""
-
-msgid "No Translation requests selected."
 msgstr ""
 
 msgid "Contact the translator"
@@ -727,13 +745,31 @@ msgstr ""
 msgid "some strings might be not registered"
 msgstr ""
 
-msgid "Post not found!"
-msgstr ""
-
 msgid " - (needs update)"
 msgstr ""
 
-msgid "No matches"
+msgid "%s has been added as a translator for this site."
+msgstr ""
+
+msgid "Language pairs for %s have been edited."
+msgstr ""
+
+msgid "%s has been removed as a translator for this site."
+msgstr ""
+
+msgid "I can't find user ID %d: he might have been removed as a translator for this site."
+msgstr ""
+
+msgid "You can't do that."
+msgstr ""
+
+msgid "Preferences saved."
+msgstr ""
+
+msgid "Translation requests cancelled."
+msgstr ""
+
+msgid "No Translation requests selected."
 msgstr ""
 
 msgid "Processing translations..."
@@ -767,9 +803,6 @@ msgid "<strong>WPML notice:</strong> Upgrades to this version are only supported
 msgstr ""
 
 msgid "HTTP code: %s (%s)"
-msgstr ""
-
-msgid "Validate on save"
 msgstr ""
 
 msgid "Language Selector"
@@ -868,7 +901,10 @@ msgstr ""
 msgid "The posts you just saved led to the creation of new hierarchical terms.\nTheir hierarchical relationship to one another is not yet synchronized with the original post's terms for the following taxonomies:"
 msgstr ""
 
-msgid "Sitemaps for each languages can be accessed here:"
+msgid "Valid"
+msgstr ""
+
+msgid "Not valid"
 msgstr ""
 
 msgid "WPML cannot connect to <a%s>www.icanlocalize.com</a>. Please make sure that outgoing communication on port 80 (or 443) is enabled.\r\n<a%s>www.icanlocalize.com</a> is found on IP - %s. You can open all ports to and from that IP."
@@ -878,42 +914,6 @@ msgid "This language selector determines which content to display. You can choos
 msgstr ""
 
 msgid "Show content in:"
-msgstr ""
-
-msgid "Setup WPML"
-msgstr ""
-
-msgid "Compatibility packages"
-msgstr ""
-
-msgid "WPML compatibility packages will soon be obsolete and removed. Please use other means to make your site multilingual-ready."
-msgstr ""
-
-msgid "Packages list updated"
-msgstr ""
-
-msgid "Package name"
-msgstr ""
-
-msgid "Version"
-msgstr ""
-
-msgid "Description"
-msgstr ""
-
-msgid "Used for theme"
-msgstr ""
-
-msgid "Used for plugin"
-msgstr ""
-
-msgid "Author"
-msgstr ""
-
-msgid "No packages found"
-msgstr ""
-
-msgid "Update"
 msgstr ""
 
 msgid "hidden"
@@ -967,6 +967,9 @@ msgstr ""
 msgid "Upload dir is not writable"
 msgstr ""
 
+msgid "(allowed: %s)"
+msgstr ""
+
 msgid "Are you sure you want to delete this language?%sALL the data associated with this language will be ERASED!"
 msgstr ""
 
@@ -988,7 +991,16 @@ msgstr ""
 msgid "Error adding flag."
 msgstr ""
 
-msgid "Language code exists"
+msgid "The Language code already exists."
+msgstr ""
+
+msgid "The Language name already exists."
+msgstr ""
+
+msgid "The default locale already exists."
+msgstr ""
+
+msgid "The tag already exists."
 msgstr ""
 
 msgid "Please, enter required data."
@@ -1009,13 +1021,31 @@ msgstr ""
 msgid "There was an error uploading the file, please try again!"
 msgstr ""
 
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr ""
+
+msgid "The uploaded file exceeds %s bytes."
+msgstr ""
+
+msgid "The uploaded file was only partially uploaded."
+msgstr ""
+
+msgid "No file was uploaded."
+msgstr ""
+
+msgid "Missing a temporary folder."
+msgstr ""
+
+msgid "Failed to write file to disk."
+msgstr ""
+
+msgid "A PHP extension stopped the file upload. PHP does not provide a way to ascertain which extension caused the file upload to stop; examining the list of loaded extensions with phpinfo() may help."
+msgstr ""
+
 msgid "Edit Languages"
 msgstr ""
 
 msgid "This table allows you to edit languages for your site. Each row represents a language.\r\n<br /><br />\r\nFor each language, you need to enter the following information:\r\n<ul>\r\n    <li><strong>Code:</strong> a unique value that identifies the language. Once entered, the language code cannot be changed.</li>\r\n    <li><strong>Translations:</strong> the way the language name will be displayed in different languages.</li>\r\n    <li><strong>Flag:</strong> the flag to display next to the language (optional). You can either upload your own flag or use one of WPML's built in flag images.</li>\r\n    <li><strong>Default locale:</strong> This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.</li>\r\n</ul>"
-msgstr ""
-
-msgid "Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code."
 msgstr ""
 
 msgid "Language name"
@@ -1039,6 +1069,9 @@ msgstr ""
 msgid "Language tag"
 msgstr ""
 
+msgid "Please note: language codes cannot be changed after adding languages. Make sure you enter the correct code."
+msgstr ""
+
 msgid "Back to languages"
 msgstr ""
 
@@ -1046,9 +1079,6 @@ msgid "Add Language"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
-
-msgid "Save"
 msgstr ""
 
 msgid "Reset languages"
@@ -1069,10 +1099,13 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Setup WPML"
+msgstr ""
+
 msgid "Please go to the <a href=\"%s\">Plugins</a> page and enable the WPML Multilingual CMS plugin before trying to configure the plugin."
 msgstr ""
 
-msgid "Next"
+msgid "Back"
 msgstr ""
 
 msgid "Finish"
@@ -1138,16 +1171,16 @@ msgstr ""
 msgid "Remember visitors' language preference for %s hours (please enter 24 or multiples of it)."
 msgstr ""
 
+msgid "Browser language redirect may affect your site's indexing"
+msgstr ""
+
+msgid "learn more"
+msgstr ""
+
 msgid "Tell the world your site is running multilingual with WPML (places a message in your site's footer) - <a href=\"%s\">read more</a>"
 msgstr ""
 
 msgid "The WPML Multilingual CMS plugin is not currently enabled."
-msgstr ""
-
-msgid "Current content language"
-msgstr ""
-
-msgid "Before adding other languages, please select the language existing contents are written in:"
 msgstr ""
 
 msgid "This screen contains the language settings for your site."
@@ -1175,9 +1208,6 @@ msgid "Make themes work multilingual"
 msgstr ""
 
 msgid "Browser language redirect"
-msgstr ""
-
-msgid "SEO Options"
 msgstr ""
 
 msgid "WPML love"
@@ -1436,9 +1466,6 @@ msgid "Always redirect visitors based on browser language (redirect to home page
 msgstr ""
 
 msgid "Your browser doesn't seem to be allowing cookies to be set."
-msgstr ""
-
-msgid "Display alternative languages in the HEAD section."
 msgstr ""
 
 msgid "Menu synchronization will sync the menu structure from the default language of %s to the secondary languages."
@@ -1732,6 +1759,9 @@ msgstr ""
 msgid "Plugin Name"
 msgstr ""
 
+msgid "Version"
+msgstr ""
+
 msgid "Not installed"
 msgstr ""
 
@@ -1811,6 +1841,9 @@ msgid "Name"
 msgstr ""
 
 msgid "Slug"
+msgstr ""
+
+msgid "Description"
 msgstr ""
 
 msgid "Singular"
@@ -1940,6 +1973,9 @@ msgid "Review changes and update"
 msgstr ""
 
 msgid "Last checked on %s"
+msgstr ""
+
+msgid "Update"
 msgstr ""
 
 msgid "Theme and Plugins compatibility with WPML"
@@ -2287,6 +2323,12 @@ msgstr ""
 msgid "Make '%s' translatable"
 msgstr ""
 
+msgid "Hide system fields"
+msgstr ""
+
+msgid "Show system fields"
+msgstr ""
+
 msgid "Note: Custom taxonomies and custom fields are shared across different post types."
 msgstr ""
 
@@ -2299,9 +2341,6 @@ msgstr ""
 msgid "WPML admin screens require JavaScript in order to display. JavaScript is currently off in your browser."
 msgstr ""
 
-msgid "Default admin language (currently %s)"
-msgstr ""
-
 msgid "A translation for this post already exists"
 msgstr ""
 
@@ -2311,55 +2350,10 @@ msgstr ""
 msgid "Invalid language code"
 msgstr ""
 
-msgid "Select translators"
-msgstr ""
-
-msgid "Send documents to translation"
-msgstr ""
-
-msgid "Deposit payment"
-msgstr ""
-
-msgid "Translations will be returned to your site"
-msgstr ""
-
-msgid "Setup check list"
-msgstr ""
-
 msgid "Multi-language | WPML %s"
 msgstr ""
 
-msgid "Custom fields"
-msgstr ""
-
-msgid "Don't translate"
-msgstr ""
-
-msgid "Copy"
-msgstr ""
-
 msgid "Nothing to configure."
-msgstr ""
-
-msgid "WPML language settings"
-msgstr ""
-
-msgid "Select your language:"
-msgstr ""
-
-msgid "this will be your admin language and will also be used for translating comments."
-msgstr ""
-
-msgid "Set admin language as editing language."
-msgstr ""
-
-msgid "Hidden languages:"
-msgstr ""
-
-msgid "All languages are currently displayed. Choose what to do when site languages are hidden."
-msgstr ""
-
-msgid "Display hidden languages"
 msgstr ""
 
 msgid "WPML is a powerful plugin with many features. Would you like to see a quick overview?"
