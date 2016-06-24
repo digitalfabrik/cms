@@ -69,7 +69,7 @@ function cl_sb_json_to_html($json, $blog_name) {
  * @param array $array
  */
 function cl_sb_metabox_item($array) {
-    $array[] = json_decode('{"id": "ig-content-loader-sprungbrett", "name": "Sprungbrett Praktika"}');
+    $array[] = array('id'=>'ig-content-loader-sprungbrett', 'name'=>'Sprungbrett Praktika');
     return $array;
 }
 add_filter('cl_metabox_item', 'cl_sb_metabox_item');

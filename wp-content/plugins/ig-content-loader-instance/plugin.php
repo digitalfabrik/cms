@@ -32,7 +32,7 @@ add_action( 'cl_update_content','cl_sb_update_content', 10, 3 );
 
 // registriert plugin in base and return meta infos
 function cl_in_metabox_item( $array ) {
-    $array[] = json_decode('{"id": "ig-content-loader-instance", "name": "Seite aus Fremdinstanz", "ajax_callback": "cl_in_metabox_ajax"}');
+    $array[] = array('id'=>'ig-content-loader-instance', 'name'=>'Seite aus Fremdinstanz');
     return $array;
 }
 add_filter( 'cl_metabox_item', 'cl_in_metabox_item' );
@@ -65,35 +65,46 @@ function cl_in_metabox_ajax() {
 function cl_in_add_js() {
 ?>
 	<script type="text/javascript" >
-	/*var sel = document.getElementById('sel');
-	sel.onchange = function() {
-		var show = document.getElementById('show');
-		show.innerHTML = this.value;
-	}
 	jQuery(document).ready(function($) {
-
-		var data = {
-			'action': 'my_action',
-			'whatever': 1234
-		};
-
-		// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-		jQuery.post(ajaxurl, data, function(response) {
-			alert('Got this from the server: ' + response);
+		jQuery("#cl_content_select").on('change', function() {
+			//window.alert( this.value );
+			if(this.value == 'ig-content-loader-instance') {
+				var data = {
+					'action': 'cl_in_instance_dropdown',
+					'whatever': 1234
+				};
+				jQuery.post(ajaxurl, data, function(response) {
+					//alert('Got this from the server: ' + response);
+					jQuery('#cl_metabox_extra').html(response);
+					//alert(response);
+				});
+			} else {
+				jQuery('#cl_in_metabox_instance').remove()
+				jQuery('#cl_in_metabox_article').remove()
+			}
 		});
-	});*/
-	
+		jQuery("#cl_in_select_instance").on('change', function() {
+			alert(this.value);
+		});
+	});
 	</script> <?php
 }
 add_action( 'cl_add_js', 'cl_in_add_js' );
 
 function cl_in_instance_dropdown() {
+	global $wpdb;
 	// get all blogs / instances (augsburg, regensburg, etc)
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 	$all_blogs = $wpdb->get_results($query);
+	echo '<p id="cl_in_metabox_instance"><select style="width: 100%;" name="cl_in_select_instance"><option selected="selected">Bitte w&auml;hlen</option>';
 	foreach( $all_blogs as $blog ){
-
+		
+		$blog_name = get_blog_details( $blog->blog_id )->blogname;
+		echo "<option>$blog_name</option>";
 	}
+	echo '</select></p><p id="cl_in_metabox_article"></p>';
+	//echo '<p id="cl-in-metabox">yay</p>';
+	exit;
 }
 add_action( 'wp_ajax_cl_in_instance_dropdown', 'cl_in_instance_dropdown' );
 

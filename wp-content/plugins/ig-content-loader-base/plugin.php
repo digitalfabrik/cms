@@ -35,7 +35,7 @@ add_action( 'init', 'cl_init' );
  *  Register Meta box Hook
  */
 function cl_generate_selection_box() {
-	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_my_display_callback', 'page', 'side' );
+	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_create_metabox', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
  
@@ -52,17 +52,11 @@ function cl_create_metabox( $post ) {
 
 	$option_value = get_post_meta( $post->ID, "ig-content-loader-base" )[0];
 	
-	$dropdown_items = apply_filters('cl_metabox_item', array(json_decode('{"id": "", "name": "Bitte ausw&auml;hlen (nichts einf&uuml;gen)"}')));
-	
+	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>'Bitte ausw&auml;hlen (nichts einf&uuml;gen)')));
 	$options = "";
-
+	
 	foreach($dropdown_items as $item) {
-		$json = '{"id": "'.$item->id.'", "ajax_callback": "'.$item->ajax_callback.'"}';
-		$options .= "<option value='$json'";
-		if( $option_value == $item->id) {
-			$options .= ' selected';
-		}
-		$options .= '>'.$item->name.'</option>';
+		$options .= "<option value='".$item['id']."' ".selected($item['id'],$option_value,false).'>'.$item['name'].'</option>';
 	}
 	cl_meta_box_html( $options,  $radio_value );
 	do_action( 'cl_add_js' );
@@ -72,21 +66,18 @@ function cl_meta_box_html( $options, $radio_value ) {
 ?>
 
     <!-- Dropdown-select for foreign contents -->
-    <p>
+    <p id="cl_metabox_plugin">
         <label style="font-weight:600" for="meta-select" class="cl-row-title">
             <?php _e( 'Inhalt wählen', 'cl-textdomain' )?>
         </label>
         <select name="cl_content_select" id="cl_content_select" style="width:100%; margin-top:10px; margin-bottom:10px">
             <!-- build select items from filtered plugin list and preselect saved item, if there was any -->
-            <?php 
-				echo $options;
-			?>
-
+            <?php echo $options; ?>
         </select>
     </p>
 
     <!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
-    <p>
+    <p id="cl_metabox_position">
         <span style="font-weight:600" class="cl-row-title"><?php _e( 'Inhalt Einfügen', 'cl-textdomain' )?></span>
         <div class="cl-row-content">
             <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
@@ -99,8 +90,7 @@ function cl_meta_box_html( $options, $radio_value ) {
             </label>
         </div>
     </p>
-
-
+    <div id="cl_metabox_extra"></div>
     <?php  
 }
 
@@ -110,17 +100,13 @@ function cl_meta_box_html( $options, $radio_value ) {
 * @param int $post_id Post ID
 */
 function cl_save_meta_box($post_id) {
-
 	// key for base-plugin in wp_postmeta
 	$meta_key = 'ig-content-loader-base';
     $meta_key_position = 'ig-content-loader-base-position';
   
 	//get the selected value from the meta box dropdown-select and the radio group
 	//get the selected value from the meta box dropdown-select
-	if( isset( $_POST['cl_content_select'] ) ) {
-		$select_value = json_decode( str_replace( "\\", "", $_POST['cl_content_select'] ) );
-		$meta_value = $select_value->id;
-	}
+	$meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
     $meta_value_position = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
     
 	//read old post meta settings
