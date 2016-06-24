@@ -28,8 +28,9 @@ class WPML_TM_Post_Edit_Custom_Field_Settings_Menu extends WPML_SP_User {
 	 */
 	public function render() {
 		$custom_keys = (array) $this->sitepress->get_wp_api()->get_post_custom_keys( $this->post->ID );
+		$custom_keys = $this->setting_factory->filter_custom_field_keys( $custom_keys );
 		ob_start();
-		if ( ! empty( $custom_keys ) ) {
+		if ( 0 !== count( $custom_keys ) ) {
 			?>
 			<table class="widefat">
 				<thead>

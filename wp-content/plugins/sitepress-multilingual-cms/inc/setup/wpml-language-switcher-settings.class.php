@@ -1,6 +1,6 @@
 <?php
 
-class WPML_Language_Switcher_Settings {
+class WPML_Setup_Language_Switcher_Settings {
 
 	protected $ls_options;
 	protected $ls_sidebars;

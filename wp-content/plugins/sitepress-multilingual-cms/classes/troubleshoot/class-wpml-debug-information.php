@@ -40,7 +40,7 @@ class WPML_Debug_Information extends WPML_WPDB_And_SP_User {
 			),
 			'Server'    => array(
 				'jQueryVersion'  => wp_script_is( 'jquery', 'registered' ) ? $GLOBALS['wp_scripts']->registered['jquery']->ver : __( 'n/a', 'bbpress' ),
-				'PHPVersion'     => phpversion(),
+				'PHPVersion'     => $this->sitepress->get_wp_api()->phpversion(),
 				'MySQLVersion'   => $this->wpdb->db_version(),
 				'ServerSoftware' => $_SERVER['SERVER_SOFTWARE']
 			),
@@ -51,6 +51,8 @@ class WPML_Debug_Information extends WPML_WPDB_And_SP_User {
 				'PostMax'         => ini_get( 'post_max_size' ),
 				'TimeLimit'       => ini_get( 'max_execution_time' ),
 				'MaxInputVars'    => ini_get( 'max_input_vars' ),
+				'MBString'        => (bool) extension_loaded( 'mbstring' ),
+
 			),
 		);
 

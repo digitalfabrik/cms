@@ -82,14 +82,15 @@ function icl_pickup_translations() {
 }
 
 function icl_get_blog_users_not_translators() {
+	global $iclTranslationManagement;
 	$translator_drop_down_options = array();
 
 	$nonce = filter_input( INPUT_POST, 'get_users_not_trans_nonce' );
-	if ( !wp_verify_nonce( $nonce, 'get_users_not_trans_nonce' ) ) {
+	if ( ! wp_verify_nonce( $nonce, 'get_users_not_trans_nonce' ) ) {
 		die( 'Wrong Nonce' );
 	}
 
-	$blog_users_nt = TranslationManagement::get_blog_not_translators();
+	$blog_users_nt = $iclTranslationManagement->get_blog_not_translators();
 
 	foreach ( (array) $blog_users_nt as $u ) {
 		$label                           = $u->display_name . ' (' . $u->user_login . ')';

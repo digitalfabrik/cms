@@ -176,7 +176,7 @@ function icl_sitepress_activate() {
 			$sql = "
                  CREATE TABLE IF NOT EXISTS `{$table_name}` (
                     `code` VARCHAR( 7 ) NOT NULL ,
-                    `locale` VARCHAR( 8 ) NOT NULL ,
+                    `locale` VARCHAR( 35 ) NOT NULL ,
                     UNIQUE (`code` ,`locale`)
                 ) {$charset_collate}";
 			if ( $wpdb->query( $sql ) === false ) {

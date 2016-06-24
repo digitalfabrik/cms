@@ -1,0 +1,817 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Revisionary 1.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-11-10 17:12-0500\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Kevin Behrens <kevin@agapetry.net>\n"
+"Language-Team: agapetry <kevin@agapetry.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED STATES\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: E:\\www\\wp33\\wp-content\\plugins\\revisionary\\\n"
+"X-Poedit-KeywordsList: __;_e;_c;__ngettext;_n;rvy_po_trigger\n"
+"X-Poedit-SearchPath-0: E:\\www\\wp33\\wp-content\\plugins\\revisionary\n"
+"X-Poedit-SearchPath-1: E:\\www\\wp33\\wp-content\\plugins\\revisionary\\admin\n"
+"X-Poedit-SearchPath-2: E:\\www\\wp33\\wp-content\\plugins\\revisionary\\hardway\n"
+"X-Poedit-SearchPath-3: E:\\www\\wp33\\wp-content\\plugins\\revisionary\\lib\n"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:152
+#, php-format
+msgid "This Revision was Published on %s"
+msgstr "Diese Revision wurde veröffentlicht am %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:157
+#, php-format
+msgid "(for publication on %s)"
+msgstr "(zur Publikation am %s)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:158
+msgid "Schedule this Pending Revision"
+msgstr "Ausstehende Revision terminieren"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:162
+msgid "Publish this Pending Revision now."
+msgstr "Ausstehende Revision jetzt veröffentlichen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:168
+#, php-format
+msgid "(already scheduled for publication on %s)"
+msgstr "(bereits geplante Publikation am %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:169
+msgid "Publish now."
+msgstr "Jetzt Veröffentlichen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:174
+#, php-format
+msgid "(dated %s)"
+msgstr "(geplant %s)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:175
+msgid "Restore this Past Revision"
+msgstr "Ehemalige Revision wiederherstellen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/front_rvy.php:201
+msgid "Current Revision"
+msgstr "Aktuelle Revision"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/revisionary.php:39
+#, php-format
+msgid "Another copy of Revisionary is already activated (version %1$s in \"%2$s\")"
+msgstr "Eine andere Kopie von Revisionary ist bereits aktiviert (version %1$s in \"%2$s\")"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/rvy_init.php:55
+msgid "Revisor"
+msgstr "Revisor"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/rvy_init.php:387
+#, php-format
+msgid "Revisionary is not compatible with Press Permit versions prior to %1$s.  Please upgrade or deactivate."
+msgstr "Revisionary ist nicht kompatibel mit Press Permit Versionen vor %1$s. Bitte aktualisieren oder deaktivieren."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/rvy_init.php:403
+#, php-format
+msgid "Revisionary is not compatible with Role Scoper versions prior to %1$s.  Please upgrade or deactivate %2$s Role Scoper%3$s."
+msgstr "Revisionary ist nicht kompatibel mit Role Scoper Versionen vor %1$s. Bitte aktualisieren oder deaktivieren %2$s Role Scoper %3$s."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:28
+msgid "unselfish, benevolent love, born of the Spirit."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:30
+msgid "Agap&eacute; discerns needs and meets them unselfishly and effectively."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:33
+#, php-format
+msgid "This WordPress plugin is part of my agap&eacute; try, a lifelong effort to love God and love people by rightly using the time and abilities He has leant me. As a husband, father, engineer, farmer and/or software developer, I have found this stewardship effort to be often fraught with contradiction. A wise and sustainable balancing of roles has seemed to elude me. Yet I want to keep trying, trusting that if God blesses and multiplies the effort, it will become agapetry, a creative arrangement motivated by benevolent love.  A fleeting childlike sketch of the beautiful %1$s chain-breaking agap&eacute;%2$s which %3$s Jesus Christ unleashed%4$s so %5$s freely%6$s and aptly on an enslaving, enslaved world."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:35
+#, php-format
+msgid "Although Role Scoper and Revisionary development was a maniacal hermit-like effort, it was only possible because of the clean and flexible %1$s WordPress code base%2$s.  My PHP programming skills grew immensely by the good examples set forth there and in plugins such as %3$s NextGen Gallery%4$s. I'm not done learning, and look forward to some real-time cooperation with these and other developers now that my all-consuming quest has reached a stable plateau."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:37
+msgid "Revisionary is currently available in the following languages, thanks to volunteer translators:"
+msgstr "Revisionary ist, dank freiwilliger Übersetzer, in folgenden Sprachen verfügbar:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:40
+#, php-format
+msgid "Belorussian by %1$s"
+msgstr "Weißrussisch von %1$s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:42
+#, php-format
+msgid "French by %s"
+msgstr "Französisch von %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:44
+#, php-format
+msgid "Italian by %s"
+msgstr "Italienisch von %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:46
+msgid "I do try to be translator-friendly, but any untranslated captions are likely due to a flurry of recent additions and changes by the plugin developer.  Now there must be someone else who wants Role Scoper in their language..."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:48
+#, php-format
+msgid "Revisionary is open source software released under the %1$s General Public License (GPL)%2$s. Due to limitations, obligations and non-technical aspirations common to most human beings, I will probably never again pursue uncommissioned plugin development on the scale these plugins has required. However, I do plan to provide some free support, correct bugs which emerge and revise the plugin for future WordPress versions. If it adds value to your website or saves you time and money, you can express appreciation in several ways:"
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:50
+#, php-format
+msgid "%1$s Submit technical feedback%2$s, including improvement requests."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:52
+#, php-format
+msgid "%1$s Submit a case study%2$s, explaining how these plugins help you do something excellent and praiseworthy."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:54
+#, php-format
+msgid "%1$s Localize Revisionary or Role Scoper%2$s to your own language %3$s using poEdit%4$s "
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:58
+#, php-format
+msgid "If the plugin has seriously broadened your CMS horizons, %s"
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:60
+#, php-format
+msgid "If you are an established web developer, %1$s grant me your professional opinion%2$s on how this work stacks up. Might the skills, work ethic and values I express here fit into a development team near you?"
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/about.php:62
+msgid "Hire or refer my services</a> to design, redesign or enhance your site - quality care at reasonable rates."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:18
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin-dashboard_rvy.php:20
+#, php-format
+msgid "Pending %1$s"
+msgstr "Ausstehend %1$s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_lib-mu_rvy.php:14
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:332
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:161
+msgid "Revisionary Options"
+msgstr "Revisionary Einstellungen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_lib-mu_rvy.php:27
+msgid "Revisionary Option Defaults"
+msgstr "Revisionary Standardeinstellungen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_lib-mu_rvy.php:27
+msgid "Revisionary Defaults"
+msgstr "Revisionary Standards"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:120
+#, php-format
+msgid "Preview &#8220;%s&#8221;"
+msgstr "Vorschau &#8220;%s&#8221;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:120
+msgid "Preview"
+msgstr "Vorschau"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:154
+msgid "save as pending revision"
+msgstr "als ausstehende Revision speichern"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:288
+#, php-format
+msgid "%1$s Revisionary Support Forum%2$s"
+msgstr "%1$s Revisionary Support Forum%2$s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:291
+#, php-format
+msgid "%1$s About Revisionary%2$s"
+msgstr "%1$s Über Revisionary%2$s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:312
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:80
+msgid "Revisions"
+msgstr "Revisionen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:319
+msgid "About Revisionary"
+msgstr "Über Revisionary"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:332
+msgid "Revisionary"
+msgstr "Revisionary"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:447
+msgid "Delete"
+msgstr "Löschen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:481
+#, php-format
+msgid "%s (revision)"
+msgstr "%s (Revision)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:595
+msgid "Your modification has been saved for editorial review.  If approved, it will be published on the date you specified."
+msgstr "Ihre Änderung wurde zur Überprüfung gespeichert. Sofern sie akzeptiert wird, wird sie zum angegebenen Datum freigegeben."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:597
+msgid "Your modification has been saved for editorial review."
+msgstr "Deine Änderung wurde zur Überprüfung gespeichert."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:600
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:750
+msgid "View it in Revisions Manager"
+msgstr "Im Revisionsmanager anschauen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:604
+msgid "Go back to Submit Another revision (possibly for a different publish date)."
+msgstr "Gehe zurück, um eine andere Revision einzureichen (Möglichkeit für ein anderes Veröffentlichungsdatum)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:611
+msgid "Sorry, an error occurred while attempting to save your modification for editorial review!"
+msgstr "Entschuldigung, während des Speicherns der zur Überprüfung vorgelegten Änderungen ist ein Fehler aufgetreten."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:622
+#, php-format
+msgid "[%s] Pending Revision Notification"
+msgstr "[%s] ausstehende Revisions-Benachrichtigung"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:624
+#, php-format
+msgid "A pending revision to the %1$s \"%2$s\" has been submitted."
+msgstr "Eine ausstehende Revision zu %1$s \"%2$s\" wurde eingereicht."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:627
+#, php-format
+msgid "It was submitted by %1$s."
+msgstr "Sie wurde eingereicht von %1$s."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:630
+msgid "Review it here: "
+msgstr "Überprüfe sie hier: "
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:689
+msgid "Pending Revision Created"
+msgstr "Ausstehende Revision geschaffen am"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:747
+msgid "Your modification was saved as a Scheduled Revision."
+msgstr "Deine Änderung wurde als geplante Revsion gespeichert."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:752
+msgid "Go back to Schedule Another revision."
+msgstr "Gehe zurück, um eine andere Änderung zu planen."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:757
+msgid "Scheduled Revision Created"
+msgstr "Geplante Revision geschaffen am"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:767
+msgid "Return to Edit Posts"
+msgstr "Zurück zum Bearbeiten des Beitrags"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:770
+msgid "Return to Edit Pages"
+msgstr "Zurück zum Bearbeiten der Seite"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/admin_rvy.php:774
+#, php-format
+msgid "Return to Edit %s"
+msgstr "Zurück zum Bearbeiten %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:52
+msgid "Enter additional User Names or IDs (comma-separate)"
+msgstr "Geben zusätzliche Benutzernamen oder IDs an (getrennt durch Kommas)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show current users (%d)"
+msgstr "zeige aktuelle Benutzer (%d)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:105
+#, php-format
+msgid "show eligible users (%d)"
+msgstr "Zeige berechtigte Benutzer (%d)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:123
+msgid "filter:"
+msgstr "Filter:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:132
+msgid "select"
+msgstr "selektieren"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:137
+msgid "unselect"
+msgstr "deselektieren"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "current users (%d):"
+msgstr "Aktuelle Benutzer (%d):"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/agents_checklist_rvy.php:145
+#, php-format
+msgid "eligible users (%d):"
+msgstr "Berechtigte Benutzer (%d):"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:36
+msgid "Schedule Revision"
+msgstr "Plane Revision"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:52
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:53
+msgid "Submit Revision"
+msgstr "Revision einreichen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:54
+msgid "Submit Scheduled Revision"
+msgstr "Geplante Revision einreichen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:69
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:88
+msgid "Pending Revisions"
+msgstr "Ausstehende Revisionen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:70
+msgid "Publishers to Notify of Your Revision"
+msgstr "Herausgeber, die über die Revision benachrichtigt werden sollen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/filters-admin-ui-item_rvy.php:76
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:89
+msgid "Scheduled Revisions"
+msgstr "Geplante Revisionen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:75
+msgid "Features"
+msgstr "Features"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:75
+msgid "Option Scope"
+msgstr "Option Scope"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:79
+msgid "Role Definition"
+msgstr "Rollendefinition"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:81
+msgid "Email Notification"
+msgstr "E-Mail Benachrichtigung"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:90
+msgid "Prevent Revisors from editing others&apos; revisions"
+msgstr "Revisoren am Ändern von Revisionen hindern"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:91
+msgid "Strip html tags out of difference display"
+msgstr "HTML tags aus diff Anzeige entfernen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:92
+msgid "Asynchronous Publishing"
+msgstr "Asynchrones Veröffentlichen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:93
+msgid "Email original Author when a Pending Revision is submitted"
+msgstr "E-Mail an ursprünglichen Autor, wenn ausstehende Revision eingereicht wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:94
+msgid "Email the original Author when a Pending Revision is approved"
+msgstr "E-Mail an ursprünglichen Autor, wenn ausstehende Revision akzeptiert wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:95
+msgid "Email the Revisor when a Pending Revision is approved"
+msgstr "E-Mail an Revisor, wenn ausstehende Revision akzeptiert wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:96
+msgid "Email the original Author when a Scheduled Revision is published"
+msgstr "E-Mail an ursprünglichen Autor, wenn eingeplante Revision veröffentlicht wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:97
+msgid "Email the Revisor when a Scheduled Revision is published"
+msgstr "E-Mail an Revisor, wenn eingeplante Revision veröffentlicht wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:98
+msgid "Include capabilities for all custom post types in the WordPress Revisor role"
+msgstr "Inkludiere Berechtigungen für alle personalisierten Beitragstypen in der WordPress Revisor-Rolle"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:102
+msgid "Email designated Publishers when a Pending Revision is submitted"
+msgstr "E-Mail an vorgesehene Herausgeber, wenn Revision vorgeschlagen wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:103
+msgid "Email designated Publishers when a Scheduled Revision is published"
+msgstr "E-Mail an vorgesehende Herausgeber, wenn eingeplante Revision veröffentlicht wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:105
+msgid "Email Editors and Administrators when a Pending Revision is submitted"
+msgstr "E-Mail an Autoren und Administratoren, wenn Revision eingereicht wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:106
+msgid "Email Editors and Administrators when a Scheduled Revision is published"
+msgstr "E-Mail an Autoren und Administratoren, wenn eingeplante Revision veröffentlicht wird"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:155
+msgid "Revisionary Network Options"
+msgstr "Netzwerkweite Revisionary-Einstellungen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:157
+msgid "Revisionary Default Site Options"
+msgstr "Standardeinstellungen für Revisionary"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:159
+msgid "Revisionary Site Options"
+msgstr "Revisionary Einstellungen für Website"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:167
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:491
+msgid "Update &raquo;"
+msgstr "Aktualisiere &raquo;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:175
+msgid "These settings will be applied to all sites."
+msgstr "Diese Einstellungen werden auf alle Websites angewendet."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:181
+msgid "These are the <strong>default</strong> settings for options which can be adjusted per-site."
+msgstr "Dies sind die <strong>Standardeinstellungen</trong>, die für jede Website angepasst werden können"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:213
+msgid "This page enables <strong>optional</strong> adjustment of Revisionary's features. For most installations, the default settings are fine."
+msgstr "Diese Seite erlaubt es, <strong>optionale</strong> Änderungen an Revisionary-Features vorzunehmen. Für die meisten Installationen genügen die Standardeinstellungen."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:222
+#, php-format
+msgid "Note that %1$s site-specific options%2$s may also be available."
+msgstr "Hinweis: %1$s Website-spezifische Einstellungen %2$s sind möglicherweise verfügbar."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:229
+#, php-format
+msgid "Note that %1$s network-wide options%2$s may also be available."
+msgstr "Hinweis: %1$s netzwerkweite Einstellungen %2$s sind möglicherweise verfügbar."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:272
+msgid "If a currently published post or page is edited and a future date set, the change will not be applied until the selected date."
+msgstr "Wenn eine aktuell veröffentlichte Seite oder Beitrag bearbeitet und ein zukünftiges Datum gesetzt ist, wird die Änderung bis zum erreichen des Datums nicht angewendet."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:276
+msgid "Publish scheduled revisions asynchronously, via a secondary http request from the server.  This is normally preferable as it eliminates delay, but some servers do not support it."
+msgstr "Veröffentliche eingeplante Revisionen ansynchron über einen zweiten HTTP Request vom Server. Dies ist bevorzugt, um Verzögerungen zu verhindern. Allerdings wird das nicht von allen Servern unterstützt."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:280
+msgid "Enable some users to submit a revision for an existing published post or page which they cannot otherwise edit.  Contributors can submit revisions to their own published content, and users who have the edit_others_ capability (but not edit_published_) can submit revisions to other user's content.<br /><br />These Pending Revisions are listed alongside regular pending content, but link to a Revisions management form.  There the pending revision can be viewed, compared to other revisions, and approved or deleted by qualified editors.  If the submitter set a future publish date, approval schedules delayed publication of the revised content."
+msgstr "Erlaube es Benutzern, Revisionen für Seiten oder Artikel einzureichen, die sie selbst nicht bearbeiten können. Autoren können Revisionen für ihre selbst beigetragenen Inhalte einreichen, und Benutzer, die das Recht edit_others_, aber nicht edit_published_ haben, können Revisionen zum Inhalt anderer Benutzer einreichen.<br /><br />Die ausstehenden Revisionen werden neben dem normal ausstehenden Inhalt gelistet, aber zum Revisionsmanagement verlinkt. Dort können die ausstehenden Revisionen angeschaut, verglichen, akzeptiert oder gelöscht werden. Wenn der Autor ein in der Zukunft liegendes Veröffentlichungsdatum auswählt, wird die Publikation entsprechend verzögert."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:283
+msgid "Note: Sitewide Revisors will still be able to edit other user&apos;s normal pending pages, but you can avoid that by using Press Permit or Role Scoper to assign the Revisor role for specific pages."
+msgstr "Hinweis: Netzwerkweite Revisoren werden trotzdem in der Lage sein, auusstehende Revisionen zu bearbeiten. Dies kannst du verhindern, indem du mittels Press Permit oder Role Scoper die Rechte für den Revisor entsprechend anpasst."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:303
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:357
+msgid "select recipients"
+msgstr "Wähle Empfänger"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:312
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:330
+msgid "Never"
+msgstr "Niemals"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:312
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:330
+msgid "By default"
+msgstr "Standard"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:312
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:330
+msgid "Always"
+msgstr "Immer"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:375
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  Eligibile \"Publisher\" email recipients are members of the Pending Revision Monitors group who <strong>also</strong> have the ability to publish the revision."
+msgstr "Hinweis: \"Standard\" heißt, dass Autoren von ausstehenden Revisionen die Empfänger der E-Mail Benachrichtigung auswählen können. Berechtigte E-Mail Empfänger sind \"Herausgeber\" aus die das Recht zum veröffentlichen haben."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:377
+#, php-format
+msgid "Note: \"by default\" means Pending Revision creators can customize email notification recipients before submitting.  For more flexibility in moderation and notification, install the %1$s Press Permit%2$s %3$s Role Scoper%4$s plugin."
+msgstr "Hinweis: \"Standard\" heißt, dass Autoren von ausstehenden Revisionen die Empfänger der E-Mail Benachrichtigungen auswählen können. Für mehr Flexibilität bei der Moderation und Benachrichtigung, kannst du das Plugin %1$s Press Permit%2$s %3$s Role Scoper%4$s installieren."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:406
+msgid "Specify which Revisionary Options should be applied network-wide."
+msgstr "Spezifiziere, welche Revisionary Einstellungen netzwerkweit angewendet werden sollen."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:413
+#, php-format
+msgid "sitewide control of \"%s\""
+msgstr "Netzwerkweite kontrolle von \"%s\""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:418
+msgid "Selected options will be controlled network-wide via <strong>Sites > Revisionary Options</strong>; unselected options can be set per-site via <strong>Settings > Revisionary</strong>"
+msgstr "Die ausgewählten Einstellungen werden Netzwerkweit über <strong>Websites > Revisionary Options</strong> kontrolliert; nicht ausgewählte Einstellungen können für jede Seite unter <strong>Einstellungen > Revisionary</strong> gesetzt werden."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:495
+msgid "All settings in this form (including those on unselected tabs) will be reset to DEFAULTS.  Are you sure?"
+msgstr "Alle Einstellungen in diesem Formular (auch in den anderen Tabs) werden zurückgesetzt. Bist du sicher?"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/options.php:500
+msgid "Revert to Defaults"
+msgstr "Zurück zu Standardeinstellungen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:106
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:123
+#, php-format
+msgid "[%s] Revision Approval Notice"
+msgstr "[%s] Benachrichtigung bei Genehmigung der Revision"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:107
+#, php-format
+msgid "A revision to your %1$s \"%2$s\" has been approved."
+msgstr "Deine Revision zu %1$s \"%2$s\" wurde genehmigt."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:109
+#, php-format
+msgid "The submitter was %1$s."
+msgstr "Der Antragsteller war %1$s."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:112
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:127
+#, php-format
+msgid "It will be published on %s"
+msgstr "Veröffentlichung am %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:115
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:130
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:421
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:431
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:441
+msgid "View it online: "
+msgstr "Online sichtbar:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:124
+#, php-format
+msgid "The revision you submitted for the %1$s \"%2$s\" has been approved."
+msgstr "Deine Revision für %1$s \"%2$s\" wurde genehmigt."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:418
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:426
+#, php-format
+msgid "[%s] Scheduled Revision Publication Notice"
+msgstr "[%s] Benachrichtigung zur geplanten Veröffentlichtung der Revision"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:419
+#, php-format
+msgid "The scheduled revision you submitted for the %1$s \"%2$s\" has been published."
+msgstr "Die von dir eingereichte geplante Revision für %1$s \"%2$s\" wurde veröffentlicht."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:427
+#, php-format
+msgid "A scheduled revision to your %1$s \"%2$s\" has been published."
+msgstr "Deine eingeplante Revision für %1$s \"%2$s\" wurde veröffentlicht."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:436
+#, php-format
+msgid "[%s] Scheduled Revision Publication"
+msgstr "[%s] Eingeplante Veröffentlichung"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-action_rvy.php:437
+#, php-format
+msgid "A scheduled revision to the %1$s \"%2$s\" has been published."
+msgstr "Eine eingeplante Revision für %1$s \"%2$s\" wurde veröffentlicht."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:222
+#, php-format
+msgid "%1$s (Current Revision)"
+msgstr "%1$s (Aktuelle Revision)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:226
+#, php-format
+msgid "%1$s (Autosave)"
+msgstr "%1$s (automatisches Speichern)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:315
+msgid "The revision will be deleted. Are you sure?"
+msgstr "Die Revision wird gelöscht. Bist du sicher?"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:373
+msgid "Unschedule"
+msgstr "Ausgeplant"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:448
+msgid "Compare Selected HTML"
+msgstr "Vergleiche ausgwähltes HTML"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:467
+msgid "Modified Date (click to view/restore)"
+msgstr "Änderungsdatum (Klick zum anschauen / wiederherstellen)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:470
+msgid "Modified Date (click to view/approve)"
+msgstr "Änderungsdatum (Klick zum anschauen / genehmigen)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:473
+msgid "Modified Date (click to view/publish)"
+msgstr "Änderungsdatum (Klick zum anschauen / veröffentlichen)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:477
+msgid "Publish Date"
+msgstr "Veröffentlichungsdatum"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:480
+msgid "Actions"
+msgstr "Aktionen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:495
+msgid "Bulk Actions"
+msgstr "Massenaktionen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:498
+msgid "Apply"
+msgstr "Anwenden"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:537
+msgid "Date as:"
+msgstr "Datum als:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:538
+msgid "Schedule for:"
+msgstr "Eingeplant für:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:539
+msgid "Published on:"
+msgstr "Veröffentlicht am:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:540
+msgid "Privately Published:"
+msgstr "Privat veröffentlicht:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:541
+msgid "Published:"
+msgstr "Veröffentlicht:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revision-ui_rvy.php:542
+msgid "Unsaved Date Selection:"
+msgstr "Ungespeicherte Datumswahl:"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:20
+msgid "<strong>Note:</strong> For visual display of revisions, add the following code to foliopress-wysiwyg.php:<br />&nbsp;&nbsp;if ( strpos( $_SERVER['REQUEST_URI'], 'admin.php?page=rvy-revisions' ) ) return;"
+msgstr "<strong>Hinweis:</strong> For visual display of revisions, add the following code to foliopress-wysiwyg.php:<br />&nbsp;&nbsp;if ( strpos( $_SERVER['REQUEST_URI'], 'admin.php?page=rvy-revisions' ) ) return;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:53
+msgid "No revision specified."
+msgstr "Keine Revision spezifiziert."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:58
+msgid "Past"
+msgstr "Vergangenheit"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:100
+#, php-format
+msgid "%1$s Revisions for &#8220;%2$s&#8221;"
+msgstr "%1$s Revisionen für &#8220;%2$s&#8221;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:171
+#, php-format
+msgid "Revision of &#8220;%1$s&#8221;"
+msgstr "Revision von &#8220;%1$s&#8221;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:173
+#, php-format
+msgid "Past Revision of &#8220;%1$s&#8221;"
+msgstr "Ehemalige Revision von &#8220;%1$s&#8221;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:176
+#, php-format
+msgid "Pending Revision of &#8220;%1$s&#8221;"
+msgstr "Ausstehende Revision von &#8220;%1$s&#8221;"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:179
+#, php-format
+msgid "Scheduled Revision of &#8220;%1$s&#8221;"
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:187
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:194
+msgid "Publish Now"
+msgstr "Jetzt veröffentlichen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:192
+msgid "Schedule Now"
+msgstr "Jetzt einplanen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:200
+msgid "Restore Now"
+msgstr "Jetzt wiederherstellen"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:217
+#, php-format
+msgid "&#8220;%1$s&#8221; (Current Revision)"
+msgstr "&#8220;%1$s&#8221; (Aktuelle Revision)"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:235
+msgid "The requested revision does not exist."
+msgstr ""
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:289
+msgid "The revision was deleted."
+msgstr "Die Revision wurde gelöscht."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:292
+#, php-format
+msgid "%s revision was deleted"
+msgstr "%s Revision wurde gelöscht"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:295
+msgid "The revision was updated."
+msgstr "Die Revision wurde aktualisiert."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:298
+msgid "The revision was restored."
+msgstr "Die Revision wurde wiederhergestellt."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:301
+msgid "The revision was scheduled for publication."
+msgstr "Die Revision wurde zur Veröffentlichung eingeplant."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:304
+msgid "The revision was published."
+msgstr "Die Revision wurde veröffentlicht."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:309
+msgid "To delete the revision, click the link below."
+msgstr "Um die Revsion zu löschen, bitte auf den Link unten klicken."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:311
+msgid "You do not have permission to delete that revision."
+msgstr "Du hast nicht das Recht, diese Revision zu löschen."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:314
+msgid "The revision was unscheduled."
+msgstr "Die Revision wurde ausgeplant."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:333
+#, php-format
+msgid "Published on: <strong>%1$s</strong>"
+msgstr "Veröffentlicht am: <strong>%1$s</strong>"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:335
+#, php-format
+msgid "Scheduled for: <strong>%1$s</strong>"
+msgstr "Eingeplant für: <strong>%1$s</strong>"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:338
+#, php-format
+msgid "Requested Publish Date: <strong>%1$s</strong>"
+msgstr "Angefordertes Veröffentlichungsdatum: <strong>%1$s</strong>"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:340
+msgid "Requested Publish Date: <strong>Immediate</strong>"
+msgstr "Angefordertes Veröffentlichungsdatum: <strong>sofort</strong>"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:342
+#, php-format
+msgid "Modified on: <strong>%1$s</strong>"
+msgstr "Verändert am: <strong>%1$s</strong>"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:445
+#, php-format
+msgid "Older: modified %s"
+msgstr "Älter: geändert %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:447
+#, php-format
+msgid "Newer: modified %s"
+msgstr "Neuer: geändert %s"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:502
+msgid "These revisions are identical."
+msgstr "Die Revisionen sind identisch."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:534
+msgid "Past Revisions"
+msgstr "Vergangene Revisionen"
+
+#
+msgid "Update Revision"
+msgstr "Revision speichern"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:545
+#, php-format
+msgid "%1$s <span class=\"count\"> (%2$s)</span>"
+msgstr "%1$s <span class=\"count\"> (%2$s)</span>"
+
+#: E:\www\wp33\wp-content\plugins\revisionary/admin/revisions.php:560
+#, php-format
+msgid "no %s revisions available."
+msgstr "Keine %s Revisionen verfügbar."
+
+#: E:\www\wp33\wp-content\plugins\revisionary/lib/debug.php:182
+#, php-format
+msgid "%1$s queries in %2$s seconds. %3$s MB used."
+msgstr "%1$s Queries in %2$s Sekunden. %3$s MB genutzt."
+

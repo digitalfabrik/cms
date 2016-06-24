@@ -124,7 +124,7 @@ class iclNavMenu extends WPML_Full_Translation_API {
 			include_once ICL_PLUGIN_PATH . '/inc/wp-nav-menus/menus-sync.php';
 			$icl_menus_sync = new ICLMenusSync( $sitepress, $wpdb, $wpml_post_translations, $wpml_term_translations );
 			$icl_menus_sync->init( isset( $_SESSION[ 'wpml_menu_sync_menu' ] ) ? $_SESSION[ 'wpml_menu_sync_menu' ] : null );
-			$results = $icl_menus_sync->do_sync( $_POST['sync'] );
+			$results = $icl_menus_sync->do_sync( $_POST['sync']);
 			$_SESSION[ 'wpml_menu_sync_menu' ] = $results;
 			$_SESSION[ 'wpml_menu_sync_menu' ] = $results;
 			echo '1';
@@ -248,11 +248,11 @@ class iclNavMenu extends WPML_Full_Translation_API {
         if($this->current_menu['id']){
             $this->_load_menu($this->current_menu['id']);
         }else{
-            $this->current_menu['trid'] = isset($_GET['trid']) ? intval($_GET['trid']) : null;
+	        $this->current_menu['trid'] = isset( $_GET['trid'] ) ? (int) $_GET['trid'] : null;
             if(isset($_POST['icl_nav_menu_language'])){
-                $this->current_menu['language'] = $_POST['icl_nav_menu_language'];    
+                $this->current_menu['language'] = $_POST['icl_nav_menu_language'];
             }elseif(isset($_GET['lang'])){
-                $this->current_menu['language'] = $_GET['lang'];    
+	            $this->current_menu['language'] = (int) $_GET['lang'];    
             }else{
                 $this->current_menu['language'] = $admin_language_cookie;
             }            
@@ -343,7 +343,7 @@ class iclNavMenu extends WPML_Full_Translation_API {
 			// show 'translation of' if this element is not in the default language and there are untranslated elements
 			$langsel .= '<span id="icl_translation_of_wrap">';
 			$trid_current = ! empty( $this->current_menu['trid'] ) ? $this->current_menu['trid'] : ( isset( $_GET['trid'] ) ? $_GET['trid'] : 0 );
-			$langsel .= $this->render_translation_of( $current_lang, $trid_current );
+			$langsel .= $this->render_translation_of( $current_lang, (int)$trid_current );
 			$langsel .= '</span>';
 		}
 		$langsel .= '</span>';
@@ -420,7 +420,7 @@ class iclNavMenu extends WPML_Full_Translation_API {
 			$out .= '</select>';
 			$out .= '</label>';
 			if ( $disabled !== '' ) {
-				$out .= '<input type="hidden" name="icl_nav_menu_trid" value="' . $_GET['trid'] . '"/>';
+				$out .= '<input type="hidden" name="icl_nav_menu_trid" value="' . (int)$_GET['trid'] . '"/>';
 			}
 		}
 
@@ -696,8 +696,8 @@ class iclNavMenu extends WPML_Full_Translation_API {
 		
 		if ( $pagenow === 'nav-menus.php' && isset( $_GET[ 'menu' ] ) && $_GET[ 'menu' ] ) {
 			$current_lang = $this->sitepress->get_current_language();
-			$menu_lang    = $this->_get_menu_language( $_GET[ 'menu' ] );
-			if ( $menu_lang && ( $current_lang != $menu_lang ) ) {
+			$menu_lang    = $this->_get_menu_language( (int)$_GET[ 'menu' ] );
+			if ( $menu_lang && ( $current_lang !== $menu_lang ) ) {
 				$this->sitepress->switch_lang( $menu_lang );
 				$_GET[ 'lang' ] = $menu_lang;
 			}

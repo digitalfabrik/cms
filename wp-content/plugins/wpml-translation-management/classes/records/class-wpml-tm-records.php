@@ -3,7 +3,9 @@
 class WPML_TM_Records extends WPML_WPDB_User {
 
 	/** @var array $cache */
-	private $cache = array( 'icl_translations' => array() );
+	private $cache = array( 'icl_translations' => array(),
+						    'status'           => array()
+							);
 
 	public function wpdb() {
 
@@ -16,8 +18,12 @@ class WPML_TM_Records extends WPML_WPDB_User {
 	 * @return WPML_TM_ICL_Translation_Status
 	 */
 	public function icl_translation_status_by_translation_id( $translation_id ) {
+		
+		if ( ! isset( $this->cache[ 'status' ][ $translation_id ] ) ) {
+			$this->cache[ 'status' ][ $translation_id ] = new WPML_TM_ICL_Translation_Status( $this->wpdb, $this, $translation_id );
+		}
 
-		return new WPML_TM_ICL_Translation_Status( $this->wpdb, $this,$translation_id );
+		return $this->cache[ 'status' ][ $translation_id ];
 	}
 
 	/**

@@ -58,7 +58,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 			$type   = (string) $attr['id'];
 			$target = $this->get_xliff_node_target( $node );
 
-			if ( ! $target ) {
+			if ( ! $target && $target !== "0" ) {
 				return $this->invalid_xliff_error();
 			}
 

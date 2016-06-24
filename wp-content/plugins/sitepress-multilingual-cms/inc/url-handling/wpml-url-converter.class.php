@@ -105,15 +105,16 @@ abstract class WPML_URL_Converter {
 	}
 
 	public function convert_url( $url, $lang_code = false ) {
-		global $sitepress;
-
-		$lang_code = $lang_code ? $lang_code : $sitepress->get_current_language();
-
 		if ( ! $url ) {
 			return $url;
 		}
 
-		$cache_key_args = array( $url, $lang_code );
+		global $sitepress;
+
+		$lang_code = $lang_code ? $lang_code : $sitepress->get_current_language();
+		$negotiation_type = $sitepress->get_setting( 'language_negotiation_type' );
+
+		$cache_key_args = array( $url, $lang_code, $negotiation_type );
 		$cache_key      = md5( wp_json_encode( $cache_key_args ) );
 		$cache_group    = 'convert_url';
 		$cache_found    = false;

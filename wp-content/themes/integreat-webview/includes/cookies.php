@@ -19,7 +19,9 @@
             }
         }
     }
-    add_action('init','set_lang_cookie');
+    if(strpos($_SERVER['REQUEST_URI'],"wp-json") === false) {
+        add_action('init','set_lang_cookie');
+    }
 
     // forward to lang defined in cookie
     function redirect_to_defined_lang() {
@@ -38,6 +40,7 @@
             }
         }
     }
-    add_action('wp_enqueue_scripts','redirect_to_defined_lang');
-
+    if(strpos($_SERVER['REQUEST_URI'],"wp-json") === false) {
+        add_action('wp_enqueue_scripts','redirect_to_defined_lang');
+    }
 ?>

@@ -93,7 +93,7 @@ function icl_get_sub_setting( $key, $sub_key, $default = false ) {
 function wpml_get_sub_setting_filter( $default, $key, $sub_key, $deprecated = null ) {
 	$default = $deprecated !== null  && !$default ? $deprecated : $default;
 
-	$parent = wpml_get_setting_filter( $key, array() );
+	$parent = wpml_get_setting_filter(array(), $key );
 
 	return isset( $parent[ $sub_key ] ) ? $parent[ $sub_key ] : $default;
 }
@@ -320,7 +320,7 @@ function wpml_make_post_duplicates_action( $master_post_id ) {
 
 	$master_post = get_post( $master_post_id );
 
-	if ( $master_post->post_status == 'auto-draft' || $master_post->post_type == 'revision' ) {
+	if ( 'auto-draft' === $master_post->post_status || 'revision' === $master_post->post_type ) {
 		return;
 	}
 
@@ -335,30 +335,7 @@ function wpml_make_post_duplicates_action( $master_post_id ) {
 			continue;
 		}
 
-		$post_array[ 'post_author' ]   = $master_post->post_author;
-		$post_array[ 'post_date' ]     = $master_post->post_date;
-		$post_array[ 'post_date_gmt' ] = $master_post->post_date_gmt;
-		$post_array[ 'post_content' ]  = addslashes_gpc( apply_filters( 'icl_duplicate_generic_string', $master_post->post_content, $lang_to, array( 'context' => 'post', 'attribute' => 'content', 'key' => $master_post->ID ) ) );
-		$post_array[ 'post_title' ]    = addslashes_gpc( apply_filters( 'icl_duplicate_generic_string', $master_post->post_title, $lang_to, array( 'context' => 'post', 'attribute' => 'title', 'key' => $master_post->ID ) ) );
-		$post_array[ 'post_excerpt' ]  = addslashes_gpc( apply_filters( 'icl_duplicate_generic_string', $master_post->post_excerpt, $lang_to, array( 'context' => 'post', 'attribute' => 'excerpt', 'key' => $master_post->ID ) ) );
-		$post_array[ 'post_status' ]   = $master_post->post_status;
-		//TODO [WPML 3.3.] wp_insert_post() does accept 'post_category': even though is not part of the WP_Post object, it deals with it. But as far as I know $master_post doesn't have this property, when set with get_post(), so probably we need to fix that, shouldn't we?
-		$post_array[ 'post_category' ]  = $master_post->post_category;
-		$post_array[ 'comment_status' ] = $master_post->comment_status;
-		$post_array[ 'ping_status' ]    = $master_post->ping_status;
-		$post_array[ 'post_name' ]      = $master_post->post_name;
-		$post_array[ 'menu_order' ]     = $master_post->menu_order;
-		$post_array[ 'post_type' ]      = $master_post->post_type;
-		$post_array[ 'post_mime_type' ] = $master_post->post_mime_type;
-
-		if ( $master_post->post_parent ) {
-			$parent                      = icl_object_id( $master_post->post_parent, $master_post->post_type, false, $lang_to );
-			$post_array[ 'post_parent' ] = $parent;
-		}
-
-		$id = wp_insert_post( $post_array );
-
-		$sitepress->set_element_language_details( $id, 'post_' . $post_array[ 'post_type' ], $trid, $lang_to, $lang_from, false );
+		$sitepress->make_duplicate( $master_post_id, $lang_to );
 	}
 }
 
@@ -654,3 +631,4 @@ function repair_el_type_collate() {
 		throw new Exception( $wpdb->last_error );
 	}
 }
+

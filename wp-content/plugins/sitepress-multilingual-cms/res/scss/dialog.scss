@@ -1,0 +1,259 @@
+@import "_mixins";
+@import "_variables";
+
+.js .wpml-dialog .tmce-active .wp-editor-area {
+	color: #000;
+}
+.wpml-dialog {
+	ul, ol {
+		padding-left: $margin-base;
+	}
+	ul {
+		list-style: disc;
+	}
+	ol {
+		list-style: decimal;
+	}
+	li {
+		margin-bottom: 3px;
+	}
+}
+
+.wpml-dialog-header {
+	overflow: hidden;
+	padding: 8px 16px;
+	border: 1px solid #dfdfdf;
+	background: #fcfcfc;
+	position: absolute;
+	top: -34.5px;
+	left: 0;
+	right: 0;
+	.view {
+		display: inline-block;
+		vertical-align: middle;
+	}
+	h2, h3 {
+		margin: 0;
+	}
+	.wpml-dialog-close-button {
+		position: absolute;
+		top: 7px;
+		right: 10px;
+		cursor: pointer;
+		&:hover {
+			color: red;
+		}
+	}
+}
+.wpml-dialog-footer {
+	overflow: hidden;
+	padding: 8px 16px;
+	border: 1px solid #dfdfdf;
+	background: #fcfcfc;
+	position: absolute;
+	top: 100%;
+	top: calc(100% - 1px);
+	left: 0;
+	right: 0;
+	input[type="submit"],
+	input[type="button"] {
+		width: auto;
+	}
+	.cancel.wpml-dialog-close-button {
+		color: #a00;
+		line-height: 25px;
+		height:25px;
+		font-size: 13px;
+		padding: 0;
+		cursor: pointer;
+		border-width: 0;
+		background: none;
+		&:hover {
+			color: red;
+		}
+	}
+}
+.wpml-dialog-title {
+	display: inline-block;
+	vertical-align: middle;
+	padding: 0 $margin-sm 0 0;
+}
+
+
+.wpml-form-row {
+	label,
+	input,
+	textarea:not(.wp-editor-area),
+	select {
+		margin: $margin-xs $margin-sm;
+		display: inline-block;
+		box-sizing: border-box;
+		vertical-align: middle;
+	}
+	label {
+		text-align: right;
+	}
+}
+
+
+.wpml-header-original,
+.wpml-header-translation {
+	font-size: 1.3em;
+	font-weight: normal;
+	display: inline-block;
+	img {
+		width: 18px;
+	}
+}
+.wpml-translation-footer {
+	margin: $margin-xs 0;
+	text-align: center;
+	@include clearfix();
+}
+
+
+
+
+
+.ui-dialog.wpml-dialog-dialog {
+	z-index: 10000 !important;
+	border-radius: 0;
+	border: none;
+	padding: 0;
+	overflow: visible;
+	font-family: inherit;
+	.ui-dialog-title {
+		@extend %truncate;
+		max-width: calc(100% - 28px - 15px);
+		display: block;
+		text-align: left;
+	}
+
+	.ui-dialog-content {
+		padding: $margin-sm;
+		position: static;
+	}
+
+	.button-copy {
+		display: inline-block;
+		margin: 0 $margin-sm;
+		cursor: pointer;
+		vertical-align: middle;
+	}
+
+
+	.wpml-dialog-content {
+		input[type="text"] {
+			width: 100%;
+		}
+	}
+	.posts-found, .no-posts-found, .ajax-loader {
+		display: none;
+	}
+	.spinner {
+		display: block;
+	}
+	button .spinner {
+		display: inline-block;
+		margin: 0 0 0 5px;
+		vertical-align: middle;
+		float: none;
+	}
+}
+
+.wpml-dialog-translate {
+	.wpml-form-row:not(.postbox) + .postbox {
+		margin-top: $margin-base;
+	}
+	.postbox {
+		.handlediv:before {
+			//copied from WP styles
+			content: '\f142';
+			right: 12px;
+			font: 400 20px/1 dashicons;
+			speak: none;
+			display: inline-block;
+			padding: 8px 10px;
+			top: 0;
+			position: relative;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			text-decoration: none !important;
+		}
+		&.closed .handlediv:before {
+			content: '\f140';
+		}
+		.hndle {
+			cursor: default;
+			font-size: 14px;
+			padding: 8px 12px;
+			margin: 0;
+			line-height: 1.4;
+		}
+	}
+	.wpml-copy-container {
+		@media (min-width: 1330px) {
+			display: inline-block;
+			vertical-align: middle;
+			margin-top: -4px;
+			margin-left: $margin-sm;
+		}
+		@media (max-width: 1329px) {
+			text-align: right;
+			margin-top: -$margin-xs;
+			margin-bottom: $margin-xs;
+		}
+
+		.button-copy-all {
+			.otgs-ico-copy {
+				margin-right: $margin-xs;
+			}
+		}
+	}
+	.wpml-header-original,
+	.wpml-header-translation {
+		margin: $margin-base 0;
+	}
+
+	.wpml-header-original {
+		width: calc(50% - 5% - 30px - 15px - 35px - 5px);
+		margin-left: calc(10% + 48px);
+	}
+	.wpml-header-translation {
+		margin-left: 70px + 30px + 8px ;
+	}
+	.wpml-form-row {
+		input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+		textarea:not(.wp-editor-area),
+		.mce_editor,
+		.mce_editor_origin,
+		.cleditorMain	{
+				width: calc(50% - 5% - 30px - 15px - 35px - 5px);
+		}
+		label {
+			width: 10%;
+		}
+	}
+	.wpml-form-row {
+		.field_translation_complete {
+			label {
+				width: auto;
+				text-align: left;
+				margin-left: 0;
+				margin-top: -6px;
+			}
+			input {
+				width: auto;
+				margin: 0 4px 0 0 ;
+			}
+		}
+	}
+}
+[class*="otgs-ico"].wpml-dialog-icon-xl {
+	&:before {
+		font-size: 70px;
+	}
+}
+
+
+

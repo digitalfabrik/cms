@@ -56,6 +56,14 @@ jQuery(document).ready(function(){
     icl_hide_languages.submit(iclSaveForm);
     jQuery('#icl_adjust_ids').submit(iclSaveForm);
     jQuery('#icl_automatic_redirect').submit(iclSaveForm);
+    jQuery('#icl_automatic_redirect input[name="icl_automatic_redirect"]').on('click', function() {
+        var $redirect_warn = jQuery(this).parents('#icl_automatic_redirect').find('.js-redirect-warning');
+        if (0 != jQuery(this).val()) {
+            $redirect_warn.fadeIn();
+        } else {
+            $redirect_warn.fadeOut();
+        }
+    });
     jQuery('input[name="icl_language_negotiation_type"]').change(iclLntDomains);
     jQuery('#icl_use_directory').change(iclUseDirectoryToggle);
 
@@ -68,7 +76,7 @@ jQuery(document).ready(function(){
     });
 
     jQuery('#icl_seo_options').submit(iclSaveForm);
-
+	jQuery('#icl_seo_head_langs').on('click', update_seo_head_langs_priority);
     jQuery('#icl_setup_back_1').click({step: "1"}, iclSetupStep);
     jQuery('#icl_setup_back_2').click({step: "2"}, iclSetupStep);
 
@@ -1059,4 +1067,13 @@ function installer_registration_form_submit(){
 
     return false;
 }
+
+	function update_seo_head_langs_priority(event) {
+		var element = jQuery(this);
+		if (element.attr('checked')) {
+			jQuery('#wpml-seo-head-langs-priority').removeAttr('disabled');
+		} else {
+			jQuery('#wpml-seo-head-langs-priority').attr('disabled', 'disabled');
+		}
+	}
 }());

@@ -215,7 +215,6 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	 */
 	function export_xliff( $xliff_version ) {
 		global $wpdb, $current_user;
-		get_currentuserinfo();
 
 		$data    = unserialize( base64_decode( $_GET['xliff_export_data'] ) );
 		$archive = new wpml_zip();
@@ -260,7 +259,6 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	 */
 	private function import_xliff( $file ) {
 		global $current_user;
-		get_currentuserinfo();
 
 		// We don't want any redirects happening when we save the translation
 		add_filter( 'wp_redirect', array( $this, '_stop_redirect' ) );

@@ -453,7 +453,14 @@ class Installer_Theme_Class {
             }
 
             //Let's add themes to the overriden WordPress API Theme response
-            $res->themes = json_decode( json_encode( $themes ), FALSE );
+            /** Installer 1.7.6: Update to compatible data format response from WP Theme API */
+            $theme_compatible_array=array();
+            if ((is_array($themes))) {
+            	foreach ($themes as $k=>$v) {
+            		$theme_compatible_array[]=(object)($v);
+            	}
+            }
+            $res->themes = $theme_compatible_array;
             $res->themes = apply_filters( 'installer_theme_hook_response_theme', $res->themes );
             return $res;
         }
@@ -729,12 +736,16 @@ class Installer_Theme_Class {
     }
 
     /** WP Theme API compatibility- added num ratings */
+    /** Installer 1.7.6+ Added updated 'rating' field */
     public function installer_theme_add_num_ratings( $themes ) {
 
         if ( (is_array( $themes )) && (!(empty($themes))) ) {
             foreach ( $themes as $k => $v ) {
                 if ( !(isset($v->num_ratings)) ) {
-                    $themes[$k]->num_ratings = 0;
+                    $themes[$k]->num_ratings = 100;
+                }
+                if ( !(isset($v->rating)) ) {
+                	$themes[$k]->rating = 100;
                 }
             }
         }

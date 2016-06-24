@@ -1,3 +1,14 @@
+= 1.7.6 =
+* Updated error messages when validating site keys and stopped removing site keys in case of communication errors
+* Added a note for users who renewed or purchased new subscriptions and who need to revalidate their subscription from their websites
+* Fixed a problem with the registrations for multi-site setups when WordPress was installed in a separate folder
+
+= 1.7.5 =
+* Fixed a bug causing registration to not be recognized for the entire network in the multi-site mode
+
+= 1.7.4 =
+* Use https for wp-types API
+
 = 1.7.3 =
 * Added a dependencies class and check for the windows paths length exception
 * Bug fix: all downloads showed up twice on the plugins list whe upgrading from WPML 3.3 

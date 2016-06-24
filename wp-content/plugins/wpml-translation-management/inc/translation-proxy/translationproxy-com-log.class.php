@@ -2,43 +2,26 @@
 
 if ( !class_exists( 'TranslationProxy_Com_Log' ) ) {
 	class TranslationProxy_Com_Log {
-		
+		private static $keys_to_block = array(
+			'api_token',
+			'username',
+			'api_key',
+			'sitekey',
+			'accesskey',
+			'file',
+		);
+
 		public static function log_call( $url, $params ) {
-			if ( isset( $params[ 'accesskey' ] ) ) {
-				$params[ 'accesskey' ] = 'UNDISCLOSED';
-			}
-			if ( isset( $params[ 'job' ] [ 'file' ] ) ) {
-				$params[ 'job' ] [ 'file' ] = 'UNDISCLOSED';
-			}
-			$custom_fields_to_block  = array(
-				'api_token',
-				'username',
-				'api_key',
-				'sitekey'
-			);
-			$params['custom_fields'] = isset( $params['custom_fields'] ) ? (array) $params['custom_fields'] : array();
-			foreach ( $custom_fields_to_block as $custom_field ) {
-				if ( isset( $params[ 'custom_fields' ] [ $custom_field ] ) ) {
-					$params[ 'custom_fields' ] [ $custom_field ] = 'UNDISCLOSED';
-				}
-				if ( isset( $params[ 'project' ][ $custom_field ] ) ) {
-					$params[ 'project' ] [ $custom_field ] = 'UNDISCLOSED';
-				}
-			}
-			
-			// strip accesskey from url if required
-			$pos = strpos( $url, 'accesskey=' );
-			if ( $pos > 0 ) {
-				$amp_pos = strpos( $url, '&', $pos );
-				
-				$accesskey = substr( $url, $pos + 10, $amp_pos - $pos - 10);
-				
-				$url = str_replace( $accesskey, 'UNDISCLOSED', $url) ;
-			}
-			
-			self::add_to_log( 'call - ' . $url . ' - ' . json_encode( $params ) );
+			$sanitized_params = self::sanitize_data( $params );
+			$sanitized_url    = self::sanitize_url( $url );
+
+			self::add_to_log( 'call - ' . $sanitized_url . ' - ' . json_encode( $sanitized_params ) );
 		}
-		
+
+		public static function get_keys_to_block() {
+			return self::$keys_to_block;
+		}
+
 		public static function log_response( $response ) {
 			self::add_to_log( 'response - ' . $response );
 		}
@@ -64,7 +47,58 @@ if ( !class_exists( 'TranslationProxy_Com_Log' ) ) {
 			
 			return $sitepress->get_setting( 'tp-com-logging', true );
 		}
-		
+
+		/**
+		 * @param string|array|stdClass $params
+		 *
+		 * @return array|stdClass
+		 */
+		public static function sanitize_data( $params ) {
+			$sanitized_params = $params;
+
+			if ( is_object( $sanitized_params ) ) {
+				$sanitized_params = get_object_vars( $sanitized_params );
+			}
+
+			if ( is_array( $sanitized_params ) ) {
+				foreach ( $sanitized_params as $key => $value ) {
+					$sanitized_params[$key] = self::sanitize_data_item( $key, $sanitized_params[ $key ] );
+				}
+			}
+
+			return $sanitized_params;
+		}
+
+		/**
+		 * @param string                $key
+		 * @param string|array|stdClass $item
+		 *
+		 * @return string|array|stdClass
+		 */
+		private static function sanitize_data_item( $key, $item ) {
+			if ( is_array( $item ) || is_object( $item ) ) {
+				$item = self::sanitize_data( $item );
+			} elseif ( in_array( $key, self::get_keys_to_block(), true ) ) {
+				$item = 'UNDISCLOSED';
+			}
+
+			return $item;
+		}
+
+		/**
+		 * @param $url
+		 *
+		 * @return mixed
+		 */
+		public static function sanitize_url( $url ) {
+			$original_url_parsed = parse_url( $url, PHP_URL_QUERY );
+			parse_str( $original_url_parsed, $original_query_vars );
+
+			$sanitized_query_vars = self::sanitize_data( $original_query_vars );
+
+			return add_query_arg( $sanitized_query_vars, $url );
+		}
+
 		public static function set_logging_state( $state ) {
 			global $sitepress;
 				
@@ -73,11 +107,11 @@ if ( !class_exists( 'TranslationProxy_Com_Log' ) ) {
 		}
 		
 		public static function add_com_log_link( ) {
-			if ( self::get_log() != '' ) {
+			if ( '' !== self::get_log() ) {
 				$url = esc_attr( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=com-log' );
 				?>
 				<p style="margin-top: 20px;">
-				    <?php printf(__('For retrieving debug information for communication between your site and the translation system, use the <a href="%s">communication log</a> page.', 'sitepress'), $url ); ?>
+				    <?php printf(__('For retrieving debug information for communication between your site and the translation system, use the <a href="%s">communication log</a> page.', 'wpml-translation-management'), $url ); ?>
 				</p>
 				<?php
 			}
@@ -109,7 +143,7 @@ if ( !class_exists( 'TranslationProxy_Com_Log' ) ) {
 		}
 		
 		private static function save_log( $log ) {
-			update_option( 'wpml_tp_com_log', $log );
+			update_option( 'wpml_tp_com_log', $log, 'no');
 		}
 
 		
