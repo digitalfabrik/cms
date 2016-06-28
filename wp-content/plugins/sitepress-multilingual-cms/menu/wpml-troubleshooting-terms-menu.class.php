@@ -20,7 +20,7 @@ class WPML_Troubleshooting_Terms_Menu {
 
 				ICL_AdminNotifier::addMessage( "termssuffixnotice", $message, 'error', true, false, false, 'terms-suffix', true );
 			}
-			$sitepress->save_settings( array( 'taxonomy_names_checked' => true ) );
+			$sitepress->set_setting( 'taxonomy_names_checked', true, true );
 		}
 
 

@@ -20,9 +20,13 @@ var WpmlTemplateCompiler = function (usInstance, templates) {
                 throw 'No such template: ' + temp;
             }
             if (compiledTemplates[temp] === undefined) {
-                compiledTemplates[temp] = usInstance.template(templates[temp].join("\n"))
+                var template = templates[temp];
+                if (template instanceof Array) {
+                    template = template.join("\n");
+                }
+                compiledTemplates[temp] = usInstance.template(template);
             }
             return compiledTemplates[temp];
         }
-    }
+    };
 };

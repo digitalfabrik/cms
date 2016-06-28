@@ -44,6 +44,7 @@
                     self.renderPlaceHolder();
                     return self;
                 } else {
+                    self.$el.siblings('#table-listing-no-jobs-wrapper').hide();
                     self.$el.show();
                 }
                 self.renderFilter();
@@ -55,9 +56,13 @@
             renderPlaceHolder: function(){
                 var self = this;
                 jQuery(".spinner").hide();
-                self.template = _.template(jQuery('#table-listing-no-jobs').html());
-                self.$el.html(self.template());
-                self.$el.show();
+                if(!self.$el.siblings('#table-listing-no-jobs-wrapper').length) {
+                    self.template = _.template(jQuery('#table-listing-no-jobs').html());
+                    self.$el.after(self.template());
+                } else {
+                    self.$el.siblings('#table-listing-no-jobs-wrapper').show();
+                }
+                self.$el.hide();
                 self.model.destroy();
                 self.off();
             },

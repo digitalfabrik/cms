@@ -45,8 +45,9 @@ class WPML_Admin_Post_Actions extends  WPML_Post_Translation {
 			return;
 		}
 		if ( WPML_WordPress_Actions::is_bulk_trash( $pidd ) ||
-			 WPML_WordPress_Actions::is_bulk_untrash( $pidd ) ||
-			 WPML_WordPress_Actions::is_heartbeat( ) ) {
+		     WPML_WordPress_Actions::is_bulk_untrash( $pidd ) ||
+		     WPML_WordPress_Actions::is_heartbeat( )
+		) {
 
 			return;
 		}
@@ -160,12 +161,21 @@ class WPML_Admin_Post_Actions extends  WPML_Post_Translation {
 		return $source_language;
 	}
 
-	private function get_trid_from_referer() {
+	public function get_trid_from_referer() {
 		if ( isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
-			$query = parse_url ( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_QUERY );
+			$query = wpml_parse_url ( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_QUERY );
 			parse_str ( $query, $vars );
 		}
 
-		return isset( $vars[ 'trid' ] ) ? filter_var ( $vars[ 'trid' ], FILTER_SANITIZE_NUMBER_INT ) : false;
+		if ( isset( $_SERVER[ 'REQUEST_URI' ] ) ) {
+			$request_uri = wpml_parse_url( $_SERVER[ 'REQUEST_URI' ], PHP_URL_QUERY );
+			parse_str( $request_uri, $request_uri_vars );
+		}
+
+		/**
+		 * trid from `HTTP_REFERER` should be return only if `REQUEST_URI` also has trid set.
+		 * @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmltm-1351
+		 */
+		return isset( $vars[ 'trid' ] ) && isset( $request_uri_vars['trid'] ) ? filter_var ( $vars[ 'trid' ], FILTER_SANITIZE_NUMBER_INT ) : false;
 	}
 }

@@ -188,7 +188,7 @@ jQuery(document).ready(function () {
 	icl_translation_jobs_basket.find('th :checkbox').change(iclTmSelectAllJobsBasket);
 	icl_translation_jobs_basket.find('td :checkbox').change(iclTmUpdateJobsSelectionBasket);
 	var icl_translation_jobs = jQuery('#icl-translation-jobs');
-	icl_translation_jobs.find('th :checkbox').change(iclTmSelectAllJobsSelection);
+	icl_translation_jobs.find('td.js-check-all :checkbox').change(iclTmSelectAllJobsSelection);
 	icl_translation_jobs.find('td :checkbox').change(update_translation_job_checkboxes);
 
 	jQuery('#icl_tm_jobs_dup_submit').click(function () {

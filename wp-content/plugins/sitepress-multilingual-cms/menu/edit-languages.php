@@ -365,7 +365,7 @@ For each language, you need to enter the following information:
 			$flag = $sitepress->get_flag($lang['code']);
 			$this->active_languages[$lang['code']]['flag'] = $flag->flag;
 			$this->active_languages[$lang['code']]['from_template'] = $flag->from_template;
-			$this->active_languages[$lang['code']]['default_locale'] = $wpdb->get_var("SELECT default_locale FROM {$wpdb->prefix}icl_languages WHERE code='".$lang['code']."'");
+			$this->active_languages[$lang['code']]['default_locale'] = $wpdb->get_var( $wpdb->prepare( "SELECT default_locale FROM {$wpdb->prefix}icl_languages WHERE code=%s", $lang['code'] ) );
             $this->active_languages[$lang['code']]['encode_url'] = $lang['encode_url'];
             $this->active_languages[$lang['code']]['tag'] = $lang['tag'];
 		}
@@ -514,7 +514,7 @@ For each language, you need to enter the following information:
 			$_POST['icl_edit_languages'][$id]['flag_upload'] = 'false';
 		}
 			// Refresh cache.
-		$sitepress->icl_language_name_cache->clear();
+		$sitepress->get_language_name_cache()->clear();
 		$sitepress->clear_flags_cache();
 		delete_option('_icl_cache');
 		
@@ -787,9 +787,9 @@ For each language, you need to enter the following information:
                 
                 icl_cache_clear(false);
                 
-                $sitepress->icl_translations_cache->clear();
+                $sitepress->get_translations_cache()->clear();
                 $sitepress->clear_flags_cache();
-                $sitepress->icl_language_name_cache->clear();
+                $sitepress->get_language_name_cache()->clear();
                 
                 $this->set_messages(sprintf(__("The language %s was deleted.", 'sitepress'), '<strong>' . $lang->code . '</strong>'));
                 

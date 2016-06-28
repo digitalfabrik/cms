@@ -11,11 +11,14 @@ function wpml_tm_save_job_fields_from_post( $job_id ) {
 
 add_action( 'wpml_save_job_fields_from_post', 'wpml_tm_save_job_fields_from_post', 10, 1 );
 
-function wpml_tm_save_data( $data ) {
-	global $wpdb;
+/**
+ * @param array $data
+ */
+function wpml_tm_save_data( array $data ) {
+	global $wpml_translation_job_factory;
 
-	$wpml_tm_records  = new WPML_TM_Records( $wpdb );
-	$save_data_action = new WPML_Save_Translation_Data_Action( $data, $wpml_tm_records );
+	$save_factory     = new WPML_TM_Job_Action_Factory( $wpml_translation_job_factory );
+	$save_data_action = $save_factory->save_action( $data );
 	$save_data_action->save_translation();
 	$redirect_target = $save_data_action->get_redirect_target();
 	if ( (bool) $redirect_target === true ) {

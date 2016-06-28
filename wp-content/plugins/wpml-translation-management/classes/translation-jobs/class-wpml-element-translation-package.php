@@ -103,6 +103,9 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	function save_job_custom_fields( $job, $post_id, $fields ) {
 		$field_names = array();
 		foreach ( $fields as $field_name => $val ) {
+			if ( '' === (string) $field_name ) {
+				continue;
+			}
 				// find it in the translation
 				foreach ( $job->elements as $el_data ) {
 					if ( strpos( $el_data->field_data, (string) $field_name ) === 0

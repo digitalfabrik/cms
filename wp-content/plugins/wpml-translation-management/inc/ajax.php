@@ -19,33 +19,35 @@ function icl_get_jobs_table() {
 
 	$table = new WPML_Translation_Jobs_Table($iclTranslationManagement);
 	$data  = $table->get_paginated_jobs();
-	
+
 	wp_send_json_success( $data );
 }
 
+
 /**
- * Ajax handler for retrieving translation job field contents
+ * Ajax handler for saving translation job field contents
  */
-function wpml_get_job_field_ajax() {
-	if ( ! wpml_is_action_authenticated( 'icl_get_job_original_field_content' ) ) {
+function wpml_save_job_ajax() {
+	if ( ! wpml_is_action_authenticated( 'wpml_save_job' ) ) {
 		die( 'Wrong Nonce' );
 	}
-	$job_id = (int) filter_input( INPUT_POST, 'tm_editor_job_id',
-		FILTER_SANITIZE_NUMBER_INT );
-	if ( ! $job_id ) {
-		wp_send_json_error( 0 );
-	}
-	/** @var WPML_Translation_Job_Factory $wpml_translation_job_factory */
-	global $wpml_translation_job_factory;
-
-	$factory = new WPML_TM_Job_Action_Factory( $wpml_translation_job_factory );
-	$action  = new WPML_TM_Field_Content_Ajax_Action( $factory, $job_id );
-	$result  = $action->run();
-	call_user_func_array( $result[0], array( $result[1] ) );
+	$data    = array();
+	parse_str( $_POST['data'], $data );
+	
+	$job = new WPML_TM_Editor_Job_Save( );
+	
+	$job_details = array( 'job_type'             => $data[ 'job_post_type' ],
+						  'job_id'               => $data[ 'job_post_id' ],
+						  'target'               => $data[ 'target_lang' ],
+						  'translation_complete' => isset( $data[ 'complete' ] ) ? true : false );
+	$job = apply_filters( 'wpml-translation-editor-fetch-job',  $job, $job_details);
+	
+	$ajax_response = $job->save( $data );
+	$ajax_response->send_json();
+	
 }
 
-add_action( 'wp_ajax_icl_get_job_original_field_content',
-	'wpml_get_job_field_ajax' );
+add_action( 'wp_ajax_wpml_save_job_ajax', 'wpml_save_job_ajax' );
 
 /**
  * Ajax action, that populates the blue TP job status box
@@ -76,9 +78,15 @@ function icl_pickup_translations() {
 	$remote_sync_factory = new WPML_TP_Remote_Sync_Factory( $project,
 		$ICL_Pro_Translation,
 		$cms_id_helper );
-	$pickup              = new WPML_TP_Polling_Pickup( $ICL_Pro_Translation,
-		$remote_sync_factory );
+
+	$pickup = new WPML_TP_Polling_Pickup( $ICL_Pro_Translation, $remote_sync_factory );
 	wp_send_json_success( $pickup->poll_job( $_POST ) );
+}
+
+function icl_pickup_translations_complete() {
+	global $sitepress;
+
+	$sitepress->set_setting( 'last_picked_up', time(), true );
 }
 
 function icl_get_blog_users_not_translators() {

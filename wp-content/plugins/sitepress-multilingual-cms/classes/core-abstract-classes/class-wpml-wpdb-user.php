@@ -9,11 +9,11 @@
  */
 abstract class WPML_WPDB_User {
 
-	/** @var  wpdb $wpdb */
+	/** @var WPDB $wpdb */
 	protected $wpdb;
 
 	/**
-	 * @param wpdb $wpdb
+	 * @param WPDB $wpdb
 	 */
 	public function __construct( &$wpdb ) {
 		$this->wpdb = &$wpdb;
