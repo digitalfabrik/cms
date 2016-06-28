@@ -114,8 +114,7 @@ class WPML_Update_Term_Action extends WPML_WPDB_And_SP_User {
 		$this->wp_new_term_args[ 'term_group' ] = $term_group;
 		$this->is_valid = $this->set_language_information( $trid, $original_tax_id, $lang_code, $source_language );
 		$this->set_action_type();
-
-		if ( ! $this->is_update || ( $this->is_update && $slug != $this->old_slug ) ) {
+		if ( ! $this->is_update || ( $this->is_update && $slug != $this->old_slug && ! empty( $slug ) ) ) {
 			if ( trim( $slug ) == '' ) {
 				$slug = sanitize_title( $term );
 			}
@@ -132,6 +131,8 @@ class WPML_Update_Term_Action extends WPML_WPDB_And_SP_User {
 	 */
 	public function execute() {
 		global $sitepress;
+
+		$switch_lang = new WPML_Temporary_Switch_Language( $sitepress, $this->lang_code );
 
 		remove_action( 'create_term', array( $sitepress, 'create_term' ), 1 );
 		remove_action( 'edit_term', array( $sitepress, 'create_term' ), 1 );
@@ -153,6 +154,7 @@ class WPML_Update_Term_Action extends WPML_WPDB_And_SP_User {
 			$new_term = false;
 		}
 
+		unset( $switch_lang );
 		return $new_term;
 	}
 

@@ -310,6 +310,6 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 	private function clear_cache() {
 		$this->term_translations->reload();
 		$this->post_translations->reload();
-		$this->sitepress->icl_translations_cache->clear();
+		$this->sitepress->get_translations_cache()->clear();
 	}
 }

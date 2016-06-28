@@ -1,103 +1,116 @@
 /*globals labels */
 
 (function () {
-    TaxonomyTranslation.views.TermPopUpView = Backbone.View.extend({
+	TaxonomyTranslation.views.TermPopUpView = Backbone.View.extend({
 
-        tagName: "div",
-        template: TaxonomyTranslation.getTemplate("termPopUp"),
-        model: TaxonomyTranslation.models.Term,
+		tagName: 'div',
+		template: WPML_core[ 'templates/taxonomy-translation/term-popup.html' ],
+		model: TaxonomyTranslation.models.Term,
 
-        events: {
-            "click .cancel": "close",
-            "click .term-save": "saveTerm",
-            "keydown" : "handleEnter"
-        },
-        initialize: function () {
-            var self = this;
-            self.listenTo(self.model, 'translationSaved', self.close);
-            self.listenTo(self.model, 'saveFailed', self.render);
-            var trid = self.model.get("trid");
-            self.originalName = TaxonomyTranslation.classes.taxonomy.getOriginalName(self.model.get("language_code"), trid);
+		events: {
+			'click .cancel': 'close',
+			'click .term-save': 'saveTerm',
+			'click .js-button-copy': 'copyOriginal',
+			'keydown': 'handleEnter',
+			'input #term-name': 'updateUI'
+		},
+		initialize: function () {
+			var self = this;
+			self.listenTo(self.model, 'translationSaved', self.close);
+			self.listenTo(self.model, 'saveFailed', self.render);
+			self.dialog = null;
+			return self;
+		},
 
-            return self;
-        },
+		render: function () {
 
-        open: function () {
-            this.$el.show();
-            this.delegateEvents();
-        },
-        close: function () {
-            this.$el.hide();
-            this.undelegateEvents();
-            this.remove();
-        },
-        get_slug: function(){
-            var self = this;
+			var self = this,
+				trid = self.model.get('trid'),
+				term = self.model.getNameSlugAndDescription(),
+				original_term = TaxonomyTranslation.classes.taxonomy.getOriginalTerm( trid );
 
-            var slug = self.model.get("slug");
-            if (!slug) {
-                slug = "";
-            }
-            slug = decodeURIComponent(slug);
+			self.$el.html(
+				this.template({
+					trid: trid,
+					lang: self.model.get('language_code'),
+					source_lang: original_term.get( 'language_code' ),
+					langs: TaxonomyTranslation.data.activeLanguages,
+					ttid: self.model.get('term_taxonomy_id'),
+					term: term,
+					original_term: original_term.getNameSlugAndDescription()
+				})
+			);
 
-            return slug;
-        },
-        render: function () {
+			self.delegateEvents();
+			return self;
+		},
+		handleEnter: function (e) {
+			var self = this;
+			if (self.$el.find('input:focus').length !== 0 && e.keyCode == 13) {
+				self.saveTerm(e);
+			}
+			return self;
+		},
+		saveTerm: function (e) {
+			var self = this;
 
-            var self = this;
-            var trid = self.model.get("trid");
-            var slug = self.get_slug();
+			self.undelegateEvents();
 
-            var description = self.model.get("description");
-            if (!description) {
-                description = "";
-            }
-            var name = self.model.get("name");
-            if (!name) {
-                name = "";
-            }
+			e.preventDefault();
+			var name = self.$el.find('#term-name').val();
+			var slug = self.$el.find('#term-slug').val();
+			var description = self.$el.find('#term-description').val();
 
-            self.$el.html(
-                this.template({
-                    trid: trid,
-                    lang: self.model.get("language_code"),
-                    slug: slug,
-                    description: description,
-                    langs: TaxonomyTranslation.data.activeLanguages,
-                    originalName: self.originalName,
-                    ttid: self.model.get("term_taxonomy_id"),
-                    name: name
-                })
-            );
+			if (name) {
+				self.$el.find('.spinner').show();
+				self.$el.find('.term-save').prop( 'disabled', true );
+				self.$el.find('.cancel').prop( 'disabled', true );
+				self.model.save(name, slug, description);
+			}
 
-            self.delegateEvents();
-            return self;
-        },
-        handleEnter: function(e){
-            var self = this;
-            if(self.$el.find('input:focus').length !== 0 && e.keyCode == 13){
-                self.saveTerm(e);
-            }
-            return self;
-        },
-        saveTerm: function (e) {
-            var self = this;
+			return self;
+		},
+		open: function ( trid, lang ) {
+			var self = this;
+			self.render();
+			var popUpDomEl = jQuery('#' + trid + '-popup-' + lang);
+			popUpDomEl.append( self.$el );
+				
+			self.dialog = jQuery( '#icl_tt_form_' + trid + '_' + lang );
+			self.dialog.dialog({
+				autoOpen: true,
+				modal: true,
+				minWidth: self.getMinDialogWidth(),
+				resizable: false,
+				draggable: false,
+				dialogClass: 'dialog-fixed otgs-ui-dialog'
+			});
+			self.setElement( self.dialog );
+			self.delegateEvents();
+			self.updateUI();
 
-            self.undelegateEvents();
+		},
+		getMinDialogWidth: function ( ) {
+			return 800;
+		},
+		close: function () {
+			if ( this.dialog ) {
+				this.dialog.dialog( 'close' );
+				this.undelegateEvents();
+				this.remove();
+				this.dialog = null;
+			}
+		},
+		copyOriginal: function ( e ) {
+			var self = this,
+				original = jQuery( e.currentTarget ).prev().val();
+			jQuery( e.currentTarget ).next().val( original );
+			self.updateUI();
+		},
+		updateUI: function ( ) {
+			var self = this;
+			self.$el.find( '.term-save' ).prop( 'disabled', self.$el.find( '#term-name').val() === '' );
+		}
 
-            e.preventDefault();
-            var name = self.$el.find("#term-name").val();
-            var slug = self.$el.find("#term-slug").val();
-            var description = self.$el.find("#term-description").val();
-
-            if (name) {
-                self.$el.find(".spinner").show();
-                self.$el.find(".term-save").hide();
-                self.$el.find(".cancel").hide();
-                self.model.save(name, slug, description);
-            }
-
-            return self;
-        }
-    });
+	});
 })(TaxonomyTranslation);

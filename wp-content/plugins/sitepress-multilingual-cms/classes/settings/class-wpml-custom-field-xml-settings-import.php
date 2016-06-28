@@ -45,16 +45,33 @@ class WPML_Custom_Field_XML_Settings_Import extends WPML_WPDB_User {
 						$this->setting_factory,
 						$setting_constructor
 					), array( $c['value'] ) );
-					if ( $c['attr']['action'] === 'translate' ) {
-						$setting->set_to_translatable();
-					} elseif ( $c['attr']['action'] === 'copy' ) {
-						$setting->set_to_copy();
-					} else {
-						$setting->set_to_nothing();
-					}
+					$this->import_action( $c, $setting );
 					$setting->make_read_only();
+					$this->import_editor_settings( $c, $setting );
 				}
 			}
 		}
+	}
+	
+	private function import_action( $c, $setting ) {
+		if ( $c['attr']['action'] === 'translate' ) {
+			$setting->set_to_translatable();
+		} elseif ( $c['attr']['action'] === 'copy' ) {
+			$setting->set_to_copy();
+		} else {
+			$setting->set_to_nothing();
+		}
+	}
+	
+	private function import_editor_settings( $c, $setting ) {
+		if ( isset( $c[ 'attr' ][ 'style' ] ) ) {
+			$setting->set_editor_style( $c[ 'attr' ][ 'style' ] );
+		}
+		if ( isset( $c[ 'attr' ][ 'label' ] ) ) {
+			$setting->set_editor_label( $c[ 'attr' ][ 'label' ] );
+		}					
+		if ( isset( $c[ 'attr' ][ 'group' ] ) ) {
+			$setting->set_editor_group( $c[ 'attr' ][ 'group' ] );
+		}					
 	}
 }

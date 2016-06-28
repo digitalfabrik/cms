@@ -109,8 +109,11 @@ function build_language_links(data, $, container) {
 
 			language_item.appendTo(languages_container);
 		}
+
+		$(document).trigger( 'wpml_language_links_added', [ languages_container ] );
 	}
 }
+
 jQuery(document).ready(
 	function ($) {
 

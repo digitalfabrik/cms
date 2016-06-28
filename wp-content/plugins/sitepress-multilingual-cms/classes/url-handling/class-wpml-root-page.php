@@ -113,12 +113,12 @@ class WPML_Root_Page {
 	 */
 	private static function get_slugs_and_get_query( $requested_url ) {
 		$result            = array();
-		$request_path      = parse_url( $requested_url, PHP_URL_PATH );
+		$request_path      = wpml_parse_url( $requested_url, PHP_URL_PATH );
 		$request_path      = wpml_strip_subdir_from_url( $request_path );
 		$slugs             = self::get_slugs_array( $request_path );
 		$result[ 'slugs' ] = $slugs;
 
-		$query_string            = parse_url( $requested_url, PHP_URL_QUERY );
+		$query_string            = wpml_parse_url( $requested_url, PHP_URL_QUERY );
 		$result[ 'querystring' ] = ! $query_string ? '' : $query_string;
 
 		return $result;
