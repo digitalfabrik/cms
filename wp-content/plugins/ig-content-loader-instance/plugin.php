@@ -69,6 +69,7 @@ function cl_in_add_js() {
 		jQuery("#cl_content_select").on('change', function() {
 			//window.alert( this.value );
 			if(this.value == 'ig-content-loader-instance') {
+				window.alert("asdf");
 				var data = {
 					'action': 'cl_in_blogs_dropdown'
 				};
@@ -134,7 +135,7 @@ function cl_in_pages_dropdown() {
 	$pages = get_pages();
 	echo "<select>";
 	foreach ($pages as $page) {
-		echo "<option>".$page->post_title."</option>";
+		echo "<option value=\"".$page->ID."\">".$page->post_title."</option>";
 	}
 	echo "</select>";
 	//switch_to_blog( $original_blog_id ); 
