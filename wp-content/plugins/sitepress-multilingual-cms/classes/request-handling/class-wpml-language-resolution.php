@@ -91,7 +91,7 @@ class WPML_Language_Resolution {
 	 */
 	public function get_referrer_language_code() {
 		if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-			$query_string = parse_url( $_SERVER['HTTP_REFERER'], PHP_URL_QUERY );
+			$query_string = wpml_parse_url( $_SERVER['HTTP_REFERER'], PHP_URL_QUERY );
 			$query        = array();
 			parse_str( (string) $query_string, $query );
 			$language_code = isset( $query['lang'] ) ? $query['lang'] : null;

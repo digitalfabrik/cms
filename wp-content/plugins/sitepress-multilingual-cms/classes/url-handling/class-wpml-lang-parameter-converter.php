@@ -74,27 +74,59 @@ class WPML_Lang_Parameter_Converter extends WPML_URL_Converter {
 	}
 
 	protected function convert_url_string( $source_url, $lang_code ) {
-		$old_lang_code = $this->get_lang_from_url_string ( $source_url );
+		$old_lang_code = $this->get_lang_from_url_string( $source_url );
+
 		$lang_code     = (bool) $lang_code === false ? $this->default_language : $lang_code;
 		$lang_code     = $lang_code === $this->default_language ? "" : $lang_code;
+
+		$source_url = $this->fix_query_structure( $source_url );
+
+		$source_url = $this->fix_trailingslashit( $source_url );
+
 		if ( (bool) $old_lang_code !== false ) {
-			$replace = $lang_code === "" ? "" : '?lang=' . $lang_code;
-			$source_url     = str_replace ( '?lang=' . $old_lang_code, $replace, $source_url );
-			$replace = str_replace ( '?', '&', $replace );
-			$source_url     = str_replace ( '&lang=' . $old_lang_code, $replace, $source_url );
-			$source_url     = strpos($source_url, '?') === false ? $source_url . '?lang=' . $lang_code : $source_url;
+			$source_url = remove_query_arg( 'lang', $source_url );
 		}
 
-		if ( strpos ( $source_url, 'lang=' . $lang_code ) === false ) {
-			$source_url .= ( strpos ( $source_url, '?' ) === false ? '?' : '&' ) . 'lang=' . $lang_code;
+		if ( ! empty( $lang_code ) ) {
+			$source_url = add_query_arg( 'lang', $lang_code, $source_url );
 		}
 
-		$source_url = str_replace ( '?lang=&', '?', $source_url );
-		$source_url = str_replace ( '&lang=&', '&', $source_url );
-		$source_url = str_replace ( '&lang=/', '', trailingslashit ( $source_url ) );
-		$source_url = str_replace ( '?lang=/', '', $source_url );
-		$source_url = str_replace ( '//?', '/?', $source_url );
+		return  $source_url ;
+	}
 
-		return untrailingslashit ( $source_url );
+	/**
+	 * Replace double ? to &
+	 *
+	 * @param string $url
+	 *
+	 * @return string
+	 */
+	private function fix_query_structure( $url ) {
+		$query = wpml_parse_url( $url, PHP_URL_QUERY );
+		$new_query = str_replace( '?', '&', $query );
+
+		$url = str_replace( $query, $new_query, $url );
+
+		return $url;
+	}
+
+	/**
+	 * @param $source_url
+	 *
+	 * @return mixed|string
+	 */
+	private function fix_trailingslashit( $source_url ) {
+		$query = wpml_parse_url( $source_url, PHP_URL_QUERY );
+		if ( ! empty( $query ) ) {
+			$source_url = str_replace( '?' . $query, '', $source_url );
+		}
+
+		$source_url = trailingslashit( $source_url );
+
+		if ( ! empty( $query ) ) {
+			$source_url .= '?' . $query;
+		}
+
+		return $source_url;
 	}
 }

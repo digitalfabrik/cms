@@ -1404,5 +1404,7 @@ function wpml_permalink_filter($permalink, $language_code = null) {
  */
 function wpml_switch_language_action($language_code = null) {
 	global $sitepress;
+
 	$sitepress->switch_lang( $language_code, true );
 }
+

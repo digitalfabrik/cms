@@ -1,6 +1,6 @@
 <?php
-require 'wpml-menu-sync-functionality.class.php';
-require 'menu-item-sync.class.php';
+require dirname( __FILE__ ) . '/wpml-menu-sync-functionality.class.php';
+require dirname( __FILE__ ) . '/menu-item-sync.class.php';
 
 class ICLMenusSync extends WPML_Menu_Sync_Functionality {
     public $menus;
@@ -15,22 +15,21 @@ class ICLMenusSync extends WPML_Menu_Sync_Functionality {
 	 * @param SitePress             $sitepress
 	 * @param wpdb                  $wpdb
 	 * @param WPML_Post_Translation $post_translations
-	 * @param WPML_Term_Translation $term_translation
+	 * @param WPML_Term_Translation $term_translations
 	 */
-	function __construct( &$sitepress, &$wpdb, &$post_translations, &$term_translation ) {
-		parent::__construct( $sitepress,
-		                     $wpdb,
-		                     $post_translations,
-		                     $term_translation );
+	function __construct( &$sitepress, &$wpdb, &$post_translations, &$term_translations ) {
+		parent::__construct( $sitepress, $wpdb, $post_translations, $term_translations );
+
+		$this->menu_item_sync = new WPML_Menu_Item_Sync( $this->sitepress, $this->wpdb, $this->post_translations, $this->term_translations );
+		$this->init_hooks();
+	}
+
+	function init_hooks() {
 		add_action( 'init', array( $this, 'init' ), 20 );
 
 		if ( isset( $_GET['updated'] ) ) {
 			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		}
-		$this->menu_item_sync = new WPML_Menu_Item_Sync( $sitepress,
-		                                                 $wpdb,
-		                                                 $post_translations,
-		                                                 $term_translation );
 	}
 
 	function init( $previous_menu = false ) {
@@ -59,6 +58,26 @@ class ICLMenusSync extends WPML_Menu_Sync_Functionality {
 			$_SESSION[ 'wpml_menu_sync_menu' ] = $this->menus;
 		}
 
+	}
+
+	function get_menu_names() {
+		$menu_names = array();
+		global $sitepress, $wpdb;
+
+		$menus = $wpdb->get_results( $wpdb->prepare( "
+            SELECT tm.term_id, tm.name FROM {$wpdb->terms} tm 
+                JOIN {$wpdb->term_taxonomy} tx ON tx.term_id = tm.term_id
+                JOIN {$wpdb->prefix}icl_translations tr ON tr.element_id = tx.term_taxonomy_id AND tr.element_type='tax_nav_menu'
+            WHERE tr.language_code=%s
+        ", $sitepress->get_default_language() ) );
+
+		if ( $menus ) {
+			foreach ( $menus as $menu ) {
+				$menu_names[] = $menu->name;
+			}
+		}
+
+		return $menu_names;
 	}
 
 	function get_menus_tree() {
@@ -486,5 +505,60 @@ class ICLMenusSync extends WPML_Menu_Sync_Functionality {
 	function admin_notices()
 	{
 		echo '<div class="updated"><p>' . __( 'Menu(s) syncing complete.', 'sitepress' ) . '</p></div>';
+	}
+
+	public function display_menu_links_to_string_translation() {
+		$menu_links_data = $this->get_links_for_menu_strings_translation();
+
+		if ( count( $menu_links_data ) > 0 ) {
+			echo '<p>' . PHP_EOL;
+			echo $menu_links_data['label'] . PHP_EOL;
+			$i = 0;
+			foreach ( $menu_links_data['items'] as $menu_name => $menu_url ) {
+				if ( $i > 0 ) {
+					echo ', ';
+				}
+				echo '<a href="' . $menu_url . '">' . $menu_name . '</a>' . PHP_EOL;
+				$i ++;
+			}
+			echo '</p>' . PHP_EOL;
+		}
+	}
+
+	public function get_links_for_menu_strings_translation() {
+		$menu_links = array();
+
+		$wpml_st_folder = $this->sitepress->get_wp_api()->constant( 'WPML_ST_FOLDER' );
+
+		if ( $wpml_st_folder ) {
+			$wpml_st_contexts = icl_st_get_contexts( false );
+			$wpml_st_contexts = wp_list_pluck( $wpml_st_contexts, 'context' );
+			$menu_names       = $this->get_menu_names();
+
+			foreach ( $menu_names as $k => $menu_name ) {
+				if ( ! in_array( $menu_name . ' menu', $wpml_st_contexts, true ) ) {
+					unset( $menu_names[ $k ] );
+				}
+			}
+
+			if ( ! empty( $menu_names ) ) {
+				$menu_url_base = add_query_arg( 'page', urlencode($wpml_st_folder . '/menu/string-translation.php'), 'admin.php' );
+
+				foreach ( $menu_names as $menu_name ) {
+					$menu_url                 = add_query_arg( 'context', urlencode($menu_name . ' menu'), $menu_url_base );
+					$menu_links[ $menu_name ] = $menu_url;
+				}
+			}
+		}
+
+		$response = array();
+		if ( $menu_links ) {
+			$response = array(
+				'label' => esc_html__( 'Translate menu strings and URLs for:', 'sitepress' ),
+				'items' => $menu_links,
+			);
+		}
+
+		return $response;
 	}
 }

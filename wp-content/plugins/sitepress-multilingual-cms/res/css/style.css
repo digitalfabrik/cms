@@ -92,6 +92,10 @@
 .clearfix:after, .wpml-tabs:after, .wpml-section-content:after, .wpml-section-content-inner:after {
   clear: both; }
 
+pre {
+  max-width: 100%;
+  overflow-x: auto; }
+
 /***********************************************************
 	WPML Boxes and Tables
 *************************************************************/
@@ -102,15 +106,15 @@
 .wpml-col-title {
   width: 30%; }
 .wpml-col-title strong {
-  font-size: 1.05em; }
-.wpml-col-title .row-actions {
-  font-size: .9em; }
+  font-size: 1.077em; }
 @media (max-width: 782px) {
   .wpml-col-title {
     width: 40%; } }
+.wpml-col-title a {
+  cursor: pointer; }
 
 .wpml-col-title-flag .row-actions {
-  margin-left: 25px; }
+  margin-left: 26px; }
 
 .wpml-title-flag {
   margin-right: 5px;
@@ -126,14 +130,21 @@
 
 .wpml-col-languages img {
   max-width: 100%;
-  height: auto; }
-.wpml-col-languages a, .wpml-col-languages span {
+  height: auto;
+  margin: 0; }
+.wpml-col-languages > a, .wpml-col-languages > span {
   display: inline-block;
   width: 20px;
   text-align: center;
-  padding: 2px 1px; }
-.wpml-col-languages div {
-  display: none; }
+  padding: 2px 1px;
+  float: left;
+  margin: 0 1px; }
+[dir="rtl"] .wpml-col-languages > a, [dir="rtl"] .wpml-col-languages > span {
+  float: right; }
+.wpml-col-languages > span > a {
+  display: block; }
+.wpml-col-languages a {
+  cursor: pointer; }
 
 .wpml-col-url {
   white-space: nowrap; }
@@ -185,6 +196,8 @@
 
 .wpml-tabs {
   margin-top: 30px; }
+.wpml-tabs .nav-tab {
+  cursor: pointer; }
 @media (max-width: 1280px) {
   .wpml-tabs .nav-tab {
     margin-left: .2em;
@@ -195,132 +208,55 @@
   border-bottom: #fff;
   padding-bottom: 6px; }
 
-.icl-admin-message {
-  border-left: 4px solid #9bc8f0;
-  background-color: #fff;
+.icl-admin-message, .icl-admin-message-information, .icl-admin-message-information-inline, .icl-admin-message-warning, .icl-admin-message-error {
+  clear: both;
+  background: #fff;
+  border-left: 4px solid #fff;
   box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
-  padding: 1em;
-  margin-top: 3em;
-  margin-bottom: 5px; }
-.icl-admin-message:first-child {
-  margin-top: 0; }
-.icl-admin-message.small {
-  padding: 0 0.5em; }
-.icl-admin-message.small > * {
-  margin: 0.2em; }
-.icl-admin-message.small .icl-admin-message-wrapper {
-  padding: 0.5em; }
-.icl-admin-message.right > * {
-  text-align: right; }
-.icl-admin-message.center > * {
-  text-align: center; }
-.icl-admin-message.center > * > ul, .icl-admin-message.center > * > ol {
-  text-align: left;
-  padding-left: 1em !important;
-  font-weight: normal; }
-.icl-admin-message.center > * > ul {
-  list-style-type: disc; }
-.icl-admin-message .icl-admin-message-wrapper {
-  position: relative;
-  padding: 2em 1em; }
-.icl-admin-message .icl-admin-message-wrapper > ul, .icl-admin-message .icl-admin-message-wrapper > ol {
+  margin: 5px 15px 2px;
+  padding: 1px 12px; }
+.wrap .icl-admin-message, .wrap .icl-admin-message-information, .wrap .icl-admin-message-information-inline, .wrap .icl-admin-message-warning, .wrap .icl-admin-message-error {
+  margin: 5px 0 15px; }
+.icl-admin-message p, .icl-admin-message-information p, .icl-admin-message-information-inline p, .icl-admin-message-warning p, .icl-admin-message-error p {
+  margin: .5em 0;
+  padding: 2px; }
+
+.icl-admin-message ul, .icl-admin-message ol, .icl-admin-message-information ul, .icl-admin-message-information ol, .icl-admin-message-warning ul, .icl-admin-message-warning ol, .icl-admin-message-error ul, .icl-admin-message-error ol {
   max-height: 10em;
   overflow: auto; }
-.icl-admin-message .icl-admin-message-hide {
-  position: absolute;
-  top: 5px;
-  right: 1px;
-  padding: 20px 15px 0 3px;
-  font-size: 13px;
-  text-decoration: none;
-  line-height: 1; }
-.icl-admin-message .icl-admin-message-hide:before {
-  background: 0 0;
-  color: #bbb;
-  content: '\f153';
-  display: block !important;
-  font: 400 16px/1 dashicons;
-  height: 20px;
-  text-align: center;
-  width: 20px;
-  -webkit-font-smoothing: antialiased !important;
-  position: absolute;
-  left: -18px;
-  margin-top: -1px;
-  transition: all .1s ease-in-out; }
-.icl-admin-message .icl-admin-message-hide:hover:before {
-  color: #c00; }
-.icl-admin-message .icl-admin-message-dismiss {
-  position: absolute;
-  right: 0.25em;
-  bottom: 0.25em;
-  display: block; }
+.icl-admin-message.right > *, .icl-admin-message-information.right > *, .icl-admin-message-warning.right > *, .icl-admin-message-error.right > * {
+  text-align: right; }
+.icl-admin-message.center > *, .icl-admin-message-information.center > *, .icl-admin-message-warning.center > *, .icl-admin-message-error.center > * {
+  text-align: center; }
+.icl-admin-message.center > * > ul, .icl-admin-message.center > * > ol, .icl-admin-message-information.center > * > ul, .icl-admin-message-information.center > * > ol, .icl-admin-message-warning.center > * > ul, .icl-admin-message-warning.center > * > ol, .icl-admin-message-error.center > * > ul, .icl-admin-message-error.center > * > ol {
+  text-align: left;
+  padding-left: 1em !important;
+  font-weight: normal; }
+.icl-admin-message.center > * > ul, .icl-admin-message-information.center > * > ul, .icl-admin-message-warning.center > * > ul, .icl-admin-message-error.center > * > ul {
+  list-style-type: disc; }
+
+.icl-admin-message {
+  border-left: 4px solid #9bc8f0; }
 
 .icl-admin-message-information {
-  border-left: 4px solid #d5e8f9;
-  padding: 1px 12px;
-  background-color: #fff;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1); }
-.icl-admin-message-information:first-child {
-  margin-top: 0; }
-.icl-admin-message-information.small {
-  padding: 0 0.5em; }
-.icl-admin-message-information.small > * {
-  margin: 0.2em; }
-.icl-admin-message-information.small .icl-admin-message-wrapper {
-  padding: 0.5em; }
-.icl-admin-message-information.right > * {
-  text-align: right; }
-.icl-admin-message-information.center > * {
-  text-align: center; }
-.icl-admin-message-information.center > * > ul, .icl-admin-message-information.center > * > ol {
-  text-align: left;
-  padding-left: 1em !important;
-  font-weight: normal; }
-.icl-admin-message-information.center > * > ul {
-  list-style-type: disc; }
+  border-left: 4px solid #d5e8f9; }
 
 .icl-admin-message-information-inline {
-  clear: both;
-  border-left: 4px solid #d5e8f9;
-  padding: 1px 12px;
-  margin-top: 5px;
-  background-color: #fff;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1); }
+  border-left: 4px solid #d5e8f9; }
 
 .icl-admin-message-warning, .icl-admin-message-error {
-  clear: both;
-  border-left: 4px solid #fff366;
-  padding: 1px 12px;
-  background-color: #fff;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1); }
-.icl-admin-message-warning:first-child, .icl-admin-message-error:first-child {
-  margin-top: 0; }
-.icl-admin-message-warning.small, .icl-admin-message-error.small {
-  padding: 0 0.5em; }
-.icl-admin-message-warning.small > *, .icl-admin-message-error.small > * {
-  margin: 0.2em; }
-.icl-admin-message-warning.small .icl-admin-message-wrapper, .icl-admin-message-error.small .icl-admin-message-wrapper {
-  padding: 0.5em; }
-.icl-admin-message-warning.right > *, .icl-admin-message-error.right > * {
-  text-align: right; }
-.icl-admin-message-warning.center > *, .icl-admin-message-error.center > * {
-  text-align: center; }
-.icl-admin-message-warning.center > * > ul, .icl-admin-message-warning.center > * > ol, .icl-admin-message-error.center > * > ul, .icl-admin-message-error.center > * > ol {
-  text-align: left;
-  padding-left: 1em !important;
-  font-weight: normal; }
-.icl-admin-message-warning.center > * > ul, .icl-admin-message-error.center > * > ul {
-  list-style-type: disc; }
+  border-left: 4px solid #fff366; }
 
 .icl-admin-message-error {
   border-color: #dd3d36;
   background-color: #FFE6E5; }
 
-.wpml-is-dismissible {
+.otgs-is-dismissible {
   position: relative;
   padding-right: 38px; }
-.wpml-is-dismissible p [class*="button-"] {
+.otgs-is-dismissible .notice-dismiss {
+  text-decoration: none; }
+.otgs-is-dismissible p [class*="button-"] {
   margin: -5px 5px; }
 
 .icl-account-setup {
@@ -330,7 +266,7 @@
   padding: 5px;
   width: 65%;
   border: 1px solid #f00;
-  border-radius: 3px;
+  border-radius: 2px;
   background-color: #ffb7b7;
   color: #000; }
 .icl_form_errors p {
@@ -343,7 +279,7 @@
 .icl_form_success {
   padding: 5px;
   border: 1px solid #fff;
-  border-radius: 5px;
+  border-radius: 2px;
   background-color: #336600;
   color: #fff; }
 
@@ -389,7 +325,7 @@ td.icl_translations a {
 
 .icl_translations_table {
   border: 1px solid #8CCEEA;
-  border-radius: 3px; }
+  border-radius: 2px; }
 .icl_translations_table tr.icl_odd_row {
   background-color: #EFF8FC; }
 .icl_translations_table td {
@@ -435,7 +371,7 @@ td.icl_translations a {
   padding: 3px 10px 3px 9px;
   width: 207px;
   border: 1px solid #8cceea;
-  border-radius: 5px;
+  border-radius: 2px;
   background-color: #eff8fc; }
 
 .icl_tick {
@@ -454,7 +390,7 @@ td.icl_translations a {
   margin-bottom: 0;
   padding: 10px;
   border: 1px solid #8cceea;
-  border-radius: 5px;
+  border-radius: 2px;
   background-color: #eff8fc; }
 .icl_cyan_box p {
   margin: 5px 0;
@@ -469,7 +405,7 @@ td.icl_translations a {
   margin: 5px;
   padding: 3px 5px;
   border: 1px solid #D54E21;
-  border-radius: 5px;
+  border-radius: 2px;
   background-color: #D54E21;
   color: #FFFFFF; }
 
@@ -759,20 +695,9 @@ img.icl_als_iclflag {
   height: 40px;
   padding: 0 15px 1px; }
 
-.wpml-dialog {
-  z-index: 10000 !important; }
-.wpml-dialog .ui-dialog-titlebar .ui-dialog-title {
-  text-align: left; }
-.wpml-dialog .wpml-dialog-content input[type="text"] {
-  width: 100%; }
-.wpml-dialog .wpml-dialog-content li {
-  list-style: disc inside; }
-.wpml-dialog .posts-found, .wpml-dialog .no-posts-found, .wpml-dialog .ajax-loader {
-  display: none; }
-.wpml-dialog .spinner {
-  display: block; }
-.wpml-dialog button .spinner {
-  display: inline-block;
-  margin: 0 0 0 5px;
-  vertical-align: middle;
-  float: none; }
+.woocommerce_page_wc-settings .select2-container .select2-choice .select2-arrow b:after {
+  content: none; }
+
+div.wpml-simple-lang-selector {
+  float: none !important;
+  display: inline-block !important; }

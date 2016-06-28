@@ -132,43 +132,43 @@ class SitePressLanguageSwitcher {
 				switch ( $k ) {
 					case 'font-current-normal':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer a, #lang_sel_footer a.lang_sel_sel, #lang_sel_footer a.lang_sel_sel:visited{color:' . $v . ';}';
+						echo '#lang_sel_footer a, #lang_sel_footer a.lang_sel_sel, #lang_sel_footer a.lang_sel_sel:visited{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'font-current-hover':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer a:hover, #lang_sel_footer a.lang_sel_sel:hover{color:' . $v . ';}';
+						echo '#lang_sel_footer a:hover, #lang_sel_footer a.lang_sel_sel:hover{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'background-current-normal':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer a.lang_sel_sel, #lang_sel_footer a.lang_sel_sel:visited{background-color:' . $v . ';}';
+						echo '#lang_sel_footer a.lang_sel_sel, #lang_sel_footer a.lang_sel_sel:visited{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'background-current-hover':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer a.lang_sel_sel:hover{background-color:' . $v . ';}';
+						echo '#lang_sel_footer a.lang_sel_sel:hover{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'font-other-normal':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer ul a, #lang_sel_footer ul a:visited{color:' . $v . ';}';
+						echo '#lang_sel_footer ul a, #lang_sel_footer ul a:visited{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'font-other-hover':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer ul a:hover{color:' . $v . ';}';
+						echo '#lang_sel_footer ul a:hover{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'background-other-normal':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer ul a, #lang_sel_footer ul a:visited{background-color:' . $v . ';}';
+						echo '#lang_sel_footer ul a, #lang_sel_footer ul a:visited{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'background-other-hover':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer ul a:hover{background-color:' . $v . ';}';
+						echo '#lang_sel_footer ul a:hover{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'border':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer{border-color:' . $v . ';}';
+						echo '#lang_sel_footer{border-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 					case 'background':
 						//if($v != $this->color_schemes[$k])
-						echo '#lang_sel_footer{background-color:' . $v . ';}';
+						echo '#lang_sel_footer{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						break;
 				}
 			}
@@ -508,73 +508,73 @@ class SitePressLanguageSwitcher {
 					case 'font-current-normal':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list a.lang_sel_sel, #lang_sel_list a.lang_sel_sel:visited{color:' . $v . ';}';
+							echo '#lang_sel_list a.lang_sel_sel, #lang_sel_list a.lang_sel_sel:visited{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel a, #lang_sel a.lang_sel_sel{color:' . $v . ';}';
+							echo '#lang_sel a, #lang_sel a.lang_sel_sel{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'font-current-hover':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list a:hover, #lang_sel_list a.lang_sel_sel:hover{color:' . $v . ';}';
+							echo '#lang_sel_list a:hover, #lang_sel_list a.lang_sel_sel:hover{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel a:hover, #lang_sel a.lang_sel_sel:hover{color:' . $v . ';}';
+							echo '#lang_sel a:hover, #lang_sel a.lang_sel_sel:hover{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'background-current-normal':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list a.lang_sel_sel, #lang_sel_list a.lang_sel_sel:visited{background-color:' . $v . ';}';
+							echo '#lang_sel_list a.lang_sel_sel, #lang_sel_list a.lang_sel_sel:visited{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel a.lang_sel_sel, #lang_sel a.lang_sel_sel:visited{background-color:' . $v . ';}';
+							echo '#lang_sel a.lang_sel_sel, #lang_sel a.lang_sel_sel:visited{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'background-current-hover':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list a.lang_sel_sel:hover{background-color:' . $v . ';}';
+							echo '#lang_sel_list a.lang_sel_sel:hover{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel a.lang_sel_sel:hover{background-color:' . $v . ';}';
+							echo '#lang_sel a.lang_sel_sel:hover{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'font-other-normal':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list ul a.lang_sel_other, #lang_sel_list ul a.lang_sel_other:visited{color:' . $v . ';}';
+							echo '#lang_sel_list ul a.lang_sel_other, #lang_sel_list ul a.lang_sel_other:visited{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel li ul a, #lang_sel li ul a:visited{color:' . $v . ';}';
+							echo '#lang_sel li ul a, #lang_sel li ul a:visited{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'font-other-hover':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list ul a.lang_sel_other:hover{color:' . $v . ';}';
+							echo '#lang_sel_list ul a.lang_sel_other:hover{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel li ul a:hover{color:' . $v . ';}';
+							echo '#lang_sel li ul a:hover{color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'background-other-normal':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list ul a.lang_sel_other, #lang_sel li ul a:link, #lang_sel_list ul a.lang_sel_other:visited{background-color:' . $v . ';}';
+							echo '#lang_sel_list ul a.lang_sel_other, #lang_sel li ul a:link, #lang_sel_list ul a.lang_sel_other:visited{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel li ul a, #lang_sel li ul a:link, #lang_sel li ul a:visited{background-color:' . $v . ';}';
+							echo '#lang_sel li ul a, #lang_sel li ul a:link, #lang_sel li ul a:visited{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'background-other-hover':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list ul a.lang_sel_other:hover{background-color:' . $v . ';}';
+							echo '#lang_sel_list ul a.lang_sel_other:hover{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel li ul a:hover{background-color:' . $v . ';}';
+							echo '#lang_sel li ul a:hover{background-color:' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 					case 'border':
 						//if($v != $this->widget_css_defaults[$k])
 						if ( $list ) {
-							echo '#lang_sel_list a, #lang_sel_list a:visited{border-color:' . $v . ';} #lang_sel_list  ul{border-top:1px solid ' . $v . ';}';
+							echo '#lang_sel_list a, #lang_sel_list a:visited{border-color:' . sanitize_text_field( $v ) . ';} #lang_sel_list  ul{border-top:1px solid ' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						} else {
-							echo '#lang_sel a, #lang_sel a:visited{border-color:' . $v . ';} #lang_sel ul ul{border-top:1px solid ' . $v . ';}';
+							echo '#lang_sel a, #lang_sel a:visited{border-color:' . sanitize_text_field( $v ) . ';} #lang_sel ul ul{border-top:1px solid ' . wpml_sanitize_hex_color_array( $v ) . ';}';
 						}
 						break;
 				}
@@ -634,6 +634,10 @@ class SitePressLanguageSwitcher {
 		$current_language = $sitepress->get_current_language();
 		$languages_helper = new WPML_Languages( $wpml_term_translations, $sitepress, $wpml_post_translations );
 		$languages        = $sitepress->get_ls_languages();
+
+		if ( empty( $languages ) ) {
+			return '';
+		}
 
 		$items = '';
 		$items .= '<li class="menu-item menu-item-language menu-item-language-current menu-item-has-children">';
