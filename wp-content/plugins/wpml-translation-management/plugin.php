@@ -5,7 +5,7 @@ Plugin URI: https://wpml.org/
 Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-2/">WPML 3.2 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.1.7
+Version: 2.2.1
 Plugin Slug: wpml-translation-management
 */
 
@@ -26,7 +26,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
 	}
 }
 
-define( 'WPML_TM_VERSION', '2.1.7' );
+define( 'WPML_TM_VERSION', '2.2.1' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -38,26 +38,34 @@ if ( ! defined( 'WPML_TM_WC_CHUNK' ) ) {
 	define( 'WPML_TM_WC_CHUNK', 1000 );
 }
 
-require_once 'embedded/wpml/commons/autoloader.php';
-$wpml_auto_loader_instance = WPML_Auto_Loader::get_instance();
-$wpml_auto_loader_instance->register( WPML_TM_PATH . '/' );
+$autoloader_dir = WPML_TM_PATH . '/embedded';
+if ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) {
+	$autoloader = $autoloader_dir . '/autoload.php';
+} else {
+	$autoloader = $autoloader_dir . '/autoload_52.php';
+}
+require_once $autoloader;
 
-require WPML_TM_PATH . '/inc/wpml-dependencies-check/wpml-bundle-check.class.php';
-require WPML_TM_PATH . '/inc/constants.php';
-require WPML_TM_PATH . '/inc/translation-proxy/wpml-pro-translation.class.php';
-require WPML_TM_PATH . '/inc/functions-load.php';
-require WPML_TM_PATH . '/inc/js-scripts.php';
+require_once WPML_TM_PATH . '/embedded/wpml/commons/src/dependencies/class-wpml-dependencies.php';
+require_once WPML_TM_PATH . '/inc/constants.php';
+require_once WPML_TM_PATH . '/inc/translation-proxy/wpml-pro-translation.class.php';
+require_once WPML_TM_PATH . '/inc/functions-load.php';
+require_once WPML_TM_PATH . '/inc/js-scripts.php';
 
 new WPML_TM_Requirements();
 
 function wpml_tm_load_ui() {
+	require_once WPML_TM_PATH . '/menu/basket-tab/sitepress-table-basket.class.php';
+	require_once WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard.class.php';
+	require_once WPML_TM_PATH . '/menu/wpml-tm-menus.class.php';
+	require_once WPML_TM_PATH . '/menu/wpml-translator-settings.class.php';
+
 	if ( version_compare( ICL_SITEPRESS_VERSION, '3.3.1', '>=' ) ) {
 		global $sitepress, $wpdb, $WPML_Translation_Management;
 
 		$core_translation_management = wpml_load_core_tm();
 		$tm_loader                   = new WPML_TM_Loader();
-		$WPML_Translation_Management = new WPML_Translation_Management(
-			$sitepress, $tm_loader, $core_translation_management );
+		$WPML_Translation_Management = new WPML_Translation_Management( $sitepress, $tm_loader, $core_translation_management );
 		$WPML_Translation_Management->load();
 
 		if ( is_admin() ) {

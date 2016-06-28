@@ -1,15 +1,7 @@
 <?php
 
-//@todo [WPML 3.3] Move the class to a new file. Also, this file may become quite useless once the class is moved out.
-class WPML_Translation_Editor_UI extends WPML_SP_User {
+class WPML_Translation_Editor_UI extends WPML_WPDB_And_SP_User {
 	private $all_translations;
-	private $all_translations_finished;
-	private $current_element;
-	private $current_element_index;
-	private $current_element_content_original;
-	private $current_element_content_translated;
-	private $current_element_field_style;
-	private $current_element_field_type;
 	/**
 	 * @var WPML_Translation_Editor
 	 */
@@ -20,6 +12,7 @@ class WPML_Translation_Editor_UI extends WPML_SP_User {
 	private $rtl_original_attribute_object;
 	private $rtl_translation;
 	private $rtl_translation_attribute;
+	private $is_duplicate = false;
 	/**
 	 * @var TranslationManagement $tm_instance
 	 */
@@ -28,20 +21,30 @@ class WPML_Translation_Editor_UI extends WPML_SP_User {
 	/** @var  WPML_Element_Translation_Job $job_instance */
 	private $job_instance;
 
+	private $job_factory;
+	private $job_layout;
+	private $fields;
+
 	/**
-	 * @param SitePress                    $sitepress
-	 * @param TranslationManagement        $iclTranslationManagement
+	 * @param WPDB $wpdb
+	 * @param SitePress $sitepress
+	 * @param TranslationManagement $iclTranslationManagement
 	 * @param WPML_Element_Translation_Job $job_instance
+	 * @param WPML_TM_Job_Action_Factory $job_factory
+	 * @param WPML_TM_Job_Layout $job_layout
 	 */
-	function __construct( &$sitepress, &$iclTranslationManagement, $job_instance ) {
-		parent::__construct( $sitepress );
-		$this->tm_instance           = $iclTranslationManagement;
-		$this->current_element_index = 0;
-		$this->job_instance          = $job_instance;
-		$this->job                   = $job_instance->get_basic_data();
+	function __construct( &$wpdb, &$sitepress, &$iclTranslationManagement, $job_instance, $job_factory, $job_layout ) {
+		parent::__construct( $wpdb, $sitepress );
+		$this->tm_instance  = $iclTranslationManagement;
+		$this->job_instance = $job_instance;
+		$this->job          = $job_instance->get_basic_data();
+		$this->job_factory  = $job_factory;
+		$this->job_layout   = $job_layout;
 		if ( $job_instance->get_translator_id() <= 0 ) {
 			$job_instance->assign_to( $sitepress->get_wp_api()->get_current_user_id(), 'local' );
 		}
+		$job_instance->maybe_load_terms_from_post_into_job( $sitepress->get_setting( 'tm_block_retranslating_terms' ) );
+
 	}
 
 	function render() {
@@ -52,81 +55,23 @@ class WPML_Translation_Editor_UI extends WPML_SP_User {
 		require_once( ABSPATH . 'wp-admin/includes/media.php' );
 
 		?>
-		<div class="wrap icl-translation-editor">
-			<h2><?php echo __( 'Translation editor', 'wpml-translation-management' ) ?></h2>
-
+		<div class="wrap icl-translation-editor wpml-dialog-translate">
+			<h1 id="wpml-translation-editor-header" class="wpml-translation-title"></h1>
 			<?php
 			do_action( 'icl_tm_messages' );
 			$this->init_original_post();
 			$this->init_editor_object();
-			$this->render_editor_header();
-			$this->render_translator_note();
+
+			$this->output_model();
+			$this->output_wysiwyg_editors();
+			$this->output_copy_all_dialog();
+			if ( $this->is_duplicate ) {
+				$this->output_edit_independently_dialog();
+			}
+			$this->output_editor_form();
 			?>
-
-			<form id="icl_tm_editor" method="post" action="">
-				<input type="hidden" name="icl_tm_action" value="save_translation"/>
-				<input type="hidden" name="job_id" value="<?php echo esc_attr( $this->job_instance->get_id() ) ?>"/>
-				<?php
-				$this->render_elements_content();
-				?>
-				<br clear="all"/>
-				<label><input type="checkbox" name="complete" <?php if ( ! $this->all_translations_finished): ?>disabled="disabled"<?php endif; ?> <?php
-					if ( $this->job->translated ):?> checked="checked"<?php endif; ?> value="1"/>&nbsp;<?php
-					_e( 'Translation of this document is complete', 'wpml-translation-management' ) ?></label>
-
-				<div id="icl_tm_validation_error" class="icl_error_text"><?php _e( 'Please review the document translation and fill in all the required fields.', 'wpml-translation-management' ) ?></div>
-				<p class="submit-buttons">
-					<input type="submit" class="button-primary" value="<?php _e( 'Save translation', 'wpml-translation-management' ) ?>"/>&nbsp;
-					<a class="button-secondary" href="<?php echo admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php' ) ?>"><?php _e( 'Cancel', 'wpml-translation-management' ); ?></a>
-					<input type="submit"
-					       id="icl_tm_resign"
-					       class="button-secondary"
-					       value="<?php _e( 'Resign', 'wpml-translation-management' ) ?>"
-					       onclick="if(confirm('<?php echo esc_js( __( 'Are you sure you want to resign from this job?', 'wpml-translation-management' ) ) ?>')) {jQuery(this).next().val(1);}else {return false;}"/><input type="hidden"
-					                                                                                                                                                                                                        name="resign"
-					                                                                                                                                                                                                        value="0"/>
-				</p>
-				<?php do_action( 'edit_form_advanced' ); ?>
-				<?php wp_nonce_field( 'icl_get_job_original_field_content_nonce', 'icl_get_job_original_field_content_nonce' ) ?>
-			</form>
 		</div>
 	<?php
-	}
-
-	private function is_external_element() {
-
-		return $this->tm_instance->is_external_type( $this->job->element_type_prefix );
-	}
-
-	private function init_original_post() {
-		// we do not need the original document of the job here
-		// but the document with the same trid and in the $this->job->source_language_code
-		$this->all_translations = $this->sitepress->get_element_translations( $this->job->trid,
-		                                                                      $this->job->original_post_type );
-		$this->original_post    = false;
-		foreach ( $this->all_translations as $t ) {
-			if ( $t->language_code === $this->job->source_language_code ) {
-				$this->original_post = $this->tm_instance->get_post( $t->element_id, $this->job->element_type_prefix );
-				//if this fails for some reason use the original doc from which the trid originated
-				break;
-			}
-		}
-		$this->original_post = $this->original_post
-				? $this->original_post
-				: $this->tm_instance->get_post( $this->job_instance->get_original_element_id(),
-				                                $this->job->element_type_prefix );
-
-		return $this->original_post;
-	}
-
-	private function init_editor_object() {
-		global $wpdb;
-
-		$this->editor_object = new WPML_Translation_Editor( $this->sitepress,
-		                                                    $wpdb,
-		                                                    $this->job_instance,
-		                                                    $this->rtl_original_attribute_object,
-		                                                    $this->rtl_translation_attribute );
 	}
 
 	/**
@@ -141,328 +86,296 @@ class WPML_Translation_Editor_UI extends WPML_SP_User {
 		return array( $this->rtl_original, $this->rtl_translation );
 	}
 
-	private function render_editor_header() {
-		?>
-		<p class="updated fade">
-			<?php
-			$post_title = esc_html( $this->job_instance->get_title() );
-			$tm_post_link = '<a id="icl_tm_editor_orig_link" href="' . $this->job_instance->get_url( true ) . '">' . $post_title . '</a>';
-			printf( __( 'You are translating %s from %s to %s.', 'wpml-translation-management' ),
-			        $tm_post_link,
-			        $this->job_instance->get_source_language_code( true ),
-			        $this->job_instance->get_language_code( true ) );
-			echo '<span style="display: block;margin-top: 20px">' . $this->editor_object->render_copy_from_original_link() . '</span>';
-			?>
-		</p>
-		<?php
-	}
-
-	private function render_translator_note() {
-		if ( $translators_note = get_post_meta( $this->job_instance->get_original_element_id(),
-		                                        '_icl_translator_note',
-		                                        true )
-		) {
-			?>
-			<i><?php _e( 'Note for translator', 'wpml-translation-management' ); ?></i>
-			<br/>
-			<div class="icl_cyan_box">
-				<?php echo $translators_note ?>
-			</div>
-			<?php
-		}
-	}
-
-	private function is_current_element_a_term() {
-		return preg_match( '/^t_/', $this->current_element->field_type );
-	}
-
-	/**
-	 * @param $current_element
-	 *
-	 * @return mixed
-	 */
-	private function set_current_element( $current_element ) {
-		$this->current_element_index = ( ! isset( $this->current_element_index ) || $this->current_element_index < 1 ) ? 1 : $this->current_element_index + 1;
-
-		return $this->current_element = $current_element;
-	}
-
-	/**
-	 * @return bool
-	 */
-	private function is_current_element_a_custom_field() {
-		return ( 0 === strpos( $this->current_element->field_type, 'field-' ) );
-	}
-
-	/**
-	 *
-	 */
-	private function render_translation_element() {
-		?>
-		<div class="metabox-holder" id="icl-translation-job-elements-<?php echo $this->current_element_index ?>">
-			<div class="postbox-container icl-tj-postbox-container-<?php echo $this->current_element->field_type ?>">
-				<div class="meta-box-sortables ui-sortable" id="icl-translation-job-sortables-<?php echo $this->current_element_index ?>">
-					<div class="postbox" id="icl-translation-job-element-<?php echo $this->current_element_index ?>">
-						<?php echo
-
-						$this->editor_object->get_click_to_toggle_html();
-						$this->init_current_field_attributes();
-
-						echo $this->editor_object->get_post_box_header( $this->current_element_field_type );
-						?>
-						<div class="inside">
-							<?php
-							$this->render_current_field_description();
-
-							$this->init_current_element_content();
-
-							echo $this->editor_object->get_translated_content_paragraph( $this->current_element->field_type, true );
-
-							$this->render_current_element_field();
-
-							echo $this->editor_object->get_finished_checkbox_html( $this->current_element->field_finished, $this->current_element->field_type );
-							?>
-							<br/>
-							<?php
-							echo $this->editor_object->get_original_content_paragraph();
-
-							$this->render_current_element_field_original_content();
-							?>
-							<input type="hidden" name="fields[<?php echo esc_attr( $this->current_element->field_type ) ?>][format]" value="<?php echo $this->current_element->field_format ?>"/>
-							<input type="hidden" name="fields[<?php echo esc_attr( $this->current_element->field_type ) ?>][tid]" value="<?php echo $this->current_element->tid ?>"/>
-							<?php
-							$this->render_current_element_diff();
-							?>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	<?php
-	}
-
-	private function init_current_field_attributes() {
-		// allow custom field names to be filtered
-		if ( $this->is_external_element() ) {
-			// Get human readable string Title and editor style from the WPML string package.
-			$this->current_element_field_type  = apply_filters( 'wpml_tm_editor_string_name', $this->current_element->field_type, $this->original_post );
-			$this->current_element_field_style = $this->current_element->field_type;
-			$this->current_element_field_style = apply_filters( 'wpml_tm_editor_string_style', $this->current_element_field_style, $this->current_element->field_type, $this->original_post );
-		} else if ( $this->is_current_element_a_custom_field() ) {
-			$custom_field_data                 = $this->editor_object->custom_field_data( $this->current_element );
-			$this->current_element_field_type  = $custom_field_data[ 0 ];
-			$this->current_element_field_style = $custom_field_data[ 1 ];
-			$this->current_element             = $custom_field_data[ 2 ];
-		} else {
-			$this->current_element_field_type  = $this->current_element->field_type;
-			$this->current_element_field_style = false;
-		}
-	}
-
-	private function render_current_field_description() {
-		if ( $this->is_current_element_a_custom_field() ) {
-			$icl_editor_cf_description = apply_filters( 'icl_editor_cf_description', '', $this->current_element->field_type );
-			if ( $icl_editor_cf_description !== null ) {
-				echo '<p class="icl_tm_field_description">' . $icl_editor_cf_description . '</p>';
+	private function init_original_post() {
+		// we do not need the original document of the job here
+		// but the document with the same trid and in the $this->job->source_language_code
+		$this->all_translations = $this->sitepress->get_element_translations( $this->job->trid,
+			$this->job->original_post_type );
+		$this->original_post    = false;
+		foreach ( $this->all_translations as $t ) {
+			if ( $t->language_code === $this->job->source_language_code ) {
+				$this->original_post = $this->tm_instance->get_post( $t->element_id, $this->job->element_type_prefix );
+				//if this fails for some reason use the original doc from which the trid originated
+				break;
 			}
 		}
-	}
+		$this->original_post = $this->original_post
+			? $this->original_post
+			: $this->tm_instance->get_post( $this->job_instance->get_original_element_id(),
+				$this->job->element_type_prefix );
 
-	private function init_current_element_content() {
-		$this->current_element_content_original   = $this->tm_instance->decode_field_data( $this->current_element->field_data, $this->current_element->field_format );
-		$this->current_element_content_translated = $this->tm_instance->decode_field_data( $this->current_element->field_data_translated, $this->current_element->field_format );
-		if(!$this->current_element_content_translated) {
-			$post_fields                    = isset($_POST[ 'fields' ]) ? $_POST[ 'fields' ] : null;
-			$current_element_in_post_fields = $post_fields ? $post_fields[ $this->current_element->field_type ] : null;
-			if ( $current_element_in_post_fields && $current_element_in_post_fields[ 'tid' ] == $this->current_element->tid ) {
-				$this->current_element_content_translated = $current_element_in_post_fields[ 'data' ];
-			}
+		if ( isset( $this->all_translations[ $this->job->language_code ] ) ) {
+			$post_status        = new WPML_Post_Status( $this->wpdb, $this->sitepress->get_wp_api() );
+			$this->is_duplicate = $post_status->is_duplicate( $this->all_translations[ $this->job->language_code ]->element_id );
 		}
+
+		return $this->original_post;
 	}
 
-	private function render_current_element_field_body() {
-		?>
-		<div id="poststuff">
-			<?php
-			$settings = array(
-				'media_buttons' => false,
-				'textarea_name' => 'fields[' . strtolower( $this->current_element->field_type ) . '][data]',
-				'textarea_rows' => 20,
-				'editor_css'    => $this->rtl_translation ? ' <style type="text/css">.wp-editor-container textarea.wp-editor-area{direction:rtl;}</style>' : ''
-			);
-			$this->render_wp_editor( $settings );
-			?>
-		</div>
-	<?php
+	private function init_editor_object() {
+		global $wpdb;
+
+		$this->editor_object = new WPML_Translation_Editor( $this->sitepress,
+			$wpdb,
+			$this->job_instance );
 	}
 
-	private function render_current_element_field_textarea() {
-		?>
-		<textarea title="<?php echo sanitize_title( $this->current_element->field_type ) ?>"
-		          id="<?php echo sanitize_title( $this->current_element->field_type ) ?>"
-		          style="width:100%;"
-		          rows="4"
-		          name="fields[<?php echo esc_attr( $this->current_element->field_type ) ?>][data]"<?php
-		echo $this->rtl_translation_attribute; ?>><?php echo esc_html( $this->current_element_content_translated ); ?></textarea>
+	private function output_model() {
 
-	<?php
-	}
-
-	private function render_current_element_field_wysiwyg() {
-		$settings = array(
-			'media_buttons' => false,
-			'textarea_name' => 'fields[' . strtolower( $this->current_element->field_type ) . '][data]',
-			'textarea_rows' => 4
+		$model = array(
+			'requires_translation_complete_for_each_field' => true,
+			'hide_empty_fields'                            => true,
+			'translation_is_complete'                      => $this->job->status == ICL_TM_COMPLETE,
+			'show_media_button'                            => false,
+			'is_duplicate'                                 => $this->is_duplicate
 		);
-		$this->render_wp_editor( $settings );
-	}
 
-	private function render_current_element_field_single_line() {
-		?>
-		<input title="<?php echo sanitize_title( $this->current_element->field_type ) ?>"
-		       id="<?php echo sanitize_title( $this->current_element->field_type ) ?>"
-		       type="text"
-		       name="fields[<?php echo esc_attr( $this->current_element->field_type ) ?>][data]"
-		       value="<?php
-		       echo esc_attr( $this->current_element_content_translated ); ?>"<?php echo $this->rtl_translation_attribute; ?> />
-	<?php
-	}
-
-	private function render_wp_editor( $settings ) {
-		wp_editor( $this->current_element_content_translated, $this->current_element->field_type, $settings );
-	}
-
-	private function render_current_element_field_original_body() {
-		?>
-		<div class="icl_single visual"<?php echo $this->rtl_original_attribute_object; ?>>
-			<?php
-			$settings = array(
-				'media_buttons' => false,
-				'textarea_name' => 'fields[' . strtolower( $this->current_element->field_type ) . '][original]',
-				'textarea_rows' => 20,
-				'editor_css'    => $this->rtl_translation ? ' <style type="text/css">.wp-editor-container textarea.wp-editor-area{direction:rtl;}</style>' : ''
-			);
-			wp_editor( $this->current_element_content_original, 'original_' . strtolower( $this->current_element->field_type ), $settings );
-			?>
-			<br clear="all"/></div>
-	<?php
-	}
-
-	private function render_current_element_field_original_single_line() {
-		?>
-		<div class="icl_single"<?php if ( $this->rtl_original ) {
-			echo ' dir="rtl" style="text-align:right;"';
+		if ( isset( $_GET['return_url'] ) ) {
+			$model['return_url'] = filter_var( $_GET['return_url'], FILTER_SANITIZE_URL );
 		} else {
-			echo ' dir="ltr" style="text-align:left;"';
-		} ?>><span style="white-space:pre-wrap;" id="icl_tm_original_<?php echo sanitize_title( $this->current_element->field_type ) ?>"><?php echo esc_html( $this->current_element_content_original ) ?></span><br clear="all"/>
+			$model['return_url'] = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php';
+		}
+
+		$languages          = new WPML_Translation_Editor_Languages( $this->sitepress, $this->job );
+		$model['languages'] = $languages->get_model();
+
+		$header          = new WPML_Translation_Editor_Header( $this->job_instance );
+		$model['header'] = $header->get_model();
+
+		$model['note'] = $this->sitepress->get_wp_api()->get_post_meta( $this->job_instance->get_original_element_id(),
+			'_icl_translator_note',
+			true );
+
+		$this->fields             = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
+		$this->fields             = $this->add_titles_and_adjust_styles( $this->fields );
+		$this->fields             = $this->add_rtl_attribues( $this->fields );
+		$model['fields']          = $this->fields;
+		$model['layout']          = $this->job_layout->run( $model['fields'], $this->tm_instance );
+		$model['rtl_original']    = $this->rtl_original;
+		$model['rtl_translation'] = $this->rtl_translation;
+
+		$model = $this->filter_the_model( $model );
+		?>
+		<script type="text/javascript">
+			var WpmlTmEditorModel = <?php echo json_encode( $model ); ?>;
+		</script>
+	<?php
+	}
+
+	private function output_wysiwyg_editors() {
+		echo '<div style="display: none">';
+
+		foreach ( $this->fields as $field ) {
+			if ( $field['field_style'] == 2 ) {
+				$this->editor_object->output_editors( $field );
+			}
+		}
+
+		echo '</div>';
+	}
+
+	private function output_copy_all_dialog() {
+		?>
+		<div id="wpml-translation-editor-copy-all-dialog" class="wpml-dialog" style="display:none"
+		     title="<?php echo __( 'Copy all fields from original', 'wpml-translation-management' ); ?>">
+			<p class="wpml-dialog-cols-icon">
+				<i class="otgs-ico-copy wpml-dialog-icon-xl"></i>
+			</p>
+
+			<div class="wpml-dialog-cols-content">
+				<p>
+					<strong><?php _e( 'Some fields in translation are already filled!', 'wpml-translation-management' ); ?></strong>
+					<br/>
+					<?php _e( 'You have two ways to copy content from the original language:', 'wpml-translation-management' ); ?>
+				</p>
+				<ul>
+					<li><?php _e( 'copy to empty fields only', 'wpml-translation-management' ); ?></li>
+					<li><?php _e( 'copy and overwrite all fields', 'wpml-translation-management' ); ?></li>
+				</ul>
+			</div>
+
+			<div class="wpml-dialog-footer">
+				<div class="alignleft">
+					<button
+						class="cancel wpml-dialog-close-button js-copy-cancel"><?php echo __( 'Cancel', 'wpml-translation-management' ); ?></button>
+				</div>
+				<div class="alignright">
+					<button
+						class="button-secondary js-copy-not-translated"><?php echo __( 'Copy to empty fields only', 'wpml-translation-management' ); ?></button>
+					<button
+						class="button-secondary js-copy-overwrite"><?php echo __( 'Copy & Overwrite all fields', 'wpml-translation-management' ); ?></button>
+				</div>
+			</div>
+
 		</div>
 	<?php
 	}
 
-	private function render_current_element_field_original() {
-		if ( $this->current_element->field_type === 'body' || $this->current_element_field_style == 2 ) {
-			$this->render_current_element_field_original_body();
-		} else {
-			$this->render_current_element_field_original_single_line();
-		}
-	}
-
-	private function render_current_element_field() {
-		if ( $this->current_element->field_type == 'body' ) {
-			$this->render_current_element_field_body();
-		} elseif ( ( $this->is_current_element_a_custom_field() || $this->original_post ) && $this->current_element_field_style == 1 ) {
-			$this->render_current_element_field_textarea();
-			// CASE 4 - wysiwyg ***********************
-		} elseif ( ( $this->is_current_element_a_custom_field() || $this->original_post ) && $this->current_element_field_style == 2 ) {
-			$this->render_current_element_field_wysiwyg();
-		} else {
-			$this->render_current_element_field_single_line();
-		}
-	}
-
-	private function render_current_element_field_original_content() {
+	private function output_edit_independently_dialog() {
 		?>
-		<div class="icl-tj-original<?php echo $this->is_current_element_a_custom_field() ? ' icl-tj-original-cf' : ''; ?>">
-			<?php
-			$this->render_current_element_field_original();
-			?>
+		<div id="wpml-translation-editor-edit-independently-dialog" class="wpml-dialog" style="display:none"
+		     title="<?php echo __( 'Edit independently', 'wpml-translation-management' ); ?>">
+			<p class="wpml-dialog-cols-icon">
+				<i class="otgs-ico-unlink wpml-dialog-icon-xl"></i>
+			</p>
+
+			<div class="wpml-dialog-cols-content">
+				<p><?php esc_html_e( 'This document is a duplicate of:', 'wpml-translation-management' ); ?>
+					<span class="wpml-duplicated-post-title">
+							<img class="wpml-title-flag"
+							     src="<?php echo $this->sitepress->get_flag_url( $this->job->source_language_code ); ?>">
+						<?php echo esc_html( $this->job_instance->get_title() ); ?>
+						</span>
+				</p>
+
+				<p>
+					<?php echo esc_html( sprintf( __( 'WPML will no longer synchronize this %s with the original content.', 'wpml-translation-management' ), $this->job_instance->get_type_title() ) ); ?>
+				</p>
+			</div>
+
+			<div class="wpml-dialog-footer">
+				<div class="alignleft">
+					<button
+						class="cancel wpml-dialog-close-button js-edit-independently-cancel"><?php echo __( 'Cancel', 'wpml-translation-management' ); ?></button>
+				</div>
+				<div class="alignright">
+					<button
+						class="button-secondary js-edit-independently"><?php echo __( 'Edit independently', 'wpml-translation-management' ); ?></button>
+				</div>
+			</div>
 		</div>
 	<?php
 	}
 
-	private function render_current_element_diff() {
-		if ( ! $this->current_element->field_finished && ! empty( $this->job->prev_version ) ) {
-			$prev_value = '';
-			foreach ( $this->job->prev_version->elements as $pel ) {
-				if ( $this->current_element->field_type == $pel->field_type ) {
-					$prev_value = $this->tm_instance->decode_field_data( $pel->field_data, $pel->field_format );
+	private function output_editor_form() {
+		?>
+		<form id="icl_tm_editor" method="post" action="">
+			<input type="hidden" name="job_post_type" value="<?php echo esc_attr( $this->job->original_post_type ) ?>"/>
+			<input type="hidden" name="job_post_id" value="<?php echo esc_attr( $this->job->original_doc_id ) ?>"/>
+			<input type="hidden" name="job_id" value="<?php echo esc_attr( $this->job_instance->get_id() ) ?>"/>
+
+			<div id="wpml-translation-editor-wrapper"></div>
+		</form>
+	<?php
+	}
+
+	private function add_titles_and_adjust_styles( $fields ) {
+		foreach ( $fields as &$field ) {
+			$field['title'] = $field['field_type'];
+			if ( $this->is_external_element() ) {
+				// Get human readable string Title and editor style from the WPML string package.
+				$field['title']       = apply_filters( 'wpml_tm_editor_string_name', $field['field_type'], $this->original_post );
+				$field['field_style'] = (string) apply_filters( 'wpml_tm_editor_string_style', $field['field_style'], $field['field_type'], $this->original_post );
+			} else if ( $this->is_a_custom_field( $field ) ) {
+				$custom_field_data    = $this->custom_field_data( (object) $field );
+				$field                = (array) $custom_field_data[2];
+				$field['title']       = $custom_field_data[0];
+				$field['field_style'] = (string) $custom_field_data[1];
+			} else if ( $this->is_a_term( $field ) ) {
+				$field['title'] = '';
+			} else {
+				switch ( $field['field_type'] ) {
+					case 'title':
+						$field['title'] = __( 'Title', 'wpml-translation-management' );
+						break;
+
+					case 'body':
+						$field['title'] = __( 'Body', 'wpml-translation-management' );
+						break;
+
+					case 'excerpt':
+						$field['title']       = __( 'Excerpt', 'wpml-translation-management' );
+						$field['field_style'] = '1';
+						break;
 				}
 			}
-			if ( $this->current_element->field_format != 'csv_base64' ) {
-				$diff = wp_text_diff( $prev_value, $this->tm_instance->decode_field_data( $this->current_element->field_data, $this->current_element->field_format ) );
-			}
-			if ( ! empty( $diff ) ) {
-				?>
-				<div class="wpml_diff_wrapper">
-					<p><a href="#" class="wpml_diff_toggle"><?php
-							_e( 'Show Changes', 'sitepress' ); ?></a></p>
-
-					<div class="wpml_diff">
-						<?php echo $diff ?>
-					</div>
-				</div>
-			<?php
-			}
 		}
+
+		return $fields;
+	}
+
+	private function add_rtl_attribues( $fields ) {
+		foreach ( $fields as &$field ) {
+			$field['original_direction']    = $this->rtl_original ? 'dir="rtl"' : 'dir="ltr"';
+			$field['translation_direction'] = $this->rtl_translation ? 'dir="rtl"' : 'dir="ltr"';
+		}
+
+		return $fields;
+	}
+
+	private function filter_the_model( $model ) {
+		$job_details = array(
+			'job_type' => $this->job->original_post_type,
+			'job_id'   => $this->job->original_doc_id,
+			'target'   => $model['languages']['target']
+		);
+		$job         = apply_filters( 'wpml-translation-editor-fetch-job', null, $job_details );
+		if ( $job ) {
+			$model['requires_translation_complete_for_each_field'] = $job->requires_translation_complete_for_each_field();
+			$model['hide_empty_fields']                            = $job->is_hide_empty_fields();
+			$model['show_media_button']                            = $job->show_media_button();
+
+			$model['fields'] = $this->add_rtl_attribues( $job->get_all_fields() );
+			$this->fields    = $model['fields'];
+
+			$model['layout'] = $job->get_layout_of_fields();
+		}
+
+		return $model;
+	}
+
+	private function is_external_element() {
+
+		return $this->tm_instance->is_external_type( $this->job->element_type_prefix );
+	}
+
+	private function is_a_custom_field( $field ) {
+		return ( 0 === strpos( $field['field_type'], 'field-' ) );
 	}
 
 	/**
-	 * @param $current_element
+	 * Applies filters to a custom field job element.
+	 * Custom fields that were named with numeric suffixes are stripped of these suffixes.
+	 *
+	 * @param object $element
+	 *
+	 * @return array
 	 */
-	private function render_element( $current_element ) {
-		$this->set_current_element( $current_element );
+	private function custom_field_data( $element ) {
+		$unfiltered_type    = WPML_TM_Field_Type_Sanitizer::sanitize( $element->field_type );
+		$element_field_type = $unfiltered_type;
+		/**
+		 * @deprecated Use `wpml_editor_custom_field_name` filter instead
+		 * @since 3.2
+		 */
+		$element_field_type = apply_filters( 'icl_editor_cf_name',
+			$element_field_type );
+		$element_field_type = apply_filters( 'wpml_editor_custom_field_name',
+			$element_field_type );
 
-		if ( $this->current_element->field_data ) {
+		$element_field_style = 0;
+		/**
+		 * @deprecated Use `wpml_editor_custom_field_style` filter instead
+		 * @since 3.2
+		 */
+		$element_field_style = apply_filters( 'icl_editor_cf_style',
+			$element_field_style,
+			$unfiltered_type );
+		$element_field_style = apply_filters( 'wpml_editor_custom_field_style',
+			$element_field_style,
+			$unfiltered_type );
 
-			if ( $this->is_current_element_a_term() ) {
-				$this->editor_object->add_term( $this->current_element );
-			} else {
-				if ( ! $this->current_element->field_finished ) {
-					$this->all_translations_finished = false;
-				}
-				$this->render_translation_element();
-			}
-		}
+		$element = apply_filters( 'wpml_editor_cf_to_display', $element,
+			$this->job_instance );
+
+		$settings            = new WPML_Custom_Field_Editor_Settings( $unfiltered_type, $this->tm_instance );
+		$element_field_type  = $settings->filter_name( $element_field_type );
+		$element_field_style = $settings->filter_style( $element_field_style );
+
+		return array( $element_field_type, $element_field_style, $element );
 	}
 
-	private function render_elements() {
-		$elements         = isset( $this->job->elements ) ? $this->job->elements : array();
-		$ordered_elements = array();
-
-		foreach ( array( 'title', 'body' ) as $type ) {
-			foreach ( $elements as $key => $element ) {
-				if ( $element->field_type === $type ) {
-					$ordered_elements[] = $element;
-					unset( $elements[ $key ] );
-				}
-			}
-		}
-		$ordered_elements = array_merge( $ordered_elements, $elements );
-
-		foreach ( $ordered_elements as $current_element ) {
-			$this->render_element( $current_element );
-		}
-	}
-
-	private function render_elements_content() {
-		?>
-		<div id="dashboard-widgets-wrap">
-			<?php
-			$this->all_translations_finished = true;
-			$this->render_elements();
-			echo $this->editor_object->render_term_metaboxes();
-			?>
-		</div>
-	<?php
+	private function is_a_term( $field ) {
+		return preg_match( '/^t_/', $field['field_type'] );
 	}
 }

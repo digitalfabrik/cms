@@ -14,6 +14,14 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 		$this->tm_records = &$tm_records;
 	}
 
+	/**
+	 * @return WPML_TM_Records
+	 */
+	public function &tm_records() {
+
+		return $this->tm_records;
+	}
+
 	public function init_hooks(){
 		add_filter( 'wpml_translation_jobs', array(
 			$this,
@@ -108,8 +116,13 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 			: 0;
 	}
 
+	public function string_job_by_translation_id( $string_translation_id ) {
+		return new WPML_String_Translation_Job( $string_translation_id );
+	}
+
 	public function job_id_by_trid_and_lang( $trid, $target_language_code ) {
-		global $iclTranslationManagement;
+		global /** @var TranslationManagement $iclTranslationManagement */
+		$iclTranslationManagement;
 
 		return $iclTranslationManagement->get_translation_job_id( $trid, $target_language_code );
 	}

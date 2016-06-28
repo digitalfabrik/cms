@@ -189,9 +189,7 @@ function setup_xliff_frontend() {
 
 	$job_factory    = wpml_tm_load_job_factory();
 	$xliff_frontend = new WPML_TM_Xliff_Frontend( $job_factory, $sitepress );
-	add_action(
-		'init', array( $xliff_frontend, 'init' ),
-		( isset( $_POST['xliff_upload'] ) || ( isset( $_GET['wpml_xliff_action'] ) && $_GET['wpml_xliff_action'] === 'download' ) ) ? 1501 : 10 );
+	add_action( 'init', array( $xliff_frontend, 'init' ), $xliff_frontend->get_init_priority() );
 
 	return $xliff_frontend;
 }

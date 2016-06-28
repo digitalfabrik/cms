@@ -78,6 +78,11 @@ class WPML_TM_Mail_Notification extends WPML_WPDB_And_SP_User {
 					}
 					$body_to_send .= $footer;
 					$attachments  = isset( $content['attachment'] ) ? $content['attachment'] : array();
+					$attachments  = apply_filters( 'wpml_new_job_notification_attachments', $attachments );
+
+					/**
+					 * @deprecated Use 'wpml_new_job_notification_attachments' instead
+					 */
 					$attachments  = apply_filters( 'WPML_new_job_notification_attachments', $attachments );
 					$this->sitepress->get_wp_api()->wp_mail( $to, $subject, $body_to_send, '', $attachments );
 				}
@@ -259,6 +264,11 @@ class WPML_TM_Mail_Notification extends WPML_WPDB_And_SP_User {
 			$edit_url
 		);
 		$mail['type'] = 'translator';
+		$mail         = apply_filters( 'wpml_new_job_notification', $mail, $job->get_id() );
+
+		/**
+		 * @deprecated Use 'wpml_new_job_notification' instead
+		 */
 		$mail         = apply_filters( 'WPML_new_job_notification', $mail, $job->get_id() );
 		$this->enqueue_mail( $mail );
 		$this->sitepress->switch_locale();

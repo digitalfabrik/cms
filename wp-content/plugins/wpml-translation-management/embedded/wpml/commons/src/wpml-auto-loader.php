@@ -157,6 +157,7 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 				if ( is_file( $possible_full_path ) ) {
 					$file = $possible_full_path;
 				} else {
+					$current_dir = $this->escape_path( $current_dir );
 					if ( ! isset( $this->glob_cache[ $current_dir ] ) ) {
 						$this->glob_cache[ $current_dir ] = glob( $current_dir . '/*', GLOB_ONLYDIR );
 						$this->glob_cache[ $current_dir ] = false === $this->glob_cache[ $current_dir ] ? array() : $this->glob_cache[ $current_dir ];
@@ -208,6 +209,15 @@ if ( ! class_exists( 'WPML_Auto_Loader' ) ) {
 		 */
 		private function is_base_dir_registered( $base_dir ) {
 			return ! in_array( $base_dir, $this->base_dirs, true );
+		}
+
+		/**
+		 * @param string $current_dir
+		 *
+		 * @return string
+		 */
+		private function escape_path( $current_dir ) {
+			return preg_replace( '/([\[\]<>?|+;="])/', '\\\\$1', $current_dir );
 		}
 	}
 }

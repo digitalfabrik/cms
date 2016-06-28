@@ -38,6 +38,14 @@ class WPML_External_Translation_Job extends WPML_Element_Translation_Job {
 			: $this->original_del_text;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function get_type_title() {
+		$original_element = $this->get_original_document();
+		return $original_element->kind;
+	}
+
 	protected function load_resultant_element_id(){
 
 		return 0;
