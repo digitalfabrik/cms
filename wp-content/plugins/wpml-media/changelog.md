@@ -1,3 +1,20 @@
+# 2.1.22
+
+## Fixes
+* [wpmlcore-3030] Class auto loading is not compatible with version of PHP older than 5.3
+
+## Performances
+* [wpmlga-133] Improved class autoloading by using class mapping, instead of file system lookup
+
+#2.1.21
+
+##Fixes
+* [wpmlcore-2897] Fixed duplication of featured image where the flag "Duplicate featured image to translations" was ignored
+
+##Performances
+* [wpmlmedia-90] Fixed constant duplication of media when editing the source page
+* [wpmlcore-2988] Removed unneeded dependencies checks in admin pages: this now runs only once and later only when activating/deactivating plugins
+
 #2.1.20
 
 ##Fixes

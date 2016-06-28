@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Class WPML_Media
+ */
 class WPML_Media
 {
 	private static $settings;
@@ -17,8 +20,7 @@ class WPML_Media
 	 */
 	private $sitepress;
 
-	function __construct( $ext = false, &$sitepress, &$wpdb )
-	{
+	function __construct( $ext = false, &$sitepress, &$wpdb ) {
 		$this->sitepress = &$sitepress;
 		$this->wpdb      = &$wpdb;
 		add_action( 'wpml_loaded', array( $this, 'loaded' ), 2 );
@@ -232,34 +234,29 @@ class WPML_Media
 		global $post, $sitepress, $pagenow;
 
 		//Removes the language metabox on media
-		if ( isset( $_POST[ 'wp-preview' ] ) && $_POST[ 'wp-preview' ] == 'dopreview' || is_preview() ) {
+		if ( ( isset( $_POST['wp-preview'] ) && $_POST['wp-preview'] === 'dopreview' ) || is_preview() ) {
 			$is_preview = true;
 		} else {
 			$is_preview = false;
 		}
 
 		//If not a media admin page, call the default WPML post_edit_language_options() method
-		if ( !( $pagenow == 'upload.php' || $pagenow == 'media-upload.php' || is_attachment() || $is_preview || ( isset( $post ) && $post->post_type == 'attachment' ) ) ) {
+		if ( ! ( $pagenow === 'upload.php' || $pagenow === 'media-upload.php' || $is_preview || ( isset( $post ) && $post->post_type === 'attachment' ) || is_attachment() ) ) {
 			$sitepress->post_edit_language_options();
 		}
 
 	}
 
-	function __destruct()
-	{
-		return;
-	}
-
 	function first_time_notice()
 	{
 		?>
-		<div class="error message">
+		<div class="error message otgs-is-dismissible">
 			<p>
 				<?php _e( 'WPML Media Translation needs to set languages to existing media in your site.', 'wpml-media' ) ?>
 				<a href="<?php echo admin_url( 'admin.php?page=wpml-media' ) ?>" class="button-secondary"><?php _e( 'Set media languages', 'wpml-media' ) ?></a>
 
-				<a id="wpml_media_dismiss_1" style="float: right;" href="#"
-				   onclick="jQuery.ajax({url:ajaxurl,method:'POST',data:{action:'wpml_media_dismiss_starting_help'},success:function(){jQuery('#wpml_media_dismiss_1').closest('.message').fadeOut()}}); return false;"><?php _e( "Dismiss", 'wpml-media' ) ?></a>
+				<span id="wpml_media_dismiss_1" class="notice-dismiss" 
+					  onclick="jQuery.ajax({url:ajaxurl,method:'POST',data:{action:'wpml_media_dismiss_starting_help'},success:function(){jQuery('#wpml_media_dismiss_1').closest('.message').fadeOut()}}); return false;"><span class="screen-reader-text"><?php _e( "Dismiss", 'wpml-media' ) ?></span></span>
 			</p>
 		</div>
 	<?php
@@ -849,59 +846,40 @@ class WPML_Media
 		if ( $source_lang == null || $source_lang == "" ) {
 			// This is the original see if we should copy to translations
 
-			$duplicate = get_post_meta( $pidd, '_wpml_media_duplicate', true );
-			$featured  = get_post_meta( $pidd, '_wpml_media_featured', true );
-			if ( $duplicate || $featured ) {
+            if ( $this->is_media_marked_to_duplication( $pidd )
+                 || $this->is_feature_image_marked_to_duplication( $pidd )
+            ) {
 				$translations_prepared = $wpdb->prepare("SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid = %d", array($icl_trid));
 				$translations = $wpdb->get_col( $translations_prepared );
 
 				foreach ( $translations as $element_id ) {
 					if ( $element_id && $element_id != $pidd ) {
-						$duplicate_t = $duplicate;
-						if ( $duplicate_t ) {
-							// See if the translation is marked for duplication
-							$duplicate_t = get_post_meta( $element_id, '_wpml_media_duplicate', true );
-						}
 
 						$lang_prepared = $wpdb->prepare( "SELECT language_code FROM {$wpdb->prefix}icl_translations WHERE element_id = %d AND trid = %d", array($element_id, $icl_trid ));
 						$lang = $wpdb->get_var( $lang_prepared );
-						if ( $duplicate_t || $duplicate_t == '' ) {
+
+						if ( $this->is_media_marked_to_duplication( $element_id ) ) {
 							$source_attachments_prepared = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", array($pidd, 'attachment' ));
 							$source_attachments = $wpdb->get_col( $source_attachments_prepared );
 							$attachments_prepared = $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_parent = %d AND post_type = %s", array($element_id, 'attachment' ));
 							$attachments        = $wpdb->get_col( $attachments_prepared );
 
 							foreach ( $source_attachments as $source_attachment_id ) {
-								$found = false;
 								foreach ( $attachments as $attachment_id ) {
 									$translation_attachment_id = icl_object_id( $attachment_id, 'attachment', false, $lang );
-									if ( $translation_attachment_id ) {
-										//If attachment has no parent, treat it as not found
-										$parent_post = get_post( $translation_attachment_id );
-										if ( !$parent_post ) {
-											$found = true;
-										}
-										break;
+									if ( ! $translation_attachment_id ) {
+										$this->create_duplicate_attachment_not_static( $source_attachment_id, $element_id, $lang );
 									}
-								}
-
-								if ( !$found ) {
-									self::create_duplicate_attachment( $source_attachment_id, $element_id, $lang );
 								}
 							}
 						}
 
-						$featured_t = $featured;
-						if ( $featured_t ) {
-							// See if the translation is marked for duplication
-							$featured_t = get_post_meta( $element_id, '_wpml_media_featured', true );
-						}
-						if ( $featured_t || $featured_t == '' ) {
+						if ( $this->is_feature_image_marked_to_duplication( $element_id ) ) {
 							$thumbnail_id = get_post_meta( $pidd, '_thumbnail_id', true );
 							if ( $thumbnail_id ) {
 								$t_thumbnail_id = icl_object_id( $thumbnail_id, 'attachment', false, $lang );
 								if ( $t_thumbnail_id == null ) {
-									$dup_att_id     = self::create_duplicate_attachment( $thumbnail_id, $element_id, $lang );
+									$dup_att_id     = $this->create_duplicate_attachment_not_static( $thumbnail_id, $element_id, $lang );
 									$t_thumbnail_id = $dup_att_id;
 								}
 
@@ -988,6 +966,39 @@ class WPML_Media
 	}
 
 	/**
+	 * @param $source_attachment_id
+	 * @param $pidd
+	 * @param $lang
+	 *
+	 * @return int|null|WP_Error
+	 */
+	public function create_duplicate_attachment_not_static( $source_attachment_id, $pidd, $lang ) {
+		return self::create_duplicate_attachment( $source_attachment_id, $pidd, $lang );
+	}
+
+	/**
+	 * @param int $post_id
+	 *
+	 * @return bool
+	 */
+	private function is_media_marked_to_duplication( $post_id ) {
+		$t = get_post_meta( $post_id, '_wpml_media_duplicate', true );
+
+		return ! empty( $t );
+	}
+
+	/**
+	 * @param int $post_id
+	 *
+	 * @return bool
+	 */
+	private function is_feature_image_marked_to_duplication( $post_id ) {
+		$t = get_post_meta( $post_id, '_wpml_media_featured', true );
+		
+		return ! empty( $t );
+	}
+
+	/**
 	 * @param $pidd int
 	 * @param $post WP_Post
 	 */
@@ -1062,11 +1073,12 @@ class WPML_Media
 		if (
 			!$sitepress->is_translated_post_type( $post_type )
 			|| isset( $_POST[ 'autosave' ] )
-			|| ( isset( $_POST[ 'post_ID' ] ) && $_POST[ 'post_ID' ] != $pidd ) || ( isset( $_POST[ 'post_type' ] ) && $_POST[ 'post_type' ] == 'revision' )
-			|| $post_type == 'revision'
+			|| ( isset( $_POST[ 'post_ID' ] ) && $_POST[ 'post_ID' ] != $pidd )
+			|| ( isset( $_POST[ 'post_type' ] ) && $_POST[ 'post_type' ] === 'revision' )
+			|| $post_type === 'revision'
 			|| get_post_meta( $pidd, '_wp_trash_meta_status', true )
-			|| ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] == 'restore' )
-			|| $post_status == 'auto-draft'
+			|| ( isset( $_GET[ 'action' ] ) && $_GET[ 'action' ] === 'restore' )
+			|| $post_status === 'auto-draft'
 		) {
 			return;
 		}
@@ -1077,10 +1089,10 @@ class WPML_Media
 			$featured                = false;
 			if ( $content_defaults_option ) {
 				if ( isset( $_POST[ 'icl_duplicate_attachments' ] ) ) {
-					$duplicate = intval( $_POST[ 'icl_duplicate_attachments' ] );
+					$duplicate = (int) $_POST['icl_duplicate_attachments'];
 				}
 				if ( isset( $_POST[ 'icl_duplicate_featured_image' ] ) ) {
-					$featured = intval( $_POST[ 'icl_duplicate_featured_image' ] );
+					$featured = (int) $_POST['icl_duplicate_featured_image'];
 				}
 			}
 
@@ -1101,7 +1113,7 @@ class WPML_Media
 			// In some cases the sitepress cache doesn't get updated (e.g. when posts are created with wp_insert_post()
 			// Only in this case, the sitepress cache will be cleared so we can read the element language details
 			if ( !$language_details ) {
-				$sitepress->icl_translations_cache->clear();
+				$sitepress->get_translations_cache()->clear();
 				$language_details = $sitepress->get_element_language_details( $pidd, 'post_' . $post_type );
 			}
 			if ( $language_details ) {
