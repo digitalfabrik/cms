@@ -70,8 +70,7 @@ function cl_in_add_js() {
 			//window.alert( this.value );
 			if(this.value == 'ig-content-loader-instance') {
 				var data = {
-					'action': 'cl_in_instance_dropdown',
-					'whatever': 1234
+					'action': 'cl_in_blogs_dropdown'
 				};
 				jQuery.post(ajaxurl, data, function(response) {
 					//alert('Got this from the server: ' + response);
@@ -83,46 +82,64 @@ function cl_in_add_js() {
 				jQuery('#cl_in_metabox_article').remove()
 			}
 		});
-		jQuery("#cl_in_select_instance").on('change', function() {
-			alert(this.value);
+		jQuery(document).bind('DOMNodeInserted', function(e) {
+			jQuery("#cl_in_select_blog_id").on('change', function() {
+				var data = {
+					'action': 'cl_in_pages_dropdown',
+					'cl_in_post_language': '<?php echo ICL_LANGUAGE_CODE; ?>',
+					'cl_in_blog_id': this.value
+				};
+				//alert(this.value);
+				jQuery.post(ajaxurl, data, function(response) {
+					//alert('Got this from the server: ' + response);
+					jQuery('#cl_in_metabox_pages').html(response);
+					//alert(response);
+				});
+			});
 		});
 	});
+
 	</script> <?php
 }
 add_action( 'cl_add_js', 'cl_in_add_js' );
 
-function cl_in_instance_dropdown() {
+function cl_in_blogs_dropdown() {
 	global $wpdb;
 	// get all blogs / instances (augsburg, regensburg, etc)
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 	$all_blogs = $wpdb->get_results($query);
-	echo '<p id="cl_in_metabox_instance"><select style="width: 100%;" name="cl_in_select_instance"><option selected="selected">Bitte w&auml;hlen</option>';
+	echo '<p id="cl_in_metabox_instance"><p style="font-weight:bold;">Bitte Kommune ausw&auml;hlen</p><select style="width: 100%;" id="cl_in_select_blog_id" name="cl_in_select_blog_id"><option selected="selected">Bitte w&auml;hlen</option>';
 	foreach( $all_blogs as $blog ){
 		
 		$blog_name = get_blog_details( $blog->blog_id )->blogname;
-		echo "<option>$blog_name</option>";
+		echo "<option value='".$blog->blog_id."'>$blog_name</option>";
 	}
-	echo '</select></p><p id="cl_in_metabox_article"></p>';
+	echo '</select></p><p id="cl_in_metabox_pages"></p>';
 	//echo '<p id="cl-in-metabox">yay</p>';
 	exit;
 }
-add_action( 'wp_ajax_cl_in_instance_dropdown', 'cl_in_instance_dropdown' );
+add_action( 'wp_ajax_cl_in_blogs_dropdown', 'cl_in_blogs_dropdown' );
 
-function cl_in_post_dropdown() {
+function cl_in_pages_dropdown() {
 	$blog_id = $_POST['cl_in_blog_id'];
+	$language_code = $_POST['cl_in_post_language'];
+
 	// query all objects in db with meta_key = ig-content-loader-base
-	$results = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
+	//$results = "SELECT post_title FROM ".$wpdb->base_prefix.$blog_id."_posts p LEFT JOIN ".$wpdb->base_prefix.$blog_id."_icl_translations t ON p.ID = t.element_id WHERE p.post_type='page' AND p.post_status='publish' AND t.language_code='$language_code'";
 
-	$result = $wpdb->get_results($results);
-
-	foreach($result as $item) {
-		$parent_id = "".$item->post_id;
-		$meta_val = "".$item->meta_value;
-		$blog_name = get_blog_details($blog_id)->blogname;
-
-		do_action('cl_update_content', $parent_id, $meta_val, $blog_id, $blog_name);
+	//$result = $wpdb->get_results($results);
+	$original_blog_id = get_current_blog_id(); 
+	switch_to_blog( $blog_id ); 
+	//echo wp_list_pages ();
+	$pages = get_pages();
+	echo "<select>";
+	foreach ($pages as $page) {
+		echo "<option>".$page->post_title."</option>";
 	}
+	echo "</select>";
+	//switch_to_blog( $original_blog_id ); 
+	exit;
 }
-add_action( 'wp_ajax_cl_in_post_dropdown', 'cl_in_post_dropdown' );
+add_action( 'wp_ajax_cl_in_pages_dropdown', 'cl_in_pages_dropdown' );
 
 ?>
