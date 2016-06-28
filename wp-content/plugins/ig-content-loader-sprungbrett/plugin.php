@@ -18,16 +18,10 @@ function cl_sb_update_content($parent_id, $meta_value, $blog_id, $blog_name) {
 
     if($meta_value == "ig-content-loader-sprungbrett") {
         
-        $json = file_get_contents('http://localhost/json.txt');
+        $json = file_get_contents('https://www.sprungbrett-intowork.de/ajax/app-search-internships?location=augsburg');
         $json = json_decode($json, TRUE);
         $html = cl_sb_json_to_html($json, $blog_name);
         
-        $json2 = file_get_contents('http://localhost/json-testergebnis.txt');
-        $json2 = json_decode($json2, TRUE);
-        
-        $testcomp = $json2['results'][2]['company'];
-        echo $testcomp;
-//        var_dump("ok ".$testcomp2);
         cl_save_content( $parent_id, $html, $blog_id);
 
         return;  
@@ -44,21 +38,24 @@ add_action('cl_update_content','cl_sb_update_content', 10, 4);
  */
 function cl_sb_json_to_html($json, $blog_name) {
   
-    $html_job_count_text = '<div id="count_text_wrapper"><p id="praktika_count_text">Zeige <strong>'.count($json).'</strong>'.
+    $html_job_count_text = '<div id="count_text_wrapper"><p id="praktika_count_text">Zeige <strong>'.$json['total'].'</strong>'.
                            ' Praktika in <strong>'.$blog_name.'</strong></p></div>';
     $html_table_header = '<tr id="table_header"><th id="table_header_col1" >Bezeichnung / <span id="table_header_comp">Unternehmen</span></th><th id="table_header_trade">Ausbildung</th></tr>';
     $html_table_prefix = '<table id="job_table">';
     $html_table_suffix = '</table>';
 
-    
-    // generate job list and pick icon depending on json value
-    foreach($json as $jobitem) {
+
+    // generate job list and pick icon for apprenticeship depending on json value
+    foreach($json['results'] as $jobitem) {
         $htmlstring .= '<tr class="job_item">
-                        <td class="job_title"><b>'.$jobitem['title'].'</b><br><span class="job_company">'.$jobitem['description'].'</span></td>
-                        <td class="job_trade"><span class="job_trade_tick dashicons '.($jobitem['zip'] ? "dashicons-yes" :  "dashicons-no").'"></span></td></tr>';
+                        <td class="job_title"><a class="joblink" href="'.$jobitem['url'].'"><b>'.$jobitem['title'].'</b><br><span class="job_company">'.$jobitem['company'].'</span></td></a>
+                        <td class="job_trade"><span class="job_trade_tick dashicons '.($jobitem['apprenticeship'] ? "dashicons-yes" :  "dashicons-no").'"></span></td></tr>';
     }
     
+    // concatinate strings to create html table
     $htmlstring = $html_job_count_text.$html_table_prefix.$html_table_header.$htmlstring.$html_table_suffix;
+    
+//    $htmlstring = $html_job_count_text;
 
     return $htmlstring;
 }
@@ -144,6 +141,9 @@ echo '
             .job_trade_tick {
                 font-size:30px !important;
                 }
+            tr td a.joblink {
+                border-bottom: none;
+            }
         </style>
     ';
 }
