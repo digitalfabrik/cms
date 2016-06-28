@@ -69,6 +69,7 @@ function cl_in_add_js() {
 		jQuery("#cl_content_select").on('change', function() {
 			//window.alert( this.value );
 			if(this.value == 'ig-content-loader-instance') {
+				//window.alert("if")
 				var data = {
 					'action': 'cl_in_blogs_dropdown'
 				};
@@ -78,8 +79,9 @@ function cl_in_add_js() {
 					//alert(response);
 				});
 			} else {
-				jQuery('#cl_in_metabox_instance').remove()
-				jQuery('#cl_in_metabox_article').remove()
+				//window.alert("else")
+				jQuery("#div_cl_in_metabox_instance").html('')
+				jQuery("#div_cl_in_metabox_instance").remove()
 			}
 		});
 		jQuery(document).bind('DOMNodeInserted', function(e) {
@@ -96,6 +98,20 @@ function cl_in_add_js() {
 					//alert(response);
 				});
 			});
+			jQuery("#cl_in_select_post_id").on('change', function() {
+				var data = {
+					'action': 'cl_in_pages_dropdown',
+					'cl_in_post_language': '<?php echo ICL_LANGUAGE_CODE; ?>',
+					'cl_in_blog_id': this.value
+				};
+				//alert(this.value);
+				jQuery.post(ajaxurl, data, function(response) {
+					window.alert("post id")
+					//alert('Got this from the server: ' + response);
+					//jQuery('#cl_in_metabox_pages').html(response);
+					//alert(response);
+				});
+			});
 		});
 	});
 
@@ -108,13 +124,22 @@ function cl_in_blogs_dropdown() {
 	// get all blogs / instances (augsburg, regensburg, etc)
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 	$all_blogs = $wpdb->get_results($query);
-	echo '<p id="cl_in_metabox_instance"><p style="font-weight:bold;">Bitte Kommune ausw&auml;hlen</p><select style="width: 100%;" id="cl_in_select_blog_id" name="cl_in_select_blog_id"><option selected="selected">Bitte w&auml;hlen</option>';
-	foreach( $all_blogs as $blog ){
-		
-		$blog_name = get_blog_details( $blog->blog_id )->blogname;
-		echo "<option value='".$blog->blog_id."'>$blog_name</option>";
-	}
-	echo '</select></p><p id="cl_in_metabox_pages"></p>';
+	?>
+	<div id="div_cl_in_metabox_instance">
+	<p style="font-weight:bold;" id="cl_in_title">Bitte Kommune ausw&auml;hlen</p>
+	<select style="width: 100%;" id="cl_in_select_blog_id" name="cl_in_select_blog_id">
+		<option selected="selected" value="">Bitte w&auml;hlen</option>
+		<?php
+		foreach( $all_blogs as $blog ){
+			
+			$blog_name = get_blog_details( $blog->blog_id )->blogname;
+			echo "<option value='".$blog->blog_id."'>$blog_name</option>";
+		}
+		?>
+	</select>
+	<p id="cl_in_metabox_pages"></p>
+	</div>
+	<?php
 	//echo '<p id="cl-in-metabox">yay</p>';
 	exit;
 }
@@ -132,7 +157,7 @@ function cl_in_pages_dropdown() {
 	switch_to_blog( $blog_id ); 
 	//echo wp_list_pages ();
 	$pages = get_pages();
-	echo "<select>";
+	echo '<select id="cl_in_select_post_id" name="cl_in_select_post_id">';
 	foreach ($pages as $page) {
 		echo "<option value=\"".$page->ID."\">".$page->post_title."</option>";
 	}
