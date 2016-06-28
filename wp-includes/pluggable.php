@@ -541,7 +541,7 @@ function wp_mail( $to, $subject, $message, $headers = '', $attachments = array()
 		return $phpmailer->Send();
 	} catch ( phpmailerException $e ) {
 
-		$mail_error_data = compact( $to, $subject, $message, $headers, $attachments );
+		$mail_error_data = compact( 'to', 'subject', 'message', 'headers', 'attachments' );
 
 		/**
 		 * Fires after a phpmailerException is caught.
@@ -1041,18 +1041,14 @@ function auth_redirect() {
 		}
 	}
 
-	if ( is_user_admin() ) {
-		$scheme = 'logged_in';
-	} else {
-		/**
-		 * Filter the authentication redirect scheme.
-		 *
-		 * @since 2.9.0
-		 *
-		 * @param string $scheme Authentication redirect scheme. Default empty.
-		 */
-		$scheme = apply_filters( 'auth_redirect_scheme', '' );
-	}
+	/**
+	 * Filters the authentication redirect scheme.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param string $scheme Authentication redirect scheme. Default empty.
+	 */
+	$scheme = apply_filters( 'auth_redirect_scheme', '' );
 
 	if ( $user_id = wp_validate_auth_cookie( '',  $scheme) ) {
 		/**
