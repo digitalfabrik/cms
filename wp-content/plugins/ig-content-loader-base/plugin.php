@@ -65,23 +65,6 @@ function cl_create_metabox( $post ) {
 function cl_meta_box_html( $options, $radio_value ) {
 	global $post;
 ?>
-	<!--<script type="text/javascript" >
-	jQuery(document).ready(function($) {
-		jQuery("#cl_content_select").on('change', function() {
-			window.alert( this.value );
-			var data = {
-				'action': 'cl_dropdown',
-				'post_id': <?php echo $post->ID ?>
-			};
-			jQuery.post(ajaxurl, data, function(response) {
-				//alert('Got this from the server: ' + response);
-				//jQuery('#cl_content_select').html(response);
-				alert(response);
-			});
-		});
-	});
-
-	</script>-->
     <!-- Dropdown-select for foreign contents -->
     <p id="cl_metabox_plugin">
         <label style="font-weight:600" for="meta-select" class="cl-row-title">
@@ -107,6 +90,7 @@ function cl_meta_box_html( $options, $radio_value ) {
             </label>
         </div>
     </p>
+
     <div id="cl_metabox_extra"></div>
     <?php  
 }
@@ -118,13 +102,13 @@ function cl_meta_box_html( $options, $radio_value ) {
 *
 * @param int $post_id Post ID
 */
-function cl_save_meta_box($post_id = False) {
-	if( !isset( $post_id ) ) {
+function cl_save_meta_box($post_id) {
+	/*if( !isset( $post_id ) ) {
 		$post_id = $_POST['post_id'];
 		
 	}
 	echo $post_id;
-	exit;
+	exit;*/
 	// key for base-plugin in wp_postmeta
 	$meta_key = 'ig-content-loader-base';
     $meta_key_position = 'ig-content-loader-base-position';

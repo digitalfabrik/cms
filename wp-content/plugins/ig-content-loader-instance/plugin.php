@@ -69,7 +69,6 @@ function cl_in_add_js() {
 		jQuery("#cl_content_select").on('change', function() {
 			//window.alert( this.value );
 			if(this.value == 'ig-content-loader-instance') {
-				window.alert("asdf");
 				var data = {
 					'action': 'cl_in_blogs_dropdown'
 				};
