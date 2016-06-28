@@ -54,8 +54,6 @@ function cl_sb_json_to_html($json, $blog_name) {
     
     // concatinate strings to create html table
     $htmlstring = $html_job_count_text.$html_table_prefix.$html_table_header.$htmlstring.$html_table_suffix;
-    
-//    $htmlstring = $html_job_count_text;
 
     return $htmlstring;
 }
@@ -131,7 +129,7 @@ echo '
                 }
             .job_title {
                 width:100%;
-                margin-bottom: 1px; /* border fix */
+                margin-bottom: 0px; /* border fix */
                 border-bottom: 1px solid lightgray;
                 border-right: none;
                 }
