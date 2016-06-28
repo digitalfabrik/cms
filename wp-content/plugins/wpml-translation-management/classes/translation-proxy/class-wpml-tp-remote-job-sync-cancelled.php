@@ -19,11 +19,11 @@ class WPML_TP_Remote_Job_Sync_Cancelled extends WPML_TP_Remote_Job_Sync {
 	 * @param WPML_TP_Polling_Counts $counts count object to be updated
 	 */
 	protected function sync_action( &$counts ) {
-		if ( $this->pro_translation->xmlrpc_updated_job_status_with_log( array(
+		if ( $this->pro_translation->poll_updated_job_status_with_log( array(
 			$this->data['id'],
 			$this->data['cms_id'],
-			'cancelled',
-		), true )
+			'cancelled'
+		                                                                 ), true )
 		) {
 			$counts->cancel_job();
 		}

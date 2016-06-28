@@ -16,11 +16,11 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 	/**
 	 * WPML_TM_Translation_Status_Display constructor.
 	 *
-	 * @param wpdb                         $wpdb
-	 * @param SitePress                    $sitepress
-	 * @param WPML_Post_Status             $status_helper
+	 * @param wpdb $wpdb
+	 * @param SitePress $sitepress
+	 * @param WPML_Post_Status $status_helper
 	 * @param WPML_Translation_Job_Factory $job_factory
-	 * @param WPML_TM_API                  $tm_api
+	 * @param WPML_TM_API $tm_api
 	 */
 	public function __construct(
 		&$wpdb,
@@ -55,17 +55,16 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 
 	public function filter_status_icon( $icon, $post_id, $lang, $trid ) {
 		$this->maybe_load_stats( $trid );
+		$element_id  = $this->post_translations->get_element_id( $lang, $trid );
+		$source_lang = $this->post_translations->get_source_lang_code( $element_id );
 
-		if ( ( $this->is_remote( $trid, $lang )
-		       || $this->is_wrong_translator( $trid, $lang ) )
-		     && $this->is_in_progress( $trid, $lang )
-		) {
+		if ( $this->is_in_progress( $trid, $lang ) ) {
 			$icon = 'in-progress.png';
 		} elseif ( $this->is_in_basket( $trid, $lang )
-		           || ( ! $this->is_lang_pair_allowed( $lang ) && $this->post_translations->get_element_id( $lang, $trid ) )
+		           || ( ! $this->is_lang_pair_allowed( $lang, $source_lang ) && $element_id )
 		) {
 			$icon = 'edit_translation_disabled.png';
-		} elseif ( ! $this->is_lang_pair_allowed( $lang ) && ! $this->post_translations->get_element_id( $lang, $trid ) ) {
+		} elseif ( ! $this->is_lang_pair_allowed( $lang, $source_lang ) && ! $element_id ) {
 			$icon = 'add_translation_disabled.png';
 		}
 
@@ -89,6 +88,9 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 				'Cannot edit this item, because it is currently in the translation basket.',
 				'sitepress'
 			);
+		} elseif ( $this->is_lang_pair_allowed( $lang ) && $this->is_in_progress( $trid, $lang ) ) {
+			$language = $this->sitepress->get_language_details( $lang );
+			$text     = sprintf( __( 'Edit the %s translation', 'sitepress' ), $language['display_name'] );
 		}
 
 		return $text;
@@ -96,27 +98,29 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 
 	/**
 	 * @param string $link
-	 * @param int    $post_id
+	 * @param int $post_id
 	 * @param string $lang
-	 * @param int    $trid
+	 * @param int $trid
 	 *
 	 * @return string
 	 */
 	public function filter_status_link( $link, $post_id, $lang, $trid ) {
 		$translated_element_id = $this->post_translations->get_element_id( $lang,
 			$trid );
+		$source_lang = $this->post_translations->get_source_lang_code( $translated_element_id );
 		if ( (bool) $translated_element_id
-		     && (bool) $this->post_translations->get_source_lang_code( $translated_element_id ) === false
+		     && (bool) $source_lang === false
 		) {
 			return $link;
 		}
 		$this->maybe_load_stats( $trid );
-		$is_remote               = $this->is_remote( $trid, $lang );
-		$is_in_progress          = $this->is_in_progress( $trid, $lang );
-		$use_tm_editor           = $this->sitepress->get_setting( 'doc_translation_method' );
+		$is_remote        = $this->is_remote( $trid, $lang );
+		$is_in_progress   = $this->is_in_progress( $trid, $lang );
+		$use_tm_editor    = $this->sitepress->get_setting( 'doc_translation_method' );
+		$use_tm_editor    = apply_filters( 'wpml_use_tm_editor', $use_tm_editor );
 		$source_lang_code = $this->post_translations->get_element_lang_code( $post_id );
 		if ( ( $is_remote && $is_in_progress ) || $this->is_in_basket( $trid,
-				$lang ) || ! $this->is_lang_pair_allowed( $lang )
+				$lang ) || ! $this->is_lang_pair_allowed( $lang, $source_lang )
 		) {
 			$link = '###';
 		} elseif ( $source_lang_code !== $lang ) {
@@ -134,29 +138,51 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 
 		return $link;
 	}
-	
+
 	private function get_link_for_new_job( $trid, $lang, $source_lang_code ) {
-		$tm_editor_link_base_url = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php';
-		return $tm_editor_link_base_url . '&trid=' . $trid . '&language_code=' . $lang . '&source_language_code=' . $source_lang_code;
+		$args = array(
+			'trid'                 => $trid,
+			'language_code'        => $lang,
+			'source_language_code' => $source_lang_code
+		);
+
+		return add_query_arg( $args, $this->get_tm_editor_base_url() );
 	}
 
 	private function get_link_for_existing_job( $job_id ) {
-		$tm_editor_link_base_url = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php';
-		return $tm_editor_link_base_url . '&job_id=' . $job_id;
+		$args = array( 'job_id' => $job_id );
+
+		return add_query_arg( $args, $this->get_tm_editor_base_url() );
 	}
-	
+
+	private function get_tm_editor_base_url() {
+		$args = array(
+			'page'       => WPML_TM_FOLDER . '/menu/translations-queue.php',
+			'return_url' => rawurlencode( esc_url_raw( stripslashes( $this->get_return_url() ) ) )
+		);
+
+		return add_query_arg( $args, 'admin.php' );
+	}
+
+	private function get_return_url() {
+		$args = array( 'wpml_tm_saved', 'wpml_tm_cancel' );
+
+		return remove_query_arg( $args );
+	}
+
 	/**
-	 * @param string $lang
+	 * @param string $lang_to
+	 * @param string $lang_from
 	 *
 	 * @return bool
 	 */
-	private function is_lang_pair_allowed( $lang ) {
+	private function is_lang_pair_allowed( $lang_to, $lang_from = null ) {
 
 		return $this->tm_api->is_translator_filter(
 			false, $this->sitepress->get_wp_api()->get_current_user_id(),
 			array(
-				'lang_from'      => $this->sitepress->get_current_language(),
-				'lang_to'        => $lang,
+				'lang_from'      => $lang_from ? $lang_from : $this->sitepress->get_current_language(),
+				'lang_to'        => $lang_to,
 				'admin_override' => $this->is_current_user_admin(),
 			) );
 	}

@@ -5,7 +5,6 @@
  */
 require_once WPML_TM_PATH . '/inc/translation-proxy/functions.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-basket.class.php';
-require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-com-log.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-api.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-project.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-service.class.php';

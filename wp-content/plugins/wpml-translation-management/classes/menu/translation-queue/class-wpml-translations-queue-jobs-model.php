@@ -65,12 +65,13 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 	}
 
 	private function get_post_link( $job ) {
-		$tm_post_link = $this->post_link_factory->view_link_anchor( $job->original_doc_id,
-																   __( 'View original', 'wpml-translation-management' ) );
+		$view_original_text = __( 'View original', 'wpml-translation-management' );
+		$tm_post_link       = $this->post_link_factory->view_link_anchor( $job->original_doc_id, $view_original_text );
 
 		$element_type_prefix = $this->tm_instance->get_element_type_prefix_from_job( $job );
 		if ( $this->tm_instance->is_external_type( $element_type_prefix ) ) {
-			$tm_post_link = apply_filters( 'wpml_external_item_link', '', $job->original_doc_id, false );
+			$url          = apply_filters( 'wpml_external_item_url', '', $job->original_doc_id );
+			$tm_post_link = '<a href="' . $url . '">' . $view_original_text . '</a>';
 		}
 
 		$original_element_type = $job->original_post_type;
@@ -80,7 +81,7 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 		}
 		$original_element_type = join( '_', $original_element_type );
 
-		$tm_post_link = apply_filters( 'wpml_document_view_item_link', $tm_post_link, __( 'View original', 'wpml-translation-management' ), $job, $element_type_prefix, $original_element_type );
+		$tm_post_link = apply_filters( 'wpml_document_view_item_link', $tm_post_link, $view_original_text, $job, $element_type_prefix, $original_element_type );
 
 		return $tm_post_link;
 	}

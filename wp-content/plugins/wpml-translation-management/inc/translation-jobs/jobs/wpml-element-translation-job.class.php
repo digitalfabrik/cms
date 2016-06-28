@@ -30,7 +30,7 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		$this->job_factory = $job_factory;
 	}
 
-	function get_type(){
+	function get_type() {
 		return 'Post';
 	}
 
@@ -225,8 +225,16 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		return array( isset( $err ) ? $err : false, $project, $res );
 	}
 
+	/**
+	 * @param bool|false $original
+	 *
+	 * @return string
+	 */
 	abstract function get_url( $original = false );
 
+	/**
+	 * @return WP_Post|WPML_Package|mixed
+	 */
 	abstract function get_original_document();
 
 	protected function load_status() {
@@ -281,6 +289,9 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		);
 	}
 
+	public function maybe_load_terms_from_post_into_job( $delete ) {
+	}
+	
 	private function get_iclt_field( $field_name, $translation ) {
 		global $wpdb;
 
@@ -303,4 +314,6 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 
 		return $value;
 	}
+	
+
 }
