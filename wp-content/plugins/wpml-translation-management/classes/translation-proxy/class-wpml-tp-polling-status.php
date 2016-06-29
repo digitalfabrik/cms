@@ -54,7 +54,7 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 			'jobs_in_progress_text' => $jobs_in_progress_text,
 			'button_text'           => $button_text,
 			'last_pickup_text'      => $last_pickup_text,
-			'polling_data'          => $this->filter_known_pending( $data )
+			'polling_data'          => $this->filter_known_pending( $data ),
 		);
 	}
 

@@ -28,6 +28,9 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 
 	public abstract function to_array();
 
+	/**
+	 * @return string
+	 */
 	abstract function get_title();
 
 	public function get_status() {
@@ -36,6 +39,12 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		}
 
 		return $this->status;
+	}
+	
+	public function get_status_value() {
+		$this->maybe_load_basic_data();
+		
+		return $this->basic_data->status;
 	}
 
 	public function get_id() {
@@ -103,6 +112,9 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		return $code && $as_name ? $this->lang_code_to_name( $code ) : $code;
 	}
 
+	/**
+	 * @return string|false
+	 */
 	public function get_translator_name() {
 		$this->maybe_load_basic_data();
 		if ( $this->basic_data->translation_service == TranslationProxy::get_current_service_id() ) {

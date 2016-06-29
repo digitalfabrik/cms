@@ -30,6 +30,29 @@ class WPML_WP_API {
 		return get_option( $option, $default );
 	}
 
+	public function is_url( $value ) {
+		$regex = "((https?|ftp)\:\/\/)?"; // SCHEME
+		$regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
+		$regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP
+		$regex .= "(\:[0-9]{2,5})?"; // Port
+		$regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
+		$regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
+		$regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor
+
+		return preg_match("/^$regex$/", $value);
+	}
+
+	/**
+	 * @param string      $option
+	 * @param mixed       $value
+	 * @param string|bool $autoload
+	 *
+	 * @return bool
+	 */
+	public function update_option( $option, $value, $autoload = null ) {
+		return update_option( $option, $value, $autoload );
+	}
+
 	/**
 	 * @param string|int|WP_Post $ID Optional. Post ID or post object. Default empty.
 	 *
@@ -50,6 +73,21 @@ class WPML_WP_API {
 	public function get_term_link( $term, $taxonomy = '' ) {
 
 		return get_term_link( $term, $taxonomy );
+	}
+
+	/**
+	 *  Wrapper for \get_term_by
+	 *
+	 * @param string     $field
+	 * @param string|int $value
+	 * @param string     $taxonomy
+	 * @param string     $output
+	 * @param string     $filter
+	 *
+	 * @return bool|WP_Term
+	 */
+	public function get_term_by( $field, $value, $taxonomy = '', $output = OBJECT, $filter = 'raw' ) {
+		return get_term_by( $field, $value, $taxonomy, $output, $filter );
 	}
 
 	/**
@@ -312,16 +350,19 @@ class WPML_WP_API {
 
 		return $result;		
 	}
-	
+
+	public function is_support_page() {
+		return $this->is_core_page( 'support.php' );
+	}
+
 	public function is_troubleshooting_page() {
 		return $this->is_core_page( 'troubleshooting.php' );
 	}
 
-	public function is_core_page( $page ) {
+	public function is_core_page( $page = '' ) {
 		$result = is_admin()
 		          && isset( $_GET['page'] )
-		          && $_GET['page'] == ICL_PLUGIN_FOLDER . '/menu/' . $page;
-
+		          && stripos( $_GET['page'], ICL_PLUGIN_FOLDER . '/menu/' . $page ) !== false;
 		return $result;
 	}
 
@@ -351,6 +392,11 @@ class WPML_WP_API {
 	public function is_term_edit_page() {
 		global $pagenow;
 		return $pagenow === 'term.php' || ( $pagenow === 'edit-tags.php' && isset( $_GET[ 'action' ] ) && filter_var ( $_GET[ 'action' ] ) === 'edit' );
+	}
+
+	public function is_customize_page() {
+		global $pagenow;
+		return $pagenow === 'customize.php';
 	}
 
 	/**
@@ -635,6 +681,17 @@ class WPML_WP_API {
 	}
 
 	/**
+	 * Wrapper for \is_main_site
+	 *
+	 * @param null|int $site_id
+	 *
+	 * @return bool
+	 */
+	public function is_main_site( $site_id = null ) {
+		return is_main_site( $site_id );
+	}
+
+	/**
 	 * Wrapper for \ms_is_switched
 	 *
 	 * @return bool
@@ -834,6 +891,77 @@ class WPML_WP_API {
 		}
 	}
 
+	/**
+	 * Compares two "PHP-standardized" version number strings
+	 * @see \WPML_WP_API::version_compare
+	 *
+	 * @param string $version1
+	 * @param string $version2
+	 * @param null   $operator
+	 *
+	 * @return mixed
+	 */
+	function version_compare( $version1, $version2, $operator = null ) {
+		return version_compare( $version1, $version2, $operator );
+	}
+
+	/**
+	 * Compare version in their "naked" form
+	 * @see \WPML_WP_API::get_naked_version
+	 * @see \WPML_WP_API::version_compare
+	 * @see \version_compare
+	 *
+	 * @param string $version1
+	 * @param string $version2
+	 * @param null   $operator
+	 *
+	 * @return mixed
+	 */
+	function version_compare_naked( $version1, $version2, $operator = null ) {
+		return $this->version_compare( $this->get_naked_version( $version1 ), $this->get_naked_version( $version2 ), $operator );
+	}
+
+	/**
+	 * Returns only the first 3 numeric elements of a version (assuming to use MAJOR.MINOR.PATCH
+	 *
+	 * @param string $version
+	 *
+	 * @return string
+	 */
+	function get_naked_version( $version ) {
+
+		$elements = explode( '.', str_replace( '..', '.', preg_replace( '/([^0-9\.]+)/', '.$1.', str_replace( array( '-', '_', '+' ), '.', trim( $version ) ) ) ) );
+
+		$naked_elements = array('0', '0', '0');
+
+		$elements_count = 0;
+		foreach ( $elements as $element ) {
+			if ( $elements_count === 3 || ! is_numeric( $element ) ) {
+				break;
+			}
+			$naked_elements[$elements_count] = $element;
+			$elements_count ++;
+		}
+
+		return implode( $naked_elements );
+	}
+
+	public function add_filter( $tag, $function_to_add, $priority = 10, $accepted_args = 1 ) {
+		return add_filter( $tag, $function_to_add, $priority, $accepted_args );
+	}
+
+	public function has_filter($tag, $function_to_check = false) {
+		return has_filter( $tag, $function_to_check );
+	}
+
+	function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
+		return  add_action( $tag, $function_to_add, $priority, $accepted_args );
+	}
+	
+	public function get_current_screen() {
+		return get_current_screen();
+	}
+
 	function array_unique( $array, $sort_flags = SORT_REGULAR ) {
 		if ( version_compare( $this->phpversion(), '5.2.9', '>=' ) ) {
 			return array_unique( $array, $sort_flags );
@@ -883,4 +1011,77 @@ class WPML_WP_API {
 	public function get_query_var( $var, $default = '' ) {
 		return get_query_var( $var, $default );
 	}
+
+	/**
+	 * Wrapper for \get_queried_object
+	 */
+	public function get_queried_object() {
+		return get_queried_object();
+	}
+
+	public function get_raw_post_data() {
+		$raw_post_data = @file_get_contents( "php://input" );
+		if ( ! $raw_post_data && array_key_exists( 'HTTP_RAW_POST_DATA', $GLOBALS ) ) {
+			$raw_post_data = $GLOBALS['HTTP_RAW_POST_DATA'];
+		}
+
+		return $raw_post_data;
+	}
+
+	public function wp_verify_nonce( $nonce, $action = -1 ) {
+		return wp_verify_nonce( $nonce, $action );
+	}
+	
+	/**
+	 * @param string $class_name The class name. The name is matched in a case-insensitive manner.
+	 * @param bool   $autoload   [optional] Whether or not to call &link.autoload; by default.
+	 *
+	 * @return bool true if <i>class_name</i> is a defined class, false otherwise.
+	 * @return bool
+	 */
+	public function class_exists( $class_name, $autoload = true ) {
+		return class_exists( $class_name, $autoload );
+	}
+
+	/**
+	 * @param string $function_name The function name, as a string.
+	 *
+	 * @return bool true if <i>function_name</i> exists and is a function, false otherwise.
+	 * This function will return false for constructs, such as <b>include_once</b> and <b>echo</b>.
+	 * @return bool
+	 */
+	public function function_exists( $function_name ) {
+		return function_exists( $function_name );
+	}
+
+	/**
+	 * @param string $name The extension name
+	 *
+	 * @return bool true if the extension identified by <i>name</i> is loaded, false otherwise.
+	 */
+	public function extension_loaded( $name ) {
+		return extension_loaded( $name );
+	}
+
+	/**
+	 * @param string $action
+	 *
+	 * @return int The number of times action hook $tag is fired.
+	 */
+	public function did_action( $action ) {
+		return did_action( $action );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function current_action() {
+		return current_action();
+	}
+
+	public function get_wp_post_types_global() {
+		global $wp_post_types;
+		return $wp_post_types;
+	}
+
 }

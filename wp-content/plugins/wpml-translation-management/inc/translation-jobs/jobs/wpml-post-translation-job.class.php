@@ -9,6 +9,11 @@ class WPML_Post_Translation_Job extends WPML_Element_Translation_Job {
 		return get_post( $this->get_original_element_id() );
 	}
 
+	/**
+	 * @param bool|false $original
+	 *
+	 * @return string
+	 */
 	public function get_url( $original = false ) {
 		$url        = null;
 		$element_id = null;
@@ -96,6 +101,12 @@ class WPML_Post_Translation_Job extends WPML_Element_Translation_Job {
 		$this->set_translated_term_values( $delete );
 	}
 
+	public function maybe_load_terms_from_post_into_job( $delete ) {
+		if ( $delete || $this->get_status_value() != ICL_TM_IN_PROGRESS ) {
+			$this->load_terms_from_post_into_job( $delete );
+		}
+	}
+	
 	/**
 	 * @return string
 	 */
@@ -104,6 +115,17 @@ class WPML_Post_Translation_Job extends WPML_Element_Translation_Job {
 
 		return is_object( $original_post ) && isset( $original_post->post_title )
 			? $original_post->post_title : $this->original_del_text;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function get_type_title() {
+		$original_post = $this->get_original_document();
+		$post_type = get_post_type_object( $original_post->post_type );
+
+		return $post_type->labels->singular_name;
 	}
 
 	protected function load_resultant_element_id() {

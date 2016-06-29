@@ -1,13 +1,20 @@
 /*jshint browser:true, devel:true */
-/*global jQuery, ajaxurl, icl_ajx_url, icl_ajxloaderimg, wpActiveEditor, tinyMCE, tinymce, icl_thickbox_reopen, icl_tb_init, icl_tb_set_size, iclSaveForm, tmEditorStrings */
+/*global _, jQuery, ajaxurl, icl_ajx_url, icl_ajxloaderimg, wpActiveEditor, tinyMCE,
+ tinymce, icl_thickbox_reopen, icl_tb_init, icl_tb_set_size, iclSaveForm,
+ tmEditorStrings, WPML_TM.editorFooterView, WPML_TM.editorHeaderView,
+ WpmlTmEditorMainView,
+ WpmlTranslationEditorTemplates, WpmlTemplateCompiler */
 
+var WPML_TM = WPML_TM || {};
 
 "use strict";
 var tmEditor = {
     dontShowAgain: false,
     copyLinks: {},
     copyLinkViews: [],
+    footerView: {},
     model: {},
+    view: {},
     update_copy_link_visibility: function () {
         var self = tmEditor;
         self.copyLinks.each(function () {
@@ -55,14 +62,6 @@ var tmEditor = {
 
         return editor !== false ? editor.getContent() : jQuery('#' + field_type).val();
     },
-    icl_tm_update_complete_cb_status: function () {
-        var icl_tm_editor = jQuery('#icl_tm_editor');
-        if (icl_tm_editor.find('.icl_tm_finished:checked').length === icl_tm_editor.find('.icl_tm_finished').length) {
-            icl_tm_editor.find(':checkbox[name=complete]').prop('disabled', false);
-        } else {
-            icl_tm_editor.find(':checkbox[name=complete]').prop('disabled', true);
-        }
-    },
     icl_populate_field: function (field_type, content) {
         var custom_editor = tmEditor.find_custom_editor(field_type);
 
@@ -70,35 +69,23 @@ var tmEditor = {
             custom_editor.insertContent(content);
         } else {
             custom_editor = jQuery('#' + field_type);
-            if('undefined' !== typeof custom_editor && 'undefined' !== typeof custom_editor.val()) {
+            if ('undefined' !== typeof custom_editor && 'undefined' !== typeof custom_editor.val()) {
                 custom_editor.val(custom_editor.val().trim() !== "" ? custom_editor.val() : content);
             }
         }
-    },
-    icl_get_job_original_contents: function (job_id, field_type, calling_element) {
-        var self = this;
-        var ajax_spinner = jQuery('<span class="spinner" style="float:left;"> </span>');
-        calling_element.after(ajax_spinner);
-        ajax_spinner.show();
-        ajax_spinner.css('visibility', 'visible');
-        self.copyLinks.closest('span').hide();
-        self.model.getOriginalContents(field_type, self.icl_populate_field, function () {
-            ajax_spinner.fadeOut();
-            self.update_copy_link_visibility();
-        });
     }
 };
 
 jQuery(document).ready(function () {
-	var wpml_diff_toggle = jQuery('.wpml_diff_toggle');
-	wpml_diff_toggle.closest('.wpml_diff_wrapper').find('.wpml_diff').hide();
-	wpml_diff_toggle.on('click', function(e) {
-		e.preventDefault();
+    var wpml_diff_toggle = jQuery('.wpml_diff_toggle');
+    wpml_diff_toggle.closest('.wpml_diff_wrapper').find('.wpml_diff').hide();
+    wpml_diff_toggle.on('click', function (e) {
+        e.preventDefault();
 
-		jQuery(this).closest('.wpml_diff_wrapper').find('.wpml_diff').slideToggle();
+        jQuery(this).closest('.wpml_diff_wrapper').find('.wpml_diff').slideToggle();
 
-		return false;
-	});
+        return false;
+    });
 
     jQuery('.tm-learn-more').on('click', function (e) {
         e.preventDefault();
@@ -167,100 +154,58 @@ jQuery(document).ready(function () {
                     '</span><p><input type="checkbox" class="tm-editor-not-show-again"/>',
                     tmEditorStrings.dontShowAgain,
                     '</p></div>'].join('');
-				            jQuery(popUpHtml).dialog(
-					            {
-						            width  : 'auto',
-						            buttons: [
-							            {
-								            text : "Ok",
-								            click: function () {
-									            jQuery(this).dialog("close");
-									            if (inputField) {
-										            inputField.attr('disabled', false);
-										            box.attr('checked', false);
-										            if (jQuery(this).find('.tm-editor-not-show-again').attr('checked')) {
-											            jQuery(this).dialog("destroy");
-											            tmEditor.dontShowAgain = true;
-										            }
-									            }
-								            }
-							            }, {
-								            text : "Cancel",
-								            click: function () {
-									            jQuery(this).dialog("close");
-									            box.attr('checked', 'checked');
-								            }
-							            }
-						            ]
+                jQuery(popUpHtml).dialog(
+                    {
+                        width: 'auto',
+                        buttons: [
+                            {
+                                text: "Ok",
+                                click: function () {
+                                    jQuery(this).dialog("close");
+                                    if (inputField) {
+                                        inputField.attr('disabled', false);
+                                        box.attr('checked', false);
+                                        if (jQuery(this).find('.tm-editor-not-show-again').attr('checked')) {
+                                            jQuery(this).dialog("destroy");
+                                            tmEditor.dontShowAgain = true;
+                                        }
+                                    }
+                                }
+                            }, {
+                                text: "Cancel",
+                                click: function () {
+                                    jQuery(this).dialog("close");
+                                    box.attr('checked', 'checked');
+                                }
+                            }
+                        ]
                     });
             }
         }
     });
 
     var job_id = jQuery('[name="job_id"]').val();
-    tmEditor.model = new WpmlTmEditorJob(
+
+    tmEditor.model = new WPML_TM.editorJob(
         {
             job_id: job_id,
-            nonce: jQuery('#icl_get_job_original_field_content_nonce').val()
+            nonce: tmEditorStrings.contentNonce,
+            is_dirty: false
         }
     );
     tmEditor.copyLinks = jQuery('.icl_tm_copy_link');
-    tmEditor.copyLinks.each(function () {
-        var link = this;
-        var view = new WpmlTmEditorJobFieldView({
-            el: jQuery(link).parent(),
-            job_id: job_id
-        });
-        tmEditor.copyLinkViews.push(view);
-        var type = this.id.replace(/^icl_tm_copy_link_/, '');
-        if (tmEditor.find_custom_editor(type) === false) {
-            jQuery('#' + type).on('keyup', tmEditor.update_copy_link_visibility);
-        }
+    tmEditor.view = new WPML_TM.editorMainView({
+        el: jQuery('.icl-translation-editor'),
+        model: tmEditor.model
     });
+    tmEditor.view.render();
+
 
     icl_tm_editor.submit(function () {
-        var formnoerr = true;
-        var validation_error = jQuery('#icl_tm_validation_error');
-
-        validation_error.hide();
-
-        jQuery('.icl_tm_finished:checked').each(function () {
-            var field = jQuery(this).attr('name').replace(/finished/, 'data');
-
-            var data;
-            var current_input_field = jQuery('*[name="' + field + '"]');
-            current_input_field = current_input_field.length ? current_input_field : jQuery('*[name="' + field.toLowerCase() + '"]');
-            if (field === 'fields[body][data]' || current_input_field.hasClass('wp-editor-area')) {
-                var editor = typeof tinyMCE !== 'undefined' ? tinyMCE.get(current_input_field.attr('id')) : false;
-                editor = editor ? editor : tinyMCE.get(current_input_field.attr('id').toLowerCase());
-                if (editor) {
-                    data = editor.getContent();
-                }
-                if (!editor || !data) {
-                    data = current_input_field.val();
-                }
-            } else if (jQuery(this).hasClass('icl_tmf_multiple')) {
-                data = 1;
-                jQuery('[name*="' + field + '"]').each(function () {
-                    data = data * jQuery(this).val().length;
-                });
-            } else {
-                data = jQuery('[name="' + field + '"]*').val();
-                data = data ? data : jQuery('[name="' + field.toLowerCase() + '"]*').val();
-            }
-
-            if (!data) {
-                validation_error.fadeIn();
-                jQuery(this).removeAttr('checked');
-                tmEditor.icl_tm_update_complete_cb_status();
-                formnoerr = false;
-            }
-        });
-
-        return formnoerr;
+        return false;
     });
 
-    icl_tm_editor.find('.icl_tm_finished').change(tmEditor.icl_tm_update_complete_cb_status);
-
     tmEditor.update_copy_link_visibility();
+
+    jQuery(window).trigger('customEvent');
 });

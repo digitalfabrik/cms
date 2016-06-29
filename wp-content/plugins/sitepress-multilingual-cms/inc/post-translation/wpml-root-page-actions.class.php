@@ -30,8 +30,13 @@ class WPML_Root_Page_Actions {
 	 * @uses \WPML_Root_Page::is_root_page
 	 */
 	public function is_url_root_page( $url ) {
+		$ret = false;
 
-		return WPML_Root_Page::is_root_page( $url );
+		if ( $this->get_root_page_id() ) {
+			$ret = WPML_Root_Page::is_root_page( $url );
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -47,6 +52,7 @@ class WPML_Root_Page_Actions {
 		       && ! empty( $urls['directory_for_default_language'] )
 		       && isset( $urls['show_on_root'] )
 		       && $urls['show_on_root'] === 'page'
+		       && $urls['root_page']
 				? $urls['root_page'] : false;
 	}
 
@@ -247,6 +253,7 @@ class WPML_Root_Page_Actions {
 		$q->query_vars['error']   = '';
 		$q->is_404                = false;
 		$q->query['error']        = null;
+		$q->is_home               = false;
 
 		return $q;
 	}

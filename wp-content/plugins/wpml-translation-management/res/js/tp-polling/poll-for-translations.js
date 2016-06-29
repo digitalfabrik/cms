@@ -52,7 +52,7 @@ var TranslationProxyPolling = {
                         var icl_message_div;
                         /** @namespace response.data.completed */
                         if (response.data.completed) {
-                            icl_message_div = jQuery("#icl_tm_pickup_wrap_completed");
+													icl_message_div = jQuery("#icl_tm_pickup_wrap_completed");
                             icl_message_div.text(response.data.completed);
                             icl_message_div.show();
                         }
@@ -70,13 +70,19 @@ var TranslationProxyPolling = {
                         }
                         if (TranslationProxyPolling.jobs.length > 0) {
                             TranslationProxyPolling.handleOne();
-                        } else if (response.data.completed.replace(/[^0-9]/g, '') > 0) {
-                            TranslationProxyPolling.hideSpinner();
-                            TranslationProxyPolling.startReloading(10);
                         } else {
-                            TranslationProxyPolling.hideSpinner();
-                            TranslationProxyPolling.button.attr('disabled', 'disabled');
-                        }
+													TranslationProxyPolling.hideSpinner();
+													TranslationProxyPolling.button.attr('disabled', 'disabled');
+													TranslationProxyPolling.startReloading(10);
+													jQuery.ajax({
+																				type:     "POST",
+																				url:      ajaxurl,
+																				dataType: 'json',
+																				data:     {
+																					action: 'icl_pickup_translations_complete'
+																				}
+																			});
+												}
                     },
                     error: function () {
                         TranslationProxyPolling.hideSpinner();

@@ -19,6 +19,7 @@ abstract class WPML_URL_Converter {
 	protected $absolute_home;
 	/** @var  string[] $cache */
 	protected $cache;
+	protected $resolving_url = false;
 
 	/**
 	 * @param string $default_language
@@ -37,7 +38,7 @@ abstract class WPML_URL_Converter {
 	 * @return bool True if the input $url points to an admin screen.
 	 */
 	public function is_url_admin($url){
-		$url_query_parts = parse_url( strpos( $url, 'http' ) === false ? 'http://' . $url : $url );
+		$url_query_parts = wpml_parse_url( strpos( $url, 'http' ) === false ? 'http://' . $url : $url );
 
 		return isset( $url_query_parts[ 'path' ] )
 		       && strpos ( wpml_strip_subdir_from_url($url_query_parts[ 'path' ]), '/wp-admin' ) === 0;
@@ -57,7 +58,7 @@ abstract class WPML_URL_Converter {
 			return $this->cache[$url];
 		}
 		$url = wpml_strip_subdir_from_url($url);
-		$url_query_parts = parse_url ( $url );
+		$url_query_parts = wpml_parse_url ( $url );
 		$url_query       = ($only_admin === false
 		                       || isset( $url_query_parts[ 'path' ] )
 		                          && strpos ( $url_query_parts[ 'path' ], '/wp-admin' ) === 0)
@@ -101,9 +102,27 @@ abstract class WPML_URL_Converter {
 					: $this->get_unfiltered_home_option() )
 			);
 
-		return $this->absolute_home;
+		return apply_filters( 'wpml_url_converter_get_abs_home', $this->absolute_home );
 	}
 
+	/**
+	 * Scope of this function:
+	 * 1. Convert the home URL in the specified language depending on language negotiation:
+	 *    1. Add a language directory
+	 *    2. Change the domain
+	 *    3. Add a language parameter
+	 * 2. If the requested URL is equal to the current URL, the URI will be adapted
+	 * with potential slug translations for:
+	 *    - single post slugs
+	 *    - taxonomy term slug
+	 *
+	 * WARNING: The URI slugs won't be translated for arbitrary URL (not the current one)
+	 *
+	 * @param $url
+	 * @param bool $lang_code
+	 *
+	 * @return bool|mixed|string
+	 */
 	public function convert_url( $url, $lang_code = false ) {
 		if ( ! $url ) {
 			return $url;
@@ -123,11 +142,28 @@ abstract class WPML_URL_Converter {
 		$new_url        = $cache->get( $cache_key, $cache_found );
 
 		if ( ! $cache_found ) {
-			$language_from_url = $this->get_language_from_url( $url );
+			$language_from_url  = $this->get_language_from_url( $url );
 			if ( $language_from_url === $lang_code ) {
 				$new_url = $url;
 			} else {
-				$new_url = $this->convert_url_string( $url, $lang_code );
+				$server_name = isset( $_SERVER['SERVER_NAME'] ) ? $_SERVER['SERVER_NAME'] : "";
+				$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : "";
+				$server_name = strpos( $request_uri, '/' ) === 0
+					? untrailingslashit( $server_name ) : trailingslashit( $server_name );
+				$request_url = stripos( get_option( 'siteurl' ), 'https://' ) === 0
+					? 'https://' . $server_name . $request_uri : 'http://' . $server_name . $request_uri;
+
+				$is_request_url     = trailingslashit( $request_url ) === trailingslashit( $url );
+				$is_home_url        = trailingslashit( $this->get_abs_home() ) === trailingslashit( $url );
+				$is_home_url_filter = current_filter() === 'home_url';
+
+				if( $is_request_url && ! $is_home_url && ! $is_home_url_filter && ! $this->resolving_url ) {
+					$new_url = $this->resolve_object_url( $url, $lang_code );
+				}
+
+				if ( $new_url === false ) {
+					$new_url = $this->convert_url_string( $url, $lang_code );
+				}
 			}
 			$new_url = $this->fix_trailing_slash( $new_url, $url );
 			$cache->set( $cache_key, $new_url );
@@ -182,10 +218,12 @@ abstract class WPML_URL_Converter {
 											$language_code );
 
 		if ( is_string( $translated_slug ) ) {
+			$link_parts = explode( '?', $link, 2 );
 			$link_new = trailingslashit(
-				preg_replace( "#\/" . preg_quote( $slug, "/" ) . "#", '/' . $translated_slug, $link, 1 )
+				preg_replace( "#\/" . preg_quote( $slug, "#" ) . "\/#", '/' . $translated_slug . '/', trailingslashit( $link_parts[0] ), 1 )
 			);
-			$link = $this->fix_trailing_slash($link_new, $link);
+			$link = $this->fix_trailing_slash( $link_new, $link_parts[0] );
+			$link = isset( $link_parts[1] ) ? $link . '?' . $link_parts[1] : $link;
 		}
 
 		return $link;
@@ -286,5 +324,70 @@ abstract class WPML_URL_Converter {
 									FROM {$wpdb->options}
 									WHERE option_name = 'home'
 									LIMIT 1" ) );
+	}
+
+	/**
+	 * Try to parse the URL to find a related post or term
+	 *
+	 * @param string $url
+	 * @param string $lang_code
+	 *
+	 * @return string|bool
+	 */
+	private function resolve_object_url( $url, $lang_code ) {
+		global $sitepress, $wp_query, $wpml_term_translations, $wpml_post_translations;// todo: pass as a dependencies
+
+		$this->resolving_url = true;
+		$new_url        = false;
+		$cache_key      = md5( $url );
+		$cache_group    = 'resolve_object_url';
+		$cache_found    = false;
+		$cache          = new WPML_WP_Cache( $cache_group );
+		$translations   = $cache->get( $cache_key, $cache_found );
+
+		if ( ! $cache_found && is_object( $wp_query ) ) {
+			$sitepress->set_wp_query(); // Make sure $sitepress->wp_query is set
+			$_wp_query_back = clone $wp_query;
+			unset( $wp_query );
+			global $wp_query; // make it global again after unset
+			$tmp_wp_query = $sitepress->get_wp_query();
+			$wp_query = is_object( $tmp_wp_query ) ? clone $tmp_wp_query : clone $_wp_query_back;
+			unset( $tmp_wp_query );
+
+			$languages_helper = new WPML_Languages( $wpml_term_translations, $sitepress, $wpml_post_translations );
+			list( $translations, $wp_query ) = $languages_helper->get_ls_translations( $wp_query,
+																					   $_wp_query_back,
+				                                                                       $sitepress->get_wp_query() );
+
+			// restore current $wp_query
+			unset( $wp_query );
+			global $wp_query; // make it global again after unset
+			$wp_query = clone $_wp_query_back;
+			unset( $_wp_query_back );
+
+			$cache->set( $cache_key, $translations );
+		}
+
+		if ( $translations && isset( $translations[ $lang_code ]->element_type ) ) {
+
+			$current_lang = $sitepress->get_current_language();
+			$sitepress->switch_lang( $lang_code );
+			$element = explode( '_', $translations[ $lang_code ]->element_type );
+			$type = array_shift( $element );
+			$subtype = implode( '_', $element );
+			switch( $type ) {
+				case 'post':
+					$new_url = get_permalink( $translations[ $lang_code ]->element_id );
+					break;
+				case 'tax':
+					$term = get_term( $translations[ $lang_code ]->element_id, $subtype );
+					$new_url = get_term_link( $term );
+					break;
+			}
+			$sitepress->switch_lang( $current_lang );
+		}
+
+		$this->resolving_url = false;
+		return $new_url;
 	}
 }

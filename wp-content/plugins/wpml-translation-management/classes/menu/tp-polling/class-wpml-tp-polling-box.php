@@ -8,6 +8,8 @@ class WPML_TP_Polling_Box {
 	 * @return string
 	 */
 	public function render() {
+		$logger_settings = new WPML_Jobs_Fetch_Log_Settings();
+
 		ob_start();
 		?>
 		<div id="icl_tm_pickup_wrap">
@@ -28,6 +30,11 @@ class WPML_TP_Polling_Box {
 				          data-reloading-text="<?php _e( 'Reloading:',
 					          'wpml-translation-management' ) ?>" value=""
 				          id="icl_tm_get_translations"/></p>
+				<p>
+					<a href="<?php echo esc_attr( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=' . $logger_settings->get_ui_key() );?>" class="button-secondary">
+						<?php _e( 'Open the content updates log', 'sitepress' ); ?>
+					</a>
+				</p>
 				<p id="icl_pickup_last_pickup"></p>
 			</div>
 			<div id="tp_polling_job" style="display:none"></div>

@@ -1,4 +1,4 @@
-@import "mixins";
+@import "_mixins";
 @import "_variables";
 @import "wpml-icons";
 
@@ -38,6 +38,11 @@
 .truncate {
 	@extend %truncate;
 }
+pre {
+	max-width: 100%;
+	overflow-x: auto;
+}
+
 /***********************************************************
 	WPML Boxes and Tables
 *************************************************************/
@@ -53,19 +58,19 @@
 .wpml-col-title {
 	width: 30%;
 	strong {
-		font-size: 1.05em;
-	}
-	.row-actions {
-		font-size: .9em;
+		font-size: 1.077em;
 	}
 	@media(max-width: $wp-breakpoint-max) {
 		width: 40%;
+	}
+	a {
+		cursor: pointer;
 	}
 }
 
 .wpml-col-title-flag {
 	.row-actions {
-		margin-left: 20px+5px;
+		margin-left: 20px + 6px;
 	}
 }
 .wpml-title-flag {
@@ -88,15 +93,25 @@
 	img {
 		max-width: 100%;
 		height: auto;
+		margin: 0;
 	}
-	a, span {
+	&>a,
+	&>span {
 		display: inline-block;
 		width: 20px;
 		text-align: center;
 		padding: 2px 1px;
+		float: left;
+		margin: 0 1px;
+		[dir="rtl"] & {
+			float: right
+		}
 	}
-	div {
-		display: none;
+	&>span>a {
+		display: block;
+	}
+	a {
+		cursor: pointer;
 	}
 }
 
@@ -183,6 +198,9 @@
 .wpml-tabs {
 	margin-top: $margin-base;
 	@extend .clearfix;
+	.nav-tab {
+		cursor: pointer;
+	}
 	@media (max-width: 1280px) {
 		.nav-tab {
 			margin-left: .2em;
@@ -197,24 +215,34 @@
 	}
 }
 
-.icl-admin-message {
-	border-left:      4px solid #9bc8f0;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
-	padding:          1em;
-	margin-top: 3em;
-	margin-bottom: 5px;
-	&:first-child {
-		margin-top: 0;
+.icl-admin-message,
+.icl-admin-message-information,
+.icl-admin-message-information-inline,
+.icl-admin-message-warning,
+.icl-admin-message-error{
+	clear: both;
+	//copy WP .notice style
+	background: #fff;
+	border-left: 4px solid #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+	margin: 5px 15px 2px;
+	padding: 1px 12px;
+	.wrap & {
+		margin: 5px 0 15px;
 	}
-	&.small {
-		padding: 0 0.5em;
-		> * {
-			margin: 0.2em;
-		}
-		.icl-admin-message-wrapper {
-			padding: 0.5em;
-		}
+	p {
+		margin: .5em 0;
+		padding: 2px;
+	}
+}
+.icl-admin-message,
+.icl-admin-message-information,
+.icl-admin-message-warning,
+.icl-admin-message-error {
+	ul, ol {
+		max-height: 10em;
+		overflow:   auto;
 	}
 	&.right > * {
 		text-align: right;
@@ -232,131 +260,23 @@
 			}
 		}
 	}
-	.icl-admin-message-wrapper {
-		position: relative;
-		padding:  2em 1em;
-		> {
-			ul, ol {
-				max-height: 10em;
-				overflow:   auto;
-			}
-		}
-	}
-	.icl-admin-message-hide {
-		position:        absolute;
-		top:             5px;
-		right:           1px;
-		padding:         20px 15px 0 3px;
-		font-size:       13px;
-		text-decoration: none;
-		line-height:     1;
-		&:before {
-			background:             0 0;
-			color:                  #bbb;
-			content:                '\f153';
-			display:                block !important;
-			font:                   400 16px/1 dashicons;
-			height:                 20px;
-			text-align:             center;
-			width:                  20px;
-			-webkit-font-smoothing: antialiased !important;
-			position:               absolute;
-			left:                   -18px;
-			margin-top:             -1px;
-			transition:             all .1s ease-in-out;
-		}
-		&:hover:before {
-			color: #c00;
-		}
-	}
-	.icl-admin-message-dismiss {
-		position: absolute;
-		right:    0.25em;
-		bottom:   0.25em;
-		display:  block;
-	}
+}
+
+.icl-admin-message {
+	border-left:      4px solid #9bc8f0;
 }
 
 .icl-admin-message-information {
 	border-left:      4px solid #d5e8f9;
-	padding:          1px 12px;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
-
-	&:first-child {
-		margin-top: 0;
-	}
-	&.small {
-		padding: 0 0.5em;
-		> * {
-			margin: 0.2em;
-		}
-		.icl-admin-message-wrapper {
-			padding: 0.5em;
-		}
-	}
-	&.right > * {
-		text-align: right;
-	}
-	&.center > * {
-		text-align: center;
-		> {
-			ul, ol {
-				text-align:   left;
-				padding-left: 1em !important;
-				font-weight:  normal;
-			}
-			ul {
-				list-style-type: disc;
-			}
-		}
-	}
 }
 
 .icl-admin-message-information-inline {
-	clear: both;
 	border-left:      4px solid #d5e8f9;
-	padding:          1px 12px;
-	margin-top:       5px;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .icl-admin-message-warning,
 .icl-admin-message-error {
-	clear: both;
 	border-left:      4px solid #fff366;
-	padding:          1px 12px;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
-	&:first-child {
-		margin-top: 0;
-	}
-	&.small {
-		padding: 0 0.5em;
-		> * {
-			margin: 0.2em;
-		}
-		.icl-admin-message-wrapper {
-			padding: 0.5em;
-		}
-	}
-	&.right > * {
-		text-align: right;
-	}
-	&.center > * {
-		text-align: center;
-		> {
-			ul, ol {
-				text-align:   left;
-				padding-left: 1em !important;
-				font-weight:  normal;
-			}
-			ul {
-				list-style-type: disc;
-			}
-		}
-	}
 }
 
 .icl-admin-message-error {
@@ -364,9 +284,12 @@
 	background-color: #FFE6E5;
 }
 
-.wpml-is-dismissible {
+.otgs-is-dismissible {
 	position: relative;
 	padding-right: 38px;
+	.notice-dismiss {
+		text-decoration: none;
+	}
 	p [class*="button-"] {
 		margin: -5px 5px;
 	}
@@ -380,7 +303,7 @@
 	padding:          5px;
 	width:            65%;
 	border:           1px solid #f00;
-	border-radius:    3px;
+	border-radius:    2px;
 	background-color: #ffb7b7;
 	color:            #000;
 	p {
@@ -396,7 +319,7 @@
 .icl_form_success {
 	padding:          5px;
 	border:           1px solid #fff;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #336600;
 	color:            #fff;
 }
@@ -454,7 +377,7 @@ td.icl_translations a {
 
 .icl_translations_table {
 	border:        1px solid #8CCEEA;
-	border-radius: 3px;
+	border-radius: 2px;
 	tr.icl_odd_row {
 		background-color: #EFF8FC;
 	}
@@ -517,7 +440,7 @@ td.icl_translations a {
 	padding:          3px 10px 3px 9px;
 	width:            207px;
 	border:           1px solid #8cceea;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #eff8fc;
 }
 
@@ -540,7 +463,7 @@ td.icl_translations a {
 	margin-bottom:    0;
 	padding:          10px;
 	border:           1px solid #8cceea;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #eff8fc;
 
 	p {
@@ -562,7 +485,7 @@ td.icl_translations a {
 	margin:           5px;
 	padding:          3px 5px;
 	border:           1px solid #D54E21;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #D54E21;
 	color:            #FFFFFF;
 }
@@ -909,6 +832,7 @@ img.icl_als_iclflag {
 	}
 }
 
+//TODO: Will be changed with .wpml-wrap
 .icl_tm_wrap {
 	padding:          10px;
 	border:           1px solid #CCCCCC;
@@ -962,4 +886,11 @@ img.icl_als_iclflag {
   padding: 0 15px 1px;
 }
 
-@import 'jquery-ui/style';
+.woocommerce_page_wc-settings .select2-container .select2-choice .select2-arrow b:after {
+	content: none;
+}
+
+div.wpml-simple-lang-selector {
+	float:   none !important;
+	display: inline-block !important;
+}

@@ -145,7 +145,7 @@ var WPMLTranslationServicesDialog = function () {
 
 	self.serviceAuthenticationDialog = function (customFields, serviceId) {
 		self.serviceDialog.dialog({
-			dialogClass: 'wpml-dialog wp-dialog',
+			dialogClass: 'wpml-dialog otgs-ui-dialog',
 			width:       'auto',
 			title:       "Translation Services",
 			modal:       true,
