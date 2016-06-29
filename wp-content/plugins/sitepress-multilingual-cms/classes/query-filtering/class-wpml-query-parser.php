@@ -25,11 +25,227 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 
 	/**
 	 * @param WP_Query $q
+	 * @param string $lang
+	 *
+	 * @return WP_Query
+	 */
+	private function adjust_default_taxonomies_query_vars( $q, $lang ) {
+		$vars = array(
+			'cat'              => array( 'type' => 'ids',   'tax' => 'category' ),
+			'category_name'    => array( 'type' => 'slugs', 'tax' => 'category' ),
+			'category__and'    => array( 'type' => 'ids',   'tax' => 'category' ),
+			'category__in'     => array( 'type' => 'ids',   'tax' => 'category' ),
+			'category__not_in' => array( 'type' => 'ids',   'tax' => 'category' ),
+			'tag'              => array( 'type' => 'slugs', 'tax' => 'post_tag' ),
+			'tag_id'           => array( 'type' => 'ids',   'tax' => 'post_tag' ),
+			'tag__and'         => array( 'type' => 'ids',   'tax' => 'post_tag' ),
+			'tag__in'          => array( 'type' => 'ids',   'tax' => 'post_tag' ),
+			'tag__not_in'      => array( 'type' => 'ids',   'tax' => 'post_tag' ),
+			'tag_slug__and'    => array( 'type' => 'slugs', 'tax' => 'post_tag' ),
+			'tag_slug__in'     => array( 'type' => 'slugs', 'tax' => 'post_tag' ),
+		);
+
+		foreach ( $vars as $key => $args ) {
+
+			if ( isset( $q->query_vars[ $key ] )
+				 && ! ( empty( $q->query_vars[ $key ] ) || $q->query_vars[ $key ] === 0 )
+			) {
+				list( $values, $glue ) = $this->parse_scalar_values_in_query_vars( $q, $key, $args['type'] );
+				$translated_values     = $this->translate_term_values( $values, $args['type'], $args['tax'], $lang );
+				$q                     = $this->replace_query_vars_value( $q, $key, $translated_values, $glue );
+			}
+		}
+
+		return $q;
+	}
+
+	/**
+	 * @param WP_Query $q
+	 * @param string   $key
+	 * @param string   $type
+	 *
+	 * @return array
+	 */
+	private function parse_scalar_values_in_query_vars( $q, $key, $type ) {
+		$glue   = false;
+		$values = array();
+
+		if( is_scalar( $q->query_vars[ $key ] ) ) {
+			$glue = strpos( $q->query_vars[ $key ], ',' ) !== false ? ',' : $glue;
+			$glue = strpos( $q->query_vars[ $key ], '+' ) !== false ? '+' : $glue;
+
+			if( $glue ) {
+				$values = explode( $glue, $q->query_vars[ $key ] );
+			} else {
+				$values = array( $q->query_vars[ $key ] );
+			}
+
+			$values = array_map( 'trim', $values );
+			$values = $type === 'ids' ? array_map( 'intval', $values ) : $values;
+		} else if ( is_array( $q->query_vars[ $key ] ) ) {
+			$values = $q->query_vars[ $key ];
+		}
+
+		return array( $values, $glue );
+	}
+
+	/**
+	 * @param array  $values
+	 * @param string $type
+	 * @param string $taxonomy
+	 * @param string $lang
+	 *
+	 * @return array
+	 */
+	private function translate_term_values( $values, $type, $taxonomy, $lang ) {
+		$translated_values = array();
+
+		if ( $type === 'ids' ) {
+
+			foreach ( $values as $id ) {
+				$sign                = intval( $id ) < 0 ? - 1 : 1;
+				$id                  = abs( $id );
+				$translated_values[] = $sign * (int) $this->term_translations->term_id_in( $id, $lang, true );
+			}
+
+		} else if ( $type === 'slugs' ) {
+
+			foreach ( $values as $slug ) {
+				$slug = preg_replace( '#((.*)/)#', '', $slug );
+
+				$id = $this->wpdb->get_var(
+					$this->wpdb->prepare(
+						"SELECT t.term_id FROM {$this->wpdb->terms} t
+								 JOIN {$this->wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+								 WHERE tt.taxonomy = %s AND t.slug = %s LIMIT 1",
+						$taxonomy,
+						$slug
+					)
+				);
+
+				$term_id = (int) $this->term_translations->term_id_in( $id, $lang, true );
+
+				if ( $term_id !== $id ) {
+
+					$slug = $this->wpdb->get_var(
+						$this->wpdb->prepare(
+							"SELECT slug FROM {$this->wpdb->terms}
+								 WHERE term_id = %d LIMIT 1",
+							$term_id
+						)
+					);
+
+				}
+
+				$translated_values[] = $slug;
+			}
+		}
+
+		return $translated_values;
+	}
+
+	/**
+	 * @param WP_Query $q
+	 * @param string   $key
+	 * @param array    $translated_values
+	 * @param string   $glue
+	 *
+	 * @return WP_Query
+	 */
+	private function replace_query_vars_value( $q, $key, $translated_values, $glue ) {
+		if ( ! empty( $translated_values ) && ! empty( $translated_values[0] ) ) {
+
+			$translated_values = array_unique( $translated_values );
+
+			if( is_scalar( $q->query_vars[ $key ] ) ) {
+				$q->query_vars[ $key ] = implode( $glue, $translated_values );
+			} else if ( is_array( $q->query_vars[ $key ] ) ) {
+				$q->query_vars[ $key ] = $translated_values;
+			}
+		}
+
+		return $q;
+	}
+
+	/**
+	 * @param WP_Query $q
+	 *
+	 * @return WP_Query
+	 */
+	private function adjust_taxonomy_query( $q ) {
+		if ( isset( $q->query_vars['tax_query'] ) && is_array( $q->query_vars['tax_query'] )
+		     && isset( $q->tax_query->queries ) && is_array( $q->tax_query->queries )
+		     && isset( $q->query['tax_query'] ) && is_array( $q->query['tax_query'] )
+		) {
+
+			$new_conditions = $this->adjust_tax_query_conditions( $q->query['tax_query'] );
+			$q->query['tax_query']      = $new_conditions;
+			$q->tax_query->queries      = $new_conditions;
+			$q->query_vars['tax_query'] = $new_conditions;
+		}
+
+		return $q;
+	}
+
+	/**
+	 * Recursive method to allow conversion of nested conditions
+	 *
+	 * @param array $conditions
+	 *
+	 * @return array
+	 */
+	private function adjust_tax_query_conditions( $conditions ) {
+
+		foreach ( $conditions as $key => $condition ) {
+
+			if ( ! is_array( $condition ) ) { // e.g 'relation' => 'OR'
+				continue;
+			} else if ( ! isset( $condition['terms'] ) ) { // Process recursively the nested condition
+				$conditions[ $key ] = $this->adjust_tax_query_conditions( $condition );
+			} else if ( is_array( $condition['terms'] ) ) {
+
+				foreach ( $condition['terms'] as $value ) {
+
+					$field = isset( $condition['field'] ) ? $condition['field'] : 'term_id';
+					$term  = $this->sitepress->get_wp_api()->get_term_by( $field, $value, $condition['taxonomy'] );
+
+					if ( is_object( $term ) ) {
+
+						if ( $field === 'id' && ! isset( $term->id ) ) {
+							$translated_value = isset( $term->term_id ) ? $term->term_id : null;
+						} else {
+							$translated_value = isset( $term->{$field} ) ? $term->{$field} : null;
+						}
+
+						$index = array_search( $value, $condition['terms'] );
+						$condition['terms'][ $index ] = $translated_value;
+					}
+				}
+
+				$conditions[ $key ] = $condition;
+
+			} else if ( is_scalar( $condition['terms'] ) ) {
+				$field = $condition['field'];
+				$term  = $this->sitepress->get_wp_api()->get_term_by( $field, $condition['terms'], $condition['taxonomy'] );
+
+				if ( is_object( $term ) ) {
+					$conditions[ $key ]['terms'] = isset( $term->{$field} ) ? $term->{$field} : null;
+				}
+			}
+		}
+
+		return $conditions;
+	}
+
+	/**
+	 * @param WP_Query $q
 	 *
 	 * @return WP_Query
 	 */
 	function parse_query( $q ) {
-		if ( is_admin() ) {
+		if ( $this->sitepress->get_wp_api()->is_admin()
+		     && ! $this->sitepress->get_wp_api()->constant( 'DOING_AJAX' )
+		) {
 			return $q;
 		}
 
@@ -43,164 +259,8 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 
 		$current_language = $this->sitepress->get_current_language();
 		if ( $current_language !== $this->sitepress->get_default_language() ) {
-			$cat_array = ! empty( $q->query_vars['cat'] ) ? array_map( 'intval',
-			                                                           array_map( 'trim',
-			                                                                      explode( ',',
-			                                                                               $q->query_vars['cat'] ) ) ) : array();
-			if ( ! empty( $q->query_vars['category_name'] ) ) {
-				$categories = array_filter( array_map( 'trim', explode( ",", $q->query_vars['category_name'] ) ) );
-				$cat_array  = array();
-				foreach ( $categories as $category ) {
-					$cat = get_term_by( 'slug', preg_replace( '#((.*)/)#', '', $category ), 'category' );
-					$cat = $cat ? $cat : get_term_by( 'name', $category, 'category' );
-					if ( is_object( $cat ) && $cat->term_id ) {
-						$cat_array[] = $cat->term_id;
-					}
-				}
-				if ( empty( $cat_array ) ) {
-					$q->query_vars['p'] = - 1;
-				}
-			}
-			if ( ! empty( $q->query_vars['category__and'] ) ) {
-				$cat_array = $q->query_vars['category__and'];
-			}
-			if ( ! empty( $q->query_vars['category__in'] ) ) {
-				$cat_array = array_unique( array_merge( $cat_array,
-				                                        array_map( 'intval', $q->query_vars['category__in'] ) ) );
-			}
-			if ( ! empty( $q->query_vars['category__not_in'] ) ) {
-				$__cats = array();
-				foreach ( $q->query_vars['category__not_in'] as $key => $val ) {
-					$__cats[ $key ] = - 1 * intval( $val );
-				}
-				$cat_array = array_unique( array_merge( $cat_array, $__cats ) );
-			}
-			if ( ! empty( $cat_array ) ) {
-				$translated_ids = array();
-				foreach ( $cat_array as $c ) {
-					$sign             = intval( $c ) < 0 ? - 1 : 1;
-					$translated_ids[] = $sign * intval( $this->term_translations->term_id_in( abs( $c ),
-					                                                                          $current_language,
-					                                                                          true ) );
-				}
-				if ( ! empty( $q->query_vars['cat'] ) ) {
-					$q->query_vars['cat'] = join( ',', $translated_ids );
-				}
-				if ( ! empty( $q->query_vars['category_name'] ) ) {
-					$_ctmp                          = get_term_by( 'id', $translated_ids[0], 'category' );
-					$q->query_vars['category_name'] = $_ctmp->slug;
-				}
-				if ( ! empty( $q->query_vars['category__and'] ) ) {
-					$q->query_vars['category__and'] = $translated_ids;
-				}
-				if ( ! empty( $q->query_vars['category__in'] ) ) {
-					$__translated_in = array();
-					foreach ( $translated_ids as $key => $t_id ) {
-						if ( $t_id > 0 ) {
-							$__translated_in[ $key ] = $t_id;
-						}
-					}
-					$q->query_vars['category__in'] = $__translated_in;
-				}
-				if ( ! empty( $q->query_vars['category__not_in'] ) ) {
-					$__translated_not_in = array();
-					foreach ( $translated_ids as $key => $t_id ) {
-						if ( $t_id < 0 ) {
-							$__translated_not_in[ $key ] = $t_id;
-						}
-					}
-					$q->query_vars['category__not_in'] = $__translated_not_in;
-				}
-			}
-			$tag_array = array();
-			$tag_glue  = '';
-			if ( ! empty( $q->query_vars['tag'] ) ) {
-				$tag_glue = false !== strpos( $q->query_vars['tag'], ' ' ) ? '+' : ',';
-				$exp      = explode( ' ', $q->query_vars['tag'] );
-				foreach ( $exp as $e ) {
-					$tag_array[] = $this->wpdb->get_var( $this->wpdb->prepare( "SELECT x.term_id FROM {$this->wpdb->terms} t
-						JOIN {$this->wpdb->term_taxonomy} x ON t.term_id=x.term_id WHERE x.taxonomy='post_tag' AND t.slug=%s LIMIT 1",
-					                                                           $e ) );
-				}
-				$_tmp = array_unique( $tag_array );
-				if ( count( $_tmp ) == 1 && empty( $_tmp[0] ) ) {
-					$tag_array = array();
-				}
-			}
-			if ( ! empty( $q->query_vars['tag_id'] ) ) {
-				$tag_array = array_map( 'trim', explode( ',', $q->query_vars['tag_id'] ) );
-			}
 
-			foreach ( array( 'tag__not_in', 'tag__in', 'tag__and' ) as $index ) {
-				if ( ! empty( $q->query_vars[ $index ] ) ) {
-					$tag_array = $q->query_vars[ $index ];
-					break;
-				}
-			}
-			// tag_slug__in
-			if ( ! empty( $q->query_vars['tag_slug__in'] ) ) {
-				foreach ( $q->query_vars['tag_slug__in'] as $t ) {
-					if ( $tg = $this->wpdb->get_var( $this->wpdb->prepare( "
-								SELECT x.term_id FROM {$this->wpdb->terms} t
-								JOIN {$this->wpdb->term_taxonomy} x ON t.term_id=x.term_id
-								WHERE x.taxonomy='post_tag' AND t.slug=%s LIMIT 1",
-					                                                       $t ) )
-					) {
-						$tag_array[] = $tg;
-					}
-				}
-			}
-			if ( ! empty( $q->query_vars['tag_slug__and'] ) ) {
-				foreach ( $q->query_vars['tag_slug__and'] as $t ) {
-					$tag_array[] = $this->wpdb->get_var( $this->wpdb->prepare( "SELECT x.term_id FROM {$this->wpdb->terms} t
-						JOIN {$this->wpdb->term_taxonomy} x ON t.term_id=x.term_id WHERE x.taxonomy='post_tag' AND t.slug=%s LIMIT 1",
-					                                                           $t ) );
-				}
-			}
-			if ( ! empty( $tag_array ) ) {
-				$translated_ids = array();
-				foreach ( $tag_array as $c ) {
-					if ( intval( $c ) < 0 ) {
-						$sign = - 1;
-					} else {
-						$sign = 1;
-					}
-					$_tid             = intval( $this->term_translations->term_id_in( abs( $c ),
-					                                                                  $current_language,
-					                                                                  true ) );
-					$translated_ids[] = $sign * $_tid;
-				}
-			}
-			if ( ! empty( $translated_ids ) ) {
-				if ( isset( $q->query_vars['tag'] ) && $q->query_vars['tag'] !== "" ) {
-					$slugs                = $this->wpdb->get_col( "SELECT slug
-                                                               FROM {$this->wpdb->terms}
-                                                               WHERE term_id IN (" . wpml_prepare_in( $translated_ids,
-					                                                                                  '%d' ) . ")" );
-					$q->query_vars['tag'] = join( $tag_glue, $slugs );
-				}
-				foreach ( array( 'tag__in', 'tag__and', 'tag_id' ) as $index ) {
-					if ( ! empty( $q->query_vars[ $index ] ) ) {
-						$q->query_vars[ $index ] = join( ',', $translated_ids );
-						break;
-					}
-				}
-				if ( ! empty( $q->query_vars['tag__not_in'] ) ) {
-					$q->query_vars['tag__not_in'] = array_map( 'abs', $translated_ids );
-				}
-				if ( ! empty( $q->query_vars['tag_slug__in'] ) ) {
-					$q->query_vars['tag_slug__in'] = $this->wpdb->get_col( "SELECT slug
-                                                               FROM {$this->wpdb->terms}
-                                                               WHERE term_id IN (" . wpml_prepare_in( $translated_ids,
-					                                                                                  '%d' ) . ")" );
-				}
-				if ( ! empty( $q->query_vars['tag_slug__and'] ) ) {
-					$q->query_vars['tag_slug__and'] = $this->wpdb->get_col( "SELECT slug
-                                                               FROM {$this->wpdb->terms}
-                                                               WHERE term_id IN (" . wpml_prepare_in( $translated_ids,
-					                                                                                  '%d' ) . ")" );
-				}
-			}
+			$q = $this->adjust_default_taxonomies_query_vars( $q, $current_language );
 
 			$post_type = ! empty( $q->query_vars['post_type'] ) ? $q->query_vars['post_type'] : 'post';
 			if ( ! is_array( $post_type ) ) {
@@ -245,56 +305,7 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 			//TODO: [WPML 3.3] Discuss this. Why WP assumes it's there if query vars are altered? Look at wp-includes/query.php line #2468 search: if ( $this->query_vars_changed ) {
 			$q->query_vars['meta_query'] = isset( $q->query_vars['meta_query'] ) ? $q->query_vars['meta_query'] : array();
 
-			if ( isset( $q->query_vars['tax_query'] ) && is_array( $q->query_vars['tax_query'] ) &&
-					 isset( $q->query['tax_query'] ) && is_array( $q->query['tax_query'] )) {
-
-				foreach ( $q->query['tax_query'] as $num => $fields ) {
-					if ( ! isset( $fields['terms'] ) ) {
-						continue;
-					}
-					if ( is_array( $fields['terms'] ) ) {
-						foreach ( $fields['terms'] as $term ) {
-							$term_index = isset( $fields['field'] ) ? $fields['field'] : 'term_id';
-							$taxonomy   = get_term_by( $term_index, $term, $fields['taxonomy'] );
-							if ( is_object( $taxonomy ) ) {
-								if ( $term_index === 'id' && ! isset( $taxonomy->id ) ) {
-									$field = isset( $taxonomy->term_id ) ? $taxonomy->term_id : null;
-								} else {
-									$field = isset( $taxonomy->{$term_index} ) ? $taxonomy->{$term_index} : null;
-								}
-								$tmp   = $q->query['tax_query'][ $num ]['terms'];
-								$tmp   = array_diff( (array) $tmp,
-								                     array( $term ) ); // removes from array element with original value
-								$tmp[] = $field;
-								//Reindex array
-								$q->query['tax_query'][ $num ]['terms'] = array_values( $tmp );
-								$tmp                                    = isset( $q->tax_query->queries[ $num ]['terms'] ) ? $q->tax_query->queries[ $num ]['terms'] : array();
-								$tmp                                    = array_diff( (array) $tmp,
-								                                                      array( $term ) ); // see above
-								$tmp[]                                  = $field;
-								//Reindex array
-								$q->tax_query->queries[ $num ]['terms'] = array_values( $tmp );
-								$tmp                                    = $q->query_vars['tax_query'][ $num ]['terms'];
-								$tmp                                    = array_diff( (array) $tmp,
-								                                                      array( $term ) ); // see above
-								$tmp[]                                  = $field;
-								//Reindex array
-								$q->query_vars['tax_query'][ $num ]['terms'] = array_values( $tmp );
-								unset( $tmp );
-							}
-						}
-					} else if ( is_string( $fields['terms'] ) ) {
-						$term_index = $fields['field'];
-						$taxonomy   = get_term_by( $term_index, $fields['terms'], $fields['taxonomy'] );
-						if ( is_object( $taxonomy ) ) {
-							$field                                       = isset( $taxonomy->{$term_index} ) ? $taxonomy->{$term_index} : null;
-							$q->query['tax_query'][ $num ]['terms']      = $field;
-							$q->tax_query->queries[ $num ]['terms'][0]   = $field;
-							$q->query_vars['tax_query'][ $num ]['terms'] = $field;
-						}
-					}
-				}
-			}
+			$q = $this->adjust_taxonomy_query( $q );
 		}
 
 		return $q;
@@ -416,7 +427,7 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 	}
 
 	private function is_permalink_part_of_request( $permalink, $request_uri ) {
-		$permalink_path = trailingslashit( urldecode( parse_url( $permalink, PHP_URL_PATH ) ) );
+		$permalink_path = trailingslashit( urldecode( wpml_parse_url( $permalink, PHP_URL_PATH ) ) );
 		$request_uri    = trailingslashit( urldecode( $request_uri ) );
 		return 0 === strcasecmp( substr( $request_uri, 0, strlen( $permalink_path ) ), $permalink_path );
 	}

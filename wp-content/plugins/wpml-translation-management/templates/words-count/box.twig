@@ -5,12 +5,12 @@
 		<input type="hidden" name="wpml_words_count_panel_nonce" value="{{ nonces.wpml_words_count_panel_nonce|e }}">
 		<input type="hidden" name="wpml_words_count_chunk_size" value="{{ wc_chunk_size|e }}">
 
-		<div class="messages">
+		<div class="wpml-wc-messages">
 			{% for message in strings.messages %}
 				<p>{{ message }}</p>
 			{% endfor %}
 		</div>
-		<div class="buttons">
+		<div class="wpml-wc-buttons">
 			<p>
 				<a class="button-primary" href="{{ strings.openDialogButtonURL }}" title="{{ strings.openDialogButton|e }}">
 					{{ strings.openDialogButton }}

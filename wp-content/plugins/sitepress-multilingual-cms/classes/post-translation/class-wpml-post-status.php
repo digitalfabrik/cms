@@ -4,6 +4,12 @@ class WPML_Post_Status extends WPML_WPDB_User {
 
 	private $needs_update = array();
 	private $status       = array();
+	private $wp_api;
+	
+	public function __construct( &$wpdb, $wp_api ) {
+		parent::__construct( $wpdb );
+		$this->wp_api = $wp_api;
+	}
 
 	public function needs_update( $post_id ) {
 		if ( !isset( $this->needs_update[ $post_id ] ) ) {
@@ -113,7 +119,7 @@ class WPML_Post_Status extends WPML_WPDB_User {
 			$status  = ICL_TM_NOT_TRANSLATED;
 			$post_id = $lang_code . $trid;
 		} else {
-			$status = get_post_meta ( $post_id, '_icl_lang_duplicate_of', true )
+			$status = $this->is_duplicate( $post_id )
 				? ICL_TM_DUPLICATE : ( $this->needs_update ( $post_id ) ? ICL_TM_NEEDS_UPDATE : ICL_TM_COMPLETE );
 		}
 		$status = apply_filters (
@@ -126,5 +132,9 @@ class WPML_Post_Status extends WPML_WPDB_User {
 		$this->status[ $post_id ] = $status;
 
 		return $status;
+	}
+	
+	public function is_duplicate( $post_id ) {
+		return (bool) $this->wp_api->get_post_meta ( $post_id, '_icl_lang_duplicate_of', true );
 	}
 }

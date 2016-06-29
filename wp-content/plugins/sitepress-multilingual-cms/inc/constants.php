@@ -127,3 +127,9 @@ define( 'WPML_POST_META_READONLY_SETTING_INDEX', 'custom_fields_readonly_config'
 define( 'WPML_TERM_META_READONLY_SETTING_INDEX', 'custom_term_fields_readonly_config' );
 
 define( 'WPML_POST_TYPE_READONLY_SETTING_INDEX', 'custom_types_readonly_config' );
+
+define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DIRECTORY',  1 );
+define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN',     2 );
+define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER',  3 );
+
+define( 'WPML_ELEMENT_TRANSLATIONS_CACHE_GROUP', 'element_translations' );

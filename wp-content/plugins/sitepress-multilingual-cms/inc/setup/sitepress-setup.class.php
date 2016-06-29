@@ -137,7 +137,7 @@ class SitePress_Setup {
 
 			$wpdb->show_errors();
 
-			if ( $truncate_result ) {
+			if ( false !== $truncate_result ) {
 				foreach ( self::get_languages_names()  as $key => $val ) {
 					$language_code     = $languages_codes[ $key ];
 					if ( strpos( $key, 'Norwegian Bokm' ) === 0 ) {
@@ -198,7 +198,7 @@ class SitePress_Setup {
 
 			$wpdb->show_errors();
 
-			if ( $truncate_result ) {
+			if ( false !== $truncate_result ) {
 				$index = 1;
 
 				$insert_sql_parts = array();

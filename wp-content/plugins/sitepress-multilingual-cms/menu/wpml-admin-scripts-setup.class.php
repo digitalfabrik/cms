@@ -408,10 +408,18 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 			wp_enqueue_style( 'sitepress-' . $page_basename, ICL_PLUGIN_URL . '/res/css/' . $page_basename . '.css', array(), ICL_SITEPRESS_VERSION );
 		}
 
+		wp_register_style( 'otgs-dialogs', ICL_PLUGIN_URL . '/res/css/otgs-dialogs.css', null, ICL_SITEPRESS_VERSION );
+		wp_register_style( 'wpml-dialog', ICL_PLUGIN_URL . '/res/css/dialog.css', array('wp-jquery-ui-dialog', 'otgs-dialogs'), ICL_SITEPRESS_VERSION );
+		wp_enqueue_style( 'wpml-dialog');
+
+
+		wp_register_style( 'otgs-ico', ICL_PLUGIN_URL . '/res/css/otgs-ico.css', null, ICL_SITEPRESS_VERSION );
+		wp_enqueue_style( 'otgs-ico');
+		
+		
 		wp_enqueue_style( 'thickbox' );
 		wp_enqueue_style( 'translate-taxonomy', ICL_PLUGIN_URL . '/res/css/taxonomy-translation.css', array(), ICL_SITEPRESS_VERSION );
-		wp_enqueue_style( 'onthegosystems-icon', ICL_PLUGIN_URL . '/res/css/otgs-ico.css' );
-
+		
 	}
 
 	private function verify_home_and_blog_pages_translations() {

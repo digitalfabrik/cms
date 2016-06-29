@@ -252,20 +252,8 @@ if ( $icl_menus_sync->is_preview ) {
 			}
 		}
 	}
-	if ( defined( 'WPML_ST_FOLDER' ) && $icl_menus_sync->string_translation_links ) {
-		echo '<p>';
-		echo __( 'Translate menu strings and URLs for:', 'sitepress' ) . ' ';
-		$url_pattern = ' href="admin.php?page=' . WPML_ST_FOLDER . '/menu/string-translation.php&context=%s"';
-		$menu_names       = array_keys( $icl_menus_sync->string_translation_links );
-		$menu_links  = array();
-		foreach ( $menu_names as $menu_name ) {
-			$menu_url_pattern = sprintf($url_pattern, urlencode($menu_name . ' menu'));
-			$menu_links[ ] = sprintf( __( '<a%s>%s</a>', 'sitepress' ), $menu_url_pattern, $menu_name );
-		}
-		$menu_links_string = join( ', ', $menu_links );
-		echo $menu_links_string;
-		echo '</p>';
-	}
+
+	$icl_menus_sync->display_menu_links_to_string_translation();
 }
 do_action( 'icl_menu_footer' );
 ?>

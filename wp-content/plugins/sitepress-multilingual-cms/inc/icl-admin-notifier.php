@@ -435,6 +435,9 @@ class ICL_AdminNotifier {
 				$temp_classes[] = $class;
 			}
 		}
+		if ( $hide OR $dismiss ) {
+			$temp_classes[] = 'otgs-is-dismissible';
+		}
 
 		$temp_classes = array_unique($temp_classes);
 
@@ -447,19 +450,18 @@ class ICL_AdminNotifier {
 		}
 		$result .= '>';
 
-		$result .= '<div class="icl-admin-message-wrapper">' . self::sanitize_and_format_message( $message );
+		$result .= '<p>' . self::sanitize_and_format_message( $message ) . '</p>';
 		if ( $hide ) {
-			$result .= ' <a href="#" class="icl-admin-message-hide">' . __( 'Hide', 'sitepress' ) . '</a>';
+			$result .= ' <span class="icl-admin-message-hide notice-dismiss"><span class="screen-reader-text">' . __( 'Hide this notice.', 'sitepress' ) . '</span></span>';
 		}
 
 		if ( $dismiss ) {
-			$result .= ' <div class="icl-admin-message-dismiss">';
-			$result .= '<input class="icl-admin-message-dismiss-check" type="checkbox" value="1" />';
-			$result .= __( 'Dismiss', 'sitepress' );
-			$result .= '</div>';
+			$result .= ' <span class="icl-admin-message-dismiss notice-dismiss">';
+			$result .= '<span class="screen-reader-text"><input class="icl-admin-message-dismiss-check" type="checkbox" value="1" />';
+			$result .=  __( 'Dismiss this notice.', 'sitepress' );
+			$result .= '</span></span>';
 		}
 
-		$result .= '</div>';
 		$result .= '</div>';
 
 		if(!$echo) {

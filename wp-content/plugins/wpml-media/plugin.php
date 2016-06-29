@@ -5,7 +5,7 @@ Plugin URI: https://wpml.org/
 Description: Add multilingual support for Media files
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.1.20
+Version: 2.1.22
 Plugin Slug: wpml-media-translation
 */
 
@@ -13,14 +13,18 @@ if (defined('WPML_MEDIA_VERSION')) {
 	return;
 }
 
-define('WPML_MEDIA_VERSION', '2.1.20');
-define('WPML_MEDIA_PATH', dirname(__FILE__));
+define('WPML_MEDIA_VERSION', '2.1.22');
+define( 'WPML_MEDIA_PATH', dirname( __FILE__ ) );
 
-require_once 'embedded/wpml/commons/autoloader.php';
-$wpml_auto_loader_instance = WPML_Auto_Loader::get_instance();
-$wpml_auto_loader_instance->register( WPML_MEDIA_PATH . '/' );
+$autoloader_dir = WPML_MEDIA_PATH . '/embedded';
+if ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) {
+	$autoloader = $autoloader_dir . '/autoload.php';
+} else {
+	$autoloader = $autoloader_dir . '/autoload_52.php';
+}
+require_once $autoloader;
 
-require WPML_MEDIA_PATH . '/inc/wpml-dependencies-check/wpml-bundle-check.class.php';
+require WPML_MEDIA_PATH . '/embedded/wpml/commons/src/dependencies/class-wpml-dependencies.php';
 require WPML_MEDIA_PATH . '/inc/constants.inc';
 require WPML_MEDIA_PATH . '/inc/private-filters.php';
 require WPML_MEDIA_PATH . '/inc/wpml-media-dependencies.class.php';

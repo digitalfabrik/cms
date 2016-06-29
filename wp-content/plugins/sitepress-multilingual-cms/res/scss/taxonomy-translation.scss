@@ -1,38 +1,44 @@
-.icl_tt_form td, .icl_tt_labels_form td {
-  border: none;
+@import "_mixins";
+@import "_variables";
+
+#term-label-summary {
+  margin-top: $margin-base;
+}
+#wpml-taxonomy-translation-terms-table {
+  overflow-x: auto;
 }
 
-#wpml_tt_filters, #wpml_tt_search {
-  display: inline;
+.wpml-tt-sync-table {
+  td {
+   vertical-align: middle;
+  }
 }
-
-.wpml_tt_spinner {
-  margin-right: 15px;
-  display: none;
+.wpml-col-ttsync {
+  width: 110px;
 }
-
-.icl_tt_form .wpml_tt_spinner, .icl_tt_labels_form .wpml_tt_spinner {
-  float: right;
+.wpml-tt-sync-section {
+  margin-top: $margin-sm;
 }
-
-#wpml_tt_clear_search {
-  cursor: pointer;
+.wpml-tt-sync-legend {
+  span {
+    padding: 0 $margin-xs;
+    margin: 0 $margin-xs/2;
+  }
 }
-
-#wpml_tt_taxonomy_translation_wrap .lowlight {
-  color: #A04060;
-  font-style: italic;
+.wpml-tt-sync-action {
+  text-align: center;
+  margin: $margin-xs $margin-sm 0;
 }
-
-.icl_tt_sync_row {
-  margin-top: 10px;
-}
-
-.icl_tt_popup {
-  position: absolute;
-  z-index: 1;
-	background: rgba(255, 255, 255, 0.9);
-	box-shadow: 10px 10px 5px #888888;
-  border: 1px solid #777;
-  border-radius: 5px;
+.wpml-loading-taxonomy {
+	.spinner {
+		float:          none;
+		vertical-align: middle;
+		display:        inline-block;
+		margin:         0 5px 2px 5px;
+	}
+	margin-bottom:  5px;
+	font-size:      13px;
+	font-weight:    bold;
+	vertical-align: middle;
+	display:        none;
 }
