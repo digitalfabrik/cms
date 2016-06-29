@@ -1,6 +1,7 @@
+"use strict";
 
-icl_lang = icl_vars.current_language;
-icl_home = icl_vars.icl_home;
+var icl_lang = icl_vars.current_language;
+var icl_home = icl_vars.icl_home;
 
 function addLoadEvent(func) {
   var oldonload = window.onload;

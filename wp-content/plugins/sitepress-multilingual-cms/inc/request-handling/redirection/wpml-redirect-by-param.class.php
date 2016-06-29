@@ -5,15 +5,21 @@ class WPML_Redirect_By_Param extends WPML_Redirection {
 	private $post_like_params = array( 'p' => 1, 'page_id' => 1 );
 	private $term_like_params  = array( 'cat_ID' => 1, 'cat' => 1, 'tag' => 1 );
 
+	/** @var Sitepress */
+	private $sitepress;
+
 	/**
 	 * @param array                    $tax_sync_option
 	 * @param WPML_URL_Converter       $url_converter
 	 * @param WPML_Request             $request_handler
 	 * @param WPML_Language_Resolution $lang_resolution
+	 * @param Sitepress                $sitepress
 	 */
-	public function __construct( $tax_sync_option, &$url_converter, &$request_handler, &$lang_resolution ) {
+	public function __construct( $tax_sync_option, &$url_converter, &$request_handler, &$lang_resolution, &$sitepress ) {
 		parent::__construct( $url_converter, $request_handler, $lang_resolution );
 		global $wp_rewrite;
+
+		$this->sitepress = &$sitepress;
 
 		if ( ! isset( $wp_rewrite ) ) {
 			require_once ABSPATH . WPINC . '/rewrite.php';
@@ -21,6 +27,10 @@ class WPML_Redirect_By_Param extends WPML_Redirection {
 		}
 
 		$this->term_like_params = array_merge( $this->term_like_params, array_filter( $tax_sync_option ) );
+	}
+
+	public function init_hooks() {
+		add_action( 'template_redirect', array( $this, 'template_redirect_action' ), 1 );
 	}
 
 	/**
@@ -92,5 +102,17 @@ class WPML_Redirect_By_Param extends WPML_Redirection {
 		);
 
 		return $query_params_new !== false ? rawurldecode( http_build_query( $query_params_new ) ) : false;
+	}
+
+	/**
+	 * @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-2822
+	 */
+	public function template_redirect_action() {
+		if ( $this->sitepress->get_wp_api()->is_front_page()
+		     && $this->sitepress->get_wp_api()->get_query_var('page')
+		     && $this->sitepress->get_default_language() !== $this->sitepress->get_current_language()
+		) {
+			remove_action( 'template_redirect', 'redirect_canonical' );
+		}
 	}
 }

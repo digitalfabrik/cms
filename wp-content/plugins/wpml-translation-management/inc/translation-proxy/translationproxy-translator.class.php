@@ -53,7 +53,7 @@ class TranslationProxy_Translator {
 			foreach ( $translation_languages as $lang ) {
 				$translators = $_tr = array();
 				$max_rate    = false;
-				if ( isset( $lang['translators'] ) && ! empty( $lang['translators'] ) ) {
+				if ( isset( $lang['translators'], $lang['translators']['translator'] ) && ! empty( $lang['translators'] ) ) {
 					if ( ! isset( $lang['translators']['translator'][0] ) ) {
 						$_tr[0] = $lang['translators']['translator'];
 					} else {
@@ -161,24 +161,20 @@ class TranslationProxy_Translator {
 	private static function get_website_details( $project ) {
 
 		require_once ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
-		require_once ICL_PLUGIN_PATH . '/lib/xml2array.php';
+		require_once ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
 		require_once ICL_PLUGIN_PATH . '/lib/icl_api.php';
 
 		$site_id    = $project->ts_id;
 		$access_key = $project->ts_access_key;
 
-		$default    = array();
+		$default = array();
 
 		if ( empty( $site_id ) ) {
 			return $default;
 		}
 
-		try {
-			$icl_query = new ICanLocalizeQuery( $site_id, $access_key );
-			$result    = $icl_query->get_website_details();
-		} catch ( Exception $e ) {
-			return $default;
-		}
+		$icl_query = new ICanLocalizeQuery( $site_id, $access_key );
+		$result    = $icl_query->get_website_details();
 
 		return $result;
 	}
@@ -245,6 +241,11 @@ class TranslationProxy_Translator {
 		return $translators;
 	}
 
+	/**
+	 * @param $translator_id
+	 *
+	 * @return string|false
+	 */
 	public static function get_translator_name( $translator_id ) {
 		if ( TranslationProxy::translator_selection_available() ) {
 			$lang_status = self::get_language_pairs();
@@ -307,7 +308,7 @@ class TranslationProxy_Translator {
 		}
 
 		require_once ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
-		require_once ICL_PLUGIN_PATH . '/lib/xml2array.php';
+		require_once ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
 		require_once ICL_PLUGIN_PATH . '/lib/icl_api.php';
 		$icl_query = new ICanLocalizeQuery();
 		$icl_query->updateAccount( $params );

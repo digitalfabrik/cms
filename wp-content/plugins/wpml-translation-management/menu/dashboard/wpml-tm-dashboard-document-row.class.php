@@ -80,8 +80,9 @@ class WPML_TM_Dashboard_Document_Row {
 		$post_view_link = '';
 		$post_edit_link = '';
 		if ( ! $this->is_external_type() ) {
-			$post_view_link = TranslationManagement::tm_post_link( $current_document->ID, __( 'View', 'wpml-translation-management' ), true );
-			$post_edit_link = TranslationManagement::tm_post_link( $current_document->ID, __( 'Edit', 'wpml-translation-management' ), true, true, true, true );
+			$post_link_factory = new WPML_TM_Post_Link_Factory($this->sitepress);
+			$post_view_link = $post_link_factory->view_link_anchor( $current_document->ID, __( 'View', 'wpml-translation-management' ));
+			$post_edit_link = $post_link_factory->edit_link_anchor( $current_document->ID, __( 'Edit', 'wpml-translation-management' ));
 		}
 
 		$post_view_link = apply_filters( 'wpml_document_view_item_link', $post_view_link, __( 'View', 'wpml-translation-management' ), $current_document, $element_type, $this->get_type());
@@ -178,7 +179,7 @@ class WPML_TM_Dashboard_Document_Row {
 			<td scope="row" class="manage-column column-date">
 				<?php echo $this->get_general_status(); ?>
 			</td>
-			<td scope="row" class="manage-column column-active-languages">
+			<td scope="row" class="manage-column column-active-languages wpml-col-languages">
 				<?php
 				foreach ( $this->active_languages as $code => $lang ) {
 					if ( $code == $this->data->language_code ) {
@@ -215,13 +216,13 @@ class WPML_TM_Dashboard_Document_Row {
 					$status_image_file_name = $iclTranslationManagement->status2img_filename( $status, ICL_TM_NEEDS_UPDATE === (int) $status );
 					?>
 
-					<span data-document_status="<?php echo $status; ?>" style="padding-top:4px;">
+					<span data-document_status="<?php echo $status; ?>">
                     <img title="<?php echo $lang[ 'display_name' ]; ?>: <?php echo $translation_status_text ?>"
                          src="<?php echo WPML_TM_URL ?>/res/img/<?php echo $status_image_file_name; ?>"
                          width="16"
                          height="16"
                          alt="<?php echo $lang[ 'display_name' ]; ?>: <?php echo $translation_status_text ?>"/>
-                </span>
+                	</span>
 				<?php
 				}
 				?>

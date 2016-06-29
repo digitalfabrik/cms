@@ -285,7 +285,7 @@ if ( ! empty( $messages ) ) {
 <div id="ajax-response"></div>
 
 <?php
-if ( current_user_can('manage_options') && is_multisite() ) {
+if ( is_multisite() ) {
 	if ( $do_both )
 		echo '<h2 id="add-existing-user">' . __( 'Add Existing User' ) . '</h2>';
 	if ( !is_super_admin() ) {

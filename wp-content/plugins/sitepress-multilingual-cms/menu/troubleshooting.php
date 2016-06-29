@@ -173,7 +173,7 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 			global $sitepress;
 
 			remove_filter('get_terms_args', array($sitepress, 'get_terms_args_filter'));
-			remove_filter('get_term', array($sitepress,'get_term_adjust_id'));
+			remove_filter('get_term', array($sitepress,'get_term_adjust_id'), 1);
 			remove_filter('terms_clauses', array($sitepress,'terms_clauses'));
 			foreach ( get_taxonomies( array(), 'names' ) as $taxonomy ) {
 
@@ -209,7 +209,6 @@ if ( wp_verify_nonce(
 
 ?>
 <div class="wrap">
-<div id="icon-wpml" class="icon32"><br/></div>
 <h2><?php echo __( 'Troubleshooting', 'sitepress' ) ?></h2>
 <?php if ( isset( $_GET[ 'message' ] ) ){ ?>
 	<div class="updated message fade"><p>

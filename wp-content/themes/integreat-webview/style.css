@@ -421,7 +421,7 @@ nav#mainNav.is-active {
 nav#mainNav a#changeLocation {
   font-size: .95em;
   color: #FFFFFF;
-  float: left;
+  float: right;
   display: block;
   padding: 16px 15px;
   border: 0;
@@ -433,7 +433,7 @@ nav#mainNav a#changeLocation i {
 nav#mainNav button#closeMainNav {
   font-size: 2em;
   color: #222222;
-  float: right;
+  float: left;
   padding: 5px 10px;
   border: 0;
   cursor: pointer;
@@ -455,6 +455,9 @@ nav#mainNav a#linkToEvents {
   bottom: 0;
   padding: 15px 10px;
   background-color: #FFA000;
+}
+nav#mainNav .overview {
+  right: 0;
 }
 nav#mainNav ul {
   margin: 0;

@@ -63,7 +63,7 @@ class WPML_Simple_Language_Selector extends WPML_SP_User {
 				echo ' name="' . $options['name'] . '"';
 			}
 			?>
-			class="js-simple-lang-selector <?php echo $options['class']; ?>"
+			class="wpml-simple-lang-selector js-simple-lang-selector <?php echo $options['class']; ?>"
 			<?php echo $data; ?>
 			<?php echo $disabled; ?>
 			style="<?php echo $options['style']; ?>">
@@ -105,8 +105,8 @@ class WPML_Simple_Language_Selector extends WPML_SP_User {
 	static public function enqueue_scripts() {
 		if ( ! wp_script_is( 'wpml-select-2' ) ) {
 			// Enqueue in the footer because this is usually called late.
-			wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), WPML_ST_VERSION, true );
-			wp_enqueue_script( 'wpml-simple_language-selector', ICL_PLUGIN_URL . '/res/js/wpml-simple-language-selector.js', array( 'jquery' ), WPML_ST_VERSION, true );
+			wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
+			wp_enqueue_script( 'wpml-simple_language-selector', ICL_PLUGIN_URL . '/res/js/wpml-simple-language-selector.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
 		}
 	}
 }

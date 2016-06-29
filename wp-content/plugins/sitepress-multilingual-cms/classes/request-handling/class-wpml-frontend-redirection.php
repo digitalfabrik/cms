@@ -8,17 +8,27 @@ class WPML_Frontend_Redirection extends WPML_SP_User {
 	/** @var  WPML_Redirection */
 	private $redirect_helper;
 
+	/** @var  WPML_Language_Resolution $lang_resolution */
+	private $lang_resolution;
+
 	/**
 	 * WPML_Frontend_Redirection constructor.
 	 *
-	 * @param SitePress $sitepress
-	 * @param           $request_handler
-	 * @param           $redir_helper
+	 * @param SitePress                $sitepress
+	 * @param WPML_Frontend_Request    $request_handler
+	 * @param WPML_Redirection         $redir_helper
+	 * @param WPML_Language_Resolution $lang_resolution
 	 */
-	public function __construct( &$sitepress, &$request_handler, &$redir_helper ) {
+	public function __construct(
+		&$sitepress,
+		&$request_handler,
+		&$redir_helper,
+		&$lang_resolution
+	) {
 		parent::__construct( $sitepress );
 		$this->request_handler = &$request_handler;
 		$this->redirect_helper = &$redir_helper;
+		$this->lang_resolution = &$lang_resolution;
 	}
 
 	/**
@@ -34,6 +44,6 @@ class WPML_Frontend_Redirection extends WPML_SP_User {
 		};
 
 		// allow forcing the current language when it can't be decoded from the URL
-		return apply_filters( 'icl_set_current_language', $this->request_handler->get_requested_lang() );
+		return $this->lang_resolution->current_lang_filter( $this->request_handler->get_requested_lang() );
 	}
 }

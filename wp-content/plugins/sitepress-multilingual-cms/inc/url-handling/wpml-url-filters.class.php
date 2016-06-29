@@ -32,9 +32,9 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	/**
 	 * Filters the link to a post's edit screen by appending the language query argument
 	 *
-	 * @param  string $link
-	 * @param    int  $id
-	 * @param string  $context
+	 * @param string $link
+	 * @param int    $id
+	 * @param string $context
 	 *
 	 * @return string
 	 *
@@ -43,6 +43,11 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	public function get_edit_post_link( $link, $id, $context = 'display' ) {
 		if ( $id && (bool) ( $lang = $this->post_translation->get_element_lang_code( $id ) ) === true ) {
 			$link .= ( 'display' === $context ? '&amp;' : '&' ) . 'lang=' . $lang;
+			if ( ! did_action( 'wpml_pre_status_icon_display' ) ) {
+				do_action( 'wpml_pre_status_icon_display' );
+			}
+			$link = apply_filters( 'wpml_link_to_translation', $link, $id,
+				$lang, $this->post_translation->get_element_trid( $id ) );
 		}
 
 		return $link;
@@ -74,7 +79,7 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	public function filter_root_permalink( $url ) {
 		$root_page_utils = $this->sitepress->get_root_page_utils();
 		if ( $root_page_utils->get_root_page_id() > 0 && $root_page_utils->is_url_root_page( $url ) ) {
-			$url_parts = parse_url( $url );
+			$url_parts = wpml_parse_url( $url );
 			$query     = isset( $url_parts['query'] ) ? $url_parts['query'] : '';
 			$path      = isset( $url_parts['path'] ) ? $url_parts['path'] : '';
 			$slugs     = array_filter( explode( '/', $path ) );

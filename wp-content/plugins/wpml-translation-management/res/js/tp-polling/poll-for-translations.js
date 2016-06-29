@@ -43,7 +43,6 @@ var TranslationProxyPolling = {
                         _icl_nonce: nonce,
                         job_polled: currentJob,
                         completed_jobs: TranslationProxyPolling.completed_count,
-                        error_jobs: TranslationProxyPolling.error_data,
                         cancelled_jobs: TranslationProxyPolling.cancel_count
                     },
                     success: function (response) {
@@ -53,14 +52,8 @@ var TranslationProxyPolling = {
                         var icl_message_div;
                         /** @namespace response.data.completed */
                         if (response.data.completed) {
-                            icl_message_div = jQuery("#icl_tm_pickup_wrap_completed");
+													icl_message_div = jQuery("#icl_tm_pickup_wrap_completed");
                             icl_message_div.text(response.data.completed);
-                            icl_message_div.show();
-                        }
-                        if (response.data.errors) {
-                            TranslationProxyPolling.error_data = response.data.errors && response.data.errors.length > 5 ? response.data.errors : '';
-                            icl_message_div = jQuery("#icl_tm_pickup_wrap_errors");
-                            icl_message_div.text(TranslationProxyPolling.error_data);
                             icl_message_div.show();
                         }
                         /** @namespace response.data.cancelled */
@@ -77,13 +70,19 @@ var TranslationProxyPolling = {
                         }
                         if (TranslationProxyPolling.jobs.length > 0) {
                             TranslationProxyPolling.handleOne();
-                        } else if (response.data.completed.replace(/[^0-9]/g, '') > 0) {
-                            TranslationProxyPolling.hideSpinner();
-                            TranslationProxyPolling.startReloading(10);
                         } else {
-                            TranslationProxyPolling.hideSpinner();
-                            TranslationProxyPolling.button.attr('disabled', 'disabled');
-                        }
+													TranslationProxyPolling.hideSpinner();
+													TranslationProxyPolling.button.attr('disabled', 'disabled');
+													TranslationProxyPolling.startReloading(10);
+													jQuery.ajax({
+																				type:     "POST",
+																				url:      ajaxurl,
+																				dataType: 'json',
+																				data:     {
+																					action: 'icl_pickup_translations_complete'
+																				}
+																			});
+												}
                     },
                     error: function () {
                         TranslationProxyPolling.hideSpinner();
