@@ -18,8 +18,7 @@ class WPML_TP_Polling_Pickup {
 	 * @param WPML_TP_Remote_Sync_Factory $remote_sync_factory
 	 */
 	public function __construct(
-		&$pro_translation,
-		&$remote_sync_factory
+		&$pro_translation, &$remote_sync_factory
 	) {
 		$this->pro_translation     = &$pro_translation;
 		$this->remote_sync_factory = &$remote_sync_factory;
@@ -34,6 +33,7 @@ class WPML_TP_Polling_Pickup {
 	 */
 	public function poll_job( array $data ) {
 		$job     = ! empty( $data['job_polled'] ) ? $data['job_polled'] : false;
+
 		$results = array(
 			'errors' => empty( $data['error_jobs'] ) ? array() : $data['error_jobs']
 		);
@@ -41,6 +41,7 @@ class WPML_TP_Polling_Pickup {
 			empty( $data['completed_jobs'] ) ? 0 : (int) $data['completed_jobs'],
 			empty( $data['cancelled_jobs'] ) ? 0 : (int) $data['cancelled_jobs']
 		);
+
 		if ( $job && in_array( $job['job_state'], array(
 				'cancelled',
 				'translation_ready',
@@ -52,6 +53,7 @@ class WPML_TP_Polling_Pickup {
 			$remote_job_sync = $this->remote_sync_factory->remote_job_sync( $job );
 			if ( $remote_job_sync->not_in_sync() ) {
 				try {
+					//Poll requests happens here
 					$remote_job_sync->sync( $counts );
 				} catch ( Exception $e ) {
 					$results['errors']   = (array) $results['errors'];

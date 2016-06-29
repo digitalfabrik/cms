@@ -29,7 +29,7 @@ function icl_import_xml() {
 	echo '
 	<script type="text/javascript">
 		jQuery(document).ready(function(){
-			jQuery("#wpbody-content .submit").before(\'' . $out . '\');
+			jQuery("#wpbody-content").find("form .submit").before(\'' . $out . '\');
 		});
 	</script>
 	';

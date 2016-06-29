@@ -63,7 +63,7 @@ class WPML_Simple_Language_Selector extends WPML_SP_User {
 				echo ' name="' . $options['name'] . '"';
 			}
 			?>
-			class="js-simple-lang-selector <?php echo $options['class']; ?>"
+			class="wpml-simple-lang-selector js-simple-lang-selector <?php echo $options['class']; ?>"
 			<?php echo $data; ?>
 			<?php echo $disabled; ?>
 			style="<?php echo $options['style']; ?>">

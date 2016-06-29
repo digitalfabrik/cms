@@ -158,10 +158,10 @@ class WPML_Translation_Proxy_Basket_Networking {
 				foreach ( $valid_jobs[ $item_type_name ] as $value ) {
 					foreach ( $value['to_langs'] as $target_language => $target_language_selected ) {
 						//for remote strings
-						if ( $value['from_lang'] != $target_language
+						if ( array_key_exists( $target_language, $translators ) && $value['from_lang'] != $target_language
 						     && ! is_numeric( $translators[ $target_language ] )
 						     && $target_language_selected
-						     && ! in_array( $target_language, $remote_target_languages )
+						     && ! in_array( $target_language, $remote_target_languages, true )
 						) {
 							$remote_target_languages[] = $target_language;
 						}

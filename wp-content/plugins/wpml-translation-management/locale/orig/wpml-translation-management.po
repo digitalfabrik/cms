@@ -13,6 +13,87 @@ msgstr ""
 "Language:en\n"
 "MIME-Version: 1.0\n"
 
+msgid "The original has been deleted!"
+msgstr ""
+
+msgid "Deleted"
+msgstr ""
+
+msgid "The translation job (%s) doesn't belong to you."
+msgstr ""
+
+msgid "\"%s\" is not a valid XLIFF file."
+msgstr ""
+
+msgid "The uploaded xliff file does not seem to be properly formed."
+msgstr ""
+
+msgid "Missing or wrong data:"
+msgstr ""
+
+msgid "The uploaded xliff file doesn't belong to this system."
+msgstr ""
+
+msgid " - A xliff file is attached."
+msgstr ""
+
+msgid "Incompatible Archive."
+msgstr ""
+
+msgid "Could not retrieve file from archive."
+msgstr ""
+
+msgid "Could not extract file from archive."
+msgstr ""
+
+msgid "Empty archive."
+msgstr ""
+
+msgid "Translation of job %s has been uploaded and completed."
+msgstr ""
+
+msgid "No translation jobs were selected for export."
+msgstr ""
+
+msgid "All types"
+msgstr ""
+
+msgid "Any language"
+msgstr ""
+
+msgid "Available to translate"
+msgstr ""
+
+msgid "Export all jobs:"
+msgstr ""
+
+msgid "Export all filtered jobs of %1$s from %2$s to %3$s in %4$s:"
+msgstr ""
+
+msgid "Bulk Actions"
+msgstr ""
+
+msgid "Select the xliff file or zip file to upload from your computer:&nbsp;"
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Include XLIFF files in notification emails"
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Import / Export XLIFF"
+msgstr ""
+
+msgid "The xliff file could not be read."
+msgstr ""
+
 msgid "Not translated"
 msgstr ""
 
@@ -34,15 +115,6 @@ msgstr ""
 msgid "needs update"
 msgstr ""
 
-msgid "You haven't set your <a %s>synchronization preferences</a> for these custom posts: %s. Default value was selected."
-msgstr ""
-
-msgid "You haven't set your <a %s>synchronization preferences</a> for these taxonomies: %s. Default value was selected."
-msgstr ""
-
-msgid "Looks like you are running a multilingual WooCommerce site. To easily translate WooCommerce products and categories, you should use %s"
-msgstr ""
-
 msgid "PHP Setting"
 msgstr ""
 
@@ -56,6 +128,291 @@ msgid "and"
 msgstr ""
 
 msgid "WPML Translation Management is enabled but not effective. It requires %s in order to work."
+msgstr ""
+
+msgid "Reloading:"
+msgstr ""
+
+msgid "Open the content updates log"
+msgstr ""
+
+msgid "Title"
+msgstr ""
+
+msgid "Caption"
+msgstr ""
+
+msgid "Alt Text"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "%1$s translation: %2$s"
+msgstr ""
+
+msgid "View %s"
+msgstr ""
+
+msgid "Don't show this again."
+msgstr ""
+
+msgid "<p>The administrator has disabled term translation from the translation editor. </p>\n<p>If your access permissions allow you can change this under \"Translation Management\" - \"Multilingual Content Setup\" - \"Block translating taxonomy terms that already got translated\". </p>\n<p>Please note that editing terms from the translation editor will affect all posts that have the respective terms associated.</p>"
+msgstr ""
+
+msgid "Please be advised that editing this term's translation here will change the value of the term in general. The changes made here, will not only affect this post!"
+msgstr ""
+
+msgid "Terms translation is disabled"
+msgstr ""
+
+msgid "You have unsaved work. Are you sure you want to close without saving?"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save & Close"
+msgstr ""
+
+msgid "Saving..."
+msgstr ""
+
+msgid "Translation is complete"
+msgstr ""
+
+msgid "Original"
+msgstr ""
+
+msgid "Translation to"
+msgstr ""
+
+msgid "Copy all fields from original"
+msgstr ""
+
+msgid "Resign"
+msgstr ""
+
+msgid "Are you sure you want to resign from this job?"
+msgstr ""
+
+msgid "You have unsaved changes!"
+msgstr ""
+
+msgid "Copy from original"
+msgstr ""
+
+msgid "Copy to empty fields only"
+msgstr ""
+
+msgid "Copy & Overwrite all fields"
+msgstr ""
+
+msgid "Edit independently"
+msgstr ""
+
+msgid "WPML will no longer synchronize this %s with the original content."
+msgstr ""
+
+msgid "Body"
+msgstr ""
+
+msgid "Excerpt"
+msgstr ""
+
+msgid "Some fields in translation are already filled!"
+msgstr ""
+
+msgid "You have two ways to copy content from the original language:"
+msgstr ""
+
+msgid "copy to empty fields only"
+msgstr ""
+
+msgid "copy and overwrite all fields"
+msgstr ""
+
+msgid "This document is a duplicate of:"
+msgstr ""
+
+msgid "Failed to disconnect posts"
+msgstr ""
+
+msgid "No duplicate posts found to disconnect."
+msgstr ""
+
+msgid "Successfully disconnected posts"
+msgstr ""
+
+msgid "Custom Field Translation"
+msgstr ""
+
+msgid "No custom fields found. It is possible that they will only show up here after you add more posts after installing a new plugin."
+msgstr ""
+
+msgid "Custom fields"
+msgstr ""
+
+msgid "Custom Term Meta Translation"
+msgstr ""
+
+msgid "No term meta found. It is possible that they will only show up here after you add/create them."
+msgstr ""
+
+msgid "Term Meta"
+msgstr ""
+
+msgid "Hide system fields"
+msgstr ""
+
+msgid "Show system fields"
+msgstr ""
+
+msgid "Don't translate"
+msgstr ""
+
+msgid "Copy from original to translation"
+msgstr ""
+
+msgid "Translate"
+msgstr ""
+
+msgid "You've resigned from this job."
+msgstr ""
+
+msgid "Translation updated: "
+msgstr ""
+
+msgid "Translation added: "
+msgstr ""
+
+msgid "Translation has been removed by admin"
+msgstr ""
+
+msgid "Translations queue"
+msgstr ""
+
+msgid "No translation languages configured for this user."
+msgstr ""
+
+msgid "From"
+msgstr ""
+
+msgid "To"
+msgstr ""
+
+msgid "All statuses"
+msgstr ""
+
+msgid "Filter"
+msgstr ""
+
+msgid "No translation jobs found"
+msgstr ""
+
+msgid "Job ID"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Translation status"
+msgstr ""
+
+msgid "Check all"
+msgstr ""
+
+msgid "View original"
+msgstr ""
+
+msgid " - (needs update)"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Take and translate"
+msgstr ""
+
+msgid "You haven't set your <a %s>synchronization preferences</a> for these custom posts: %s. Default value was selected."
+msgstr ""
+
+msgid "You haven't set your <a %s>synchronization preferences</a> for these taxonomies: %s. Default value was selected."
+msgstr ""
+
+msgid "String \"%s\" has not been sent."
+msgstr ""
+
+msgid "Translation complete"
+msgstr ""
+
+msgid "Partial translation"
+msgstr ""
+
+msgid "Translation needs update"
+msgstr ""
+
+msgid "Waiting for translator / In progress"
+msgstr ""
+
+msgid "Strings in the basket"
+msgstr ""
+
+msgid "You have been assigned to a new translation job from %s to %s.\n\n\tStart editing: %s\n\n\tYou can view your other translation jobs here: %s\n\n\t This message was automatically sent by Translation Management running on WPML. To stop receiving these notifications contact the system administrator at %s.\n\n\t This email is not monitored for replies.\n\n\t - WPML team\n\t"
+msgstr ""
+
+msgid "You have been assigned to a new translation job on %s."
+msgstr ""
+
+msgid "Translate to %s"
+msgstr ""
+
+msgid "Estimated cost: %s USD"
+msgstr ""
+
+msgid "In the translation basket"
+msgstr ""
+
+msgid "One or more strings sent to %s"
+msgstr ""
+
+msgid "Translation options"
+msgstr ""
+
+msgid "Add to translation basket"
+msgstr ""
+
+msgid "One of the selected strings is in a language that is not activate. It can not be added to the translation basket."
+msgstr ""
+
+msgid "Strings in different languages are selected. They can not be added to the translation basket."
+msgstr ""
+
+msgid "You cannot add strings in this language to the basket since it already contains posts or strings of another source language! Either submit the current basket or delete the posts of differing language in the current basket"
+msgstr ""
+
+msgid "First available"
+msgstr ""
+
+msgid "Local"
+msgstr ""
+
+msgid "Translation Proxy error"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "Translation jobs for:"
+msgstr ""
+
+msgid "Looks like you are running a multilingual WooCommerce site. To easily translate WooCommerce products and categories, you should use %s"
 msgstr ""
 
 msgid "Incomplete local translation jobs"
@@ -88,19 +445,10 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-msgid "First available"
+msgid "Are you sure you want to reset the %1$s translation process?"
 msgstr ""
 
-msgid "Local"
-msgstr ""
-
-msgid "Translation Proxy error"
-msgstr ""
-
-msgid "Error"
-msgstr ""
-
-msgid "Translation jobs for:"
+msgid "You can't do that!"
 msgstr ""
 
 msgid "Show other professional translation options"
@@ -112,25 +460,160 @@ msgstr ""
 msgid "Your site is currently configured to use only %s as its professional translation service."
 msgstr ""
 
-msgid "Ok!"
+msgid "Custom Fields"
 msgstr ""
 
-msgid "You can't do that!"
+msgid "Changes in these translations will affect terms in general! (Not only for this post)"
 msgstr ""
 
-msgid "Reset professional translation state"
+msgid "Get completed translations"
 msgstr ""
 
-msgid "I am about to stop any ongoing work done by %1$s."
+msgid "1 job has been sent to the translation service."
 msgstr ""
 
-msgid "Are you sure you want to reset the %1$s translation process?"
+msgid "%d jobs have been sent to the translation service."
 msgstr ""
 
-msgid "The original has been deleted!"
+msgid "never"
 msgstr ""
 
-msgid "Deleted"
+msgid "Last time translations were picked up: %s"
+msgstr ""
+
+msgid "The following table lists the content which professional translation updated or created."
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "The log is empty."
+msgstr ""
+
+msgid "Export full log in CSV"
+msgstr ""
+
+msgid "More information"
+msgstr ""
+
+msgid "Basic information"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "Pickup method"
+msgstr ""
+
+msgid "Pickup ID"
+msgstr ""
+
+msgid "Pickup CMS_ID"
+msgstr ""
+
+msgid "Job state"
+msgstr ""
+
+msgid "Source language"
+msgstr ""
+
+msgid "Target language"
+msgstr ""
+
+msgid "Batch ID"
+msgstr ""
+
+msgid "Element type"
+msgstr ""
+
+msgid "Language code"
+msgstr ""
+
+msgid "Source language code"
+msgstr ""
+
+msgid "Status of original"
+msgstr ""
+
+msgid "Original element ID"
+msgstr ""
+
+msgid "Edit URL of original"
+msgstr ""
+
+msgid "Front-end URL of original"
+msgstr ""
+
+msgid "Content type"
+msgstr ""
+
+msgid "Content status"
+msgstr ""
+
+msgid "Edit URL of translation"
+msgstr ""
+
+msgid "Front-end URL of translation"
+msgstr ""
+
+msgid "Status of translation"
+msgstr ""
+
+msgid "New or updated"
+msgstr ""
+
+msgid "Debug data"
+msgstr ""
+
+msgid "Serialized data"
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "New"
+msgstr ""
+
+msgid "{untitled}"
+msgstr ""
+
+msgid "You can check again in %s seconds."
+msgstr ""
+
+msgid "You can check again in %s minutes."
+msgstr ""
+
+msgid "The below exception has occurred while communicating with Translation Proxy, please try again later or contact support if the problem persists:"
+msgstr ""
+
+msgid "Service invalidated."
+msgstr ""
+
+msgid "Unable to invalidate this service. Please contact WPML support."
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "1 translation has been fetched from the translation service."
+msgstr ""
+
+msgid "%d translations have been fetched from the translation service."
+msgstr ""
+
+msgid "%d translations have been marked as cancelled."
+msgstr ""
+
+msgid "Service activated."
+msgstr ""
+
+msgid "Unable to activate this service. Please check entered data and try again."
+msgstr ""
+
+msgid "For retrieving debug information for communication between your site and the translation system, use the <a href=\"%s\">communication log</a> page."
 msgstr ""
 
 msgid "Translation Service"
@@ -182,6 +665,12 @@ msgid "WPML Translation Management is enabled but not effective. Please finish t
 msgstr ""
 
 msgid "WPML Translation Management is enabled but not effective. It is not compatible with  <a href=\"%s\">WPML</a> versions prior 2.0.5."
+msgstr ""
+
+msgid "Translation saved."
+msgstr ""
+
+msgid "Translation cancelled."
 msgstr ""
 
 msgid "Translation Management"
@@ -262,250 +751,37 @@ msgstr ""
 msgid "Cannot edit this item, because it is currently in the translation basket."
 msgstr ""
 
-msgid "Hide system fields"
+msgid "Edit the %s translation"
 msgstr ""
 
-msgid "Show system fields"
+msgid "Reset professional translation state"
 msgstr ""
 
-msgid "Don't translate"
+msgid "I am about to stop any ongoing work done by %1$s."
 msgstr ""
 
-msgid "Copy from original to translation"
-msgstr ""
-
-msgid "Translate"
-msgstr ""
-
-msgid "Save"
-msgstr ""
-
-msgid "Custom Field Translation"
-msgstr ""
-
-msgid "No custom fields found. It is possible that they will only show up here after you add more posts after installing a new plugin."
-msgstr ""
-
-msgid "Custom fields"
-msgstr ""
-
-msgid "Custom Term Meta Translation"
-msgstr ""
-
-msgid "No term meta found. It is possible that they will only show up here after you add/create them."
-msgstr ""
-
-msgid "Term Meta"
-msgstr ""
-
-msgid "Reloading:"
-msgstr ""
-
-msgid "Failed to disconnect posts"
-msgstr ""
-
-msgid "No duplicate posts found to disconnect."
-msgstr ""
-
-msgid "Successfully disconnected posts"
-msgstr ""
-
-msgid "Translation editor"
-msgstr ""
-
-msgid "Are you sure you want to resign from this job?"
-msgstr ""
-
-msgid "You are translating %s from %s to %s."
-msgstr ""
-
-msgid "Translation of this document is complete"
-msgstr ""
-
-msgid "Please review the document translation and fill in all the required fields."
-msgstr ""
-
-msgid "Save translation"
-msgstr ""
-
-msgid "Cancel"
-msgstr ""
-
-msgid "Resign"
-msgstr ""
-
-msgid "Note for translator"
-msgstr ""
-
-msgid "Show Changes"
-msgstr ""
-
-msgid "Click to toggle"
-msgstr ""
-
-msgid "Don't show this again."
-msgstr ""
-
-msgid "<p>The administrator has disabled term translation from the translation editor. </p>\r\n<p>If your access permissions allow you can change this under \"Translation Management\" - \"Multilingual Content Setup\" - \"Block translating taxonomy terms that already got translated\". </p>\r\n<p>Please note that editing terms from the translation editor will affect all posts that have the respective terms associated.</p>"
-msgstr ""
-
-msgid "Please be advised that editing this term's translation here will change the value of the term in general. The changes made here, will not only affect this post!"
-msgstr ""
-
-msgid "Terms translation is disabled"
-msgstr ""
-
-msgid "<p>Some terms in this taxonomy have already been translated.</p> <p>If your user permissions allow, you can edit the translation from the \"Taxonomy Translation\" admin screen.</p>"
-msgstr ""
-
-msgid "Learn more"
-msgstr ""
-
-msgid "Some terms have already been translated. If you want to edit their translation, please uncheck the box below their value."
-msgstr ""
-
-msgid "This translation is finished."
-msgstr ""
-
-msgid "This field cannot be empty"
-msgstr ""
-
-msgid "Translated content"
-msgstr ""
-
-msgid "Copy all fields from %s"
-msgstr ""
-
-msgid "Copy from %s"
-msgstr ""
-
-msgid "Original content"
-msgstr ""
-
-msgid "Job ID"
-msgstr ""
-
-msgid "Title"
-msgstr ""
-
-msgid "Type"
-msgstr ""
-
-msgid "Language"
-msgstr ""
-
-msgid "Translation status"
-msgstr ""
-
-msgid "Check all"
-msgstr ""
-
-msgid "View original"
-msgstr ""
-
-msgid " - (needs update)"
-msgstr ""
-
-msgid "Edit"
-msgstr ""
-
-msgid "Take and translate"
-msgstr ""
-
-msgid "You've resigned from this job."
-msgstr ""
-
-msgid "Translation updated: "
-msgstr ""
-
-msgid "Translation added: "
-msgstr ""
-
-msgid "Translation has been removed by admin"
-msgstr ""
-
-msgid "Translations queue"
-msgstr ""
-
-msgid "Any language"
-msgstr ""
-
-msgid "No translation languages configured for this user."
-msgstr ""
-
-msgid "All types"
-msgstr ""
-
-msgid "From"
-msgstr ""
-
-msgid "To"
-msgstr ""
-
-msgid "All statuses"
-msgstr ""
-
-msgid "Available to translate"
-msgstr ""
-
-msgid "Filter"
-msgstr ""
-
-msgid "No translation jobs found"
-msgstr ""
-
-msgid "You can check again in %s seconds."
-msgstr ""
-
-msgid "You can check again in %s minutes."
-msgstr ""
-
-msgid "The below exception has occurred while communicating with Translation Proxy, please try again later or contact support if the problem persists:"
-msgstr ""
-
-msgid "Error"
-msgstr ""
-
-msgid "OK"
-msgstr ""
-
-msgid "1 translation has been fetched from the translation service."
-msgstr ""
-
-msgid "%d translations have been fetched from the translation service."
-msgstr ""
-
-msgid "%d translations have been marked as cancelled."
-msgstr ""
-
-msgid "Get completed translations"
-msgstr ""
-
-msgid "1 job has been sent to the translation service."
-msgstr ""
-
-msgid "%d jobs have been sent to the translation service."
-msgstr ""
-
-msgid "never"
-msgstr ""
-
-msgid "Last time translations were picked up: %s"
-msgstr ""
-
-msgid "Service activated."
-msgstr ""
-
-msgid "Unable to activate this service. Please check entered data and try again."
-msgstr ""
-
-msgid "Service invalidated."
-msgstr ""
-
-msgid "Unable to invalidate this service. Please contact WPML support."
+msgid "Ok!"
 msgstr ""
 
 msgid "String"
+msgstr ""
+
+msgid "No results"
+msgstr ""
+
+msgid "Items"
+msgstr ""
+
+msgid "Items - untranslated (total)"
+msgstr ""
+
+msgid "Words"
+msgstr ""
+
+msgid "Words - untranslated (total)"
+msgstr ""
+
+msgid "Totals"
 msgstr ""
 
 msgid "Translation Cost Estimate"
@@ -538,394 +814,193 @@ msgstr ""
 msgid "WPML-friendly translation services"
 msgstr ""
 
-msgid "No results"
-msgstr ""
-
-msgid "Content type"
-msgstr ""
-
-msgid "Items"
-msgstr ""
-
-msgid "Items - untranslated (total)"
-msgstr ""
-
-msgid "Words"
-msgstr ""
-
-msgid "Words - untranslated (total)"
-msgstr ""
-
-msgid "Totals"
-msgstr ""
-
-msgid "String \"%s\" has not been sent."
-msgstr ""
-
-msgid "Translation complete"
-msgstr ""
-
-msgid "Partial translation"
-msgstr ""
-
-msgid "Translation needs update"
-msgstr ""
-
-msgid "Waiting for translator / In progress"
-msgstr ""
-
-msgid "Strings in the basket"
-msgstr ""
-
-msgid "You have been assigned to a new translation job from %s to %s.\r\n\r\n\tStart editing: %s\r\n\r\n\tYou can view your other translation jobs here: %s\r\n\r\n\t This message was automatically sent by Translation Management running on WPML. To stop receiving these notifications contact the system administrator at %s.\r\n\r\n\t This email is not monitored for replies.\r\n\r\n\t - WPML team\r\n\t"
-msgstr ""
-
-msgid "You have been assigned to a new translation job on %s."
-msgstr ""
-
-msgid "Translate to %s"
-msgstr ""
-
-msgid "Estimated cost: %s USD"
-msgstr ""
-
-msgid "In the translation basket"
-msgstr ""
-
-msgid "One or more strings sent to %s"
-msgstr ""
-
-msgid "Translation options"
-msgstr ""
-
-msgid "Add to translation basket"
-msgstr ""
-
-msgid "One of the selected strings is in a language that is not activate. It can not be added to the translation basket."
-msgstr ""
-
-msgid "Strings in different languages are selected. They can not be added to the translation basket."
-msgstr ""
-
-msgid "You cannot add strings in this language to the basket since it already contains posts or strings of another source language! Either submit the current basket or delete the posts of differing language in the current basket"
-msgstr ""
-
-msgid " - A xliff file is attached."
-msgstr ""
-
-msgid "Incompatible Archive."
-msgstr ""
-
-msgid "Could not retrieve file from archive."
-msgstr ""
-
-msgid "Could not extract file from archive."
-msgstr ""
-
-msgid "Empty archive."
-msgstr ""
-
-msgid "\"%s\" is not a valid XLIFF file."
-msgstr ""
-
-msgid "The translation job (%s) doesn't belong to you."
-msgstr ""
-
-msgid "Translation of job %s has been uploaded and completed."
-msgstr ""
-
-msgid "No translation jobs were selected for export."
-msgstr ""
-
-msgid "Import XLIFF"
-msgstr ""
-
-msgid "Select the xliff file or zip file to upload from your computer:&nbsp;"
-msgstr ""
-
-msgid "Upload"
-msgstr ""
-
-msgid "Bulk Actions"
-msgstr ""
-
-msgid "Include XLIFF files in notification emails"
-msgstr ""
-
-msgid "Apply"
-msgstr ""
-
-msgid "The xliff file could not be read."
-msgstr ""
-
-msgid "The uploaded xliff file does not seem to be properly formed."
-msgstr ""
-
-msgid "The uploaded xliff file doesn't belong to this system."
-msgstr ""
-
-msgid "You can view your other translation jobs here: %s"
-msgstr ""
-
-msgid "This message was automatically sent by Translation Management running on %s. To stop receiving these notifications contact the system administrator at %s.\n\nThis email is not monitored for replies."
-msgstr ""
-
-msgid "This message was automatically sent by Translation Management running on %s. To stop receiving these notifications, go to Notification Settings, or contact the system administrator at %s.\n\nThis email is not monitored for replies."
-msgstr ""
-
-msgid "\nView the original document in %s here: %s\n"
-msgstr ""
-
-msgid "New translation job from %s"
-msgstr ""
-
-msgid "New job available from %s to %s.\n%s\nStart editing: %s"
-msgstr ""
-
-msgid "Translator has updated translation job for %s"
-msgstr ""
-
-msgid "Translator has completed translation job for %s"
-msgstr ""
-
-msgid "Hi %s,"
-msgstr ""
-
-msgid "You have been assigned to new translation job from %s to %s.\n%s\nStart editing: %s"
-msgstr ""
-
-msgid "Removed from translation job on %s"
-msgstr ""
-
-msgid "You have been removed from the translation job \"%s\" for %s to %s."
-msgstr ""
-
-msgid "Translator has resigned from job on %s"
-msgstr ""
-
-msgid "Translator %s has resigned from the translation job \"%s\" for %s to %s.%sView translation jobs: %s"
-msgstr ""
-
-msgid "Translation added: "
-msgstr ""
-
-msgid "Translation updated: "
-msgstr ""
-
-msgid "Translation (incomplete) saved."
-msgstr ""
-
-msgid "Submitted data is not valid."
-msgstr ""
-
-msgid "Job ID is missing"
-msgstr ""
-
-msgid "The original post cannot be retrieved"
-msgstr ""
-
-msgid "The type of the post cannot be retrieved"
-msgstr ""
-
-msgid "This job cannot be edited anymore because a newer job for this element exists."
-msgstr ""
-
-msgid "(inactive and unknown service)"
-msgstr ""
-
-msgid "Contact the translator"
-msgstr ""
-
-msgid "Send"
-msgstr ""
-
-msgid "The items you have selected are now in the translation basket &ndash;"
-msgstr ""
-
-msgid "<a href=\"%s\">Send to translation &raquo;</a>"
-msgstr ""
-
-msgid "Post \"%s\" will be ignored for %s, because translation is already in progress."
-msgstr ""
-
-msgid "Post \"%s\" will be ignored for %s, because translation is already waiting for translator."
-msgstr ""
-
-msgid "Post \"%s\" will be ignored for %s, because it is an original post."
-msgstr ""
-
-msgid "Please select at least one document to translate."
-msgstr ""
-
-msgid "Please select at least one language to translate into."
-msgstr ""
-
-msgid "You cannot add strings  in this language to the basket since it already contains posts or strings of another source language!\r\n\t\t\t\t\t\tEither submit the current basket and then add the post or delete the posts of differing language in the current basket"
-msgstr ""
-
-msgid "String \"%s\" will be ignored for %s, because translation is already waiting for translator."
-msgstr ""
-
-msgid "Select additional options"
-msgstr ""
-
-msgid "You cannot add posts in this language to the basket since it already contains posts or strings of another source language!\r\n\t\t\t\t\t\tEither submit the current basket and then add the post or delete the posts of differing language in the current basket"
-msgstr ""
-
-msgid "For retrieving debug information for communication between your site and the translation system, use the <a href=\"%s\">communication log</a> page."
-msgstr ""
-
-msgid "<p>Requested languages are not supported by the translation service (%s). Please <a%s>contact us</a> for support. </p>"
-msgstr ""
-
-msgid "<p>Could not add the requested languages. Please <a%s>contact us</a> for support. </p><p>Show <a%s>debug information</a>.</p>"
-msgstr ""
-
-msgid "%s: WPML Translation Jobs"
-msgstr ""
-
-msgid "Contact translator"
-msgstr ""
-
-msgid "Translation Service"
-msgstr ""
-
-msgid "Add translators"
-msgstr ""
-
-msgid "Contact"
-msgstr ""
-
-msgid "Hide this"
-msgstr ""
-
-msgid "Need translators?"
-msgstr ""
-
-msgid "Please activate translation service first."
-msgstr ""
-
-msgid "Could not update the translation pickup mode."
-msgstr ""
-
-msgid "Ok"
-msgstr ""
-
-msgid "Minor edit - don't update translation"
-msgstr ""
-
-msgid "The length of the batch name exceeds the maximum length of %s"
-msgstr ""
-
-msgid "This batch name already exists and was modified to ensure unique naming"
-msgstr ""
-
 msgid "The batch name was appended with the source language of its elements."
+msgstr ""
+
+msgid "The length of the batch name exceeds the maximum length of 20"
 msgstr ""
 
 msgid "Batch is empty"
 msgstr ""
 
-msgid "WPML Update is Incomplete"
+msgid "Translation Dashboard"
 msgstr ""
 
-msgid "You are running updated %s, but the following component is not updated:"
+msgid "This section is for selecting WPML (local) translators only. If you wish to use %s, please go to %s."
 msgstr ""
 
-msgid "You are running updated %s and %s, but the following components are not updated:"
+msgid "Edit translator"
 msgstr ""
 
-msgid "The following components are not updated:"
+msgid "From language:"
 msgstr ""
 
-msgid "WPML.org account"
+msgid "Choose"
 msgstr ""
 
-msgid "Your site will not work as it should in this configuration"
+msgid "To language:"
 msgstr ""
 
-msgid "Please update all components which you are using."
+msgid "Select translation service"
 msgstr ""
 
-msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
+msgid "Select translators"
 msgstr ""
 
-msgid "Done! "
+msgid "Add translator"
 msgstr ""
 
-msgid "<p>Jobs committed...</p><p>You can check current status of this job in  <a href='%s'>Translation Jobs tab</a>.</p>"
-msgstr ""
-
-msgid "Committing jobs..."
-msgstr ""
-
-msgid "An error occurred:"
-msgstr ""
-
-msgid "You are not allowed to run this action."
-msgstr ""
-
-msgid "Batch"
-msgstr ""
-
-msgid "No selected translators!"
-msgstr ""
-
-msgid "Rollback jobs..."
-msgstr ""
-
-msgid "Batch rolled back"
-msgstr ""
-
-msgid "Errors:"
-msgstr ""
-
-msgid "Status"
-msgstr ""
-
-msgid "Languages"
+msgid " (inactive)"
 msgstr ""
 
 msgid "%s to %s"
 msgstr ""
 
-msgid "%s to %s and %s"
+msgid "Translation Service"
+msgstr ""
+
+msgid "You haven't added any translator accounts yet."
+msgstr ""
+
+msgid "No Translation Service selected: you can only use local translators."
+msgstr ""
+
+msgid "If you wish to use a translation service for your content, please select one from the available services."
+msgstr ""
+
+msgid "Refresh Available Services List"
+msgstr ""
+
+msgid "Your own translators"
+msgstr ""
+
+msgid "All WordPress users are already translators. To add more translators, first create accounts for them."
+msgstr ""
+
+msgid "Select user."
+msgstr ""
+
+msgid "To add translators, they must first have accounts in WordPress. Translators can have any editing privileges, including subscriber."
+msgstr ""
+
+msgid "Editing language pairs for <strong>%s</strong>"
+msgstr ""
+
+msgid "From %s"
+msgstr ""
+
+msgid "to"
+msgstr ""
+
+msgid "Update"
+msgstr ""
+
+msgid "Add as translator"
+msgstr ""
+
+msgid "search"
+msgstr ""
+
+msgid "No add translator interface available"
+msgstr ""
+
+msgid "Current translators"
 msgstr ""
 
 msgid "Remove"
 msgstr ""
 
-msgid "The basket is empty"
+msgid "Language pairs"
 msgstr ""
 
-msgid "Clear Basket"
+msgid "edit languages"
 msgstr ""
 
-msgid "You are about to translate duplicated posts."
+msgid "Current service"
 msgstr ""
 
-msgid "These items will be automatically disconnected from originals, so translation is not lost when you update the originals."
+msgid "Activate"
 msgstr ""
 
-msgid "You have sent items to %s. Please check if additional steps are required on their end"
+msgid "Name"
 msgstr ""
 
-msgid "No items found in basket"
+msgid "Languages"
 msgstr ""
 
-msgid "%s items in basket:"
+msgid "Service"
 msgstr ""
 
-msgid "Add to translation basket / Duplicate"
+msgid "Action"
 msgstr ""
 
-msgid "Choose at least one translation action"
+msgid "Please choose"
 msgstr ""
 
-msgid "Finished Post Duplication"
+msgid "XLIFF %s"
 msgstr ""
 
-msgid "Duplicating"
+msgid "All new lines should be replaced by HTML element %s. Use this option if translation tool used by translator does not support new lines characters (for example Virtaal software)"
+msgstr ""
+
+msgid "XLIFF file options"
+msgstr ""
+
+msgid "XLIFF version"
+msgstr ""
+
+msgid "Choose default format for XLIFF file:"
+msgstr ""
+
+msgid "New lines character"
+msgstr ""
+
+msgid "How new lines characters in XLIFF files should be handled?"
+msgstr ""
+
+msgid "Do nothing. If you will select this, all new line characters will stay untouched."
+msgstr ""
+
+msgid "%s offers affordable professional translation via a streamlined process."
+msgstr ""
+
+msgid "%d documents sent to translation.<br />%d are complete, %d waiting for translation."
+msgstr ""
+
+msgid "Your translators"
+msgstr ""
+
+msgid "Translate content"
+msgstr ""
+
+msgid "Need translation work?"
+msgstr ""
+
+msgid "Get translators"
+msgstr ""
+
+msgid "Content translation"
+msgstr ""
+
+msgid "Add translators &raquo;"
+msgstr ""
+
+msgid "Translate contents &raquo;"
+msgstr ""
+
+msgid "(missing title)"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "Edit note for the translators"
+msgstr ""
+
+msgid "Add note for the translators"
+msgstr ""
+
+msgid "Note for the translators"
 msgstr ""
 
 msgid "Show documents in:"
@@ -991,22 +1066,73 @@ msgstr ""
 msgid "clear"
 msgstr ""
 
-msgid "(missing title)"
+msgid "Add to translation basket / Duplicate"
 msgstr ""
 
-msgid "View"
+msgid "Choose at least one translation action"
 msgstr ""
 
-msgid "Edit note for the translators"
+msgid "Finished Post Duplication"
 msgstr ""
 
-msgid "Add note for the translators"
+msgid "Duplicating"
 msgstr ""
 
-msgid "Note for the translators"
+msgid "Done! "
 msgstr ""
 
-msgid "Clear"
+msgid "<p>Jobs committed...</p><p>You can check current status of this job in  <a href='%s'>Translation Jobs tab</a>.</p>"
+msgstr ""
+
+msgid "Committing jobs..."
+msgstr ""
+
+msgid "An error occurred:"
+msgstr ""
+
+msgid "You are not allowed to run this action."
+msgstr ""
+
+msgid "Batch"
+msgstr ""
+
+msgid "No selected translators!"
+msgstr ""
+
+msgid "Rollback jobs..."
+msgstr ""
+
+msgid "Batch rolled back"
+msgstr ""
+
+msgid "Errors:"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "%s to %s and %s"
+msgstr ""
+
+msgid "The basket is empty"
+msgstr ""
+
+msgid "Clear Basket"
+msgstr ""
+
+msgid "You are about to translate duplicated posts."
+msgstr ""
+
+msgid "These items will be automatically disconnected from originals, so translation is not lost when you update the originals."
+msgstr ""
+
+msgid "You have sent items to %s. Please check if additional steps are required on their end"
+msgstr ""
+
+msgid "No items found in basket"
+msgstr ""
+
+msgid "%s items in basket:"
 msgstr ""
 
 msgid "Translation management"
@@ -1022,9 +1148,6 @@ msgid "Multilingual Content Setup"
 msgstr ""
 
 msgid "Translation Jobs"
-msgstr ""
-
-msgid "Translation Dashboard"
 msgstr ""
 
 msgid "Please register WPML to enable the professional translation option"
@@ -1085,6 +1208,9 @@ msgid "account status"
 msgstr ""
 
 msgid "Communication Log"
+msgstr ""
+
+msgid "Content updates log"
 msgstr ""
 
 msgid "Your Translators"
@@ -1174,13 +1300,13 @@ msgstr ""
 msgid "WPML can read a configuration file that tells it what needs translation in themes and plugins. The file is named wpml-config.xml and it's placed in the root folder of the plugin or theme."
 msgstr ""
 
+msgid "Learn more"
+msgstr ""
+
 msgid "Create translations manually"
 msgstr ""
 
 msgid "Use the translation editor"
-msgstr ""
-
-msgid "Block translating taxonomy terms (from the Translation Editor) that have already been translated."
 msgstr ""
 
 msgid "Show translation instructions in the list of pages"
@@ -1267,157 +1393,34 @@ msgstr ""
 msgid "Enable logging"
 msgstr ""
 
-msgid "This section is for selecting WPML (local) translators only. If you wish to use %s, please go to %s."
-msgstr ""
-
-msgid "Edit translator"
-msgstr ""
-
-msgid "From language:"
-msgstr ""
-
-msgid "Choose"
-msgstr ""
-
-msgid "To language:"
-msgstr ""
-
-msgid "Select translation service"
-msgstr ""
-
-msgid "Select translators"
-msgstr ""
-
-msgid "Add translator"
-msgstr ""
-
-msgid " (inactive)"
-msgstr ""
-
-msgid "You haven't added any translator accounts yet."
-msgstr ""
-
-msgid "No Translation Service selected: you can only use local translators."
-msgstr ""
-
-msgid "If you wish to use a translation service for your content, please select one from the available services."
-msgstr ""
-
-msgid "Refresh Available Services List"
-msgstr ""
-
-msgid "Your own translators"
-msgstr ""
-
-msgid "All WordPress users are already translators. To add more translators, first create accounts for them."
-msgstr ""
-
-msgid "Select user."
-msgstr ""
-
-msgid "To add translators, they must first have accounts in WordPress. Translators can have any editing privileges, including subscriber."
-msgstr ""
-
-msgid "Editing language pairs for <strong>%s</strong>"
-msgstr ""
-
-msgid "From %s"
-msgstr ""
-
-msgid "to"
-msgstr ""
-
-msgid "Update"
-msgstr ""
-
-msgid "Add as translator"
-msgstr ""
-
-msgid "search"
-msgstr ""
-
-msgid "No add translator interface available"
-msgstr ""
-
-msgid "Current translators"
-msgstr ""
-
-msgid "Language pairs"
-msgstr ""
-
-msgid "edit languages"
-msgstr ""
-
-msgid "Current service"
-msgstr ""
-
-msgid "Activate"
-msgstr ""
-
-msgid "Name"
-msgstr ""
-
-msgid "Service"
-msgstr ""
-
-msgid "Action"
+msgid "Don't include already translated terms in the translation editor"
 msgstr ""
 
 msgid "XLIFF translation"
 msgstr ""
 
-msgid "Please choose"
+msgid "WPML Update is Incomplete"
 msgstr ""
 
-msgid "XLIFF %s"
+msgid "You are running updated %s, but the following component is not updated:"
 msgstr ""
 
-msgid "All new lines should be replaced by HTML element %s. Use this option if translation tool used by translator does not support new lines characters (for example Virtaal software)"
+msgid "You are running updated %s and %s, but the following components are not updated:"
 msgstr ""
 
-msgid "XLIFF file options"
+msgid "The following components are not updated:"
 msgstr ""
 
-msgid "XLIFF version"
+msgid "WPML.org account"
 msgstr ""
 
-msgid "Choose default format for XLIFF file:"
+msgid "Your site will not work as it should in this configuration"
 msgstr ""
 
-msgid "New lines character"
+msgid "Please update all components which you are using."
 msgstr ""
 
-msgid "How new lines characters in XLIFF files should be handled?"
-msgstr ""
-
-msgid "Do nothing. If you will select this, all new line characters will stay untouched."
-msgstr ""
-
-msgid "%s offers affordable professional translation via a streamlined process."
-msgstr ""
-
-msgid "%d documents sent to translation.<br />%d are complete, %d waiting for translation."
-msgstr ""
-
-msgid "Your translators"
-msgstr ""
-
-msgid "Translate content"
-msgstr ""
-
-msgid "Need translation work?"
-msgstr ""
-
-msgid "Get translators"
-msgstr ""
-
-msgid "Content translation"
-msgstr ""
-
-msgid "Add translators &raquo;"
-msgstr ""
-
-msgid "Translate contents &raquo;"
+msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
 msgstr ""
 
 msgid "All"
@@ -1427,6 +1430,27 @@ msgid "All translation jobs"
 msgstr ""
 
 msgid "Content duplication"
+msgstr ""
+
+msgid "show all %s items"
+msgstr ""
+
+msgid "show %s items"
+msgstr ""
+
+msgid "go to the <a href=\"%s\">Translation Dashboard</a>"
+msgstr ""
+
+msgid "There are no Jobs in the queue."
+msgstr ""
+
+msgid "In order to add jobs to the queue you must:"
+msgstr ""
+
+msgid "add documents to the basket"
+msgstr ""
+
+msgid "send them for translation"
 msgstr ""
 
 msgid "Synchronize status"
@@ -1462,26 +1486,152 @@ msgstr ""
 msgid "Batch Name: "
 msgstr ""
 
-msgid "show all %s items"
+msgid "Translation added: "
 msgstr ""
 
-msgid "show %s items"
+msgid "Translation updated: "
 msgstr ""
 
-msgid "go to the <a href=\"%s\">Translation Dashboard</a>"
+msgid "Translation (incomplete) saved."
 msgstr ""
 
-msgid "There are no Jobs in the queue."
+msgid "Submitted data is not valid."
 msgstr ""
 
-msgid "In order to add jobs to the queue you must:"
+msgid "Job ID is missing"
 msgstr ""
 
-msgid "add documents to the basket"
+msgid "The original post cannot be retrieved"
 msgstr ""
 
-msgid "send them for translation"
+msgid "The type of the post cannot be retrieved"
 msgstr ""
 
-msgid "The length of the batch name exceeds the maximum length of 20"
+msgid "This job cannot be edited anymore because a newer job for this element exists."
+msgstr ""
+
+msgid "(inactive and unknown service)"
+msgstr ""
+
+msgid "Contact the translator"
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "You can view your other translation jobs here: %s"
+msgstr ""
+
+msgid "This message was automatically sent by Translation Management running on %s. To stop receiving these notifications contact the system administrator at %s.\n\nThis email is not monitored for replies."
+msgstr ""
+
+msgid "This message was automatically sent by Translation Management running on %s. To stop receiving these notifications, go to Notification Settings, or contact the system administrator at %s.\n\nThis email is not monitored for replies."
+msgstr ""
+
+msgid "\nView the original document in %s here: %s\n"
+msgstr ""
+
+msgid "New translation job from %s"
+msgstr ""
+
+msgid "New job available from %s to %s.\n%s\nStart editing: %s"
+msgstr ""
+
+msgid "Translator has updated translation job for %s"
+msgstr ""
+
+msgid "Translator has completed translation job for %s"
+msgstr ""
+
+msgid "Hi %s,"
+msgstr ""
+
+msgid "You have been assigned to new translation job from %s to %s.\n%s\nStart editing: %s"
+msgstr ""
+
+msgid "Removed from translation job on %s"
+msgstr ""
+
+msgid "You have been removed from the translation job \"%s\" for %s to %s."
+msgstr ""
+
+msgid "Translator has resigned from job on %s"
+msgstr ""
+
+msgid "Translator %s has resigned from the translation job \"%s\" for %s to %s.%sView translation jobs: %s"
+msgstr ""
+
+msgid "The items you have selected are now in the translation basket &ndash;"
+msgstr ""
+
+msgid "<a href=\"%s\">Send to translation &raquo;</a>"
+msgstr ""
+
+msgid "Post \"%s\" will be ignored for %s, because translation is already in progress."
+msgstr ""
+
+msgid "Post \"%s\" will be ignored for %s, because translation is already waiting for translator."
+msgstr ""
+
+msgid "Post \"%s\" will be ignored for %s, because it is an original post."
+msgstr ""
+
+msgid "Please select at least one document to translate."
+msgstr ""
+
+msgid "Please select at least one language to translate into."
+msgstr ""
+
+msgid "You cannot add strings  in this language to the basket since it already contains posts or strings of another source language!\n\t\t\t\t\t\tEither submit the current basket and then add the post or delete the posts of differing language in the current basket"
+msgstr ""
+
+msgid "String \"%s\" will be ignored for %s, because translation is already waiting for translator."
+msgstr ""
+
+msgid "Select additional options"
+msgstr ""
+
+msgid "You cannot add posts in this language to the basket since it already contains posts or strings of another source language!\n\t\t\t\t\t\tEither submit the current basket and then add the post or delete the posts of differing language in the current basket"
+msgstr ""
+
+msgid "Add translators"
+msgstr ""
+
+msgid "Contact"
+msgstr ""
+
+msgid "Hide this"
+msgstr ""
+
+msgid "Need translators?"
+msgstr ""
+
+msgid "<p>Requested languages are not supported by the translation service (%s). Please <a%s>contact us</a> for support. </p>"
+msgstr ""
+
+msgid "<p>Could not add the requested languages. Please <a%s>contact us</a> for support. </p><p>Show <a%s>debug information</a>.</p>"
+msgstr ""
+
+msgid "Please activate translation service first."
+msgstr ""
+
+msgid "Could not update the translation pickup mode."
+msgstr ""
+
+msgid "Ok"
+msgstr ""
+
+msgid "Minor edit - don't update translation"
+msgstr ""
+
+msgid "%s: WPML Translation Jobs"
+msgstr ""
+
+msgid "Contact translator"
+msgstr ""
+
+msgid "The length of the batch name exceeds the maximum length of %s"
+msgstr ""
+
+msgid "This batch name already exists and was modified to ensure unique naming"
 msgstr ""

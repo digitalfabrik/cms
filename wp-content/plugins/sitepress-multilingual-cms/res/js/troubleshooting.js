@@ -124,7 +124,7 @@ jQuery(document).ready(function () {
 					var type_term_popup_html = '<div id="icl_fix_languages_and_post_types"><p>' + text + '</p></div>';
 					jQuery(type_term_popup_html).dialog(
 						{
-							dialogClass: 'wpml-dialog wp-dialog',
+							dialogClass: 'wpml-dialog otgs-ui-dialog',
 							width      : 'auto',
 							modal      : true,
 							buttons    : {
@@ -184,7 +184,7 @@ jQuery(document).ready(function () {
 					var termSuffixUpdatedHTML = '<div id="icl_fix_term_suffixes"><p>' + troubleshooting_strings.suffixesRemoved + '</p></div>';
 					jQuery(termSuffixUpdatedHTML).dialog(
 						{
-							dialogClass: 'wpml-dialog wp-dialog',
+							dialogClass: 'wpml-dialog otgs-ui-dialog',
 							width      : 'auto',
 							modal      : true,
 							buttons    : {

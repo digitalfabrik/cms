@@ -100,7 +100,7 @@ jQuery(document).ready(function ($) {
 
 		postEdit.$connect_translations_dialog.dialog(
 			{
-				dialogClass  : 'wpml-dialog wp-dialog',
+				dialogClass  : 'wpml-dialog otgs-ui-dialog',
 				width        : 'auto',
 				modal        : true,
 				autoOpen     : false,
@@ -108,7 +108,7 @@ jQuery(document).ready(function ($) {
 				buttons      : [
 					{
 						text   : postEdit.$connect_translations_dialog.data('cancel-label'),
-						'class': 'button button-secondary',
+						'class': 'button button-secondary alignleft',
 						click  : function () {
 							$(this).dialog("close");
 						}
@@ -173,7 +173,7 @@ jQuery(document).ready(function ($) {
 
 				postEdit.$connect_translations_dialog_confirm.dialog(
 					{
-						dialogClass: 'wpml-dialog wp-dialog',
+						dialogClass: 'wpml-dialog otgs-ui-dialog',
 						resizable  : false,
 						width      : 'auto',
 						autoOpen   : true,
@@ -181,7 +181,7 @@ jQuery(document).ready(function ($) {
 						buttons    : [
 							{
 								text   : postEdit.$connect_translations_dialog_confirm.data('cancel-label'),
-								'class': 'button button-secondary',
+								'class': 'button button-secondary alignleft',
 								click  : function () {
 									$(this).dialog("close");
 									postEdit.$connect_translations_dialog.dialog('open');

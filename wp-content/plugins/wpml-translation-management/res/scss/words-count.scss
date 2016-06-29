@@ -54,13 +54,11 @@
 .wpml-wc-accordion {
 	margin:    10px;
 	max-width: 550px;
-	.inside {
-		p {
-			margin-top: inherit;
-		}
-	}
-	.buttons {
+	.wpml-wc-buttons {
 		text-align: center;
+		p {
+			margin-top: 1em;
+		}
 	}
 	.call-to-action {
 		font-size: 0.8em;

@@ -110,20 +110,22 @@ class WPML_SEO_HeadLangs {
 	}
 
 	private function must_render( $languages ) {
-		$post    = $this->sitepress->get_wp_api()->get_post();
-		$post_id = $post ? $post->ID : false;
+		$has_languages = false;
+		$is_published  = false;
+		$post          = $this->sitepress->get_wp_api()->get_post();
+		if ( $post ) {
+			$post_id = $post ? $post->ID : false;
 
-		$has_languages     = is_array( $languages ) && count( $languages ) > 1;
-		$is_single_or_page = $this->sitepress->get_wp_api()->is_single() || $this->sitepress->get_wp_api()->is_page();
-		$is_published      = $is_single_or_page
-		                     && $post_id
-		                     && $this->sitepress->get_wp_api()->get_post_status( $post_id ) === 'publish';
-
+			$has_languages     = is_array( $languages ) && count( $languages ) > 0 && $this->sitepress->is_translated_post_type( $post->post_type );
+			$is_single_or_page = $this->sitepress->get_wp_api()->is_single() || $this->sitepress->get_wp_api()->is_page();
+			$is_published      = $is_single_or_page
+			                     && $post_id
+			                     && $this->sitepress->get_wp_api()->get_post_status( $post_id ) === 'publish';
+		}
 		return $has_languages && ! $this->sitepress->get_wp_api()->is_paged()
 		       && ( $is_published
 		            || ( $this->sitepress->get_wp_api()->is_home()
 		                 || $this->sitepress->get_wp_api()->is_front_page()
 		                 || $this->sitepress->get_wp_api()->is_archive() ) );
 	}
-
 }

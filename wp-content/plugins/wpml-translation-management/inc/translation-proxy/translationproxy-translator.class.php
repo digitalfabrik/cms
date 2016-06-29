@@ -241,6 +241,11 @@ class TranslationProxy_Translator {
 		return $translators;
 	}
 
+	/**
+	 * @param $translator_id
+	 *
+	 * @return string|false
+	 */
 	public static function get_translator_name( $translator_id ) {
 		if ( TranslationProxy::translator_selection_available() ) {
 			$lang_status = self::get_language_pairs();

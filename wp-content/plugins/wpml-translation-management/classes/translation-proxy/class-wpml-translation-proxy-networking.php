@@ -54,8 +54,9 @@ class WPML_Translation_Proxy_Networking {
 			$params['api_version'] = self::API_VERSION;
 		}
 
-		TranslationProxy_Com_Log::log_call( $url, $params );
-		$api_response = $this->call_remote_api( $url, $params, $method, $has_return_value );
+		WPML_TranslationProxy_Com_Log::log_call( $url, $params );
+		$api_response = $this->call_remote_api( $url, $params, $method,
+			$has_return_value );
 
 		if ( $has_return_value ) {
 			if ( ! isset( $api_response['headers']['content-type'] ) ) {
@@ -64,15 +65,23 @@ class WPML_Translation_Proxy_Networking {
 			$content_type = $api_response['headers']['content-type'];
 			$api_response = $api_response['body'];
 			$api_response = strpos( $content_type, 'zip' ) !== false ? gzdecode( $api_response ) : $api_response;
-			TranslationProxy_Com_Log::log_response( $json_response ? $api_response : 'XLIFF received' );
+			WPML_TranslationProxy_Com_Log::log_response( $json_response ? $api_response : 'XLIFF received' );
 			if ( $json_response ) {
 				$response = json_decode( $api_response );
 				if ( $has_api_response ) {
 					if ( ! $response || ! isset( $response->status->code ) || $response->status->code !== 0 ) {
-						$sanitized_url = TranslationProxy_Com_Log::sanitize_url($url);
-						$sanitized_params = TranslationProxy_Com_Log::sanitize_data($params);
-						$sanitized_response = TranslationProxy_Com_Log::sanitize_data($response);
-						throw new RuntimeException( 'Cannot communicate with the remote service response on url: `' . $sanitized_url . '` params: `' . serialize( $sanitized_params ) . '` response: `' . serialize( $sanitized_response ) . '`' );
+						$sanitized_url      = WPML_TranslationProxy_Com_Log::sanitize_url( $url );
+						$sanitized_params   = WPML_TranslationProxy_Com_Log::sanitize_data( $params );
+						$sanitized_response = WPML_TranslationProxy_Com_Log::sanitize_data( $response );
+						$exception_message  = 'Cannot communicate with the remote service response on url: `' . $sanitized_url . '` params: `' . serialize( $sanitized_params ) . '` response: `' . serialize( $sanitized_response ) . '`';
+						if ( isset( $response->status->message ) ) {
+							$exception_message = '';
+							if ( isset( $response->status->code ) ) {
+								$exception_message = '(' . $response->status->code . ') ';
+							}
+							$exception_message .= $response->status->message;
+						}
+						throw new RuntimeException( $exception_message );
 					}
 					$response = $response->response;
 				}
@@ -115,8 +124,8 @@ class WPML_Translation_Proxy_Networking {
 		$context  = $this->filter_request_params( $params, $method );
 		$response = $this->http->request( $url, $context );
 		if ( is_wp_error( $response ) || ( $has_return_value && (bool) $response === false ) || ( isset( $response['response']['code'] ) && $response['response']['code'] > 400 ) ) {
-			$sanitized_context = TranslationProxy_Com_Log::sanitize_data($context);
-			$sanitized_response = TranslationProxy_Com_Log::sanitize_data($response);
+			$sanitized_context = WPML_TranslationProxy_Com_Log::sanitize_data($context);
+			$sanitized_response = WPML_TranslationProxy_Com_Log::sanitize_data($response);
 			throw new RuntimeException( 'Cannot communicate with the remote service params: `' . serialize( $sanitized_context ) . '` response: `' . serialize( $sanitized_response ) . '`');
 		}
 

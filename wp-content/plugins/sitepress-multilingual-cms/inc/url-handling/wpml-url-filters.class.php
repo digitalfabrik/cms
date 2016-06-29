@@ -79,7 +79,7 @@ class WPML_URL_Filters extends WPML_SP_And_PT_User {
 	public function filter_root_permalink( $url ) {
 		$root_page_utils = $this->sitepress->get_root_page_utils();
 		if ( $root_page_utils->get_root_page_id() > 0 && $root_page_utils->is_url_root_page( $url ) ) {
-			$url_parts = parse_url( $url );
+			$url_parts = wpml_parse_url( $url );
 			$query     = isset( $url_parts['query'] ) ? $url_parts['query'] : '';
 			$path      = isset( $url_parts['path'] ) ? $url_parts['path'] : '';
 			$slugs     = array_filter( explode( '/', $path ) );
