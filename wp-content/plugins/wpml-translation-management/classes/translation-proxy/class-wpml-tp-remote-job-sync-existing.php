@@ -19,8 +19,9 @@ class WPML_TP_Remote_Job_Sync_Existing extends WPML_TP_Remote_Job_Sync {
 	/**
 	 * Synchronises the job with Translation Proxy and increments the completed
 	 * job count in case of having downloaded a job.
+
 	 *
-	 * @param WPML_TP_Polling_Counts $counts count object to be updated
+*@param WPML_TP_Polling_Counts $counts count object to be updated
 	 */
 	protected function sync_action( &$counts ) {
 		if ( (bool) $this->data['cms_id'] === true ) {
@@ -29,7 +30,7 @@ class WPML_TP_Remote_Job_Sync_Existing extends WPML_TP_Remote_Job_Sync {
 		}
 		$this->data['job_state'] = $this->data['job_state'] === 'delivered' ? 'translation_ready' : $this->data['job_state'];
 		if ( $this->data['job_state'] === 'translation_ready'
-		     && $this->pro_translation->xmlrpc_updated_job_status_with_log( array(
+		     && $this->pro_translation->poll_updated_job_status_with_log( array(
 				$this->data['id'],
 				$this->data['cms_id'],
 				'translation_ready',

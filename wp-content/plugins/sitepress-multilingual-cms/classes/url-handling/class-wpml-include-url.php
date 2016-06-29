@@ -17,8 +17,8 @@ class WPML_Include_Url extends WPML_WPDB_User {
 		$domains = wpml_get_setting_filter( array(), 'language_domains' );
 		$domains = preg_replace( '#^(http(?:s?))://#', '', array_map( 'untrailingslashit', $domains ) );
 		if ( (bool) $domains === true ) {
-			$php_host_in_domain = parse_url( $result, PHP_URL_HOST );
-			$domains[]          = parse_url( $this->get_unfiltered_home(), PHP_URL_HOST );
+			$php_host_in_domain = wpml_parse_url( $result, PHP_URL_HOST );
+			$domains[]          = wpml_parse_url( $this->get_unfiltered_home(), PHP_URL_HOST );
 			foreach ( $domains as $dom ) {
 				if ( strpos( trailingslashit( $php_host_in_domain ), trailingslashit( $dom ) ) === 0 ) {
 					$http_host_parts = explode( ':', $this->requested_host );

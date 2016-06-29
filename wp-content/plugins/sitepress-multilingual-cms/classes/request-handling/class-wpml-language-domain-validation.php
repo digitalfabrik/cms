@@ -56,7 +56,7 @@ class WPML_Language_Domain_Validation {
 	 * @return bool
 	 */
 	private function validate_url_string() {
-		$url_parts = parse_url( $this->url );
+		$url_parts = wpml_parse_url( $this->url );
 
 		return isset( $url_parts['scheme'] ) && isset( $url_parts['host'] );
 	}

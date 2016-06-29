@@ -171,6 +171,7 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 				}
 				$data[ 'post_status' ] = $post_status;
 				$wpdb->update ( $wpdb->posts, $data, array( 'ID' => $translated_pid ) );
+				wp_schedule_single_event( strtotime( $post_date_gmt . '+1 second' ), 'publish_future_post', array( $translated_pid ) );
 			}
 			if ( $post_password !== null ) {
 				$wpdb->update ( $wpdb->posts, array( 'post_password' => $post_password ), array( 'ID' => $translated_pid ) );

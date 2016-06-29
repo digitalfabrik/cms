@@ -173,7 +173,7 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 			global $sitepress;
 
 			remove_filter('get_terms_args', array($sitepress, 'get_terms_args_filter'));
-			remove_filter('get_term', array($sitepress,'get_term_adjust_id'));
+			remove_filter('get_term', array($sitepress,'get_term_adjust_id'), 1);
 			remove_filter('terms_clauses', array($sitepress,'terms_clauses'));
 			foreach ( get_taxonomies( array(), 'names' ) as $taxonomy ) {
 

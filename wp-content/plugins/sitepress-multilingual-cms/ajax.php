@@ -123,11 +123,11 @@ switch($request){
 	    }
 
         if(isset($_POST['icl_lang_sel_config'])){
-            $iclsettings['icl_lang_sel_config'] = $_POST['icl_lang_sel_config'];
+            $iclsettings['icl_lang_sel_config'] = wpml_sanitize_hex_color_array($_POST['icl_lang_sel_config'], '', true, false );
         }
 
         if(isset($_POST['icl_lang_sel_footer_config'])){
-            $iclsettings['icl_lang_sel_footer_config'] = $_POST['icl_lang_sel_footer_config'];
+	        $iclsettings['icl_lang_sel_footer_config'] = wpml_sanitize_hex_color_array( $_POST['icl_lang_sel_footer_config'], '', true, false );
         }
 
         if (isset($_POST['icl_lang_sel_type']))
@@ -152,12 +152,12 @@ switch($request){
             $iclsettings['icl_post_availability_text'] = $_POST['icl_post_availability_text'];
 
         $iclsettings['icl_widget_title_show'] = (isset($_POST['icl_widget_title_show'])) ? 1 : 0;
-        $iclsettings['icl_additional_css'] = $_POST['icl_additional_css'];
+        $iclsettings['icl_additional_css'] = isset( $_POST['icl_additional_css'] ) ? $_POST['icl_additional_css'] : '';
 
         $iclsettings['display_ls_in_menu'] = @intval($_POST['display_ls_in_menu']);
         $iclsettings['menu_for_ls'] = @intval($_POST['menu_for_ls']);
 
-        $iclsettings['icl_lang_sel_copy_parameters'] = join(', ', array_map('trim', explode(',', $_POST['copy_parameters'])));
+        $iclsettings['icl_lang_sel_copy_parameters'] = join( ', ', array_map( 'trim', explode(',', sanitize_text_field( $_POST['copy_parameters'] ) ) ) );
 
         if(!$ls_options['icl_lso_flags'] && !$ls_options['icl_lso_native_lang'] && !$ls_options['icl_lso_display_lang']){
             echo '0|';
@@ -353,6 +353,9 @@ switch($request){
         foreach($_POST['icl_st'] as $k=>$v){
             $iclsettings['st'][$k] = $v;
         }
+	    if ( array_key_exists( 'st', $iclsettings ) && array_key_exists( 'hl_color', $iclsettings['st'] ) && ! wpml_is_valid_hex_color( $iclsettings['st']['hl_color'] ) ) {
+		    $iclsettings['st']['hl_color'] = '#FFFF00';
+	    }
 		if(isset($iclsettings)) {
         	$this->save_settings($iclsettings);
 		}

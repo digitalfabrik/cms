@@ -945,10 +945,11 @@ function iclRenderLangPreviewFooter() {
 
 function iclUpdateLangSelColorSchemeFooter() {
     /*jshint validthis: true*/
-    var element = jQuery(this);
+	var element = jQuery(this);
     var scheme = element.val();
     if (scheme && confirm(element.next().html())) {
         jQuery('#icl_lang_preview_config_footer').find('input[type="text"]').each(function () {
+			var element = jQuery(this);
             var this_n = element.attr('name').replace('icl_lang_sel_footer_config[', '').replace(']', '');
             var value = jQuery('#icl_lang_sel_footer_config_alt_' + scheme + '_' + this_n).val();
             element.wpColorPicker('color', value);

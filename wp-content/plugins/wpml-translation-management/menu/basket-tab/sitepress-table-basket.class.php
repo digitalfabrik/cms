@@ -1,8 +1,6 @@
 <?php
 require WPML_TM_PATH . '/menu/sitepress-table.class.php';
 
-$_POST[ 'SitePress_Table_Basket_loaded' ] = true;
-
 class SitePress_Table_Basket extends SitePress_Table {
 
     public static function enqueue_js() {

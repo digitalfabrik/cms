@@ -197,7 +197,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
             ?>
             <?php if ( !empty( $blog_users_t ) || !empty( $other_service_translators ) ) { ?>
                 <h3><?php _e( 'Current translators', 'wpml-translation-management' ); ?></h3>
-                <table class="widefat fixed" cellspacing="0">
+                <table class="widefat fixed striped" cellspacing="0">
                     <thead>
                     <?php $this->translators_head_foot_row() ?>
                     </thead>
@@ -209,11 +209,6 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
                     <tbody class="list:user user-list">
                     <?php if ( !empty( $blog_users_t ) ): foreach ( $blog_users_t as $bu ): ?>
                         <?php
-                        if ( !isset( $trstyle ) || $trstyle ) {
-                            $trstyle = '';
-                        } else {
-                            $trstyle = ' class="alternate"';
-                        }
                         if ( $current_user->ID == $bu->ID ) {
                             $edit_link = 'profile.php';
                         } else {
@@ -223,7 +218,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
                         }
                         $language_pairs = get_user_meta( $bu->ID, $this->wpdb->prefix . 'language_pairs', true );
                         ?>
-                        <tr<?php echo $trstyle ?>>
+                        <tr>
                             <td class="column-title">
                                 <strong><a class="row-title"
                                            href="<?php echo $edit_link ?>"><?php echo $bu->user_login; ?></a></strong>
@@ -239,7 +234,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
                                         <?php _e( 'Language pairs', 'wpml-translation-management' ) ?></a>
                                 </div>
                             </td>
-                            <td>
+                            <td class="column-translator-languages">
                                 <?php
                                 $langs = $this->get_translation_languages();
                                 ?>

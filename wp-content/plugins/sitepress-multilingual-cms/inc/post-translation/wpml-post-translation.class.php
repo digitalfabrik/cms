@@ -244,6 +244,21 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		if ( $post_vars['post_type'] !== 'nav_menu_item' ) {
 			do_action( 'wpml_tm_save_post', $post_vars['ID'], get_post( $post_vars['ID'] ), false );
 		}
+		// Flush object cache.
+		$this->flush_object_cache_for_groups( array( 'ls_languages', 'element_translations' ) );
+	}
+
+	/**
+	 * Create new instance of WPML_WP_Cache for each group and flush cache for group.
+	 * @param array $groups
+	 */
+	private function flush_object_cache_for_groups( $groups = array() ) {
+		if ( ! empty( $groups ) ) {
+			foreach ( $groups as $group ) {
+				$cache            = new WPML_WP_Cache( $group );
+				$cache->flush_group_cache();
+			}
+		}
 	}
 
 	private function get_original_post_attr( $trid, $attribute, $source_lang_code ) {
