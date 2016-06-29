@@ -14,9 +14,9 @@
 //register_activation_hook(__FILE__, 'cl_update_content');
 //
 //function cl_update_content() {
-//    if (! wp_next_scheduled ( 'cl_update_contents' )) {
+//	if (! wp_next_scheduled ( 'cl_update_contents' )) {
 //	wp_schedule_event(time(), 'twicedaily', 'cl_update_contents');
-//    }
+//	}
 //}
 //
 //add_action('cl_update_contents', 'cl_update_content');
@@ -57,8 +57,8 @@ function cl_create_metabox( $post ) {
 
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
 	
-    $radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-    $option_value = get_post_meta( $post->ID, 'ig-content-loader-base', true );[0];
+	$radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
+	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base', true );[0];
 	
 	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>'Bitte ausw&auml;hlen (nichts einf&uuml;gen)')));
 	$options = "";
@@ -73,33 +73,33 @@ function cl_create_metabox( $post ) {
 function cl_meta_box_html( $options, $radio_value ) {
 	global $post;
 ?>
-    <!-- Dropdown-select for foreign contents -->
-    <p id="cl_metabox_plugin">
-        <label style="font-weight:600" for="meta-select" class="cl-row-title">
-            <?php _e( 'Inhalt wählen', 'cl-textdomain' )?>
-        </label>
-        <select name="cl_content_select" id="cl_content_select" style="width:100%; margin-top:10px; margin-bottom:10px">
-            <!-- build select items from filtered plugin list and preselect saved item, if there was any -->
-            <?php echo $options; ?>
-        </select>
-    </p>
+	<!-- Dropdown-select for foreign contents -->
+	<p id="cl_metabox_plugin">
+		<label style="font-weight:600" for="meta-select" class="cl-row-title">
+			<?php _e( 'Inhalt wählen', 'cl-textdomain' )?>
+		</label>
+		<select name="cl_content_select" id="cl_content_select" style="width:100%; margin-top:10px; margin-bottom:10px">
+			<!-- build select items from filtered plugin list and preselect saved item, if there was any -->
+			<?php echo $options; ?>
+		</select>
+	</p>
 
-    <!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
-    <p id="cl_metabox_position">
-        <span style="font-weight:600" class="cl-row-title"><?php _e( 'Inhalt Einfügen', 'cl-textdomain' )?></span>
-        <div class="cl-row-content">
-            <label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-                <input type="radio" name="meta-radio" id="insert-pre-radio" value="anfang" <?php checked( $radio_value, 'anfang' ); ?>>
-                <?php _e( 'Am Anfang', 'cl-textdomain' )?>
-            </label>
-            <label for="meta-radio-two">
-                <input type="radio" name="meta-radio" id="insert-suf-radio" value="ende" <?php checked( $radio_value, 'ende' ); ?>>
-                <?php _e( 'Am Ende', 'cl-textdomain' )?>
-            </label>
-        </div>
-    </p>
+	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
+	<p id="cl_metabox_position">
+		<span style="font-weight:600" class="cl-row-title"><?php _e( 'Inhalt Einfügen', 'cl-textdomain' )?></span>
+		<div class="cl-row-content">
+			<label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
+				<input type="radio" name="meta-radio" id="insert-pre-radio" value="anfang" <?php checked( $radio_value, 'anfang' ); ?>>
+				<?php _e( 'Am Anfang', 'cl-textdomain' )?>
+			</label>
+			<label for="meta-radio-two">
+				<input type="radio" name="meta-radio" id="insert-suf-radio" value="ende" <?php checked( $radio_value, 'ende' ); ?>>
+				<?php _e( 'Am Ende', 'cl-textdomain' )?>
+			</label>
+		</div>
+	</p>
 
-    <div id="cl_metabox_extra"></div>
+	<div id="cl_metabox_extra"></div>
 	<script type="text/javascript" >
 	
 		jQuery("#cl_content_select").on('change', function() {
@@ -120,7 +120,7 @@ function cl_meta_box_html( $options, $radio_value ) {
 		});
 	
 	</script>
-    <?php  
+	<?php  
 }
 
 add_action( 'wp_ajax_cl_dropdown', 'cl_dropdown' );
@@ -144,17 +144,17 @@ function cl_save_meta_box($post_id) {
 	exit;*/
 	// key for base-plugin in wp_postmeta
 	$meta_key = 'ig-content-loader-base';
-    $meta_key_position = 'ig-content-loader-base-position';
+	$meta_key_position = 'ig-content-loader-base-position';
   
 	//get the selected value from the meta box dropdown-select and the radio group
-    $meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
-    $meta_value_position = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
-    
+	$meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
+	$meta_value_position = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
+	
 	//read old post meta settings
 	$old_meta_value = get_post_meta( $post_id, $meta_key, true );
-    $old_meta_value_position = get_post_meta ($post_id, $meta_key_position, true);
+	$old_meta_value_position = get_post_meta ($post_id, $meta_key_position, true);
 	
-    /* meta value for dropdown select */
+	/* meta value for dropdown select */
 	if ($meta_value != '') {
 	  
 	//if there was no old post meta entry, add it
@@ -170,13 +170,13 @@ function cl_save_meta_box($post_id) {
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
 	}
-    
-    /* meta value for radio buttons */
-    if($meta_value_position != '') {
-        
-    if( '' == $old_meta_value_position) 
-        add_post_meta($post_id, $meta_key_position, $meta_value_position, true);
-        
+	
+	/* meta value for radio buttons */
+	if($meta_value_position != '') {
+		
+	if( '' == $old_meta_value_position) 
+		add_post_meta($post_id, $meta_key_position, $meta_value_position, true);
+		
 	elseif ( $old_meta_value_position != $meta_value_position )
 		update_post_meta( $post_id, $meta_key_position, $meta_value_position );
 	}
@@ -199,12 +199,12 @@ add_action('edit_page_form', 'cl_save_meta_box');
 */
 function cl_save_content( $parent_id, $attachment, $blog_id) {
 	global $wpdb;
-    
-    // get content item from database
+	
+	// get content item from database
 	$sql = "SELECT * FROM ".$wpdb->prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'cl_html'";
 	$sql_results = $wpdb->get_results($sql);
-    
-    // if there is already an value in the db, update it, else insert it
+	
+	// if there is already an value in the db, update it, else insert it
 	if(count($sql_results) > 0) {
 		$update = "UPDATE ".$wpdb->prefix.$blog_id."_posts SET post_content = '$attachment' WHERE ID = ".$sql_results[0]->ID;
 		$wpdb->query($update);
@@ -225,8 +225,8 @@ add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 function cl_modify_post($post) {
 	global $wpdb;
 	global $array;
-    
-    
+	
+	
 	if(!$array)
 		$array = array();
 	if(!in_array($post->ID,$array)) {
@@ -235,25 +235,25 @@ function cl_modify_post($post) {
 		// get foreign cotennt from database
 		$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
 		
-        // execute sql statement in $query
+		// execute sql statement in $query
 		$result = $wpdb->get_results($query);
 
-        /* get saved post meta for radio group from db */
-        $option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-        $select_value = get_post_meta( $post->ID, 'ig-content-loader-base');
-        
-        // if there is a selected value for the dropdown in the database
-        if(count($select_value) > 0 ) {
-            if($option_value == 'ende') {
-                // add foreign content from db to the end of the post
-                $post->post_content = $post->post_content.$result[0]->post_content;
-            } else {
-                // add foreign content from db to the front of the post
-                $post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
-            }
-        }
+		/* get saved post meta for radio group from db */
+		$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
+		$select_value = get_post_meta( $post->ID, 'ig-content-loader-base');
+		
+		// if there is a selected value for the dropdown in the database
+		if(count($select_value) > 0 ) {
+			if($option_value == 'ende') {
+				// add foreign content from db to the end of the post
+				$post->post_content = $post->post_content.$result[0]->post_content;
+			} else {
+				// add foreign content from db to the front of the post
+				$post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
+			}
+		}
 
-        return $post;
+		return $post;
 	}
 }
 add_action('rest_api_print_post', 'cl_modify_post', 1);
@@ -267,17 +267,17 @@ function cl_update () {
 	global $wp_query;
 	global $wpdb;
 	
-    // query url for 'content-loader'
+	// query url for 'content-loader'
 	$cl_action = $wp_query->query_vars['content-loader'];
 	//if url contains ?content-loader=update
 	if( $cl_action == "update" ) {
-        
+		
 		// get all blogs / instances (augsburg, regensburg, etc)
 		$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 		$all_blogs = $wpdb->get_results($query);
 		foreach( $all_blogs as $blog ){
 			$blog_id = $blog->blog_id;
-            // query all objects in db with meta_key = ig-content-loader-base
+			// query all objects in db with meta_key = ig-content-loader-base
 			$results = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
 
 			$result = $wpdb->get_results($results);
@@ -285,7 +285,7 @@ function cl_update () {
 			foreach($result as $item) {
 				$parent_id = "".$item->post_id;
 				$meta_val = "".$item->meta_value;
-                $blog_name = get_blog_details($blog_id)->blogname;
+				$blog_name = get_blog_details($blog_id)->blogname;
 
 				do_action('cl_update_content', $parent_id, $meta_val, $blog_id, $blog_name);
 			}
