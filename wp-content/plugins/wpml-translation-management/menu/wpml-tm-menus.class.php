@@ -1,7 +1,4 @@
 <?php
-require WPML_TM_PATH . '/menu/basket-tab/sitepress-table-basket.class.php';
-require WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard.class.php';
-
 if ( filter_input( INPUT_GET, 'sm', FILTER_SANITIZE_STRING ) === 'basket' ) {
     add_action( 'init', array( 'SitePress_Table_Basket', 'enqueue_js' ) );
 }
@@ -9,6 +6,7 @@ if ( filter_input( INPUT_GET, 'sm', FILTER_SANITIZE_STRING ) === 'basket' ) {
 class WPML_TM_Menus
 {
     private $active_languages;
+	private $logger_ui;
 	private $translatable_types;
     private $current_document_words_count;
     private $current_language;
@@ -42,6 +40,9 @@ class WPML_TM_Menus
 		$this->current_document_words_count = 0;
 		$this->current_shown_item           = isset( $_GET[ 'sm' ] ) ? $_GET[ 'sm' ] : 'dashboard';
 		$this->base_target_url              = dirname( __FILE__ );
+		$logger_settings                    = new WPML_Jobs_Fetch_Log_Settings();
+		$wpml_wp_api                        = new WPML_WP_API();
+		$this->logger_ui                    = new WPML_Jobs_Fetch_Log_UI( $logger_settings, $wpml_wp_api );
 	}
 
     public function display_main()
@@ -91,6 +92,7 @@ class WPML_TM_Menus
         $this->build_mcs_item();
         $this->build_translation_notifications_item();
 		$this->build_tp_com_log_item();
+		$this->build_tp_pickup_log_item();
 
         $this->tab_items = apply_filters('wpml_tm_tab_items', $this->tab_items);
     }
@@ -258,7 +260,7 @@ class WPML_TM_Menus
 	    /** @var SitePress $sitepress */
         global $sitepress;
         $this->active_languages = $sitepress->get_active_languages();
-		$this->translatable_types = $sitepress->get_translatable_documents();
+		$this->translatable_types = apply_filters( 'wpml_tm_dashboard_translatable_types', $sitepress->get_translatable_documents() );
         $this->build_dashboard_data();
 
         $this->build_content_dashboard_filter();
@@ -269,7 +271,6 @@ class WPML_TM_Menus
     public function build_content_translators() {
         global $iclTranslationManagement, $wpdb, $sitepress;
 
-        require_once 'wpml-translator-settings.class.php';
         $translator_settings = new WPML_Translator_Settings( $wpdb, $sitepress, $iclTranslationManagement );
         $translator_settings->build_header_content();
         ?>
@@ -536,7 +537,7 @@ class WPML_TM_Menus
          */
         global $sitepress, $iclTranslationManagement;
 
-	      $doc_translation_method = isset($iclTranslationManagement->settings['doc_translation_method']) ? intval($iclTranslationManagement->settings['doc_translation_method']) : ICL_TM_TMETHOD_MANUAL;
+	      $doc_translation_method = isset($iclTranslationManagement->settings['doc_translation_method']) ? (int)$iclTranslationManagement->settings['doc_translation_method'] : ICL_TM_TMETHOD_MANUAL;
 
         ?>
 
@@ -627,12 +628,15 @@ class WPML_TM_Menus
 		                    </label>
 	                    </li>
                     </ul>
-                    <p id="tm_block_retranslating_terms"><label>
+
+	                <?php do_action( 'wpml_doc_translation_method_below' ); ?>
+
+	                <p id="tm_block_retranslating_terms"><label>
                             <input name="tm_block_retranslating_terms"
                                    value="1" <?php checked( icl_get_setting( 'tm_block_retranslating_terms' ),
                                                             "1" ) ?>
                                    type="checkbox"/>
-                            <?php _e( 'Block translating taxonomy terms (from the Translation Editor) that have already been translated.',
+                            <?php esc_html_e( "Don't include already translated terms in the translation editor",
                                       'wpml-translation-management' ) ?>
                         </label>
                     </p>
@@ -645,6 +649,10 @@ class WPML_TM_Menus
                             <?php _e('Show translation instructions in the list of pages', 'wpml-translation-management') ?>
                         </label>
                     </p>
+	                
+	                <?php do_action('wpml_how_to_translate_posts_and_pages'); ?>
+
+	                <?php do_action( 'wpml_how_to_translate_posts_and_pages_below' ); ?>
 
                     <p>
                         <a href="https://wpml.org/?page_id=3416"
@@ -889,7 +897,14 @@ class WPML_TM_Menus
                                 for="icl_tm_notify_translator_dont"><?php _e('No notification', 'wpml-translation-management'); ?></label>
                         </li>
                     </ul>
-                    <?php do_action('WPML_translator_notification'); ?>
+                    <?php
+                    do_action( 'wpml_translator_notification' );
+
+                    /**
+                     * @deprecated Use 'wpml_translator_notification' instead
+                     */
+                    do_action( 'WPML_translator_notification' );
+                    ?>
                 </div>
             </div>
             <div class="wpml-section" id="translation-notifications- sec-2">
@@ -1092,28 +1107,29 @@ class WPML_TM_Menus
             </th>
 
 	        <?php
-	        $lang_count = count($sitepress->get_active_languages());
+	        $active_languages = $sitepress->get_active_languages();
+	        $lang_count       = count( $active_languages );
+	        $lang_col_width   = ( $lang_count - 1 ) * 24 . "px";
 	        if ($lang_count > 10) {
 		        $lang_col_width = "30%";
-	        } else {
-		        $lang_col_width = $lang_count*17 . "px";
 	        }
 	        ?>
 
-	        <th scope="col" class="manage-column column-active-languages" style="width: <?php echo $lang_col_width; ?>">
+	        <th scope="col" class="manage-column column-active-languages wpml-col-languages" style="width: <?php echo $lang_col_width; ?>">
             <?php
-            if ( $this->translation_filter[ 'to_lang' ] ) {
+            if ( $this->translation_filter['to_lang'] && array_key_exists( $this->translation_filter['to_lang'], $active_languages ) ) {
+	            $lang = $active_languages[ $this->translation_filter['to_lang'] ];
                 ?>
 
-                    <img src="<?php echo $sitepress->get_flag_url( $this->translation_filter[ 'to_lang' ] ) ?>" width="16" height="12" alt="<?php echo $this->translation_filter[ 'to_lang' ] ?>"/>
+                    <span title="<?php echo $lang[ 'display_name' ]; ?>"><img src="<?php echo $sitepress->get_flag_url( $this->translation_filter[ 'to_lang' ] ) ?>" width="16" height="12" alt="<?php echo $this->translation_filter[ 'to_lang' ] ?>"/></span>
             <?php
             } else {
-                foreach ( $sitepress->get_active_languages() as $lang ) {
-                    if ( $lang[ 'code' ] == $this->translation_filter[ 'from_lang' ] ) {
+	            foreach ( $active_languages as $lang ) {
+		            if ( $lang['code'] === $this->translation_filter['from_lang'] ) {
                         continue;
                     }
                     ?>
-                        <img src="<?php echo $sitepress->get_flag_url( $lang[ 'code' ] ) ?>" width="16" height="12" alt="<?php echo $lang[ 'code' ] ?>"/>
+                        <span title="<?php echo $lang[ 'display_name' ]; ?>"><img src="<?php echo $sitepress->get_flag_url( $lang[ 'code' ] ) ?>" width="16" height="12" alt="<?php echo $lang[ 'code' ] ?>"/></span>
                 <?php
                 }
             }
@@ -1222,8 +1238,8 @@ class WPML_TM_Menus
 		}
 	}
 
-    private function build_content_dashboard_filter() {
-        require WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard-display-filter.class.php';
+    public function build_content_dashboard_filter() {
+        require_once WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard-display-filter.class.php';
         $dashboard_filter = new WPML_TM_Dashboard_Display_Filter(
             $this->active_languages,
             $this->source_language,
@@ -1398,6 +1414,22 @@ class WPML_TM_Menus
         $this->documents = $tm_dashboard->get_documents( $this->translation_filter );
     }
 
+    public function get_dashboard_documents(){
+        return $this->documents;
+    }
+
+    /**
+     * Used only by unit tests at the moment
+     * @return mixed
+     */
+    public function get_post_types(){
+        return $this->post_types;
+    }
+
+    /**
+     * Used only by unit tests at the moment
+     * @return mixed
+     */
     private function build_dashboard_data() {
         $this->build_dashboard_filter_arguments();
         $this->build_dashboard_documents();
@@ -1446,36 +1478,42 @@ class WPML_TM_Menus
     }
 
 	private function build_tp_com_log_item( ) {
-
-        if ( isset( $_GET[ 'sm' ] ) && $_GET[ 'sm' ] == 'com-log' ) {
+        if ( isset( $_GET[ 'sm' ] ) && 'com-log' === $_GET['sm' ] ) {
 			$this->tab_items['com-log']['caption'] = __('Communication Log', 'wpml-translation-management');
 			$this->tab_items['com-log']['callback'] = array($this, 'build_tp_com_log');
 		}
 	}
 
-	public function build_tp_com_log( ) {
-		require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-com-log.class.php';
+	private function build_tp_pickup_log_item() {
+		$logger_settings = new WPML_Jobs_Fetch_Log_Settings();
 
+		if ( isset( $_GET['sm'] ) && $logger_settings->get_ui_key() === $_GET['sm'] ) {
+			$this->tab_items[ $logger_settings->get_ui_key() ]['caption']  = __( 'Content updates log', 'wpml-translation-management' );
+			$this->tab_items[ $logger_settings->get_ui_key() ]['callback'] = array( $this, 'build_tp_pickup_log' );
+		}
+	}
+
+	public function build_tp_com_log( ) {
 		if ( isset( $_POST[ 'tp-com-clear-log' ] ) ) {
-			TranslationProxy_Com_Log::clear_log( );
+			WPML_TranslationProxy_Com_Log::clear_log( );
 		}
 
 		if ( isset( $_POST[ 'tp-com-disable-log' ] ) ) {
-			TranslationProxy_Com_Log::set_logging_state( false );
+			WPML_TranslationProxy_Com_Log::set_logging_state( false );
 		}
 
 		if ( isset( $_POST[ 'tp-com-enable-log' ] ) ) {
-			TranslationProxy_Com_Log::set_logging_state( true );
+			WPML_TranslationProxy_Com_Log::set_logging_state( true );
 		}
 
 		$action_url = esc_attr( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=' . $_GET[ 'sm' ] );
-		$com_log = TranslationProxy_Com_Log::get_log( );
+		$com_log = WPML_TranslationProxy_Com_Log::get_log( );
 
 		?>
 
 		<form method="post" id="tp-com-log-form" name="tp-com-log-form" action="<?php echo $action_url; ?>">
 
-			<?php if ( TranslationProxy_Com_Log::is_logging_enabled( ) ): ?>
+			<?php if ( WPML_TranslationProxy_Com_Log::is_logging_enabled( ) ): ?>
 
 				<?php _e("This is a log of the communication between your site and the translation system. It doesn't include any private information and allows WPML support to help with problems related to sending content to translation.", 'wpml-translation-management'); ?>
 
@@ -1506,5 +1544,9 @@ class WPML_TM_Menus
 		</form>
 		<?php
 
+	}
+
+	public function build_tp_pickup_log() {
+		$this->logger_ui->render();
 	}
 }

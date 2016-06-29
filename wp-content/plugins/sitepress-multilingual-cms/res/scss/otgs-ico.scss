@@ -18,7 +18,7 @@
 
 
 [class*="otgs-ico"]:before,
-[data-icon]:before {
+[data-otgs-ico]:before {
   font-family: "otgs-icons" !important;
   font-style: normal !important;
   font-weight: normal !important;
@@ -34,10 +34,9 @@
 .otgs-ico-32:before {
   font-size: 32px;
 }
-[data-icon]:before {
-  content: attr(data-icon);
+[data-otgs-ico]:before {
+  content: attr(data-otgs-ico);
 }
-
 
 .otgs-ico-note-add:before {
   content: "a";
@@ -173,3 +172,8 @@
 	font-family: dashicons !important;
 	content: "\f141";
 }
+.otgs-ico-unlink:before {
+	font-family: dashicons !important;
+	content: "\f225";
+}
+

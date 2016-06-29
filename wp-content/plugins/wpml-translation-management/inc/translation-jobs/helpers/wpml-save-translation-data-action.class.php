@@ -67,6 +67,9 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 				$icl_translate_job->update( array( 'translated' => 0 ) );
 			}
 
+			$element_id = $translation_status->element_id();
+			delete_post_meta( $element_id, '_icl_lang_duplicate_of' );
+			
 			if ( ! empty( $data['complete'] ) && ! $is_incomplete ) {
 				$icl_translate_job->update( array( 'translated' => 1 ) );
 				$translation_status->update( array(
@@ -74,13 +77,14 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 					'needs_update' => 0
 				) );
 				$job = $this->get_translation_job( $data['job_id'], true );
-				$element_id = $translation_status->element_id();
 
 				if ( $is_external ) {
 					$this->save_external( $element_type_prefix, $job );
 				} else {
 					if ( ! is_null( $element_id ) ) {
 						$postarr['ID'] = $_POST['post_ID'] = $element_id;
+					} else {
+						$postarr['post_status'] = ! $sitepress->get_setting( 'translated_document_status' ) ? 'draft' : $original_post->post_status;
 					}
 					foreach ( $job->elements as $field ) {
 						switch ( $field->field_type ) {
@@ -122,9 +126,6 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 					if ( $sitepress->get_setting( 'sync_post_date' ) ) {
 						$postarr['post_date'] = $original_post->post_date;
 					}
-
-					//set as draft or the same status as original post
-					$postarr['post_status'] = ! $sitepress->get_setting( 'translated_document_status' ) ? 'draft' : $original_post->post_status;
 
 					if ( $original_post->post_parent ) {
 						$parent_id = $wpml_post_translations->element_id_in( $original_post->post_parent, $job->language_code );

@@ -179,7 +179,7 @@ class WPML_TM_Dashboard_Document_Row {
 			<td scope="row" class="manage-column column-date">
 				<?php echo $this->get_general_status(); ?>
 			</td>
-			<td scope="row" class="manage-column column-active-languages">
+			<td scope="row" class="manage-column column-active-languages wpml-col-languages">
 				<?php
 				foreach ( $this->active_languages as $code => $lang ) {
 					if ( $code == $this->data->language_code ) {
@@ -216,13 +216,13 @@ class WPML_TM_Dashboard_Document_Row {
 					$status_image_file_name = $iclTranslationManagement->status2img_filename( $status, ICL_TM_NEEDS_UPDATE === (int) $status );
 					?>
 
-					<span data-document_status="<?php echo $status; ?>" style="padding-top:4px;">
+					<span data-document_status="<?php echo $status; ?>">
                     <img title="<?php echo $lang[ 'display_name' ]; ?>: <?php echo $translation_status_text ?>"
                          src="<?php echo WPML_TM_URL ?>/res/img/<?php echo $status_image_file_name; ?>"
                          width="16"
                          height="16"
                          alt="<?php echo $lang[ 'display_name' ]; ?>: <?php echo $translation_status_text ?>"/>
-                </span>
+                	</span>
 				<?php
 				}
 				?>

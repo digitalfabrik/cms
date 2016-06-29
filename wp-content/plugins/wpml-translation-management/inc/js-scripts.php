@@ -5,23 +5,53 @@
  */
 function wpml_tm_register_js_scripts() {
 	wp_register_script(
+		'wpml-tm-editor-templates',
+		WPML_TM_URL . '/res/js/translation-editor/templates.js',
+		array(),
+		WPML_TM_VERSION,
+		true
+	);
+	wp_register_script(
 		'wpml-tm-editor-job',
 		WPML_TM_URL . '/res/js/translation-editor/wpml-tm-editor-job.js',
 		array( 'underscore', 'backbone' ),
 		WPML_TM_VERSION,
 		true
 	);
-	wp_register_script(
+	
+	$scripts = array(
 		'wpml-tm-editor-job-field-view',
-		WPML_TM_URL . '/res/js/translation-editor/wpml-tm-editor-job-field-view.js',
-		array( 'wpml-tm-editor-job' ),
-		WPML_TM_VERSION,
-		true
-	);
+		'wpml-tm-editor-job-basic-field-view',
+		'wpml-tm-editor-job-single-line-field-view',
+		'wpml-tm-editor-job-textarea-field-view',
+		'wpml-tm-editor-job-wysiwyg-field-view',
+		'wpml-tm-editor-field-view-factory',
+		'wpml-tm-editor-section-view',
+		'wpml-tm-editor-group-view',
+		'wpml-tm-editor-image-view',
+		'wpml-tm-editor-main-view',
+		'wpml-tm-editor-header-view',
+		'wpml-tm-editor-note-view',
+		'wpml-tm-editor-footer-view',
+		'wpml-tm-editor-languages-view',
+		'wpml-tm-editor-copy-all-dialog',
+		'wpml-tm-editor-edit-independently-dialog'
+		);
+	
+	foreach( $scripts as $script ) {
+		wp_register_script(
+			$script,
+			WPML_TM_URL . '/res/js/translation-editor/' . $script . '.js',
+			array( 'wpml-tm-editor-job' ),
+			WPML_TM_VERSION,
+			true
+		);
+	}
+
 	wp_register_script(
 		'wpml-tm-editor-scripts',
 		WPML_TM_URL . '/res/js/translation-editor/translation-editor.js',
-		array( 'jquery', 'jquery-ui-dialog', 'wpml-tm-editor-job-field-view' ),
+		array_merge( array( 'jquery', 'jquery-ui-dialog', 'wpml-tm-editor-templates', 'wpml-tm-editor-job'), $scripts ),
 		WPML_TM_VERSION,
 		true
 	);

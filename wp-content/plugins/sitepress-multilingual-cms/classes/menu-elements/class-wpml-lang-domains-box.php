@@ -12,8 +12,8 @@ class WPML_Lang_Domains_Box extends WPML_SP_User {
 		$default_language = $this->sitepress->get_default_language();
 		$language_domains = $this->sitepress->get_setting( 'language_domains', array() );
 		$default_home     = $this->sitepress->convert_url( $this->sitepress->get_wp_api()->get_home_url(), $default_language );
-		$home_schema      = parse_url( $default_home, PHP_URL_SCHEME ) . '://';
-		$home_path        = parse_url( $default_home, PHP_URL_PATH );
+		$home_schema      = wpml_parse_url( $default_home, PHP_URL_SCHEME ) . '://';
+		$home_path        = wpml_parse_url( $default_home, PHP_URL_PATH );
 		ob_start();
 		?>
 		<table class="language_domains">

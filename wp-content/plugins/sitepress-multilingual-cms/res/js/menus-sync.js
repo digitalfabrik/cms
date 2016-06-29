@@ -135,8 +135,7 @@ var WPML_core = WPML_core || {};
 										type:    "POST",
 										data:    data,
 										success: function (response) {
-
-											if (response == '1') {
+											if (response.success) {
 												WPML_core.sync_menus(total_menus);
 											}
 										}
@@ -146,7 +145,38 @@ var WPML_core = WPML_core || {};
 			message = jQuery('#icl_msync_submit').data('message-complete');
 			icl_msync_message.text(message);
 			jQuery('.spinner').remove();
+			jQuery('#icl_msync_cancel').fadeOut();
 			icl_msync_message.fadeIn('slow');
+
+			jQuery.ajax({
+										url:     ajaxurl,
+										data:    {
+											'action': 'wpml_get_links_for_menu_strings_translation'
+										},
+										success: function (response) {
+											if (response.success && response.data.items) {
+												var element = jQuery('<p></p>');
+												element.text(response.data.label + ' ');
+												var items = 0;
+
+												for (var key in response.data.items) {
+													if (response.data.items.hasOwnProperty(key)) {
+														if(items>0) {
+															element.append(', ');
+														}
+														var link = jQuery('<a></a>');
+														link.attr('href', response.data.items[key]);
+														link.text(key);
+														link.appendTo(element);
+														items++;
+													}
+												}
+
+												element.appendTo(jQuery('#icl_msync_confirm_form'));
+											}
+										}
+									});
+
 		}
 
 	};

@@ -165,6 +165,13 @@ function _wp_translate_postdata( $update = false, $post_data = null ) {
 		$post_data['post_date_gmt'] = get_gmt_from_date( $post_data['post_date'] );
 	}
 
+	if ( isset( $post_data['post_category'] ) ) {
+		$category_object = get_taxonomy( 'category' );
+		if ( ! current_user_can( $category_object->cap->assign_terms ) ) {
+			unset( $post_data['post_category'] );
+		}
+	}
+
 	return $post_data;
 }
 
@@ -687,7 +694,7 @@ function post_exists($title, $content = '', $date = '') {
 	}
 
 	if ( !empty ( $content ) ) {
-		$query .= ' AND post_content = %s';
+		$query .= 'AND post_content = %s';
 		$args[] = $post_content;
 	}
 
@@ -1294,7 +1301,8 @@ function get_sample_permalink_html( $id, $new_title = null, $new_slug = null ) {
 
 	if ( current_user_can( 'read_post', $post->ID ) ) {
 		if ( 'draft' === $post->post_status ) {
-			$view_link = get_preview_post_link( $post );
+			$draft_link = set_url_scheme( get_permalink( $post->ID ) );
+			$view_link = get_preview_post_link( $post, array(), $draft_link );
 			$preview_target = " target='wp-preview-{$post->ID}'";
 		} else {
 			if ( 'publish' === $post->post_status || 'attachment' === $post->post_type ) {
@@ -1312,7 +1320,7 @@ function get_sample_permalink_html( $id, $new_title = null, $new_slug = null ) {
 
 		if ( false !== $view_link ) {
 			$display_link = urldecode( $view_link );
-			$return .= '<a id="sample-permalink" href="' . esc_url( $view_link ) . '"' . $preview_target . '>' . $display_link . "</a>\n";
+			$return .= '<a id="sample-permalink" href="' . esc_url( $view_link ) . '"' . $preview_target . '>' . esc_html( $display_link ) . "</a>\n";
 		} else {
 			$return .= '<span id="sample-permalink">' . $permalink . "</span>\n";
 		}
@@ -1336,14 +1344,14 @@ function get_sample_permalink_html( $id, $new_title = null, $new_slug = null ) {
 			}
 		}
 
-		$post_name_html = '<span id="editable-post-name">' . $post_name_abridged . '</span>';
-		$display_link = str_replace( array( '%pagename%', '%postname%' ), $post_name_html, urldecode( $permalink ) );
+		$post_name_html = '<span id="editable-post-name">' . esc_html( $post_name_abridged ) . '</span>';
+		$display_link = str_replace( array( '%pagename%', '%postname%' ), $post_name_html, esc_html( urldecode( $permalink ) ) );
 
 		$return = '<strong>' . __( 'Permalink:' ) . "</strong>\n";
 		$return .= '<span id="sample-permalink"><a href="' . esc_url( $view_link ) . '"' . $preview_target . '>' . $display_link . "</a></span>\n";
 		$return .= '&lrm;'; // Fix bi-directional text display defect in RTL languages.
 		$return .= '<span id="edit-slug-buttons"><button type="button" class="edit-slug button button-small hide-if-no-js" aria-label="' . __( 'Edit permalink' ) . '">' . __( 'Edit' ) . "</button></span>\n";
-		$return .= '<span id="editable-post-name-full">' . $post_name . "</span>\n";
+		$return .= '<span id="editable-post-name-full">' . esc_html( $post_name ) . "</span>\n";
 	}
 
 	/**
@@ -1380,12 +1388,12 @@ function _wp_post_thumbnail_html( $thumbnail_id = null, $post = null ) {
 
 	$post               = get_post( $post );
 	$post_type_object   = get_post_type_object( $post->post_type );
-	$set_thumbnail_link = '<p class="hide-if-no-js"><a href="%s" id="set-post-thumbnail"%s class="thickbox">%s</a></p>';
+	$set_thumbnail_link = '<p class="hide-if-no-js"><a title="%s" href="%s" id="set-post-thumbnail" class="thickbox">%s</a></p>';
 	$upload_iframe_src  = get_upload_iframe_src( 'image', $post->ID );
 
 	$content = sprintf( $set_thumbnail_link,
+		esc_attr( $post_type_object->labels->set_featured_image ),
 		esc_url( $upload_iframe_src ),
-		'', // Empty when there's no featured image set, `aria-describedby` attribute otherwise.
 		esc_html( $post_type_object->labels->set_featured_image )
 	);
 
@@ -1416,11 +1424,10 @@ function _wp_post_thumbnail_html( $thumbnail_id = null, $post = null ) {
 		if ( !empty( $thumbnail_html ) ) {
 			$ajax_nonce = wp_create_nonce( 'set_post_thumbnail-' . $post->ID );
 			$content = sprintf( $set_thumbnail_link,
+				esc_attr( $post_type_object->labels->set_featured_image ),
 				esc_url( $upload_iframe_src ),
-				' aria-describedby="set-post-thumbnail-desc"',
 				$thumbnail_html
 			);
-			$content .= '<p class="hide-if-no-js howto" id="set-post-thumbnail-desc">' . __( 'Click the image to edit or update' ) . '</p>';
 			$content .= '<p class="hide-if-no-js"><a href="#" id="remove-post-thumbnail" onclick="WPRemoveThumbnail(\'' . $ajax_nonce . '\');return false;">' . esc_html( $post_type_object->labels->remove_featured_image ) . '</a></p>';
 		}
 	}
@@ -1649,7 +1656,7 @@ function _admin_notice_post_locked() {
 function wp_create_post_autosave( $post_data ) {
 	if ( is_numeric( $post_data ) ) {
 		$post_id = $post_data;
-		$post_data = $_POST;
+		$post_data = &$_POST;
 	} else {
 		$post_id = (int) $post_data['post_ID'];
 	}
@@ -1662,14 +1669,14 @@ function wp_create_post_autosave( $post_data ) {
 
 	// Store one autosave per author. If there is already an autosave, overwrite it.
 	if ( $old_autosave = wp_get_post_autosave( $post_id, $post_author ) ) {
-		$new_autosave = _wp_post_revision_data( $post_data, true );
+		$new_autosave = _wp_post_revision_fields( $post_data, true );
 		$new_autosave['ID'] = $old_autosave->ID;
 		$new_autosave['post_author'] = $post_author;
 
 		// If the new autosave has the same content as the post, delete the autosave.
 		$post = get_post( $post_id );
 		$autosave_is_different = false;
-		foreach ( array_intersect( array_keys( $new_autosave ), array_keys( _wp_post_revision_fields( $post ) ) ) as $field ) {
+		foreach ( array_intersect( array_keys( $new_autosave ), array_keys( _wp_post_revision_fields() ) ) as $field ) {
 			if ( normalize_whitespace( $new_autosave[ $field ] ) != normalize_whitespace( $post->$field ) ) {
 				$autosave_is_different = true;
 				break;
@@ -1759,7 +1766,7 @@ function post_preview() {
  *
  * @param array $post_data Associative array of the submitted post data.
  * @return mixed The value 0 or WP_Error on failure. The saved post ID on success.
- *               The ID can be the draft post_id or the autosave revision post_id.
+ *               Te ID can be the draft post_id or the autosave revision post_id.
  */
 function wp_autosave( $post_data ) {
 	// Back-compat

@@ -118,6 +118,59 @@ class TranslationManagement {
 	}
 
 	/**
+	 * @param WP_User         $current_user
+	 * @param WPML_Translator $current_translator
+	 *
+	 * @return WPML_Translator
+	 */
+	private function init_translator_language_pairs( WP_User $current_user, WPML_Translator $current_translator ) {
+		global $wpdb;
+		$current_translator_language_pairs  = get_user_meta( $current_user->ID, $wpdb->prefix . 'language_pairs', true );
+		$current_translator->language_pairs = $this->sanitize_language_pairs( $current_translator_language_pairs );
+		if ( ! count( $current_translator->language_pairs ) ) {
+			$current_translator->language_pairs = array();
+		}
+
+		return $current_translator;
+	}
+
+	/**
+	 * @param $code
+	 *
+*@return bool
+	 */
+	private function is_valid_language_code_format( $code ) {
+		return $code && is_string( $code ) && strlen( $code ) >= 2;
+	}
+
+	/**
+	 * @param array $language_pairs
+	 *
+	 * @return array
+	 */
+	private function sanitize_language_pairs( $language_pairs ) {
+		if(!$language_pairs || !is_array($language_pairs)) {
+			$language_pairs = array();
+		} else {
+			$language_codes_from = array_keys( $language_pairs );
+			foreach ( $language_codes_from as $code_from ) {
+				$language_codes_to = array_keys( $language_pairs[ $code_from ] );
+
+				foreach ( $language_codes_to as $code_to ) {
+					if ( ! $this->is_valid_language_code_format( $code_to ) ) {
+						unset( $language_pairs[ $code_from ][ $code_to ] );
+					}
+				}
+
+				if ( ! $this->is_valid_language_code_format( $code_from ) || ! count( $language_pairs[ $code_from ] ) ) {
+					unset( $language_pairs[ $code_from ] );
+				}
+			}
+		}
+		return $language_pairs;
+	}
+
+	/**
 	 * @param array $args @see \TranslationManagement::wpml_config_action
 	 */
 	private function update_section_translation_setting( $args ) {
@@ -1142,7 +1195,7 @@ class TranslationManagement {
 													WHERE translation_id = %d",
 			$data['translation_id'] ) );
 		$update = (bool) $rid;
-		if ( $update === true ) {
+		if ( true === $update ) {
 			$data_where = array( 'rid' => $rid );
 			$wpdb->update( $wpdb->prefix . 'icl_translation_status', $data, $data_where );
 		} else {
@@ -1284,8 +1337,9 @@ class TranslationManagement {
 						$data[ '_prevstate' ] = serialize( $_prevstate );
 					}
 
+					$backup_translation_status = $this->get_translation_status_data( $data['translation_id'] );
 					$update_translation_status = $this->update_translation_status( $data );
-					$rid                       = $update_translation_status[ 0 ]; //__ adds or updates row in icl_translation_status,
+					$rid                       = $update_translation_status[0];
 
 					$job_id     = $this->add_translation_job( $rid, $translator_id, $translation_package );
 					$job_ids[ ] = $job_id;
@@ -1299,6 +1353,11 @@ class TranslationManagement {
 							$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}icl_translate_job WHERE job_id=%d", $job_id ) );
 							$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->prefix}icl_translate_job SET revision = NULL WHERE rid=%d ORDER BY job_id DESC LIMIT 1", $rid ) );
 							$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}icl_translate WHERE job_id=%d", $job_id ) );
+							if ( $backup_translation_status ) {
+								$wpdb->update( "{$wpdb->prefix}icl_translation_status", $backup_translation_status, array( 'translation_id' => $data['translation_id'] ) );
+							} else {
+								$wpdb->delete( "{$wpdb->prefix}icl_translation_status", array( 'translation_id' => $data['translation_id'] )  );
+							}
 						}
 					}
 				} // if / else is making a duplicate
@@ -1309,6 +1368,16 @@ class TranslationManagement {
 		do_action('wpml_tm_empty_mail_queue');
 
 		return $job_ids;
+	}
+
+	private function get_translation_status_data( $translation_id ) {
+		global $wpdb;
+		$data = $wpdb->get_results( $wpdb->prepare( "SELECT *
+													FROM {$wpdb->prefix}icl_translation_status
+													WHERE translation_id = %d",
+			$translation_id ), ARRAY_A );
+
+		return isset( $data[0] ) ? $data[0] : array();
 	}
 
 	/**
@@ -1783,7 +1852,7 @@ class TranslationManagement {
 			$encode_url = $wpdb->get_var( $wpdb->prepare( "SELECT encode_url FROM {$wpdb->prefix}icl_languages WHERE code=%s", $translation_row->language_code ) );
 			if ( $encode_url ) {
 
-				$trid               = $sitepress->get_element_trid( $post_id, 'post_' . $post->post_type );
+				$trid               = $translation_row->trid;
 				$original_post_id   = $wpdb->get_var( $wpdb->prepare( "SELECT element_id FROM {$wpdb->prefix}icl_translations WHERE trid=%d AND source_language_code IS NULL", $trid ) );
 				$post_name_original = $wpdb->get_var( $wpdb->prepare( "SELECT post_name FROM {$wpdb->posts} WHERE ID = %d", $original_post_id ) );
 
@@ -1816,7 +1885,7 @@ class TranslationManagement {
 	public function icl_insert_post( $postarr, $lang ) {
 		$create_post_helper = wpml_get_create_post_helper();
 
-		return $create_post_helper->icl_insert_post( $postarr, $lang );
+		return $create_post_helper->insert_post( $postarr, $lang );
 	}
 
 	/**
@@ -2059,7 +2128,7 @@ class TranslationManagement {
 
 	private function init_current_translator( ) {
 		if(did_action('init')) {
-			global $wpdb, $current_user;
+			global $current_user;
 			$current_translator = null;
 			$user = false;
 			if ( isset( $current_user->ID ) ) {
@@ -2071,10 +2140,7 @@ class TranslationManagement {
 				$current_translator->ID             = $current_user->ID;
 				$current_translator->user_login     = isset( $user->data->user_login ) ? $user->data->user_login : false;
 				$current_translator->display_name   = isset( $user->data->display_name ) ? $user->data->display_name : $current_translator->user_login;
-				$current_translator->language_pairs = get_user_meta( $current_user->ID, $wpdb->prefix . 'language_pairs', true );
-				if ( empty( $current_translator->language_pairs ) ) {
-					$current_translator->language_pairs = array();
-				}
+				$current_translator                 = $this->init_translator_language_pairs( $current_user, $current_translator );
 			}
 
 			$this->current_translator = $current_translator;

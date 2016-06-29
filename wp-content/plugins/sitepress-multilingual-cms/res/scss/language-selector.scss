@@ -15,7 +15,6 @@
 	#lang_sel ul ul,
 	#lang_sel_list ul {
 		top: 18px;
-
 		a {
 			width: 150px;
 			&:visited {
@@ -50,6 +49,7 @@
 			top: 25px;
 			left: 0;
 			border-top: 1px solid #cdcdcd;
+			z-index: 10000;
 
 			a {
 				background: #ffffff;

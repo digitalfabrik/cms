@@ -345,7 +345,7 @@ function wp_oembed_register_route() {
 function wp_oembed_add_discovery_links() {
 	$output = '';
 
-	if ( is_singular() ) {
+	if ( is_singular() && ! is_front_page() ) {
 		$output .= '<link rel="alternate" type="application/json+oembed" href="' . esc_url( get_oembed_endpoint_url( get_permalink() ) ) . '" />' . "\n";
 
 		if ( class_exists( 'SimpleXMLElement' ) ) {
@@ -387,10 +387,9 @@ function get_post_embed_url( $post = null ) {
 		return false;
 	}
 
-	$embed_url     = trailingslashit( get_permalink( $post ) ) . user_trailingslashit( 'embed' );
-	$path_conflict = get_page_by_path( str_replace( home_url(), '', $embed_url ), OBJECT, get_post_types( array( 'public' => true ) ) );
-
-	if ( ! get_option( 'permalink_structure' ) || $path_conflict ) {
+	if ( get_option( 'permalink_structure' ) ) {
+		$embed_url = trailingslashit( get_permalink( $post ) ) . user_trailingslashit( 'embed' );
+	} else {
 		$embed_url = add_query_arg( array( 'embed' => 'true' ), get_permalink( $post ) );
 	}
 
@@ -490,14 +489,7 @@ JS;
 		esc_url( $embed_url ),
 		absint( $width ),
 		absint( $height ),
-		esc_attr(
-			sprintf(
-				/* translators: 1: post title, 2: site name */
-				__( '&#8220;%1$s&#8221; &#8212; %2$s' ),
-				get_the_title( $post ),
-				get_bloginfo( 'name' )
-			)
-		)
+		esc_attr__( 'Embedded WordPress Post' )
 	);
 
 	/**
@@ -942,7 +934,7 @@ function print_embed_scripts() {
 			 * and edit wp-embed-template.js directly.
 			 */
 			?>
-			!function(a,b){"use strict";function c(b,c){a.parent.postMessage({message:b,value:c,secret:g},"*")}function d(){function d(){l.className=l.className.replace("hidden",""),b.querySelector('.wp-embed-share-tab-button [aria-selected="true"]').focus()}function e(){l.className+=" hidden",b.querySelector(".wp-embed-share-dialog-open").focus()}function f(a){var c=b.querySelector('.wp-embed-share-tab-button [aria-selected="true"]');c.setAttribute("aria-selected","false"),b.querySelector("#"+c.getAttribute("aria-controls")).setAttribute("aria-hidden","true"),a.target.setAttribute("aria-selected","true"),b.querySelector("#"+a.target.getAttribute("aria-controls")).setAttribute("aria-hidden","false")}function g(a){var c,d,e=a.target,f=e.parentElement.previousElementSibling,g=e.parentElement.nextElementSibling;if(37===a.keyCode)c=f;else{if(39!==a.keyCode)return!1;c=g}"rtl"===b.documentElement.getAttribute("dir")&&(c=c===f?g:f),c&&(d=c.firstElementChild,e.setAttribute("tabindex","-1"),e.setAttribute("aria-selected",!1),b.querySelector("#"+e.getAttribute("aria-controls")).setAttribute("aria-hidden","true"),d.setAttribute("tabindex","0"),d.setAttribute("aria-selected","true"),d.focus(),b.querySelector("#"+d.getAttribute("aria-controls")).setAttribute("aria-hidden","false"))}function h(a){var c=b.querySelector('.wp-embed-share-tab-button [aria-selected="true"]');n!==a.target||a.shiftKey?c===a.target&&a.shiftKey&&(n.focus(),a.preventDefault()):(c.focus(),a.preventDefault())}function i(a){var b,d=a.target;b=d.hasAttribute("href")?d.getAttribute("href"):d.parentElement.getAttribute("href"),b&&(c("link",b),a.preventDefault())}if(!k){k=!0;var j,l=b.querySelector(".wp-embed-share-dialog"),m=b.querySelector(".wp-embed-share-dialog-open"),n=b.querySelector(".wp-embed-share-dialog-close"),o=b.querySelectorAll(".wp-embed-share-input"),p=b.querySelectorAll(".wp-embed-share-tab-button button");if(o)for(j=0;j<o.length;j++)o[j].addEventListener("click",function(a){a.target.select()});if(m&&m.addEventListener("click",function(){d()}),n&&n.addEventListener("click",function(){e()}),p)for(j=0;j<p.length;j++)p[j].addEventListener("click",f),p[j].addEventListener("keydown",g);b.addEventListener("keydown",function(a){27===a.keyCode&&-1===l.className.indexOf("hidden")?e():9===a.keyCode&&h(a)},!1),a.self!==a.top&&(c("height",Math.ceil(b.body.getBoundingClientRect().height)),b.addEventListener("click",i))}}function e(){a.self!==a.top&&(clearTimeout(i),i=setTimeout(function(){c("height",Math.ceil(b.body.getBoundingClientRect().height))},100))}function f(){a.self===a.top||g||(g=a.location.hash.replace(/.*secret=([\d\w]{10}).*/,"$1"),clearTimeout(h),h=setTimeout(function(){f()},100))}var g,h,i,j=b.querySelector&&a.addEventListener,k=!1;j&&(f(),b.documentElement.className=b.documentElement.className.replace(/\bno-js\b/,"")+" js",b.addEventListener("DOMContentLoaded",d,!1),a.addEventListener("load",d,!1),a.addEventListener("resize",e,!1))}(window,document);
+			!function(a,b){"use strict";function c(b,c){a.parent.postMessage({message:b,value:c,secret:g},"*")}function d(){function d(){l.className=l.className.replace("hidden",""),b.querySelector('.wp-embed-share-tab-button [aria-selected="true"]').focus()}function e(){l.className+=" hidden",b.querySelector(".wp-embed-share-dialog-open").focus()}function f(a){var c=b.querySelector('.wp-embed-share-tab-button [aria-selected="true"]');c.setAttribute("aria-selected","false"),b.querySelector("#"+c.getAttribute("aria-controls")).setAttribute("aria-hidden","true"),a.target.setAttribute("aria-selected","true"),b.querySelector("#"+a.target.getAttribute("aria-controls")).setAttribute("aria-hidden","false")}function g(a){var c,d,e=a.target,f=e.parentElement.previousElementSibling,g=e.parentElement.nextElementSibling;if(37===a.keyCode)c=f;else{if(39!==a.keyCode)return!1;c=g}"rtl"===b.documentElement.getAttribute("dir")&&(c=c===f?g:f),c&&(d=c.firstElementChild,e.setAttribute("tabindex","-1"),e.setAttribute("aria-selected",!1),b.querySelector("#"+e.getAttribute("aria-controls")).setAttribute("aria-hidden","true"),d.setAttribute("tabindex","0"),d.setAttribute("aria-selected","true"),d.focus(),b.querySelector("#"+d.getAttribute("aria-controls")).setAttribute("aria-hidden","false"))}function h(a){var c=b.querySelector('.wp-embed-share-tab-button [aria-selected="true"]');n!==a.target||a.shiftKey?c===a.target&&a.shiftKey&&(n.focus(),a.preventDefault()):(c.focus(),a.preventDefault())}function i(a){var b,d=a.target;b=d.hasAttribute("href")?d.getAttribute("href"):d.parentElement.getAttribute("href"),c("link",b),a.preventDefault()}if(!k){k=!0;var j,l=b.querySelector(".wp-embed-share-dialog"),m=b.querySelector(".wp-embed-share-dialog-open"),n=b.querySelector(".wp-embed-share-dialog-close"),o=b.querySelectorAll(".wp-embed-share-input"),p=b.querySelectorAll(".wp-embed-share-tab-button button"),q=b.getElementsByTagName("a");if(o)for(j=0;j<o.length;j++)o[j].addEventListener("click",function(a){a.target.select()});if(m&&m.addEventListener("click",function(){d()}),n&&n.addEventListener("click",function(){e()}),p)for(j=0;j<p.length;j++)p[j].addEventListener("click",f),p[j].addEventListener("keydown",g);if(b.addEventListener("keydown",function(a){27===a.keyCode&&-1===l.className.indexOf("hidden")?e():9===a.keyCode&&h(a)},!1),a.self!==a.top)for(c("height",Math.ceil(b.body.getBoundingClientRect().height)),j=0;j<q.length;j++)q[j].addEventListener("click",i)}}function e(){a.self!==a.top&&(clearTimeout(i),i=setTimeout(function(){c("height",Math.ceil(b.body.getBoundingClientRect().height))},100))}function f(){a.self===a.top||g||(g=a.location.hash.replace(/.*secret=([\d\w]{10}).*/,"$1"),clearTimeout(h),h=setTimeout(function(){f()},100))}var g,h,i,j=b.querySelector&&a.addEventListener,k=!1;j&&(f(),b.documentElement.className=b.documentElement.className.replace(/\bno-js\b/,"")+" js",b.addEventListener("DOMContentLoaded",d,!1),a.addEventListener("load",d,!1),a.addEventListener("resize",e,!1))}(window,document);
 			<?php
 		}
 	?>
@@ -1055,27 +1047,37 @@ function print_embed_sharing_dialog() {
 }
 
 /**
- * Prints the necessary markup for the site title in an embed template.
+ * Filters the oEmbed result before any HTTP requests are made.
  *
- * @since 4.5.0
+ * If the URL belongs to the current site, the result is fetched directly instead of
+ * going through the oEmbed discovery process.
+ *
+ * @since 4.5.3
+ *
+ * @param null|string $result The UNSANITIZED (and potentially unsafe) HTML that should be used to embed. Default null.
+ * @param string      $url    The URL that should be inspected for discovery `<link>` tags.
+ * @param array       $args   oEmbed remote get arguments.
+ * @return null|string The UNSANITIZED (and potentially unsafe) HTML that should be used to embed.
+ *                     Null if the URL does not belong to the current site.
  */
-function the_embed_site_title() {
-	$site_title = sprintf(
-		'<a href="%s" target="_top"><img src="%s" srcset="%s 2x" width="32" height="32" alt="" class="wp-embed-site-icon"/><span>%s</span></a>',
-		esc_url( home_url() ),
-		esc_url( get_site_icon_url( 32, admin_url( 'images/w-logo-blue.png' ) ) ),
-		esc_url( get_site_icon_url( 64, admin_url( 'images/w-logo-blue.png' ) ) ),
-		esc_html( get_bloginfo( 'name' ) )
-	);
+function wp_filter_pre_oembed_result( $result, $url, $args ) {
+	$post_id = url_to_postid( $url );
 
-	$site_title = '<div class="wp-embed-site-title">' . $site_title . '</div>';
+	/** This filter is documented in wp-includes/class-wp-oembed-controller.php */
+	$post_id = apply_filters( 'oembed_request_post_id', $post_id, $url );
 
-	/**
-	 * Filter the site title HTML in the embed footer.
-	 *
-	 * @since 4.4.0
-	 *
-	 * @param string $site_title The site title HTML.
-	 */
-	echo apply_filters( 'embed_site_title_html', $site_title );
+	if ( ! $post_id ) {
+		return $result;
+	}
+
+	$width = isset( $args['width'] ) ? $args['width'] : 0;
+
+	$data = get_oembed_response_data( $post_id, $width );
+	$data = _wp_oembed_get_object()->data2html( (object) $data, $url );
+
+	if ( ! $data ) {
+		return $result;
+	}
+
+	return $data;
 }
