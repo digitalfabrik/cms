@@ -1,16 +1,25 @@
 <?php
 /**
  * Plugin Name: Content Loader Base
- * Description: Base to include any foreign content into integreat
+ * Description: Template-base to include any foreign content into Integreat
  * Version: 0.1
- * Author: Julian Orth, Sven Seeberg
+ * Author: Julian Orth
  * Author URI: https://github.com/Integreat
  * License: MIT
  */
- 
+
 /**
  * Register Cron Job Hook to update data every 12 hour 
  */
+//register_activation_hook(__FILE__, 'cl_update_content');
+//
+//function cl_update_content() {
+//    if (! wp_next_scheduled ( 'cl_update_contents' )) {
+//	wp_schedule_event(time(), 'twicedaily', 'cl_update_contents');
+//    }
+//}
+//
+//add_action('cl_update_contents', 'cl_update_content');
 
 
 /**
@@ -40,7 +49,7 @@ function cl_generate_selection_box() {
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
  
 /**
- * Meta box display callback.
+ * Meta Box display Callback.
  *
  * @param WP_Post $post Current post object.
  */
@@ -48,9 +57,8 @@ function cl_create_metabox( $post ) {
 
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
 	
-	$radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-
-	$option_value = get_post_meta( $post->ID, "ig-content-loader-base" )[0];
+    $radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
+    $option_value = get_post_meta( $post->ID, 'ig-content-loader-base', true );[0];
 	
 	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>'Bitte ausw&auml;hlen (nichts einf&uuml;gen)')));
 	$options = "";
@@ -139,8 +147,7 @@ function cl_save_meta_box($post_id) {
     $meta_key_position = 'ig-content-loader-base-position';
   
 	//get the selected value from the meta box dropdown-select and the radio group
-	//get the selected value from the meta box dropdown-select
-	$meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
+    $meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
     $meta_value_position = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
     
 	//read old post meta settings
@@ -177,6 +184,7 @@ function cl_save_meta_box($post_id) {
 	elseif ( '' == $meta_value_position && $old_meta_value_position ) {
 		delete_post_meta( $post_id, $meta_key_position, $meta_value_position );
 	}
+
 	do_action('cl_save_meta_box',$post_id);
 }
 add_action('save_post', 'cl_save_meta_box');
@@ -288,6 +296,6 @@ function cl_update () {
 
 }
 add_action( 'template_redirect', 'cl_update' );
-add_action( 'template_redirect', 'cl_update' );
 
 ?>
+
