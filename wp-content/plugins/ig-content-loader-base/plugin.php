@@ -185,7 +185,7 @@ function cl_save_meta_box($post_id) {
 		delete_post_meta( $post_id, $meta_key_position, $meta_value_position );
 	}
 
-	do_action('cl_save_meta_box',$post_id);
+	do_action('cl_post_meta_box',$post_id,$old_meta_value,$meta_value);
 }
 add_action('save_post', 'cl_save_meta_box');
 add_action('edit_post', 'cl_save_meta_box');
@@ -240,7 +240,7 @@ function cl_modify_post($post) {
 
 		/* get saved post meta for radio group from db */
 		$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-		$select_value = get_post_meta( $post->ID, 'ig-content-loader-base');
+		$select_value = get_post_meta( $post->ID, 'ig-content-loader-base', true);
 		
 		// if there is a selected value for the dropdown in the database
 		if(count($select_value) > 0 ) {

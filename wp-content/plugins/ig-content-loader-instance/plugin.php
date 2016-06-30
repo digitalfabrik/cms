@@ -9,31 +9,38 @@
  */
 
 
-/**
- * Get Sprungbrett JSON-DATA, transform it to html code (cl_sb_json_to_html()) and send it to base-plugin (cl_save_content) with Parameters $parent_id , $html and $blog_id
- *
- */
 function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 
-    // sprungbrett praktika -> ig-content-loader-sprungbrett
-    if( $meta_value == "Sprungbrett Praktika" ) {
-        
-        $json = file_get_contents('http://localhost/json.txt');
-        $json = json_decode($json, TRUE);
-        $html = cl_sb_json_to_html($json);
+	// sprungbrett praktika -> ig-content-loader-sprungbrett
+	if( $meta_value == "ig-content-loader-instance" ) {
+ 
+		$key_blog_id = 'ig-content-loader-instance-blog-id';
+		$key_post_id = 'ig-content-loader-instance-post-id';	   
+		
+		$original_blog_id = get_current_blog_id();
+		
+		$source_blog_id = get_post_meta( $parent_id, $key_blog_id, true);
+		$source_post_id = get_post_meta( $parent_id, $key_post_id, true);
+		
+		// switch to data origin block
+		switch_to_blog( $blog_id );
+		
+		$html = get_post( $source_post_id )->post_content;
+		
+		// switch back to network site
+		switch_to_blog( $original_blog_id );
+		
+		cl_save_content( $parent_id, $html, $blog_id);
 
-        cl_save_content( $parent_id, $html, $blog_id);
-
-        return;  
-        
-    }
+		return;
+	}
 }
 add_action( 'cl_update_content','cl_sb_update_content', 10, 3 );
 
 // registriert plugin in base and return meta infos
 function cl_in_metabox_item( $array ) {
-    $array[] = array('id'=>'ig-content-loader-instance', 'name'=>'Seite aus Fremdinstanz');
-    return $array;
+	$array[] = array('id'=>'ig-content-loader-instance', 'name'=>'Seite aus Fremdinstanz');
+	return $array;
 }
 add_filter( 'cl_metabox_item', 'cl_in_metabox_item' );
 
@@ -166,5 +173,38 @@ function cl_in_pages_dropdown() {
 	exit;
 }
 add_action( 'wp_ajax_cl_in_pages_dropdown', 'cl_in_pages_dropdown' );
+
+function cl_in_save_meta_box ( $post_id, $old_meta_value, $meta_value ) {
+
+	$added_blog_id = $_POST['cl_in_select_blog_id'];
+	$added_post_id = $_POST['cl_in_select_post_id'];
+	
+	$key_blog_id = 'ig-content-loader-instance-blog-id';
+	$key_post_id = 'ig-content-loader-instance-post-id';
+	
+	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
+	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
+	
+	// if the content loader instance is removed, we want to remove all related meta data
+	if ( $old_meta_value == 'ig-content-loader-instance' && $meta_value != 'ig-content-loader-instance' ) {
+		delete_post_meta( $post_id, $key_blog_id, $meta_value );
+		delete_post_meta( $post_id, $key_post_id, $meta_value );
+	}	
+	// content loader instance is added, save meta data
+	elseif ( $meta_value == 'ig-content-loader-instance' ) {
+		if ( $added_blog_id && $added_post_id ) {			
+			if ( $old_blog_id )
+				update_post_meta( $post_id, $key_blog_id, $added_blog_id );
+			else
+				add_post_meta( $post_id, $key_blog_id, $added_blog_id );
+				
+			if ( $old_post_id )
+				update_post_meta( $post_id, $key_post_id, $added_post_id );
+			else
+				add_post_meta( $post_id, $key_post_id, $added_post_id );
+		}
+	}
+}
+add_action( 'cl_save_meta_box', 'cl_in_save_meta_box' , 3 );
 
 ?>
