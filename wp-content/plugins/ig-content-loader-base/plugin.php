@@ -103,7 +103,7 @@ function cl_meta_box_html( $options, $radio_value ) {
 	<script type="text/javascript" >
 	
 		jQuery("#cl_content_select").on('change', function() {
-			window.alert( jQuery('#insert-pre-radio') )
+			//window.alert( jQuery('#insert-pre-radio') )
 			var data = {
 				'action': 'cl_dropdown',
 				'post_id': <?php echo $post->ID?>,
@@ -112,7 +112,7 @@ function cl_meta_box_html( $options, $radio_value ) {
 				'insert-suf-radio': jQuery('#insert-suf-radio').value
 			};
 			jQuery.post(ajaxurl, data, function(response) {
-				alert('Got this from the server: ' + response);
+				//alert('Got this from the server: ' + response);
 				//jQuery('#cl_metabox_extra').html(response);
 				//alert(response);
 			});
@@ -185,7 +185,7 @@ function cl_save_meta_box($post_id) {
 		delete_post_meta( $post_id, $meta_key_position, $meta_value_position );
 	}
 
-	do_action('cl_post_meta_box',$post_id,$old_meta_value,$meta_value);
+	do_action( 'cl_save_meta_box', $post_id, $old_meta_value, $meta_value );
 }
 add_action('save_post', 'cl_save_meta_box');
 add_action('edit_post', 'cl_save_meta_box');

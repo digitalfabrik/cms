@@ -35,7 +35,7 @@ function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 		return;
 	}
 }
-add_action( 'cl_update_content','cl_sb_update_content', 10, 3 );
+add_action( 'cl_update_content','cl_in_update_content', 10, 3 );
 
 // registriert plugin in base and return meta infos
 function cl_in_metabox_item( $array ) {
@@ -113,7 +113,7 @@ function cl_in_add_js() {
 				};
 				//alert(this.value);
 				jQuery.post(ajaxurl, data, function(response) {
-					window.alert("post id")
+					//window.alert("post id")
 					//alert('Got this from the server: ' + response);
 					//jQuery('#cl_in_metabox_pages').html(response);
 					//alert(response);
@@ -205,6 +205,6 @@ function cl_in_save_meta_box ( $post_id, $old_meta_value, $meta_value ) {
 		}
 	}
 }
-add_action( 'cl_save_meta_box', 'cl_in_save_meta_box' , 3 );
+add_action( 'cl_save_meta_box', 'cl_in_save_meta_box' , 10, 3 );
 
 ?>
