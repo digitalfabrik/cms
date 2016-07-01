@@ -66,11 +66,15 @@ function cl_create_metabox( $post ) {
 	foreach($dropdown_items as $item) {
 		$options .= "<option value='".$item['id']."' ".selected($item['id'],$option_value,false).'>'.$item['name'].'</option>';
 	}
-	cl_meta_box_html( $options,  $radio_value );
+	
+	$cl_metabox_extra = '';
+	//only the plugin responsinble is allowed to add something to the cl_metabox_extra variable
+	$cl_metabox_extra = apply_filters( 'cl_metabox_extra', $cl_metabox_extra, $option_value, $post->ID );
+	cl_meta_box_html( $options, $radio_value, $cl_metabox_extra );
 	do_action( 'cl_add_js' );
 }
 
-function cl_meta_box_html( $options, $radio_value ) {
+function cl_meta_box_html( $options, $radio_value, $cl_metabox_extra = '' ) {
 	global $post;
 ?>
 	<!-- Dropdown-select for foreign contents -->
@@ -99,7 +103,7 @@ function cl_meta_box_html( $options, $radio_value ) {
 		</div>
 	</p>
 
-	<div id="cl_metabox_extra"></div>
+	<div id="cl_metabox_extra"><?php echo $cl_metabox_extra; ?></div>
 	<script type="text/javascript" >
 	
 		jQuery("#cl_content_select").on('change', function() {
@@ -201,15 +205,15 @@ function cl_save_content( $parent_id, $attachment, $blog_id) {
 	global $wpdb;
 	
 	// get content item from database
-	$sql = "SELECT * FROM ".$wpdb->prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'cl_html'";
+	$sql = "SELECT * FROM ".$wpdb->base_prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'cl_html'";
 	$sql_results = $wpdb->get_results($sql);
 	
 	// if there is already an value in the db, update it, else insert it
 	if(count($sql_results) > 0) {
-		$update = "UPDATE ".$wpdb->prefix.$blog_id."_posts SET post_content = '$attachment' WHERE ID = ".$sql_results[0]->ID;
+		$update = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET post_content = '$attachment' WHERE ID = ".$sql_results[0]->ID;
 		$wpdb->query($update);
 	} else {
-		$insert = "INSERT INTO ".$wpdb->prefix.$blog_id."_posts(post_content, post_type, post_mime_type, post_parent, post_status) VALUES('$attachment','cl_html', 'text/html', '$parent_id', 'inherit')";
+		$insert = "INSERT INTO ".$wpdb->base_prefix.$blog_id."_posts(post_content, post_type, post_mime_type, post_parent, post_status) VALUES('$attachment','cl_html', 'text/html', '$parent_id', 'inherit')";
 		$wpdb->query($insert);
 	}
 

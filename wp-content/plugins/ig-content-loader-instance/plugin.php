@@ -13,22 +13,22 @@ function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 
 	// sprungbrett praktika -> ig-content-loader-sprungbrett
 	if( $meta_value == "ig-content-loader-instance" ) {
+	
+		switch_to_blog( $blog_id );
  
 		$key_blog_id = 'ig-content-loader-instance-blog-id';
 		$key_post_id = 'ig-content-loader-instance-post-id';	   
 		
-		$original_blog_id = get_current_blog_id();
-		
-		$source_blog_id = get_post_meta( $parent_id, $key_blog_id, true);
-		$source_post_id = get_post_meta( $parent_id, $key_post_id, true);
-		
+		$source_blog_id = get_post_meta( $parent_id, $key_blog_id, true );
+		$source_post_id = get_post_meta( $parent_id, $key_post_id, true );
+				
 		// switch to data origin block
-		switch_to_blog( $blog_id );
-		
+		switch_to_blog( $source_blog_id );
+						
 		$html = get_post( $source_post_id )->post_content;
 		
 		// switch back to network site
-		switch_to_blog( $original_blog_id );
+		switch_to_blog( 0 );
 		
 		cl_save_content( $parent_id, $html, $blog_id);
 
@@ -126,35 +126,49 @@ function cl_in_add_js() {
 }
 add_action( 'cl_add_js', 'cl_in_add_js' );
 
-function cl_in_blogs_dropdown() {
+function cl_in_blogs_dropdown( $blog_id = false ) {
 	global $wpdb;
+	if ( $blog_id ) {
+		$ajax = false;
+	} else {
+		$ajax = true;
+	}
 	// get all blogs / instances (augsburg, regensburg, etc)
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 	$all_blogs = $wpdb->get_results($query);
-	?>
-	<div id="div_cl_in_metabox_instance">
+	$output = '<div id="div_cl_in_metabox_instance">
 	<p style="font-weight:bold;" id="cl_in_title">Bitte Kommune ausw&auml;hlen</p>
 	<select style="width: 100%;" id="cl_in_select_blog_id" name="cl_in_select_blog_id">
-		<option selected="selected" value="">Bitte w&auml;hlen</option>
-		<?php
+		<option value="">Bitte w&auml;hlen</option>';
 		foreach( $all_blogs as $blog ){
 			
 			$blog_name = get_blog_details( $blog->blog_id )->blogname;
-			echo "<option value='".$blog->blog_id."'>$blog_name</option>";
+			$output .= "<option value='".$blog->blog_id."' ".selected( $blog->blog_id, $blog_id, false ).">$blog_name</option>";
 		}
-		?>
-	</select>
+	$output .= '</select>
 	<p id="cl_in_metabox_pages"></p>
-	</div>
-	<?php
+	</div>';
+	
 	//echo '<p id="cl-in-metabox">yay</p>';
-	exit;
+	if ( $ajax == true ) {
+		echo $output;
+		//exit;
+	} else {
+		return $output;
+	}
 }
 add_action( 'wp_ajax_cl_in_blogs_dropdown', 'cl_in_blogs_dropdown' );
 
-function cl_in_pages_dropdown() {
-	$blog_id = $_POST['cl_in_blog_id'];
-	$language_code = $_POST['cl_in_post_language'];
+function cl_in_pages_dropdown( $blog_id = false, $language_code = false, $post_id = false ) {
+	if ( $blog_id == false ) {
+		$blog_id = $_POST['cl_in_blog_id'];
+		$ajax = true;
+	} else {
+		$ajax = false;
+	}
+	if ( $language_code == false ) {
+		$language_code = $_POST['cl_in_post_language'];
+	}
 
 	// query all objects in db with meta_key = ig-content-loader-base
 	//$results = "SELECT post_title FROM ".$wpdb->base_prefix.$blog_id."_posts p LEFT JOIN ".$wpdb->base_prefix.$blog_id."_icl_translations t ON p.ID = t.element_id WHERE p.post_type='page' AND p.post_status='publish' AND t.language_code='$language_code'";
@@ -164,13 +178,18 @@ function cl_in_pages_dropdown() {
 	switch_to_blog( $blog_id ); 
 	//echo wp_list_pages ();
 	$pages = get_pages();
-	echo '<select id="cl_in_select_post_id" name="cl_in_select_post_id">';
+	$output = '<select id="cl_in_select_post_id" name="cl_in_select_post_id">';
 	foreach ($pages as $page) {
-		echo "<option value=\"".$page->ID."\">".$page->post_title."</option>";
+		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id,false ).">".$page->post_title."</option>";
 	}
-	echo "</select>";
-	//switch_to_blog( $original_blog_id ); 
-	exit;
+	$output .= "</select>";
+	switch_to_blog( $original_blog_id ); 
+	if ( $ajax == true ) {
+		echo $output;
+		//exit;
+	} else {
+		return $output;
+	}
 }
 add_action( 'wp_ajax_cl_in_pages_dropdown', 'cl_in_pages_dropdown' );
 
@@ -206,5 +225,20 @@ function cl_in_save_meta_box ( $post_id, $old_meta_value, $meta_value ) {
 	}
 }
 add_action( 'cl_save_meta_box', 'cl_in_save_meta_box' , 10, 3 );
+
+function cl_in_metabox_extra( $cl_metabox_extra, $module, $post_id ) {
+	if( $module == 'ig-content-loader-instance' ) {
+		$key_blog_id = 'ig-content-loader-instance-blog-id';
+		$key_post_id = 'ig-content-loader-instance-post-id';
+		
+		$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
+		$old_post_id = get_post_meta( $post_id, $key_post_id, true );
+		
+		$output = cl_in_blogs_dropdown( $old_blog_id );
+		$output .= cl_in_pages_dropdown( $old_blog_id, 'de' );
+		return $output;
+	}
+}
+add_filter( 'cl_metabox_extra', 'cl_in_metabox_extra', 10, 3);
 
 ?>
