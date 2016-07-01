@@ -107,13 +107,6 @@ function cl_meta_box_html( $options, $radio_value, $cl_metabox_extra = '' ) {
 	<?php  
 }
 
-add_action( 'wp_ajax_cl_dropdown', 'cl_dropdown' );
-function cl_dropdown () {
-	//echo "asdf";
-	var_dump($_POST);
-	exit;
-}
-
 /**
 * Save Meta Box contents (content dropdown + append before or after radiogroup) in post_meta database
 *

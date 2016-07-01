@@ -79,7 +79,7 @@ function cl_in_add_js() {
 }
 add_action( 'cl_add_js', 'cl_in_add_js' );
 
-function cl_in_blogs_dropdown( $blog_id = false ) {
+function cl_in_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 	global $wpdb;
 	if ( $blog_id ) {
 		$ajax = false;
@@ -99,13 +99,12 @@ function cl_in_blogs_dropdown( $blog_id = false ) {
 			$output .= "<option value='".$blog->blog_id."' ".selected( $blog->blog_id, $blog_id, false ).">$blog_name</option>";
 		}
 	$output .= '</select>
-	<p id="cl_in_metabox_pages"></p>
+	<p id="cl_in_metabox_pages">'.$pages_dropdown.'</p>
 	</div>';
 	
-	//echo '<p id="cl-in-metabox">yay</p>';
 	if ( $ajax == true ) {
 		echo $output;
-		//exit;
+		exit;
 	} else {
 		return $output;
 	}
@@ -123,13 +122,8 @@ function cl_in_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 		$language_code = $_POST['cl_in_post_language'];
 	}
 
-	// query all objects in db with meta_key = ig-content-loader-base
-	//$results = "SELECT post_title FROM ".$wpdb->base_prefix.$blog_id."_posts p LEFT JOIN ".$wpdb->base_prefix.$blog_id."_icl_translations t ON p.ID = t.element_id WHERE p.post_type='page' AND p.post_status='publish' AND t.language_code='$language_code'";
-
-	//$result = $wpdb->get_results($results);
 	$original_blog_id = get_current_blog_id(); 
 	switch_to_blog( $blog_id ); 
-	//echo wp_list_pages ();
 	$pages = get_pages();
 	$output = '<select id="cl_in_select_post_id" name="cl_in_select_post_id">';
 	foreach ($pages as $page) {
@@ -139,7 +133,7 @@ function cl_in_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 	switch_to_blog( $original_blog_id ); 
 	if ( $ajax == true ) {
 		echo $output;
-		//exit;
+		exit;
 	} else {
 		return $output;
 	}
@@ -187,8 +181,7 @@ function cl_in_metabox_extra( $cl_metabox_extra, $module, $post_id ) {
 		$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
 		$old_post_id = get_post_meta( $post_id, $key_post_id, true );
 		
-		$output = cl_in_blogs_dropdown( $old_blog_id );
-		$output .= cl_in_pages_dropdown( $old_blog_id, 'de' );
+		$output = cl_in_blogs_dropdown( $old_blog_id, cl_in_pages_dropdown( $old_blog_id, ICL_LANGUAGE_CODE, $old_post_id ) );
 		return $output;
 	}
 }
