@@ -44,31 +44,6 @@ function cl_in_metabox_item( $array ) {
 }
 add_filter( 'cl_metabox_item', 'cl_in_metabox_item' );
 
-function cl_in_metabox_ajax() {
-	$selected_instance = $_POST['cl-metabox-instance-id'];
-	$selected_post = $_POST['cl-metabox-instance-post-id'];
-
-	/*
-	 * Neither instance nor post has been selected. Return instance dropdown.
-	 */
-	if ( !$selected_instance && !$selected_post ) {
-		echo cl_in_generate_instance_dropdown();
-	}
-	/*
-	 * An instance has been selected but no page. Therefore return a dropdown with all pages in instance 
-	 */
-	elseif ( $selected_instance && !$selected_post ) {
-		echo cl_in_generate_post_dropdown( $blog_id );
-	}
-	/*
-	 * Instance and post selected. Needs no ajax but need to save and save_post
-	 */ 
-	elseif ( $selected_instance && $selected_post ) {
-		
-	}
-	
-}
-
 function cl_in_add_js() {
 ?>
 	<script type="text/javascript" >
