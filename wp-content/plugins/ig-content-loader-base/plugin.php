@@ -104,26 +104,6 @@ function cl_meta_box_html( $options, $radio_value, $cl_metabox_extra = '' ) {
 	</p>
 
 	<div id="cl_metabox_extra"><?php echo $cl_metabox_extra; ?></div>
-	<script type="text/javascript" >
-	
-		jQuery("#cl_content_select").on('change', function() {
-			//window.alert( jQuery('#insert-pre-radio') )
-			var data = {
-				'action': 'cl_dropdown',
-				'post_id': <?php echo $post->ID?>,
-				'cl_content_select': this.value,
-				'insert-pre-radio': jQuery('#insert-pre-radio').value,
-				'insert-suf-radio': jQuery('#insert-suf-radio').value
-			};
-			jQuery.post(ajaxurl, data, function(response) {
-				//alert('Got this from the server: ' + response);
-				//jQuery('#cl_metabox_extra').html(response);
-				//alert(response);
-			});
-		
-		});
-	
-	</script>
 	<?php  
 }
 

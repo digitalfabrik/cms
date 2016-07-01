@@ -49,19 +49,14 @@ function cl_in_add_js() {
 	<script type="text/javascript" >
 	jQuery(document).ready(function($) {
 		jQuery("#cl_content_select").on('change', function() {
-			//window.alert( this.value );
 			if(this.value == 'ig-content-loader-instance') {
-				//window.alert("if")
 				var data = {
 					'action': 'cl_in_blogs_dropdown'
 				};
 				jQuery.post(ajaxurl, data, function(response) {
-					//alert('Got this from the server: ' + response);
 					jQuery('#cl_metabox_extra').html(response);
-					//alert(response);
 				});
 			} else {
-				//window.alert("else")
 				jQuery("#div_cl_in_metabox_instance").html('')
 				jQuery("#div_cl_in_metabox_instance").remove()
 			}
@@ -73,25 +68,8 @@ function cl_in_add_js() {
 					'cl_in_post_language': '<?php echo ICL_LANGUAGE_CODE; ?>',
 					'cl_in_blog_id': this.value
 				};
-				//alert(this.value);
 				jQuery.post(ajaxurl, data, function(response) {
-					//alert('Got this from the server: ' + response);
 					jQuery('#cl_in_metabox_pages').html(response);
-					//alert(response);
-				});
-			});
-			jQuery("#cl_in_select_post_id").on('change', function() {
-				var data = {
-					'action': 'cl_in_pages_dropdown',
-					'cl_in_post_language': '<?php echo ICL_LANGUAGE_CODE; ?>',
-					'cl_in_blog_id': this.value
-				};
-				//alert(this.value);
-				jQuery.post(ajaxurl, data, function(response) {
-					//window.alert("post id")
-					//alert('Got this from the server: ' + response);
-					//jQuery('#cl_in_metabox_pages').html(response);
-					//alert(response);
 				});
 			});
 		});
