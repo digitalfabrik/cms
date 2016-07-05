@@ -15,13 +15,18 @@ $edit_user_caps_mode = $this->get_edit_user_caps_mode();
 
 <div class="has-sidebar-content">
 <?php
+    $switch_to_user = '';
 	if (!is_multisite() || current_user_can('manage_network_users')) {
 		$anchor_start = '<a href="' . wp_nonce_url("user-edit.php?user_id={$this->user_to_edit->ID}", 
           "ure_user_{$this->user_to_edit->ID}") .'" >';
 		$anchor_end = '</a>';
+  if (class_exists('user_switching') && current_user_can('switch_to_user', $this->user_to_edit->ID)) {
+      $switch_to_user_link = user_switching::switch_to_url($this->user_to_edit);
+      $switch_to_user = '<a href="'. esc_url($switch_to_user_link) .'">'. esc_html__('Switch&nbsp;To', 'user-switching') .'</a>';
+  }
 	} else {
 		$anchor_start = '';
-		$anchor_end = '';
+		$anchor_end = '';  
 	}
   $user_info = ' <span style="font-weight: bold;">'.$anchor_start. $this->user_to_edit->user_login; 
   if ($this->user_to_edit->display_name!==$this->user_to_edit->user_login) {
@@ -31,8 +36,13 @@ $edit_user_caps_mode = $this->get_edit_user_caps_mode();
  if (is_multisite() && is_super_admin($this->user_to_edit->ID)) {
    $user_info .= '  <span style="font-weight: bold; color:red;">'. esc_html__('Network Super Admin', 'user-role-editor') .'</span>';
  }
+ 
+ if (!empty($switch_to_user)) {
+     $user_info .= '&nbsp;&nbsp;&nbsp;&nbsp;'. $switch_to_user; 
+ }
+ 
   
-	 $this->display_box_start(esc_html__('Change capabilities for user', 'user-role-editor').$user_info, 'min-width:1100px;');
+	 $this->display_box_start(esc_html__('Change capabilities for user', 'user-role-editor'). $user_info, 'min-width:1100px;');
  
 ?>
 <table cellpadding="0" cellspacing="0" style="width: 100%;">

@@ -235,8 +235,7 @@ class EM_Ticket extends EM_Object{
 		$missing_fields = Array ();
 		$this->errors = array();
 		foreach ( $this->required_fields as $field ) {
-			$true_field = $this->fields[$field]['name'];
-			if ( $this->$true_field == "") {
+			if ( $this->$field == "") {
 				$missing_fields[] = $field;
 			}
 		}

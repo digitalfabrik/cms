@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": ";AAAA,sBAAuB;EACpB,SAAS,EAAE,IAAI",
+"sources": ["../scss/colorpicker.scss"],
+"names": [],
+"file": "colorpicker.css"
+}

@@ -1,0 +1,173 @@
+@import "mixins";
+
+#icl_save_default_button,
+#icl_cancel_default_button,
+#icl_theme_localization {
+  display: none;
+}
+
+/* Wizard */
+#icl_setup_wizard .icl_setup_wizard_step {
+  float: left;
+  width: 25%;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+#icl_setup_wizard_progress {
+  margin: 10px 0 10px 0;
+  width: 100%;
+  height: 10px;
+  background-color: #ccc;
+}
+
+#icl_setup_wizard_progress_bar {
+  height: 10px;
+  background-color: #777;
+}
+/* Wizard END */
+
+/* Color picker */
+#colorPickerDiv {
+  a {
+    padding: 1px;
+    border-bottom: 0;
+    text-decoration: none;
+    &:hover {
+      padding: 1px;
+      border-bottom: 0;
+      text-decoration: none;
+    }
+  }
+  z-index: 999;
+}
+/* Color picker END */
+
+#icl_edit_languages_table {
+	td {
+		vertical-align: middle;
+	}
+
+  input {
+    width: 70px;
+  }
+
+  .radio, .file {
+    width: auto;
+  }
+}
+
+#icl_edit_languages_info ul {
+  padding: 15px;
+  list-style: square inside;
+}
+
+
+/* Wizard section */
+.wpml-section-wizard-steps h3 {
+  color: #278ab7;
+}
+/* Wizard section END */
+
+/* Languages section */
+.wpml-section-languages {
+  .selected {
+    font-weight: bold;
+  }
+  .available-languages, .enabled-languages {
+    margin: 0 0 20px 0;
+  }
+  .available-languages {
+    overflow: hidden;
+
+		li {
+			display: inline-block;
+			width: 170px;
+			&:hover {
+				color: #21759b;
+				font-weight: bold;
+			}
+		}
+  }
+  .enabled-languages {
+    li {
+      position: relative;
+    }
+    input[type="radio"] {
+      /*position: absolute;*/
+      /*left: -18px;*/
+      display: none;
+    }
+  }
+
+	.inactive-content-table {
+		width: auto;
+		td {
+			text-align: right;
+		}
+		tfoot td {
+			font-weight: bold;
+		}
+	}
+}
+
+.branch-3-8 .enabled-languages input[type="radio"] {
+  left: -22px;
+  top: 7px;
+}
+/* Languages section END */
+
+/* URL format */
+.wpml-section-url-format ul table {
+  margin: 10px 0;
+}
+/* URL format END */
+
+/* Language switcher */
+.language-selector-preview {
+  float: right;
+  padding: 0 15px;
+  height: 30px;
+  border: 1px solid #ccc;
+}
+
+.language-selector-preview-footer {
+  float: none;
+  padding: 15px;
+  min-height: 80px;
+  height: auto;
+}
+
+.wpml-section-language-switcher .languages-order {
+  overflow: hidden;
+  li {
+    float: left;
+    margin: 0 8px 0 0;
+    padding: 2px 8px;
+    border: 1px solid #DFDFDF;
+    border-radius: 2px;
+		/* autoprefixer: off */
+		@include background-gradient( to top, #ececec, #f9f9f9, #f1f1f1 );
+    cursor: move;
+  }
+}
+
+.wpml-section-language-switcher {
+  span.dashicons {
+    font-size: 14px;
+    display: inline;
+    width: auto;
+    height: auto;
+    line-height: inherit;
+    vertical-align: baseline;
+    background-image: none;
+    background-position: 0% 0%;
+    background-repeat: repeat;
+    margin-top: 0;
+    font-weight: 900;
+    font-style: normal;
+    text-decoration: inherit;
+    -webkit-font-smoothing: none;
+  }
+}
+/* Language switcher END */

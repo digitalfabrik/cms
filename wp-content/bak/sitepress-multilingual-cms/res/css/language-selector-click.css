@@ -1,0 +1,111 @@
+#lang_sel_click {
+  height: 32px;
+  position: relative;
+  z-index: 99;
+  font-family: verdana, arial, sans-serif;
+  /* hack to correct IE5.5 faulty box model */
+  /* style the table so that it takes no ppart in the layout - required for IE to work */
+}
+* html #lang_sel_click {
+  width: 12em;
+}
+* html #lang_sel_click a {
+  width: 149px;
+}
+* html #lang_sel_click a:visited {
+  width: 149px;
+}
+* html #lang_sel_click ul ul {
+  top: 18px;
+}
+* html #lang_sel_click ul ul a {
+  width: 150px;
+}
+* html #lang_sel_click ul ul a:visited {
+  width: 150px;
+}
+#lang_sel_click ul {
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style-type: none !important;
+}
+#lang_sel_click ul ul {
+  width: 149px;
+  visibility: hidden;
+  position: absolute;
+  height: 0;
+  top: 25px;
+  left: 0;
+  border-top: 1px solid #cdcdcd;
+}
+#lang_sel_click ul ul a {
+  background: #ffffff;
+  color: #444444;
+  height: auto;
+  line-height: 1em;
+  padding: 5px 10px;
+  border-width: 0 1px 1px 1px;
+}
+#lang_sel_click ul ul a:visited {
+  background: #ffffff;
+  color: #444444;
+  height: auto;
+  line-height: 1em;
+  padding: 5px 10px;
+  border-width: 0 1px 1px 1px;
+}
+#lang_sel_click li {
+  float: left;
+  width: 149px;
+  position: relative;
+}
+#lang_sel_click li:before {
+  content: '' !important;
+}
+#lang_sel_click a {
+  display: block;
+  font-size: 11px;
+  text-decoration: none !important;
+  color: #444444;
+  border: 1px solid #cdcdcd;
+  background: #fff;
+  padding-left: 10px;
+  line-height: 24px;
+}
+#lang_sel_click a:visited {
+  display: block;
+  font-size: 11px;
+  text-decoration: none !important;
+  color: #444444;
+  border: 1px solid #cdcdcd;
+  background: #fff;
+  padding-left: 10px;
+  line-height: 24px;
+}
+#lang_sel_click a.lang_sel_sel {
+  background: url(../img/nav-arrow-down.png) #fff right no-repeat;
+  color: #444;
+}
+#lang_sel_click a.lang_sel_sel:hover {
+  text-decoration: none;
+  color: #000;
+}
+#lang_sel_click a:hover, #lang_sel_click ul ul a:hover, #lang_sel_click :hover > a, #lang_sel_click ul ul :hover > a {
+  color: #000;
+  background: #eee;
+}
+#lang_sel_click img.iclflag {
+  width: 18px;
+  height: 12px;
+  position: relative;
+  top: 1px;
+}
+#lang_sel_click table {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-collapse: collapse;
+}
+
+/* make the second level visible when hover on first level list OR link */
+/* #lang_sel_click ul li:hover ul, #lang_sel_click ul a:hover ul{visibility:visible; } */
