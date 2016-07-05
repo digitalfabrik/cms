@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": ";AAAA,8BAA+B;EAC7B,YAAY,EAAE,EAAE",
+"sources": ["../scss/translation-options.scss"],
+"names": [],
+"file": "translation-options.css"
+}

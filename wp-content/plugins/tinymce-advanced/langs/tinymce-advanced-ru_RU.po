@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: tinymce-advanced\n"
-"POT-Creation-Date: 2015-09-15 10:42-0800\n"
-"PO-Revision-Date: 2015-09-15 10:45-0800\n"
+"POT-Creation-Date: 2016-03-17 12:21-0800\n"
+"PO-Revision-Date: 2016-03-17 12:24-0800\n"
 "Last-Translator: Vadim Bogaiskov <vadim.bogaiskov@gmail.com>\n"
 "Language-Team: Vadim Bogaiskov\n"
 "Language: ru\n"
@@ -17,19 +17,19 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: ../tadv_admin.php:125
+#: ../tadv_admin.php:140
 msgid "Default settings restored."
 msgstr "Настройки по умолчанию восстановлены"
 
-#: ../tadv_admin.php:137
+#: ../tadv_admin.php:152
 msgid "TinyMCE Advanced Settings Export"
 msgstr "Экспорт настроек TinyMCE Advanced"
 
-#: ../tadv_admin.php:141
+#: ../tadv_admin.php:156
 msgid "The settings are exported as a JSON encoded string."
 msgstr "Настройки экспортируется как закодированная JSON-строка."
 
-#: ../tadv_admin.php:142
+#: ../tadv_admin.php:157
 msgid ""
 "Please copy the content and save it in a <b>text</b> (.txt) file, using a "
 "plain text editor like Notepad."
@@ -37,26 +37,26 @@ msgstr ""
 "Пожалуйста скопируйте содержимое и сохраните его в <b>текстовом</b> (.txt) "
 "файл, используя текстовый редактор, например Блокнот."
 
-#: ../tadv_admin.php:143
+#: ../tadv_admin.php:158
 msgid ""
 "It is important that the export is not changed in any way, no spaces, line "
 "breaks, etc."
 msgstr ""
 "Важно, чтобы экспорт никак не изменялся, без пробелов, разрывы строк и т.д."
 
-#: ../tadv_admin.php:148
+#: ../tadv_admin.php:163
 msgid "Select All"
 msgstr "Выбрать все"
 
-#: ../tadv_admin.php:150 ../tadv_admin.php:176
+#: ../tadv_admin.php:165 ../tadv_admin.php:191
 msgid "Back to Editor Settings"
 msgstr "Назад в настройки редактора"
 
-#: ../tadv_admin.php:162
+#: ../tadv_admin.php:177
 msgid "TinyMCE Advanced Settings Import"
 msgstr "Импорт настроек TinyMCE Advanced"
 
-#: ../tadv_admin.php:165
+#: ../tadv_admin.php:180
 msgid ""
 "The settings are imported from a JSON encoded string. Please paste the "
 "exported string in the text area below."
@@ -64,48 +64,40 @@ msgstr ""
 "Настройки импортируются из закодированной JSON-строки. Пожалуйста вставьте "
 "экспортированную строку в текстовом поле ниже."
 
-#: ../tadv_admin.php:170
+#: ../tadv_admin.php:185
 msgid "Verify"
 msgstr "Проверить"
 
-#: ../tadv_admin.php:171
+#: ../tadv_admin.php:186
 msgid "Import"
 msgstr "Импорт"
 
-#: ../tadv_admin.php:201
+#: ../tadv_admin.php:216
 msgid "Importing of settings failed."
 msgstr "Импорт настроек не выполнен."
 
-#: ../tadv_admin.php:227
+#: ../tadv_admin.php:242
 msgid "ERROR: All toolbars are empty. Default settings loaded."
 msgstr ""
 "ОШИБКА: Все панели инструментов пусты.  Загружены настройки по умолчанию."
 
-#: ../tadv_admin.php:239
+#: ../tadv_admin.php:254
 msgid "Editor Settings"
 msgstr "Настройки редактора"
 
-#: ../tadv_admin.php:246
+#: ../tadv_admin.php:261
 msgid "Settings saved."
 msgstr "Настройки сохранены."
 
-#: ../tadv_admin.php:255 ../tadv_admin.php:509
+#: ../tadv_admin.php:270 ../tadv_admin.php:540
 msgid "Save Changes"
 msgstr "Сохранить изменения"
 
-#: ../tadv_admin.php:260
-msgid ""
-"New in TinyMCE 4.0/WordPress 3.9 is the editor menu. When it is enabled, "
-"most buttons are also available as menu items."
-msgstr ""
-"Новое в TinyMCE 4.0/WordPress 3.9 - меню редактора. Когда оно включено, "
-"большинство кнопок, также доступны как элементы меню."
-
-#: ../tadv_admin.php:264
+#: ../tadv_admin.php:277
 msgid "Enable the editor menu."
 msgstr "Включить меню редактора."
 
-#: ../tadv_admin.php:376
+#: ../tadv_admin.php:389
 msgid ""
 "Drag buttons from the unused buttons below and drop them in the toolbars "
 "above, or drag the buttons in the toolbars to rearrange them."
@@ -114,52 +106,64 @@ msgstr ""
 "поместите их в панели инструментов наверху, или переместите кнопки в панелях "
 "инструментов, чтобы изменить их."
 
-#: ../tadv_admin.php:379
+#: ../tadv_admin.php:392
 msgid "Unused Buttons"
 msgstr "Неиспользуемые кнопки"
 
-#: ../tadv_admin.php:420
-msgid "Also enable:"
-msgstr "Также вкл.:"
+#: ../tadv_admin.php:434
+#, fuzzy
+msgid "Options"
+msgstr "Дополнительные параметры"
 
-#: ../tadv_admin.php:423
+#: ../tadv_admin.php:437
 msgid "List Style Options"
 msgstr "Список настроек стилей"
 
-#: ../tadv_admin.php:428
+#: ../tadv_admin.php:439
+msgid ""
+"Enable more list options: upper or lower case letters for ordered lists, "
+"disk or square for unordered lists, etc."
+msgstr ""
+
+#: ../tadv_admin.php:444
 msgid "Context Menu"
 msgstr "Контекстное меню"
 
-#: ../tadv_admin.php:433
-msgid "Link (replaces the Insert/Edit Link dialog)"
-msgstr "Ссылка (заменяет диалог Вставить/Редактировать ссылку)"
+#: ../tadv_admin.php:446
+msgid "Replace the browser context (right-click) menu."
+msgstr ""
 
-#: ../tadv_admin.php:443
+#: ../tadv_admin.php:451
+msgid "Alternative link dialog"
+msgstr ""
+
+#: ../tadv_admin.php:453
+msgid ""
+"Open the TinyMCE link dialog when using the link button on the toolbar or "
+"the link menu item."
+msgstr ""
+
+#: ../tadv_admin.php:458
+msgid "Font sizes"
+msgstr ""
+
+#: ../tadv_admin.php:459
+msgid ""
+"Replace the size setting available for fonts with: 8px 10px 12px 14px 16px "
+"20px 24px 28px 32px 36px 48px 60px."
+msgstr ""
+"Заменяет настройки размера шрифта одним из доступных: 8px 10px 12px 14px "
+"16px 20px 24px 28px 32px 36px 48px 60px."
+
+#: ../tadv_admin.php:467
 msgid "Advanced Options"
 msgstr "Дополнительные параметры"
 
-#: ../tadv_admin.php:451
-msgid "Import editor-style.css."
-msgstr "Импорт editor-style.css."
-
-#: ../tadv_admin.php:453
-msgid "It seems your theme does not support customised styles for the editor."
+#: ../tadv_admin.php:476
+msgid "Create CSS classes menu"
 msgstr ""
-"Кажется, ваша тема не поддерживает пользовательские стили для редактора."
 
-#: ../tadv_admin.php:454
-msgid ""
-"You can create a CSS file named <code>editor-style.css</code> and upload it "
-"to your theme's directory."
-msgstr ""
-"Вы можете создать CSS-файл с именем <code>editor-style.css</code> и "
-"загрузите его в папку вашей темы."
-
-#: ../tadv_admin.php:455
-msgid "After that, enable this setting."
-msgstr "После этого, включить этот параметр."
-
-#: ../tadv_admin.php:464
+#: ../tadv_admin.php:478
 msgid ""
 "Load the CSS classes used in editor-style.css and replace the Formats button "
 "and sub-menu."
@@ -167,15 +171,20 @@ msgstr ""
 "Загрузить классы CSS, используемые в editor-style.css и заменить кнопку "
 "Форматы и подменю."
 
-#: ../tadv_admin.php:469
+#: ../tadv_admin.php:488
+msgid "Keep paragraph tags"
+msgstr ""
+
+#: ../tadv_admin.php:490
+#, fuzzy
 msgid ""
 "Stop removing the &lt;p&gt; and &lt;br /&gt; tags when saving and show them "
-"in the Text editor"
+"in the Text editor."
 msgstr ""
 "Остановить удаление тегов &lt;p&gt; и  &lt;br /&gt; при сохранении и "
 "показать их в текстовом редакторе"
 
-#: ../tadv_admin.php:471
+#: ../tadv_admin.php:491
 msgid ""
 "This will make it possible to use more advanced coding in the HTML editor "
 "without the back-end filtering affecting it much."
@@ -183,7 +192,7 @@ msgstr ""
 "Это позволит использовать более передовые методы кодирования в редакторе "
 "HTML без фоновой фильтрации, существенно влияющей на него."
 
-#: ../tadv_admin.php:472
+#: ../tadv_admin.php:492
 msgid ""
 "However it may behave unexpectedly in rare cases, so test it thoroughly "
 "before enabling it permanently."
@@ -191,7 +200,7 @@ msgstr ""
 "Однако в редких случаях это может вести себя непредсказуемо, поэтому "
 "тщательно проверьте его перед включением на постоянно."
 
-#: ../tadv_admin.php:473
+#: ../tadv_admin.php:493
 msgid ""
 "Line breaks in the HTML editor would still affect the output, in particular "
 "do not use empty lines, line breaks inside HTML tags or multiple &lt;br /"
@@ -201,23 +210,11 @@ msgstr ""
 "частности, не используйте пустые строки, переносы строк внутри тегов HTML "
 "или многократные теги  &lt;br /&gt;. "
 
-#: ../tadv_admin.php:479
-msgid "Replace font size settings"
-msgstr "Заменить настройки размера шрифта "
-
-#: ../tadv_admin.php:480
-msgid ""
-"Replaces the size setting available for fonts with: 8px 10px 12px 14px 16px "
-"20px 24px 28px 32px 36px."
-msgstr ""
-"Заменяет настройки размера шрифта одним из доступных: 8px 10px 12px 14px "
-"16px 20px 24px 28px 32px 36px."
-
-#: ../tadv_admin.php:485
+#: ../tadv_admin.php:498
 msgid "Enable pasting of image source"
 msgstr "Включить вставку исходного кода изображения"
 
-#: ../tadv_admin.php:487
+#: ../tadv_admin.php:500
 msgid ""
 "Works only in Firefox and Safari. These browsers support pasting of images "
 "directly in the editor and convert them to base64 encoded text."
@@ -226,7 +223,7 @@ msgstr ""
 "изображений непосредственно в редакторе и конвертацию их в base64-"
 "закодированный текст."
 
-#: ../tadv_admin.php:488
+#: ../tadv_admin.php:501
 msgid ""
 "This is not acceptable for larger images like photos or graphics, but may be "
 "useful in some cases for very small images like icons, not larger than 2-3KB."
@@ -235,27 +232,48 @@ msgstr ""
 "но может быть полезным в некоторых случаях для очень маленьких изображений, "
 "таких как иконки размером не более 2-3KB."
 
-#: ../tadv_admin.php:489
+#: ../tadv_admin.php:502
 msgid "These images will not be available in the Media Library."
 msgstr "Эти изображения не будут доступны в библиотеке мультимедиа."
 
-#: ../tadv_admin.php:495
+#: ../tadv_admin.php:508
 msgid "Administration"
 msgstr "Управление"
 
-#: ../tadv_admin.php:497
+#: ../tadv_admin.php:510
+msgid "Settings import and export"
+msgstr ""
+
+#: ../tadv_admin.php:512
 msgid "Export Settings"
 msgstr "Экспорт настроек"
 
-#: ../tadv_admin.php:498
+#: ../tadv_admin.php:513
 msgid "Import Settings"
 msgstr "Импорт настроек"
 
-#: ../tadv_admin.php:508
+#: ../tadv_admin.php:517
+#, fuzzy
+msgid "Enable the editor enhancements for:"
+msgstr "Включить меню редактора."
+
+#: ../tadv_admin.php:520
+msgid "The main editor (Add New and Edit posts and pages)"
+msgstr ""
+
+#: ../tadv_admin.php:524
+msgid "Other editors in wp-admin"
+msgstr ""
+
+#: ../tadv_admin.php:528
+msgid "Editors on the front end of the site"
+msgstr ""
+
+#: ../tadv_admin.php:539
 msgid "Restore Default Settings"
 msgstr "Восстановить настройки по умолчанию"
 
-#: ../tadv_admin.php:514
+#: ../tadv_admin.php:545
 msgid ""
 "The [Toolbar toggle] button shows or hides the second, third, and forth "
 "button rows. It will only work when it is in the first row and there are "
@@ -265,7 +283,7 @@ msgstr ""
 "строки кнопок. Она будет работать только тогда, когда она находится в первой "
 "строке и есть кнопки во второй строке."
 
-#: ../tinymce-advanced.php:180
+#: ../tinymce-advanced.php:221
 #, php-format
 msgid ""
 "TinyMCE Advanced requires WordPress version %1$s or newer. It appears that "
@@ -275,7 +293,7 @@ msgstr ""
 "Похоже, что Вы работаете на %2$s. Это может сделать работу редактора "
 "неустойчивой."
 
-#: ../tinymce-advanced.php:187
+#: ../tinymce-advanced.php:228
 #, php-format
 msgid ""
 "Please upgrade your WordPress installation or download an <a href=\"%s"
@@ -283,6 +301,45 @@ msgid ""
 msgstr ""
 "Пожалуйста, обновите Ваш WordPress или скачайте <a href=\"%s\">старую версию "
 "плагина</a> ."
+
+#: ../tinymce-advanced.php:703
+#, fuzzy
+msgid "Settings"
+msgstr "Настройки редактора"
+
+#~ msgid ""
+#~ "New in TinyMCE 4.0/WordPress 3.9 is the editor menu. When it is enabled, "
+#~ "most buttons are also available as menu items."
+#~ msgstr ""
+#~ "Новое в TinyMCE 4.0/WordPress 3.9 - меню редактора. Когда оно включено, "
+#~ "большинство кнопок, также доступны как элементы меню."
+
+#~ msgid "Also enable:"
+#~ msgstr "Также вкл.:"
+
+#~ msgid "Link (replaces the Insert/Edit Link dialog)"
+#~ msgstr "Ссылка (заменяет диалог Вставить/Редактировать ссылку)"
+
+#~ msgid "Import editor-style.css."
+#~ msgstr "Импорт editor-style.css."
+
+#~ msgid ""
+#~ "It seems your theme does not support customised styles for the editor."
+#~ msgstr ""
+#~ "Кажется, ваша тема не поддерживает пользовательские стили для редактора."
+
+#~ msgid ""
+#~ "You can create a CSS file named <code>editor-style.css</code> and upload "
+#~ "it to your theme's directory."
+#~ msgstr ""
+#~ "Вы можете создать CSS-файл с именем <code>editor-style.css</code> и "
+#~ "загрузите его в папку вашей темы."
+
+#~ msgid "After that, enable this setting."
+#~ msgstr "После этого, включить этот параметр."
+
+#~ msgid "Replace font size settings"
+#~ msgstr "Заменить настройки размера шрифта "
 
 #~ msgid ""
 #~ "This plugin requires WordPress version 4.0 or newer. Please upgrade your "

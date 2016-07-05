@@ -3,7 +3,7 @@ Contributors: elliotcondon
 Tags: custom, field, custom field, advanced, simple fields, magic fields, more fields, repeater, matrix, post, type, text, textarea, file, image, edit, admin
 Requires at least: 3.5.0
 Tested up to: 4.5.0
-Stable tag: 4.4.5
+Stable tag: 4.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -116,7 +116,21 @@ http://support.advancedcustomfields.com/
 
 == Changelog ==
 
-= 4.4.5=
+= 4.4.7 =
+* Relationship field: Fixed bug preventing values from being selected in WP 4.5
+* Google Map field: Fixed bug preventing map to load within repeater field
+* Core: Fixed PHP error when loading ACF values on 'The Events Calendar' (plugin) page
+* Language: Updated Portuguese translation - thanks to Pedro Mendonca
+
+= 4.4.6 =
+* Google Map field: Improved compatibility with 3rd party plugins including Google JS API
+* API: Improved `get_` functions to load value from the current queried object (post, user, term)
+* Core: Added support for new WP 4.5 term edit page
+* Language: Updated Portuguese translation - thanks to Pedro Mendonca
+* Language: Added Welsh translation - thanks to Carl Morris
+* Language: Added Indonesian translation - thanks to Rio Bermano
+
+= 4.4.5 =
 * Core: Fixed metabox title appearing on seamless field groups
 * Language: Updated Portuguese translation
 * Language: Updated Polish translation

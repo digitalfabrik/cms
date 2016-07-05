@@ -26,7 +26,7 @@ function _mw_adminimize_get_admin_bar_nodes() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
-	;
+
 	if ( _mw_adminimize_exclude_settings_page() ) {
 		return;
 	}
@@ -71,6 +71,11 @@ function _mw_adminimize_change_admin_bar() {
 
 	// Exclude super admin.
 	if ( _mw_adminimize_exclude_super_admin() ) {
+		return;
+	}
+
+	// Exclude the new settings of the Admin Bar on settings page of Adminimize.
+	if ( _mw_adminimize_exclude_settings_page() ) {
 		return;
 	}
 

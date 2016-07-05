@@ -14,7 +14,7 @@
     <a href="http://role-editor.com">
         <div id="ure-icon" class="icon32"><br></div>        
     </a>    
-    <h2><?php esc_html_e('User Role Editor - Options', 'user-role-editor'); ?></h2>            
+    <h1><?php esc_html_e('User Role Editor - Options', 'user-role-editor'); ?></h1>
 
     <div id="ure_tabs" style="clear: left;">
         <ul>

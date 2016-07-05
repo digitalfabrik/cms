@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": ";AAAA,6BAA8B;EAC5B,SAAS,EAAE,GAAG;;;;AAGhB,kBAAmB;EACjB,OAAO,EAAE,IAAI;EACb,SAAS,EAAE,IAAI;;;;AAGjB,kBAAmB;EACjB,WAAW,EAAE,IAAI;EACjB,SAAS,EAAE,GAAG;EACd,cAAc,EAAE,MAAM",
+"sources": ["../scss/theme-localization.scss"],
+"names": [],
+"file": "theme-localization.css"
+}

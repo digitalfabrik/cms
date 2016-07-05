@@ -141,7 +141,7 @@ class URE_Base_Lib {
             }
         } else {
             if (isset($_REQUEST[$var_name])) {
-                $result = $_REQUEST[$var_name];
+                $result = filter_var($_REQUEST[$var_name], FILTER_SANITIZE_STRING);
             }
         }
 

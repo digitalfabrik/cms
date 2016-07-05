@@ -7,13 +7,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: advanced-custom-fields\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
-"Last-Translator: Ahrale <contact@atar4u.com>\n"
+"PO-Revision-Date: 2016-04-04 10:09+1000\n"
+"Last-Translator: Elliot Condon <e@elliotcondon.com>\n"
 "Language-Team: Ahrale | Atar4U.com <contact@atar4u.com>\n"
 "MIME-Version: 1.0\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: he\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.8.1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 # 'large'		=>	__("Large",'acf'),
@@ -1137,15 +1137,15 @@ msgid "File"
 msgstr "קובץ"
 
 # <label><?php _e("Formatting",'acf'); ?></label>
-# <p><?php _e("Effects value on front end",'acf') ?></p>
+# <p><?php _e("Affects value on front end",'acf') ?></p>
 # </td>
 # wpml-name: 5881d23e5578bda6b39632adb3d9a5cf
-msgid "Effects value on front end"
+msgid "Affects value on front end"
 msgstr "ערך השפעה על הפרונט אנד"
 
 # <td class="label">
 # <label><?php _e("Formatting",'acf'); ?></label>
-# <p><?php _e("Effects value on front end",'acf') ?></p>
+# <p><?php _e("Affects value on front end",'acf') ?></p>
 # wpml-name: 767042e4dbdd6d8f737786f122d66d4f
 msgid "Formatting"
 msgstr "עיצוב"
@@ -1241,7 +1241,7 @@ msgstr "פורמט תצוגה"
 msgid "jQuery date formats"
 msgstr "פורמט תאריך jQuary  "
 
-# <p class="description"><?php _e("This format will determin the value saved to the database and returned via the API",'acf'); ?></p>
+# <p class="description"><?php _e("This format will determine the value saved to the database and returned via the API",'acf'); ?></p>
 # <p><?php _e("\"yymmdd\" is the most versatile save format. Read more about",'acf'); ?> <a href="http://docs.jquery.com/UI/Datepicker/formatDate"><?php _e("jQuery date formats",'acf'); ?></a></p>
 # </td>
 # wpml-name: 859b701b589225e84b65246501039279
@@ -1249,15 +1249,15 @@ msgid "\"yymmdd\" is the most versatile save format. Read more about"
 msgstr "הוא פורמט השמירה הרב צדדי ביותר.קרא עוד אודות זה"
 
 # <label><?php _e("Save format",'acf'); ?></label>
-# <p class="description"><?php _e("This format will determin the value saved to the database and returned via the API",'acf'); ?></p>
+# <p class="description"><?php _e("This format will determine the value saved to the database and returned via the API",'acf'); ?></p>
 # <p><?php _e("\"yymmdd\" is the most versatile save format. Read more about",'acf'); ?> <a href="http://docs.jquery.com/UI/Datepicker/formatDate"><?php _e("jQuery date formats",'acf'); ?></a></p>
 # wpml-name: b32d3e0433f5fbc2fc5b2593d5129cfc
-msgid "This format will determin the value saved to the database and returned via the API"
+msgid "This format will determine the value saved to the database and returned via the API"
 msgstr "הפורמט הזה יקבע את הערך הנשמר לבסיס הנתונים ויוחזר דרך הAPI."
 
 # <td class="label">
 # <label><?php _e("Save format",'acf'); ?></label>
-# <p class="description"><?php _e("This format will determin the value saved to the database and returned via the API",'acf'); ?></p>
+# <p class="description"><?php _e("This format will determine the value saved to the database and returned via the API",'acf'); ?></p>
 # wpml-name: d3db150cd06127a833ecd279debf7729
 msgid "Save format"
 msgstr "פורמט שמירה"
@@ -2117,29 +2117,29 @@ msgid "Really Important!"
 msgstr "באמת חשוב!"
 
 # <h4><?php _e("Potential Issues",'acf'); ?></h4>
-# <p><?php _e("Do to the sizable changes surounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
+# <p><?php _e("Due to the sizable changes surrounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
 #
 # wpml-name: 4bbc83cd7980cfa0a8172dc3065342c7
 msgid "guide to view the full list of changes."
 msgstr "מדריך כדי להציג את הרשימה המלאה של שינויים."
 
 # <h4><?php _e("Potential Issues",'acf'); ?></h4>
-# <p><?php _e("Do to the sizable changes surounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
+# <p><?php _e("Due to the sizable changes surrounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
 #
 # wpml-name: 1b239e26fb4421abef5ca328d1357aab
 msgid "Migrating from v3 to v4"
 msgstr "מעבר מ-גרסה 3 לגרסה 4"
 
 # <h4><?php _e("Potential Issues",'acf'); ?></h4>
-# <p><?php _e("Do to the sizable changes surounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
+# <p><?php _e("Due to the sizable changes surrounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
 #
 # wpml-name: 791934a08992b9d534fc76b7ceb175be
-msgid "Do to the sizable changes surounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full"
-msgstr "האם לשינויים ניכרים surounding תוספות, סוגי שדות ופעולה / מסננים, האתר שלך לא יפעל בצורה נכונה. זה חשוב שתקרא מלא"
+msgid "Due to the sizable changes surrounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full"
+msgstr "האם לשינויים ניכרים surrounding תוספות, סוגי שדות ופעולה / מסננים, האתר שלך לא יפעל בצורה נכונה. זה חשוב שתקרא מלא"
 
 #
 # <h4><?php _e("Potential Issues",'acf'); ?></h4>
-# <p><?php _e("Do to the sizable changes surounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
+# <p><?php _e("Due to the sizable changes surrounding Add-ons, field types and action/filters, your website may not operate correctly. It is important that you read the full",'acf'); ?> <a href="http://www.advancedcustomfields.com/resources/getting-started/migrating-from-v3-to-v4/" target="_blank"><?php _e("Migrating from v3 to v4",'acf'); ?></a> <?php _e("guide to view the full list of changes.",'acf'); ?></p>
 # wpml-name: a01d9190e303d23db01632f603c31708
 msgid "Potential Issues"
 msgstr "בעיות פוטנציאליות"

@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Advanced Custom Fields 4.4.4\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/advanced-custom-fields\n"
 "POT-Creation-Date: 2015-12-12 15:14+0100\n"
-"PO-Revision-Date: 2015-12-16 11:33+1000\n"
+"PO-Revision-Date: 2016-04-04 10:09+1000\n"
 "Last-Translator: Elliot Condon <e@elliotcondon.com>\n"
 "Language-Team: Maciej Gryniuk <maciejka45@gmail.com>\n"
 "Language: pl_PL\n"
@@ -734,7 +734,7 @@ msgstr "Potencjalne błędy"
 #: core/controllers/field_groups.php:362
 #, php-format
 msgid ""
-"Due to the sizable changes surounding Add-ons, field types and action/"
+"Due to the sizable changes surrounding Add-ons, field types and action/"
 "filters, your website may not operate correctly. It is important that you "
 "read the full %sMigrating from v3 to v4%s guide to view the full list of "
 "changes."
@@ -984,7 +984,7 @@ msgstr "Format zapisu"
 
 #: core/fields/date_picker/date_picker.php:127
 msgid ""
-"This format will determin the value saved to the database and returned via "
+"This format will determine the value saved to the database and returned via "
 "the API"
 msgstr ""
 "Ten format określa wartość zapisywaną do bazy danych i zwracaną poprzez API"
@@ -1476,7 +1476,7 @@ msgid "Formatting"
 msgstr "Formatowanie"
 
 #: core/fields/text.php:177 core/fields/textarea.php:165
-msgid "Effects value on front end"
+msgid "Affects value on front end"
 msgstr "Określa sposób wyświetlania wartości na stronie docelowej (front-end)."
 
 #: core/fields/text.php:186 core/fields/textarea.php:174
@@ -1862,7 +1862,7 @@ msgstr "Wyślij trackbacki"
 #~ msgstr ", aby poznać zaktualizowane normy nazewnictwa."
 
 #~ msgid ""
-#~ "Do to the sizable changes surounding Add-ons, field types and action/"
+#~ "Due to the sizable changes surrounding Add-ons, field types and action/"
 #~ "filters, your website may not operate correctly. It is important that you "
 #~ "read the full"
 #~ msgstr ""
