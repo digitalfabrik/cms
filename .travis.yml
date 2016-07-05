@@ -31,5 +31,6 @@ before_script:
   - mysql -u root -e "FLUSH PRIVILEGES;"
   - sed -i "s|C:\\xampp\\htdocs\\wordpress|$working_dir|g" database.sql
   - mysql -u root wordpress < database.sql
-  ## activate wordpress plugins
+  ## activate wordpress plugins and themes
   - source ./wp-activate-plugins.sh
+  - source ./wp-activate-themes.sh
