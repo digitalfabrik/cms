@@ -1,44 +1,18 @@
+#wpbody .wrap > h2:first-child {
+	margin-bottom: 6px;
+}
+
+.actions select {
+	float: left;
+	margin-right: 6px;
+	max-width: 200px;
+}
+
 .icl_tj_your_job {
 	width:       14px;
 	color:       #f00;
 	font-weight: bold;
 	cursor:      help;
-}
-
-.icl-translation-editor {
-	p.updated {
-		padding: 4px;
-	}
-	#dashboard-widgets-wrap {
-		.inside {
-			padding-right: 8px;
-			padding-left:  8px;
-			p {
-				margin-top:    4px;
-				margin-bottom: 4px;
-			}
-			input[type=text] {
-				width: 99%;
-			}
-		}
-	}
-
-	.postbox-container {
-		.meta-box-sortables {
-			min-height: 0;
-		};
-		width: 49%;
-	}
-	.icl-tj-postbox-container-title, .icl-tj-postbox-container-body {
-		width: 100%;
-	}
-	#editorcontainer {
-		textarea {
-			margin: 0;
-			width:  100%;
-			border: none;
-		}
-	}
 }
 
 .icl-tj-original {

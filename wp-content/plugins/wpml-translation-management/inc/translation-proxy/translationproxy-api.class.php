@@ -8,7 +8,7 @@ if ( ! class_exists( 'TranslationProxy_Api_Error' ) ) {
 	class TranslationProxy_Api_Error extends Exception {
 
 		public function __construct( $message ) {
-			TranslationProxy_Com_Log::log_error( $message );
+			WPML_TranslationProxy_Com_Log::log_error( $message );
 
 			parent::__construct( $message );
 		}

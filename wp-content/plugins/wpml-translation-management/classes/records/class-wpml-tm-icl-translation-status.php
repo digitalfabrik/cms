@@ -7,6 +7,8 @@ class WPML_TM_ICL_Translation_Status extends WPML_WPDB_User {
 	private $table = 'icl_translation_status';
 	private $translation_id = 0;
 	private $rid = 0;
+	
+	private $status_result;
 
 	/**
 	 * WPML_TM_ICL_Translation_Status constructor.
@@ -40,6 +42,7 @@ class WPML_TM_ICL_Translation_Status extends WPML_WPDB_User {
 		$this->wpdb->update(
 			$this->wpdb->prefix . $this->table, $args, $this->get_args() );
 
+		$this->status_result = null;
 		return $this;
 	}
 
@@ -67,10 +70,13 @@ class WPML_TM_ICL_Translation_Status extends WPML_WPDB_User {
 	 */
 	public function status() {
 
-		return (int) $this->wpdb->get_var(
-			"SELECT status
-		     FROM {$this->wpdb->prefix}{$this->table} "
-			. $this->get_where() );
+		if ( $this->status_result === null ) {
+			$this->status_result = (int) $this->wpdb->get_var(
+				"SELECT status
+				 FROM {$this->wpdb->prefix}{$this->table} "
+				. $this->get_where() );
+		}
+		return $this->status_result;
 	}
 
 	/**

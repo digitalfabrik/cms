@@ -5,7 +5,6 @@
  */
 require_once WPML_TM_PATH . '/inc/translation-proxy/functions.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-basket.class.php';
-require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-com-log.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-api.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-project.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-service.class.php';
@@ -150,7 +149,6 @@ class TranslationProxy {
 			$service_info['setup_url']                = TranslationProxy_Popup::get_link( '@select-translators;from_replace;to_replace@', array( 'ar' => 1 ), true );
 			$service_info['has_quote']                = $service->quote_iframe_url != '';
 			$service_info['has_translator_selection'] = $service->has_translator_selection;
-			$service_info['default_service']          = $service->default_service;
 
 			$info[ $service->id ] = $service_info;
 		}

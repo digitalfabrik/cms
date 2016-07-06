@@ -29,8 +29,8 @@ class WPML_TP_Pickup_Box_Ajax_Action extends WPML_SP_User {
 	 * @return array index 0 contains the callback to be invoked, index 1 contains an array of strings used to display the output of the polling status box.
 	 */
 	public function run() {
-		$translation_offset = strtotime( current_time( 'mysql' ) ) - intval( $this->sitepress->get_setting( 'last_picked_up' ) ) - 5 * 60;
-		if ( $this->sitepress->get_wp_api()->constant( WP_DEBUG ) == false && $translation_offset < 0 ) {
+		$translation_offset = strtotime( current_time( 'mysql' ) ) - (int) $this->sitepress->get_setting( 'last_picked_up' ) - 5 * 60;
+		if ( $this->sitepress->get_wp_api()->constant( 'WP_DEBUG' ) === false && $translation_offset < 0 ) {
 			$translation_offset = abs( $translation_offset );
 			$time_left          = floor( $translation_offset / 60 );
 			if ( $time_left == 0 ) {
