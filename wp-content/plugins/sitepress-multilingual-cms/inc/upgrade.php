@@ -1,5 +1,8 @@
 <?php
-if (!defined('ICL_SITEPRESS_DEV_VERSION') && (version_compare( get_option( 'icl_sitepress_version' ), ICL_SITEPRESS_VERSION, '=' ) || ( isset( $_REQUEST[ 'action' ] ) && $_REQUEST[ 'action' ] == 'error_scrape' ) || ! isset( $wpdb ) )) {
+
+$wp_api = new WPML_WP_API();
+
+if (!defined('ICL_SITEPRESS_DEV_VERSION') && ( $wp_api->version_compare_naked( get_option( 'icl_sitepress_version' ), ICL_SITEPRESS_VERSION, '=' ) || ( isset( $_REQUEST[ 'action' ] ) && $_REQUEST[ 'action' ] == 'error_scrape' ) || ! isset( $wpdb ) )) {
 	return;
 }
 
@@ -110,6 +113,7 @@ function icl_plugin_upgrade(){
 			'3.2',
 			'3.2.3',
 			'3.3',
+			'3.3.7',
 		);
     
 		foreach($versions as $version) {

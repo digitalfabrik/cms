@@ -15,8 +15,7 @@ class WPML_Root_Page_Actions {
 
 		if ( $root_id ) {
 			$wpdb->delete (
-				$wpdb->prefix . 'icl_translations',
-				array( 'element_id' => $root_id, 'element_type' => 'post_page' )
+				$wpdb->prefix . 'icl_translations', array( 'element_id' => $root_id, 'element_type' => 'post_page' ), array( '%d', '%s' )
 			);
 		}
 	}
@@ -31,8 +30,13 @@ class WPML_Root_Page_Actions {
 	 * @uses \WPML_Root_Page::is_root_page
 	 */
 	public function is_url_root_page( $url ) {
+		$ret = false;
 
-		return WPML_Root_Page::is_root_page( $url );
+		if ( $this->get_root_page_id() ) {
+			$ret = WPML_Root_Page::is_root_page( $url );
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -48,6 +52,7 @@ class WPML_Root_Page_Actions {
 		       && ! empty( $urls['directory_for_default_language'] )
 		       && isset( $urls['show_on_root'] )
 		       && $urls['show_on_root'] === 'page'
+		       && $urls['root_page']
 				? $urls['root_page'] : false;
 	}
 
@@ -211,7 +216,7 @@ class WPML_Root_Page_Actions {
 		} else {
 			remove_action( 'parse_query', array( $this, 'wpml_home_url_parse_query' ) );
 
-			$request_array                  = explode( '/', $_SERVER["REQUEST_URI"] );
+			$request_array                  = explode( '/', $_SERVER['REQUEST_URI'] );
 			$sanitized_query                = array_pop( $request_array );
 			$potential_pagination_parameter = array_pop( $request_array );
 
@@ -224,17 +229,31 @@ class WPML_Root_Page_Actions {
 
 			$sanitized_query = str_replace( '?', '', $sanitized_query );
 			$q->parse_query( $sanitized_query );
-			add_action( 'parse_query', array( $this, 'wpml_home_url_parse_query' ) );
 			$root_id                  = $this->get_root_page_id();
-			$q->query_vars['page_id'] = $root_id;
-			$q->query['page_id']      = $root_id;
-			$q->is_page               = 1;
-			$q->queried_object        = new WP_Post( get_post( $root_id ) );
-			$q->queried_object_id     = $root_id;
-			$q->query_vars['error']   = "";
-			$q->is_404                = false;
-			$q->query['error']        = null;
+			add_action( 'parse_query', array( $this, 'wpml_home_url_parse_query' ) );
+			if ( false !== $root_id ) {
+				$q = $this->set_page_query_parameters( $q, $root_id );
+			} else {
+				$front_page = get_option( 'page_on_front' );
+				if ( $front_page ) {
+					$q = $this->set_page_query_parameters( $q, $front_page );
+				}
+			}
 		}
+
+		return $q;
+	}
+
+	private function set_page_query_parameters( $q, $page_id ) {
+		$q->query_vars['page_id'] = $page_id;
+		$q->query['page_id']      = $page_id;
+		$q->is_page               = 1;
+		$q->queried_object        = new WP_Post( get_post( $page_id ) );
+		$q->queried_object_id     = $page_id;
+		$q->query_vars['error']   = '';
+		$q->is_404                = false;
+		$q->query['error']        = null;
+		$q->is_home               = false;
 
 		return $q;
 	}

@@ -36,11 +36,11 @@ class WPML_Debug_Information extends WPML_WPDB_And_SP_User {
 				'Version'            => get_bloginfo( 'version' ),
 				'PermalinkStructure' => get_option( 'permalink_structure' ),
 				'PostTypes'          => implode( ', ', get_post_types( '', 'names' ) ),
-				'PostSatus'          => implode( ', ', get_post_stati() )
+				'PostStatus'          => implode( ', ', get_post_stati() )
 			),
 			'Server'    => array(
 				'jQueryVersion'  => wp_script_is( 'jquery', 'registered' ) ? $GLOBALS['wp_scripts']->registered['jquery']->ver : __( 'n/a', 'bbpress' ),
-				'PHPVersion'     => phpversion(),
+				'PHPVersion'     => $this->sitepress->get_wp_api()->phpversion(),
 				'MySQLVersion'   => $this->wpdb->db_version(),
 				'ServerSoftware' => $_SERVER['SERVER_SOFTWARE']
 			),
@@ -51,6 +51,8 @@ class WPML_Debug_Information extends WPML_WPDB_And_SP_User {
 				'PostMax'         => ini_get( 'post_max_size' ),
 				'TimeLimit'       => ini_get( 'max_execution_time' ),
 				'MaxInputVars'    => ini_get( 'max_input_vars' ),
+				'MBString'        => $this->sitepress->get_wp_api()->extension_loaded( 'mbstring' ),
+				'libxml'          => $this->sitepress->get_wp_api()->extension_loaded( 'libxml' ),
 			),
 		);
 

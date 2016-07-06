@@ -62,8 +62,7 @@ if(is_admin() || defined('XMLRPC_REQUEST')):
                     }                    
                     
                     // when a post is sent from the translation server
-                    global $HTTP_RAW_POST_DATA;
-                    $hrow = icl_xml2array($HTTP_RAW_POST_DATA);
+	                $hrow = icl_xml2array( $this->get_raw_post_data() );
                     if(isset($hrow['methodCall']['methodName']['value']) && $hrow['methodCall']['methodName']['value'] == 'icanlocalize.set_translation_status'){
                         add_action('save_post', array($this, 'call_cache_clear'));
                     }
@@ -72,6 +71,12 @@ if(is_admin() || defined('XMLRPC_REQUEST')):
             }
             
         }
+
+	    private function get_raw_post_data() {
+		    $wpml_wp_api = new WPML_WP_API();
+
+		    return $wpml_wp_api->get_raw_post_data();
+	    }
         
         function validate_settings(){
             $save_settings = false;
@@ -98,7 +103,7 @@ if(is_admin() || defined('XMLRPC_REQUEST')):
         
         function ajx_calls($call, $data){
             if($call == 'wpml_cpi_options'){
-                $this->settings['automatic'] = intval($data['automatic']);   
+	            $this->settings['automatic'] = (int) $data['automatic'];   
                 if($this->settings['automatic'] == 1){
                     $this->settings['dirty_cache'] = 0;
                 }

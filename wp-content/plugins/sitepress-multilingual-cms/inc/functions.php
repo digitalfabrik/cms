@@ -93,7 +93,7 @@ function icl_get_sub_setting( $key, $sub_key, $default = false ) {
 function wpml_get_sub_setting_filter( $default, $key, $sub_key, $deprecated = null ) {
 	$default = $deprecated !== null  && !$default ? $deprecated : $default;
 
-	$parent = wpml_get_setting_filter( $key, array() );
+	$parent = wpml_get_setting_filter(array(), $key );
 
 	return isset( $parent[ $sub_key ] ) ? $parent[ $sub_key ] : $default;
 }
@@ -313,6 +313,7 @@ function icl_makes_duplicates_public( $master_post_id ) {
  * @uses  SitePress
  * @since 3.2
  * @use \SitePress::api_hooks
+ * @deprecated This function will be removed in future releases.
  */
 function wpml_make_post_duplicates_action( $master_post_id ) {
 
@@ -320,7 +321,7 @@ function wpml_make_post_duplicates_action( $master_post_id ) {
 
 	$master_post = get_post( $master_post_id );
 
-	if ( $master_post->post_status == 'auto-draft' || $master_post->post_type == 'revision' ) {
+	if ( 'auto-draft' === $master_post->post_status || 'revision' === $master_post->post_type ) {
 		return;
 	}
 
@@ -335,30 +336,7 @@ function wpml_make_post_duplicates_action( $master_post_id ) {
 			continue;
 		}
 
-		$post_array[ 'post_author' ]   = $master_post->post_author;
-		$post_array[ 'post_date' ]     = $master_post->post_date;
-		$post_array[ 'post_date_gmt' ] = $master_post->post_date_gmt;
-		$post_array[ 'post_content' ]  = addslashes_gpc( apply_filters( 'icl_duplicate_generic_string', $master_post->post_content, $lang_to, array( 'context' => 'post', 'attribute' => 'content', 'key' => $master_post->ID ) ) );
-		$post_array[ 'post_title' ]    = addslashes_gpc( apply_filters( 'icl_duplicate_generic_string', $master_post->post_title, $lang_to, array( 'context' => 'post', 'attribute' => 'title', 'key' => $master_post->ID ) ) );
-		$post_array[ 'post_excerpt' ]  = addslashes_gpc( apply_filters( 'icl_duplicate_generic_string', $master_post->post_excerpt, $lang_to, array( 'context' => 'post', 'attribute' => 'excerpt', 'key' => $master_post->ID ) ) );
-		$post_array[ 'post_status' ]   = $master_post->post_status;
-		//TODO [WPML 3.3.] wp_insert_post() does accept 'post_category': even though is not part of the WP_Post object, it deals with it. But as far as I know $master_post doesn't have this property, when set with get_post(), so probably we need to fix that, shouldn't we?
-		$post_array[ 'post_category' ]  = $master_post->post_category;
-		$post_array[ 'comment_status' ] = $master_post->comment_status;
-		$post_array[ 'ping_status' ]    = $master_post->ping_status;
-		$post_array[ 'post_name' ]      = $master_post->post_name;
-		$post_array[ 'menu_order' ]     = $master_post->menu_order;
-		$post_array[ 'post_type' ]      = $master_post->post_type;
-		$post_array[ 'post_mime_type' ] = $master_post->post_mime_type;
-
-		if ( $master_post->post_parent ) {
-			$parent                      = icl_object_id( $master_post->post_parent, $master_post->post_type, false, $lang_to );
-			$post_array[ 'post_parent' ] = $parent;
-		}
-
-		$id = wp_insert_post( $post_array );
-
-		$sitepress->set_element_language_details( $id, 'post_' . $post_array[ 'post_type' ], $trid, $lang_to, $lang_from, false );
+		$sitepress->make_duplicate( $master_post_id, $lang_to );
 	}
 }
 
@@ -460,7 +438,7 @@ function wpml_strip_subdir_from_url( $url ) {
 	/** @var WPML_URL_Converter $wpml_url_converter */
 	global $wpml_url_converter;
 
-	$subdir       = parse_url( $wpml_url_converter->get_abs_home(), PHP_URL_PATH );
+	$subdir       = wpml_parse_url( $wpml_url_converter->get_abs_home(), PHP_URL_PATH );
 	$subdir_slugs = array_values( array_filter( explode( '/', $subdir ) ) );
 
 	$url_path_expl = explode( '/', preg_replace( '#^(http|https)://#', '', $url ) );
@@ -581,7 +559,7 @@ function icl_suppress_activation() {
  */
 function activate_installer( $sitepress = null ) {
 	// installer hook - start
-	include_once ICL_PLUGIN_PATH . '/inc/installer/loader.php'; //produces global variable $wp_installer_instance
+	include_once ICL_PLUGIN_PATH . '/embedded/otgs/installer/loader.php'; //produces global variable $wp_installer_instance
 	$args = array(
 		'plugins_install_tab' => 1,
 		'high_priority'       => 1,
@@ -654,3 +632,71 @@ function repair_el_type_collate() {
 		throw new Exception( $wpdb->last_error );
 	}
 }
+
+/**
+ * Wrapper for `parse_url` using `wp_parse_url`
+ *
+ * @param $url
+ * @param int $component
+ *
+ * @return array|string|int|null
+ */
+function wpml_parse_url( $url, $component = -1 ) {
+	$ret = null;
+
+	$component_map = array(
+		PHP_URL_SCHEME     => 'scheme',
+		PHP_URL_HOST       => 'host',
+		PHP_URL_PORT       => 'port',
+		PHP_URL_USER       => 'user',
+		PHP_URL_PASS       => 'pass',
+		PHP_URL_PATH       => 'path',
+		PHP_URL_QUERY      => 'query',
+		PHP_URL_FRAGMENT   => 'fragment',
+	);
+
+	if ( $component === -1 ) {
+		$ret = wp_parse_url( $url );
+	} else if ( isset( $component_map[ $component ] ) ) {
+		$key = $component_map[ $component ];
+		$parsed = wp_parse_url( $url );
+		$ret = isset( $parsed[ $key ] ) ? $parsed[ $key ] : null;
+	}
+
+	return $ret;
+}
+
+// Add wp_parse_url function for versions of WP before 4.4
+
+if ( ! function_exists( 'wp_parse_url' ) ) {
+	function wp_parse_url( $url ) {
+		$parts = @parse_url( $url );
+		if ( ! $parts ) {
+			// < PHP 5.4.7 compat, trouble with relative paths including a scheme break in the path
+			if ( '/' == $url[0] && false !== strpos( $url, '://' ) ) {
+				// Since we know it's a relative path, prefix with a scheme/host placeholder and try again
+				if ( ! $parts = @parse_url( 'placeholder://placeholder' . $url ) ) {
+					return $parts;
+				}
+				// Remove the placeholder values
+				unset( $parts['scheme'], $parts['host'] );
+			} else {
+				return $parts;
+			}
+		}
+	
+		// < PHP 5.4.7 compat, doesn't detect schemeless URL's host field
+		if ( '//' == substr( $url, 0, 2 ) && ! isset( $parts['host'] ) ) {
+			$path_parts = explode( '/', substr( $parts['path'], 2 ), 2 );
+			$parts['host'] = $path_parts[0];
+			if ( isset( $path_parts[1] ) ) {
+				$parts['path'] = '/' . $path_parts[1];
+			} else {
+				unset( $parts['path'] );
+			}
+		}
+	
+		return $parts;
+	}
+}
+

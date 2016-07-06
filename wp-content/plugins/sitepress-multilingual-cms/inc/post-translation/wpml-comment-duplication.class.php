@@ -13,8 +13,7 @@ class WPML_Comment_Duplication{
 			array(
 				'comment_post_ID' => $duplicate_of,
 				'comment_parent'  => $original_parent
-			),
-			array( 'comment_ID' => $comment['comment_ID'] )
+			), array( 'comment_ID' => $comment['comment_ID'] ), array( '%d', '%d' ), array( '%d' )
 		);
 		wp_update_comment_count_now($duplicate_of);
 	}
@@ -72,7 +71,7 @@ class WPML_Comment_Duplication{
 					'comment_id' => $dup_comment_id,
 					'meta_key'   => $meta_row->meta_key,
 					'meta_value' => $meta_row->meta_value
-				)
+				), array( '%d', '%s', '%s' )
 			);
 		}
 

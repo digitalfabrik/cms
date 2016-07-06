@@ -5,7 +5,7 @@ class WPML_Post_Edit_Ajax {
 	/**
 	 * Ajax handler for adding a term via Ajax.
 	 */
-	public static function wpml_save_term() {
+	public static function wpml_save_term_action() {
 		if ( !wpml_is_action_authenticated ( 'wpml_save_term' ) ) {
 			wp_send_json_error ( 'Wrong Nonce' );
 		}
@@ -18,6 +18,13 @@ class WPML_Post_Edit_Ajax {
 		$name        = filter_input ( INPUT_POST, 'name' );
 		$trid        = filter_input ( INPUT_POST, 'trid', FILTER_SANITIZE_NUMBER_INT );
 		$description = filter_input ( INPUT_POST, 'description' );
+		
+		$new_term_object = self::save_term_ajax( $sitepress, $lang, $taxonomy, $slug, $name, $trid, $description );
+		$sitepress->get_wp_api()->wp_send_json_success( $new_term_object );
+
+	}
+
+	public static function save_term_ajax( $sitepress, $lang, $taxonomy, $slug, $name, $trid, $description ) {
 		$new_term_object = false;
 
 		if ( $name !== "" && $taxonomy && $trid && $lang ) {
@@ -37,11 +44,15 @@ class WPML_Post_Edit_Ajax {
 				$args[ 'description' ] = $description;
 			}
 
+			$switch_lang = new WPML_Temporary_Switch_Language( $sitepress, $lang );
 			$res = WPML_Terms_Translations::create_new_term( $args );
+			$switch_lang->restore_lang();
 
 			if ( $res && isset( $res[ 'term_taxonomy_id' ] ) ) {
 				/* res holds the term taxonomy id, we return the whole term objects to the ajax call */
+				$switch_lang = new WPML_Temporary_Switch_Language( $sitepress, $lang );
 				$new_term_object                = get_term_by( 'term_taxonomy_id', (int) $res[ 'term_taxonomy_id' ], $taxonomy );
+				$switch_lang->restore_lang();
 				$lang_details                   = $sitepress->get_element_language_details( $new_term_object->term_taxonomy_id, 'tax_' . $new_term_object->taxonomy );
 				$new_term_object->trid          = $lang_details->trid;
 				$new_term_object->language_code = $lang_details->language_code;
@@ -49,10 +60,10 @@ class WPML_Post_Edit_Ajax {
 				WPML_Terms_Translations::icl_save_term_translation_action( $taxonomy, $res );
 			}
 		}
-
-		wp_send_json_success( $new_term_object );
+		
+		return $new_term_object;
 	}
-
+	
 	/**
 	 * Gets the content of a post, its excerpt as well as its title and returns it as an array
 	 *
@@ -156,7 +167,6 @@ class WPML_Post_Edit_Ajax {
 
 		$result = false;
 
-		set_transient( md5( $sitepress->get_current_user()->ID . 'current_user_post_edit_lang' ), $to );
 		if ( $post_id && $to ) {
 
 			$post_type      = get_post_type( $post_id );
@@ -189,20 +199,6 @@ class WPML_Post_Edit_Ajax {
 		}
 
 		wp_send_json_success( $result );
-	}
-
-	/**
-	 * Saves the language from which a user is editing the currently edited post as a transient.
-	 * This is done so that filtering the language from which terms for the flat terms preview dropdown can be performed.
-	 */
-	public static function wpml_set_post_edit_lang() {
-		global $sitepress;
-		$lang_code = false;
-		if ( isset( $_POST[ 'wpml_post_lang' ] ) ) {
-			$lang_code = $_POST[ 'wpml_post_lang' ];
-		}
-
-		set_transient( md5( $sitepress->get_current_user()->ID . 'current_user_post_edit_lang' ), $lang_code );
 	}
 
 	public static function wpml_get_default_lang() {

@@ -399,10 +399,10 @@ class AbsoluteLinks{
 		return $home_url;
 	}
 	
-	private function does_lang_exist ( $lang ) {
+	private function does_lang_exist( $lang ) {
 		global $wpdb;
-		
-		return $wpdb->get_var( "SELECT code FROM {$wpdb->prefix}icl_languages WHERE code='{$lang}'" );
+
+		return $wpdb->get_var( $wpdb->prepare( "SELECT code FROM {$wpdb->prefix}icl_languages WHERE code=%s", $lang ) );
 		
 	}
 	

@@ -41,7 +41,7 @@ class WPML_Post_Edit_Screen extends WPML_SP_User {
 	public function preview_post_link_filter( $link ) {
 		$original_host = filter_var( $_SERVER['HTTP_HOST'], FILTER_SANITIZE_STRING );
 		if ( $original_host ) {
-			$domain = parse_url( $link, PHP_URL_HOST );
+			$domain = wpml_parse_url( $link, PHP_URL_HOST );
 			$link   = str_replace( '//' . $domain . '/', '//' . $original_host . '/', $link );
 		}
 
