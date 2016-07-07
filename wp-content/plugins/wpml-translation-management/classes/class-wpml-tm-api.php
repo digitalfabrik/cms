@@ -17,21 +17,48 @@ class WPML_TM_API {
 	public function __construct( &$blog_translators, &$TranslationManagement ) {
 		$this->blog_translators      = &$blog_translators;
 		$this->TranslationManagement = &$TranslationManagement;
+
+		$this->translation_statuses = array(
+			ICL_TM_NOT_TRANSLATED         => array(
+				'label'         => __( 'Not translated', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-not-translated',
+			),
+			ICL_TM_WAITING_FOR_TRANSLATOR => array(
+				'label'         => __( 'Waiting for translator', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-waiting',
+				'default_color' => '#0000'
+			),
+			ICL_TM_IN_BASKET              => array(
+				'label'         => __( 'In basket', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-basket',
+			),
+			ICL_TM_IN_PROGRESS            => array(
+				'label'         => __( 'In progress', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-in-progress',
+			),
+			ICL_TM_DUPLICATE              => array(
+				'label'         => __( 'Duplicate', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-duplicate',
+			),
+			ICL_TM_COMPLETE               => array(
+				'label'         => __( 'Complete', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-translated',
+			),
+			ICL_TM_NEEDS_UPDATE           => array(
+				'label'         => ' - ' . __( 'needs update', 'wpml-translation-management' ),
+				'css-class'     => 'icon otgs-ico-needs-update',
+			),
+		);
+	}
+
+	public function get_translation_status_label( $value ) {
+		return isset( $this->translation_statuses[ $value ] ) ? $this->translation_statuses[ $value ][ 'label' ] : null;
 	}
 
 	public function init_hooks() {
-		add_filter( 'wpml_is_translator', array(
-			$this,
-			'is_translator_filter'
-		), 10, 3 );
-		add_filter( 'wpml_translator_languages_pairs', array(
-			$this,
-			'translator_languages_pairs_filter'
-		), 10, 2 );
-		add_action( 'wpml_edit_translator', array(
-			$this,
-			'edit_translator_action'
-		), 10, 2 );
+		add_filter( 'wpml_is_translator', array( $this, 'is_translator_filter' ), 10, 3 );
+		add_filter( 'wpml_translator_languages_pairs', array( $this, 'translator_languages_pairs_filter' ), 10, 2 );
+		add_action( 'wpml_edit_translator', array( $this, 'edit_translator_action' ), 10, 2 );
 	}
 
 	/**
@@ -57,7 +84,7 @@ class WPML_TM_API {
 			$this->TranslationManagement->edit_translator( $user_id, $language_pairs );
 		}
 	}
-
+	
 	public function translator_languages_pairs_filter( $default, $user ) {
 		$result  = $default;
 		$user_id = $this->get_user_id( $user );
@@ -86,4 +113,5 @@ class WPML_TM_API {
 
 		return $user_id;
 	}
+
 }

@@ -83,11 +83,17 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	public function add_tax_url_to_ls_lang( $lang, $translations, $icl_lso_link_empty, $skip_lang ) {
 		if ( isset( $translations[ $lang['code'] ] ) ) {
 			// force  the taxonomy id adjustment to not modify this
-			$taxonomy                     = is_category() ? 'category' : ( is_tag() ? 'post_tag' : get_query_var( 'taxonomy' ) );
-			$lang['translated_url']       = $this->sitepress->get_wp_api()->get_term_link( (int) $translations[ $lang['code'] ]->term_id,
-			                                                              $taxonomy );
-			$lang['missing']              = 0;
-		} else {
+			$queried_object = $this->sitepress->get_wp_api()->get_queried_object();
+			$taxonomy       = isset( $queried_object->taxonomy ) ? $queried_object->taxonomy : null;
+
+			if ( $taxonomy ) {
+				$lang['translated_url'] = $this->sitepress->get_wp_api()
+				                                          ->get_term_link( (int) $translations[ $lang['code'] ]->term_id, $taxonomy );
+				$lang['missing']        = 0;
+			}
+		}
+
+		if ( ! isset( $translations[ $lang['code'] ] ) || ! isset( $taxonomy ) ) {
 			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $skip_lang, $icl_lso_link_empty );
 		}
 
@@ -105,8 +111,7 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	public function add_author_url_to_ls_lang( $lang, $author_data, $icl_lso_link_empty, $skip_lang ) {
 		$post_type = get_query_var( 'post_type' ) ? get_query_var( 'post_type' ) : 'post';
 		if ( $this->query_utils->author_query_has_posts( $post_type, $author_data, $lang['code'] ) ) {
-			$lang['translated_url'] = $this->sitepress->convert_url( $this->sitepress->get_wp_api()->get_author_posts_url( $author_data->ID ),
-			                                                         $lang['code'] );
+			$lang['translated_url'] = $this->sitepress->convert_url( $this->sitepress->get_wp_api()->get_author_posts_url( $author_data->ID ), $lang['code'] );
 			$lang['missing']        = 0;
 		} else {
 			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $skip_lang, $icl_lso_link_empty );
@@ -125,7 +130,8 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	 */
 	public function add_date_or_cpt_url_to_ls_lang( $lang, $current_query, $icl_lso_link_empty, $skip_lang ) {
 		list( $year, $month, $day ) = $this->extract_date_data_from_query( $current_query );
-		$post_type    = ( $_type = $current_query->get( 'post_type' ) ) ? $_type : 'post';
+		$query_helper = new WPML_WP_Query_API( $current_query );
+		$post_type    = ( $_type = $query_helper->get_post_type_if_single() ) ? $_type : 'post';
 		$lang_code    = $lang['code'];
 		$mark_missing = false;
 		$override     = false;

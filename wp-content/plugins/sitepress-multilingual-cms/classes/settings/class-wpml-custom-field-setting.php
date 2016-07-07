@@ -62,6 +62,33 @@ abstract class WPML_Custom_Field_Setting extends WPML_TM_User {
 	public function set_to_nothing() {
 		$this->set_state( WPML_IGNORE_CUSTOM_FIELD );
 	}
+	
+	public function set_editor_style( $style ) {
+		$this->tm_instance->settings[ $this->get_editor_style_array_setting_index() ][ $this->index ] = $style;
+	}
+	
+	public function get_editor_style() {
+		$setting = $this->get_editor_style_array_setting_index();
+		return isset( $this->tm_instance->settings[ $setting ][ $this->index ] ) ? $this->tm_instance->settings[ $setting ][ $this->index ] : '';
+	}
+
+	public function set_editor_label( $label ) {
+		$this->tm_instance->settings[ $this->get_editor_label_array_setting_index() ][ $this->index ] = $label;
+	}
+
+	public function get_editor_label() {
+		$setting = $this->get_editor_label_array_setting_index();
+		return isset( $this->tm_instance->settings[ $setting ][ $this->index ] ) ? $this->tm_instance->settings[ $setting ][ $this->index ] : '';
+	}
+
+	public function set_editor_group( $group ) {
+		$this->tm_instance->settings[ $this->get_editor_group_array_setting_index() ][ $this->index ] = $group;
+	}
+
+	public function get_editor_group() {
+		$setting = $this->get_editor_group_array_setting_index();
+		return isset( $this->tm_instance->settings[ $setting ][ $this->index ] ) ? $this->tm_instance->settings[ $setting ][ $this->index ] : '';
+	}
 
 	private function set_state( $state ) {
 		$this->tm_instance->settings[ $this->get_state_array_setting_index() ][ $this->index ] = $state;
@@ -77,6 +104,10 @@ abstract class WPML_Custom_Field_Setting extends WPML_TM_User {
 	 */
 	protected abstract function get_read_only_array_setting_index();
 
+	protected abstract function get_editor_style_array_setting_index();
+	protected abstract function get_editor_label_array_setting_index();
+	protected abstract function get_editor_group_array_setting_index();
+	
 	/**
 	 * @return  string[]
 	 */

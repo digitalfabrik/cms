@@ -151,7 +151,7 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 
 					$translated_menu_id = $menus[ $menu_id ]['translations'][ $language ]['id'];
 
-					remove_filter( 'get_term', array( $this->sitepress, 'get_term_adjust_id' ) );
+					remove_filter( 'get_term', array( $this->sitepress, 'get_term_adjust_id' ), 1 );
 					$translated_item_id = wp_update_nav_menu_item( $translated_menu_id, 0, $menu_data );
 
 					// set language explicitly since the 'wp_update_nav_menu_item' is still TBD

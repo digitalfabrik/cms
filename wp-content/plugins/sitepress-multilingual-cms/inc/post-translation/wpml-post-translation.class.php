@@ -203,7 +203,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @param SitePress $sitepress
 	 * @return bool|mixed|null|string|void
 	 */
-	protected function get_save_post_lang( $post_id, $sitepress ) {
+	public function get_save_post_lang( $post_id, $sitepress ) {
 		$language_code = $this->get_element_lang_code ( $post_id );
 		$language_code = $language_code ? $language_code : $sitepress->get_current_language ();
 		$language_code = $sitepress->is_active_language ( $language_code ) ? $language_code
@@ -243,6 +243,21 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		wp_defer_term_counting( false );
 		if ( $post_vars['post_type'] !== 'nav_menu_item' ) {
 			do_action( 'wpml_tm_save_post', $post_vars['ID'], get_post( $post_vars['ID'] ), false );
+		}
+		// Flush object cache.
+		$this->flush_object_cache_for_groups( array( 'ls_languages', 'element_translations' ) );
+	}
+
+	/**
+	 * Create new instance of WPML_WP_Cache for each group and flush cache for group.
+	 * @param array $groups
+	 */
+	private function flush_object_cache_for_groups( $groups = array() ) {
+		if ( ! empty( $groups ) ) {
+			foreach ( $groups as $group ) {
+				$cache            = new WPML_WP_Cache( $group );
+				$cache->flush_group_cache();
+			}
 		}
 	}
 

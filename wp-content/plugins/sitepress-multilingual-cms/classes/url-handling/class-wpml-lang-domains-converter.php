@@ -59,7 +59,7 @@ class WPML_Lang_Domains_Converter extends WPML_URL_Converter {
 		$absolute_home_url = $this->get_abs_home();
 		$converted_url     = preg_replace(
 			'#^(https?://)?([^\/]*)\/?#',
-			'$1' . preg_replace(
+			'${1}' . preg_replace(
 				array('#^(http(?:s?))://#', '#(\w/).+$#'),
 				array('', '$1'),
 				trailingslashit(

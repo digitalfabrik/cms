@@ -123,11 +123,11 @@ switch($request){
 	    }
 
         if(isset($_POST['icl_lang_sel_config'])){
-            $iclsettings['icl_lang_sel_config'] = $_POST['icl_lang_sel_config'];
+            $iclsettings['icl_lang_sel_config'] = wpml_sanitize_hex_color_array($_POST['icl_lang_sel_config'], '', true, false );
         }
 
         if(isset($_POST['icl_lang_sel_footer_config'])){
-            $iclsettings['icl_lang_sel_footer_config'] = $_POST['icl_lang_sel_footer_config'];
+	        $iclsettings['icl_lang_sel_footer_config'] = wpml_sanitize_hex_color_array( $_POST['icl_lang_sel_footer_config'], '', true, false );
         }
 
         if (isset($_POST['icl_lang_sel_type']))
@@ -152,12 +152,12 @@ switch($request){
             $iclsettings['icl_post_availability_text'] = $_POST['icl_post_availability_text'];
 
         $iclsettings['icl_widget_title_show'] = (isset($_POST['icl_widget_title_show'])) ? 1 : 0;
-        $iclsettings['icl_additional_css'] = $_POST['icl_additional_css'];
+        $iclsettings['icl_additional_css'] = isset( $_POST['icl_additional_css'] ) ? $_POST['icl_additional_css'] : '';
 
         $iclsettings['display_ls_in_menu'] = @intval($_POST['display_ls_in_menu']);
         $iclsettings['menu_for_ls'] = @intval($_POST['menu_for_ls']);
 
-        $iclsettings['icl_lang_sel_copy_parameters'] = join(', ', array_map('trim', explode(',', $_POST['copy_parameters'])));
+        $iclsettings['icl_lang_sel_copy_parameters'] = join( ', ', array_map( 'trim', explode(',', sanitize_text_field( $_POST['copy_parameters'] ) ) ) );
 
         if(!$ls_options['icl_lso_flags'] && !$ls_options['icl_lso_native_lang'] && !$ls_options['icl_lso_display_lang']){
             echo '0|';
@@ -353,6 +353,9 @@ switch($request){
         foreach($_POST['icl_st'] as $k=>$v){
             $iclsettings['st'][$k] = $v;
         }
+	    if ( array_key_exists( 'st', $iclsettings ) && array_key_exists( 'hl_color', $iclsettings['st'] ) && ! wpml_is_valid_hex_color( $iclsettings['st']['hl_color'] ) ) {
+		    $iclsettings['st']['hl_color'] = '#FFFF00';
+	    }
 		if(isset($iclsettings)) {
         	$this->save_settings($iclsettings);
 		}
@@ -525,9 +528,13 @@ switch($request){
 	    }
 	    break;
     case 'icl_seo_options':
-        $iclsettings['seo']['head_langs'] = isset($_POST['icl_seo_head_langs']) ? intval($_POST['icl_seo_head_langs']) : 0;
-        $iclsettings['seo']['canonicalization_duplicates'] = isset($_POST['icl_seo_canonicalization_duplicates']) ? intval($_POST['icl_seo_canonicalization_duplicates']) : 0;
-        $this->save_settings($iclsettings);
+	    $seo = $sitepress->get_setting( 'seo', array() );
+
+	    $seo['head_langs']                  = isset( $_POST['icl_seo_head_langs'] ) ? (int) $_POST['icl_seo_head_langs'] : 0;
+	    $seo['canonicalization_duplicates'] = isset( $_POST['icl_seo_canonicalization_duplicates'] ) ? (int) $_POST['icl_seo_canonicalization_duplicates'] : 0;
+	    $seo['head_langs_priority']         = isset( $_POST['wpml_seo_head_langs_priority'] ) ? (int) $_POST['wpml_seo_head_langs_priority'] : 1;
+
+	    $sitepress->set_setting( 'seo', $seo, true );
         echo '1|';
         break;
     case 'dismiss_object_cache_warning':
@@ -548,8 +555,11 @@ switch($request){
 		$language_details = $sitepress->get_element_language_details($post_id, 'post_' . $post_type);
 
 		if ( $set_as_source ) {
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $language_details->language_code ), array( 'trid' => $new_trid, 'element_type' => 'post_' . $post_type ) );
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => null, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ) );
+			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $language_details->language_code ), array( 'trid' => $new_trid, 'element_type' => 'post_' . $post_type ), array( '%s' ), array( '%d', '%s' ) );
+			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => null, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ), array( '%s', '%d' ), array(
+				'%d',
+				'%s'
+			) );
 		} else {
 			$original_element_language = $sitepress->get_default_language();
 			$trid_elements             = $sitepress->get_element_translations( $new_trid, 'post_' . $post_type );
@@ -561,7 +571,10 @@ switch($request){
 					}
 				}
 			}
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $original_element_language, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ) );
+			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $original_element_language, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ), array(
+				'%s',
+				'%d'
+			), array( '%d', '%s' ) );
 		}
 		echo wp_json_encode(true);
 		break;
