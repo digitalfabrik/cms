@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Content Loader Base
  * Description: Template-base to include any foreign content into Integreat
- * Version: 0.1
+ * Version: 1.0
  * Author: Julian Orth
  * Author URI: https://github.com/Integreat
  * License: MIT
@@ -10,6 +10,7 @@
 
 /**
  * Register Cron Job Hook to update data every 12 hour 
+ * Currently we dont need that functionality because we're using an actual *nix cronjob
  */
 //register_activation_hook(__FILE__, 'cl_update_content');
 //
@@ -113,13 +114,7 @@ function cl_meta_box_html( $options, $radio_value, $cl_metabox_extra = '' ) {
 * @param int $post_id Post ID
 */
 function cl_save_meta_box($post_id) {
-	/*if( !isset( $post_id ) ) {
-		$post_id = $_POST['post_id'];
-		
-	}
-	echo $post_id;
-	exit;*/
-	// key for base-plugin in wp_postmeta
+
 	$meta_key = 'ig-content-loader-base';
 	$meta_key_position = 'ig-content-loader-base-position';
   

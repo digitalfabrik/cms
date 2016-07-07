@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Content Loader Instance
  * Description: Load content from another instance
- * Version: 0.1
+ * Version: 1.0
  * Author: Sven Seeberg
  * Author URI: https://github.com/Integreat
  * License: MIT
@@ -37,7 +37,6 @@ function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 }
 add_action( 'cl_update_content','cl_in_update_content', 10, 3 );
 
-// registriert plugin in base and return meta infos
 function cl_in_metabox_item( $array ) {
 	$array[] = array('id'=>'ig-content-loader-instance', 'name'=>'Seite aus Fremdinstanz');
 	return $array;
