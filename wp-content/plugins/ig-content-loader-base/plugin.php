@@ -8,20 +8,6 @@
  * License: MIT
  */
 
-/**
- * Register Cron Job Hook to update data every 12 hour 
- * Currently we dont need that functionality because we're using an actual *nix cronjob
- */
-//register_activation_hook(__FILE__, 'cl_update_content');
-//
-//function cl_update_content() {
-//	if (! wp_next_scheduled ( 'cl_update_contents' )) {
-//	wp_schedule_event(time(), 'twicedaily', 'cl_update_contents');
-//	}
-//}
-//
-//add_action('cl_update_contents', 'cl_update_content');
-
 
 /**
  * Initiate Rewrite Tag for Cron Job and Register custom Post Type for HTML Atachement
@@ -196,39 +182,42 @@ add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
  */
 function cl_modify_post($post) {
 	global $wpdb;
-	global $array;
 	
+	global $cl_already_manipulated;
 	
-	if(!$array)
-		$array = array();
-	if(!in_array($post->ID,$array)) {
-		$array[] = $post->ID;
+	if ( !$cl_already_manipulated ) {
+		$cl_already_manipulated = array();
+	}
 		
-		// get foreign cotennt from database
-		$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
-		
-		// execute sql statement in $query
-		$result = $wpdb->get_results($query);
-
-		/* get saved post meta for radio group from db */
-		$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-		$select_value = get_post_meta( $post->ID, 'ig-content-loader-base', true);
-		
-		// if there is a selected value for the dropdown in the database
-		if(count($select_value) > 0 ) {
-			if($option_value == 'ende') {
-				// add foreign content from db to the end of the post
-				$post->post_content = $post->post_content.$result[0]->post_content;
-			} else {
-				// add foreign content from db to the front of the post
-				$post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
-			}
-		}
-
+	if ( in_array( $post->ID, $cl_already_manipulated) ) {
 		return $post;
 	}
+	$cl_already_manipulated[] = $post->ID;
+	
+	// get foreign cotennt from database
+	$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
+	
+	// execute sql statement in $query
+	$result = $wpdb->get_results($query);
+
+	/* get saved post meta for radio group from db */
+	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
+	$select_value = get_post_meta( $post->ID, 'ig-content-loader-base', true);
+	
+	// if there is a selected value for the dropdown in the database
+	if(count($select_value) > 0 ) {
+		if($option_value == 'ende') {
+			// add foreign content from db to the end of the post
+			$post->post_content = $post->post_content.$result[0]->post_content;
+		} else {
+			// add foreign content from db to the front of the post
+			$post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
+		}
+	}
+
+	return $post;
 }
-add_action('rest_api_print_post', 'cl_modify_post', 1);
+add_filter('wp_api_extensions_output_post', 'cl_modify_post', 10, 2);
 add_action('the_post', 'cl_modify_post');
 
 

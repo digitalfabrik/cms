@@ -18,7 +18,7 @@ function cl_sb_update_content($parent_id, $meta_value, $blog_id, $blog_name) {
 
 	if($meta_value == "ig-content-loader-sprungbrett") {
 		
-		$json = file_get_contents('https://www.sprungbrett-intowork.de/ajax/app-search-internships?location=augsburg');
+		$json = file_get_contents('https://www.sprungbrett-intowork.de/ajax/app-search-internships?location='.$blog_name);
 		$json = json_decode($json, TRUE);
 		$html = cl_sb_json_to_html($json, $blog_name);
 		
