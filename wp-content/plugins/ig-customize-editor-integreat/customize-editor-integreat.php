@@ -92,6 +92,8 @@ function modify_buttons($buttons)
 		insert_button($settings, 'undo', 'toolbar_1', 9);
 		insert_button($settings, 'redo', 'toolbar_1', 10);
 		insert_button($settings, 'wp_adv', 'toolbar_1', 11);
+		insert_button($settings, 'ltr', 'toolbar_1', 12);
+		insert_button($settings, 'rtl', 'toolbar_1', 13);
 
 		//second toolbar
 		insert_button($settings, 'alignleft', 'toolbar_2', 1);
