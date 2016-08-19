@@ -217,7 +217,7 @@ function cl_modify_post($post) {
 
 	return $post;
 }
-add_filter('wp_api_extensions_output_post', 'cl_modify_post', 10, 2);
+add_filter('wp_api_extensions_pre_post', 'cl_modify_post', 10, 2);
 add_action('the_post', 'cl_modify_post');
 
 
