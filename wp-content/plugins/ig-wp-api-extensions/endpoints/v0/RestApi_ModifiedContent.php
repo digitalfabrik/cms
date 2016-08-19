@@ -182,6 +182,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	}
 
 	protected function prepare_item($post) {
+		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
 		$content = $this->prepare_content($post);
 		$output_post = [
