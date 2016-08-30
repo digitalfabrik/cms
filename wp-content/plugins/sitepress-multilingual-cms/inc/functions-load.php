@@ -226,12 +226,16 @@ function maybe_load_translated_tax_screen() {
 function wpml_reload_active_languages_setting( $override = false ) {
 	global $wpdb, $sitepress_settings;
 
-	if ( (bool) $sitepress_settings === true
+	if ( true === (bool) $sitepress_settings
 	     && ( $override || wpml_get_setting_filter( false, 'setup_complete' ) )
 	) {
-		$active_languages                       = $wpdb->get_col( "	SELECT code
+		if ( $wpdb->query( "SHOW TABLES LIKE '{$wpdb->prefix}icl_languages'") ) {
+			$active_languages                       = $wpdb->get_col( "	SELECT code
 																	FROM {$wpdb->prefix}icl_languages
 																	WHERE active = 1" );
+		} else {
+			$active_languages = array();
+		}
 		$sitepress_settings['active_languages'] = $active_languages;
 		icl_set_setting( 'active_languages', $active_languages, true );
 	} else {

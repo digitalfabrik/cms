@@ -67,6 +67,9 @@ function wpml_tm_register_js_scripts() {
 	wp_register_script( 'wpml-tm-mcs',
 		WPML_TM_URL . '/res/js/mcs/wpml-tm-mcs.js',
 		array( 'wpml-tp-polling' ), WPML_TM_VERSION );
+	wp_register_script( 'wpml-tm-mcs-translate-link-targets',
+		WPML_TM_URL . '/res/js/mcs/wpml-tm-mcs-translate-link-targets.js',
+		array(), WPML_TM_VERSION );
 }
 
 if ( is_admin() ) {

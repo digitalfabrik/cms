@@ -18,6 +18,12 @@ if ( ! defined( 'ICL_PLUGIN_INACTIVE' ) ) {
 	define( 'ICL_PLUGIN_INACTIVE', false );
 }
 
+if ( defined( 'PHP_INT_MIN' ) ) {
+	define( 'WPML_PRIORITY_BEFORE_EVERYTHING', PHP_INT_MIN );
+} else {
+	define( 'WPML_PRIORITY_BEFORE_EVERYTHING', ~PHP_INT_MAX );
+}
+
 define ( 'ICL_TM_NOT_TRANSLATED', 0);
 define ( 'ICL_TM_WAITING_FOR_TRANSLATOR', 1);
 define ( 'ICL_TM_IN_PROGRESS', 2);

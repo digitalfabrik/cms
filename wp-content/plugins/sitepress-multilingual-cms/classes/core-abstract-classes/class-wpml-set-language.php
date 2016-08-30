@@ -28,6 +28,9 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 			throw new InvalidArgumentException( 'element_id and type do not match for element_id:' . $el_id . ' the database contains ' . $el_type_db . ' while this function was called with ' . $el_type );
 		}
 
+		$context = explode( '_', $el_type );
+		$context = $context[0];
+
 		$src_language_code = $src_language_code === $language_code ? null : $src_language_code;
 
 		if ( $trid ) { // it's a translation of an existing element
@@ -41,6 +44,19 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 					array( 'language_code' => $language_code ),
 					array( 'translation_id' => $translation_id )
 				);
+
+				do_action(
+					'wpml_translation_update',
+					array(
+						'type' => 'update',
+						'trid' => $trid,
+						'element_id' => $el_id,
+						'element_type' => $el_type,
+						'translation_id' => $translation_id,
+						'context' => $context
+					)
+				);
+
 			} elseif ( $el_id && (bool) ( $translation_id = $this->existing_element( $el_id, $el_type ) ) === true ) {
 				$this->change_translation_of( $trid, $el_id, $el_type, $language_code, $src_language_code );
 			} elseif ( (bool) ( $translation_id = $this->is_placeholder_update( $trid, $language_code ) ) === true ) {
@@ -49,6 +65,19 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 					array( 'element_id' => $el_id ),
 					array( 'translation_id' => $translation_id )
 				);
+
+				do_action(
+					'wpml_translation_update',
+					array(
+						'type' => 'update',
+						'trid' => $trid,
+						'element_id' => $el_id,
+						'element_type' => $el_type,
+						'translation_id' => $translation_id,
+						'context' => $context
+					)
+				);
+
 			} elseif ( (bool) ( $translation_id = $this->trid_lang_trans_id( $trid, $language_code ) ) === false ) {
 				$translation_id = $this->insert_new_row( $el_id, $trid, $el_type, $language_code, $src_language_code );
 			}
@@ -108,6 +137,19 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 				),
 				array( 'element_type' => $el_type, 'element_id' => $el_id )
 			);
+
+			$context = explode( '_', $el_type );
+
+			do_action(
+				'wpml_translation_update',
+				array(
+					'type' => 'update',
+					'trid' => $trid,
+					'element_id' => $el_id,
+					'element_type' => $el_type,
+					'context' => $context[0],
+				)
+			);
 		}
 	}
 
@@ -116,6 +158,16 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 	 * @param int    $el_id
 	 */
 	private function delete_existing_row( $el_type, $el_id ) {
+
+		$context = explode( '_', $el_type );
+		$update_args = array(
+			'element_id' => $el_id,
+			'element_type' => $el_type,
+			'context' => $context[0]
+		);
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 		$this->wpdb->query(
 			$this->wpdb->prepare(
 				"DELETE FROM {$this->wpdb->prefix}icl_translations
@@ -123,6 +175,8 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 				      AND element_id = %d",
 				$el_type,
 				$el_id ) );
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 	}
 
 	/**
@@ -156,6 +210,20 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 		}
 		$this->wpdb->insert( $this->wpdb->prefix . 'icl_translations', $new );
 		$translation_id = $this->wpdb->insert_id;
+
+		$context = explode( '_', $el_type );
+
+		do_action(
+			'wpml_translation_update',
+			array(
+				'type' => 'insert',
+				'trid' => $trid,
+				'element_id' => $el_id,
+				'element_type' => $el_type,
+				'translation_id' => $translation_id,
+				'context' => $context[0]
+			)
+		);
 
 		return $translation_id;
 	}
@@ -239,9 +307,9 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 	 * @param int    $correct_element_id
 	 */
 	private function maybe_delete_orphan( $trid, $language_code, $correct_element_id ) {
-		$translation_id = $this->wpdb->get_var(
+		$result = $this->wpdb->get_row(
 			$this->wpdb->prepare(
-				"SELECT translation_id
+				"SELECT translation_id, element_type, element_id
 				 FROM {$this->wpdb->prefix}icl_translations
 				 WHERE   trid = %d
 					AND language_code = %s
@@ -254,13 +322,29 @@ class WPML_Set_Language extends WPML_Full_Translation_API {
 			)
 		);
 
+		$translation_id = ( null != $result ? $result->translation_id : null );
+
 		if ( $translation_id ) {
+
+			$context = explode( '_', $result->element_type );
+			$update_args = array(
+				'trid' => $trid,
+				'element_id' => $result->element_id,
+				'element_type' => $result->element_type,
+				'translation_id' => $translation_id,
+				'context' => $context[0]
+			);
+
+			do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 			$this->wpdb->query(
 				$this->wpdb->prepare(
 					"DELETE FROM {$this->wpdb->prefix}icl_translations WHERE translation_id=%d",
 					$translation_id
 				)
 			);
+
+			do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 		}
 	}
 

@@ -34,9 +34,19 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 				$id
 			)
 		);
+
+		$update_args = array(
+			'element_id' => $menu_id_tt,
+			'element_type' => 'tax_nav_menu',
+			'context' => 'tax'
+		);
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 		$q          = "DELETE FROM {$this->wpdb->prefix}icl_translations WHERE element_id=%d AND element_type='tax_nav_menu' LIMIT 1";
 		$q_prepared = $this->wpdb->prepare ( $q, $menu_id_tt );
 		$this->wpdb->query ( $q_prepared );
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 	}
 
 	function wp_update_nav_menu( $menu_id, $menu_data = null ) {
@@ -79,9 +89,20 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 	public function wp_delete_nav_menu_item( $menu_item_id ) {
 		$post = get_post( $menu_item_id );
 		if ( ! empty( $post->post_type ) && $post->post_type == 'nav_menu_item' ) {
+
+			$update_args = array(
+				'element_id' => $menu_item_id,
+				'element_type' => 'post_nav_menu_item',
+				'context' => 'post'
+			);
+
+			do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 			$q          = "DELETE FROM {$this->wpdb->prefix}icl_translations WHERE element_id=%d AND element_type='post_nav_menu_item' LIMIT 1";
 			$q_prepared = $this->wpdb->prepare( $q, $menu_item_id );
 			$this->wpdb->query( $q_prepared );
+
+			do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 		}
 	}
 

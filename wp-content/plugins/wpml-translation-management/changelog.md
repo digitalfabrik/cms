@@ -1,3 +1,31 @@
+# 2.2.2
+
+## Fixes
+* [wpmlcore-3104] Fixed compatibility issue with ACF repeated fields
+* [wpmltm-1381] Fixed word count for translatable custom fields.
+* [wpmltm-1489] Resolved a compatibility issue with a change in `WP_Http` introduced in WP 4.6
+* [wpmlcore-3104] ACF Repeater subfields are now visible on edit post screen after downloading translated content with Translation Management
+* [wpmlcore-2637] Add `wpml_translate_link_targets` filter to fix links to point to translated content
+* [wpmltm-1175] Fix missing links in other posts and strings when translations return via pro translation
+* [wpmltm-1467] Fixed NextGen Gallery compatibility issue.
+* Other minor bug fixes
+
+## Features
+* [wpmltm-1241] Added button in Translation Dashboard to refresh language pairs defined in Translation Proxy
+* [wpmltm-744] Improved messages when sending jobs to Translation Proxy fails
+* [wpmltm-1204] Added UI to Multilingual Content Setup Tab to allow to scan the whole site for links that need fixing.
+* [wpmltm-1487] Added a button in WPML > TM > Translators to refresh translators data from ICanLocalize
+
+# 2.2.1.2
+ 
+## Feature
+* [wpmltm-1487] Added button to refresh data from ICanLocalize
+
+# 2.2.1.1
+ 
+## Fixes
+* [wpmltm-1487] Reduced automatic calls to ICanLocalize server to one per hour
+
 # 2.2.1
 
 ## Fixes
@@ -29,6 +57,9 @@
 ## Usability
 * [wpmltm-1442] Improved feedback message when sending jobs to a translation service fails
 * [wpmltm-1408] Improved the admin notice when the XLIFF is missing the `target` element, or the element is empty
+
+## Performances
+* [wpmlcore-2988] Removed unneeded dependencies checks in admin pages: this now runs only once and later only when activating/deactivating plugins
 
 # 2.1.7
 

@@ -35,7 +35,7 @@ $batch_id_exists = $wpdb->get_var( $sql );
 if ( ! $batch_id_exists || ! (int) $batch_id_exists ) {
 	$sql = "ALTER TABLE `{$wpdb->prefix}icl_string_translations` ADD batch_id int DEFAULT -1 NOT NULL;";
 	$wpdb->query( $sql );
-	require '3.2/wpml-upgrade-string-statuses.php';
+	require dirname( __FILE__ ) . '/3.2/wpml-upgrade-string-statuses.php';
 	update_string_statuses();
 	fix_icl_string_status();
 }

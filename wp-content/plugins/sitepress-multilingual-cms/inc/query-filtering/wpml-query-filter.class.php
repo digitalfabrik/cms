@@ -1,9 +1,9 @@
 <?php
-require 'wpml-slug-resolution.class.php';
-require 'wpml-name-query-filter.class.php';
-require 'wpml-name-query-filter-translated.class.php';
-require 'wpml-name-query-filter-untranslated.class.php';
-require 'wpml-pagename-query-filter.class.php';
+require dirname( __FILE__ ) . '/wpml-slug-resolution.class.php';
+require dirname( __FILE__ ) . '/wpml-name-query-filter.class.php';
+require dirname( __FILE__ ) . '/wpml-name-query-filter-translated.class.php';
+require dirname( __FILE__ ) . '/wpml-name-query-filter-untranslated.class.php';
+require dirname( __FILE__ ) . '/wpml-pagename-query-filter.class.php';
 
 /**
  * Class WPML_Query_Filter

@@ -1,7 +1,7 @@
 <?php
-require ICL_PLUGIN_PATH . '/inc/post-translation/wpml-post-duplication.class.php';
-require 'wpml-post-synchronization.class.php';
-require_once 'wpml-wordpress-actions.class.php';
+require dirname( __FILE__ ) . '/wpml-post-duplication.class.php';
+require dirname( __FILE__ ) . '/wpml-post-synchronization.class.php';
+require_once dirname( __FILE__ ) . '/wpml-wordpress-actions.class.php';
 
 /**
  * Class WPML_Post_Translation
@@ -162,12 +162,18 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	}
 
 	public function delete_post_translation_entry( $post_id ) {
+
+		$update_args = array( 'context' => 'post', 'element_id' => $post_id );
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 		$sql = $this->wpdb->prepare( "DELETE FROM {$this->wpdb->prefix}icl_translations
 								WHERE element_id = %d
 									AND element_type LIKE 'post%%'
 								LIMIT 1",
 		                       $post_id );
 		$res = $this->wpdb->query( $sql );
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 
 		return $res;
 	}

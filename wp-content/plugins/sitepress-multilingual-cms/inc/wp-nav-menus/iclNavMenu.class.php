@@ -487,12 +487,18 @@ class iclNavMenu extends WPML_Full_Translation_API {
         global $wpdb, $sitepress, $pagenow;        
         // deal with the case of not translated taxonomies
         // we'll assume that it's called as just a single item
-        if(!$sitepress->is_translated_taxonomy($taxonomies[0]) && 'nav_menu' != $taxonomies[0]){
+	    if ( ! $sitepress->is_translated_taxonomy( $taxonomies[0] ) && 'nav_menu' !== $taxonomies[0] ) {
             return $terms;
         }      
         
         // special case for determining list of menus for updating auto-add option
-        if($taxonomies[0] == 'nav_menu' && $args['fields'] == 'ids' && $_POST['action'] == 'update' && $pagenow=='nav-menus.php'){
+	    if ( 'nav-menus.php' === $pagenow
+	         && array_key_exists( 'fields', $args )
+	         && array_key_exists( 'action', $_POST )
+	         && 'nav_menu' === $taxonomies[0]
+	         && 'ids' === $args['fields']
+	         && 'update' === $_POST['action']
+	    ) {
             return $terms;
         }
           

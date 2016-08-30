@@ -25,6 +25,7 @@ var WPMLTranslationServicesDialog = function () {
 		var deactivateServiceLink;
 		var activateServiceLink;
 		var activateServiceImage;
+		var flushWebsiteDetailsCacheLink;
 
 		var header = tm_ts_data.strings.header;
 		var tip = tm_ts_data.strings.tip;
@@ -38,6 +39,7 @@ var WPMLTranslationServicesDialog = function () {
 		deactivateServiceLink = jQuery('.js-deactivate-service');
 		authenticateServiceLink = jQuery('.js-authenticate-service');
 		invalidateServiceLink = jQuery('.js-invalidate-service');
+		flushWebsiteDetailsCacheLink = jQuery('.js-flush-website-details-cache');
 
 		activateServiceImage.bind('click', function (event) {
 			var link;
@@ -80,6 +82,15 @@ var WPMLTranslationServicesDialog = function () {
 			button = jQuery(this);
 			serviceId = jQuery(this).data('id');
 			self.translationServiceAuthentication(serviceId, button, 1);
+
+			return false;
+		});
+
+		flushWebsiteDetailsCacheLink.on('click', function (event) {
+			var anchor = jQuery(this);
+			self.preventEventDefault(event);
+
+			self.flushWebsiteDetailsCache(anchor);
 
 			return false;
 		});
@@ -296,6 +307,31 @@ var WPMLTranslationServicesDialog = function () {
 		});
 	};
 
+	self.flushWebsiteDetailsCache = function (anchor) {
+		var nonce = anchor.data('nonce');
+
+		self.ajaxSpinner.appendTo(anchor);
+		self.ajaxSpinner.addClass('is-activve');
+
+		if (nonce) {
+			jQuery.ajax({
+										type:     "POST",
+										url:      ajaxurl,
+										data:     {
+											'action': 'wpml-flush-website-details-cache',
+											'nonce':  nonce
+										},
+										dataType: 'json',
+										success:  function (response) {
+											self.ajaxSpinner.removeClass('is-activve');
+											if (response.success) {
+												/** @namespace response.redirectTo */
+												location.reload(response.data.redirectTo);
+											}
+										}
+									});
+		}
+	};
 };
 
 jQuery(document).ready(function () {
