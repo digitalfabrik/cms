@@ -1,6 +1,6 @@
 <?php
-require 'wpml-redirection.class.php';
-require ICL_PLUGIN_PATH . '/inc/request-handling/redirection/wpml-redirect-by-param.class.php';
+require dirname( __FILE__ ) . '/wpml-redirection.class.php';
+require dirname( __FILE__ ) . '/wpml-redirect-by-param.class.php';
 
 /**
  *

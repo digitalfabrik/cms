@@ -95,7 +95,7 @@ abstract class WPML_Element_Translation extends WPML_WPDB_User {
 	}
 
 	/**
-	 * @param $element_id
+	 * @param int $element_id
 	 *
 	 * @return null|string
 	 */

@@ -78,4 +78,39 @@ class WP_Installer_API{
 
     }
 
+    /**
+     * Retrieve the translation services client id for a specific repository (if any)
+     *
+     * @since 1.7.9
+     *
+     * @param string The repository id (e.g. wpml)
+     * @return string The client id or false
+     */
+    public static function get_ts_client_id( $repository_id = 'wpml' ){
+
+        if(isset(WP_Installer()->settings['repositories'][$repository_id]['ts_info']['client_id'])){
+            return WP_Installer()->settings['repositories'][$repository_id]['ts_info']['client_id'];
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Retrieve the site key corresponding to a repository.
+     * This is a wrapper of WP_Installer::get_site_key()
+     * @see WP_Installer::get_site_key()
+     *
+     * @since 1.7.9
+     *
+     * @param string The repository id (e.g. wpml)
+     * @return string The site key (or false)
+     */
+    public static function get_site_key( $repository_id = 'wpml' ){
+
+        return WP_Installer()->get_site_key( $repository_id );
+
+    }
+
+
 }

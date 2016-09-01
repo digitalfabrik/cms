@@ -254,10 +254,15 @@ class WPML_Post_Synchronization extends WPML_SP_And_PT_User {
 			if ( $new_source_lang_code ) {
 				global $wpdb;
 
-				$wpdb->update( $wpdb->prefix . 'icl_translations',
+				$rows_updated = $wpdb->update( $wpdb->prefix . 'icl_translations',
 				               array( 'source_language_code' => $new_source_lang_code ),
 				               array( 'trid' => $trid, 'source_language_code' => $removed_lang_code )
 				);
+
+				if( 0 < $rows_updated ) {
+					do_action( 'wpml_translation_update', array( 'trid' => $trid ) );
+				}
+
 				$wpdb->query( "	UPDATE {$wpdb->prefix}icl_translations
 								SET source_language_code = NULL
 								WHERE language_code = source_language_code" );

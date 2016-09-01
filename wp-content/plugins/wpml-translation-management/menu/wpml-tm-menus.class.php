@@ -144,8 +144,13 @@ class WPML_TM_Menus
 
     private function build_mcs_item()
     {
+	    global $sitepress;
+
         $this->tab_items['mcsetup']['caption'] = __('Multilingual Content Setup', 'wpml-translation-management');
-        //$this->tab_items['mcsetup']['target'] = $this->build_tab_item_target_url('/sub/mcsetup.php');
+	    $translate_link_targets = new WPML_Translate_Link_Target_Global_State( $sitepress );
+	    if ( $translate_link_targets->is_rescan_required() ) {
+		    $this->tab_items['mcsetup']['caption'] = '<i class="otgs-ico-warning"></i>' . $this->tab_items['mcsetup']['caption'];
+	    }
         $this->tab_items['mcsetup']['callback'] = array($this, 'build_content_mcs');
     }
 
@@ -535,9 +540,29 @@ class WPML_TM_Menus
          *
          * @uses TranslationManagement
          */
-        global $sitepress, $iclTranslationManagement;
+        global $sitepress, $iclTranslationManagement, $wpdb, $ICL_Pro_Translation;
 
-	      $doc_translation_method = isset($iclTranslationManagement->settings['doc_translation_method']) ? (int)$iclTranslationManagement->settings['doc_translation_method'] : ICL_TM_TMETHOD_MANUAL;
+
+	    $doc_translation_method = isset($iclTranslationManagement->settings['doc_translation_method']) ? (int)$iclTranslationManagement->settings['doc_translation_method'] : ICL_TM_TMETHOD_MANUAL;
+
+	    $translate_link_targets_ui = new WPML_Translate_Link_Targets_UI(
+		    'ml-content-setup-sec-10',
+		    __( 'Translate Link Targets', 'wpml-translation-management' ),
+		    $wpdb,
+		    $sitepress,
+		    $ICL_Pro_Translation
+	    );
+
+	    $translate_link_targets = new WPML_Translate_Link_Target_Global_State( $sitepress );
+	    if ( $translate_link_targets->is_rescan_required() ) {
+		    ?>
+			    <div class="update-nag">
+				    <p><i class="otgs-ico-warning"></i> <?php echo esc_html__( 'There is new translated content on this site. You can scan posts and strings to adjust links to point to translated content.', 'wpml-translation-management' ); ?></p>
+				    <p><?php $translate_link_targets_ui->render_top_link(); ?></p>
+			    </div>
+		    <?php
+	    }
+
 
         ?>
 
@@ -587,6 +612,9 @@ class WPML_TM_Menus
                     <a href="#ml-content-setup-sec-9"><?php _e('Admin Strings to Translate', 'wpml-translation-management'); ?></a>
                 </li>
             <?php endif; ?>
+	        <li>
+	            <?php $translate_link_targets_ui->render_top_link(); ?>
+	        </li>
         </ul>
 
         <div class="wpml-section wpml-section-notice">
@@ -705,7 +733,7 @@ class WPML_TM_Menus
                             </li>
                         </ul>
                         <p class="explanation-text">
-                            <?php _e("Choose if translations should be published when received. Note: If Publish is selected, the translation will only be published if the original node is published when the translation is received.", 'wpml-translation-management') ?>
+                            <?php _e( 'Choose if translations should be published when received. Note: If Publish is selected, the translation will only be published if the original document is published when the translation is received.', 'wpml-translation-management') ?>
                         </p>
                     </div>
 
@@ -850,7 +878,11 @@ class WPML_TM_Menus
     <?php
 
     endif;
+
+	    $translate_link_targets_ui->render();
+
 	    wp_enqueue_script( 'wpml-tm-mcs' );
+	    wp_enqueue_script( 'wpml-tm-mcs-translate-link-targets' );
     }
 
 	private function build_content_mcs_custom_fields() {
@@ -1454,7 +1486,6 @@ class WPML_TM_Menus
         } else {
             $this->odd_row = false;
             wp_nonce_field( 'save_translator_note_nonce', '_icl_nonce_stn_' );
-            require WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard-document-row.class.php';
             $odd_row          = true;
             $active_languages = $this->translation_filter[ 'to_lang' ]
                 ? array( $this->translation_filter[ 'to_lang' ] => $this->active_languages[ $this->translation_filter[ 'to_lang' ] ] )

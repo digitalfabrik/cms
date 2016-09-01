@@ -41,7 +41,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
             <div id="icl-your-translators">
             <?php
 
-            if ( $active_service && TranslationProxy::translator_selection_available() ) {
+	        if ( $this->translation_service_has_translators( $active_service ) ) {
                 if ( $only_local_translators ) {
                     $translation_dashboard_url = "admin.php?page=" . WPML_TM_FOLDER . "/menu/main.php&sm=dashboard";
                     $translation_dashboard_link = sprintf( '<a href="%s">' . __( 'Translation Dashboard',
@@ -386,6 +386,9 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
 			if ( !TranslationProxy::get_tp_default_suid()) {
 				echo $this->wpml_refresh_translation_services_button();
 			}
+			if ( $this->translation_service_has_translators( $active_service ) ) {
+				echo $this->flush_website_details_cache_button();
+			}
             if(!$has_errors) {
                 ?>
                 <div class="icl-current-service">
@@ -631,4 +634,22 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
 
         return $languages = apply_filters( 'wpml_tm_allowed_source_languages', $this->sitepress->get_active_languages() );
     }
+
+	private function flush_website_details_cache_button() {
+		$ts_name   = TranslationProxy::get_current_service_name();
+		$link_text = sprintf( __( 'Refresh Translators data from %s', 'wpml-translation-management' ), $ts_name );
+
+		$nonce = wp_create_nonce( 'wpml-flush-website-details-cache' );
+
+		return '<a href="#" data-nonce="' . $nonce . '" type="submit" class="button secondary js-flush-website-details-cache">' . $link_text . ' &raquo;</a>' . PHP_EOL;
+	}
+
+	/**
+	 * @param $active_service
+	 *
+	 * @return bool
+	 */
+	private function translation_service_has_translators( $active_service ) {
+		return $active_service && TranslationProxy::translator_selection_available();
+	}
 }

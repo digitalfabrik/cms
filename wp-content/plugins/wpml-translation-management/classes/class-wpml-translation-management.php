@@ -15,20 +15,34 @@ class WPML_Translation_Management extends WPML_SP_User {
 	private $tm_queue;
 	private $wpml_tm_menus;
 
+	/** @var WPML_Ajax_Route $ajax_route */
+	private $ajax_route;
+
+	/**
+	 * @var WPML_TP_Translator
+	 */
+	private $wpml_tp_translator;
+
 	/**
 	 * WPML_Translation_Management constructor.
 	 *
-	 * @param WPML_TM_Loader        $tm_loader
-	 * @param SitePress             $sitepress
+	 * @param SitePress $sitepress
+	 * @param WPML_TM_Loader $tm_loader
 	 * @param TranslationManagement $tm_instance
-	 *
+	 * @param WPML_TP_Translator $wpml_tp_translator
 	 */
-	function __construct( &$sitepress, &$tm_loader, &$tm_instance ) {
+	function __construct( &$sitepress, &$tm_loader, &$tm_instance, WPML_TP_Translator &$wpml_tp_translator = null ) {
 		parent::__construct( $sitepress );
+		global $wpdb;
 
 		$this->tm_loader     = &$tm_loader;
 		$this->tm_instance   = &$tm_instance;
 		$this->wpml_tm_menus = new WPML_TM_Menus();
+		$this->wpml_tp_translator = $wpml_tp_translator;
+		if ( null === $this->wpml_tp_translator ) {
+			$this->wpml_tp_translator = new WPML_TP_Translator();
+		}
+		$this->ajax_route    = new WPML_Ajax_Route( new WPML_TM_Ajax_Factory( $wpdb, $sitepress, $_POST ) );
 	}
 
 	function load() {
@@ -87,10 +101,11 @@ class WPML_Translation_Management extends WPML_SP_User {
 			add_action( 'wp_ajax_icl_pickup_translations', 'icl_pickup_translations' );
 			add_action( 'wp_ajax_icl_pickup_translations_complete', 'icl_pickup_translations_complete' );
 			add_action( 'wp_ajax_icl_get_blog_users_not_translators', 'icl_get_blog_users_not_translators' );
-			add_action( 'wp_ajax_get_translator_status', array('TranslationProxy_Translator', 'get_translator_status_ajax') );
+			add_action( 'wp_ajax_get_translator_status', array( 'TranslationProxy_Translator', 'get_translator_status_ajax' ) );
+			add_action( 'wp_ajax_wpml-flush-website-details-cache', array( 'TranslationProxy_Translator', 'flush_website_details_cache_action' ) );
 			add_action( 'wpml_updated_translation_status', array( 'TranslationProxy_Batch', 'maybe_assign_generic_batch' ),  10, 2 );
-			add_action('init', array($this, 'handle_notices_action'));
-			do_action('wpml_tm_init');
+			add_action( 'init', array($this, 'handle_notices_action' ) );
+			do_action( 'wpml_tm_init' );
 			if ( $pagenow != 'customize.php' ) { // stop TM scripts from messing up theme customizer
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 				add_action( 'admin_print_styles', array( $this, 'admin_print_styles' ), 11 );
@@ -100,7 +115,6 @@ class WPML_Translation_Management extends WPML_SP_User {
 			add_action( 'admin_menu', array( $this, 'menu' ) );
 			add_action( 'admin_menu', array( $this, 'menu_fix_order' ), 999 ); // force 'Translations' at the end
 			add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
-			add_action( 'icl_dashboard_widget_content_top', array( $this, 'icl_dashboard_widget_content' ) );
 
 			if ( $this->sitepress->get_wp_api()->is_translation_queue_page() ) {
 				//  Use WP_Table_List class to get standard WP pagination links
@@ -526,28 +540,6 @@ class WPML_Translation_Management extends WPML_SP_User {
         exit;
     }
 
-    function icl_dashboard_widget_content(){
-        global $wpdb;
-
-        $docs_sent = 0;
-        $docs_completed = 0;
-        $docs_waiting = 0;
-        $docs_statuses = $wpdb->get_results($wpdb->prepare("SELECT status FROM {$wpdb->prefix}icl_translation_status WHERE status > %d", ICL_TM_NOT_TRANSLATED));
-			foreach ( $docs_statuses as $doc_status ) {
-				if ( in_array( $doc_status->status, array( ICL_TM_COMPLETE, ICL_TM_WAITING_FOR_TRANSLATOR , ICL_TM_IN_PROGRESS) ) ) {
-					$docs_sent += 1;
-					if ( $doc_status->status == ICL_TM_COMPLETE ) {
-						$docs_completed += 1;
-					} elseif ( $doc_status->status == ICL_TM_WAITING_FOR_TRANSLATOR
-										 || $doc_status->status == ICL_TM_IN_PROGRESS
-					) {
-						$docs_waiting += 1;
-					}
-				}
-        }
-        include WPML_TM_PATH . '/menu/_icl_dashboard_widget.php';
-    }
-
     function plugin_action_links($links, $file){
         $this_plugin = basename(WPML_TM_PATH) . '/plugin.php';
         if($file == $this_plugin) {
@@ -637,8 +629,18 @@ class WPML_Translation_Management extends WPML_SP_User {
 		$this->automatic_service_selection();
 	}
 
+	/**
+	 * Handles the display of notices in the TM translators tab
+	 */
 	public function handle_notices_action() {
-		$this->handle_notices();
+		if ( $this->sitepress->get_wp_api()->is_back_end() && $this->sitepress->get_wp_api()->is_tm_page() ) {
+			$lang_status = $this->wpml_tp_translator->get_icl_translator_status();
+			if ( $lang_status ) {
+				$this->sitepress->save_settings( $lang_status );
+			}
+
+			$this->service_authentication_notice();
+		}
 	}
 
 	public function basket_extra_fields_refresh() {
@@ -693,8 +695,8 @@ class WPML_Translation_Management extends WPML_SP_User {
 	}
 
 	private function service_has_accepted_translators() {
-		$result = false;
-		$icl_data = TranslationProxy_Translator::get_icl_translator_status();
+		$result   = false;
+		$icl_data = $this->wpml_tp_translator->get_icl_translator_status();
 		if ( isset( $icl_data[ 'icl_lang_status' ] ) && is_array( $icl_data[ 'icl_lang_status' ] ) ) {
 			foreach ( $icl_data[ 'icl_lang_status' ] as $translator ) {
 				if ( isset( $translator[ 'contract_id' ] ) && $translator[ 'contract_id' ] != 0 ) {
@@ -713,7 +715,7 @@ class WPML_Translation_Management extends WPML_SP_User {
 			$current_service_name = TranslationProxy::get_current_service_name();
 
 			if ( $this->is_translators_tab() ) {
-				if ( $this->service_requires_translators() && $current_service_name == 'ICanLocalize' ) {
+				if ( $this->service_requires_translators() && 'ICanLocalize' === $current_service_name ) {
 					$message     = __( 'You selected %1$s as your translation service. Next, you need to add translators from %1$s to your site. Click on the "Add translators" button. Select the source and target language and choose %1$s as the source of the translator. You can add different translators between different languages.', 'wpml-translation-management' );
 					$button_text = __( 'Getting started with ICanLocalize', 'wpml-translation-management' );
 					$button_url  = 'https://wpml.org/translation-service/icanlocalize/';
@@ -862,21 +864,5 @@ class WPML_Translation_Management extends WPML_SP_User {
 		}
 
 		wp_cache_set('done', true, 'automatic_service_selection');
-	}
-
-	/**
-	 * Handles the display of notices in the TM translators tab
-	 */
-	private function handle_notices() {
-		global $sitepress;
-
-		$lang_status = TranslationProxy_Translator::get_icl_translator_status();
-		if ( ! empty( $lang_status ) ) {
-			$sitepress->save_settings( $lang_status );
-		}
-
-		if ( ! defined( 'DOING_AJAX' ) ) {
-			$this->service_authentication_notice();
-		}
 	}
 }

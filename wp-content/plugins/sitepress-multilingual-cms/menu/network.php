@@ -64,7 +64,7 @@ $text = isset($text) ? $text : '';
     <?php $wp_list_table->pagination( 'bottom' ); ?>
     </div>
     
-    <table class="widefat">
+    <table class="wp-list-table widefat">
         <thead>
             <tr>
                 <th><?php _e('Site', 'sitepress'); ?></th>
@@ -87,15 +87,19 @@ $text = isset($text) ? $text : '';
                 'deleted'  => array( 'site-deleted', __( 'Deleted' ) ),
                 'mature'   => array( 'site-mature', __( 'Mature' ) )
             );        
-            $class = '';                    
-        ?>
-        <?php foreach($wp_list_table->items as $blog):?>
-        <?php 
+            $class = '';
+
+        foreach( $wp_list_table->items as $blog ):
+
+            if ( class_exists( 'WP_Site' ) && $blog instanceof WP_Site ) {
+                $blog = object_to_array( $blog );
+            }
+
             $class = ( 'alternate' == $class ) ? '' : 'alternate';
             
             $blog_states = array();
             foreach ( $status_list as $status => $col ) {
-                if ( get_blog_status( $blog['blog_id'], $status ) == 1 ) {
+                if ( 1 === get_blog_status( $blog['blog_id'], $status ) ) {
                     $class = $col[0];
                     $blog_states[] = $col[1];
                 }
@@ -133,7 +137,7 @@ $text = isset($text) ? $text : '';
                         $actions['visit']    = "<span class='view'><a href='" . esc_url( get_home_url( $blog['blog_id'] ) ) . "' rel='permalink'>" . __( 'Visit', 'sitepress' ) . '</a></span>';
 
                         $actions = apply_filters( 'manage_sites_action_links', array_filter( $actions ), $blog['blog_id'], $blogname );
-                        echo $wp_list_table->row_actions( $actions );                    
+                        echo $wp_list_table->row_actions( $actions );
                     ?>
                 </td>
                 <td>

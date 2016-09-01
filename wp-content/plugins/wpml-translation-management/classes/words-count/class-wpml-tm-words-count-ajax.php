@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TM_Words_Count_AJAX extends WPML_TM_AJAX_Factory {
+class WPML_TM_Words_Count_AJAX extends WPML_TM_AJAX_Factory_Obsolete {
 	/**
 	 * @var WPML_TM_Words_Count
 	 */

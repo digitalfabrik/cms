@@ -100,7 +100,9 @@ class WPML_Admin_Post_Actions extends  WPML_Post_Translation {
 		if ( isset( $post_vars['icl_tn_note'] ) ) {
 			update_post_meta( $post_id, '_icl_translator_note', $post_vars['icl_tn_note'] );
 		}
+		$save_filter_action_state = new WPML_WP_Filter_State( 'save_post' );
 		$this->after_save_post( $trid, $post_vars, $language_code, $source_language );
+		$save_filter_action_state->restore();
 	}
 
 	/**

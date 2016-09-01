@@ -1,3 +1,41 @@
+# 3.5.1.1
+
+# Fixes
+* [wpmlcore-3303] Removed updating of ST DB Cache tables: moved to ST plugin, to avoid dependency issues
+
+# 3.5.1
+
+# Fixes
+* [wpmlcore-3280] Fixed `Fatal error: Uncaught exception 'InvalidArgumentException' with message 'Argument ID must be numeric and greater than 0` when filtering permalinks
+* [wpmlcore-3272] Fixed `Fatal error: Declaration of WPML_Post_Element::get_type() must be compatible with that of WPML_Translation_Element::get_type()` for PHP 5.2
+* [wpmlst-881] Removed leading backslash `\` to avoid warnings in PHP <5.3
+* [wpmlcore-3278] Fixed fatal error appearing during upgrade: `WordPress database error: specified key was too long; max key length is 1000`
+* [wpmlcore-3273] Fixed uncaught exception in cases where `domain_name_context_md5` column didn't exist in `icl_strings` table
+* [wpmlcore-3291] Improved query validation used for caching strings
+* [wpmlst-888] Improved caching of strings per page, update of db structure.
+
+# 3.5.0
+
+## Fixes
+* [wpmlcore-2590] Fix conversion to absolute link when link is to a post in another language
+* [wpmlcore-2937] Fixed multisite so that links to posts on sub-sites are correct
+* [wpmlcore-2952] Canonical for non translated post types must always be the "default language" URL
+* [wpmlcore-2631] Fixed XML-RPC API calls to set the language of a newly created post (e.g. `metaWeblog.newPost`, `wp.newPost`, and `wp.newPage`).
+* [wpmlcore-3081] Duplicated content will use the same canonical for all all languages
+* [wpmlsl-28] Fix sticky links so that the correct link is used when the same slug is used in different languages
+* [wpmlsl-32] Fix sticky links so that they convert correctly when the current post has duplicates
+* [wpmlcore-1761] Fix notice when no field is specified in tax_query when getting posts.
+* Other minor bug fixes
+
+## Performances
+* [wpmlcore-3172] Reduce SQL queries when checking if site uses ICanLocalize translation services previous to WPML 3.2
+* [wpmlcore-3197] Removed the WPML Dashboard Widget to avoid unnecessary calls.
+
+# 3.4.1.1
+ 
+## Fixes
+* [wpmltm-1487] Reduced automatic calls to ICanLocalize server to one per hour
+
 # 3.4.1
 
 ## Fixes

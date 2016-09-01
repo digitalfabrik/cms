@@ -125,11 +125,29 @@ class WPML_Post_Comments extends WPML_WPDB_User {
 		$comment_ids      = $results[ 0 ];
 		$deleted_comments = 0;
 		if ( $comment_ids ) {
-			$comment_ids = implode( ',', $comment_ids );
-			$post_ids = $this->get_post_ids_from_comments_ids( $comment_ids );
-			$deleted_comments += $this->wpdb->query( "DELETE FROM {$this->wpdb->comments} WHERE comment_ID IN( {$comment_ids} )" );
-			$this->wpdb->query( "DELETE FROM {$this->wpdb->commentmeta} WHERE comment_ID IN( {$comment_ids} )" );
-			$this->wpdb->query( "DELETE FROM {$this->wpdb->prefix}icl_translations WHERE element_id IN( {$comment_ids} ) AND element_type = 'comment'" );
+			$comment_ids_flat = implode( ',', $comment_ids );
+			$post_ids = $this->get_post_ids_from_comments_ids( $comment_ids_flat );
+			$deleted_comments += $this->wpdb->query( "DELETE FROM {$this->wpdb->comments} WHERE comment_ID IN( {$comment_ids_flat} )" );
+			$this->wpdb->query( "DELETE FROM {$this->wpdb->commentmeta} WHERE comment_ID IN( {$comment_ids_flat} )" );
+
+			$update_arg_set = array();
+			foreach( $comment_ids as $comment_id ) {
+				$update_args = array(
+					'element_id' => $comment_id,
+					'element_type' => 'comment',
+					'context' => 'comment'
+				);
+
+				$update_arg_set[] = $update_args;
+
+				do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+			}
+
+			$this->wpdb->query( "DELETE FROM {$this->wpdb->prefix}icl_translations WHERE element_id IN( {$comment_ids_flat} ) AND element_type = 'comment'" );
+
+			foreach( $update_arg_set as $update_args ) {
+				do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
+			}
 
 			$this->update_comments_count( $post_ids );
 		}

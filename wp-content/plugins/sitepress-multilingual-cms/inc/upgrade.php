@@ -93,32 +93,33 @@ function icl_plugin_upgrade(){
         $wpdb->query($sql);
     }
     
-		$versions = array(
-			'2.0.5',
-			'2.2.2',
-			'2.3.0',
-			'2.3.1',
-			'2.3.3',
-			'2.4.0',
-			'2.5.0',
-			'2.5.2',
-			'2.6.0',
-			'2.7'  ,
-			'2.9'  ,
-			'2.9.3',
-			'3.1'  ,
-			'3.1.5',
-			'3.1.8',
-			'3.1.9.5',
-			'3.2',
-			'3.2.3',
-			'3.3',
-			'3.3.7',
-		);
-    
-		foreach($versions as $version) {
-			icl_upgrade_version( $version );
-		}
+	$versions = array(
+		'2.0.5',
+		'2.2.2',
+		'2.3.0',
+		'2.3.1',
+		'2.3.3',
+		'2.4.0',
+		'2.5.0',
+		'2.5.2',
+		'2.6.0',
+		'2.7'  ,
+		'2.9'  ,
+		'2.9.3',
+		'3.1'  ,
+		'3.1.5',
+		'3.1.8',
+		'3.1.9.5',
+		'3.2',
+		'3.2.3',
+		'3.3',
+		'3.3.7',
+		'3.5.1',
+	);
+
+	foreach($versions as $version) {
+		icl_upgrade_version( $version );
+	}
     
 	//Forcing upgrade logic when ICL_SITEPRESS_DEV_VERSION is defined
 	//This allow to run the logic between different alpha/beta/RC versions
@@ -130,6 +131,8 @@ function icl_plugin_upgrade(){
     if(version_compare(get_option('icl_sitepress_version'), ICL_SITEPRESS_VERSION, '<')){
         update_option('icl_sitepress_version', ICL_SITEPRESS_VERSION);
     }
+
+    do_action( 'wpml_upgraded', ICL_SITEPRESS_VERSION );
 }
 
 function icl_upgrade_version($version, $force = false){

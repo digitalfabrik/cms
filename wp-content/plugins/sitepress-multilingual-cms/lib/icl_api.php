@@ -1,13 +1,26 @@
 <?php
 class ICanLocalizeQuery{
-      private $site_id; 
-      private $access_key;
-      private $error = null;
 
-      function __construct($site_id=null, $access_key=null){             
-            $this->site_id = $site_id;
-            $this->access_key = $access_key;
-      } 
+	private $site_id;
+	private $access_key;
+	private $error = null;
+	private $sitepress;
+	private $wpml_icl_client;
+
+	const WEBSITE_DETAILS_TRANSIENT_KEY = 'wpml_icl_query_website_details';
+
+	function __construct( $site_id = null, $access_key = null, SitePress $sitepress = null, $wpml_icl_client = null ) {
+		$this->site_id    = $site_id;
+		$this->access_key = $access_key;
+		if ( null === $sitepress ) {
+			global $sitepress;
+		}
+		$this->sitepress = $sitepress;
+		if ( null === $wpml_icl_client ) {
+			$wpml_icl_client = new WPML_ICL_Client( $this->sitepress );
+		}
+		$this->wpml_icl_client = $wpml_icl_client;
+	}
       
       public function setting($setting){
           return $this->$setting;
@@ -29,86 +42,35 @@ class ICanLocalizeQuery{
     }
 
 	/**
+	 * @param bool $force
+	 *
 	 * @return array of website details returned from a direct API call to ICL
 	 */
-	function get_website_details() {
-		global $sitepress;
+	function get_website_details( $force = false ) {
+		$res = $this->sitepress->get_wp_api()->get_transient( self::WEBSITE_DETAILS_TRANSIENT_KEY );
 
-		$website_details_cache_index = '_last_valid_icl_website_details';
-		$request_url                 = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '.xml?accesskey=' . $this->access_key;
-		$res                         = $this->_request( $request_url );
-		if ( isset( $res['info']['website'] ) ) {
-			$res = $res['info']['website'];
-			$sitepress->set_setting( $website_details_cache_index, $res, true );
-		} else {
-			$res = $sitepress->get_setting( $website_details_cache_index, array() );
+		if ( ! $res || $force ) {
+			$website_details_cache_index = '_last_valid_icl_website_details';
+			$request_url                 = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '.xml?accesskey=' . $this->access_key;
+			$res                         = $this->_request( $request_url );
+			if ( isset( $res['info']['website'] ) ) {
+				$res = $res['info']['website'];
+				$this->sitepress->set_setting( $website_details_cache_index, $res, true );
+			} else {
+				$res = $this->sitepress->get_setting( $website_details_cache_index, array() );
+			}
+			$this->sitepress->get_wp_api()->set_transient( self::WEBSITE_DETAILS_TRANSIENT_KEY, $res, DAY_IN_SECONDS );
 		}
-
 		return $res;
 	}
     
     function _request($request, $method='GET', $formvars=null, $formfiles=null, $gzipped = false){
-        global $sitepress_settings;
-        $request = str_replace(" ", "%20", $request);
-        $c = new IcanSnoopy();
-        
-        $debugvars =  array(
-            'debug_cms' => 'WordPress',
-            'debug_module' => 'WPML ' . ICL_SITEPRESS_VERSION,
-            'debug_url'     => get_bloginfo('url')
-        );
-        
-        if($method == 'GET'){
-            $request .= '&' . http_build_query($debugvars);    
-        }else{
-            $formvars += $debugvars;
-        }
-        
-        // disable error reporting
-        // needed for open_basedir restrictions (is_readable)
-        $_display_errors = ini_get('display_errors');
-        $_error_reporting = ini_get('error_reporting');
-        ini_set('display_errors', '0');        
-        ini_set('error_reporting', 0);        
-        
-        if (!@is_readable($c->curl_path) || !@is_executable($c->curl_path)){
-            $c->curl_path = '/usr/bin/curl';
-        }        
-        
-        // restore error reporting
-        // needed for open_basedir restrictions
-        ini_set('display_errors', $_display_errors);        
-        ini_set('error_reporting', $_error_reporting);
-        
-        $c->_fp_timeout  = 3;
-        $c->read_timeout = 5;
-        if ( $sitepress_settings['troubleshooting_options']['http_communication'] ) {
-            $request = str_replace( 'https://', 'http://', $request );
-        }
-        if ( $method == 'GET' ) {
-            $c->fetch( $request );
-        } else {
-            $c->set_submit_multipart();
-            $c->submit( $request, $formvars, $formfiles );
-        }
+	    $this->wpml_icl_client->set_gzipped( $gzipped );
+	    $this->wpml_icl_client->set_method( $method );
+	    $this->wpml_icl_client->set_post_data( $formvars );
+	    $this->wpml_icl_client->set_post_files( $formfiles );
 
-        if ( $c->error || $c->timed_out ) {
-            $this->error = $c->error;
-
-            return false;
-        }
-        
-        if($gzipped){
-            $c->results = $this->_gzdecode($c->results);
-        }
-        $results = icl_xml2array($c->results,1);
-
-        if(isset($results['info']) && $results['info']['status']['attr']['err_code']=='-1'){
-            $this->error = $results['info']['status']['value'];            
-            return false;
-        }
-                
-        return $results;
+	    return $this->wpml_icl_client->request( $request );
     }
     
     function _gzdecode($data){
