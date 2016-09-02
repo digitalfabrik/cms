@@ -181,6 +181,7 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 			$res = $project->send_to_translation_batch_mode( $file, $title, $cms_id, $url, $source_language, $target_language, $word_count, $translator_id, $note, $is_update );
 		} catch ( Exception $err ) {
 			// The translation entry will be removed
+			$project->errors[] = $err;
 			$res = 0;
 		}
 

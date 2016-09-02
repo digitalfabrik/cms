@@ -6,7 +6,7 @@
  *
  */
 
-require 'wpml-taxonomy-element-language-dropdown.class.php';
+require dirname( __FILE__ ) . '/wpml-taxonomy-element-language-dropdown.class.php';
 
 global $sitepress, $wpdb;
 

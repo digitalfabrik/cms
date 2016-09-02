@@ -4,7 +4,7 @@
  * @subpackage wpml-core
  */
 
-require_once( 'translationproxy-api.class.php' );
+require_once dirname( __FILE__ ) . '/translationproxy-api.class.php';
 
 class TranslationProxy_Service {
 
@@ -16,6 +16,7 @@ class TranslationProxy_Service {
 	public $delivery_method;
 	public $project_details_url;
 	public $custom_text_url;
+	public $has_language_pairs;
 	public $languages_map;
 	public $url;
 	public $logo_url;

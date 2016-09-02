@@ -58,7 +58,17 @@ class WPML_Term_Actions extends WPML_Full_Translation_API {
 			}
 		}
 
+		$update_args = array(
+			'element_id' => $tt_id,
+			'element_type' => $icl_el_type,
+			'context' => 'tax'
+		);
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 		$this->wpdb->delete( $this->wpdb->prefix . 'icl_translations', array( 'element_type' => $icl_el_type, 'element_id' => $tt_id ) );
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 	}
 
 	/**

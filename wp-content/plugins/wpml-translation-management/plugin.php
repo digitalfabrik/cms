@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Translation Management
 Plugin URI: https://wpml.org/
-Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-2/">WPML 3.2 release notes</a>
+Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-5-0/">WPML 3.5.0 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.2.1
+Version: 2.2.2
 Plugin Slug: wpml-translation-management
 */
 
@@ -26,7 +26,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
 	}
 }
 
-define( 'WPML_TM_VERSION', '2.2.1' );
+define( 'WPML_TM_VERSION', '2.2.2' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -65,7 +65,8 @@ function wpml_tm_load_ui() {
 
 		$core_translation_management = wpml_load_core_tm();
 		$tm_loader                   = new WPML_TM_Loader();
-		$WPML_Translation_Management = new WPML_Translation_Management( $sitepress, $tm_loader, $core_translation_management );
+		$wpml_tp_translator          = new WPML_TP_Translator();
+		$WPML_Translation_Management = new WPML_Translation_Management( $sitepress, $tm_loader, $core_translation_management, $wpml_tp_translator );
 		$WPML_Translation_Management->load();
 
 		if ( is_admin() ) {
@@ -92,6 +93,9 @@ function wpml_tm_word_count_init() {
 	new WPML_TM_Words_Count_AJAX( $wpml_tm_words_count, $wpml_tm_words_count_summary, $wpml_wp_api );
 }
 
-if ( is_admin() ) {
+if ( is_admin() && isset( $GLOBALS['sitepress'] ) ) {
+	global $wpdb, $sitepress;
+	new WPML_TM_Integration( $wpdb, $sitepress );
+
 	add_action( 'wpml_tm_loaded', 'wpml_tm_word_count_init' );
 }

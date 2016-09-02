@@ -55,8 +55,7 @@ class WPML_Translation_Proxy_Networking {
 		}
 
 		WPML_TranslationProxy_Com_Log::log_call( $url, $params );
-		$api_response = $this->call_remote_api( $url, $params, $method,
-			$has_return_value );
+		$api_response = $this->call_remote_api( $url, $params, $method, $has_return_value );
 
 		if ( $has_return_value ) {
 			if ( ! isset( $api_response['headers']['content-type'] ) ) {
@@ -101,8 +100,7 @@ class WPML_Translation_Proxy_Networking {
 			'project_id'  => $project->id
 		);
 
-		return TranslationProxy_Api::proxy_request( '/projects/{project_id}/extra_fields.json',
-			$params );
+		return TranslationProxy_Api::proxy_request( '/projects/{project_id}/extra_fields.json', $params );
 	}
 
 	/**

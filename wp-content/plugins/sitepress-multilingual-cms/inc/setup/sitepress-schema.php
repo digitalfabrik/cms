@@ -43,6 +43,8 @@ function icl_reset_language_data(){
     }
 
     icl_cache_clear();
+
+	do_action( 'wpml_translation_update', array( 'type' => 'reset' ) );
 }
 
 function icl_sitepress_activate() {
@@ -370,6 +372,7 @@ function icl_sitepress_activate() {
 
 	//Set new caps for all administrator role
 	icl_enable_capabilities();
+	repair_el_type_collate();
 
 	do_action('wpml_activated');
 }

@@ -1,6 +1,6 @@
 <?php
 
-abstract class WPML_TM_AJAX_Factory {
+abstract class WPML_TM_AJAX_Factory_Obsolete {
 	protected $ajax_actions;
 
 	/**

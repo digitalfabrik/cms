@@ -35,35 +35,32 @@ class WPML_TM_Post extends WPML_TM_Translatable_Element {
 	}
 
 	private function estimate_custom_field_word_count() {
-		global $sitepress_settings;
-
-		if ( ! isset( $this->language_code ) || ! isset( $this->id ) || $this->is_registered_type() ) {
+		$sitepress_settings = $this->sitepress->get_settings();
+		if ( ! isset( $this->language_code ) || ! isset( $this->id ) || ! $this->is_registered_type() ) {
 			return 0;
 		}
 
 		$words   = 0;
 		$post_id = $this->id;
 
-		if ( ! empty( $sitepress_settings[ 'translation-management' ][ 'custom_fields_translation' ] )
-				 && is_array( $sitepress_settings[ 'translation-management' ][ 'custom_fields_translation' ] )
+		if ( ! empty( $sitepress_settings['translation-management']['custom_fields_translation'] )
+		     && is_array( $sitepress_settings['translation-management']['custom_fields_translation'] )
 		) {
 			$custom_fields = array();
-			foreach ( $sitepress_settings[ 'translation-management' ][ 'custom_fields_translation' ] as $cf => $op ) {
-				if ( $op == 2 ) {
+			foreach ( $sitepress_settings['translation-management']['custom_fields_translation'] as $cf => $op ) {
+				if ( WPML_TRANSLATE_CUSTOM_FIELD === (int) $op ) {
 					$custom_fields[] = $cf;
 				}
 			}
 			foreach ( $custom_fields as $cf ) {
 				$custom_fields_value = get_post_meta( $post_id, $cf );
-				if ( $custom_fields_value
-						 && is_scalar( $custom_fields_value )
-				) {  // only support scalar values fo rnow
+				if ( $custom_fields_value && is_scalar( $custom_fields_value ) ) {
+					// only support scalar values fo rnow
 					$words += $this->get_string_words_count( $this->language_code, $custom_fields_value );
 				} else {
 					foreach ( $custom_fields_value as $custom_fields_value_item ) {
-						if ( $custom_fields_value_item
-								 && is_scalar( $custom_fields_value_item )
-						) { // only support scalar values fo rnow
+						if ( $custom_fields_value_item && is_scalar( $custom_fields_value_item ) ) {
+							// only support scalar values fo rnow
 							$words += $this->get_string_words_count( $this->language_code, $custom_fields_value_item );
 						}
 					}

@@ -4,9 +4,9 @@
  * @subpackage wpml-core
  */
 
-require_once( 'translationproxy-api.class.php' );
-require_once( 'translationproxy-service.class.php' );
-require_once( 'translationproxy-batch.class.php' );
+require_once dirname( __FILE__ ) . '/translationproxy-api.class.php';
+require_once dirname( __FILE__ ) . '/translationproxy-service.class.php';
+require_once dirname( __FILE__ ) . '/translationproxy-batch.class.php';
 
 /**
  * Class TranslationProxy_Project
@@ -25,7 +25,7 @@ class TranslationProxy_Project {
 	public $errors;
 
 	/**
-	 * @param object $service
+	 * @param TranslationProxy_Service $service
 	 * @param string $delivery
 	 */
 	public function __construct( $service, $delivery = 'xmlrpc' ) {
@@ -94,15 +94,14 @@ class TranslationProxy_Project {
 		global $sitepress;
 
 		$networking          = wpml_tm_load_tp_networking();
-		$project_creation    = new WPML_TP_Project_Creation( $this, $sitepress,
-			$networking,
-			array(
-				'name'            => $name,
-				'description'     => $description,
-				'url'             => $url,
-				'delivery_method' => $delivery,
-				'sitekey'         => WP_Installer()->get_site_key( 'wpml' ),
-			) );
+		$project_creation    = new WPML_TP_Project_Creation( $this, $sitepress, $networking, array(
+			'name'               => $name,
+			'description'        => $description,
+			'url'                => $url,
+			'delivery_method'    => $delivery,
+			'sitekey'            => WP_Installer_API::get_site_key( 'wpml' ),
+			'client_external_id' => WP_Installer_API::get_ts_client_id(),
+		) );
 		$response_project    = $project_creation->run();
 		$this->id            = $response_project->id;
 		$this->access_key    = $response_project->accesskey;
@@ -404,8 +403,7 @@ class TranslationProxy_Project {
 			'batch_id'    => $tp_batch_id,
 		);
 
-		$response    = TranslationProxy_Api::proxy_request( '/batches/{batch_id}/commit.json',
-			$params, 'PUT', false );
+		$response    = TranslationProxy_Api::proxy_request( '/batches/{batch_id}/commit.json', $params, 'PUT', false );
 		$basket_name = TranslationProxy_Basket::get_basket_name();
 		if ( $basket_name ) {
 			global $wpdb;

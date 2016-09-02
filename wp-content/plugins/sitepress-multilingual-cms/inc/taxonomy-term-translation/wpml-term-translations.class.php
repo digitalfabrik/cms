@@ -1,5 +1,5 @@
 <?php
-require_once 'wpml-update-term-action.class.php';
+require_once dirname( __FILE__ ) . '/wpml-update-term-action.class.php';
 
 /**
  * @since      3.1.8
@@ -184,6 +184,18 @@ class WPML_Terms_Translations {
 								$new_ttid             = $wpdb->insert_id;
 								$data[ 'element_id' ] = $new_ttid;
 								$wpdb->insert( $wpdb->prefix . 'icl_translations', $data );
+
+								do_action(
+									'wpml_translation_update',
+									array(
+										'type' => 'insert',
+										'trid' => $data['trid'],
+										'element_id' => $data['element_id'],
+										'element_type' => $data['element_type'],
+										'translation_id' => $wpdb->insert_id,
+										'context' => 'tax'
+									)
+								);
 							}
 						}
 					}
@@ -284,7 +296,7 @@ class WPML_Terms_Translations {
 
 		extract( $args, EXTR_OVERWRITE );
 
-		require_once 'wpml-update-term-action.class.php';
+		require_once dirname( __FILE__ ) . '/wpml-update-term-action.class.php';
 
 		$new_term_action = new WPML_Update_Term_Action( $wpdb, $sitepress, $args );
 		$new_term        = $new_term_action->execute();

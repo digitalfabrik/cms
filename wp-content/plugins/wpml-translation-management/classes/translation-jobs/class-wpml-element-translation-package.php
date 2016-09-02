@@ -7,6 +7,17 @@
  */
 class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 
+	/** @var WPML_WP_API $wp_api */
+	private $wp_api;
+
+	public function __construct( WPML_WP_API $wp_api = null ) {
+		global $sitepress;
+		if ( $wp_api ) {
+			$this->wp_api = $wp_api;
+		} else {
+			$this->wp_api = $sitepress->get_wp_api();
+		}
+	}
 	/**
 	 * create translation package
 	 *
@@ -106,11 +117,19 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 			if ( '' === (string) $field_name ) {
 				continue;
 			}
-				// find it in the translation
-				foreach ( $job->elements as $el_data ) {
-					if ( strpos( $el_data->field_data, (string) $field_name ) === 0
-					     && preg_match( "/field-(.*?)-name/", $el_data->field_type, $match ) === 1
-					) {
+
+			// find it in the translation
+			foreach ( $job->elements as $el_data ) {
+				if ( strpos( $el_data->field_data, (string) $field_name ) === 0
+				     && preg_match( "/field-(.*?)-name/", $el_data->field_type, $match ) === 1
+				) {
+					if ( preg_match( "/field-(.*?)-([0-9]*?)-name/", $el_data->field_type, $match_with_index ) ) {
+						$match_without_index = $match_with_index[1];
+					} else  {
+						$match_without_index = $match[1];
+					}
+
+					if ( $field_name == $match_without_index ) {
 						$field_names[ $field_name ] = isset( $field_names[ $field_name ] )
 								? $field_names[ $field_name ] : array();
 						$field_id_string            = $match[1];
@@ -131,14 +150,15 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 							$field_translation = str_replace( '&#0A;', "\n", $field_translation );
 							// always decode html entities  eg decode &amp; to &
 							$field_translation = html_entity_decode( $field_translation );
-							$field_names = $this->insert_under_keys(
-									array_merge( array( $field_name ),
-											explode( '-', preg_replace( '#' . $field_name . '-?#', '', $field_id_string ) )
-									), $field_names, $field_translation );
+							$field_names       = $this->insert_under_keys(
+								array_merge( array( $field_name ),
+									explode( '-', preg_replace( '#' . $field_name . '-?#', '', $field_id_string ) )
+								), $field_names, $field_translation );
 						}
 					}
 				}
 			}
+		}
 
 		$this->save_custom_field_values( $field_names, $post_id );
 	}
@@ -167,11 +187,11 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 
 	private function save_custom_field_values( $fields_in_job, $post_id ) {
 		foreach ( $fields_in_job as $name => $contents ) {
-			delete_post_meta( $post_id, $name );
+			$this->wp_api->delete_post_meta( $post_id, $name );
 			$single   = count( $contents ) === 1;
 			$contents = (array) $contents;
 			foreach ( $contents as $val ) {
-				add_post_meta( $post_id, $name, $val, $single );
+				$this->wp_api->add_post_meta( $post_id, $name, $val, $single );
 			}
 		}
 	}

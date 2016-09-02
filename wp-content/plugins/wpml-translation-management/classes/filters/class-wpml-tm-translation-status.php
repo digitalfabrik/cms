@@ -3,6 +3,12 @@
 class WPML_TM_Translation_Status extends WPML_TM_Record_User {
 
 	private $element_id_cache;
+	private $wpml_cache;
+
+	public function __construct( WPML_TM_Records $tm_records ) {
+		parent::__construct( $tm_records );
+		$this->wpml_cache = new WPML_WP_Cache( 'element_translations' );
+	}
 
 	public function init() {
 		add_filter(
@@ -11,35 +17,35 @@ class WPML_TM_Translation_Status extends WPML_TM_Record_User {
 			1,
 			4
 		);
-		add_action('wpml_cache_clear', array($this, 'reload'));
+		add_action( 'wpml_cache_clear', array( $this, 'reload' ) );
 	}
 
 	public function filter_translation_status( $status, $trid, $target_lang_code ) {
 		/** @var WPML_TM_Element_Translations $wpml_tm_element_translations */
 		global $wpml_tm_element_translations;
 
-		if ( $trid ) {
-			$element_ids         = array_filter( $this->get_element_ids( $trid ) );
-			$element_type_prefix = $wpml_tm_element_translations->get_element_type_prefix( $trid, $target_lang_code );
-			foreach ( $element_ids as $id ) {
-				if ( $this->is_in_basket( $id, $target_lang_code, $element_type_prefix ) ) {
-					$status = ICL_TM_IN_BASKET;
-					break;
-				} elseif ( (bool) ( $job_status = $this->is_in_active_job(
-						$id,
-						$target_lang_code,
-						$element_type_prefix,
-						true
-					) ) !== false
-				) {
-					$status = $job_status;
-					break;
+		$cache_key = md5( $trid . $target_lang_code );
+		$found = false;
+		$status = $this->wpml_cache->get( $cache_key, $found );
+		if ( false === $found ) {
+			if ( $trid ) {
+				$element_ids         = array_filter( $this->get_element_ids( $trid ) );
+				$element_type_prefix = $wpml_tm_element_translations->get_element_type_prefix( $trid, $target_lang_code );
+				foreach ( $element_ids as $id ) {
+					if ( $this->is_in_basket( $id, $target_lang_code, $element_type_prefix ) ) {
+						$status = ICL_TM_IN_BASKET;
+						break;
+					} elseif ( $job_status = $this->is_in_active_job( $id, $target_lang_code, $element_type_prefix, true ) ) {
+						$status = $job_status;
+						break;
+					}
 				}
+				$status = ICL_TM_IN_BASKET !== $status && $wpml_tm_element_translations->is_update_needed( $trid, $target_lang_code )
+					? ICL_TM_NEEDS_UPDATE
+					: $status;
 			}
-			$status = $status != ICL_TM_IN_BASKET && $wpml_tm_element_translations->is_update_needed( $trid,
-				$target_lang_code )
-				? ICL_TM_NEEDS_UPDATE
-				: $status;
+
+			$this->wpml_cache->set( $cache_key, $status );
 		}
 
 		return $status;
@@ -47,6 +53,7 @@ class WPML_TM_Translation_Status extends WPML_TM_Record_User {
 
 	public function reload(){
 		$this->element_id_cache = array();
+		$this->wpml_cache->flush_group_cache();
 	}
 
 	public function is_in_active_job (

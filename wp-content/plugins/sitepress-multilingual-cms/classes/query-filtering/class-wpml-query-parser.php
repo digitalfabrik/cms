@@ -225,10 +225,11 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 				$conditions[ $key ] = $condition;
 
 			} else if ( is_scalar( $condition['terms'] ) ) {
-				$field = $condition['field'];
+				$field = isset( $condition['field'] ) ? $condition['field'] : 'id';
 				$term  = $this->sitepress->get_wp_api()->get_term_by( $field, $condition['terms'], $condition['taxonomy'] );
 
 				if ( is_object( $term ) ) {
+					$field = $field == 'id' ? 'term_id' : $field;
 					$conditions[ $key ]['terms'] = isset( $term->{$field} ) ? $term->{$field} : null;
 				}
 			}

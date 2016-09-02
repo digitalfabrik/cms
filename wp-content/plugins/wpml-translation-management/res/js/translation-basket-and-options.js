@@ -366,7 +366,7 @@
                             },
                             success: function (result) {
                                 var success = result.success;
-                                result = result.data;
+                                var data = result.data;
                                 /** @namespace result.is_error */
                                 if (success) {
                                     progress_bar_object.change(batch_size);
@@ -377,8 +377,8 @@
                                         }, 1000
                                     );
                                 } else {
-                                    update_message(result.message, true, 'error', true);
-                                    show_additional_messages(result);
+                                    update_message(data.message, true, 'error', true);
+                                    show_additional_messages(data);
                                     progress_bar_object.stop();
                                     end_process(false);
                                 }

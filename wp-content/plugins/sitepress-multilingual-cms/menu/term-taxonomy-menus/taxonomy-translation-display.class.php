@@ -1,6 +1,6 @@
 <?php
 
-require 'wpml-taxonomy-translation-sync-display.class.php';
+require dirname( __FILE__ ) . '/wpml-taxonomy-translation-sync-display.class.php';
 new WPML_Taxonomy_Translation_Sync_Display();
 
 class WPML_Taxonomy_Translation_Table_Display {
@@ -152,7 +152,7 @@ class WPML_Taxonomy_Translation_Table_Display {
 		}
 	}
 
-	public static function wpml_get_table_taxonomies( $sitepress ) {
+	public static function wpml_get_table_taxonomies( SitePress $sitepress ) {
 		$taxonomies = $sitepress->get_wp_api()->get_taxonomies( array(), 'objects' );
 
 		$result = array( "taxonomies" => array(), "activeLanguages" => array(), "allLanguages" => array() );

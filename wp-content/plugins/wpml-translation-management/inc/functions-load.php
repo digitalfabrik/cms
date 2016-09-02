@@ -109,6 +109,9 @@ function wpml_tm_load_tm_dashboard_ajax(){
 	if(!isset($wpml_tm_dashboard_ajax)){
 	require WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard-ajax.class.php';
 		$wpml_tm_dashboard_ajax = new WPML_Dashboard_Ajax();
+		$wpml_tp_communication  = new WPML_TP_Communication( OTG_TRANSLATION_PROXY_URL, new WP_Http() );
+		$wpml_tp_api            = new WPML_TP_API( $wpml_tp_communication, '1.1', new WPML_TM_Log() );
+		new WPML_TP_API_AJAX( $wpml_tp_api );
 	}
 
 	return $wpml_tm_dashboard_ajax;
@@ -160,15 +163,6 @@ function tm_after_load() {
 	}
 }
 
-function wpml_tm_load_dashboard_widget() {
-	global $pagenow;
-	if ( $pagenow === 'index.php' ) {
-		global $sitepress, $wp_taxonomies;
-		$widget = new WPML_TM_CPT_Dashboard_Widget( $sitepress, $wp_taxonomies );
-		echo $widget->render();
-	}
-}
-
 /**
  * @return WPML_TM_Records
  */
@@ -178,9 +172,6 @@ function wpml_tm_get_records() {
 	return new WPML_TM_Records( $wpdb );
 }
 
-if ( is_admin() ) {
-	add_action( 'icl_dashboard_widget_notices', 'wpml_tm_load_dashboard_widget' );
-}
 /**
  * @return WPML_TM_Xliff_Frontend
  */
