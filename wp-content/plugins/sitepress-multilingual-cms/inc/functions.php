@@ -7,18 +7,37 @@
 function wpml_site_uses_icl() {
 	global $wpdb;
 
-	$icl_job_count = false;
+	$setting = 'site_does_not_use_icl';
 
-	$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}icl_translation_status'" );
-
-	if ( $table_exists ) {
-		$icl_job_count_query = "SELECT COUNT(*)
-							FROM {$wpdb->prefix}icl_translation_status
-							WHERE translation_service = 'icanlocalize'";
-		$icl_job_count       = $wpdb->get_var( $icl_job_count_query );
+	if ( icl_get_setting( $setting, false ) ) {
+		return false;
 	}
 
-	return $icl_job_count;
+	$cache = new WPML_WP_Cache( 'wpml-checks' );
+
+	$found         = false;
+	$site_uses_icl = $cache->get( 'site_uses_icl', $found );
+
+	if ( ! $found ) {
+		$site_uses_icl = false;
+
+		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$wpdb->prefix}icl_translation_status'" );
+
+		if ( $table_exists ) {
+			$icl_job_count_query = "SELECT rid
+							FROM {$wpdb->prefix}icl_translation_status
+							WHERE translation_service = 'icanlocalize'
+							LIMIT 1;";
+			$site_uses_icl       = (bool) $wpdb->get_var( $icl_job_count_query );
+		}
+		$cache->set( 'site_uses_icl', $site_uses_icl );
+	}
+
+	if ( icl_get_setting( 'setup_complete', false ) && ! $site_uses_icl ) {
+		icl_set_setting( $setting, true, true );
+	}
+
+	return $site_uses_icl;
 }
 
 /**

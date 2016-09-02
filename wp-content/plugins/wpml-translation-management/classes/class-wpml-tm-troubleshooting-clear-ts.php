@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TM_Troubleshooting_Clear_TS extends WPML_TM_AJAX_Factory {
+class WPML_TM_Troubleshooting_Clear_TS extends WPML_TM_AJAX_Factory_Obsolete {
 	private $script_handle = 'wpml_clear_ts';
 
 	/**

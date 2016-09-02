@@ -38,7 +38,7 @@ function wpml_tm_add_translation_job( $rid, $translator_id, $translation_package
 
 add_action( 'wpml_add_translation_job', 'wpml_tm_add_translation_job', 10, 3 );
 
-require 'wpml-private-filters.php';
+require dirname( __FILE__ ) . '/wpml-private-filters.php';
 
 function wpml_set_job_translated_term_values( $job_id, $delete = false ) {
 

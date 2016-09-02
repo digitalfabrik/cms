@@ -35,14 +35,31 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 
 			// clean the icl_translations table
 			$orphans = $wpdb->get_col( "
-                SELECT t.translation_id 
+                SELECT t.translation_id, t.element_type 
                 FROM {$wpdb->prefix}icl_translations t 
                 LEFT JOIN {$wpdb->posts} p ON t.element_id = p.ID 
                 WHERE t.element_id IS NOT NULL AND t.element_type LIKE 'post\\_%' AND p.ID IS NULL
             " );
 			if ( !empty( $orphans ) ) {
+
+				$upgrade_args_set = array();
+				foreach( $orphans as $orphan ) {
+					$upgrade_args = array(
+						'translation_id' => $orphan,
+						'context' => 'post'
+					);
+
+					$upgrade_args_set[] = $upgrade_args;
+
+					do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'before_delete' ) ) );
+				}
+
 				$wpdb->query( "DELETE FROM {$wpdb->prefix}icl_translations
                                WHERE translation_id IN (" . wpml_prepare_in( $orphans, '%d' ) . ")" );
+
+				foreach( $upgrade_args_set as $upgrade_args ) {
+					do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'after_delete' ) ) );
+				}
 			}
 
 			$orphans = $wpdb->get_col( "
@@ -54,8 +71,25 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 				echo $wpdb->last_result; 
 			}
 			if ( !empty( $orphans ) ) {
+
+				$upgrade_args_set = array();
+				foreach( $orphans as $orphan ) {
+					$upgrade_args = array(
+						'translation_id' => $orphan,
+						'context' => 'comment'
+					);
+
+					$upgrade_args_set[] = $upgrade_args;
+
+					do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'before_delete' ) ) );
+				}
+
 				$wpdb->query( "DELETE FROM {$wpdb->prefix}icl_translations
                                WHERE translation_id IN (" . wpml_prepare_in( $orphans, '%d' ) . ")" );
+
+				foreach( $upgrade_args_set as $upgrade_args ) {
+					do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'after_delete' ) ) );
+				}
 			}
 
 			$orphans = $wpdb->get_col( "
@@ -64,8 +98,24 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
                 LEFT JOIN {$wpdb->term_taxonomy} p ON t.element_id = p.term_taxonomy_id 
                 WHERE t.element_id IS NOT NULL AND t.element_type LIKE 'tax\\_%' AND p.term_taxonomy_id IS NULL" );
 			if ( !empty( $orphans ) ) {
+
+				$upgrade_args_set = array();
+				foreach( $orphans as $orphan ) {
+					$upgrade_args = array(
+						'translation_id' => $orphan,
+						'context' => 'tax'
+					);
+
+					$upgrade_args_set[] = $upgrade_args;
+					do_action( 'wpml_translation_update', $upgrade_args );
+				}
+
 				$wpdb->query( "DELETE FROM {$wpdb->prefix}icl_translations
                                WHERE translation_id IN (" . wpml_prepare_in( $orphans, '%d' ) . ")" );
+
+				foreach( $upgrade_args_set as $upgrade_args ) {
+					do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'after_delete' ) ) );
+				}
 			}
 
 			global $wp_taxonomies;
@@ -80,8 +130,25 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
                 AND p.taxonomy <> '{$t}'
                     " );
 					if ( !empty( $orphans ) ) {
+
+						$upgrade_args_set = array();
+						foreach( $orphans as $orphan ) {
+
+							$upgrade_args = array(
+								'translation_id' => $orphan,
+								'context' => 'tax'
+							);
+
+							$upgrade_args_set[] = $upgrade_args;
+							do_action( 'wpml_translation_update', $upgrade_args );
+						}
+
 						$wpdb->query( "DELETE FROM {$wpdb->prefix}icl_translations
                                        WHERE translation_id IN (" . wpml_prepare_in( $orphans, '%d' ) . ")" );
+
+						foreach( $upgrade_args_set as $upgrade_args ) {
+							do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'after_delete' ) ) );
+						}
 					}
 				}
 			}
@@ -107,7 +174,16 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 					$maxtid = max( $exp );
 					foreach ( $exp as $e ) {
 						if ( $e != $maxtid ) {
+							$upgrade_args = array(
+								'translation_id' => $e,
+								'context' => 'post'
+							);
+
+							do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'before_delete' ) ) );
+
 							$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}icl_translations WHERE translation_id=%d", $e ) );
+
+							do_action( 'wpml_translation_update', array_merge( $upgrade_args, array( 'type' => 'after_delete' ) ) );
 						}
 					}
 				}
@@ -160,14 +236,45 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 			$iclTranslationManagement->add_missing_language_information();
 			exit;
 		case 'link_post_type':
+
+			$old_el_type = 'post_' . sanitize_key ( filter_input ( INPUT_GET, 'old_value' ) );
+			$new_el_type = 'post_' . sanitize_key ( filter_input ( INPUT_GET, 'new_value' ) );
+
 			$wpdb->update (
 				$wpdb->prefix . 'icl_translations',
-				array( 'element_type' => 'post_' . sanitize_key ( filter_input ( INPUT_GET, 'new_value' ) ) ),
-				array( 'element_type' => 'post_' . sanitize_key ( filter_input ( INPUT_GET, 'old_value' ) ) )
+				array( 'element_type' => $new_el_type ),
+				array( 'element_type' => $old_el_type )
 			);
+
+			do_action(
+				'wpml_translation_update',
+				array(
+					'type' => 'element_type_update',
+					'element_type' => $new_el_type,
+					'context' => 'post'
+				)
+			);
+
 			exit;
 		case 'link_taxonomy':
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'element_type' => 'tax_' . $_GET[ 'new_value' ] ), array( 'element_type' => 'tax_' . $_GET[ 'old_value' ] ) );
+
+			$new_el_type = 'tax_' . $_GET[ 'new_value' ];
+			$old_el_type = 'tax_' . $_GET[ 'old_value' ];
+
+			$wpdb->update(
+				$wpdb->prefix . 'icl_translations',
+				array( 'element_type' => $new_el_type ),
+				array( 'element_type' => $old_el_type ) );
+
+			do_action(
+				'wpml_translation_update',
+				array(
+					'type' => 'element_type_update',
+					'element_type' => $new_el_type,
+					'content' => 'tax'
+				)
+			);
+
 			exit;
 		case 'icl_fix_terms_count':
 			global $sitepress;
@@ -187,6 +294,9 @@ if ( isset( $action) && wp_verify_nonce($nonce, $action) ) {
 			add_filter('terms_clauses', array($sitepress,'terms_clauses'));
 			add_filter('get_term', array($sitepress,'get_term_adjust_id'));
 			add_filter('get_terms_args', array($sitepress, 'get_terms_args_filter'), 10, 2);
+			exit;
+		case 'icl_remove_st_db_cache_logs' :
+			delete_option( 'wpml-st-persist-errors' );
 			exit;
 	}
 }
@@ -427,6 +537,18 @@ echo '</textarea>';
 
 			});
 		});
+
+		jQuery('#icl_remove_st_db_cache_logs').click(function () {
+			var self = jQuery(this);
+			self.attr('disabled', 'disabled');
+			self.after(icl_ajxloaderimg);
+			jQuery.post(location.href + '&debug_action=icl_remove_st_db_cache_logs&nonce=<?php echo wp_create_nonce('icl_remove_st_db_cache_logs'); ?>', function () {
+				self.removeAttr('disabled');
+				alert('<?php echo esc_js(__('Done', 'sitepress')) ?>');
+				self.next().fadeOut();
+
+			});
+		});
 	})
 </script>
 <div class="icl_cyan_box">
@@ -479,6 +601,14 @@ echo '</textarea>';
 		<input id="icl_fix_post_types" type="button" class="button-secondary" value="<?php _e( 'Fix post type assignment for translations', 'sitepress' ) ?>"/><br/>
 		<small style="margin-left:10px;"><?php _e( 'Correct post type assignment for translations of custom post types in case something went wrong.', 'sitepress' ) ?></small>
 	</p>
+
+	<?php if( get_option( 'wpml-st-persist-errors' ) ) { ?>
+	<p>
+		<input id="icl_remove_st_db_cache_logs" type="button" class="button-secondary" value="<?php _e( 'Remove debug logs of String Translation cache', 'sitepress' ) ?>"/><br/>
+		<small style="margin-left:10px;"><?php _e( 'Removes invalid rows stored in option and hide admin notice.', 'sitepress' ) ?></small>
+	</p>
+	<?php } ?>
+
 	<p>
 		<br/>
 		<?php _e( 'Translatable custom posts linking', 'sitepress' ); ?><br/>
@@ -605,6 +735,7 @@ echo WPML_Troubleshooting_Terms_Menu::display_terms_with_suffix();
 				<a href="<?php echo esc_url(
 					network_admin_url( 'admin.php?page=' . ICL_PLUGIN_FOLDER . '/menu/network.php' )
 				) ?>"><?php _e( 'Go to WPML Network settings.', 'sitepress' ) ?></a>
+				<p><small><?php _e( 'Note: WPML must be activated on the primary site or must be network activated.', 'sitepress' ); ?></small></p>
 			<?php } else { ?>
 				<i><?php _e( 'You are not allowed to manage the WPML Network settings.', 'sitepress' ) ?></i>
 			<?php } ?>

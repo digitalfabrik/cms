@@ -775,7 +775,14 @@ For each language, you need to enter the following information:
                     wp_delete_post($post_id, true);
                 }
                 add_action('delete_comment', array($IclCommentsTranslation, 'delete_comment_actions'));
-                
+
+		        do_action(
+		        	'wpml_translation_update',
+			        array(
+			            'type' => 'before_language_delete',
+				        'language' => $lang->code
+			        )
+		        );
                 
                 $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->prefix}icl_translations WHERE language_code=%s", $lang->code));
 

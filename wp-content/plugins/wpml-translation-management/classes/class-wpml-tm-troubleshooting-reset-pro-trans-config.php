@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factory {
+class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factory_Obsolete {
 	/**
 	 * @var wpdb $wpdb
 	 */

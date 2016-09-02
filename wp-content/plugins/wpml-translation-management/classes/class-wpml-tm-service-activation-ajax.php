@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TM_Service_Activation_AJAX extends WPML_TM_AJAX_Factory {
+class WPML_TM_Service_Activation_AJAX extends WPML_TM_AJAX_Factory_Obsolete {
 	private $script_handle = 'wpml_tm_service_activation';
 
 	private $ignore_local_jobs;

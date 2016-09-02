@@ -50,14 +50,6 @@ if( 0 === strcmp( $filtered_page, ICL_PLUGIN_FOLDER . '/menu/troubleshooting.php
                 echo '</ul>';
                 echo '</div>';        
             }
-        }else{
-            add_action('icl_dashboard_widget_content_top', 'icl_incomp_plugins_warn_dashboard', 1, 0);
-            function icl_incomp_plugins_warn_dashboard(){
-                echo '<div class="icl_form_errors" style="width:98%">';
-                printf (__('You are using plugins that are incompatible with WPML - <a href="%s">see details</a>.', 'sitepress'), admin_url('admin.php?page='.ICL_PLUGIN_FOLDER.'/menu/troubleshooting.php'));
-                echo '</div>';        
-                
-            }
         }
     }
 }

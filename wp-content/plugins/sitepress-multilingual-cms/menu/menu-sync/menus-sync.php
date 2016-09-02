@@ -1,5 +1,5 @@
 <?php
-require 'wpml-menu-sync-display.class.php';
+require dirname( __FILE__ ) . '/wpml-menu-sync-display.class.php';
 
 /** @var $sitepress SitePress */
 /** @var $icl_menus_sync ICLMenusSync */

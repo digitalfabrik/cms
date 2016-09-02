@@ -24,6 +24,11 @@ class TranslationServiceInfo{
             $save_settings = true;
         }
 
+        if ( !empty( $data->ts_info['client_id'] ) ) { // can be updated
+            WP_Installer()->settings['repositories'][$repository_id]['ts_info']['client_id'] = $data->ts_info['client_id'];
+            $save_settings = true;
+        }
+
         if($save_settings){
             WP_Installer()->save_settings();
         }

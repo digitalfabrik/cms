@@ -260,6 +260,12 @@ switch($request){
 
         }
         $this->save_settings($iclsettings);
+
+		// clear ST DB Cache
+	    $factory = new WPML_ST_DB_Cache_Factory( $wpdb );
+	    $persist = $factory->create_persist();
+	    $persist->clear_cache();
+
         echo '1|'.$icl_tl_type;
         break;
     case 'dismiss_help':
@@ -368,12 +374,6 @@ switch($request){
             $sitepress_settings['st']['translated-users'] = $iclsettings['st']['translated-users'];
             icl_st_register_user_strings_all();
         }
-        echo 1;
-        break;
-    case 'icl_st_ar_form':
-        // Auto register string settings.
-        $iclsettings['st']['icl_st_auto_reg'] = $_POST['icl_auto_reg_type'];
-        $this->save_settings($iclsettings);
         echo 1;
         break;
     case 'icl_hide_languages':
@@ -551,18 +551,41 @@ switch($request){
 		$post_type = $_POST['post_type'];
 		$post_id = $_POST['post_id'];
 		$set_as_source = $_POST['set_as_source'];
+		$element_type = 'post_' . $post_type;
 
-		$language_details = $sitepress->get_element_language_details($post_id, 'post_' . $post_type);
+		$language_details = $sitepress->get_element_language_details( $post_id, $element_type );
 
 		if ( $set_as_source ) {
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $language_details->language_code ), array( 'trid' => $new_trid, 'element_type' => 'post_' . $post_type ), array( '%s' ), array( '%d', '%s' ) );
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => null, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ), array( '%s', '%d' ), array(
-				'%d',
-				'%s'
-			) );
+
+			$wpdb->update(
+				$wpdb->prefix . 'icl_translations',
+				array( 'source_language_code' => $language_details->language_code ),
+				array( 'trid' => $new_trid, 'element_type' => $element_type ),
+				array( '%s' ),
+				array( '%d', '%s' )
+			);
+
+			$wpdb->update(
+				$wpdb->prefix . 'icl_translations',
+				array( 'source_language_code' => null, 'trid' => $new_trid ),
+				array( 'element_id' => $post_id, 'element_type' => $element_type ),
+				array( '%s', '%d' ),
+				array( '%d', '%s' )
+			);
+
+			do_action(
+				'wpml_translation_update',
+				array(
+					'type' => 'update',
+					'trid' => $new_trid,
+					'element_type' => $element_type,
+					'context' => 'post'
+				)
+			);
+
 		} else {
 			$original_element_language = $sitepress->get_default_language();
-			$trid_elements             = $sitepress->get_element_translations( $new_trid, 'post_' . $post_type );
+			$trid_elements             = $sitepress->get_element_translations( $new_trid, $element_type );
 			if($trid_elements) {
 				foreach ( $trid_elements as $trid_element ) {
 					if ( $trid_element->original ) {
@@ -571,10 +594,27 @@ switch($request){
 					}
 				}
 			}
-			$wpdb->update( $wpdb->prefix . 'icl_translations', array( 'source_language_code' => $original_element_language, 'trid' => $new_trid ), array( 'element_id' => $post_id, 'element_type' => 'post_' . $post_type ), array(
-				'%s',
-				'%d'
-			), array( '%d', '%s' ) );
+
+			$wpdb->update(
+				$wpdb->prefix . 'icl_translations',
+				array( 'source_language_code' => $original_element_language, 'trid' => $new_trid ),
+				array( 'element_id' => $post_id, 'element_type' => $element_type ),
+				array( '%s', '%d' ),
+				array( '%d', '%s' )
+			);
+
+
+			do_action(
+				'wpml_translation_update',
+				array(
+					'type' => 'update',
+					'trid' => $new_trid,
+					'element_id' => $post_id,
+					'element_type' => $element_type,
+					'context' => 'post'
+				)
+			);
+
 		}
 		echo wp_json_encode(true);
 		break;
