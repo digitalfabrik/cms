@@ -17,7 +17,9 @@
 		var editorContent = mobilePreview.postContent.text();
 		// replace all \n with surrounding p tags
 		// split-join is faster than replace: http://jsperf.com/replace-all-vs-split-join
-		editorContent = "<p>" + editorContent.split("\n").join("</p><p>") + "</p>";
+		//editorContent = "<p>" + editorContent.split("\n").join("</p><p>") + "</p>";
+		//editorContent = editorContent.split("\n").join("<br>");
+		editorContent = editorContent.replace("\n","<br>");
 		mobilePreview.content.html(editorContent);
 	};
 }(window.mobilePreview = window.mobilePreview || {}, jQuery));
