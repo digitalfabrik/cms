@@ -206,15 +206,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 
 	protected function prepare_content($post) {
 		$content = $post->post_content;
-		$match_result = preg_match(self::EMPTY_P_PATTERN, $content);
-		if ($match_result === false) {
-			throw new RuntimeException("preg_match on content indicated error status (pattern='" . self::EMPTY_P_PATTERN . "', content='$content')");
-		}
-		if ($match_result) {
-			return self::EMPTY_CONTENT;
-		}
-		// replace all newlines with surrounding p tags
-		return "<p>" . str_replace(["\r\n", "\r", "\n"], "</p><p>", $content) . "</p>";
+		return str_replace(["\r\n", "\r", "\n"], "<br>", $content);
 	}
 
 	protected function prepare_excerpt($post) {
