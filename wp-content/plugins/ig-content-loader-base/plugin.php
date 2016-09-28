@@ -258,4 +258,3 @@ function cl_update () {
 }
 add_action( 'template_redirect', 'cl_update' );
 
-
