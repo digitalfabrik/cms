@@ -25,6 +25,7 @@ var WPMLTranslationServicesDialog = function () {
 		var deactivateServiceLink;
 		var activateServiceLink;
 		var activateServiceImage;
+		var flushWebsiteDetailsCacheLink;
 
 		var header = tm_ts_data.strings.header;
 		var tip = tm_ts_data.strings.tip;
@@ -38,6 +39,7 @@ var WPMLTranslationServicesDialog = function () {
 		deactivateServiceLink = jQuery('.js-deactivate-service');
 		authenticateServiceLink = jQuery('.js-authenticate-service');
 		invalidateServiceLink = jQuery('.js-invalidate-service');
+		flushWebsiteDetailsCacheLink = jQuery('.js-flush-website-details-cache');
 
 		activateServiceImage.bind('click', function (event) {
 			var link;
@@ -80,6 +82,15 @@ var WPMLTranslationServicesDialog = function () {
 			button = jQuery(this);
 			serviceId = jQuery(this).data('id');
 			self.translationServiceAuthentication(serviceId, button, 1);
+
+			return false;
+		});
+
+		flushWebsiteDetailsCacheLink.on('click', function (event) {
+			var anchor = jQuery(this);
+			self.preventEventDefault(event);
+
+			self.flushWebsiteDetailsCache(anchor);
 
 			return false;
 		});
@@ -145,7 +156,7 @@ var WPMLTranslationServicesDialog = function () {
 
 	self.serviceAuthenticationDialog = function (customFields, serviceId) {
 		self.serviceDialog.dialog({
-			dialogClass: 'wpml-dialog wp-dialog',
+			dialogClass: 'wpml-dialog otgs-ui-dialog',
 			width:       'auto',
 			title:       "Translation Services",
 			modal:       true,
@@ -259,30 +270,30 @@ var WPMLTranslationServicesDialog = function () {
 			button.after(self.ajaxSpinner);
 		}
 
-		ajaxData = {
-			'action':        'translation_service_authentication',
-			'nonce':         tm_ts_data.nonce.translation_service_authentication,
-			'service_id':    serviceId,
-			'invalidate':    invalidate,
-			'custom_fields': self.customFieldsSerialized.val()
-		};
-
 		jQuery.ajax({
 			type:     "POST",
 			url:      ajaxurl,
-			data:     ajaxData,
+			data:     {
+				'action':        'translation_service_authentication',
+				'nonce':         tm_ts_data.nonce.translation_service_authentication,
+				'service_id':    serviceId,
+				'invalidate':    invalidate,
+				'custom_fields': self.customFieldsSerialized.val()
+			},
 			dataType: 'json',
-			success:  function (msg) {
-				if ('undefined' !== msg.message && '' !== msg.message.trim()) {
-					alert(msg.message);
-				}
-
-				if (msg.reload) {
-					location.reload(true);
-				} else {
-					if (button) {
-						button.removeAttr('disabled');
-						button.next().fadeOut();
+			success: function (msg) {
+				if (msg.success) {
+					msg = msg.data;
+					if ('undefined' !== msg.message && '' !== msg.message.trim()) {
+						alert(msg.message);
+					}
+					if (msg.reload) {
+						location.reload(true);
+					} else {
+						if (button) {
+							button.removeAttr('disabled');
+							button.next().fadeOut();
+						}
 					}
 				}
 			},
@@ -296,6 +307,31 @@ var WPMLTranslationServicesDialog = function () {
 		});
 	};
 
+	self.flushWebsiteDetailsCache = function (anchor) {
+		var nonce = anchor.data('nonce');
+
+		self.ajaxSpinner.appendTo(anchor);
+		self.ajaxSpinner.addClass('is-activve');
+
+		if (nonce) {
+			jQuery.ajax({
+										type:     "POST",
+										url:      ajaxurl,
+										data:     {
+											'action': 'wpml-flush-website-details-cache',
+											'nonce':  nonce
+										},
+										dataType: 'json',
+										success:  function (response) {
+											self.ajaxSpinner.removeClass('is-activve');
+											if (response.success) {
+												/** @namespace response.redirectTo */
+												location.reload(response.data.redirectTo);
+											}
+										}
+									});
+		}
+	};
 };
 
 jQuery(document).ready(function () {

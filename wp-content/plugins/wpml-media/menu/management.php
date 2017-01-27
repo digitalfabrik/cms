@@ -8,7 +8,6 @@
 
 <div class="wrap">
 
-	<div id="icon-wpml" class="icon32"><br/></div>
 	<h2><?php echo __('Media translation', 'wpml-media') ?></h2>
 
 	<?php if ($orphan_attachments): ?>
@@ -100,8 +99,9 @@
 
 		</table>
 
-		<p id="wpml_media_all_done" class="hidden icl_cyan_box"
-		   style=""><?php _e("You're all done. Now that the Media Translation plugin is running, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen.", 'wpml-media') ?></p>
+		<div id="wpml_media_all_done" class="hidden updated">
+			<p><?php _e("You're all done. Now that the Media Translation plugin is running, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen.", 'wpml-media') ?></p>
+		</div>
 
 	</form>
 

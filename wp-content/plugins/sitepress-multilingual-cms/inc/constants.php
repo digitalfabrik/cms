@@ -18,6 +18,12 @@ if ( ! defined( 'ICL_PLUGIN_INACTIVE' ) ) {
 	define( 'ICL_PLUGIN_INACTIVE', false );
 }
 
+if ( defined( 'PHP_INT_MIN' ) ) {
+	define( 'WPML_PRIORITY_BEFORE_EVERYTHING', PHP_INT_MIN );
+} else {
+	define( 'WPML_PRIORITY_BEFORE_EVERYTHING', ~PHP_INT_MAX );
+}
+
 define ( 'ICL_TM_NOT_TRANSLATED', 0);
 define ( 'ICL_TM_WAITING_FOR_TRANSLATOR', 1);
 define ( 'ICL_TM_IN_PROGRESS', 2);
@@ -103,3 +109,33 @@ define( "WPML_QUERY_IS_NOT_FOR_POST", 3 );
 define( 'WPML_XDOMAIN_DATA_OFF', 	0 );
 define( 'WPML_XDOMAIN_DATA_GET', 	1 );
 define( 'WPML_XDOMAIN_DATA_POST', 	2 );
+
+define( 'WPML_TT_TAXONOMIES_NOT_TRANSLATED', 1 );
+define( 'WPML_TT_TAXONOMIES_ALL', 0 );
+// This sets the number of rows in the table to be displayed by this class, not the actual number of terms.
+define( 'WPML_TT_TERMS_PER_PAGE', 10 );
+define( 'WPML_TRANSLATE_CUSTOM_FIELD', 2 );
+define( 'WPML_COPY_CUSTOM_FIELD', 1 );
+define( 'WPML_IGNORE_CUSTOM_FIELD', 0 );
+
+define( 'WPML_POST_META_CONFIG_INDEX_SINGULAR', 'custom-field' );
+define( 'WPML_POST_META_SETTING_INDEX_SINGULAR', 'custom_field' );
+define( 'WPML_POST_META_CONFIG_INDEX_PLURAL', 'custom-fields' );
+define( 'WPML_POST_META_SETTING_INDEX_PLURAL', 'custom_fields_translation' );
+
+define( 'WPML_TERM_META_CONFIG_INDEX_SINGULAR', 'custom-term-field' );
+define( 'WPML_TERM_META_CONFIG_INDEX_PLURAL', 'custom-term-fields' );
+
+define( 'WPML_TERM_META_SETTING_INDEX_SINGULAR', 'custom_term_field' );
+define( 'WPML_TERM_META_SETTING_INDEX_PLURAL', 'custom_term_fields_translation' );
+
+define( 'WPML_POST_META_READONLY_SETTING_INDEX', 'custom_fields_readonly_config' );
+define( 'WPML_TERM_META_READONLY_SETTING_INDEX', 'custom_term_fields_readonly_config' );
+
+define( 'WPML_POST_TYPE_READONLY_SETTING_INDEX', 'custom_types_readonly_config' );
+
+define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DIRECTORY',  1 );
+define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN',     2 );
+define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER',  3 );
+
+define( 'WPML_ELEMENT_TRANSLATIONS_CACHE_GROUP', 'element_translations' );

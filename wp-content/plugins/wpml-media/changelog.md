@@ -1,3 +1,37 @@
+# 2.1.22
+
+## Fixes
+* [wpmlcore-3030] Class auto loading is not compatible with version of PHP older than 5.3
+
+## Performances
+* [wpmlga-133] Improved class autoloading by using class mapping, instead of file system lookup
+
+#2.1.21
+
+##Fixes
+* [wpmlcore-2897] Fixed duplication of featured image where the flag "Duplicate featured image to translations" was ignored
+
+##Performances
+* [wpmlmedia-90] Fixed constant duplication of media when editing the source page
+* [wpmlcore-2988] Removed unneeded dependencies checks in admin pages: this now runs only once and later only when activating/deactivating plugins
+
+#2.1.20
+
+##Fixes
+* [wpmlmedia-81] Fixed language filter issue in Media Library section.
+
+#2.1.19
+
+##Fixes
+* [wpmlmedia-76] Resolved "Not Found" errors in front-end for attachments in secondary languages
+* [wpmlmedia-75] Improved upload process in WP-Admin for images uploaded in secondary languages 
+
+##Performances
+* [wpmlcore-2528] Cached calls to `glob()` function when auto loading classes
+
+##Cleanup
+* [wpmlcore-2541] Removal of "icon-32" usage
+
 # 2.1.17
 
 ##Fixes

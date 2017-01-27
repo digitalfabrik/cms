@@ -12,3 +12,8 @@
     font-weight: bold;
   }
 }
+
+html[dir="rtl"] #nav-menu-header div.icl_nav_menu_text {
+  float: left !important;
+  text-align: left;
+}

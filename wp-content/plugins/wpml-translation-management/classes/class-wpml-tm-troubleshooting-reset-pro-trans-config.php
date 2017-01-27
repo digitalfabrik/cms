@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factory {
+class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factory_Obsolete {
 	/**
 	 * @var wpdb $wpdb
 	 */
@@ -10,6 +10,10 @@ class WPML_TM_Troubleshooting_Reset_Pro_Trans_Config extends WPML_TM_AJAX_Factor
 	 * @var SitePress
 	 */
 	private $sitepress;
+	/**
+	 * @var WPML_Translation_Proxy_API $TranslationProxy
+	 */
+	private $TranslationProxy;
 
 	private $script_handle = 'wpml_reset_pro_trans_config';
 

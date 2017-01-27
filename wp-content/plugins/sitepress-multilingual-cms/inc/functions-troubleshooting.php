@@ -19,6 +19,8 @@ function icl_reset_wpml( $blog_id = false ) {
 			switch_to_blog( $blog_id );
 		}
 
+		do_action( 'wpml_reset_plugins_before' );
+
 		wp_clear_scheduled_hook( 'update_wpml_config_index' );
 
 		$icl_tables = array(
@@ -70,6 +72,8 @@ function icl_reset_wpml( $blog_id = false ) {
 		$sitepress_settings = null;
 		wp_cache_init();
 
+		do_action( 'wpml_reset_plugins_after' );
+		
 		$wpmu_sitewide_plugins = (array) maybe_unserialize( get_site_option( 'active_sitewide_plugins' ) );
 		if ( ! isset( $wpmu_sitewide_plugins[ ICL_PLUGIN_FOLDER . '/sitepress.php' ] ) ) {
 			$file = plugin_basename( WP_PLUGIN_DIR . '/' . ICL_PLUGIN_FOLDER . '/sitepress.php' );
@@ -88,11 +92,14 @@ function icl_reset_wpml( $blog_id = false ) {
 	}
 }
 
+/**
+ * Ajax handler for type assignment fix troubleshoot action
+ */
 function icl_repair_broken_type_and_language_assignments() {
 	global $sitepress;
 
-	$lang_setter = $sitepress->get_language_setter();
-	$rows_fixed  = $lang_setter->repair_broken_assignments();
+	$lang_setter = new WPML_Fix_Type_Assignments( $sitepress );
+	$rows_fixed  = $lang_setter->run();
 
 	wp_send_json_success( $rows_fixed );
 }

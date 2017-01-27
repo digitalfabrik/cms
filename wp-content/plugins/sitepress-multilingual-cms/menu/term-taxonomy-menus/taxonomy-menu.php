@@ -6,7 +6,7 @@
  *
  */
 
-require 'wpml-taxonomy-element-language-dropdown.class.php';
+require dirname( __FILE__ ) . '/wpml-taxonomy-element-language-dropdown.class.php';
 
 global $sitepress, $wpdb;
 
@@ -59,7 +59,7 @@ $dropdown->add_language_selector_to_page (
 
 if ( icl_get_setting('setup_complete') ) {
     require ICL_PLUGIN_PATH . '/menu/wpml-translation-selector.class.php';
-    $selector = new WPML_Translation_Selector($default_language, $source_language, $element_id);
+    $selector = new WPML_Translation_Selector( $sitepress, $default_language, $source_language, $element_id );
     $selector->add_translation_of_selector_to_page (
         $trid,
         $sitepress->get_current_language (),

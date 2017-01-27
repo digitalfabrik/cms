@@ -1,7 +1,7 @@
 <?php
-require ICL_PLUGIN_PATH . '/inc/post-translation/wpml-post-duplication.class.php';
-require 'wpml-post-synchronization.class.php';
-require_once 'wpml-wordpress-actions.class.php';
+require dirname( __FILE__ ) . '/wpml-post-duplication.class.php';
+require dirname( __FILE__ ) . '/wpml-post-synchronization.class.php';
+require_once dirname( __FILE__ ) . '/wpml-wordpress-actions.class.php';
 
 /**
  * Class WPML_Post_Translation
@@ -115,7 +115,8 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		return $this->get_original_post_attr ( $trid, 'ID', $source_lang_code );
 	}
 
-	public function get_original_menu_order( $trid, $source_lang_code = null ) {
+	public function get_original_menu_order
+	( $trid, $source_lang_code = null ) {
 
 		return $this->get_original_post_attr ( $trid, 'menu_order', $source_lang_code );
 	}
@@ -161,12 +162,18 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	}
 
 	public function delete_post_translation_entry( $post_id ) {
+
+		$update_args = array( 'context' => 'post', 'element_id' => $post_id );
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 		$sql = $this->wpdb->prepare( "DELETE FROM {$this->wpdb->prefix}icl_translations
 								WHERE element_id = %d
 									AND element_type LIKE 'post%%'
 								LIMIT 1",
 		                       $post_id );
 		$res = $this->wpdb->query( $sql );
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 
 		return $res;
 	}
@@ -202,7 +209,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @param SitePress $sitepress
 	 * @return bool|mixed|null|string|void
 	 */
-	protected function get_save_post_lang( $post_id, $sitepress ) {
+	public function get_save_post_lang( $post_id, $sitepress ) {
 		$language_code = $this->get_element_lang_code ( $post_id );
 		$language_code = $language_code ? $language_code : $sitepress->get_current_language ();
 		$language_code = $sitepress->is_active_language ( $language_code ) ? $language_code
@@ -242,6 +249,21 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		wp_defer_term_counting( false );
 		if ( $post_vars['post_type'] !== 'nav_menu_item' ) {
 			do_action( 'wpml_tm_save_post', $post_vars['ID'], get_post( $post_vars['ID'] ), false );
+		}
+		// Flush object cache.
+		$this->flush_object_cache_for_groups( array( 'ls_languages', 'element_translations' ) );
+	}
+
+	/**
+	 * Create new instance of WPML_WP_Cache for each group and flush cache for group.
+	 * @param array $groups
+	 */
+	private function flush_object_cache_for_groups( $groups = array() ) {
+		if ( ! empty( $groups ) ) {
+			foreach ( $groups as $group ) {
+				$cache            = new WPML_WP_Cache( $group );
+				$cache->flush_group_cache();
+			}
 		}
 	}
 
@@ -323,7 +345,8 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		return apply_filters ( 'wpml_allowed_target_langs', $can_translate, $post->ID, 'post' );
 	}
 
-	/** Before setting the language of the post to be saved, check if a translation in this language already exists
+	/**
+	 * Before setting the language of the post to be saved, check if a translation in this language already exists
 	 * This check is necessary, so that synchronization actions like thrashing or un-trashing of posts, do not lead to
 	 * database corruption, due to erroneously changing a posts language into a state,
 	 * where it collides with an existing translation. While the UI prevents this sort of action for the most part,
@@ -339,7 +362,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @param Integer $post_id
 	 * @param String  $source_language
 	 */
-	protected function maybe_set_elid( $trid, $post_type, $language_code, $post_id, $source_language ) {
+	private function maybe_set_elid( $trid, $post_type, $language_code, $post_id, $source_language ) {
 		global $sitepress;
 
 		$element_type = 'post_' . $post_type;

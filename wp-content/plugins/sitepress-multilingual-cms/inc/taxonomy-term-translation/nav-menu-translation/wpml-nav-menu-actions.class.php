@@ -34,16 +34,24 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 				$id
 			)
 		);
+
+		$update_args = array(
+			'element_id' => $menu_id_tt,
+			'element_type' => 'tax_nav_menu',
+			'context' => 'tax'
+		);
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 		$q          = "DELETE FROM {$this->wpdb->prefix}icl_translations WHERE element_id=%d AND element_type='tax_nav_menu' LIMIT 1";
 		$q_prepared = $this->wpdb->prepare ( $q, $menu_id_tt );
 		$this->wpdb->query ( $q_prepared );
+
+		do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 	}
 
 	function wp_update_nav_menu( $menu_id, $menu_data = null ) {
 		if ( $menu_data ) {
-			$trid = ! empty( $_POST['icl_translation_of'] ) ? ( $_POST['icl_translation_of'] === 'none'
-				? null : $this->sitepress->get_element_trid( $_POST['icl_translation_of'], 'tax_nav_menu' ) )
-				: ( isset( $_POST['icl_nav_menu_trid'] ) ? intval( $_POST['icl_nav_menu_trid'] ) : null );
+			$trid          = $this->get_trid_from_post_data();
 			$language_code = $this->get_save_lang( $menu_id );
 			$menu_id_tt    = $this->wpdb->get_var(
 				$this->wpdb->prepare(
@@ -81,9 +89,20 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 	public function wp_delete_nav_menu_item( $menu_item_id ) {
 		$post = get_post( $menu_item_id );
 		if ( ! empty( $post->post_type ) && $post->post_type == 'nav_menu_item' ) {
+
+			$update_args = array(
+				'element_id' => $menu_item_id,
+				'element_type' => 'post_nav_menu_item',
+				'context' => 'post'
+			);
+
+			do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'before_delete' ) ) );
+
 			$q          = "DELETE FROM {$this->wpdb->prefix}icl_translations WHERE element_id=%d AND element_type='post_nav_menu_item' LIMIT 1";
 			$q_prepared = $this->wpdb->prepare( $q, $menu_item_id );
 			$this->wpdb->query( $q_prepared );
+
+			do_action( 'wpml_translation_update', array_merge( $update_args, array( 'type' => 'after_delete' ) ) );
 		}
 	}
 
@@ -136,8 +155,26 @@ class WPML_Nav_Menu_Actions extends WPML_Full_Translation_API {
 	private function get_save_lang( $menu_id ) {
 		$language_code = isset( $_POST[ 'icl_nav_menu_language' ] )
 				? $_POST[ 'icl_nav_menu_language' ] : $this->term_translations->lang_code_by_termid ( $menu_id );
-		$language_code = $language_code ? $language_code : $this->sitepress->get_current_language ();
+		$language_code = $language_code ? $language_code : $this->sitepress->get_current_language();
 
 		return $language_code;
+	}
+
+	/**
+	 * @return bool|int|mixed|null|string
+	 */
+	private function get_trid_from_post_data() {
+		$trid = null;
+		if ( ! empty( $_POST['icl_translation_of'] ) && $_POST['icl_translation_of'] !== 'none' ) {
+			$trid = $this->sitepress->get_element_trid( $_POST['icl_translation_of'], 'tax_nav_menu' );
+
+			return $trid;
+		} elseif ( isset( $_POST['icl_nav_menu_trid'] ) ) {
+			$trid = ( (int) $_POST['icl_nav_menu_trid'] );
+
+			return $trid;
+		}
+
+		return $trid;
 	}
 }

@@ -1,7 +1,7 @@
 /*jshint browser:true, devel:true */
 /*global jQuery, ajaxurl, icl_ajx_url, icl_ajxloaderimg, tm_basket_data */
 
-(function () {
+(function ($) {
 	"use strict";
 
 	jQuery(document).ready(
@@ -366,7 +366,7 @@
                             },
                             success: function (result) {
                                 var success = result.success;
-                                result = result.data;
+                                var data = result.data;
                                 /** @namespace result.is_error */
                                 if (success) {
                                     progress_bar_object.change(batch_size);
@@ -377,8 +377,8 @@
                                         }, 1000
                                     );
                                 } else {
-                                    update_message(result.message, true, 'error', true);
-                                    show_additional_messages(result);
+                                    update_message(data.message, true, 'error', true);
+                                    show_additional_messages(data);
                                     progress_bar_object.stop();
                                     end_process(false);
                                 }
@@ -588,6 +588,31 @@
 			});
 		});
 
+			var duplicated = document.getElementById('icl_duplicate_post_in_basket'),
+				button = $('.button-primary'),
+				nonce = document.getElementById('icl_disconnect_nonce');
+			if (duplicated !== null) {
+				$('<div />', {
+					id: 'icl_disconnect_message',
+					text: tm_basket_data.tmi_message,
+					class: 'icl-admin-message-warning'
+				}).insertBefore('.button-primary');
+				button.on('click', function () {
+					$.ajax({
+						method: "POST",
+						url: ajaxurl,
+						data: {
+							action: 'icl_disconnect_posts',
+							nonce: nonce.value,
+							posts: duplicated.value
+						}
+					}).success(function (resp) {
+						if (resp.success !== true) {
+							alert(resp.data);
+						}
+					});
+				});
+			}
 		}
 	);
-}());
+}(jQuery));

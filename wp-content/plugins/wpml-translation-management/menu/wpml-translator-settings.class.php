@@ -41,7 +41,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
             <div id="icl-your-translators">
             <?php
 
-            if ( $active_service && TranslationProxy::translator_selection_available() ) {
+	        if ( $this->translation_service_has_translators( $active_service ) ) {
                 if ( $only_local_translators ) {
                     $translation_dashboard_url = "admin.php?page=" . WPML_TM_FOLDER . "/menu/main.php&sm=dashboard";
                     $translation_dashboard_link = sprintf( '<a href="%s">' . __( 'Translation Dashboard',
@@ -197,7 +197,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
             ?>
             <?php if ( !empty( $blog_users_t ) || !empty( $other_service_translators ) ) { ?>
                 <h3><?php _e( 'Current translators', 'wpml-translation-management' ); ?></h3>
-                <table class="widefat fixed" cellspacing="0">
+                <table class="widefat fixed striped" cellspacing="0">
                     <thead>
                     <?php $this->translators_head_foot_row() ?>
                     </thead>
@@ -209,11 +209,6 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
                     <tbody class="list:user user-list">
                     <?php if ( !empty( $blog_users_t ) ): foreach ( $blog_users_t as $bu ): ?>
                         <?php
-                        if ( !isset( $trstyle ) || $trstyle ) {
-                            $trstyle = '';
-                        } else {
-                            $trstyle = ' class="alternate"';
-                        }
                         if ( $current_user->ID == $bu->ID ) {
                             $edit_link = 'profile.php';
                         } else {
@@ -223,7 +218,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
                         }
                         $language_pairs = get_user_meta( $bu->ID, $this->wpdb->prefix . 'language_pairs', true );
                         ?>
-                        <tr<?php echo $trstyle ?>>
+                        <tr>
                             <td class="column-title">
                                 <strong><a class="row-title"
                                            href="<?php echo $edit_link ?>"><?php echo $bu->user_login; ?></a></strong>
@@ -239,7 +234,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
                                         <?php _e( 'Language pairs', 'wpml-translation-management' ) ?></a>
                                 </div>
                             </td>
-                            <td>
+                            <td class="column-translator-languages">
                                 <?php
                                 $langs = $this->get_translation_languages();
                                 ?>
@@ -391,6 +386,9 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
 			if ( !TranslationProxy::get_tp_default_suid()) {
 				echo $this->wpml_refresh_translation_services_button();
 			}
+			if ( $this->translation_service_has_translators( $active_service ) ) {
+				echo $this->flush_website_details_cache_button();
+			}
             if(!$has_errors) {
                 ?>
                 <div class="icl-current-service">
@@ -516,7 +514,7 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
      * @return mixed
      */
     private function icl_local_edit_translator_form( $action = 'add', $selected_translator = 0 ) {
-        $blog_users_nt = TranslationManagement::get_blog_not_translators();
+        $blog_users_nt = $this->tm_instance->get_blog_not_translators();
         $output = '';
         $return[ 'name' ] = __( 'Local', 'wpml-translation-management' );
         $return[ 'description' ] = __( 'Your own translators', 'wpml-translation-management' );
@@ -636,4 +634,22 @@ class WPML_Translator_Settings extends WPML_WPDB_And_SP_User {
 
         return $languages = apply_filters( 'wpml_tm_allowed_source_languages', $this->sitepress->get_active_languages() );
     }
+
+	private function flush_website_details_cache_button() {
+		$ts_name   = TranslationProxy::get_current_service_name();
+		$link_text = sprintf( __( 'Refresh Translators data from %s', 'wpml-translation-management' ), $ts_name );
+
+		$nonce = wp_create_nonce( 'wpml-flush-website-details-cache' );
+
+		return '<a href="#" data-nonce="' . $nonce . '" type="submit" class="button secondary js-flush-website-details-cache">' . $link_text . ' &raquo;</a>' . PHP_EOL;
+	}
+
+	/**
+	 * @param $active_service
+	 *
+	 * @return bool
+	 */
+	private function translation_service_has_translators( $active_service ) {
+		return $active_service && TranslationProxy::translator_selection_available();
+	}
 }

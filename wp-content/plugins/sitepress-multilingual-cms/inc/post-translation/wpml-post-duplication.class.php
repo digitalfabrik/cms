@@ -1,6 +1,6 @@
 <?php
 
-require_once 'wpml-wordpress-actions.class.php';
+require_once dirname( __FILE__ ) . '/wpml-wordpress-actions.class.php';
 
 /**
  * Class WPML_Post_Duplication
@@ -32,7 +32,12 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 	function make_duplicate( $master_post_id, $lang ) {
 		global $wpml_post_translations;
 
+		/**
+		 * @deprecated Use 'wpml_before_make_duplicate' instead
+		 * @since      3.4
+		 */
 		do_action( 'icl_before_make_duplicate', $master_post_id, $lang );
+		do_action( 'wpml_before_make_duplicate', $master_post_id, $lang );
 		$master_post = get_post( $master_post_id );
 		$is_duplicated = false;
 		$translations  = $wpml_post_translations->get_element_translations( $master_post_id, false, false );
@@ -81,12 +86,12 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 		global $ICL_Pro_Translation;
 		/** @var WPML_Pro_Translation $ICL_Pro_Translation */
 		if ( $ICL_Pro_Translation ) {
-			$ICL_Pro_Translation->_content_fix_links_to_translated_content( $id, $lang );
+			$ICL_Pro_Translation->fix_links_to_translated_content( $id, $lang );
 		}
 		if ( ! is_wp_error( $id ) ) {
 			$ret = $this->run_wpml_actions( $master_post, $trid, $lang, $id, $post_array );
 		} else {
-			$ret = false;
+			throw new Exception( $id->get_error_message() );
 		}
 
 		return $ret;
@@ -101,12 +106,12 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 
 		// make sure post name is copied
 		$this->wpdb->update( $this->wpdb->posts, array( 'post_name' => $master_post->post_name ), array( 'ID' => $id ) );
-		update_post_meta( $id, '_icl_lang_duplicate_of', $master_post->ID );
 
 		if ( $this->sitepress->get_option( 'sync_post_taxonomies' ) ) {
 			$this->duplicate_taxonomies( $master_post_id, $lang );
 		}
 		$this->duplicate_custom_fields( $master_post_id, $lang );
+		update_post_meta( $id, '_icl_lang_duplicate_of', $master_post->ID );
 
 		// Duplicate post format after the taxonomies because post format is stored
 		// as a taxonomy by WP.
@@ -156,10 +161,10 @@ class WPML_Post_Duplication extends WPML_WPDB_And_SP_User {
 
 	private function save_duplicate( $post_array, $lang ) {
 		if ( isset( $post_array[ 'ID' ] ) ) {
-			$id = wp_update_post( $post_array );
+			$id = wp_update_post( $post_array, true );
 		} else {
 			$create_post_helper = wpml_get_create_post_helper();
-			$id                 = $create_post_helper->icl_insert_post( $post_array, $lang );
+			$id                 = $create_post_helper->insert_post( $post_array, $lang, true );
 		}
 
 		return $id;

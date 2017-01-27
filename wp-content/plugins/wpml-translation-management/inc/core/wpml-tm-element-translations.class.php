@@ -15,10 +15,6 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 
 	public function init_hooks() {
 		add_action( 'wpml_cache_clear', array( $this, 'reload' ) );
-		add_filter( 'wpml_tm_get_element_id', array(
-			$this,
-			'get_element_id_filter'
-		), 10, 2 );
 		add_filter( 'wpml_tm_translation_status', array(
 			$this,
 			'get_translation_status_filter'
@@ -33,35 +29,11 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 		$this->element_type_prefix_cache = array();
 	}
 
-	public function get_element_id_filter( $empty, $arg ) {
-		$trid = $arg['trid'];
-		$language_code = $arg['language_code'];
-		return $this->get_element_id($trid, $language_code);
-	}
-
-	/**
-	 * @param int    $trid
-	 * @param string $language_code
-	 *
-	 * @return bool|int element_id for trid/lang combination or false if not found
-	 */
-	public function get_element_id( $trid, $language_code ) {
-		if ( (bool) $trid === false || (bool) $language_code === false ) {
-
-			return false;
-		}
-		$element_id = $this->tm_records
-			->icl_translations_by_trid_and_lang( $trid, $language_code )
-			->element_id();
-
-		return $element_id > 0 ? $element_id : false;
-	}
-
 	public function is_update_needed( $trid, $language_code ) {
 		if ( isset( $this->update_status_cache[ $trid ][ $language_code ] ) ) {
 			$needs_update = $this->update_status_cache[ $trid ][ $language_code ];
 		} else {
-			$this->get_job_id( $trid, $language_code );
+			$this->init_job_id( $trid, $language_code );
 			$needs_update = isset( $this->update_status_cache[ $trid ][ $language_code ] )
 				? $this->update_status_cache[ $trid ][ $language_code ] : 0;
 		}
@@ -77,11 +49,10 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 	 */
 	public function get_element_type_prefix( $trid, $language_code ) {
 		if ( $trid && $language_code && ! isset( $this->element_type_prefix_cache[ $trid ] ) ) {
-			$this->get_job_id( $trid, $language_code );
+			$this->init_job_id( $trid, $language_code );
 		}
 
-		return $trid && isset( $this->element_type_prefix_cache[ $trid ] )
-			? $this->element_type_prefix_cache[ $trid ] : "";
+		return $trid && array_key_exists( $trid, $this->element_type_prefix_cache ) ? $this->element_type_prefix_cache[ $trid ] : '';
 	}
 
 	public function get_translation_status_filter( $empty, $args ) {
@@ -100,7 +71,7 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 		if ( isset( $this->translation_status_cache[ $trid ][ $language_code ] ) ) {
 			$status = $this->translation_status_cache[ $trid ][ $language_code ];
 		} else {
-			$this->get_job_id( $trid, $language_code );
+			$this->init_job_id( $trid, $language_code );
 			$status = isset( $this->translation_status_cache[ $trid ][ $language_code ] )
 				? $this->translation_status_cache[ $trid ][ $language_code ] : 0;
 		}
@@ -108,7 +79,7 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 		return (int) $status;
 	}
 
-	public function get_job_id( $trid, $target_lang_code ) {
+	public function init_job_id( $trid, $target_lang_code ) {
 		global $wpdb, $wpml_language_resolution;
 
 		if ( ! isset( $this->job_id_cache[ $trid ][ $target_lang_code ] ) ) {
@@ -134,8 +105,6 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 				$this->cache_job_in_lang( $jobs, $lang_code, $trid );
 			}
 		}
-
-		return $job_id = $this->job_id_cache[ $trid ][ $target_lang_code ];
 	}
 
 	/**

@@ -136,8 +136,8 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			// if we have something in the basket
 			if ( $basket_items_count > 0 && ( !isset($_GET['clear_basket']) || $_GET['clear_basket'] != 1 ) && ( !isset($_GET['action']) || $_GET['action'] != 'delete' ) ){
 
-				$text =  __( 'The items you have selected are now in the translation basket &ndash;', 'sitepress' );
-				$text .= ' ' . sprintf( __( '<a href="%s">Send to translation &raquo;</a>', 'sitepress' ), $basket_link );
+				$text =  __( 'The items you have selected are now in the translation basket &ndash;', 'wpml-translation-management' );
+				$text .= ' ' . sprintf( __( '<a href="%s">Send to translation &raquo;</a>', 'wpml-translation-management' ), $basket_link );
 
 				// translation management pages
 				$message_args = array(
@@ -347,7 +347,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 									self::$messages[ ] = array(
 										'type' => 'update',
 										'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already in progress.',
-										                       'sitepress' ),
+										                       'wpml-translation-management' ),
 										                   $post_title,
 										                   $language_name )
 									);
@@ -356,7 +356,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 									self::$messages[ ] = array(
 										'type' => 'update',
 										'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already waiting for translator.',
-										                       'sitepress' ),
+										                       'wpml-translation-management' ),
 										                   $post_title,
 										                   $language_name )
 									);
@@ -367,7 +367,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 							self::$messages[ ] = array(
 								'type' => 'update',
 								'text' => sprintf( __( 'Post "%s" will be ignored for %s, because it is an original post.',
-								                       'sitepress' ),
+								                       'wpml-translation-management' ),
 								                   $post_title,
 								                   $language_name )
 							);
@@ -422,7 +422,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			if ( empty( $string_ids ) ) {
 				self::$messages[ ]      = array(
 					'type' => 'error',
-					'text' => __( 'Please select at least one document to translate.', 'sitepress' )
+					'text' => __( 'Please select at least one document to translate.', 'wpml-translation-management' )
 				);
 				self::update_basket();
 				return false;
@@ -432,7 +432,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			if ( empty( $target_languages ) ) {
 				self::$messages[ ]      = array(
 					'type' => 'error',
-					'text' => __( 'Please select at least one language to translate into.', 'sitepress' )
+					'text' => __( 'Please select at least one language to translate into.', 'wpml-translation-management' )
 				);
 				self::update_basket();
 				return false;
@@ -446,7 +446,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 					self::$messages[ ] = array(
 						'type' => 'update',
 						'text' => __( 'You cannot add strings  in this language to the basket since it already contains posts or strings of another source language!
-						Either submit the current basket and then add the post or delete the posts of differing language in the current basket', 'sitepress' )
+						Either submit the current basket and then add the post or delete the posts of differing language in the current basket', 'wpml-translation-management' )
 						);
 					self::update_basket();
 					return false;
@@ -476,7 +476,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 						self::$messages[ ] = array(
 							'type' => 'update',
 							'text' => sprintf( __( 'String "%s" will be ignored for %s, because translation is already waiting for translator.',
-							                       'sitepress' ),
+							                       'wpml-translation-management' ),
 							                   $string_translation->value,
 							                   $target_language_name )
 						);
@@ -554,31 +554,6 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			self::$basket = false;
 			delete_option( self::ICL_TRANSLATION_JOBS_BASKET );
 			self::update_basket();
-		}
-
-		/**
-		 * Changes structure of basket to be flat.
-		 * Information of type is stored in $flat_basket[number]['type']
-		 * @return array rearranged basket
-		 */
-		public static function get_flat_basket() {
-			self::get_basket();
-
-			$flat_basket = array();
-
-			$flat_index = 0;
-
-			$basket_items_types = self::get_basket_items_types();
-			foreach ( $basket_items_types as $item_type_name => $item_type ) {
-				foreach ( self::$basket[ $item_type_name ] as $id => $item ) {
-					$flat_basket[ $flat_index ]           = $item;
-					$flat_basket[ $flat_index ][ 'type' ] = $item_type_name;
-					$flat_basket[ $flat_index ][ 'id' ]   = $id;
-					$flat_index ++;
-				}
-			}
-
-			return $flat_basket;
 		}
 
 		/**
@@ -719,12 +694,6 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 		public static function get_source_language() {
 			self::get_basket();
 			return isset( self::$basket[ 'source_language' ] ) ? self::$basket[ 'source_language' ] : false;
-		}
-
-		public static function set_target_languages( $target_languages ) {
-			self::get_basket();
-			self::$basket[ 'target_languages' ] = $target_languages;
-			self::update_basket();
 		}
 
 		private static function sync_target_languages() {
@@ -890,7 +859,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 					self::$messages[ ] = array(
 						'type' => 'update',
 						'text' => __( 'You cannot add posts in this language to the basket since it already contains posts or strings of another source language!
-						Either submit the current basket and then add the post or delete the posts of differing language in the current basket', 'sitepress' )
+						Either submit the current basket and then add the post or delete the posts of differing language in the current basket', 'wpml-translation-management' )
 					);
 					self::update_basket();
 
@@ -902,7 +871,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			if ( ! isset( self::$translation_action ) || empty( self::$translation_action ) ) {
 				self::$messages[ ]      = array(
 					'type' => 'error',
-					'text' => __( 'Please select at least one language to translate into.', 'sitepress' )
+					'text' => __( 'Please select at least one language to translate into.', 'wpml-translation-management' )
 				);
 				self::$dashboard_select = $data; // pre fill dashboard
 				$data_is_valid          = false;
@@ -923,7 +892,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			if ( ! $data_is_valid ) {
 				self::$messages[ ]      = array(
 					'type' => 'error',
-					'text' => __( 'Please select at least one document to translate.', 'sitepress' )
+					'text' => __( 'Please select at least one document to translate.', 'wpml-translation-management' )
 				);
 				self::$dashboard_select = $data; // pre-populate dashboard
 				$data_is_valid          = false;

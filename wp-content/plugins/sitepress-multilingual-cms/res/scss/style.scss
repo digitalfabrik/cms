@@ -1,13 +1,157 @@
-@import "mixins";
+@import "_mixins";
+@import "_variables";
+@import "wpml-icons";
+
+/***********************************************************
+	Helper classes
+*************************************************************/
+.text-center {
+	text-align: center;
+}
+.text-left {
+	text-align: left;
+}
+.text-right {
+	text-align: right;
+}
+.wpml-margin-top-lg {
+	margin-top: $margin-lg;
+}
+.wpml-margin-bottom-lg {
+	margin-bottom: $margin-lg;
+}
+.wpml-margin-top-base {
+	margin-top: $margin-base;
+}
+.wpml-margin-bottom-base {
+	margin-bottom: $margin-base;
+}
+.wpml-margin-top-sm {
+	margin-top: $margin-sm;
+}
+.wpml-margin-bottom-sm {
+	margin-bottom: $margin-sm;
+}
+.clearfix {
+	@include clearfix();
+}
+.truncate {
+	@extend %truncate;
+}
+pre {
+	max-width: 100%;
+	overflow-x: auto;
+}
+
+/***********************************************************
+	WPML Boxes and Tables
+*************************************************************/
+.wpml-wrap {
+	@extend %wpml-wrap;
+}
+
+.widefat .wpml-col-ico {
+	width: 26px;
+	text-align: center;
+}
+
+.wpml-col-title {
+	width: 30%;
+	strong {
+		font-size: 1.077em;
+	}
+	@media(max-width: $wp-breakpoint-max) {
+		width: 40%;
+	}
+	a {
+		cursor: pointer;
+	}
+}
+
+.wpml-col-title-flag {
+	.row-actions {
+		margin-left: 20px + 6px;
+	}
+}
+.wpml-title-flag {
+	margin-right: 5px;
+	position: relative;
+	top: 1px;
+	width: 20px;
+	.wpml-header-translation &,
+	.wpml-header-original & {
+		margin-left: 5px;
+	}
+	img {
+		margin: 0;
+		max-width: 100%;
+		height: auto;
+	}
+}
+
+.wpml-col-languages {
+	img {
+		max-width: 100%;
+		height: auto;
+		margin: 0;
+	}
+	&>a,
+	&>span {
+		display: inline-block;
+		width: 20px;
+		text-align: center;
+		padding: 2px 1px;
+		float: left;
+		margin: 0 1px;
+		[dir="rtl"] & {
+			float: right
+		}
+	}
+	&>span>a {
+		display: block;
+	}
+	a {
+		cursor: pointer;
+	}
+}
+
+.wpml-col-url {
+	white-space: nowrap
+}
+
+.wpml-list-table {
+	a {
+		cursor: pointer;
+	}
+	th, td {
+		&:not(.check-column):first-child {
+			padding-left: $margin-sm;
+		}
+		&:last-child {
+			padding-right: $margin-sm;
+		}
+	}
+	//Overwrite WP styling for small screens
+	@media screen and (max-width: 782px) {
+		tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
+			display: auto;
+		}
+	}
+
+}
+
+.wpml-table-info {
+	font-size: 1.2em;
+}
 
 .wpml-section {
-	clear:         both;
-	overflow:      hidden;
-	margin:        30px 0 0 0;
-	padding:       20px;
-	max-width:     900px;
+	clear: both;
+	overflow: hidden;
+	margin: 30px 0 0 0;
+	padding: 20px;
+	max-width: 900px;
 	border-bottom: 1px solid #ededed;
-	background:    #fff;
+	background: #fff;
 
 	&:first-child {
 		margin-top: 0;
@@ -40,9 +184,9 @@
 	}
 
 	.icl_languages_order_ajx_resp {
-		display:     inline-block;
+		display: inline-block;
 		padding-top: 5px;
-		color:       #E68A00;
+		color: #E68A00;
 	}
 
 	input[type="radio"] {
@@ -51,23 +195,54 @@
 	/* Sections general styles END */
 }
 
-.icl-admin-message {
-	border-left:      4px solid #9bc8f0;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
-	padding:          1em;
-	margin:           3em 20px 0 0;
-	&:first-child {
-		margin-top: 0;
+.wpml-tabs {
+	margin-top: $margin-base;
+	@extend .clearfix;
+	.nav-tab {
+		cursor: pointer;
 	}
-	&.small {
-		padding: 0 0.5em;
-		> * {
-			margin: 0.2em;
+	@media (max-width: 1280px) {
+		.nav-tab {
+			margin-left: .2em;
+			padding: 5px;
+			margin-top: 5px;
 		}
-		.icl-admin-message-wrapper {
-			padding: 0.5em;
-		}
+	}
+	.nav-tab-active, .nav-tab-active:focus, .nav-tab-active:focus:active, .nav-tab-active:hover {
+		background: #fff;
+		border-bottom: #fff;
+		padding-bottom: 6px;
+	}
+}
+
+.icl-admin-message,
+.icl-admin-message-information,
+.icl-admin-message-information-inline,
+.icl-admin-message-warning,
+.icl-admin-message-error{
+	clear: both;
+	//copy WP .notice style
+	background: #fff;
+	border-left: 4px solid #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
+	margin: 5px 15px 2px;
+	padding: 1px 12px;
+	.wrap & {
+		margin: 5px 0 15px;
+	}
+	p {
+		margin: .5em 0;
+		padding: 2px;
+	}
+}
+.icl-admin-message,
+.icl-admin-message-information,
+.icl-admin-message-warning,
+.icl-admin-message-error {
+	ul, ol {
+		max-height: 10em;
+		overflow:   auto;
 	}
 	&.right > * {
 		text-align: right;
@@ -85,134 +260,39 @@
 			}
 		}
 	}
-	.icl-admin-message-wrapper {
-		position: relative;
-		padding:  2em 1em;
-		> {
-			ul, ol {
-				max-height: 10em;
-				overflow:   auto;
-			}
-		}
-	}
-	.icl-admin-message-hide {
-		position:        absolute;
-		top:             5px;
-		right:           1px;
-		padding:         20px 15px 0 3px;
-		font-size:       13px;
-		text-decoration: none;
-		line-height:     1;
-		&:before {
-			background:             0 0;
-			color:                  #bbb;
-			content:                '\f153';
-			display:                block !important;
-			font:                   400 16px/1 dashicons;
-			height:                 20px;
-			text-align:             center;
-			width:                  20px;
-			-webkit-font-smoothing: antialiased !important;
-			position:               absolute;
-			left:                   -18px;
-			margin-top:             -1px;
-			transition:             all .1s ease-in-out;
-		}
-		&:hover:before {
-			color: #c00;
-		}
-	}
-	.icl-admin-message-dismiss {
-		position: absolute;
-		right:    0.25em;
-		bottom:   0.25em;
-		display:  block;
-	}
+}
+
+.icl-admin-message {
+	border-left:      4px solid #9bc8f0;
 }
 
 .icl-admin-message-information {
 	border-left:      4px solid #d5e8f9;
-	padding:          1px 12px;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
-
-	&:first-child {
-		margin-top: 0;
-	}
-	&.small {
-		padding: 0 0.5em;
-		> * {
-			margin: 0.2em;
-		}
-		.icl-admin-message-wrapper {
-			padding: 0.5em;
-		}
-	}
-	&.right > * {
-		text-align: right;
-	}
-	&.center > * {
-		text-align: center;
-		> {
-			ul, ol {
-				text-align:   left;
-				padding-left: 1em !important;
-				font-weight:  normal;
-			}
-			ul {
-				list-style-type: disc;
-			}
-		}
-	}
 }
 
 .icl-admin-message-information-inline {
 	border-left:      4px solid #d5e8f9;
-	padding:          1px 12px;
-	margin-top:       5px;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .icl-admin-message-warning,
 .icl-admin-message-error {
 	border-left:      4px solid #fff366;
-	padding:          1px 12px;
-	background-color: #fff;
-	box-shadow:       0 1px 1px 0 rgba(0, 0, 0, 0.1);
-	&:first-child {
-		margin-top: 0;
-	}
-	&.small {
-		padding: 0 0.5em;
-		> * {
-			margin: 0.2em;
-		}
-		.icl-admin-message-wrapper {
-			padding: 0.5em;
-		}
-	}
-	&.right > * {
-		text-align: right;
-	}
-	&.center > * {
-		text-align: center;
-		> {
-			ul, ol {
-				text-align:   left;
-				padding-left: 1em !important;
-				font-weight:  normal;
-			}
-			ul {
-				list-style-type: disc;
-			}
-		}
-	}
 }
 
 .icl-admin-message-error {
 	border-color:     #dd3d36;
 	background-color: #FFE6E5;
+}
+
+.otgs-is-dismissible {
+	position: relative;
+	padding-right: 38px;
+	.notice-dismiss {
+		text-decoration: none;
+	}
+	p [class*="button-"] {
+		margin: -5px 5px;
+	}
 }
 
 .icl-account-setup {
@@ -223,7 +303,7 @@
 	padding:          5px;
 	width:            65%;
 	border:           1px solid #f00;
-	border-radius:    3px;
+	border-radius:    2px;
 	background-color: #ffb7b7;
 	color:            #000;
 	p {
@@ -239,7 +319,7 @@
 .icl_form_success {
 	padding:          5px;
 	border:           1px solid #fff;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #336600;
 	color:            #fff;
 }
@@ -287,13 +367,17 @@
 	}
 }
 
-.icl_advanced_feature {
-	/*display:none;*/
+
+td.icl_translations a {
+	display: inline-block;
+	width: 20px;
+	text-align: center;
+	padding: 2px 1px;
 }
 
 .icl_translations_table {
 	border:        1px solid #8CCEEA;
-	border-radius: 3px;
+	border-radius: 2px;
 	tr.icl_odd_row {
 		background-color: #EFF8FC;
 	}
@@ -311,6 +395,8 @@
 		color:        #fff;
 	}
 }
+
+
 
 #icl_post_add_notes {
 	h4 {
@@ -354,7 +440,7 @@
 	padding:          3px 10px 3px 9px;
 	width:            207px;
 	border:           1px solid #8cceea;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #eff8fc;
 }
 
@@ -377,7 +463,7 @@
 	margin-bottom:    0;
 	padding:          10px;
 	border:           1px solid #8cceea;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #eff8fc;
 
 	p {
@@ -399,7 +485,7 @@
 	margin:           5px;
 	padding:          3px 5px;
 	border:           1px solid #D54E21;
-	border-radius:    5px;
+	border-radius:    2px;
 	background-color: #D54E21;
 	color:            #FFFFFF;
 }
@@ -409,28 +495,16 @@
 	font-weight: bold;
 }
 
-
-.wpml-tab-controls {
-	.nav-tab {
-		background-color: #efefef;
-		color:            #000;
-		&:hover {
-			background-color: #fff;
-		}
-	}
-
-	.nav-tab-active {
-		border-bottom-color: #fff;
-		background-color:    #fff;
-		font-weight:         bold;
-	}
-}
-
 #icon-wpml {
 	background: transparent url(../img/icon.png) no-repeat;
 }
 
-.wpml-translation-management-menu-main-php .icon32, .wpml_page_wpml-sticky-links .icon32, .wpml-string-translation-menu-string-translation-php .icon32, .wpml-translation-analytics-menu-main-php .icon32, .wpml-cms-nav-menu-navigation-php .icon32, .wpml_page_wpml-media .icon32 {
+.wpml-translation-management-menu-main-php .icon32,
+.wpml_page_wpml-sticky-links .icon32,
+.wpml-string-translation-menu-string-translation-php .icon32,
+.wpml-translation-analytics-menu-main-php .icon32,
+.wpml-cms-nav-menu-navigation-php .icon32,
+.wpml_page_wpml-media .icon32 {
 	width: 42px;
 }
 
@@ -468,7 +542,8 @@
 		background-image: url(../img/icon16-sprite.png);
 	}
 	&.sitepress-multilingual-cms {
-		display:             none;
+		background-image: url("../img/icon-16-black.png");
+		vertical-align: middle;
 		background-position: 0;
 	}
 	&.wpml-translation-analytics {
@@ -711,7 +786,7 @@ img.icl_als_iclflag {
 		color:          #ccc;
 		vertical-align: middle;
 		font-size:      12px;
-		cursor:         pointer;
+		cursor: help;
 
 		&:hover {
 			color:      #007cbd;
@@ -724,21 +799,12 @@ img.icl_als_iclflag {
 	float:       left;
 	margin-left: 30px;
 	width:       570px;
+  	@extend .clearfix;
 
 	[dir="rtl"] & {
 		float:        right;
 		margin-left:  0;
 		margin-right: 30px;
-	}
-
-	&:before,
-	&:after {
-		display: table;
-		content: " ";
-	}
-
-	&:after {
-		clear: both
 	}
 
 	.buttons-wrap {
@@ -758,13 +824,21 @@ img.icl_als_iclflag {
 			/* margin-top: 0;*/
 		}
 	}
+
+	.wpml-form-message {
+		&.update-nag {
+			font-size: inherit;
+		}
+	}
 }
 
+//TODO: Will be changed with .wpml-wrap
 .icl_tm_wrap {
 	padding:          10px;
 	border:           1px solid #CCCCCC;
 	background-color: #ffffff;
-	clear: both;
+	clear:            both;
+	overflow:         hidden;
 
 	.form-table {
 		border-collapse: separate;
@@ -776,14 +850,7 @@ img.icl_als_iclflag {
 }
 
 .wpml-section-content-inner {
-	&:before, &:after {
-		display: table;
-		content: " ";
-	}
-
-	&:after {
-		clear: both
-	}
+	@extend .clearfix;
 }
 
 .wpml-section-content, .wpml-section-content-inner {
@@ -812,4 +879,18 @@ img.icl_als_iclflag {
 	direction: ltr;
 }
 
-@import 'jquery-ui/style';
+.wp-core-ui .button-lg {
+  font-size: 15px;
+  line-height: 38px;
+  height: 40px;
+  padding: 0 15px 1px;
+}
+
+.woocommerce_page_wc-settings .select2-container .select2-choice .select2-arrow b:after {
+	content: none;
+}
+
+div.wpml-simple-lang-selector {
+	float:   none !important;
+	display: inline-block !important;
+}
