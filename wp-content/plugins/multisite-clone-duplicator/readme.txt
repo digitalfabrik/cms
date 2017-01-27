@@ -1,9 +1,9 @@
 === MultiSite Clone Duplicator ===
-Contributors: pdargham, julienog, globalis
+Contributors: pdargham, julienog, daviddaug, globalis
 Tags: duplicate, clone, copy, duplication, duplicator, factory, multisite, site, blog, network, wpmu, new blog
-Requires at least: 3.5.0
-Tested up to: 4.1.2
-Stable tag: 1.3.2
+Requires at least: 4.0.0
+Tested up to: 4.7.1
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,9 @@ It allows you to clone any site of your network into a new one : all data, files
 
 It is useful when you want to create multiple sites from the same template : Don't waste your time copying the same configuration again and again !  
   
-Simple and user-friendly, this plugin extends WordPress core network's functionalities without polluting the dashboard.  
+Simple and user-friendly, this plugin extends WordPress core network's functionalities without polluting the dashboard.
+
+WARNING : If you clone the primary site, you must use ```mucd_default_primary_tables_to_copy``` filter to declare plugins and custom database tables, or your cloned site won't be complete
 
 = Features: =
 * Clones any site of your wordpress multisite installation
@@ -90,6 +92,19 @@ As of now, following languages are supported : English (en_US), French (fr_FR), 
 5. **Log warning**
 
 == Changelog ==
+
+= 1.4.1 =
+* Fix wp_cli activation
+
+= 1.4.0 =
+* Added select2 support (Ajax dropdown when selecting site)
+* Restrict activate to network admin only (network admin area)
+* Default logs path moved in upload dir
+* Added language zh_CN
+* Bugfix : SSL compatibility
+
+= 1.3.3 =
+* Bugfix : Compatibility : WordPress 4.7 (wp_get_sites was deprecated)
 
 = 1.3.2 =
 * Bugfix : Check on admin referer broke some admin page

@@ -11,7 +11,12 @@ if ( ! function_exists( 'add_action' ) ) {
 }
 
 if ( ! is_admin() ) {
-	return NULL;
+	return;
+}
+
+// If is AJAX Call.
+if ( defined('DOING_AJAX') && DOING_AJAX ) {
+	return;
 }
 
 function _mw_adminimize_get_all_widgets() {
@@ -40,7 +45,6 @@ function _mw_adminimize_get_sidebars_widgets() {
 }
 
 function _mw_adminimize_get_registered_sidebars() {
-
 	global $wp_registered_sidebars;
 
 	return $wp_registered_sidebars;

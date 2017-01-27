@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Advanced Custom Field - version 3.4.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/advanced-custom-fields\n"
 "POT-Creation-Date: 2013-10-22 18:19+0100\n"
-"PO-Revision-Date: 2015-11-04 09:31+1000\n"
+"PO-Revision-Date: 2016-04-04 10:08+1000\n"
 "Last-Translator: Elliot Condon <e@elliotcondon.com>\n"
 "Language-Team: RVOLA <hello@rvola.com>\n"
 "Language: fr\n"
@@ -788,7 +788,7 @@ msgstr "Problèmes connus"
 
 #: ../core/controllers/field_groups.php:366
 msgid ""
-"Do to the sizable changes surounding Add-ons, field types and action/filters, your website may not "
+"Due to the sizable changes surrounding Add-ons, field types and action/filters, your website may not "
 "operate correctly. It is important that you read the full"
 msgstr ""
 "À cause des gros changements effectués autour des Add-ons, types de champs et actions/filtres, votre site "
@@ -1511,7 +1511,7 @@ msgid "Formatting"
 msgstr "Formatage  "
 
 #: ../core/fields/text.php:177 ../core/fields/textarea.php:142
-msgid "Effects value on front end"
+msgid "Affects value on front end"
 msgstr "Modifie le contenu sur la partie publique du site"
 
 # @ acf
@@ -1600,7 +1600,7 @@ msgid "Save format"
 msgstr "Sauvegarder format"
 
 #: ../core/fields/date_picker/date_picker.php:127
-msgid "This format will determin the value saved to the database and returned via the API"
+msgid "This format will determine the value saved to the database and returned via the API"
 msgstr "Ce format déterminera la valeur enregistrée dans la base de données et retournée par l‘API"
 
 #: ../core/fields/date_picker/date_picker.php:128

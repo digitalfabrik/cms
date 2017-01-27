@@ -38,7 +38,7 @@ if ( ! is_multisite() ) {
 		$cap = 'update_plugins';
 	else
 		$cap = 'update_themes';
-	$submenu[ 'index.php' ][10] = array( sprintf( __('Updates %s'), "<span class='update-plugins count-{$update_data['counts']['total']}' title='{$update_data['title']}'><span class='update-count'>" . number_format_i18n($update_data['counts']['total']) . "</span></span>" ), $cap, 'update-core.php');
+	$submenu[ 'index.php' ][10] = array( sprintf( __('Updates %s'), "<span class='update-plugins count-{$update_data['counts']['total']}'><span class='update-count'>" . number_format_i18n($update_data['counts']['total']) . "</span></span>" ), $cap, 'update-core.php');
 	unset( $cap );
 }
 
@@ -182,7 +182,10 @@ if ( ! is_multisite() ) {
 	add_action('admin_menu', '_add_themes_utility_last', 101);
 }
 /**
+ * Adds the (theme) 'Editor' link to the bottom of the Appearance menu.
  *
+ * @access private
+ * @since 3.0.0
  */
 function _add_themes_utility_last() {
 	// Must use API on the admin_menu hook, direct modification is only possible on/before the _admin_menu hook
@@ -262,7 +265,7 @@ $_wp_real_parent_file['page-new.php'] = 'edit.php?post_type=page';
 $_wp_real_parent_file['wpmu-admin.php'] = 'tools.php';
 $_wp_real_parent_file['ms-admin.php'] = 'tools.php';
 
-// ensure we're backwards compatible
+// Ensure backward compatibility.
 $compat = array(
 	'index' => 'dashboard',
 	'edit' => 'posts',

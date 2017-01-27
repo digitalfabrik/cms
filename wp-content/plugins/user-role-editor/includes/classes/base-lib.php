@@ -16,9 +16,9 @@ class URE_Base_Lib {
     protected static $instance = null; // object exemplar reference  
     protected $options_id = ''; // identifire to save/retrieve plugin options to/from wp_option DB table
     protected $options = array(); // plugin options data
-    public $multisite = false;
-    public $active_for_network = false;
-    public $blog_ids = null;
+    protected $multisite = false;
+    protected $active_for_network = false;
+    protected $blog_ids = null;
     protected $main_blog_id = 0;
 
     
@@ -30,33 +30,11 @@ class URE_Base_Lib {
         return self::$instance;
     }
     // end of get_instance()
-    
-/**
- * Every child class should override get_instance() method with its own version for compatibility purpose.
- * We do not use the only get_instance() method at the base class for the compatibility with PHP 5.2, 
- * as get_called_class() function and 'late static binding' is available for PHP 5.3+ only. 
- * 
-    public static function get_instance($options_id = '') {
-
-        $class = get_called_class();
-        if (self::$instance === null) {
-            if (empty($options_id)) {
-                throw new Exception($class . '::get_inctance() - Error: plugin options ID string is required');
-            }
-            // new static() will work too
-            self::$instance = new $class($options_id);
-        }
-
-        return self::$instance;
-    }
-    // end of get_instance()
- 
- **/    
-    
+        
 
     /**
      * class constructor
-     * @param string $option_name   identifire to save/retrieve plugin options to/from wp_option DB table
+     * @param string $options_id  to save/retrieve plugin options to/from wp_option DB table
      */
     protected function __construct($options_id) {
 
@@ -64,14 +42,45 @@ class URE_Base_Lib {
         if ($this->multisite) {
             $this->blog_ids = $this->get_blog_ids();
             // get Id of 1st (main) blog
-            $this->main_blog_id = $this->blog_ids[0][0];
+            $this->main_blog_id = $this->get_main_site();
         }
 
         $this->init_options($options_id);
 
     }
     // end of __construct()
+
     
+    public function get($property_name) {
+        
+        if (!property_exists($this, $property_name)) {
+            syslog(LOG_ERR, 'Lib class does not have such property '. $property_name);
+        }
+        
+        return $this->$property_name;
+    }
+    // end of get_property()
+    
+    
+    public function set($property_name, $property_value) {
+        
+        if (!property_exists($this, $property_name)) {
+            syslog(LOG_ERR, 'Lib class does not have such property '. $property_name);
+        }
+        
+        $this->$property_name = $property_value;
+    }
+    // end of get_property()
+    
+
+    public function get_main_site() {
+        global $current_site;
+        
+        return $current_site->blog_id;
+    }
+    // end of get_main_site()
+
+
 
     /**
      * Returns the array of multisite WP blogs IDs
@@ -129,19 +138,19 @@ class URE_Base_Lib {
         $result = 0;
         if ($request_type == 'get') {
             if (isset($_GET[$var_name])) {
-                $result = $_GET[$var_name];
+                $result = filter_var($_GET[$var_name], FILTER_SANITIZE_STRING);
             }
         } else if ($request_type == 'post') {
             if (isset($_POST[$var_name])) {
                 if ($var_type != 'checkbox') {
-                    $result = $_POST[$var_name];
+                    $result = filter_var($_POST[$var_name], FILTER_SANITIZE_STRING);;
                 } else {
                     $result = 1;
                 }
             }
         } else {
             if (isset($_REQUEST[$var_name])) {
-                $result = $_REQUEST[$var_name];
+                $result = filter_var($_REQUEST[$var_name], FILTER_SANITIZE_STRING);
             }
         }
 
@@ -228,23 +237,6 @@ class URE_Base_Lib {
     }
     // end of check_version()
 
-    /**
-     * returns 'selected' HTML cluster if $value matches to $etalon
-     * 
-     * @param string $value
-     * @param string $etalon
-     * @return string
-     */
-    public function option_selected($value, $etalon) {
-        $selected = '';
-        if (strcasecmp($value, $etalon) == 0) {
-            $selected = 'selected="selected"';
-        }
-
-        return $selected;
-    }
-    // end of option_selected()
-
 
     public function get_current_url() {
         global $wp;
@@ -254,6 +246,34 @@ class URE_Base_Lib {
     }
     // end of get_current_url()
 
+    
+    /**
+     * Returns comma separated list from the first $items_count element of $full_list array
+     * 
+     * @param array $full_list
+     * @param int $items_count
+     * @return string
+     */
+    public function get_short_list_str($full_list, $items_count=3) {
+     
+        $short_list = array(); $i = 0;
+        foreach($full_list as $key=>$item) {            
+            if ($i>=$items_count) {
+                break;
+            }
+            $short_list[] = $item;
+            $i++;
+        }
+        
+        $str = implode(', ', $short_list);
+        if ($items_count<count($full_list)) {
+            $str .= '...';
+        }
+        
+        return $str;
+    }    
+    //  end of get_short_list_str()
+    
     
     /**
      * Private clone method to prevent cloning of the instance of the
