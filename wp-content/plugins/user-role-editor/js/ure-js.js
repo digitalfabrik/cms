@@ -20,6 +20,97 @@
     });
 })(jQuery);
 
+var ure_ajax_get_caps_to_remove = null;
+
+jQuery(document).ready(function() {
+    
+// Get from the server a list of capabilities we can delete and show dialog to select what to delete
+    ure_ajax_get_caps_to_remove = {
+        url: ajaxurl,
+        type: 'POST',
+        dataType: 'html',
+        data: {
+            action: 'ure_ajax',
+            sub_action: 'get_caps_to_remove',
+            current_role: jQuery('#user_role').val(),
+            network_admin: ure_data.network_admin,
+            wp_nonce: ure_data.wp_nonce
+        },
+        success: function (response) {
+            var data = jQuery.parseJSON(response);
+            if (typeof data.result !== 'undefined') {
+                if (data.result === 'success') {
+                    jQuery('#ure_delete_capability_dialog .ure-input').html(data.html);
+                    ure_main.show_delete_capability_dialog();
+                } else if (data.result === 'failure') {
+                    alert(data.message);
+                } else {
+                    alert('Wrong response: ' + response)
+                }
+            } else {
+                alert('Wrong response: ' + response)
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, exception) {
+            alert("Ajax failure\n" + XMLHttpRequest.statusText);
+        },
+        async: true
+    };
+
+});
+
+// Main User Role Editor object
+var ure_main = {
+    selected_group: 'all', 
+    caps_counter: null,
+    class_prefix: 'ure-',
+        
+    show_delete_capability_dialog: function () {
+        jQuery('#ure_delete_capability_dialog').dialog({
+            dialogClass: 'wp-dialog',
+            modal: true,
+            autoOpen: true,
+            closeOnEscape: true,
+            width: 350,
+            height: 400,
+            resizable: false,
+            title: ure_data.delete_capability,
+            buttons: {
+                'Delete Capability': function () {
+                    if (!confirm(ure_data.delete_capability + ' - ' + ure_data.delete_capability_warning)) {
+                        return;
+                    }                    
+                    jQuery('#ure_remove_caps_form').submit();                    
+                    jQuery(this).dialog('close');
+                },
+                Cancel: function () {
+                    jQuery(this).dialog('close');
+                }
+            }
+        });
+        // translate buttons caption
+        jQuery('.ui-dialog-buttonpane button:contains("Delete Capability")').attr('id', 'dialog-delete-capability-button');
+        jQuery('#dialog-delete-capability-button').html(ure_ui_button_text(ure_data.delete_capability));
+        jQuery('.ui-dialog-buttonpane button:contains("Cancel")').attr('id', 'delete-capability-dialog-cancel-button');
+        jQuery('#delete-capability-dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
+        jQuery('#ure_remove_caps_select_all').click(this.remove_caps_auto_select);
+    },
+    
+    remove_caps_auto_select: function (event) {
+        if (event.shiftKey) {
+            jQuery('.ure-cb-column').each(function () {   // reverse selection
+                jQuery(this).prop('checked', !jQuery(this).prop('checked'));
+            });
+        } else {    // switch On/Off all checkboxes
+            jQuery('.ure-cb-column').prop('checked', jQuery('#ure_remove_caps_select_all').prop('checked'));
+
+        }
+    }
+
+};  // end of ure_main declaration
+//-------------------------------
+
+
 
 function ure_ui_button_text(caption) {
     var wrapper = '<span class="ui-button-text">' + caption + '</span>';
@@ -28,30 +119,30 @@ function ure_ui_button_text(caption) {
 }
 
 
+function ure_select_selectable_element(selectable_container, elements_to_select) {
+    // add unselecting class to all elements in the styleboard canvas except the ones to select
+    jQuery(".ui-selected", selectable_container).not(elements_to_select).removeClass("ui-selected").addClass("ui-unselecting");    
+    // add ui-selecting class to the elements to select
+    jQuery(elements_to_select).not(".ui-selected").addClass("ui-selecting");
+    // trigger the mouse stop event (this will select all .ui-selecting elements, and deselect all .ui-unselecting elements)
+    selectable_container.data("ui-selectable")._mouseStop(null);
+}
+
+
 jQuery(function ($) {
 
-    $('#ure_select_all').button({
-        label: ure_data.select_all
-    }).click(function (event) {
-        event.preventDefault();
-        ure_select_all(1);
-    });
-
-    if (typeof ure_current_role === 'undefined' || 'administrator' !== ure_current_role) {
-        $('#ure_unselect_all').button({
-            label: ure_data.unselect_all
-        }).click(function (event) {
-            event.preventDefault();
-            ure_select_all(0);
-        });
-
-        $('#ure_reverse_selection').button({
-            label: ure_data.reverse
-        }).click(function (event) {
-            event.preventDefault();
-            ure_select_all(-1);
-        });
-    }
+    ure_count_caps_in_groups();
+    ure_sizes_update();
+    $('#ure_select_all_caps').click(ure_auto_select_caps);
+    $('#granted_only').click(ure_show_granted_caps_only);
+    $('#ure_caps_groups_list').selectable({
+        selected: function( event, ui ) {
+            // do not allow multiple selection
+            $(ui.selected).siblings().removeClass("ui-selected");
+            ure_caps_refresh(ui.selected.id);
+        }
+    });            
+    ure_select_selectable_element($('#ure_caps_groups_list'), $('#ure_caps_group_all'));
 
     $('#ure_update_role').button({
         label: ure_data.update
@@ -75,7 +166,7 @@ jQuery(function ($) {
             modal: true,
             autoOpen: true,
             closeOnEscape: true,
-            width: 400,
+            width: 450,
             height: 230,
             resizable: false,
             title: ure_data.add_new_role_title,
@@ -131,7 +222,7 @@ jQuery(function ($) {
             modal: true,
             autoOpen: true,
             closeOnEscape: true,
-            width: 400,
+            width: 450,
             height: 230,
             resizable: false,
             title: ure_data.rename_role_title,
@@ -167,7 +258,7 @@ jQuery(function ($) {
         ure_show_rename_role_dialog();
     });
 
-
+        
     function ure_show_delete_role_dialog() {
         $('#ure_delete_role_dialog').dialog({
             dialogClass: 'wp-dialog',
@@ -205,7 +296,7 @@ jQuery(function ($) {
         label: ure_data.delete_role
     }).click(function (event) {
         event.preventDefault();
-        ure_show_delete_role_dialog();        
+        ure_show_delete_role_dialog();
     });
 
 
@@ -254,50 +345,16 @@ jQuery(function ($) {
         event.preventDefault();
         ure_show_add_capability_dialog();
     });
-
-
-    function ure_show_delete_capability_dialog() {
-        $('#ure_delete_capability_dialog').dialog({
-            dialogClass: 'wp-dialog',
-            modal: true,
-            autoOpen: true,
-            closeOnEscape: true,
-            width: 320,
-            height: 190,
-            resizable: false,
-            title: ure_data.delete_capability,
-            buttons: {
-                'Delete Capability': function () {
-                    if (!confirm(ure_data.delete_capability + ' - ' + ure_data.delete_capability_warning)) {
-                        return;
-                    }
-                    $(this).dialog('close');
-                    var user_capability_id = $('#remove_user_capability').val();
-                    $.ure_postGo(ure_data.page_url,
-                            {action: 'delete-user-capability', user_capability_id: user_capability_id, ure_nonce: ure_data.wp_nonce});
-                },
-                Cancel: function () {
-                    $(this).dialog('close');
-                }
-            }
-        });
-        // translate buttons caption
-        $('.ui-dialog-buttonpane button:contains("Delete Capability")').attr('id', 'dialog-delete-capability-button');
-        $('#dialog-delete-capability-button').html(ure_ui_button_text(ure_data.delete_capability));
-        $('.ui-dialog-buttonpane button:contains("Cancel")').attr('id', 'delete-capability-dialog-cancel-button');
-        $('#delete-capability-dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
         
-    }
-    
 
     if ($('#ure_delete_capability').length > 0) {
         $('#ure_delete_capability').button({
             label: ure_data.delete_capability
         }).click(function (event) {
             event.preventDefault();
-            ure_show_delete_capability_dialog()
+            $.ajax(ure_ajax_get_caps_to_remove);
         });
-    }
+    }            
 
     
     function ure_show_default_role_dialog() {
@@ -390,7 +447,7 @@ jQuery(function ($) {
 
 
 // change color of apply to all check box - for multi-site setup only
-function ure_applyToAllOnClick(cb) {
+function ure_apply_to_all_on_click(cb) {
     el = document.getElementById('ure_apply_to_all_div');
     if (cb.checked) {
         el.style.color = '#FF0000';
@@ -398,7 +455,7 @@ function ure_applyToAllOnClick(cb) {
         el.style.color = '#000000';
     }
 }
-// end of ure_applyToAllOnClick()
+// end of ure_apply_to_all_on_click()
 
 
 // turn on checkbox back if clicked to turn off
@@ -410,47 +467,49 @@ function ure_turn_it_back(control) {
 // end of ure_turn_it_back()
 
 
-/**
- * Manipulate mass capability checkboxes selection
- * @param {bool} selected
- * @returns {none}
- */
-function ure_select_all(selected) {
-
+function ure_apply_selection(cb_id) {
     var qfilter = jQuery('#quick_filter').val();
-    var form = document.getElementById('ure_form');
-    for (i = 0; i < form.elements.length; i++) {
-        el = form.elements[i];
-        if (el.type !== 'checkbox') {
-            continue;
+    var parent_div = jQuery('#ure_cap_div_'+ cb_id);
+    var disabled = jQuery('#'+ cb_id).attr('disabled');
+    var result = false;
+    if (parent_div.hasClass(ure_main.class_prefix + ure_main.selected_group) && // make selection inside currently selected group of capabilities only
+        !parent_div.hasClass('hidden') && disabled!=='disabled') {   // select not hidden and not disabled checkboxes (capabilities) only
+        //  if quick filter is not empty, then apply selection to the tagged element only
+        if (qfilter==='' || parent_div.hasClass('ure_tag')) {            
+            result = true;
         }
-        if (el.name === 'ure_caps_readable' || el.name === 'ure_show_deprecated_caps' ||
-                el.name === 'ure_apply_to_all' || el.disabled ||
-                el.name.substr(0, 8) === 'wp_role_') {
-            continue;
-        }
-        if (qfilter !== '' && !form.elements[i].parentNode.ure_tag) {
-            continue;
-        }
-        if (selected >= 0) {
-            form.elements[i].checked = selected;
-        } else {
-            form.elements[i].checked = !form.elements[i].checked;
-        }
+    }
+    
+    return result;
+}
 
+
+function ure_auto_select_caps(event) {
+    
+    if (event.shiftKey) {
+        jQuery('.ure-cap-cb').each(function () {   // reverse selection
+            if (ure_apply_selection(this.id)) {
+                jQuery(this).prop('checked', !jQuery(this).prop('checked'));
+            }
+        });
+    } else {    
+        jQuery('.ure-cap-cb').each(function () { // switch On/Off all checkboxes
+            if (ure_apply_selection(this.id)) {
+                jQuery(this).prop('checked', jQuery('#ure_select_all_caps').prop('checked'));
+            }
+        });
     }
 
 }
-// end of ure_select_all()
 
 
 function ure_turn_caps_readable(user_id) {
-    var ure_object = 'user';
+    var ure_obj = 'user';
     if (user_id === 0) {
-        ure_object = 'role';
+        ure_obj = 'role';
     }
 
-    jQuery.ure_postGo(ure_data.page_url, {action: 'caps-readable', object: ure_object, user_id: user_id, ure_nonce: ure_data.wp_nonce});
+    jQuery.ure_postGo(ure_data.page_url, {action: 'caps-readable', object: ure_obj, user_id: user_id, ure_nonce: ure_data.wp_nonce});
 
 }
 // end of ure_turn_caps_readable()
@@ -458,13 +517,11 @@ function ure_turn_caps_readable(user_id) {
 
 function ure_turn_deprecated_caps(user_id) {
 
-    var ure_object = '';
+    var ure_obj = 'user';
     if (user_id === 0) {
-        ure_object = 'role';
-    } else {
-        ure_object = 'user';
+        ure_obj = 'role';
     }
-    jQuery.ure_postGo(ure_data.page_url, {action: 'show-deprecated-caps', object: ure_object, user_id: user_id, ure_nonce: ure_data.wp_nonce});
+    jQuery.ure_postGo(ure_data.page_url, {action: 'show-deprecated-caps', object: ure_obj, user_id: user_id, ure_nonce: ure_data.wp_nonce});
 
 }
 // ure_turn_deprecated_caps()
@@ -479,14 +536,14 @@ function ure_role_change(role_name) {
 
 
 function ure_filter_capabilities(cap_id) {
-    var div_list = jQuery("div[id^='ure_div_cap_']");
+    var div_list = jQuery('.ure-cap-div');
     for (i = 0; i < div_list.length; i++) {
         if (cap_id !== '' && div_list[i].id.substr(11).indexOf(cap_id) !== -1) {
-            div_list[i].ure_tag = true;
+            jQuery('#'+ div_list[i].id).addClass('ure_tag');
             div_list[i].style.color = '#27CF27';
         } else {
             div_list[i].style.color = '#000000';
-            div_list[i].ure_tag = false;
+            jQuery('#'+ div_list[i].id).removeClass('ure_tag');
         }
     }
     ;
@@ -501,3 +558,167 @@ function ure_hide_pro_banner() {
 
 }
 // end of ure_hide_this_banner()
+
+
+function ure_caps_refresh_all() {
+    jQuery('.ure-cap-div').each(function () {
+        if (jQuery(this).hasClass('hidden')) {
+            if (!jQuery(this).hasClass(ure_main.class_prefix + 'deprecated')) {
+                jQuery(this).removeClass('hidden');
+            }
+        }        
+    });
+}
+
+
+function ure_caps_refresh_for_group(group_id) {
+    var show_deprecated = jQuery('#ure_show_deprecated_caps').attr('checked');
+    jQuery('.ure-cap-div').each(function () {
+        var el = jQuery(this);
+        if (el.hasClass(ure_main.class_prefix + group_id)) {
+            if (el.hasClass('hidden')) {
+                if (el.hasClass('blocked')) {
+                    return;
+                }
+                if (el.hasClass(ure_main.class_prefix + 'deprecated')) {
+                    if (group_id==='deprecated' || show_deprecated) {
+                        el.removeClass('hidden');
+                    }
+                } else {                    
+                    el.removeClass('hidden');
+                }                
+            } else {
+                if (el.hasClass(ure_main.class_prefix + 'deprecated')) {
+                    if (!show_deprecated) {
+                        el.addClass('hidden');
+                    }
+                }
+            }
+        } else {
+            if (!el.hasClass('hidden')) {
+                el.addClass('hidden');
+            }
+        }
+    });    
+}
+
+
+function ure_caps_refresh(group) {
+
+    var group_id = group.substr(15);
+    ure_main.selected_group = group_id;
+    if (group_id === 'all') {
+        ure_caps_refresh_all();
+    } else {
+        ure_caps_refresh_for_group(group_id);
+    }    
+    ure_change_caps_columns_quant();
+    jQuery('#granted_only').attr('checked', false);
+} 
+
+
+function ure_validate_columns(columns) {    
+    if (columns==1 || ure_main.selected_group=='all') {  
+        return columns;
+    }
+    
+    // Do not split list on columns in case it contains less then < 25 capabilities
+    for (i=0; i<ure_main.caps_counter.length; i++) {
+        if (ure_main.caps_counter[i].id==ure_main.selected_group) {
+            if (ure_main.caps_counter[i].total<=25) {
+                columns = 1;
+            }
+            break;
+        }
+    }
+    
+    return columns;
+}
+
+
+function ure_change_caps_columns_quant() {
+    var selected_index = parseInt(jQuery('#caps_columns_quant').val());
+    var columns = ure_validate_columns(selected_index);
+    var el = jQuery('#ure_caps_list');
+    el.css('-moz-column-count', columns);
+    el.css('-webkit-column-count', columns);
+    el.css('column-count', columns);
+
+}
+
+
+function ure_init_caps_counter() {
+    ure_main.caps_counter = new Array();
+    jQuery('#ure_caps_groups_list li').each(function() {
+        var group_id = jQuery(this).attr('id').substr(15);
+        group_counter = {'id': group_id, 'total': 0, 'granted':0};
+        ure_main.caps_counter.push(group_counter);
+    });
+    
+}
+
+
+function ure_count_caps_in_groups() {    
+    ure_init_caps_counter();    
+    
+    jQuery('.ure-cap-div').each(function () {
+        var cap_div = jQuery(this);
+        var capability = cap_div.attr('id').substr(12);
+        for (i=0; i<ure_main.caps_counter.length; i++) {
+            if (cap_div.hasClass(ure_main.class_prefix + ure_main.caps_counter[i].id)) {
+                ure_main.caps_counter[i].total++;
+                if (jQuery('#'+ capability).is(':checked')) {
+                    ure_main.caps_counter[i].granted++;
+                }
+            }                            
+        }
+    });
+    
+    for (i=0; i<ure_main.caps_counter.length; i++) {
+        var el = jQuery('#ure_caps_group_'+ ure_main.caps_counter[i].id);
+        var value = el.text() +' ('+ ure_main.caps_counter[i].total +'/'+ ure_main.caps_counter[i].granted +')';
+        
+        el.text(value);
+    }
+    
+}
+
+
+function ure_sizes_update() {
+    var width = jQuery('#ure_caps_td').css('width');
+    jQuery('#ure_caps_list_container').css('width', width);
+}
+
+
+jQuery(window).resize(function() {
+   ure_sizes_update(); 
+});
+
+
+function ure_show_granted_caps_only() {
+    var show_deprecated = jQuery('#ure_show_deprecated_caps').attr('checked');
+    var hide_flag = jQuery('#granted_only').attr('checked');
+    jQuery('.ure-cap-div').each(function () {
+        var cap_div = jQuery(this);
+        if (!cap_div.hasClass(ure_main.class_prefix + ure_main.selected_group)) {    // apply to the currently selected group only
+            return;
+        }
+        var cap_id = cap_div.attr('id').substr(12);        
+        var granted = jQuery('#'+ cap_id).attr('checked');
+        if (granted) {
+            return;
+        }
+        if (hide_flag) {
+            if (!cap_div.hasClass('hidden')) {
+                cap_div.addClass('hidden');
+            }
+        } else {
+            if (cap_div.hasClass('deprecated') && !show_deprecated) {
+                return;
+            }
+            if (cap_div.hasClass('hidden')) {
+                cap_div.removeClass('hidden');
+            }
+        }
+    });    
+}

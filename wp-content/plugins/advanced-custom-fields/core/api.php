@@ -343,7 +343,7 @@ function the_field( $field_name, $post_id = false ) {
 *  have_rows
 *
 *  This function will instantiate a global variable containing the rows of a repeater or flexible content field,
-*  afterwhich, it will determin if another row exists to loop through
+*  afterwhich, it will determine if another row exists to loop through
 *
 *  @type	function
 *  @date	2/09/13

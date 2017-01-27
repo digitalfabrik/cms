@@ -1,4 +1,4 @@
-# Copyright (C) 2013 
+# Copyright (C) 2013
 # This file is distributed under the same license as the  package.
 msgid ""
 msgstr ""
@@ -354,7 +354,7 @@ msgid "Support"
 msgstr ""
 
 #: functions.php:1706
-msgid "Plese see the <a href=\"%1$s\">support forum</a> for help."
+msgid "Please see the <a href=\"%1$s\">support forum</a> for help."
 msgstr ""
 
 #: functions.php:1710
