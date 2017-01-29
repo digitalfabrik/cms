@@ -34,4 +34,5 @@
   ig-content-loader-base \
   ig-content-loader-instance \
   ig-content-loader-sprungbrett \
-  ig-customize-editor-integreat
+  ig-customize-editor-integreat \
+  ig-plugin-adjustment
