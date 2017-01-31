@@ -977,3 +977,11 @@ footer {
     padding-bottom: 25px;
   }
 }
+
+
+@media print{
+  a:after{
+    color: @text-color;
+    content:" (" attr(href) ") ";
+  }
+}
