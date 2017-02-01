@@ -1,4 +1,10 @@
-// TinyMCE Advanced
+/**
+ * This file is part of the TinyMCE Advanced WordPress plugin and is released under the same license.
+ * For more information please see tinymce-advanced.php.
+ *
+ * Copyright (c) 2007-2016 Andrew Ozz. All rights reserved.
+ */
+ 
 jQuery( document ).ready( function( $ ) {
 	var $importElement = $('#tadv-import'),
 		$importError = $('#tadv-import-error');
@@ -14,16 +20,12 @@ jQuery( document ).ready( function( $ ) {
 				ui.item.find('input.tadv-button').attr('name', toolbar_id + '[]');
 			}
 		},
-		/*
 		activate: function( event, ui ) {
-			if ( this.id !== ui.sender.attr('id') ) {
-				$(this).parent().css({ 'border-color': '#888' }); // , 'background-color': '#fafff9'
-			}
+			$(this).parent().addClass( 'highlighted' );
 		},
 		deactivate: function( event, ui ) {
-			$(this).parent().css({ 'border-color': '' }); // , 'background-color': ''
+			$(this).parent().removeClass( 'highlighted' );
 		},
-		*/
 		revert: 300,
 		opacity: 0.7,
 		placeholder: 'tadv-placeholder',
@@ -33,6 +35,12 @@ jQuery( document ).ready( function( $ ) {
 
 	$( '#menubar' ).on( 'change', function() {
 		$( '#tadv-mce-menu' ).toggleClass( 'enabled', $(this).prop('checked') );
+	});
+
+	$( '#tadvadmins' ).on( 'submit', function() {
+		$( 'ul.container' ).each( function( i, node ) {
+			$( node ).find( '.tadv-button' ).attr( 'name', node.id ? node.id + '[]' : '' );
+		});
 	});
 
 	$('#tadv-export-select').click( function() {

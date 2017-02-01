@@ -17,7 +17,7 @@ foreach ( get_post_types( $args ) as $post_type ) {
 
 	<div id="poststuff" class="ui-sortable meta-box-sortables">
 		<div class="postbox">
-			<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+			<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
 			<h3 class="hndle" id="config_edit_<?php echo $post_type; ?>">
 				<?php esc_attr_e( 'Write options', 'adminimize' );
 				echo ' - ' . $post_type_object->label; ?>
@@ -81,22 +81,28 @@ foreach ( get_post_types( $args ) as $post_type ) {
 						'#editor-toolbar #edButtonHTML, #quicktags, #content-html',
 					);
 
-					foreach ( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] as $post_type_support => $key ) {
-						if ( post_type_supports( $post_type, $post_type_support ) && 'excerpt' === $post_type_support ) {
-								$post_type_support = 'postexcerpt';
-						}
-						if ( 'page-attributes' === $post_type_support ) {
-							$post_type_support = 'pageparentdiv';
-						}
-						if ( 'custom-fields' === $post_type_support ) {
-							$post_type_support = 'postcustom';
-						}
+					if ( ! empty( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] ) ) {
+						foreach ( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] as $post_type_support => $key ) {
 
-						$metaboxes[] = '#' . $post_type_support
-							. ', #' . $post_type_support
-							. 'div, th.column-' . $post_type_support
-							. ', td.' . $post_type_support; // td for raw in edit screen
+							if ( post_type_supports( $post_type, $post_type_support ) && 'excerpt' === $post_type_support ) {
+								$post_type_support = 'postexcerpt';
+							}
+
+							if ( 'page-attributes' === $post_type_support ) {
+								$post_type_support = 'pageparentdiv';
+							}
+
+							if ( 'custom-fields' === $post_type_support ) {
+								$post_type_support = 'postcustom';
+							}
+
+							$metaboxes[] = '#' . $post_type_support
+								. ', #' . $post_type_support
+								. 'div, th.column-' . $post_type_support
+								. ', td.' . $post_type_support; // td for raw in edit screen
+						}
 					}
+
 					if ( function_exists( 'current_theme_supports' )
 						&& current_theme_supports(
 							'post-thumbnails', $post_type
@@ -145,11 +151,14 @@ foreach ( get_post_types( $args ) as $post_type ) {
 						esc_attr__( 'HTML Editor Button' ),
 					);
 
-					foreach ( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] as $post_type_support => $key ) {
-						if ( post_type_supports( $post_type, $post_type_support ) ) {
-							$metaboxes_names[] = ucfirst( $post_type_support );
+					if ( ! empty( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] ) ) {
+						foreach ( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] as $post_type_support => $key ) {
+							if ( post_type_supports( $post_type, $post_type_support ) ) {
+								$metaboxes_names[] = ucfirst( $post_type_support );
+							}
 						}
 					}
+
 					if ( function_exists( 'current_theme_supports' )
 						&& current_theme_supports(
 							'post-thumbnails', 'post'
@@ -157,6 +166,7 @@ foreach ( get_post_types( $args ) as $post_type ) {
 					) {
 						$metaboxes_names[] = esc_attr__( 'Post Thumbnail', 'adminimize' );
 					}
+
 					if ( function_exists( 'sticky_add_meta_box' ) ) {
 						$metaboxes_names[] = 'Post Sticky Status';
 					}
@@ -165,15 +175,15 @@ foreach ( get_post_types( $args ) as $post_type ) {
 					$quickedit_names = array(
 						'<strong>' . esc_attr__( 'Quick Edit Link', 'adminimize' ) . '</strong>',
 						esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Inline Edit Left', 'adminimize' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'All Labels', 'adminimize' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Author' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Password and Private', 'adminimize' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'All Labels', 'adminimize' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Author' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Password and Private', 'adminimize' ),
 						esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Inline Edit Center', 'adminimize' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Categories Title', 'adminimize' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Categories List', 'adminimize' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Categories Title', 'adminimize' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Categories List', 'adminimize' ),
 						esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Inline Edit Right', 'adminimize' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Tags' ),
-						'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Status, Sticky', 'adminimize' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Tags' ),
+						'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Status, Sticky', 'adminimize' ),
 						esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Cancel/Save Button', 'adminimize' ),
 					);
 					$metaboxes_names = array_merge( $metaboxes_names, $quickedit_names );
@@ -247,13 +257,14 @@ foreach ( get_post_types( $args ) as $post_type ) {
 					<tr>
 						<th>
 							<?php echo sprintf(
-								esc_attr__( 'Your own %s options', 'adminimize' ), $post_type_object->label
+								esc_attr__( 'Your own %s options', 'adminimize' ),
+								$post_type_object->label
 							);
 							echo '<br />';
-							esc_attr_e( 'ID or class', 'adminimize' ); ?>
+							esc_attr_e( 'Option name', 'adminimize' ); ?>
 						</th>
 						<th><?php echo '<br />';
-							esc_attr_e( 'Option', 'adminimize' ); ?></th>
+							esc_attr_e( 'Selector, ID or class', 'adminimize' ); ?></th>
 					</tr>
 					</thead>
 

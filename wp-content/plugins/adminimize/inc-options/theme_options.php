@@ -11,8 +11,8 @@ if ( ! function_exists( 'add_action' ) ) {
 ?>
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
-		<h3 class="hndle" id="set_theme" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><?php
+		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
+		<h3 class="hndle" id="set_theme" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><?php
 			esc_attr_e( 'Set Theme', 'adminimize' ) ?></h3>
 
 		<div class="inside">
@@ -24,7 +24,7 @@ if ( ! function_exists( 'add_action' ) ) {
 				); ?>">
 					<?php wp_nonce_field( 'mw_adminimize_nonce' ); ?>
 					<p><?php esc_attr_e(
-							'For better peformance with many users on your blog; load only userlist, when you will change the theme options for users.',
+							'For better peformance on sites with many users, you should load userlist data before making any changes in the theme options for users.',
 							'adminimize'
 						); ?></p>
 
@@ -45,17 +45,18 @@ if ( ! function_exists( 'add_action' ) ) {
 						<thead>
 						<tr class="thead">
 							<th class="num">&nbsp;</th>
-							<th class="num"><?php esc_attr_e( 'User-ID' ) ?></th>
-							<th><?php esc_attr_e( 'Username' ) ?></th>
-							<th><?php esc_attr_e( 'Display name publicly as' ) ?></th>
-							<th><?php esc_attr_e( 'Admin-Color Scheme' ) ?></th>
-							<th><?php esc_attr_e( 'User Level' ) ?></th>
-							<th><?php esc_attr_e( 'Role' ) ?></th>
+							<th class="num"><?php esc_attr_e( 'User-ID', 'adminimize' ) ?></th>
+							<th><?php esc_attr_e( 'Username', 'adminimize' ) ?></th>
+							<th><?php esc_attr_e( 'Display name publicly as', 'adminimize' ) ?></th>
+							<th><?php esc_attr_e( 'Admin Color Scheme', 'adminimize' ) ?></th>
+							<th><?php esc_attr_e( 'User Level', 'adminimize' ) ?></th>
+							<th><?php esc_attr_e( 'Role', 'adminimize' ) ?></th>
 						</tr>
 						</thead>
 						<tbody id="users" class="list:user user-list">
 						<?php
-						$wp_user_search = $wpdb->get_results(
+						/** @var \WPDB $wpdb */
+						$wp_user_search = (array) $wpdb->get_results(
 							"SELECT ID, user_login, display_name FROM $wpdb->users ORDER BY ID"
 						);
 
@@ -68,12 +69,18 @@ if ( ! function_exists( 'add_action' ) ) {
 							$user_object   = new WP_User( $user_id );
 							$roles         = $user_object->roles;
 							$role          = array_shift( $roles );
+							/** @var \WP_Roles $wp_roles */
+							$role_name = '';
+							if ( isset( $wp_roles->role_names[ $role ] ) ) {
+								$role_name = $wp_roles->role_names[ $role ];
+							}
+
 							if ( function_exists( 'translate_user_role' ) ) {
-								$role_name = translate_user_role( $wp_roles->role_names[ $role ] );
+								$role_name = translate_user_role( $role_name );
 							} elseif ( function_exists( 'before_last_bar' ) ) {
-								$role_name = before_last_bar( $wp_roles->role_names[ $role ] );
+								$role_name = before_last_bar( $role_name );
 							} else {
-								$role_name = strrpos( $wp_roles->role_names[ $role ], '|' );
+								$role_name = strrpos( $role_name, '|' );
 							}
 
 							$return = '';
@@ -96,8 +103,10 @@ if ( ! function_exists( 'add_action' ) ) {
 							<td>&nbsp;</td>
 							<td>&nbsp;</td>
 							<td>
-								<select name="_mw_adminimize_set_theme">
-									<?php foreach ( $_wp_admin_css_colors as $color => $color_info ): ?>
+								<label for="_mw_adminimize_set_theme"></label>
+								<select id="_mw_adminimize_set_theme" name="_mw_adminimize_set_theme">
+									<?php /** @var array $_wp_admin_css_colors */
+									foreach ( $_wp_admin_css_colors as $color => $color_info ): ?>
 										<option value="<?php echo $color; ?>"><?php echo $color_info->name . ' (' . $color . ')' ?></option>
 									<?php endforeach; ?>
 								</select>

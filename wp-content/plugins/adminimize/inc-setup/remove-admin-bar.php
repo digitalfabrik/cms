@@ -67,6 +67,17 @@ function _mw_adminimize_add_logout( $wp_admin_bar ) {
 }
 
 /**
+ * Add stylesheet for see the the admin bar item also on mobile.
+ */
+function _mw_adminimize_admin_bar_style() {
+	?>
+	<style type="text/css">
+		#wpadminbar #wp-admin-bar-mw-account { display: block; }
+	</style>
+	<?php
+}
+
+/**
  * Add Logout link include user info.
  *
  * @param $wp_admin_bar WP_Admin_Bar
@@ -100,9 +111,13 @@ function _mw_adminimize_add_user_logout( $wp_admin_bar ) {
 /**
  * Change logout, user info link in Admin bar.
  *
- * @return null|void
+ * @return void
  */
 function _mw_adminimize_set_logout_menu() {
+
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
 
 	// exclude super admin
 	if ( _mw_adminimize_exclude_super_admin() ) {
@@ -134,10 +149,14 @@ function _mw_adminimize_set_logout_menu() {
 		case 2:
 			add_action( 'wp_before_admin_bar_render', '_mw_adminimize_remove_my_account' );
 			add_action( 'admin_bar_menu', '_mw_adminimize_add_logout', 0 );
+			add_action( 'wp_head', '_mw_adminimize_admin_bar_style' );
+			add_action( 'admin_head', '_mw_adminimize_admin_bar_style' );
 			break;
 		case 3:
 			add_action( 'wp_before_admin_bar_render', '_mw_adminimize_remove_my_account' );
 			add_action( 'admin_bar_menu', '_mw_adminimize_add_user_logout', 0 );
+			add_action( 'wp_head', '_mw_adminimize_admin_bar_style' );
+			add_action( 'admin_head', '_mw_adminimize_admin_bar_style' );
 			break;
 	}
 }
@@ -145,9 +164,13 @@ function _mw_adminimize_set_logout_menu() {
 /**
  * Remove Admin Bar
  *
- * @return null|void
+ * @return void
  */
 function _mw_adminimize_remove_admin_bar() {
+
+	if ( ! is_user_logged_in() ) {
+		return;
+	}
 
 	// exclude super admin
 	if ( _mw_adminimize_exclude_super_admin() ) {
@@ -160,37 +183,44 @@ function _mw_adminimize_remove_admin_bar() {
 	}
 
 	$user_roles = _mw_adminimize_get_all_user_roles();
+	$disabled_global_option_ = array();
 
 	foreach ( $user_roles as $role ) {
-		$disabled_global_option_[ $role ] = _mw_adminimize_get_option_value(
+		$disabled_global_option_[ $role ] = (array) _mw_adminimize_get_option_value(
 			'mw_adminimize_disabled_global_option_' . $role . '_items'
 		);
 	}
 
-	foreach ( $user_roles as $role ) {
-		if ( ! isset( $disabled_global_option_[ $role ][ '0' ] ) ) {
-			$disabled_global_option_[ $role ][ '0' ] = '';
-		}
-	}
-
+	$mw_global_options = array();
 	$user            = wp_get_current_user();
-	$remove_adminbar = FALSE;
-	// new 1.7.8
+
 	foreach ( $user_roles as $role ) {
-		if ( is_array( $user->roles ) && in_array( $role, $user->roles, FALSE ) ) {
-			if ( _mw_adminimize_current_user_has_role( $role )
-				&& isset( $disabled_global_option_[ $role ] )
-				&& is_array( $disabled_global_option_[ $role ] )
-				&& _mw_adminimize_recursive_in_array( '.show-admin-bar', $disabled_global_option_[ $role ] )
-			) {
-				$remove_adminbar = TRUE;
+
+		if ( in_array( $role, $user->roles, FALSE )
+		     && _mw_adminimize_current_user_has_role( $role )
+		) {
+			// Create array about all items with all affected roles, important for multiple roles.
+			foreach ( $disabled_global_option_[ $role ] as $global_item ) {
+				$mw_global_options[] = $global_item;
 			}
 		}
+
+	}
+
+	// Support Multiple Roles for users.
+	if ( _mw_adminimize_get_option_value( 'mw_adminimize_multiple_roles' ) && 1 < count( $user->roles ) ) {
+		$mw_global_options = _mw_adminimize_get_duplicate( $mw_global_options );
+	}
+
+	$remove_adminbar = FALSE;
+	// Check for admin bar selector to set to remove the Admin Bar.
+	if ( _mw_adminimize_recursive_in_array( '.show-admin-bar', $mw_global_options ) ) {
+		$remove_adminbar = TRUE;
 	}
 
 	if ( $remove_adminbar ) {
 		if ( ! is_admin_bar_showing() ) {
-			return FALSE;
+			return;
 		}
 
 		add_filter( 'show_admin_bar', '__return_false' );

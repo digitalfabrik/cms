@@ -22,7 +22,7 @@ if ( ! current_theme_supports( 'menus' ) && ! current_theme_supports( 'widgets' 
 if ( ! current_user_can( 'edit_theme_options' ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'You are not allowed to edit theme options on this site.' ) . '</p>',
+		'<p>' . __( 'Sorry, you are not allowed to edit theme options on this site.' ) . '</p>',
 		403
 	);
 }
@@ -48,6 +48,12 @@ $num_locations = count( array_keys( $locations ) );
 
 // Allowed actions: add, update, delete
 $action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'edit';
+
+/*
+ * If a JSON blob of navigation menu data is found, expand it and inject it
+ * into `$_POST` to avoid PHP `max_input_vars` limitations. See #14134.
+ */
+_wp_expand_nav_menu_post_data();
 
 switch ( $action ) {
 	case 'add-menu-item':
@@ -512,7 +518,8 @@ if ( ! current_theme_supports( 'menus' ) && ! $num_locations )
 
 if ( ! $locations_screen ) : // Main tab
 	$overview  = '<p>' . __( 'This screen is used for managing your custom navigation menus.' ) . '</p>';
-	$overview .= '<p>' . sprintf( __( 'Menus can be displayed in locations defined by your theme, even used in sidebars by adding a &#8220;Custom Menu&#8221; widget on the <a href="%1$s">Widgets</a> screen. If your theme does not support the custom menus feature (the default themes, %2$s and %3$s, do), you can learn about adding this support by following the Documentation link to the side.' ), admin_url( 'widgets.php' ), 'Twenty Fifteen', 'Twenty Fourteen' ) . '</p>';
+	/* translators: 1: Widgets admin screen URL, 2 and 3: The name of the default themes */
+	$overview .= '<p>' . sprintf( __( 'Menus can be displayed in locations defined by your theme, even used in sidebars by adding a &#8220;Custom Menu&#8221; widget on the <a href="%1$s">Widgets</a> screen. If your theme does not support the custom menus feature (the default themes, %2$s and %3$s, do), you can learn about adding this support by following the Documentation link to the side.' ), admin_url( 'widgets.php' ), 'Twenty Sixteen', 'Twenty Seventeen' ) . '</p>';
 	$overview .= '<p>' . __( 'From this screen you can:' ) . '</p>';
 	$overview .= '<ul><li>' . __( 'Create, edit, and delete menus' ) . '</li>';
 	$overview .= '<li>' . __( 'Add, organize, and modify individual menu items' ) . '</li></ul>';
@@ -561,8 +568,8 @@ endif;
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Appearance_Menus_Screen" target="_blank">Documentation on Menus</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Appearance_Menus_Screen">Documentation on Menus</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 );
 
 // Get the admin header.
@@ -579,12 +586,12 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 					array( 'autofocus' => $focus ),
 					'return' => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 				), admin_url( 'customize.php' ) ) ),
-				__( 'Manage in Customizer' )
+				__( 'Manage with Live Preview' )
 			);
 		endif;
 		?>
 	</h1>
-	<h2 class="nav-tab-wrapper">
+	<h2 class="nav-tab-wrapper wp-clearfix">
 		<a href="<?php echo admin_url( 'nav-menus.php' ); ?>" class="nav-tab<?php if ( ! isset( $_GET['action'] ) || isset( $_GET['action'] ) && 'locations' != $_GET['action'] ) echo ' nav-tab-active'; ?>"><?php esc_html_e( 'Edit Menus' ); ?></a>
 		<?php if ( $num_locations && $menu_count ) : ?>
 			<a href="<?php echo esc_url( add_query_arg( array( 'action' => 'locations' ), admin_url( 'nav-menus.php' ) ) ); ?>" class="nav-tab<?php if ( $locations_screen ) echo ' nav-tab-active'; ?>"><?php esc_html_e( 'Manage Locations' ); ?></a>
@@ -647,7 +654,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 				<?php } // foreach ?>
 				</tbody>
 			</table>
-			<p class="button-controls"><?php submit_button( __( 'Save Changes' ), 'primary left', 'nav-menu-locations', false ); ?></p>
+			<p class="button-controls wp-clearfix"><?php submit_button( __( 'Save Changes' ), 'primary left', 'nav-menu-locations', false ); ?></p>
 			<?php wp_nonce_field( 'save-menu-locations' ); ?>
 			<input type="hidden" name="menu" id="nav-menu-meta-object-id" value="<?php echo esc_attr( $nav_menu_selected_id ); ?>" />
 		</form>
@@ -687,7 +694,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 							}
 
 							/**
-							 * Filter the number of locations listed per menu in the drop-down select.
+							 * Filters the number of locations listed per menu in the drop-down select.
 							 *
 							 * @since 3.6.0
 							 *
@@ -707,14 +714,14 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 					</option>
 				<?php endforeach; ?>
 			</select>
-			<span class="submit-btn"><input type="submit" class="button-secondary" value="<?php esc_attr_e( 'Select' ); ?>"></span>
+			<span class="submit-btn"><input type="submit" class="button" value="<?php esc_attr_e( 'Select' ); ?>"></span>
 			<span class="add-new-menu-action">
 				<?php printf( __( 'or <a href="%s">create a new menu</a>.' ), esc_url( add_query_arg( array( 'action' => 'edit', 'menu' => 0 ), admin_url( 'nav-menus.php' ) ) ) ); ?>
 			</span><!-- /add-new-menu-action -->
 		</form>
 	<?php endif; ?>
 	</div><!-- /manage-menus -->
-	<div id="nav-menus-frame">
+	<div id="nav-menus-frame" class="wp-clearfix">
 	<div id="menu-settings-column" class="metabox-holder<?php if ( isset( $_GET['menu'] ) && '0' == $_GET['menu'] ) { echo ' metabox-holder-disabled'; } ?>">
 
 		<div class="clear"></div>
@@ -731,29 +738,34 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 		<div id="menu-management">
 			<form id="update-nav-menu" method="post" enctype="multipart/form-data">
 				<div class="menu-edit <?php if ( $add_new_screen ) echo 'blank-slate'; ?>">
+					<input type="hidden" name="nav-menu-data">
 					<?php
 					wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
 					wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
 					wp_nonce_field( 'update-nav_menu', 'update-nav-menu-nonce' );
 
-					if ( $one_theme_location_no_menus ) { ?>
+					$menu_name_aria_desc = $add_new_screen ? ' aria-describedby="menu-name-desc"' : '';
+
+					if ( $one_theme_location_no_menus ) {
+						$menu_name_val = 'value="' . esc_attr( 'Menu 1' ) . '"';
+					?>
 						<input type="hidden" name="zero-menu-state" value="true" />
-					<?php } ?>
+					<?php } else {
+						$menu_name_val = 'value="' . esc_attr( $nav_menu_selected_title ) . '"';
+					} ?>
  					<input type="hidden" name="action" value="update" />
 					<input type="hidden" name="menu" id="menu" value="<?php echo esc_attr( $nav_menu_selected_id ); ?>" />
 					<div id="nav-menu-header">
-						<div class="major-publishing-actions">
-							<label class="menu-name-label howto open-label" for="menu-name">
-								<span><?php _e( 'Menu Name' ); ?></span>
-								<input name="menu-name" id="menu-name" type="text" class="menu-name regular-text menu-item-textbox input-with-default-title" title="<?php esc_attr_e( 'Enter menu name here' ); ?>" value="<?php if ( $one_theme_location_no_menus ) _e( 'Menu 1' ); else echo esc_attr( $nav_menu_selected_title ); ?>" />
-							</label>
+						<div class="major-publishing-actions wp-clearfix">
+							<label class="menu-name-label" for="menu-name"><?php _e( 'Menu Name' ); ?></label>
+							<input name="menu-name" id="menu-name" type="text" class="menu-name regular-text menu-item-textbox" <?php echo $menu_name_val . $menu_name_aria_desc; ?> />
 							<div class="publishing-action">
-								<?php submit_button( empty( $nav_menu_selected_id ) ? __( 'Create Menu' ) : __( 'Save Menu' ), 'button-primary menu-save', 'save_menu', false, array( 'id' => 'save_menu_header' ) ); ?>
+								<?php submit_button( empty( $nav_menu_selected_id ) ? __( 'Create Menu' ) : __( 'Save Menu' ), 'primary large menu-save', 'save_menu', false, array( 'id' => 'save_menu_header' ) ); ?>
 							</div><!-- END .publishing-action -->
 						</div><!-- END .major-publishing-actions -->
 					</div><!-- END .nav-menu-header -->
 					<div id="post-body">
-						<div id="post-body-content">
+						<div id="post-body-content" class="wp-clearfix">
 							<?php if ( ! $add_new_screen ) : ?>
 							<h3><?php _e( 'Menu Structure' ); ?></h3>
 							<?php $starter_copy = ( $one_theme_location_no_menus ) ? __( 'Edit your default menu by adding or removing items. Drag each item into the order you prefer. Click Create Menu to save your changes.' ) : __( 'Drag each item into the order you prefer. Click the arrow on the right of the item to reveal additional configuration options.' ); ?>
@@ -769,7 +781,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 							<?php } ?>
 							<?php endif; ?>
 							<?php if ( $add_new_screen ) : ?>
-								<p class="post-body-plain"><?php _e( 'Give your menu a name above, then click Create Menu.' ); ?></p>
+								<p class="post-body-plain" id="menu-name-desc"><?php _e( 'Give your menu a name, then click Create Menu.' ); ?></p>
 								<?php if ( isset( $_GET['use-location'] ) ) : ?>
 									<input type="hidden" name="use-location" value="<?php echo esc_attr( $_GET['use-location'] ); ?>" />
 								<?php endif; ?>
@@ -787,30 +799,32 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 										$auto_add = false;
 								} ?>
 
-								<dl class="auto-add-pages">
-									<dt class="howto"><?php _e( 'Auto add pages' ); ?></dt>
-									<dd class="checkbox-input"><input type="checkbox"<?php checked( $auto_add ); ?> name="auto-add-pages" id="auto-add-pages" value="1" /> <label for="auto-add-pages"><?php printf( __('Automatically add new top-level pages to this menu' ), esc_url( admin_url( 'edit.php?post_type=page' ) ) ); ?></label></dd>
-								</dl>
+								<fieldset class="menu-settings-group auto-add-pages">
+									<legend class="menu-settings-group-name howto"><?php _e( 'Auto add pages' ); ?></legend>
+									<div class="menu-settings-input checkbox-input">
+										<input type="checkbox"<?php checked( $auto_add ); ?> name="auto-add-pages" id="auto-add-pages" value="1" /> <label for="auto-add-pages"><?php printf( __('Automatically add new top-level pages to this menu' ), esc_url( admin_url( 'edit.php?post_type=page' ) ) ); ?></label>
+									</div>
+								</fieldset>
 
 								<?php if ( current_theme_supports( 'menus' ) ) : ?>
 
-									<dl class="menu-theme-locations">
-										<dt class="howto"><?php _e( 'Theme locations' ); ?></dt>
+									<fieldset class="menu-settings-group menu-theme-locations">
+										<legend class="menu-settings-group-name howto"><?php _e( 'Display location' ); ?></legend>
 										<?php foreach ( $locations as $location => $description ) : ?>
-										<dd class="checkbox-input">
+										<div class="menu-settings-input checkbox-input">
 											<input type="checkbox"<?php checked( isset( $menu_locations[ $location ] ) && $menu_locations[ $location ] == $nav_menu_selected_id ); ?> name="menu-locations[<?php echo esc_attr( $location ); ?>]" id="locations-<?php echo esc_attr( $location ); ?>" value="<?php echo esc_attr( $nav_menu_selected_id ); ?>" />
 											<label for="locations-<?php echo esc_attr( $location ); ?>"><?php echo $description; ?></label>
 											<?php if ( ! empty( $menu_locations[ $location ] ) && $menu_locations[ $location ] != $nav_menu_selected_id ) : ?>
-												<span class="theme-location-set"><?php 
+												<span class="theme-location-set"><?php
 													/* translators: %s: menu name */
 													printf( _x( '(Currently set to: %s)', 'menu location' ),
 														wp_get_nav_menu_object( $menu_locations[ $location ] )->name
 													);
 												?></span>
 											<?php endif; ?>
-										</dd>
+										</div>
 										<?php endforeach; ?>
-									</dl>
+									</fieldset>
 
 								<?php endif; ?>
 
@@ -818,14 +832,14 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 						</div><!-- /#post-body-content -->
 					</div><!-- /#post-body -->
 					<div id="nav-menu-footer">
-						<div class="major-publishing-actions">
+						<div class="major-publishing-actions wp-clearfix">
 							<?php if ( 0 != $menu_count && ! $add_new_screen ) : ?>
 							<span class="delete-action">
-								<a class="submitdelete deletion menu-delete" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'menu' => $nav_menu_selected_id, admin_url() ) ), 'delete-nav_menu-' . $nav_menu_selected_id) ); ?>"><?php _e('Delete Menu'); ?></a>
+								<a class="submitdelete deletion menu-delete" href="<?php echo esc_url( wp_nonce_url( add_query_arg( array( 'action' => 'delete', 'menu' => $nav_menu_selected_id ), admin_url( 'nav-menus.php' ) ), 'delete-nav_menu-' . $nav_menu_selected_id) ); ?>"><?php _e('Delete Menu'); ?></a>
 							</span><!-- END .delete-action -->
 							<?php endif; ?>
 							<div class="publishing-action">
-								<?php submit_button( empty( $nav_menu_selected_id ) ? __( 'Create Menu' ) : __( 'Save Menu' ), 'button-primary menu-save', 'save_menu', false, array( 'id' => 'save_menu_footer' ) ); ?>
+								<?php submit_button( empty( $nav_menu_selected_id ) ? __( 'Create Menu' ) : __( 'Save Menu' ), 'primary large menu-save', 'save_menu', false, array( 'id' => 'save_menu_footer' ) ); ?>
 							</div><!-- END .publishing-action -->
 						</div><!-- END .major-publishing-actions -->
 					</div><!-- /#nav-menu-footer -->

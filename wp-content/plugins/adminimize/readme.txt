@@ -1,10 +1,10 @@
 === Adminimize ===
-Contributors: Bueltge
+Contributors: Bueltge, inpsyde
 Donate link: https://www.paypal.me/FrankBueltge
 Tags: color, scheme, theme, admin, dashboard, color scheme, plugin, interface, ui, metabox, hide, editor, minimal, menu, customization, interface, administration, lite, light, usability, lightweight, layout, zen
 Requires at least: 4.0
-Tested up to: 4.5-beta1
-Stable tag: 1.10.1
+Tested up to: 4.7.0
+Stable tag: 1.11.2
 
 Adminimize that lets you hide 'unnecessary' items from the WordPress backend
 
@@ -14,7 +14,7 @@ If you manage a multi-author WordPress blog or WordPress sites for clients, then
 Adminimize makes it easy to remove items from view based on a user’s role.
 
 = What does this plugin do? =
-The plugin changes the administration backend and gives you the power to assign rights on certain parts. Admins can activate/deactivate every part of the menu and even parts of the sub-menu. Meta fields can be administered separately for posts and pages. Certain parts of the write menu can be deactivated separately for admins or non-admins. The header of the backend is minimized and optimized to give you more space and the structure of the menu gets changed to make it more logical - this can all be done per user so each user can have his own settings.
+The plugin changes the administration backend and gives you the power to assign rights on certain parts. Admins can activate/deactivate every part of the menu and even parts of the sub-menu. Meta fields can be administered separately for posts and pages. Certain parts of the write menu can be deactivated separately for admins or non-admins. The header of the backend is minimized and optimized to give you more space and the structure of the menu gets changed to make it more logical - this can all be done per user so each role and their resulting users can have his own settings.
 
 = Support Custom Post Type =
 The plugin support all functions also for custom post types, automatically in the settings page.
@@ -25,10 +25,12 @@ It is possible to add own options to hide areas in the back-end of WordPress. It
 = Compatibility with plugins for MetaBoxes in Write-area =
 You can add your own options, you must only check for css selectors.
 
+**Crafted by [Inpsyde](http://inpsyde.com) · Engineering the web since 2006.**
+
 == Installation ==
 = Requirements =
 * WordPress version 4.0 and later; tested only in last stable version.
-* PHP 5.2.4, newer PHP versions will work faster. Tested only from version 5.4.
+* PHP 5.2.4, newer PHP versions will work faster. Tested only from version 5.6.
 
 Use the installer via back-end of your install or ...
 
@@ -41,6 +43,50 @@ Use the installer via back-end of your install or ...
 1. Settings area in WP 4.5-alpha
 
 == Changelog ==
+= 1.11.2 (2016-12-04) =
+* Fix backticks for `shell_exec` error.
+* Fix prevent access function for pages.
+
+= 1.11.1 (2016-11-24) =
+* Fix fatal error for WP smaller than 4.7 - Sorry again!
+
+= 1.11.0 (2016-11-24) =
+* Fix open Translations. props pedro-mendonca
+* Fix Typos.
+* Fix php warning on Admin Bar items for PHP 5.2.
+* Fix CPT feature support, if it false.
+* Add check in different functions for AJAX request.
+* Add to prevent access to pages of the back end, there are active for hiding in the settings.
+* Add plugin option to remove the default behavior to prevent access to pages.
+
+= 1.10.6 (2016-08-09) =
+* Fix to see Logout link also on mobile view.
+* Fix type definition.
+
+= 1.10.5 (2016-06-28) =
+* Fix PHP Warning
+* Fix check for active usage of Link Manager
+* Fix menu var type, if is object.
+* Check for multiple roles on Menu Settings, that it works only, if the option is still active on each role of this user.
+
+= 1.10.4 (2016-06-03) =
+* Add support for multiple roles to remove the Admin Bar via global options.
+* Add support for multiple roles to remove the Admin Bar Back end items.
+* Add also this support for Front End Admin Bar items.
+* Multiple roles supported now on "Menu Options", "Global Options", "Admin Bar Back end options" and "Admin Bar Front end options".
+
+= 1.10.3 (2016-05-11) =
+* Fix exclude of set new Admin Bar on settings page of Adminimize.
+* Fix check for settings page.
+* Fix colors on raw, column of the settings page.
+* Add buffering for debug helper in the console.
+* Fix caching for Dashboard Widget options.
+
+= 1.10.2 (2016-03-10) =
+* Add possibility for custom menu slugs, especially for Plugins, Themes, there add different slug for different roles.
+* Add the possibility to use the WP object cache for settings, if the webspace support this, like Memcached, APC.
+* More clarity for the "own options" label.
+
 = 1.10.1 (2016-02-29) =
 * Fix the Removing of Admin Color Scheme Select on the profile page.
 * Back-end options are also excluded on the settings page.
@@ -410,7 +456,7 @@ The plugin comes with various translations, please refer to the [WordPress Codex
 
 == Frequently Asked Questions ==
 = Help with "Your own options" =
-My english ist gruesome here and there and you can see the [entry on the WP community forum](http://wordpress.org/support/topic/328449 "[Plugin: Adminimize] Help with "Your own options" (3 posts)") for help with great function.
+See the [entry on the WP community forum](http://wordpress.org/support/topic/328449 "[Plugin: Adminimize] Help with "Your own options" (3 posts)") for help with great function to add custom/own options.
 
 = Post about the plugin with helpful hints =
  * [wpbeginner.com: How to Hide Unnecessary Items From WordPress Admin with Adminimize](http://www.wpbeginner.com/plugins/how-to-hide-unnecessary-items-from-wordpress-admin-with-adminimize/)

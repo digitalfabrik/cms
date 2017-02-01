@@ -21,7 +21,7 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 <br class="clear" />
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div id="minimeu" class="postbox ">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
 		<h3 class="hndle" id="menu"><?php esc_attr_e( 'MiniMenu', 'adminimize' ) ?></h3>
 
 		<div class="inside">
@@ -99,7 +99,7 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 				}
 
 				// check for active links, active since WP 3.5
-				if ( 0 !== (int) get_option( 'link_manager_enabled' ) ) {
+				if ( 0 !== get_option( 'link_manager_enabled' ) ) {
 					?>
 					<tr>
 						<td class="row-title"><a href="#links_options"><?php esc_attr_e(
@@ -140,7 +140,7 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div id="about" class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
 		<h3 class="hndle" id="about-sidebar"><?php esc_attr_e( 'About the plugin', 'adminimize' ) ?></h3>
 
 		<div class="inside">
@@ -162,8 +162,9 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 						'http://wordpress.org/extend/plugins/adminimize/',
 						'http://wordpress.org/support/plugin/adminimize'
 					);
+					echo '<br>';
 					printf(
-						__( '<br>For more hints about the functions and how to\'s with the possibilities of the plugin settings see the <a href="%s">FAQ page</a> on the plugin site.', 'adminimize' ),
+						__( 'For more hints about the functions and how to\'s with the possibilities of the plugin settings see the <a href="%s">FAQ page</a> on the plugin site.', 'adminimize' ),
 						'https://wordpress.org/plugins/adminimize/faq/'
 					);?></li>
 				<li><?php esc_attr_e( 'Report a issue on the development repository:', 'adminimize' ); ?>
@@ -191,6 +192,7 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 						'Please note: The Adminimize settings page ignores the Menu Options below and displays the menu with all entries.',
 						'adminimize'
 					);
+					echo ' ';
 					esc_attr_e(
 						'To view your changes to the menu you need to navigate away from the Adminimize settings page.',
 						'adminimize'
@@ -198,7 +200,7 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 				</strong></p>
 				<?php if ( _mw_adminimize_is_active_on_multisite() ) { ?>
 					<p><?php esc_attr_e(
-							'You have to activated the Plugin for your Multisite Network. Your settings works now on all blogs in the network. Please set the settings only in one blog, there you have all active menu items and plugins. If you update the settings then write the plugin new settings in dependence of the blog where you put, save the settings.',
+							'You have activated the Plugin for your Multisite Network. By default you will have all active menu items and plugins. The settings are for all network sites, you can set it from any site and it will be set for all network. You should also update the settings on every network site to include every custom items that might exist for each of it.',
 							'adminimize'
 						); ?></p>
 				<?php } ?>
