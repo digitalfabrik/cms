@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /wordpress/
+RewriteBase /integreat/cms/
 RewriteRule ^index\.php$ - [L]
 
 # add a trailing slash to /wp-admin
