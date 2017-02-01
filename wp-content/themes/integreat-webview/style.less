@@ -856,6 +856,7 @@ footer {
 
     #languageList {
       .inner {
+        width: 1px;
         a {
           span { .smooth-transition(0.2s); }
           &:hover {
@@ -975,5 +976,13 @@ footer {
 
   footer {
     padding-bottom: 25px;
+  }
+}
+
+
+@media print{
+  a:after{
+    color: @text-color;
+    content:" (" attr(href) ") ";
   }
 }
