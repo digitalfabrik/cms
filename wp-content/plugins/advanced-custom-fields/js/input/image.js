@@ -86,11 +86,8 @@
 			div.closest('.field').removeClass('error');
 	
 		},
-		edit : function(){
-			
-			// vars
-			var id = this.$input.val();
-			
+		
+		new_frame: function( attributes ){
 			
 			// set global var
 			_media.div = this.$el;
@@ -100,23 +97,78 @@
 			_media.clear_frame();
 			
 			
-			// create the media frame
-			_media.frame = wp.media({
+			// vars
+			attributes.states = [];
+			
+			
+			// append states
+			attributes.states.push(
+				new wp.media.controller.Library({
+					library		:	wp.media.query( this.o.query ),
+					multiple	:	attributes.multiple,
+					title		:	attributes.title,
+					priority	:	20,
+					filterable	:	'all'
+				})
+			);
+			
+			
+			// edit image functionality (added in WP 3.9)
+			if( acf.helpers.isset(wp, 'media', 'controller', 'EditImage') ) {
+				
+				attributes.states.push( new wp.media.controller.EditImage() );
+				
+			}
+			
+			
+			// Create the media frame
+			_media.frame = wp.media( attributes );
+			
+			
+			// edit image view
+			// source: media-views.js:2410 editImageContent()
+			_media.frame.on('content:render:edit-image', function(){
+				
+				var image = this.state().get('image'),
+					view = new wp.media.view.EditImage( { model: image, controller: this } ).render();
+	
+				this.content.set( view );
+	
+				// after creating the wrapper view, load the actual editor via an ajax call
+				view.loadEditor();
+				
+			}, _media.frame);
+			
+			
+			// update toolbar button
+			_media.frame.on( 'toolbar:create:select', function( toolbar ) {
+				
+				toolbar.view = new wp.media.view.Toolbar.Select({
+					text: attributes.button.text,
+					controller: this
+				});
+				
+			}, _media.frame );
+			
+			
+			// return
+			return _media.frame;
+			
+		},
+		
+		edit : function(){
+			
+			// vars
+			var id = this.$input.val();
+			
+			
+			// create frame
+			this.new_frame({
 				title		:	acf.l10n.image.edit,
 				multiple	:	false,
 				button		:	{ text : acf.l10n.image.update }
 			});
-			
-			
-			// log events
-			/*
-			acf.media.frame.on('all', function(e){
-				
-				console.log( e );
-				
-			});
-			*/
-			
+						
 			
 			// open
 			_media.frame.on('open',function() {
@@ -159,7 +211,7 @@
 			
 							
 			// Finally, open the modal
-			acf.media.frame.open();
+			_media.frame.open();
 			
 		},
 		remove : function()
@@ -180,37 +232,16 @@
 			var t = this;
 			
 			
-			// set global var
-			_media.div = this.$el;
-			
-
-			// clear the frame
-			_media.clear_frame();
-			
-			
-			 // Create the media frame
-			 _media.frame = wp.media({
-				states : [
-					new wp.media.controller.Library({
-						library		:	wp.media.query( t.o.query ),
-						multiple	:	t.o.multiple,
-						title		:	acf.l10n.image.select,
-						priority	:	20,
-						filterable	:	'all'
-					})
-				]
+			// create frame
+			this.new_frame({
+				title		:	acf.l10n.image.select,
+				multiple	:	t.o.multiple,
+				button		:	{ text : acf.l10n.image.select }
 			});
 			
 			
-			/*acf.media.frame.on('all', function(e){
-				
-				console.log( e );
-				
-			});*/
-			
-			
 			// customize model / view
-			acf.media.frame.on('content:activate', function(){
+			_media.frame.on('content:activate', function(){
 
 				// vars
 				var toolbar = null,

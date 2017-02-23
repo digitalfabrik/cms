@@ -912,6 +912,9 @@ footer ul li a {
     padding-top: 16px;
     padding-bottom: 16px;
   }
+  header#topHeader #languageList .inner {
+    width: 1px;
+  }
   header#topHeader #languageList .inner a span {
     -webkit-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
@@ -1031,5 +1034,11 @@ footer ul li a {
   }
   footer {
     padding-bottom: 25px;
+  }
+}
+@media print {
+  a:after {
+    color: #222222;
+    content: " (" attr(href) ") ";
   }
 }

@@ -3,7 +3,7 @@ if (@$_POST['submit-bpu']){
 	$blocked_plugins = @join('###',$_POST['block_plugin_updates']);
 	update_option('bpu_update_blocked_plugins', $blocked_plugins);
 	delete_option('_site_transient_update_plugins');	
-	$bspu_save_MSG = 'Updated Succesfully';
+	$bspu_save_MSG = 'Updated Succesfully. Please logout and login again to get the proper effect.';
 }
 ?>
 
