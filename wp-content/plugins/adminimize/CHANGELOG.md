@@ -1,20 +1,93 @@
-## 1.10.1 (2016-02-29)
+# Change Log
+All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [Unreleased](https://github.com/bueltge/Adminimize/compare/1.11.0...HEAD)
+
+## [1.11.2](https://github.com/bueltge/Adminimize/compare/1.11.2...1.11.2) - 2016-12-04
+* Fix backticks for `shell_exec` error #59.
+* Fix prevent access function for pages #51, #57.
+
+## [1.11.1](https://github.com/bueltge/Adminimize/compare/1.11.0...1.11.1) - 2016-11-24
+* Fix fatal error for WP smaller than 4.7 - Sorry again!
+
+## [1.11.0](https://github.com/bueltge/Adminimize/compare/1.10.6...1.11.0) - 2016-11-24
+### Fixed
+* Fix open Translations. props pedro-mendonca
+* Fix Typos.
+* Fix php warning on Admin Bar items for PHP 5.2.
+* Fix CPT feature support, if it false.
+
+### Added
+* Add check in different functions for AJAX request.
+* Add to prevent access to pages of the back end, there are active for hiding in the settings.
+* Add plugin option to remove the default behavior to prevent access to pages.
+
+## [1.10.6](https://github.com/bueltge/Adminimize/compare/1.10.5...1.10.6) - 2016-08-09
+### Fixed
+* Fix to see Logout link also on mobile view.
+* Fix type definition.
+
+## [1.10.5](https://github.com/bueltge/Adminimize/compare/1.10.4...1.10.5) - 2016-06-28
+### Fixed
+* Fix PHP Warning
+* Fix check for active usage of Link Manager
+* Fix menu var type, if is object.
+* Check for multiple roles on Menu Settings, that it works only, if the option is still active on each role of this user.
+
+## [1.10.4](https://github.com/bueltge/Adminimize/compare/1.10.3...1.10.4) - 2016-06-03
+### Added
+* Add support for multiple roles to remove the Admin Bar via global options.
+* Add support for multiple roles to remove the Admin Bar Back end items.
+* Add also this support for Front End Admin Bar items.
+* Multiple roles supported now on "Menu Options", "Global Options", "Admin Bar Back end options" and "Admin Bar Front end options".
+
+## [1.10.3](https://github.com/bueltge/Adminimize/compare/1.10.2...1.10.3) - 2016-05-11
+### Fixed
+* Fix exclude of set new Admin Bar on settings page of Adminimize.
+* Fix check for settings page.
+* Fix colors on raw, column of the settings page.
+* Fix caching for Dashboard Widget options.
+
+### Added
+* Add buffering for debug helper in the console.
+
+## [1.10.2](https://github.com/bueltge/Adminimize/compare/1.10.1...1.10.2) - 2016-03-10
+### Added
+* Add possibility for custom menu slugs, especially for Plugins, Themes, there add different slug for different roles.
+* Add the possibility to use the WP object cache for settings, if the webspace support this, like Memcached, APC.
+
+### Changed
+* More clarity for the "own options" label.
+
+## [1.10.1](https://github.com/bueltge/Adminimize/compare/1.10.0...1.10.1) - 2016-02-29
+### Fixed
 * Fix the Removing of Admin Color Scheme Select on the profile page.
+
+### Changed
 * Back-end options are also excluded on the settings page.
+
+### Added
 * Add new settings area for options of the plugin self.
 * The support for multiple roles is now optional.
 * The support for bbPress is now active and optional.
 
-## 1.10.0 (2016-02-21)
-* Rewrite the Admin Bar settings, simplify the source and new hook to get and render the Admin Bar.
-* Change settings screen for custom post type.
+## [1.10.0](https://github.com/bueltge/Adminimize/compare/1.9.2...1.10.0) - 2016-02-21
+### Fixed
 * Fix "select all" on Admin Bar settings.
 * Fix exclude settings page for pages, there is the current screen not existent.
-* Improve the exclude settings page function for hooks, there fired before `get_current_screen`.
+
+### Removed
 * Remove more legacy code before WP 3.3.
-* Change removal of Menu and Submenu items to WP core functions, possible to non support older WP Versions.
+
+### Changed
+* Rewrite the Admin Bar settings, simplify the source and new hook to get and render the Admin Bar.
+* Change settings screen for custom post type.
+* Change removal of Menu and Sub-Menu items to WP core functions, possible to non support older WP Versions.
 * Supports multiple roles on "Menu Options" and "Global Options".
+
+### Added
 * Add possibility to hide Admin Notices globally, new setting point in "Global Options".
+* Improve the exclude settings page function for hooks, there fired before `get_current_screen`.
 
 ## 1.9.2 (2016-01-30)
 * Change get role name, return now a array with slug and name to fix "Select All" function for custom roles.
@@ -23,7 +96,7 @@
 * Update pot and de_De language files.
 
 ## 1.9.1 (2016-25-01)
-* Bugfix for fixing ssl protocol in WP core on include styles and scripts.
+* Fixing ssl protocol in WP core on include styles and scripts.
 
 ## 1.9.0 (2016-01-21)
 * Change Ex-/Import functions to use JSON format and remove mysql topics, there no longer valid in WP core.
@@ -37,10 +110,10 @@
 * Replace static source to get option, only one function to get it.
 * Change Admin Bar Feature: Difference between front-end and back-end.
 * More stability on admin bar settings. Switch hook to set, get data of admin bar.
-* Add possibilty to select/unselect all checkboxess for each area.
+* Add possibility to select/unselect all checkboxes for each area.
 * Fix redirect feature, if Dashboard menu item is active for a role.
 * Remove functions for WordPress versions smaller 3.5.
-* Remove css tyles small WP 4.0
+* Remove css styles small WP 4.0
 * Add minify js/css.
 * Several code changes.
 * Add custom fix for hide editors on post types.

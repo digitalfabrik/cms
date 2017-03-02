@@ -31,7 +31,7 @@
 
     padding-left: 10px;
     padding-right: 20px; /* hide the scrollbar */
-    width: 375px;
+    width: 355px;
     height: 519px;
 
     margin-left: 15px;
@@ -40,3 +40,5 @@
     overflow-y: scroll;
     overflow-wrap: break-word;
 }
+
+#mobile-preview-content > p {  margin-top: 0em;  margin-bottom: 0.8em; }

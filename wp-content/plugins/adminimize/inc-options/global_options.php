@@ -12,7 +12,7 @@ if ( ! function_exists( 'add_action' ) ) {
 
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
 		<h3 class="hndle" id="global_options"><?php esc_attr_e( 'Global options', 'adminimize' ); ?></h3>
 
 		<div class="inside">
@@ -108,7 +108,7 @@ if ( ! function_exists( 'add_action' ) ) {
 					echo '<td>' . $global_options_names[ $index ] . ' <span>(' . $global_option . ')</span> </td>' . "\n";
 					foreach ( $user_roles as $role ) {
 						echo '<td class="num"><input id="check_post' . $role . $x . '" class="global_options_'
-							. preg_replace( '/[^a-z0-9]+/', '', $role ) . '" type="checkbox"'
+							. preg_replace( '/[^a-z0-9_-]+/', '', $role ) . '" type="checkbox"'
 							. $checked_user_role_[ $role ] . ' name="mw_adminimize_disabled_global_option_'
 							. $role . '_items[]" value="' . $global_option . '" /></td>' . "\n";
 					}
@@ -129,9 +129,9 @@ if ( ! function_exists( 'add_action' ) ) {
 				<tr>
 					<th><?php esc_attr_e( 'Your own options', 'adminimize' );
 						echo '<br />';
-						esc_attr_e( 'ID or class', 'adminimize' ); ?></th>
+						esc_attr_e( 'Option name', 'adminimize' ); ?></th>
 					<th><?php echo '<br />';
-						esc_attr_e( 'Option', 'adminimize' ); ?></th>
+						esc_attr_e( 'Selector, ID or class', 'adminimize' ); ?></th>
 				</tr>
 				</thead>
 

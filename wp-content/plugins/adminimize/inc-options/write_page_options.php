@@ -11,7 +11,7 @@ if ( ! function_exists( 'add_action' ) ) {
 ?>
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle' ); ?>"><br /></div>
+		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
 		<h3 class="hndle" id="config_edit_page"><?php esc_attr_e( 'Write options - Page', 'adminimize' ); ?></h3>
 		<div class="inside">
 			<br class="clear" />
@@ -163,13 +163,13 @@ if ( ! function_exists( 'add_action' ) ) {
 				$quickedit_page_names = array(
 					'<strong>' . esc_attr__( 'Quick Edit Link', 'adminimize' ) . '</strong>',
 					esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Inline Edit Left', 'adminimize' ),
-					'&emsp;QE &rArr;' . ' ' . esc_attr__( 'All Labels', 'adminimize' ),
-					'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Date', 'adminimize' ),
-					'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Author' ),
-					'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Password and Private', 'adminimize' ),
+					'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'All Labels', 'adminimize' ),
+					'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Date', 'adminimize' ),
+					'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Author' ),
+					'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Password and Private', 'adminimize' ),
 					esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Inline Edit Right', 'adminimize' ),
-					'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Parent, Order, Template', 'adminimize' ),
-					'&emsp;QE &rArr;' . ' ' . esc_attr__( 'Status', 'adminimize' ),
+					'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Parent, Order, Template', 'adminimize' ),
+					'&emsp;' . esc_attr__( 'QE', 'adminimize' ) . ' &rArr;' . ' ' . esc_attr__( 'Status', 'adminimize' ),
 					esc_attr__( 'QE', 'adminimize' ) . ' ' . esc_attr__( 'Cancel/Save Button', 'adminimize' )
 				);
 				$metaboxes_names_page = array_merge( $metaboxes_names_page, $quickedit_page_names );
@@ -204,7 +204,7 @@ if ( ! function_exists( 'add_action' ) ) {
 						foreach ( $user_roles as $role ) {
 							echo '<td class="num">';
 							echo '<input id="check_page' . $role . $x . '" class="write_page_options_'
-								. preg_replace( '/[^a-z0-9]+/', '', $role ) . '" type="checkbox"'
+								. preg_replace( '/[^a-z0-9_-]+/', '', $role ) . '" type="checkbox"'
 								. $checked_user_role_[ $role ] . ' name="mw_adminimize_disabled_metaboxes_page_'
 								. $role . '_items[]" value="' . $metabox . '" />';
 							echo '</td>' . "\n";
@@ -224,11 +224,11 @@ if ( ! function_exists( 'add_action' ) ) {
 			<table summary="config_own_page" class="widefat">
 				<thead>
 				<tr>
-					<th><?php esc_attr_e( 'Your own page options', 'adminimize' );
+					<th><?php esc_attr_e( 'Your own options', 'adminimize' );
 						echo '<br />';
-						esc_attr_e( 'ID or class', 'adminimize' ); ?></th>
+						esc_attr_e( 'Option name', 'adminimize' ); ?></th>
 					<th><?php echo '<br />';
-						esc_attr_e( 'Option', 'adminimize' ); ?></th>
+						esc_attr_e( 'Selector, ID or class', 'adminimize' ); ?></th>
 				</tr>
 				</thead>
 

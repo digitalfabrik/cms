@@ -11,9 +11,9 @@ if ( !defined('ABSPATH') )
 	die('-1');
 
 /**
- * @global string  $post_type
- * @global object  $post_type_object
- * @global WP_Post $post
+ * @global string       $post_type
+ * @global WP_Post_Type $post_type_object
+ * @global WP_Post      $post
  */
 global $post_type, $post_type_object, $post;
 
@@ -21,7 +21,7 @@ wp_enqueue_script('post');
 $_wp_editor_expand = $_content_editor_dfw = false;
 
 /**
- * Filter whether to enable the 'expand' functionality in the post editor.
+ * Filters whether to enable the 'expand' functionality in the post editor.
  *
  * @since 4.0.0
  * @since 4.1.0 Added the `$post_type` parameter.
@@ -129,7 +129,7 @@ if ( $viewable ) {
 
 }
 
-/* translators: Publish box date format, see http://php.net/date */
+/* translators: Publish box date format, see https://secure.php.net/date */
 $scheduled_date = date_i18n( __( 'M j, Y @ H:i' ), strtotime( $post->post_date ) );
 
 $messages['post'] = array(
@@ -160,10 +160,10 @@ $messages['page'] = array(
 	 9 => sprintf( __( 'Page scheduled for: %s.' ), '<strong>' . $scheduled_date . '</strong>' ) . $scheduled_page_link_html,
 	10 => __( 'Page draft updated.' ) . $preview_page_link_html,
 );
-$messages['attachment'] = array_fill( 1, 10, __( 'Media attachment updated.' ) ); // Hack, for now.
+$messages['attachment'] = array_fill( 1, 10, __( 'Media file updated.' ) ); // Hack, for now.
 
 /**
- * Filter the post updated messages.
+ * Filters the post updated messages.
  *
  * @since 3.0.0
  *
@@ -197,7 +197,7 @@ $form_extra .= "<input type='hidden' id='post_ID' name='post_ID' value='" . esc_
 
 // Detect if there exists an autosave newer than the post and if that autosave is different than the post
 if ( $autosave && mysql2date( 'U', $autosave->post_modified_gmt, false ) > mysql2date( 'U', $post->post_modified_gmt, false ) ) {
-	foreach ( _wp_post_revision_fields() as $autosave_field => $_autosave_field ) {
+	foreach ( _wp_post_revision_fields( $post ) as $autosave_field => $_autosave_field ) {
 		if ( normalize_whitespace( $autosave->$autosave_field ) != normalize_whitespace( $post->$autosave_field ) ) {
 			$notice = sprintf( __( 'There is an autosave of this post that is more recent than the version below. <a href="%s">View the autosave</a>' ), get_edit_post_link( $autosave->ID ) );
 			break;
@@ -219,7 +219,7 @@ $publish_callback_args = null;
 if ( post_type_supports($post_type, 'revisions') && 'auto-draft' != $post->post_status ) {
 	$revisions = wp_get_post_revisions( $post_ID );
 
-	// We should aim to show the revisions metabox only when there are revisions.
+	// We should aim to show the revisions meta box only when there are revisions.
 	if ( count( $revisions ) > 1 ) {
 		reset( $revisions ); // Reset pointer for key()
 		$publish_callback_args = array( 'revisions_count' => count( $revisions ), 'revision_id' => key( $revisions ) );
@@ -259,8 +259,9 @@ foreach ( get_object_taxonomies( $post ) as $tax_name ) {
 	add_meta_box( $tax_meta_box_id, $label, $taxonomy->meta_box_cb, null, 'side', 'core', array( 'taxonomy' => $tax_name ) );
 }
 
-if ( post_type_supports($post_type, 'page-attributes') )
-	add_meta_box('pageparentdiv', 'page' == $post_type ? __('Page Attributes') : __('Attributes'), 'page_attributes_meta_box', null, 'side', 'core');
+if ( post_type_supports( $post_type, 'page-attributes' ) || count( get_page_templates( $post ) ) > 0 ) {
+	add_meta_box( 'pageparentdiv', $post_type_object->labels->attributes, 'page_attributes_meta_box', null, 'side', 'core' );
+}
 
 if ( $thumbnail_support && current_user_can( 'upload_files' ) )
 	add_meta_box('postimagediv', esc_html( $post_type_object->labels->featured_image ), 'post_thumbnail_meta_box', null, 'side', 'low');
@@ -331,7 +332,7 @@ do_action( 'add_meta_boxes', $post_type, $post );
  *
  * @param WP_Post $post Post object.
  */
-do_action( 'add_meta_boxes_' . $post_type, $post );
+do_action( "add_meta_boxes_{$post_type}", $post );
 
 /**
  * Fires after meta boxes have been added.
@@ -363,8 +364,8 @@ if ( 'post' == $post_type ) {
 
 	$title_and_editor  = '<p>' . __('<strong>Title</strong> &mdash; Enter a title for your post. After you enter a title, you&#8217;ll see the permalink below, which you can edit.') . '</p>';
 	$title_and_editor .= '<p>' . __( '<strong>Post editor</strong> &mdash; Enter the text for your post. There are two modes of editing: Visual and Text. Choose the mode by clicking on the appropriate tab.' ) . '</p>';
-	$title_and_editor .= '<p>' . __( 'Visual mode gives you a WYSIWYG editor. Click the last icon in the row to get a second row of controls. ') . '</p>';
-	$title_and_editor .= '<p>' . __( 'The Text mode allows you to enter HTML along with your post text. Line breaks will be converted to paragraphs automatically.' ) . '</p>';
+	$title_and_editor .= '<p>' . __( 'Visual mode gives you an editor that is similar to a word processor. Click the Toolbar Toggle button to get a second row of controls.' ) . '</p>';
+	$title_and_editor .= '<p>' . __( 'The Text mode allows you to enter HTML along with your post text. Note that &lt;p&gt; and &lt;br&gt; tags are converted to line breaks when switching to the Text editor to make it less cluttered. When you type, a single line break can be used instead of typing &lt;br&gt;, and two line breaks instead of paragraph tags. The line breaks are converted back to tags automatically.' ) . '</p>';
 	$title_and_editor .= '<p>' . __( 'You can insert media files by clicking the icons above the post editor and following the directions. You can align or edit images using the inline formatting toolbar available in Visual mode.' ) . '</p>';
 	$title_and_editor .= '<p>' . __( 'You can enable distraction-free writing mode using the icon to the right. This feature is not available for old browsers or devices with small screens, and requires that the full-height editor be enabled in Screen Options.' ) . '</p>';
 	$title_and_editor .= '<p>' . __( 'Keyboard users: When you&#8217;re working in the visual editor, you can use <kbd>Alt + F10</kbd> to access the toolbar.' ) . '</p>';
@@ -378,8 +379,8 @@ if ( 'post' == $post_type ) {
 	get_current_screen()->set_help_sidebar(
 			'<p>' . sprintf(__('You can also create posts with the <a href="%s">Press This bookmarklet</a>.'), 'tools.php') . '</p>' .
 			'<p><strong>' . __('For more information:') . '</strong></p>' .
-			'<p>' . __('<a href="https://codex.wordpress.org/Posts_Add_New_Screen" target="_blank">Documentation on Writing and Editing Posts</a>') . '</p>' .
-			'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+			'<p>' . __('<a href="https://codex.wordpress.org/Posts_Add_New_Screen">Documentation on Writing and Editing Posts</a>') . '</p>' .
+			'<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 	);
 } elseif ( 'page' == $post_type ) {
 	$about_pages = '<p>' . __('Pages are similar to posts in that they have a title, body text, and associated metadata, but they are different in that they are not part of the chronological blog stream, kind of like permanent posts. Pages are not categorized or tagged, but can have a hierarchy. You can nest pages under other pages by making one the &#8220;Parent&#8221; of the other, creating a group of pages.') . '</p>' .
@@ -393,9 +394,9 @@ if ( 'post' == $post_type ) {
 
 	get_current_screen()->set_help_sidebar(
 			'<p><strong>' . __('For more information:') . '</strong></p>' .
-			'<p>' . __('<a href="https://codex.wordpress.org/Pages_Add_New_Screen" target="_blank">Documentation on Adding New Pages</a>') . '</p>' .
-			'<p>' . __('<a href="https://codex.wordpress.org/Pages_Screen#Editing_Individual_Pages" target="_blank">Documentation on Editing Pages</a>') . '</p>' .
-			'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+			'<p>' . __('<a href="https://codex.wordpress.org/Pages_Add_New_Screen">Documentation on Adding New Pages</a>') . '</p>' .
+			'<p>' . __('<a href="https://codex.wordpress.org/Pages_Screen#Editing_Individual_Pages">Documentation on Editing Pages</a>') . '</p>' .
+			'<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 	);
 } elseif ( 'attachment' == $post_type ) {
 	get_current_screen()->add_help_tab( array(
@@ -410,8 +411,8 @@ if ( 'post' == $post_type ) {
 
 	get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Media_Add_New_Screen#Edit_Media" target="_blank">Documentation on Edit Media</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Media_Add_New_Screen#Edit_Media">Documentation on Edit Media</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 	);
 }
 
@@ -429,7 +430,7 @@ if ( 'post' == $post_type || 'page' == $post_type ) {
 if ( 'post' == $post_type ) {
 	$publish_box = '<p>' . __('Several boxes on this screen contain settings for how your content will be published, including:') . '</p>';
 	$publish_box .= '<ul><li>' .
-		__( '<strong>Publish</strong> &mdash; You can set the terms of publishing your post in the Publish box. For Status, Visibility, and Publish (immediately), click on the Edit link to reveal more options. Visibility includes options for password-protecting a post or making it stay at the top of your blog indefinitely (sticky). Publish (immediately) allows you to set a future or past date and time, so you can schedule a post to be published in the future or backdate a post. The Password protected option allows you to set an arbitrary password for each post. The Private option hides the post from everyone except editors and administrators.' ) .
+		__( '<strong>Publish</strong> &mdash; You can set the terms of publishing your post in the Publish box. For Status, Visibility, and Publish (immediately), click on the Edit link to reveal more options. Visibility includes options for password-protecting a post or making it stay at the top of your blog indefinitely (sticky). The Password protected option allows you to set an arbitrary password for each post. The Private option hides the post from everyone except editors and administrators. Publish (immediately) allows you to set a future or past date and time, so you can schedule a post to be published in the future or backdate a post.' ) .
 	'</li>';
 
 	if ( current_theme_supports( 'post-formats' ) && post_type_supports( 'post', 'post-formats' ) ) {
@@ -473,11 +474,18 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 ?>
 
 <div class="wrap">
-<h1><?php
+<h1 class="wp-heading-inline"><?php
 echo esc_html( $title );
-if ( isset( $post_new_file ) && current_user_can( $post_type_object->cap->create_posts ) )
-	echo ' <a href="' . esc_url( admin_url( $post_new_file ) ) . '" class="page-title-action">' . esc_html( $post_type_object->labels->add_new ) . '</a>';
 ?></h1>
+
+<?php
+if ( isset( $post_new_file ) && current_user_can( $post_type_object->cap->create_posts ) ) {
+	echo ' <a href="' . esc_url( admin_url( $post_new_file ) ) . '" class="page-title-action">' . esc_html( $post_type_object->labels->add_new ) . '</a>';
+}
+?>
+
+<hr class="wp-header-end">
+
 <?php if ( $notice ) : ?>
 <div id="notice" class="notice notice-warning"><p id="has-newer-autosave"><?php echo $notice ?></p></div>
 <?php endif; ?>
@@ -543,7 +551,7 @@ do_action( 'edit_form_top', $post ); ?>
 <div id="titlewrap">
 	<?php
 	/**
-	 * Filter the title field placeholder text.
+	 * Filters the title field placeholder text.
 	 *
 	 * @since 3.1.0
 	 *
@@ -631,9 +639,11 @@ if ( post_type_supports($post_type, 'editor') ) {
 	if ( 'auto-draft' != $post->post_status ) {
 		echo '<span id="last-edit">';
 		if ( $last_user = get_userdata( get_post_meta( $post_ID, '_edit_last', true ) ) ) {
-			printf(__('Last edited by %1$s on %2$s at %3$s'), esc_html( $last_user->display_name ), mysql2date(get_option('date_format'), $post->post_modified), mysql2date(get_option('time_format'), $post->post_modified));
+			/* translators: 1: Name of most recent post author, 2: Post edited date, 3: Post edited time */
+			printf( __( 'Last edited by %1$s on %2$s at %3$s' ), esc_html( $last_user->display_name ), mysql2date( __( 'F j, Y' ), $post->post_modified ), mysql2date( __( 'g:i a' ), $post->post_modified ) );
 		} else {
-			printf(__('Last edited on %1$s at %2$s'), mysql2date(get_option('date_format'), $post->post_modified), mysql2date(get_option('time_format'), $post->post_modified));
+			/* translators: 1: Post edited date, 2: Post edited time */
+			printf( __( 'Last edited on %1$s at %2$s' ), mysql2date( __( 'F j, Y' ), $post->post_modified ), mysql2date( __( 'g:i a' ), $post->post_modified ) );
 		}
 		echo '</span>';
 	} ?>
