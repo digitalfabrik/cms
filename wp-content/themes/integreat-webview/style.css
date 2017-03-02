@@ -1036,6 +1036,11 @@ footer ul li a {
     padding-bottom: 25px;
   }
 }
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  header#topHeader #languageList .inner {
+    width: 0;
+  }
+}
 @media print {
   a:after {
     color: #222222;
