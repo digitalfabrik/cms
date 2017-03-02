@@ -887,6 +887,7 @@ footer ul li a {
   }
 }
 @media screen and (min-width: 992px) {
+  header#topHeader #languageList .inner { width: 1px }
   .container {
     max-width: 990px;
     margin: 0;
