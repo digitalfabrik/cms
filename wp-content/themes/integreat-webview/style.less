@@ -856,6 +856,7 @@ footer {
 
     #languageList {
       .inner {
+        width: 1px;
         a {
           span { .smooth-transition(0.2s); }
           &:hover {
@@ -975,5 +976,20 @@ footer {
 
   footer {
     padding-bottom: 25px;
+  }
+}
+
+// quickfix IE language switcher
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  header#topHeader #languageList .inner {
+    width: 0;
+  }
+}
+
+// print stylesheet
+@media print{
+  a:after{
+    color: @text-color;
+    content:" (" attr(href) ") ";
   }
 }

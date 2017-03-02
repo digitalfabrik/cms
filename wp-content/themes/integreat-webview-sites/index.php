@@ -82,15 +82,12 @@
                     $currentLanguageTranslations = $wpdb->get_results('SELECT * FROM '.$table_prefix.'icl_languages_translations WHERE language_code = "'.$language->code.'" AND display_language_code = "'.$language->code.'"');
                     $currentLanguageFlags = $wpdb->get_results('SELECT * FROM '.$table_prefix.'icl_flags WHERE lang_code = "'.$language->code.'"');
                     $currentLanguageInCurrentLanguage = $wpdb->get_row('SELECT * FROM '.$table_prefix.'icl_languages_translations WHERE language_code = "'.$language->code.'" AND display_language_code = "'.ICL_LANGUAGE_CODE.'"');
-                    $homeURL = home_url();
-                    $homeURL = parse_url($homeURL);
-                    $homeURL = $homeURL['path'];
                     $languages[$language->english_name] = array(
                             'code'                  => $language->code,
                             'english_name'          => $language->english_name,
                             'native_name'           => $currentLanguageTranslations[0]->name,
                             'name_current_language' => $currentLanguageInCurrentLanguage->name,
-                            'flag_url'              => "http" . (isset($_SERVER['HTTPS']) ? "s" : "") . "://" . $_SERVER['HTTP_HOST'] . $homeURL . '/wp-content/plugins/sitepress-multilingual-cms/res/flags/' . $currentLanguageFlags[0]->flag
+                            'flag_url'              => "http" . (isset($_SERVER['HTTPS']) ? "s" : "") . "://" . $_SERVER['HTTP_HOST'] . constant("PATH_CURRENT_SITE") . '/wp-content/plugins/sitepress-multilingual-cms/res/flags/' . $currentLanguageFlags[0]->flag
                         );
                 }
                 restore_current_blog();

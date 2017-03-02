@@ -116,11 +116,16 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base {
 		$tempfile = wp_tempnam($file);
 		$temp = fopen($tempfile, 'w+');
 
-		if ( ! $temp )
+		if ( ! $temp ) {
+			unlink( $tempfile );
 			return false;
+		}
 
-		if ( ! @ftp_fget($this->link, $temp, $file, FTP_BINARY ) )
+		if ( ! @ftp_fget( $this->link, $temp, $file, FTP_BINARY ) ) {
+			fclose( $temp );
+			unlink( $tempfile );
 			return false;
+		}
 
 		fseek( $temp, 0 ); // Skip back to the start of the file being written to
 		$contents = '';
@@ -154,8 +159,11 @@ class WP_Filesystem_FTPext extends WP_Filesystem_Base {
 	public function put_contents($file, $contents, $mode = false ) {
 		$tempfile = wp_tempnam($file);
 		$temp = fopen( $tempfile, 'wb+' );
-		if ( ! $temp )
+
+		if ( ! $temp ) {
+			unlink( $tempfile );
 			return false;
+		}
 
 		mbstring_binary_safe_encoding();
 

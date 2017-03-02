@@ -5,13 +5,13 @@ msgstr ""
 "Project-Id-Version: Advanced Custom Fields\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/advanced-custom-fields\n"
 "POT-Creation-Date: 2014-01-05 07:41:49+00:00\n"
-"PO-Revision-Date: 2014-01-28 19:03+0100\n"
-"Last-Translator: Jakub Machala <jakubmachala@webees.cz>\n"
+"PO-Revision-Date: 2016-04-04 10:08+1000\n"
+"Last-Translator: Elliot Condon <e@elliotcondon.com>\n"
 "Language-Team: webees.cz s.r.o. <jakubmachala@webees.cz>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.8.1\n"
 "Language: cs_CZ\n"
 "X-Poedit-Basepath: c:\\Users\\Jakub\\Documents\\GitHub\\wpcz\\Advanced "
 "Custom Fields\\moduly\n"
@@ -732,7 +732,7 @@ msgstr "Potenciální problémy"
 
 #: core/controllers/field_groups.php:362
 msgid ""
-"Do to the sizable changes surounding Add-ons, field types and action/"
+"Due to the sizable changes surrounding Add-ons, field types and action/"
 "filters, your website may not operate correctly. It is important that you "
 "read the full"
 msgstr ""
@@ -1000,7 +1000,7 @@ msgstr "Uložit formát"
 
 #: core/fields/date_picker/date_picker.php:127
 msgid ""
-"This format will determin the value saved to the database and returned via "
+"This format will determine the value saved to the database and returned via "
 "the API"
 msgstr "Tento formát určí hodnotu uloženou do databáze a vrácenou přes API"
 
@@ -1482,7 +1482,7 @@ msgid "Formatting"
 msgstr "Formátování"
 
 #: core/fields/text.php:177 core/fields/textarea.php:142
-msgid "Effects value on front end"
+msgid "Affects value on front end"
 msgstr "Ovlivňuje hodnotu na front endu"
 
 #: core/fields/text.php:186 core/fields/textarea.php:151
