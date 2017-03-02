@@ -979,7 +979,14 @@ footer {
   }
 }
 
+// quickfix IE language switcher
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+  header#topHeader #languageList .inner {
+    width: 0;
+  }
+}
 
+// print stylesheet
 @media print{
   a:after{
     color: @text-color;
