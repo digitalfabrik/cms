@@ -17,7 +17,7 @@ function replace_logo() {
 	?>
 	<style type="text/css">
 
-		.login h1 a {
+		#login h1 a {
 			border: 2px solid #F1F1F1;
 			border-radius 15px;
 			background-size: 320px 100px;
