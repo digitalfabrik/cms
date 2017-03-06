@@ -158,7 +158,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	 */
 	protected function build_query_where() {
 		$since = $this->current_request->rest_request->get_param('since');
-		if(strtotime($since) > stroftime($this->force_update_date)) {
+		if(strtotime($since) > strtotime($this->force_update_date)) {
 			//if the last update is after the deadline, pull all content by setting the since date to the beginning of 2015
 			$since = "2015-01-01T00:00:00+02:00";
 		}
