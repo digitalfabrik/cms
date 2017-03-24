@@ -212,7 +212,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 
 	protected function prepare_content($post) {
 		$content = $post->post_content;
-		return str_replace(["\r\n", "\r", "\n"], "<br>", $content);
+		return wpautop($content);
 	}
 
 	protected function prepare_excerpt($post) {
