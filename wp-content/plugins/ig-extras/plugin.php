@@ -53,4 +53,4 @@ function ig_extras_deactivate() {
 		}
 	}
 }
-register_uninstall_hook( __FILE__, 'ig_extras_deactivate' );
+register_deactivation_hook( __FILE__, 'ig_extras_deactivate' );
