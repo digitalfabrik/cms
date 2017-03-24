@@ -13,7 +13,6 @@ function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 
 	// sprungbrett praktika -> ig-content-loader-sprungbrett
 	if( $meta_value == "ig-content-loader-instance" ) {
-	
 		switch_to_blog( $blog_id );
  
 		$key_blog_id = 'ig-content-loader-instance-blog-id';
@@ -21,15 +20,15 @@ function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 		
 		$source_blog_id = get_post_meta( $parent_id, $key_blog_id, true );
 		$source_post_id = get_post_meta( $parent_id, $key_post_id, true );
-				
+
 		// switch to data origin block
 		switch_to_blog( $source_blog_id );
-						
+
 		$html = get_post( $source_post_id )->post_content;
-		
+
 		// switch back to network site
 		switch_to_blog( 0 );
-		
+
 		cl_save_content( $parent_id, $html, $blog_id);
 
 		return;
@@ -100,7 +99,6 @@ function cl_in_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 	$output .= '</select>
 	<p id="cl_in_metabox_pages">'.$pages_dropdown.'</p>
 	</div>';
-	
 	if ( $ajax == true ) {
 		echo $output;
 		exit;
@@ -126,7 +124,8 @@ function cl_in_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 	$pages = get_pages();
 	$output = '<select id="cl_in_select_post_id" name="cl_in_select_post_id">';
 	foreach ($pages as $page) {
-		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id,false ).">".$page->post_title."</option>";
+		$orig_title = get_the_title( icl_object_id($page->ID, 'post', true, wpml_get_default_language()));
+		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id,false ).">".$orig_title." — ".$page->post_title."</option>";
 	}
 	$output .= "</select>";
 	switch_to_blog( $original_blog_id ); 
@@ -143,13 +142,13 @@ function cl_in_save_meta_box ( $post_id, $old_meta_value, $meta_value ) {
 
 	$added_blog_id = $_POST['cl_in_select_blog_id'];
 	$added_post_id = $_POST['cl_in_select_post_id'];
-	
+
 	$key_blog_id = 'ig-content-loader-instance-blog-id';
 	$key_post_id = 'ig-content-loader-instance-post-id';
-	
+
 	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
 	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
-	
+
 	// if the content loader instance is removed, we want to remove all related meta data
 	if ( $old_meta_value == 'ig-content-loader-instance' && $meta_value != 'ig-content-loader-instance' ) {
 		delete_post_meta( $post_id, $key_blog_id, $meta_value );
@@ -176,10 +175,10 @@ function cl_in_metabox_extra( $cl_metabox_extra, $module, $post_id ) {
 	if( $module == 'ig-content-loader-instance' ) {
 		$key_blog_id = 'ig-content-loader-instance-blog-id';
 		$key_post_id = 'ig-content-loader-instance-post-id';
-		
+
 		$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
 		$old_post_id = get_post_meta( $post_id, $key_post_id, true );
-		
+
 		$output = cl_in_blogs_dropdown( $old_blog_id, cl_in_pages_dropdown( $old_blog_id, ICL_LANGUAGE_CODE, $old_post_id ) );
 		return $output;
 	}
