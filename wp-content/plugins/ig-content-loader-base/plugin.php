@@ -157,7 +157,8 @@ add_action('edit_page_form', 'cl_save_meta_box');
 function cl_update_parent_modified_date( $post_id, $blog_id ) {
 	global $wpdb;
 	$datetime = date("Y-m-d H:i:s");
-	if($wpdb->query( "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_date` = '".$datetime."' WHERE `ID` = '".$post_id."'" ))
+	$gmtdatetime = gmdate("Y-m-d H:i:s");
+	if($wpdb->query( "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$post_id."'" ))
 		return true;
 	else
 		return false;
