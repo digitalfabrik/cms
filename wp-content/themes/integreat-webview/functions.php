@@ -27,4 +27,6 @@ function wp_remove_version() {
 }
 add_filter('the_generator', 'wp_remove_version');
 
+add_theme_support( 'post-thumbnails' );
+
 ?>
