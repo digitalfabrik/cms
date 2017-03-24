@@ -42,6 +42,7 @@ class RestApi_Multisites extends RestApi_ExtensionBase {
 			'description' => get_bloginfo($blog['path']),
 			'live' => $blog['public'] and !$blog['spam'] and !$blog['deleted'] and !$blog['archived'] and !$blog['mature']
 		];
+		$result = apply_filters( 'ig_wp_api_extension_settings', $result, $id );
 		restore_current_blog();
 		return $result;
 	}
