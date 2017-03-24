@@ -18,7 +18,7 @@ function ig_extras_settings() {
 function ig_extras_api_settings( $array, $blog_id ) {
 	$ig_extras_settings = ig_extras_settings();
 	foreach( $ig_extras_settings as $key => $value ) {
-		$ig_extras_settings[ $key ] = get_blog_option( $blog_id, $key, 0 );
+		$ig_extras_settings[ $key ] = get_blog_option( $blog_id, $key, $value );
 	}
 	return array_merge( $array, $ig_extras_settings );
 }
