@@ -160,9 +160,8 @@ function cl_update_parent_modified_date( $parent_id, $blog_id ) {
 	$gmtdatetime = gmdate("Y-m-d H:i:s");
 	$select = $sql = "SELECT * FROM ".$wpdb->base_prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'revision' ORDER BY ID DESC LIMIT 1";
 	$sql_results = $wpdb->get_results($sql);
-	if(count($sql_results) > 0) {
+	if(count($sql_results) > 0)
 		$update_query = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$sql_results[0]->ID."'";
-	}
 	else
 		$update_query = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$parent_id."'";
 	if($wpdb->query( $update_query ))
