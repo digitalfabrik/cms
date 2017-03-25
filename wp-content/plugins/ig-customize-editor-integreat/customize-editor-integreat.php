@@ -87,13 +87,12 @@ function modify_buttons($buttons)
 		insert_button($settings, 'forecolor', 'toolbar_1', 4);
 		insert_button($settings, 'bullist', 'toolbar_1', 5);
 		insert_button($settings, 'numlist', 'toolbar_1', 6);
-		//insert_button($settings, 'table', 'toolbar_1', 7);
-		insert_button($settings, 'formatselect', 'toolbar_1', 8);
-		insert_button($settings, 'undo', 'toolbar_1', 9);
-		insert_button($settings, 'redo', 'toolbar_1', 10);
-		insert_button($settings, 'wp_adv', 'toolbar_1', 11);
-		insert_button($settings, 'ltr', 'toolbar_1', 12);
-		insert_button($settings, 'rtl', 'toolbar_1', 13);
+		insert_button($settings, 'formatselect', 'toolbar_1', 7);
+		insert_button($settings, 'undo', 'toolbar_1', 8);
+		insert_button($settings, 'redo', 'toolbar_1', 9);
+		insert_button($settings, 'wp_adv', 'toolbar_1', 10);
+		insert_button($settings, 'ltr', 'toolbar_1', 11);
+		insert_button($settings, 'rtl', 'toolbar_1', 12);
 
 		//second toolbar
 		insert_button($settings, 'alignleft', 'toolbar_2', 1);
@@ -116,14 +115,13 @@ function modify_buttons($buttons)
 		insert_button($settings, 'alignleft', 'toolbar_1', 6);
 		insert_button($settings, 'aligncenter', 'toolbar_1', 7);
 		insert_button($settings, 'alignright', 'toolbar_1', 8);
-		//insert_button($settings, 'table', 'toolbar_1', 9);
-		insert_button($settings, 'link', 'toolbar_1', 10);
-		insert_button($settings, 'unlink', 'toolbar_1', 11);
-		insert_button($settings, 'blockquote', 'toolbar_1', 12);
-		insert_button($settings, 'undo', 'toolbar_1', 13);
-		insert_button($settings, 'redo', 'toolbar_1', 14);
-		insert_button($settings, 'fullscreen', 'toolbar_1', 15);
-		insert_button($settings, 'wp_adv', 'toolbar_1', 16);
+		insert_button($settings, 'link', 'toolbar_1', 9);
+		insert_button($settings, 'unlink', 'toolbar_1', 10);
+		insert_button($settings, 'blockquote', 'toolbar_1', 11);
+		insert_button($settings, 'undo', 'toolbar_1', 12);
+		insert_button($settings, 'redo', 'toolbar_1', 13);
+		insert_button($settings, 'fullscreen', 'toolbar_1', 14);
+		insert_button($settings, 'wp_adv', 'toolbar_1', 15);
 		//second toolbar
 		//first toolbar
 		insert_button($settings, 'formatselect', 'toolbar_2', 1);
