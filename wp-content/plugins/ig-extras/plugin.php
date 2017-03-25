@@ -12,7 +12,7 @@ function ig_extras_settings() {
 	$ig_extras_settings['ige-sbt'] = "0";
 	$ig_extras_settings['ige-evts'] = "0";
 	$ig_extras_settings['ige-pn'] = "0";
-	$ig_extras_settings['ige-c4r'] = ";
+	$ig_extras_settings['ige-c4r'] = "";
 	return $ig_extras_settings;
 }
 
