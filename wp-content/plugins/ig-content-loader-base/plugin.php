@@ -150,6 +150,26 @@ add_action('edit_post', 'cl_save_meta_box');
 add_action('publish_post', 'cl_save_meta_box');
 add_action('edit_page_form', 'cl_save_meta_box');
 
+/*
+* update post modified date, usually for parent of attached post. Necessary to push updates to App
+* @param int $post_id, int $blog_id
+*/
+function cl_update_parent_modified_date( $parent_id, $blog_id ) {
+	global $wpdb;
+	$datetime = date("Y-m-d H:i:s");
+	$gmtdatetime = gmdate("Y-m-d H:i:s");
+	$select = $sql = "SELECT * FROM ".$wpdb->base_prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'revision' ORDER BY ID DESC LIMIT 1";
+	$sql_results = $wpdb->get_results($sql);
+	if(count($sql_results) > 0)
+		$update_query = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$sql_results[0]->ID."'";
+	else
+		$update_query = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$parent_id."'";
+	if($wpdb->query( $update_query ))
+		return true;
+	else
+		return false;
+}
+
 /**
 * Safe foreign content in database as html code
 * 
@@ -170,7 +190,7 @@ function cl_save_content( $parent_id, $attachment, $blog_id) {
 		$insert = "INSERT INTO ".$wpdb->base_prefix.$blog_id."_posts(post_content, post_type, post_mime_type, post_parent, post_status) VALUES('$attachment','cl_html', 'text/html', '$parent_id', 'inherit')";
 		$wpdb->query($insert);
 	}
-
+	cl_update_parent_modified_date( $parent_id, $blog_id );
 }
 add_action('cl_save_html_as_attachement', 'cl_save_content', 10 , 3);
 

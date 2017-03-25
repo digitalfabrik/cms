@@ -110,7 +110,7 @@
                             </a>
                         </h1>
                     </div>
-
+                    <?php get_template_part('templates/createPDF'); ?>
                     <?php get_template_part('templates/languageSwitcher'); ?>
                 </div>
             </div>

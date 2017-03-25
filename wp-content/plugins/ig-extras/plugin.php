@@ -8,10 +8,11 @@
  * License: MIT
  */
 function ig_extras_settings() {
-	$ig_extras_settings['ig-extras-serlo'] = "0";
-	$ig_extras_settings['ig-extras-sprungbrett'] = "0";
-	$ig_extras_settings['ig-extras-events'] = "0";
-	$ig_extras_settings['ig-extras-pushnotifications'] = "0";
+	$ig_extras_settings['ige-srl'] = "0";
+	$ig_extras_settings['ige-sbt'] = "0";
+	$ig_extras_settings['ige-evts'] = "0";
+	$ig_extras_settings['ige-pn'] = "0";
+	$ig_extras_settings['ige-c4r'] = ";
 	return $ig_extras_settings;
 }
 
@@ -45,12 +46,4 @@ function ig_extras_activate() {
 	}
 }
 register_activation_hook( __FILE__, 'ig_extras_activate' );
-
-function ig_extras_deactivate() {
-	foreach(ig_extras_blogs() as $blog_id) {
-		foreach(ig_extras_settings() as $key => $value) {
-			delete_blog_option($blog_id, $key);
-		}
-	}
-}
-register_deactivation_hook( __FILE__, 'ig_extras_deactivate' );
+?>
