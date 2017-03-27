@@ -27,6 +27,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			/* Users */
 			'create_users' => true,
 			'edit_users' => true,
+			'delete_users' => true,
 			'promote_users' => true,
 			'list_users' => true,
 			/* Pages */
