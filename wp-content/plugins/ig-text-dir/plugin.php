@@ -19,7 +19,7 @@ function ig_text_dir( $lang_code ) {
 
 function ig_dir_rtl( $content ) {
 	$dom = new DOMDocument();
-	$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+	$dom->loadHTML( mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'), LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 	$xpath = new DOMXPath( $dom );
 	$tags = $xpath->evaluate( "//p" );
 	foreach ( $tags as $tag ) {
