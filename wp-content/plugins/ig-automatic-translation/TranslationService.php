@@ -15,6 +15,10 @@ class TranslationService {
 	public function translate_post($post, $source_language_code, $target_language_code) {
 		$translated_title = $this->translate_string($post->post_title, $source_language_code, $target_language_code);
 		$translated_content = $this->translate_string($post->post_content, $source_language_code, $target_language_code);
+		if( ig_text_dir( $target_language_code ) == 'rtl' ) {
+			$translated_title = ig_dir_rtl( $translated_title );
+			$translated_content = ig_dir_rtl( $translated_content );
+		}
 		$translated_post = [
 			'post_title' => $translated_title,
 			'post_content' => $translated_content,

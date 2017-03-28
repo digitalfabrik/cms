@@ -38,16 +38,7 @@ class RestApi_WpmlLanguagesV0 extends RestApi_ExtensionBaseV0 {
 			'code' => $language['code'],
 			'native_name' => $language['native_name'],
 			'country_flag_url' => $language['country_flag_url'],
-			'dir' => $this->text_dir($language['code']),
+			'dir' => ig_text_dir($language['code']),
 		];
 	}
-
-	private function text_dir($lang_code) {
-		$rtl_languages = array('ar','fa');
-		if(in_array($lang_code, $rtl_languages))
-			return "rtl";
-		else
-			return "ltr";
-	}
-	
 }
