@@ -16,6 +16,7 @@
 			}
 		}
     }
-    add_action('init','switch_to_defined_language');
+    if ( !is_admin() )
+        add_action('init','switch_to_defined_language');
 
 ?>
