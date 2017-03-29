@@ -97,6 +97,16 @@ class URE_Ajax_Processor {
     // end of get_users_without_role()
     
     
+    protected function grant_roles() {
+        
+        $answer = URE_Grant_Roles::process_user_request();
+        
+        return $answer;
+        
+    }
+    // end of grant_roles()
+    
+    
     protected function _dispatch() {
         switch ($this->action) {
             case 'get_caps_to_remove':
@@ -104,6 +114,9 @@ class URE_Ajax_Processor {
                 break;
             case 'get_users_without_role':
                 $answer = $this->get_users_without_role();
+                break;
+            case 'grant_roles':
+                $answer = $this->grant_roles();
                 break;
             default:
                 $answer = array('result' => 'error', 'message' => 'unknown action "' . $this->action . '"');
