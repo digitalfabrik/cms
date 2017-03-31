@@ -6,7 +6,14 @@
  * Author: Sven Seeberg
  * Author URI: https://github.com/Integreat
  * License: MIT
+ * Text Domain: ig-content-loader-instance
  */
+
+function cl_init_instance() {
+	$plugin_dir = basename(dirname(__FILE__));
+	load_plugin_textdomain( 'ig-content-loader-instance', false, $plugin_dir );
+}
+add_action( 'init', 'cl_init_instance' );
 
 
 function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
@@ -37,7 +44,7 @@ function cl_in_update_content( $parent_id, $meta_value, $blog_id ) {
 add_action( 'cl_update_content','cl_in_update_content', 10, 3 );
 
 function cl_in_metabox_item( $array ) {
-	$array[] = array('id'=>'ig-content-loader-instance', 'name'=>'Seite aus Fremdinstanz');
+	$array[] = array('id'=>'ig-content-loader-instance', 'name'=>__('Page from other instance', 'ig-content-loader-instance'));
 	return $array;
 }
 add_filter( 'cl_metabox_item', 'cl_in_metabox_item' );
@@ -88,9 +95,9 @@ function cl_in_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_cl_in_metabox_instance">
-	<p style="font-weight:bold;" id="cl_in_title">Bitte Kommune ausw&auml;hlen</p>
+	<p style="font-weight:bold;" id="cl_in_title">'.__('Select city', 'ig-content-loader-instance').'</p>
 	<select style="width: 100%;" id="cl_in_select_blog_id" name="cl_in_select_blog_id">
-		<option value="">Bitte w&auml;hlen</option>';
+		<option value="">'.__('Please select', 'ig-content-loader-instance').'</option>';
 		foreach( $all_blogs as $blog ){
 			
 			$blog_name = get_blog_details( $blog->blog_id )->blogname;

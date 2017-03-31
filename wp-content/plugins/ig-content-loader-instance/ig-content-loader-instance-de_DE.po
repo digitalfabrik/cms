@@ -1,0 +1,8 @@
+msgid "Page from other instance"
+msgstr "Seite aus Fremdinstanz"
+
+msgid "Select city"
+msgstr "Bitte Kommune ausw&auml;hlen"
+
+msgid "Please select"
+msgstr "Bitte w&auml;hlen"
