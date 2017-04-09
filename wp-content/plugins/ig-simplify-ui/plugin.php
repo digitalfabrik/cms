@@ -14,6 +14,5 @@ class IGSimplifyUI {
 		}
 	}
 }
-
 $igsimplifyui = new IGSimplifyUI();
 add_action('admin_enqueue_scripts', [$igsimplifyui, 'enqueue_styles_and_scripts']);
