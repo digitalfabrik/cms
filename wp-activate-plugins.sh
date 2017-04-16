@@ -3,7 +3,6 @@
 "vendor/wp-cli/wp-cli/bin/wp" plugin activate --network \
 adminimize \
 advanced-custom-fields \
-block-specific-plugin-updates \
 cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
