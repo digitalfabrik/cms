@@ -1,4 +1,15 @@
 <?php
+/*
+ * Plugin Name: Author Chat Plugin
+ * Plugin URI: http://ordin.pl/
+ * Description: Plugin that gives your authors an easy way to communicate through back-end UI (admin panel).
+ * Author: Piotr Pesta
+ * Version: 1.4.3
+ * Author URI: http://ordin.pl/
+ * License: GPL12
+ * Text Domain: author-chat
+ * Domain Path: /lang
+ */
 
 include 'pp-process.php';
 
@@ -17,9 +28,10 @@ function pp_author_chat_load_textdomain() {
 // create author_chat table
 function pp_author_chat_activate() {
     global $wpdb;
-    $author_chat_table = $wpdb->base_prefix . 'author_chat';
-    $author_chat_color = $wpdb->base_prefix . 'author_chat_colors';
-    $wpdb->query("CREATE TABLE IF NOT EXISTS $author_chat_table (
+    $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+    $author_chat_table = $wpdb->base_prefix.'author_chat';
+    $author_chat_color = $wpdb->base_prefix.'author_chat_colors';
+    $mydb->query("CREATE TABLE IF NOT EXISTS $author_chat_table (
 		id BIGINT(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		nickname TINYTEXT NOT NULL,
 		content TEXT NOT NULL,
@@ -29,7 +41,7 @@ function pp_author_chat_activate() {
 		color TINYTEXT NOT NULL)
 		CHARACTER SET utf8 COLLATE utf8_bin
 		;");
-    $wpdb->query("CREATE TABLE IF NOT EXISTS $author_chat_color (
+    $mydb->query("CREATE TABLE IF NOT EXISTS $author_chat_color (
 		id BIGINT(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 		site TINYTEXT NOT NULL,
 		tag TINYTEXT NOT NULL,
@@ -48,8 +60,9 @@ function pp_author_chat_activate() {
 // delete author_chat table
 function pp_author_chat_uninstall() {
     global $wpdb;
-    $author_chat_table = $wpdb->base_prefix . 'author_chat';
-    $wpdb->query("DROP TABLE IF EXISTS $author_chat_table");
+    $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+    $author_chat_table = $wpdb->base_prefix.'author_chat';
+    $mydb->query("DROP TABLE IF EXISTS $author_chat_table");
     delete_option('author_chat_settings');
     delete_option('author_chat_settings_delete');
     delete_option('author_chat_settings_access_editor');
@@ -74,8 +87,8 @@ function pp_author_chat_setup_menu() {
 }
 
 function pp_wp_dashboard_author_chat() {
-    add_meta_box('author-chat-widget', 'Autorenchat', 'pp_author_chat', 'dashboard', 'advanced', 'high');
-    //wp_add_dashboard_widget('author-chat-widget', 'Author Chat', 'pp_author_chat');
+    //add_meta_box('author-chat-widget', 'Autorenchat', 'pp_author_chat', 'dashboard', 'advanced', 'high');
+    wp_add_dashboard_widget('author-chat-widget', 'Author Chat', 'pp_author_chat');
 }
 
 function register_author_chat_settings() {
@@ -199,15 +212,17 @@ function pp_author_chat_chat_on_top() {
 
 function pp_author_chat_clean_up_chat_history() {
     global $wpdb;
-    $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+    $author_chat_table = $wpdb->base_prefix.'author_chat';
     $daystoclear = get_option('author_chat_settings');
-    $wpdb->query("DELETE FROM $author_chat_table WHERE date <= NOW() - INTERVAL $daystoclear DAY");
+    $mydb->query("DELETE FROM $author_chat_table WHERE date <= NOW() - INTERVAL $daystoclear DAY");
 }
 
 function pp_author_chat_clean_up_database() {
-    global $wpdb;
-    $author_chat_table = $wpdb->base_prefix . 'author_chat';
-    $wpdb->query("TRUNCATE TABLE $author_chat_table");
+    global $wpdb;    
+    $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+    $author_chat_table = $wpdb->base_prefix.'author_chat';
+    $mydb->query("TRUNCATE TABLE $author_chat_table");
     $update_options = get_option('author_chat_settings_delete');
     $update_options = '';
     update_option('author_chat_settings_delete', $update_options);

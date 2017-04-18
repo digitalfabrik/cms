@@ -31,20 +31,21 @@ if (!function_exists('array_column')) {
 if (isset($_POST['function'])) {
     $function = filter_var($_POST['function'], FILTER_SANITIZE_STRING);
     $log = array();
+    global $wpdb;
 
     switch ($function) {
 
         case('updateCount'):
-	    global $wpdb;
-   	    $author_chat_table = $wpdb->base_prefix . 'author_chat'; 
-            $linesCount = $wpdb->get_var("SELECT COUNT(*) FROM $author_chat_table");
+            $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+            $author_chat_table = $wpdb->base_prefix.'author_chat';
+            $linesCount = $mydb->get_var("SELECT COUNT(*) FROM $author_chat_table");
             $log = $linesCount;
             break;
 
         case('getState'):
-	    global $wpdb;
-   	    $author_chat_table = $wpdb->base_prefix . 'author_chat'; 
-            $newLinesCount = $wpdb->get_var("SELECT COUNT(*) FROM $author_chat_table");
+            $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+            $author_chat_table = $wpdb->base_prefix.'author_chat';
+            $newLinesCount = $mydb->get_var("SELECT COUNT(*) FROM $author_chat_table");
             $log = $newLinesCount;
             break;
 
@@ -55,14 +56,13 @@ if (isset($_POST['function'])) {
             $nickname = strip_tags(filter_var($_POST['nickname'], FILTER_SANITIZE_STRING));
             $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
             $message = strip_tags(filter_var($_POST['message'], FILTER_SANITIZE_STRING));
-
-	    global $wpdb;
-   	    $author_chat_table = $wpdb->base_prefix . 'author_chat';
-	    $author_chat_color = $wpdb->base_prefix . 'author_chat_colors';
+	    $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+	    $author_chat_table = $wpdb->base_prefix.'author_chat';
+	    $author_chat_color = $wpdb->base_prefix.'author_chat_color';
 	    $site = "'"+$site+"'";
-	    $lines = $wpdb->get_results("SELECT tag, color FROM $author_chat_color where site=$site", ARRAY_A);
+	    $lines = $mydb->get_results("SELECT tag, color FROM $author_chat_color where site=$site", ARRAY_A);
 	    $tag = "";
-	    $color = "FBDA16";
+	    $color = "";
 	    foreach ($lines as $line){
 		$tag = $line['tag'];
 		$color = $line['color'];
@@ -71,16 +71,16 @@ if (isset($_POST['function'])) {
                 if (preg_match($reg_exUrl, $message, $url)) {
                     $message = preg_replace($reg_exUrl, '<a href="' . $url[0] . '" target="_blank">' . $url[0] . '</a>', $message);
                 }
-                $wpdb->query($wpdb->prepare(
+                $mydb->query($mydb->prepare(
                                 "INSERT INTO $author_chat_table (nickname, content, date, email, tag, color) VALUES (%s, %s, NOW(), %s, %s, %s)", $nickname, $message, $mail, $tag, $color
                 ));
             }
             break;
 
         case('update'):
-	    global $wpdb;
-   	    $author_chat_table = $wpdb->base_prefix . 'author_chat';
-            $lines = $wpdb->get_results("SELECT nickname, content, date, email, tag, color FROM $author_chat_table ORDER BY id ASC", ARRAY_A);
+            $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+            $author_chat_table = $wpdb->base_prefix.'author_chat';
+            $lines = $mydb->get_results("SELECT nickname, content, date, email, tag, color FROM $author_chat_table ORDER BY id ASC", ARRAY_A);
             $text = array();
             foreach ($lines as $line) {
                 $text[] = $line;
@@ -98,9 +98,9 @@ if (isset($_POST['function'])) {
             break;
 
         case('initiate'):
-	    global $wpdb;
-   	    $author_chat_table = $wpdb->base_prefix . 'author_chat';
-            $lines = $wpdb->get_results("SELECT nickname, content, date, email, tag, color FROM $author_chat_table ORDER BY id ASC", ARRAY_A);
+            $mydb = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,DB_HOST);
+            $author_chat_table = $wpdb->base_prefix.'author_chat';
+            $lines = $mydb->get_results("SELECT nickname, content, date, email, tag, color FROM $author_chat_table ORDER BY id ASC", ARRAY_A);
             $text = array();
             foreach ($lines as $line) {
                 $text[] = $line;

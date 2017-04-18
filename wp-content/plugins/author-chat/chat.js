@@ -95,7 +95,7 @@ function ppUpdateChat(){
 							if(jQuery.inArray(data.result2[i], contentcompare) > -1 && jQuery.inArray(data.result3[i], datecompare) > -1){
                             	continue;
                             }else{
-								jQuery('#chat-area').append(jQuery("<p style='border-bottom: 0px;'>" + "<span id='group' style='background:#" + data.result6[i]+"'>" + data.result5[i]+":" + "</span>" + "<span id='nick' style='background:#"+data.result6[i]+"'>" + data.result1[i] + "</span>" + "<span id='email' style='background:#"+ data.result6[i]+"'>("+data.result4[i]+")</span>"+ "<span id=\"date\">" + data.result3[i] + "</span>" +"<p style='border-bottom: 0px'></p>"+"<b>"+ data.result2[i]+"</b>" + "</p>"));
+								jQuery('#chat-area').append(jQuery("<p style='border-bottom: 0px;'>" + "<span id='group' style='background:#" + data.result6[i]+"'>" + data.result5[i] + "</span>" + "<span id='nick' style='background:#"+data.result6[i]+"'>" + data.result1[i] + "</span>" + "<span id='email' style='background:#"+ data.result6[i]+"'>("+data.result4[i]+")</span>"+ "<span id=\"date\">" + data.result3[i] + "</span>" +"<p style='border-bottom: 0px'></p>"+"<b>"+ data.result2[i]+"</b>" + "</p>"));
 								if(isActive == false){
 									count++;
 									document.title = "(" + count + ")" + title;
@@ -122,7 +122,7 @@ function ppInitiateChat(){
 			   success: function(data){
 				   if(data != null){
 						for (var i = 0; i < data.result1.length; i++){
-                            jQuery('#chat-area').append(jQuery("<p style='border-bottom: 0px'>" + "<span id='group' style='background:#"+data.result6[i]+"'>" + data.result5[i]+":" + "</span>" + "<span id='nick' style='background:#"+data.result6[i]+"'>" + data.result1[i] + "</span>" + "<span id='email' style='background:#"+data.result6[i]+"'>("+data.result4[i]+")</span>" +"<span id=\"date\">" + data.result3[i] + "</span>" +"<p style='border-bottom: 0px'></p>" + "<b>"+data.result2[i]+"</b>" + "</p>"));
+                            jQuery('#chat-area').append(jQuery("<p style='border-bottom: 0px'>" + "<span id='group' style='background:#"+data.result6[i]+"'>" + data.result5[i]+ "</span>" + "<span id='nick' style='background:#"+data.result6[i]+"'>" + data.result1[i] + "</span>" + "<span id='email' style='background:#"+data.result6[i]+"'>("+data.result4[i]+")</span>" +"<span id=\"date\">" + data.result3[i] + "</span>" +"<p style='border-bottom: 0px'></p>" + "<b>"+data.result2[i]+"</b>" + "</p>"));
                             datecompare.push(data.result3[i]);
 							contentcompare.push(data.result2[i]);
                         }
