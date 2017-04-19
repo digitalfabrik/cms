@@ -129,6 +129,9 @@ function cl_save_meta_box($post_id) {
 	//if there is no plugin selected but there is one in the db, remove meta value from wp_postmeta and deactive content-loader plugin
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
+		global $wpdb;
+		$insert = "DELETE FROM ".$wpdb->base_prefix.get_current_blog_id()."_posts WHERE post_type = 'cl_html' AND post_parent = '$post_id'";
+		$wpdb->query($insert);
 	}
 	
 	/* meta value for radio buttons */
