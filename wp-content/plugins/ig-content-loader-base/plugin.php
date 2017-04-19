@@ -132,6 +132,7 @@ function cl_save_meta_box($post_id) {
 		global $wpdb;
 		$insert = "DELETE FROM ".$wpdb->base_prefix.get_current_blog_id()."_posts WHERE post_type = 'cl_html' AND post_parent = '$post_id'";
 		$wpdb->query($insert);
+		cl_update_parent_modified_date( $post_id, get_current_blog_id() );
 	}
 	
 	/* meta value for radio buttons */
