@@ -14,6 +14,7 @@ function ig_extras_settings() {
 	$ig_extras_settings['ige-pn'] = "0";
 	$ig_extras_settings['ige-c4r'] = "0";
 	$ig_extras_settings['ige-lr'] = "0";
+	$ig_extras_settings['ige-zip'] = "0";
 	return $ig_extras_settings;
 }
 
