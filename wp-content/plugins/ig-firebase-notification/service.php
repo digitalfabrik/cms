@@ -2,18 +2,20 @@
 class IgFirebaseService() {
 	
 	function __construct(){
-		$this->api_url = 'https://fcm.googleapis.com/fcm/send';
-		$this->blog_id = get_current_blog_id();
+		$this->readSettings()
 	}
 
 
-	public function sendNotification( $title, $body, $language, $group ) {
-
+	public function sendNotification( $title, $body, $language ) {
+		$header = $this->buildHeader( $this->settings['auth_key'] );
+		$fields = $this->buildJson( $title, $body, $language, $this->settings['blog_id'] );
 	}
 
 
 	private function readSettings() {
-		
+		$this->settings['api_url'] = 'https://fcm.googleapis.com/fcm/send';
+		$this->settings['blog_id'] = get_current_blog_id();
+		$this->settings['auth_key'] = "asdf";
 	}
 
 
@@ -30,12 +32,12 @@ class IgFirebaseService() {
 	}
 
 
-	private function buildJson( $title, $body, $language, $group ) {
+	private function buildJson( $title, $body, $language, blog_id ) {
 		$fields = array (
-			'to' => '/topics/news',
+			'to' => '/topics/' . (string)$blog_id . "-" .$language,
 			'notification' => array (
-				'title' => 'my title',
-				'body' => 'hello world'
+				'title' => $title,
+				'body' => $body
 			)
 		 );
 		return json_encode ( $fields );
@@ -46,7 +48,7 @@ class IgFirebaseService() {
 			'Authorization: key=' . $authKey,
 			'Content-Type: application/json'
 		);
-		return json_encode($headers)
+		return $headers;
 	}
 
 }
