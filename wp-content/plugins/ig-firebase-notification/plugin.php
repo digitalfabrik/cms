@@ -9,6 +9,10 @@
  * Text Domain: ig-firebase-notification
  */
 
+require_once __DIR__ . '/service.php';
+require_once __DIR__ . '/notifications.php';
+require_once __DIR__ . '/settings.php';
+
 add_action( 'admin_menu', 'ig_fb_menu' );
 
 function ig_fb_menu() {

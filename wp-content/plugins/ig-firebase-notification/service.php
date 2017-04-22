@@ -1,8 +1,8 @@
 <?php
-class IgFirebaseService() {
+class IgFirebaseService {
 	
 	function __construct(){
-		$this->readSettings()
+		$this->readSettings();
 	}
 
 
@@ -32,9 +32,9 @@ class IgFirebaseService() {
 	}
 
 
-	private function buildJson( $title, $body, $language, blog_id ) {
+	private function buildJson( $title, $body, $language, $blog_id ) {
 		$fields = array (
-			'to' => '/topics/' . (string)$blog_id . "-" .$language,
+			'to' => '/topics/' . (string)$blog_id . "-" . $language,
 			'notification' => array (
 				'title' => $title,
 				'body' => $body
@@ -42,6 +42,7 @@ class IgFirebaseService() {
 		 );
 		return json_encode ( $fields );
 	}
+
 
 	private function buildHeader( $authKey ) {
 		$headers = array (
@@ -52,24 +53,5 @@ class IgFirebaseService() {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ?>
