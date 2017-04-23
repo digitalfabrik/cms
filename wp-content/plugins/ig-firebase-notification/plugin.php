@@ -16,7 +16,8 @@ require_once __DIR__ . '/settings.php';
 add_action( 'admin_menu', 'ig_fb_menu' );
 
 function ig_fb_menu() {
-	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'ig-fb-pn', 'igWritePushNotification', $position = 6 );
+	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'ig-fb-pn', 'igWritePushNotification', 'dashicons-email-alt', $position = 99 );
+	add_submenu_page( 'ig-fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'ig-fb-pn-send', 'igWritePushNotification' ); 
 	add_submenu_page( 'ig-fb-pn', 'Push Notifications Settings', 'Settings', 'manage_options', 'ig-fb-pn-settings', 'igPushNotificationSettings' ); 
 }
 
