@@ -1,0 +1,25 @@
+msgid "Please fill in the title and message for the red underlined language. Optionally, translations can be filled in as well."
+msgstr "Bitte f&uuml;llen Sie die Felder Titel und Nachricht f&uuml;r die rot unterstrichene Sprache aus. Optional k&ouml;nnen auch &Uuml;bersetzungen eingegeben werden."
+
+msgid "Languages without manual translation receive:"
+msgstr "Sprachen ohne manuelle &Uuml;bersetzung erhalten:"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Automatic translation"
+msgstr "Automatische &Uuml;bersetzung"
+
+msgid "No message"
+msgstr "Keine Benachrichtigung"
+
+msgid "Message in original language (marked red)"
+msgstr "Benachrichtigung in Originalsprache (rot markiert)"
+
+msgid "Send Notification"
+msgstr "Benachrichtigung senden"
+
+

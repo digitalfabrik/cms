@@ -6,7 +6,7 @@
  * Author: Sven Seeberg
  * Author URI: https://github.com/sven15
  * License: MIT
- * Text Domain: ig-firebase-notification
+ * Text Domain: firebase-notifications
  */
 
 require_once __DIR__ . '/service.php';
@@ -14,6 +14,7 @@ require_once __DIR__ . '/notifications.php';
 require_once __DIR__ . '/settings.php';
 
 add_action( 'admin_menu', 'ig_fb_menu' );
+load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
 
 function ig_fb_menu() {
 	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'ig-fb-pn', 'igWritePushNotification', 'dashicons-email-alt', $position = 99 );
