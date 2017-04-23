@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: Integreat Firebase Notifications
- * Description: Sending Multilingual Messages to Smartphones
+ * Plugin Name: FCM Notifications
+ * Description: Sending FCM Messages to Smartphones with WPML support
  * Version: 1.0
  * Author: Sven Seeberg
  * Author URI: https://github.com/sven15
@@ -13,13 +13,52 @@ require_once __DIR__ . '/service.php';
 require_once __DIR__ . '/notifications.php';
 require_once __DIR__ . '/settings.php';
 
-add_action( 'admin_menu', 'ig_fb_menu' );
-load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
 
-function ig_fb_menu() {
-	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'ig-fb-pn', 'igWritePushNotification', 'dashicons-email-alt', $position = 99 );
-	add_submenu_page( 'ig-fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'ig-fb-pn-send', 'igWritePushNotification' ); 
-	add_submenu_page( 'ig-fb-pn', 'Push Notifications Settings', 'Settings', 'manage_options', 'ig-fb-pn-settings', 'igPushNotificationSettings' ); 
+function fb_pn_menu() {
+	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
+	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'fb-pn', 'WriteFirebaseNotification', 'dashicons-email-alt', $position = 99 );
+	add_submenu_page( 'fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'fb-pn-send', 'WriteFirebaseNotification' ); 
+	add_submenu_page( 'fb-pn', 'Push Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'FirebaseNotificationSettings' );
 }
+add_action( 'admin_menu', 'fb_pn_menu' );
+
+
+function fb_pn_network_menu() {
+	add_menu_page( "Firebase Cloud Messaging Network Settings", "FCM Push Notifications", 'manage_network_options', 'fb-pn-network-settings', 'FirebaseNotificationNetworkSettings');
+}
+add_action( 'network_admin_menu', 'fb_pn_network_menu' );
+
+
+function firebase_notifications_settings() {
+	$settings['fbn_auth_key'] = '0';
+	$settings['fbn_api_url'] = 'https://fcm.googleapis.com/fcm/send';
+	$settings['fbn_use_network_settings'] = '1';
+	return $settings;
+}
+
+
+function firebase_notifications_network_settings() {
+	$settings['fbn_auth_key'] = '0';
+	$settings['fbn_api_url'] = 'https://fcm.googleapis.com/fcm/send';
+	$settings['fbn_force_network_settings'] = '0'; // 0: allow settings for each blog; 1: blogs CAN use network settings; 2: blogs MUST use network settings
+	return $settings;
+}
+
+
+function firebase_notifications_registration() {
+	$default_network_settings = firebase_notifications_network_settings();
+	foreach( $default_network_settings as $key => $value ) {
+		add_site_option( $key, $value );
+	}
+
+	$default_blog_settings = firebase_notifications_settings();
+	$all_blogs = get_sites();
+	foreach ( $all_blogs as $blog ) {
+		foreach ( $default_blog_settings as $key => $value ) {
+			add_blog_option( $blog->blog_id, $key, $value );
+		}
+	}
+}
+register_activation_hook( __FILE__, 'firebase_notifications_registration' );
 
 ?>

@@ -1,6 +1,6 @@
 <?php
 
-function igWritePushNotification () {
+function WriteFirebaseNotification () {
 	wp_enqueue_style( 'ig-fb-style-send', plugin_dir_url(__FILE__) . '/css/send.css' );
 	wp_enqueue_script( 'ig-fb-js-send', plugin_dir_url(__FILE__) . '/js/send.js' );
 	$header = "

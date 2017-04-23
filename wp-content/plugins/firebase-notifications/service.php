@@ -1,5 +1,5 @@
 <?php
-class IgFirebaseService {
+class FirebaseNotificationsService {
 	
 	function __construct(){
 		$this->readSettings();
