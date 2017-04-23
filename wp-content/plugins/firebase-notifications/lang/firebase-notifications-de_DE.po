@@ -22,4 +22,26 @@ msgstr "Benachrichtigung in Originalsprache (rot markiert)"
 msgid "Send Notification"
 msgstr "Benachrichtigung senden"
 
+msgid "This blog must manage it's own Firebase Cloud Messaging settings."
+msgstr "Dieser Blog muss seine Firebase Cloud Messaging Einstellungen selbst verwalten."
 
+msgid "This blog is allowed to use the network wide Firebase Cloud Messaging settings."
+msgstr "Dieser Blog darf die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "This blog must use the network wide Firebase Cloud Messaging settings."
+msgstr "Dieser Blog muss die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "Use network settings"
+msgstr "Netzwerkeinstellungen nutzen"
+
+msgid "Network settings for blogs"
+msgstr "Netzwerkeinstellungen f&uuml;r Blogs"
+
+msgid "Each blog must manage it's own Firebase Cloud Messaging settings."
+msgstr "Jeder Blog muss seine Firebase Cloud Messaging Einstellungen selbst verwalten."
+
+msgid "Each blog is allowed to use the network wide Firebase Cloud Messaging settings."
+msgstr "Jeder Blog darf die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "Each blog must use the network wide Firebase Cloud Messaging settings."
+msgstr "Jeder Blog muss die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."

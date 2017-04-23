@@ -18,13 +18,14 @@ function fb_pn_menu() {
 	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
 	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'fb-pn', 'WriteFirebaseNotification', 'dashicons-email-alt', $position = 99 );
 	add_submenu_page( 'fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'fb-pn-send', 'WriteFirebaseNotification' ); 
-	add_submenu_page( 'fb-pn', 'Push Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'FirebaseNotificationSettings' );
+	add_submenu_page( 'fb-pn', 'Firebase Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'FirebaseNotificationSettings' );
 }
 add_action( 'admin_menu', 'fb_pn_menu' );
 
 
 function fb_pn_network_menu() {
-	add_menu_page( "Firebase Cloud Messaging Network Settings", "FCM Push Notifications", 'manage_network_options', 'fb-pn-network-settings', 'FirebaseNotificationNetworkSettings');
+	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
+	add_menu_page( "Firebase Notifications Network Settings", "FCM Push Notifications", 'manage_network_options', 'fb-pn-network-settings', 'FirebaseNotificationNetworkSettings');
 }
 add_action( 'network_admin_menu', 'fb_pn_network_menu' );
 

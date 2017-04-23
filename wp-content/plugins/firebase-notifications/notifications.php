@@ -3,7 +3,7 @@
 function WriteFirebaseNotification () {
 	wp_enqueue_style( 'ig-fb-style-send', plugin_dir_url(__FILE__) . '/css/send.css' );
 	wp_enqueue_script( 'ig-fb-js-send', plugin_dir_url(__FILE__) . '/js/send.js' );
-	$header = "
+	$header = "<h1>".get_admin_page_title()."</h1>
 <form>
 	<div class='notification-editor'>
 		<div class='tabs'>
@@ -17,7 +17,7 @@ function WriteFirebaseNotification () {
 	<fieldset>
 		<ul>
 			<li><input type='radio' id='at' name='pn-translate' value='at' checked='checked'><label for='at'> ".__('Automatic translation', 'firebase-notifications')."</label></li>
-			<li><input type='radio' id='no' name='pn-translate' value='no'><label for='no'></label> ".__('No message', 'firebase-notifications')."</li>
+			<li><input type='radio' id='no' name='pn-translate' value='no'><label for='no'> ".__('No message', 'firebase-notifications')."</label></li>
 			<li><input type='radio' id='or' name='pn-translate' value='or'><label for='or'> ".__('Message in original language (marked red)', 'firebase-notifications')."</label></li>
 		</ul>
 	</fieldset>
