@@ -1,10 +1,22 @@
 <?php
 
 function WriteFirebaseNotification () {
+	//send message if nonce is valid
+	if ( wp_verify_nonce( $_POST['_wpnonce'], 'ig-fb-send-nonce' ) ) {
+		$myNotification = new FirebaseNotificationsService();
+		$myNotification->translateSendNotifications( $title, $body, $_POST['pn-translate'] );
+	}
+
 	wp_enqueue_style( 'ig-fb-style-send', plugin_dir_url(__FILE__) . '/css/send.css' );
 	wp_enqueue_script( 'ig-fb-js-send', plugin_dir_url(__FILE__) . '/js/send.js' );
+	// display form
+	echo WriteFirebaseNotificationForm();
+}
+
+function WriteFirebaseNotificationForm () {
 	$header = "<h1>".get_admin_page_title()."</h1>
-<form>
+<form method='post'>
+	".wp_nonce_field( 'ig-fb-send-nonce' )."
 	<div class='notification-editor'>
 		<div class='tabs'>
 ";
@@ -41,7 +53,7 @@ function WriteFirebaseNotification () {
 			</div>
 ";
 	}
-	echo $header.$tabs.$footer;
+	return $header.$tabs.$footer;
 }
 
 ?>

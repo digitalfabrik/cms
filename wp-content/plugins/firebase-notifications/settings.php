@@ -15,7 +15,8 @@ function FirebaseNotificationSettings () {
 	echo "<h1>".get_admin_page_title()."</h1>";
 	echo "<div class='notice notice-success'><p>$network_settings</p></div>";
 	echo "
-	<form>
+	<form method='post'>
+		".wp_nonce_field( 'ig-fb-send-nonce' )."
 		<table>
 			<tr>
 				<td>Authentication Key</td><td><input type='text' name='fbn_auth_key' value='".$settings['auth_key']."'></td>
@@ -44,7 +45,8 @@ function FirebaseNotificationNetworkSettings () {
 	$settings['force_network_settings'] = get_site_option('fbn_force_network_settings');
 	echo "<h1>".get_admin_page_title()."</h1>";
 	echo "
-	<form>
+	<form method='post'>
+		".wp_nonce_field( 'ig-fb-send-nonce' )."
 		<table>
 			<tr>
 				<td>Authentication Key</td><td><input type='text' name='fbn_auth_key' value='".$settings['auth_key']."'></td>

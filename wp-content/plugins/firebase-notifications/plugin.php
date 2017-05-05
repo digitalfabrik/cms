@@ -33,7 +33,7 @@ add_action( 'network_admin_menu', 'fb_pn_network_menu' );
 function firebase_notifications_settings() {
 	$settings['fbn_auth_key'] = '0';
 	$settings['fbn_api_url'] = 'https://fcm.googleapis.com/fcm/send';
-	$settings['fbn_use_network_settings'] = '1';
+	$settings['fbn_use_network_settings'] = '1'; //0 use blog settings; 1 use network settings
 	return $settings;
 }
 
