@@ -16,8 +16,8 @@ require_once __DIR__ . '/settings.php';
 
 function fb_pn_menu() {
 	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
-	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_post', 'fb-pn', 'WriteFirebaseNotification', 'dashicons-email-alt', $position = 99 );
-	add_submenu_page( 'fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'fb-pn-send', 'WriteFirebaseNotification' ); 
+	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_pages', 'fb-pn', 'WriteFirebaseNotification', 'dashicons-email-alt', $position = 99 );
+	//add_submenu_page( 'fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'fb-pn-send', 'WriteFirebaseNotification' ); 
 	add_submenu_page( 'fb-pn', 'Firebase Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'FirebaseNotificationSettings' );
 }
 add_action( 'admin_menu', 'fb_pn_menu' );

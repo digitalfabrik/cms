@@ -6,30 +6,41 @@ class FirebaseNotificationsService {
 	}
 
 
-	public function translateSendNotifications( $titles, $bodys, $translate ) {
-		//auutotranslate
-		if( $translate == 'at' ) {
-			
-		// no message
-		} elseif( $translate == 'no' ) {
-			
-		// original language
-		} elseif( $translate == 'or' ) {
-			
+	public function translateSendNotifications( $items ) {
+		$languages = icl_get_languages();
+		foreach($items as $item) {
+			if( $item['title'] == '' and $item['message'] == '' ) {
+				//autotranslate | at
+				if( $item['translate'] == 'at' ) {
+					$translation_service = new TranslationService();
+					$item['title'] = $translation_service->translate_string($items[ICL_LANGUAGE_CODE]['title'], ICL_LANGUAGE_CODE, $item['lang']);
+					$item['message'] = $translation_service->translate_string($items[ICL_LANGUAGE_CODE]['message'], ICL_LANGUAGE_CODE, $item['lang']);
+				// no message | no
+				} elseif( $item['translate'] == 'no' ) {
+					continue;
+				// original language | or
+				} elseif( $item['translate'] == 'or' ) {
+					$item['title'] = $items[ICL_LANGUAGE_CODE]['title'];
+					$item['message'] = $items[ICL_LANGUAGE_CODE]['message'];
+				}
+			}
+			echo $this->sendNotification($item['title'],$item['message'],$item['lang']);
 		}
 	}
+
 
 	private function sendNotification( $title, $body, $language ) {
 		$header = $this->buildHeader( $this->settings['auth_key'] );
 		$fields = $this->buildJson( $title, $body, $language, $this->settings['blog_id'] );
-		echo $this->executeCurl( $this->settings['api_url'], $headers, $fields );
+		$settings = $this->readSettings();
+		echo $this->executeCurl( $this->settings['api_url'], $header, $fields );
 	}
 
 
 	private function readSettings() {
 		// are network settings enforced?
 		$this->settings['blog_id'] = get_current_blog_id();
-		$this->settings['force_network_settings'] = add_site_option( 'fbn_force_network_settings' );
+		$this->settings['force_network_settings'] = get_site_option( 'fbn_force_network_settings' );
 		// use network settings
 		if ( $this->settings['force_network_settings'] == '2' ) {
 			$this->settings['api_url'] = get_site_option('fbn_auth_key');

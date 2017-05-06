@@ -1,10 +1,15 @@
 <?php
 
-function WriteFirebaseNotification () {
+function WriteFirebaseNotification() {
 	//send message if nonce is valid
-	if ( wp_verify_nonce( $_POST['_wpnonce'], 'ig-fb-send-nonce' ) ) {
+	if ( wp_verify_nonce( $_POST['_wpnonce'], 'ig-fb-send-nonce' ) && current_user_can('publish_pages') ) {
+		$languages = icl_get_languages();
+		$items = array();
+		foreach( $languages as $key => $value ) {
+			$items[$key]  = array( 'title' => $_POST['pn-title_'.$key], 'message' => $_POST['pn-message_'.$key], 'lang' => $key, 'translate' => $_POST['pn-translate'] );
+		}
 		$myNotification = new FirebaseNotificationsService();
-		$myNotification->translateSendNotifications( $title, $body, $_POST['pn-translate'] );
+		$myNotification->translateSendNotifications( $items );
 	}
 
 	wp_enqueue_style( 'ig-fb-style-send', plugin_dir_url(__FILE__) . '/css/send.css' );
@@ -13,7 +18,7 @@ function WriteFirebaseNotification () {
 	echo WriteFirebaseNotificationForm();
 }
 
-function WriteFirebaseNotificationForm () {
+function WriteFirebaseNotificationForm() {
 	$header = "<h1>".get_admin_page_title()."</h1>
 <form method='post'>
 	".wp_nonce_field( 'ig-fb-send-nonce' )."
@@ -46,8 +51,8 @@ function WriteFirebaseNotificationForm () {
 				<a href='#".$default."'>".$value['translated_name']."</a>
 				<div>
 					<table class='tabtable'>
-						<tr><td>".__('Title', 'firebase-notifications')."</td><td><input type='text' class='pn-title' maxlength='50'></td></tr>
-						<tr><td>".__('Message', 'firebase-notifications')."</td><td><textarea class='pn-message' maxlength='140'></textarea></td></tr>
+						<tr><td>".__('Title', 'firebase-notifications')."</td><td><input name='pn-title_".$value['code']."' type='text' class='pn-title' maxlength='50'></td></tr>
+						<tr><td>".__('Message', 'firebase-notifications')."</td><td><textarea name='pn-message_".$value['code']."' class='pn-message' maxlength='140'></textarea></td></tr>
 					</table>
 				</div>
 			</div>
