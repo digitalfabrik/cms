@@ -6,7 +6,7 @@ class FirebaseNotificationsService {
 	}
 
 
-	public function translateSendNotifications( $items ) {
+	public function translate_send_notifications( $items ) {
 		$languages = icl_get_languages();
 		foreach($items as $item) {
 			if( $item['title'] == '' and $item['message'] == '' ) {
@@ -24,23 +24,24 @@ class FirebaseNotificationsService {
 					$item['message'] = $items[ICL_LANGUAGE_CODE]['message'];
 				}
 			}
-			echo $this->sendNotification($item['title'],$item['message'],$item['lang']);
+			echo $this->send_notification( $item['title'],$item['message'],$item['lang'], $item['group'] );
 		}
 	}
 
 
-	private function sendNotification( $title, $body, $language ) {
-		$header = $this->buildHeader( $this->settings['auth_key'] );
-		$fields = $this->buildJson( $title, $body, $language, $this->settings['blog_id'] );
-		$settings = $this->readSettings();
-		echo $this->executeCurl( $this->settings['api_url'], $header, $fields );
+	private function send_notification( $title, $body, $language, $group ) {
+		$header = $this->build_header( $this->settings['auth_key'] );
+		$fields = $this->build_json( $title, $body, $language, $this->settings['blog_id'], $group );
+		$settings = $this->read_settings();
+		echo $this->execute_curl( $this->settings['api_url'], $header, $fields );
 	}
 
 
-	private function readSettings() {
+	private function read_settings() {
 		// are network settings enforced?
 		$this->settings['blog_id'] = get_current_blog_id();
 		$this->settings['force_network_settings'] = get_site_option( 'fbn_force_network_settings' );
+		$this->settings['per_blog_topic'] = get_site_option( 'fbn_per_blog_topic' );
 		// use network settings
 		if ( $this->settings['force_network_settings'] == '2' ) {
 			$this->settings['api_url'] = get_site_option('fbn_auth_key');
@@ -64,7 +65,7 @@ class FirebaseNotificationsService {
 	}
 
 
-	private function executeCurl( $url, $headers, $fields ) {
+	private function execute_curl( $url, $headers, $fields ) {
 		$ch = curl_init ();
 		curl_setopt ( $ch, CURLOPT_URL, $url );
 		curl_setopt ( $ch, CURLOPT_POST, true );
@@ -77,9 +78,9 @@ class FirebaseNotificationsService {
 	}
 
 
-	private function buildJson( $title, $body, $language, $blog_id ) {
+	private function build_json( $title, $body, $language, $blog_id, $group ) {
 		$fields = array (
-			'to' => '/topics/' . (string)$blog_id . "-" . $language,
+			'to' => '/topics/' . ($this->settings['per_blog_topic'] == '1' ? (string)$blog_id . "-" . $language . "-" : "") . $group,
 			'notification' => array (
 				'title' => $title,
 				'body' => $body
@@ -89,7 +90,7 @@ class FirebaseNotificationsService {
 	}
 
 
-	private function buildHeader( $authKey ) {
+	private function build_header( $authKey ) {
 		$headers = array (
 			'Authorization: key=' . $authKey,
 			'Content-Type: application/json'

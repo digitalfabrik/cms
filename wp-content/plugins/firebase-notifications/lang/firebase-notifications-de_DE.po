@@ -45,3 +45,12 @@ msgstr "Jeder Blog darf die netzwerkweiten Firebase Cloud Messaging Einstellunge
 
 msgid "Each blog must use the network wide Firebase Cloud Messaging settings."
 msgstr "Jeder Blog muss die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "Groups"
+msgstr "Gruppen"
+
+msgid "Add blog ID and WPML language to topic name.<br>The topic name is then<br>/topics/[blog_id]-[language_code]-[topic],<br>e.g. /topics/1-en-news"
+msgstr "Blog ID fund WPML Sprache zum Topic Namen hinzuf&uuml;gen.<br>Der Topic Name wird dann<br>/topics/[blog_id]-[language_code]-[topic],<br>z.B. /topics/1-en-news"
+
+msgid "Groups (separate with white space)"
+msgstr "Gruppen (mit Leerzeichen trennen)"

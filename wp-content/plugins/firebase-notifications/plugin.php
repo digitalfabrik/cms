@@ -16,8 +16,7 @@ require_once __DIR__ . '/settings.php';
 
 function fb_pn_menu() {
 	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
-	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_pages', 'fb-pn', 'WriteFirebaseNotification', 'dashicons-email-alt', $position = 99 );
-	//add_submenu_page( 'fb-pn', 'Send Push Notifications', 'Send', 'publish_pages', 'fb-pn-send', 'WriteFirebaseNotification' ); 
+	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_pages', 'fb-pn', 'write_firebase_notification', 'dashicons-email-alt', $position = 99 );
 	add_submenu_page( 'fb-pn', 'Firebase Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'FirebaseNotificationSettings' );
 }
 add_action( 'admin_menu', 'fb_pn_menu' );
@@ -34,6 +33,7 @@ function firebase_notifications_settings() {
 	$settings['fbn_auth_key'] = '0';
 	$settings['fbn_api_url'] = 'https://fcm.googleapis.com/fcm/send';
 	$settings['fbn_use_network_settings'] = '1'; //0 use blog settings; 1 use network settings
+	$settings['fbn_groups'] = 'news';
 	return $settings;
 }
 
@@ -42,6 +42,8 @@ function firebase_notifications_network_settings() {
 	$settings['fbn_auth_key'] = '0';
 	$settings['fbn_api_url'] = 'https://fcm.googleapis.com/fcm/send';
 	$settings['fbn_force_network_settings'] = '0'; // 0: allow settings for each blog; 1: blogs CAN use network settings; 2: blogs MUST use network settings
+	$settings['fbn_per_blog_topic'] = '1'; //add blog id and wpml language to topic, 1 = add, 0 = only group
+	$settings['fbn_groups'] = 'news';
 	return $settings;
 }
 
