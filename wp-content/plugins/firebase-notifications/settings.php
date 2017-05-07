@@ -1,6 +1,6 @@
 <?php
 
-function FirebaseNotificationSettings () {
+function firebase_notification_settings () {
 	if ( wp_verify_nonce( $_POST['_wpnonce'], 'ig-fb-settings-nonce' ) && current_user_can('manage_options') ) {
 		$blog_id = get_current_blog_id();
 		update_blog_option( $blog_id, 'fbn_auth_key', $_POST['fbn_auth_key'] );
@@ -9,10 +9,10 @@ function FirebaseNotificationSettings () {
 		update_blog_option( $blog_id, 'fbn_groups', $_POST['fbn_groups'] );
 		echo "<div class='notice notice-success'><p>".__('Settings saved.', 'firebase-notifications')."</p></div>";
 	}
-	echo FirebaseNotificationSettingsForm();
+	echo firebase_notification_settings_form();
 }
 
-function FirebaseNotificationSettingsForm() {
+function firebase_notification_settings_form() {
 	$blog_id = get_current_blog_id();
 	$settings['auth_key'] = get_blog_option( $blog_id, 'fbn_auth_key' );
 	$settings['api_url'] = get_blog_option( $blog_id, 'fbn_api_url' );
@@ -57,17 +57,17 @@ function FirebaseNotificationSettingsForm() {
 	return $result;
 }
 
-function FirebaseNotificationNetworkSettings () {
+function firebase_notification_network_settings () {
 	if ( wp_verify_nonce( $_POST['_wpnonce'], 'ig-fb-networksettings-nonce' ) && current_user_can('manage_network_options') ) {
 		update_site_option( 'fbn_auth_key', $_POST['fbn_auth_key'] );
 		update_site_option( 'fbn_api_url', $_POST['fbn_api_url'] );
 		update_site_option( 'fbn_force_network_settings', $_POST['fbn_force_network_settings'] );
 		update_site_option( 'fbn_groups', $_POST['fbn_groups'] );
 	}
-	echo FirebaseNotificationNetworkSettingsForm();
+	echo firebase_notification_network_settings_form();
 }
 
-function FirebaseNotificationNetworkSettingsForm() {
+function firebase_notification_network_settings_form() {
 	$settings['auth_key'] = get_site_option( 'fbn_auth_key' );
 	$settings['api_url'] = get_site_option( 'fbn_api_url' );
 	$settings['force_network_settings'] = get_site_option( 'fbn_force_network_settings' );

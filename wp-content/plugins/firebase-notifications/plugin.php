@@ -17,14 +17,14 @@ require_once __DIR__ . '/settings.php';
 function fb_pn_menu() {
 	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
 	add_menu_page( 'Push Notifications', 'Push Notifications', 'publish_pages', 'fb-pn', 'write_firebase_notification', 'dashicons-email-alt', $position = 99 );
-	add_submenu_page( 'fb-pn', 'Firebase Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'FirebaseNotificationSettings' );
+	add_submenu_page( 'fb-pn', 'Firebase Notifications Settings', 'Settings', 'manage_options', 'fb-pn-settings', 'firebase_notification_settings' );
 }
 add_action( 'admin_menu', 'fb_pn_menu' );
 
 
 function fb_pn_network_menu() {
 	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
-	add_menu_page( "Firebase Notifications Network Settings", "FCM Push Notifications", 'manage_network_options', 'fb-pn-network-settings', 'FirebaseNotificationNetworkSettings');
+	add_menu_page( "Firebase Notifications Network Settings", "FCM Push Notifications", 'manage_network_options', 'fb-pn-network-settings', 'firebase_notification_network_settings');
 }
 add_action( 'network_admin_menu', 'fb_pn_network_menu' );
 
