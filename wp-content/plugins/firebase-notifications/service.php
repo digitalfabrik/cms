@@ -24,14 +24,16 @@ class FirebaseNotificationsService {
 					$item['message'] = $items[ICL_LANGUAGE_CODE]['message'];
 				}
 			}
-			echo $this->send_notification( $item['title'],$item['message'],$item['lang'], $item['group'] );
+			echo "<h1>". $this->send_notification( $item['title'],$item['message'],$item['lang'], $item['group'] )."</h1>";
 		}
 	}
 
 
 	private function send_notification( $title, $body, $language, $group ) {
 		$header = $this->build_header( $this->settings['auth_key'] );
+		var_dump($header);
 		$fields = $this->build_json( $title, $body, $language, $this->settings['blog_id'], $group );
+		var_dump($fields);
 		$settings = $this->read_settings();
 		echo $this->execute_curl( $this->settings['api_url'], $header, $fields );
 	}
@@ -44,14 +46,14 @@ class FirebaseNotificationsService {
 		$this->settings['per_blog_topic'] = get_site_option( 'fbn_per_blog_topic' );
 		// use network settings
 		if ( $this->settings['force_network_settings'] == '2' ) {
-			$this->settings['api_url'] = get_site_option('fbn_auth_key');
-			$this->settings['auth_key'] = get_site_option('fbn_api_url');
+			$this->settings['api_url'] = get_site_option('fbn_api_url');
+			$this->settings['auth_key'] = get_site_option('fbn_auth_key');
 		}
 		// network or blog settings
 		elseif ( $this->settings['force_network_settings'] == '1' ) {
 			if( get_blog_option( $blog_id, 'fbn_use_network_settings' ) == '1' ) {
-				$this->settings['api_url'] = get_site_option('fbn_auth_key');
-				$this->settings['auth_key'] = get_site_option('fbn_api_url');
+				$this->settings['api_url'] = get_site_option('fbn_api_url');
+				$this->settings['auth_key'] = get_site_option('fbn_auth_key');
 			} else {
 				$this->settings['auth_key'] = get_blog_option( $blog_id, 'fbn_auth_key' );
 				$this->settings['api_url'] = get_blog_option( $blog_id, 'fbn_api_url' );
@@ -66,6 +68,9 @@ class FirebaseNotificationsService {
 
 
 	private function execute_curl( $url, $headers, $fields ) {
+		echo "<h1>Sending</h1>";
+		var_dump($headers);
+		var_dump($fields);
 		$ch = curl_init ();
 		curl_setopt ( $ch, CURLOPT_URL, $url );
 		curl_setopt ( $ch, CURLOPT_POST, true );
@@ -74,6 +79,7 @@ class FirebaseNotificationsService {
 		curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields );
 		$result = curl_exec ( $ch );
 		curl_close ( $ch );
+		var_dump($result);
 		return $result;
 	}
 
