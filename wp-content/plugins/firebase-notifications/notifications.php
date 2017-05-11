@@ -45,8 +45,8 @@ function write_firebase_notification_form() {
 	<p>".__('Languages without manual translation receive:', 'firebase-notifications')."</p>
 	<fieldset>
 		<ul>
-			<li><input type='radio' id='at' name='pn-translate' value='at' checked='checked'><label for='at'> ".__('Automatic translation', 'firebase-notifications')."</label></li>
-			<li><input type='radio' id='no' name='pn-translate' value='no'><label for='no'> ".__('No message', 'firebase-notifications')."</label></li>
+			".( class_exists('TranslationService') ? "<li><input type='radio' id='at' name='pn-translate' value='at' checked='checked'><label for='at'> ".__('Automatic translation', 'firebase-notifications')."</label></li>":"")."
+			<li><input type='radio' id='no' name='pn-translate' value='no' ".( !class_exists('TranslationService') ? " checked='checked'" : "")."><label for='no'> ".__('No message', 'firebase-notifications')."</label></li>
 			<li><input type='radio' id='or' name='pn-translate' value='or'><label for='or'> ".__('Message in original language (marked red)', 'firebase-notifications')."</label></li>
 		</ul>
 	</fieldset>

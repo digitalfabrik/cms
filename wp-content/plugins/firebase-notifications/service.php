@@ -2,7 +2,7 @@
 class FirebaseNotificationsService {
 	
 	function __construct(){
-		$this->readSettings();
+		$this->read_settings();
 	}
 
 

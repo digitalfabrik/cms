@@ -62,6 +62,7 @@ function firebase_notification_network_settings () {
 		update_site_option( 'fbn_auth_key', $_POST['fbn_auth_key'] );
 		update_site_option( 'fbn_api_url', $_POST['fbn_api_url'] );
 		update_site_option( 'fbn_force_network_settings', $_POST['fbn_force_network_settings'] );
+		update_site_option( 'fbn_per_blog_topic', $_POST['fbn_per_blog_topic'] );
 		update_site_option( 'fbn_groups', $_POST['fbn_groups'] );
 	}
 	echo firebase_notification_network_settings_form();
