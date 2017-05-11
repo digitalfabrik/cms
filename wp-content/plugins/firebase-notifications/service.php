@@ -24,18 +24,17 @@ class FirebaseNotificationsService {
 					$item['message'] = $items[ICL_LANGUAGE_CODE]['message'];
 				}
 			}
-			echo "<h1>". $this->send_notification( $item['title'],$item['message'],$item['lang'], $item['group'] )."</h1>";
+			$this->send_notification( $item['title'],$item['message'],$item['lang'], $item['group'] );
 		}
+		echo "<div class='notice notice-success'><p>".__( 'Messages sent.', 'firebase-notifications' )."</p></div>";
 	}
 
 
 	private function send_notification( $title, $body, $language, $group ) {
 		$header = $this->build_header( $this->settings['auth_key'] );
-		var_dump($header);
 		$fields = $this->build_json( $title, $body, $language, $this->settings['blog_id'], $group );
-		var_dump($fields);
 		$settings = $this->read_settings();
-		echo $this->execute_curl( $this->settings['api_url'], $header, $fields );
+		return $this->execute_curl( $this->settings['api_url'], $header, $fields );
 	}
 
 
@@ -68,9 +67,6 @@ class FirebaseNotificationsService {
 
 
 	private function execute_curl( $url, $headers, $fields ) {
-		echo "<h1>Sending</h1>";
-		var_dump($headers);
-		var_dump($fields);
 		$ch = curl_init ();
 		curl_setopt ( $ch, CURLOPT_URL, $url );
 		curl_setopt ( $ch, CURLOPT_POST, true );
@@ -79,7 +75,6 @@ class FirebaseNotificationsService {
 		curl_setopt ( $ch, CURLOPT_POSTFIELDS, $fields );
 		$result = curl_exec ( $ch );
 		curl_close ( $ch );
-		var_dump($result);
 		return $result;
 	}
 
