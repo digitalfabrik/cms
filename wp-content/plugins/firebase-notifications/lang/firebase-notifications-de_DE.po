@@ -54,3 +54,6 @@ msgstr "Blog ID fund WPML Sprache zum Topic Namen hinzuf&uuml;gen.<br>Der Topic 
 
 msgid "Groups (separate with white space)"
 msgstr "Gruppen (mit Leerzeichen trennen)"
+
+msgid "Messages sent."
+msgstr "Nachrichten versendet."
