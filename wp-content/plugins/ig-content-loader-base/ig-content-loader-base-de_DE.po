@@ -14,4 +14,4 @@ msgid "Insert foreign content"
 msgstr "Fremdinhalte einfügen"
 
 msgid "Please select (insert nothing)"
-msgstr "'Bitte ausw&auml;hlen (nichts einf&uuml;gen)'"
+msgstr "Bitte ausw&auml;hlen (nichts einf&uuml;gen)"

@@ -1,4 +1,4 @@
-#! \usr \bin \env bash
+#!/usr/bin/env bash
 "vendor/wp-cli/wp-cli/bin/wp" plugin deactivate --network --all
 "vendor/wp-cli/wp-cli/bin/wp" plugin activate --network \
 adminimize \
@@ -8,6 +8,7 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 events-manager-wpml \
+firebase-notifications \
 ig-automatic-translation \
 ig-automatic-translation-button \
 ig-click-guide \
