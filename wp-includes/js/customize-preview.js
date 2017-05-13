@@ -145,10 +145,9 @@
 				return;
 			}
 
+			// Allow internal jump links and JS links to behave normally without preventing default.
 			isInternalJumpLink = ( '#' === link.attr( 'href' ).substr( 0, 1 ) );
-
-			// Allow internal jump links to behave normally without preventing default.
-			if ( isInternalJumpLink ) {
+			if ( isInternalJumpLink || ! /^https?:$/.test( link.prop( 'protocol' ) ) ) {
 				return;
 			}
 
@@ -274,7 +273,7 @@
 	 * @returns {boolean} Is appropriate for changeset link.
 	 */
 	api.isLinkPreviewable = function isLinkPreviewable( element, options ) {
-		var matchesAllowedUrl, parsedAllowedUrl, args;
+		var matchesAllowedUrl, parsedAllowedUrl, args, elementHost;
 
 		args = _.extend( {}, { allowAdminAjax: false }, options || {} );
 
@@ -287,10 +286,11 @@
 			return false;
 		}
 
+		elementHost = element.host.replace( /:(80|443)$/, '' );
 		parsedAllowedUrl = document.createElement( 'a' );
 		matchesAllowedUrl = ! _.isUndefined( _.find( api.settings.url.allowed, function( allowedUrl ) {
 			parsedAllowedUrl.href = allowedUrl;
-			return parsedAllowedUrl.protocol === element.protocol && parsedAllowedUrl.host === element.host && 0 === element.pathname.indexOf( parsedAllowedUrl.pathname.replace( /\/$/, '' ) );
+			return parsedAllowedUrl.protocol === element.protocol && parsedAllowedUrl.host.replace( /:(80|443)$/, '' ) === elementHost && 0 === element.pathname.indexOf( parsedAllowedUrl.pathname.replace( /\/$/, '' ) );
 		} ) );
 		if ( ! matchesAllowedUrl ) {
 			return false;
@@ -334,8 +334,8 @@
 			return;
 		}
 
-		// Ignore links with href="#" or href="#id".
-		if ( '#' === $( element ).attr( 'href' ).substr( 0, 1 ) ) {
+		// Ignore links with href="#", href="#id", or non-HTTP protocols (e.g. javascript: and mailto:).
+		if ( '#' === $( element ).attr( 'href' ).substr( 0, 1 ) || ! /^https?:$/.test( element.protocol ) ) {
 			return;
 		}
 

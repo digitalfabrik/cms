@@ -220,6 +220,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			'per_page' => 'number',
 			'search'   => 'search',
 			'roles'    => 'role__in',
+			'slug'     => 'nicename__in',
 		);
 
 		$prepared_args = array();
@@ -260,12 +261,6 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		if ( ! empty( $prepared_args['search'] ) ) {
 			$prepared_args['search'] = '*' . $prepared_args['search'] . '*';
 		}
-
-		if ( isset( $registered['slug'] ) && ! empty( $request['slug'] ) ) {
-			$prepared_args['search'] = $request['slug'];
-			$prepared_args['search_columns'] = array( 'user_nicename' );
-		}
-
 		/**
 		 * Filters WP_User_Query arguments when querying users via the REST API.
 		 *
@@ -347,6 +342,10 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 
 		$user = get_userdata( (int) $id );
 		if ( empty( $user ) || ! $user->exists() ) {
+			return $error;
+		}
+
+		if ( is_multisite() && ! is_user_member_of_blog( $user->ID ) ) {
 			return $error;
 		}
 
@@ -637,10 +636,6 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 
 		/* This action is documented in lib/endpoints/class-wp-rest-users-controller.php */
 		do_action( 'rest_insert_user', $user, $request, false );
-
-		if ( is_multisite() && ! is_user_member_of_blog( $id ) ) {
-			add_user_to_blog( get_current_blog_id(), $id, '' );
-		}
 
 		if ( ! empty( $request['roles'] ) ) {
 			array_map( array( $user, 'add_role' ), $request['roles'] );
@@ -1361,7 +1356,10 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 
 		$query_params['slug']    = array(
 			'description'        => __( 'Limit result set to users with a specific slug.' ),
-			'type'               => 'string',
+			'type'               => 'array',
+			'items'              => array(
+				'type'               => 'string',
+			),
 		);
 
 		$query_params['roles']   = array(
