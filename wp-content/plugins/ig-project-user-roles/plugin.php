@@ -27,6 +27,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			/* Users */
 			'create_users' => true,
 			'edit_users' => true,
+			'delete_users' => true,
 			'promote_users' => true,
 			'list_users' => true,
 			/* Pages */
@@ -186,11 +187,10 @@ add_filter('pre_option_default_role',
 register_deactivation_hook(__FILE__,
 	/** Reset all user roles */
 	function () {
-		$method = new ReflectionMethod('Ure_Lib', 'reset_user_roles'); // work around protected method access
-		$method->setAccessible(true);
-		$ure_lib = new Ure_Lib('user_role_editor');
-		$ure_lib->apply_to_all = true;
-		$method->invoke($ure_lib);
+		if ( !function_exists( 'populate_roles' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/schema.php' );
+		}
+		populate_roles();
 	}
 );
 

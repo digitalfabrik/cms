@@ -1,0 +1,15 @@
+#page-wrap body                 { font: 12px "Lucida Grande", Sans-Serif; }
+#page-wrap h2                   { color: #fbda16; font: 30px Helvetica, Sans-Serif; margin: 0 0 0 0; }
+#page-wrap                      { width: 96%; margin: 1% auto; padding-top:10%;position: relative; }
+#chat-wrap                      { border: 1px solid #eee; margin: 0 0 2% 0; }
+#chat-area                      { height: 550px; overflow: auto; border: 1px solid #666; padding: 10px; background: white; }
+#nick			                { color: black; padding: 0px 2px 0px 2px; margin: 0 0 0 0; margin-left: 0px; font-weight: bold; float: left; }
+#time			                { font-size: 85%; padding: 0px 0px; margin: 0 0 0 0; float: left; font-weight: normal }
+#date			                { font-size: 85%; padding: 0px 5px; margin: 0 0 0 0; float: left; font-weight: normal}
+#group					{ color: black; padding: 0 2px 0 2px; margin: 0 0 0 0; margin-left: 0px; font-weight: bold; float:left; }
+#email					{ color: black; padding: 0 2px 0 2px; margin: 0 0 0 0; margin-left: 0px; font-weight: normal; float:left; }
+#chat-area p                    { padding: 1px; border-bottom: 1px solid #ccc; margin: 0px 0px 12px 0px; font-weight:bold;}
+#name-area                      { position: absolute; top: 12px; right: 0; font: bold 12px "Lucida Grande", Sans-Serif; text-align: right; }   
+#name-area span                 { color: #fbda16; }
+#subject-area			{ position: absolute; top: 12px; right: 1; font: bold 12px "Lucida Grande", Sans-Serif; text-align: left; }
+#sendie                         { border: 3px solid #999; width: 100%; padding: 1%; font: 12px "Lucida Grande", Sans-Serif; }

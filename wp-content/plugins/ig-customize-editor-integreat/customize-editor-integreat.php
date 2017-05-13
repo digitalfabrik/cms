@@ -189,3 +189,13 @@ function remove_button(&$array,$to_remove,$menue){
 }
 
 add_filter( 'tadv_allowed_buttons', 'modify_buttons' );
+
+
+// remove formatting when pasting
+function ig_custom_editor_paste( $config ) {
+	global $plugin_page;
+	$options = array( 'paste_strip_class_attributes' => 'all', 'paste_remove_spans' => true, 'paste_remove_styles' => true, 'paste_as_text' => true, 'paste_text_sticky' => true );
+	$config = array_merge( $config, $options );
+	return $config;
+}
+add_filter( 'tiny_mce_before_init', 'ig_custom_editor_paste', 1111 );
