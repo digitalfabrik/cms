@@ -49,7 +49,7 @@ function cl_create_metabox( $post ) {
 	$radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
 	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base', true );[0];
 	
-	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>__('Please select (insert nothing)'))));
+	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>__('Please select (insert nothing)', 'ig-content-loader-base'))));
 	$options = "";
 	
 	foreach($dropdown_items as $item) {
