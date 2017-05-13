@@ -3,8 +3,8 @@ Contributors: shinephp
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=vladimir%40shinephp%2ecom&lc=RU&item_name=ShinePHP%2ecom&item_number=User%20Role%20Editor%20WordPress%20plugin&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
 Tags: user, role, editor, security, access, permission, capability
 Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 4.31.1
+Tested up to: 4.7.3
+Stable tag: 4.32.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,7 +24,7 @@ Multi-site support is provided.
 To read more about 'User Role Editor' visit [this page](http://www.shinephp.com/user-role-editor-wordpress-plugin/) at [shinephp.com](http://shinephp.com)
 
 
-Do you need more functionality with quality support in the real time? Do you wish to remove advertisements from User Role Editor pages? 
+Do you need more functionality with quality support in a real time? Do you wish to remove advertisements from User Role Editor pages? 
 [Buy Pro version](https://www.role-editor.com). 
 [User Role Editor Pro](https://www.role-editor.com) includes extra modules:
 <ul>
@@ -67,6 +67,7 @@ To read full FAQ section visit [this page](http://www.shinephp.com/user-role-edi
 3. screenshot-3.png User Capabilities link
 4. screenshot-4.png User Capabilities Editor
 5. screenshot-5.png Bulk change role for users without roles
+6. screenshot-6.png Assign multiple roles to the selected users
 
 To read more about 'User Role Editor' visit [this page](http://www.shinephp.com/user-role-editor-wordpress-plugin/) at [shinephp.com](shinephp.com).
 
@@ -75,7 +76,20 @@ To read more about 'User Role Editor' visit [this page](http://www.shinephp.com/
 If you wish to check available translations or help with plugin translation to your language visit this link
 https://translate.wordpress.org/projects/wp-plugins/user-role-editor/
 
+
 == Changelog ==
+= [4.32.2] 17.03.2017 =
+* Fix: "Users->Grant Roles" button did not work with switched off option "Count Users without role" at "Settings->User Role Editor->Additional Modules" tab. "JQuery UI" library was not loaded.
+* Update: minimal PHP version was raised to 5.3.
+
+= [4.32.1] 09.03.2017 =
+* Fix: URL to users.php page was built incorrectly after bulk roles assignment to the users selected at the 1st page of a users list.
+
+= [4.32] 09.03.2017 =
+* New: Button "Grant Roles" allows to "Assign multiple roles to the selected users" directly from the "Users" page.
+* Update: singleton template was applied to the main User_Role_Editor class. While GLOBALS['user-role-editor'] reference to the instance of User_Role_Editor class is still available for the compatibility purpose, call to User_Role_Editor::get_instance() is the best way now to get a reference to the instance of User_Role_Editor class.
+* Fix: Missed 'unfiltered_html' capability is shown now at the 'General' capabilities group too.
+
 = [4.31.1] 06.01.2017 =
 * Fix: WP transients get/set were removed from URE_Own_Capabilities class. It leaded to the MySQL deadlock in some cases.
 * Update: Base_Lib::get_request_var() sanitizes user input by PHP's filter_var() in addition to WordPress core's esc_attr().

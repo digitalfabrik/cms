@@ -422,6 +422,7 @@ final class WP_Customize_Widgets {
 			'description'     => __( 'Widgets are independent sections of content that can be placed into widgetized areas provided by your theme (commonly called sidebars).' ),
 			'priority'        => 110,
 			'active_callback' => array( $this, 'is_panel_active' ),
+			'auto_expand_sole_section' => true,
 		) );
 
 		foreach ( $sidebars_widgets as $sidebar_id => $sidebar_widget_ids ) {
@@ -1086,7 +1087,6 @@ final class WP_Customize_Widgets {
 	 */
 	public function customize_preview_enqueue() {
 		wp_enqueue_script( 'customize-preview-widgets' );
-		wp_enqueue_style( 'customize-preview' );
 	}
 
 	/**

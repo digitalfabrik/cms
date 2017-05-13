@@ -6,6 +6,7 @@
  * Author: Julian Orth
  * Author URI: https://github.com/Integreat
  * License: MIT
+ * Text Domain: ig-content-loader-base
  */
 
 
@@ -23,7 +24,8 @@ function cl_init() {
 	  )
 	)
   );
-
+	$plugin_dir = basename(dirname(__FILE__));
+	load_plugin_textdomain( 'ig-content-loader-base', false, $plugin_dir );
 }
 add_action( 'init', 'cl_init' );
 
@@ -31,7 +33,7 @@ add_action( 'init', 'cl_init' );
  *  Register Meta box Hook
  */
 function cl_generate_selection_box() {
-	add_meta_box( 'meta-box-id', __( 'Fremdinhalte einfügen', 'textdomain' ), 'cl_create_metabox', 'page', 'side' );
+	add_meta_box( 'meta-box-id', __( 'Insert foreign content', 'ig-content-loader-base' ), 'cl_create_metabox', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'cl_generate_selection_box' );
  
@@ -47,7 +49,7 @@ function cl_create_metabox( $post ) {
 	$radio_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
 	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base', true );[0];
 	
-	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>'Bitte ausw&auml;hlen (nichts einf&uuml;gen)')));
+	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>__('Please select (insert nothing)', 'ig-content-loader-base'))));
 	$options = "";
 	
 	foreach($dropdown_items as $item) {
@@ -67,7 +69,7 @@ function cl_meta_box_html( $options, $radio_value, $cl_metabox_extra = '' ) {
 	<!-- Dropdown-select for foreign contents -->
 	<p id="cl_metabox_plugin">
 		<label style="font-weight:600" for="meta-select" class="cl-row-title">
-			<?php _e( 'Inhalt wählen', 'cl-textdomain' )?>
+			<?php __( 'Select source', 'ig-content-loader-base' )?>
 		</label>
 		<select name="cl_content_select" id="cl_content_select" style="width:100%; margin-top:10px; margin-bottom:10px">
 			<!-- build select items from filtered plugin list and preselect saved item, if there was any -->
@@ -77,15 +79,15 @@ function cl_meta_box_html( $options, $radio_value, $cl_metabox_extra = '' ) {
 
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php _e( 'Inhalt Einfügen', 'cl-textdomain' )?></span>
+		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-content-loader-base' )?></span>
 		<div class="cl-row-content">
 			<label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
 				<input type="radio" name="meta-radio" id="insert-pre-radio" value="anfang" <?php checked( $radio_value, 'anfang' ); ?>>
-				<?php _e( 'Am Anfang', 'cl-textdomain' )?>
+				<?php echo __( 'At beginning', 'ig-content-loader-base' )?>
 			</label>
 			<label for="meta-radio-two">
 				<input type="radio" name="meta-radio" id="insert-suf-radio" value="ende" <?php checked( $radio_value, 'ende' ); ?>>
-				<?php _e( 'Am Ende', 'cl-textdomain' )?>
+				<?php echo __( 'At end', 'ig-content-loader-base' )?>
 			</label>
 		</div>
 	</p>
@@ -127,6 +129,10 @@ function cl_save_meta_box($post_id) {
 	//if there is no plugin selected but there is one in the db, remove meta value from wp_postmeta and deactive content-loader plugin
 	elseif ( '' == $meta_value && $old_meta_value ) {
 		delete_post_meta( $post_id, $meta_key, $meta_value );
+		global $wpdb;
+		$insert = "DELETE FROM ".$wpdb->base_prefix.get_current_blog_id()."_posts WHERE post_type = 'cl_html' AND post_parent = '$post_id'";
+		$wpdb->query($insert);
+		cl_update_parent_modified_date( $post_id, get_current_blog_id() );
 	}
 	
 	/* meta value for radio buttons */

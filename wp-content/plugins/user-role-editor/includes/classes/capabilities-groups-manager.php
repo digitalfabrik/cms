@@ -157,7 +157,7 @@ class URE_Capabilities_Groups_Manager {
         $caps['manage_links'] = array('core', 'others');
         $caps['upload_files'] = array('core', 'general'); 
         $caps['import'] = array('core', 'general');
-        $caps['unfiltered_html'] = array('core');
+        $caps['unfiltered_html'] = array('core','general');
         if ($multisite) {
             $caps['unfiltered_html'] = array('deprecated');
         }

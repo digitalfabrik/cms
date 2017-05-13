@@ -1,0 +1,57 @@
+.notification-editor {
+	padding: 0.6em;
+}
+
+div.tabs {
+	min-height: 13em;
+	height: 13em;
+	position: relative;
+	line-height: 1;
+	z-index: 0;
+}
+div.tabs > div {
+	display: inline
+}
+div.tabs > div > a {
+	padding: 0.2em;
+	border: 0.1em;
+}
+div.tabs > div:not(:target) > a {
+	border-bottom: 0.2em solid #BBB;
+}
+#deflang:target > a {
+	border-bottom: 0.2em solid #F00;
+}
+#deflang:not(:target) > a {
+	border-bottom: 0.2em solid #A00;
+}
+div.tabs > div:target > a {
+	border-bottom: 0.2em solid #000;
+}
+div.tabs > div > div {
+	z-index: -2;
+	left: 0;
+	top: 1.3em;
+	bottom: 0; right: 0;
+	overflow: auto;
+	padding: 0.3em;
+	border: 0.1em;
+	background: #f1f1f1;
+}
+div.tabs > div:not(:target) > div {
+	position: absolute
+}
+div.tabs > div:target > div {
+	position: absolute;
+	z-index: -1
+}
+
+.pn-title {
+	width: 300px;
+}
+
+.pn-message {
+	width: 300px;
+	resize: none;
+	height: 7em;
+}

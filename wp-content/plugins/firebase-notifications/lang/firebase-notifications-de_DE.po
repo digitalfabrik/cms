@@ -1,0 +1,59 @@
+msgid "Please fill in the title and message for the red underlined language. Optionally, translations can be filled in as well."
+msgstr "Bitte f&uuml;llen Sie die Felder Titel und Nachricht f&uuml;r die rot unterstrichene Sprache aus. Optional k&ouml;nnen auch &Uuml;bersetzungen eingegeben werden."
+
+msgid "Languages without manual translation receive:"
+msgstr "Sprachen ohne manuelle &Uuml;bersetzung erhalten:"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Automatic translation"
+msgstr "Automatische &Uuml;bersetzung"
+
+msgid "No message"
+msgstr "Keine Benachrichtigung"
+
+msgid "Message in original language (marked red)"
+msgstr "Benachrichtigung in Originalsprache (rot markiert)"
+
+msgid "Send Notification"
+msgstr "Benachrichtigung senden"
+
+msgid "This blog must manage it's own Firebase Cloud Messaging settings."
+msgstr "Dieser Blog muss seine Firebase Cloud Messaging Einstellungen selbst verwalten."
+
+msgid "This blog is allowed to use the network wide Firebase Cloud Messaging settings."
+msgstr "Dieser Blog darf die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "This blog must use the network wide Firebase Cloud Messaging settings."
+msgstr "Dieser Blog muss die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "Use network settings"
+msgstr "Netzwerkeinstellungen nutzen"
+
+msgid "Network settings for blogs"
+msgstr "Netzwerkeinstellungen f&uuml;r Blogs"
+
+msgid "Each blog must manage it's own Firebase Cloud Messaging settings."
+msgstr "Jeder Blog muss seine Firebase Cloud Messaging Einstellungen selbst verwalten."
+
+msgid "Each blog is allowed to use the network wide Firebase Cloud Messaging settings."
+msgstr "Jeder Blog darf die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "Each blog must use the network wide Firebase Cloud Messaging settings."
+msgstr "Jeder Blog muss die netzwerkweiten Firebase Cloud Messaging Einstellungen nutzen."
+
+msgid "Groups"
+msgstr "Gruppen"
+
+msgid "Add blog ID and WPML language to topic name.<br>The topic name is then<br>/topics/[blog_id]-[language_code]-[topic],<br>e.g. /topics/1-en-news"
+msgstr "Blog ID fund WPML Sprache zum Topic Namen hinzuf&uuml;gen.<br>Der Topic Name wird dann<br>/topics/[blog_id]-[language_code]-[topic],<br>z.B. /topics/1-en-news"
+
+msgid "Groups (separate with white space)"
+msgstr "Gruppen (mit Leerzeichen trennen)"
+
+msgid "Messages sent."
+msgstr "Nachrichten versendet."
