@@ -1,0 +1,59 @@
+{
+  "definitions": {
+    "language": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "3"
+        },
+        "code": {
+          "type": "string",
+          "example": "de"
+        },
+        "native_name": {
+          "type": "string",
+          "example": "Deutsch"
+        },
+        "dir": {
+          "type": "string",
+          "example": "ltr"
+        },
+        "country_flag_url": {
+          "type": "string",
+          "example": "http://cms.integreat-app.de/regensburg/wp-content/plugins/sitepress-multilingual-cms/res/flags/de.png"
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "native_name",
+        "dir",
+        "country_flag_url"
+      ]
+    }
+  },
+  "id": "languages",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Languages",
+  "description": "",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/language"
+  },
+  "links": [
+    {
+      "title": "Available languages",
+      "description": "Get all available languages for a location",
+      "rel": "instances",
+      "href": "/{location}/{language}/wp-json/extensions/v0/languages/wpml",
+      "method": "GET",
+      "hrefSchema": {
+        "$ref": "common.json#/definitions/hrefScheme"
+      },
+      "targetSchema": {
+        "rel": "self"
+      }
+    }
+  ]
+}
