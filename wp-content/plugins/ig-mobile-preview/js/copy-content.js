@@ -15,10 +15,10 @@
 	 */
 	mobilePreview.copyTextContent = function () {
 		var editorContent = mobilePreview.postContent.text();
-		// replace all \n with surrounding p tags
-		// split-join is faster than replace: http://jsperf.com/replace-all-vs-split-join
-		editorContent = editorContent.replace("\n","<br>");
-		mobilePreview.content.html(editorContent);
+		jQuery.post( "index.php", { mpvwpautop: editorContent })
+			.done(function( data ) {
+				mobilePreview.content.html( data );
+			});
 	};
 }(window.mobilePreview = window.mobilePreview || {}, jQuery));
 

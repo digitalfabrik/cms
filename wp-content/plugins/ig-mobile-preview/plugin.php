@@ -81,3 +81,14 @@ $mobilePreviewPlugin = new MobilePreviewPlugin();
 add_action('admin_init', [$mobilePreviewPlugin, 'add_meta_box']);
 add_action('admin_enqueue_scripts', [$mobilePreviewPlugin, 'enqueue_styles_and_scripts']);
 add_filter('tiny_mce_before_init', [$mobilePreviewPlugin, 'add_editor_hooks']);
+
+function mobile_preview_wpautop () {
+	$text = $_POST['mpvwpautop'];
+	if( $text != "" ) {
+		echo wpautop($text);
+		exit;
+	}
+	else{}
+
+}
+add_action( 'init', 'mobile_preview_wpautop' );
