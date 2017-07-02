@@ -74,25 +74,27 @@ add_action('before_delete_post', 'wp_api_extension_before_delete_post', 1);
 
 function wp_api_extension_hide_delete_css()
 {
-	if( !is_super_admin() ){
-		if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
-		{
-			echo "<style>
-				.alignleft.actions:first-child, #delete_all {
-					display: none;
-				}
-				</style>";
-		}
+	if( is_super_admin() ){
+		//superadmins are allowed to delete posts. This feature is "dangerous".
+		return;
+	}
+	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ){
+		echo "<style>
+			.alignleft.actions:first-child, #delete_all {
+				display: none;
+			}
+			</style>";
 	}
 }
 add_action( 'admin_head-edit.php', 'wp_api_extension_hide_delete_css' );
 
 function wp_api_extension_hide_row_action( $actions, $post ) 
 {
-	if( !is_super_admin() ){
-		if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
-			unset( $actions['delete'] );
+	if( is_super_admin() ) {
+		return $actions;
 	}
+	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] )
+		unset( $actions['delete'] );
 	return $actions; 
 }
 add_filter( 'post_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
