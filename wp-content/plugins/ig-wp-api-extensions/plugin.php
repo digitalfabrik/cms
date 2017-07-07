@@ -65,7 +65,7 @@ add_action('rest_api_init', function () {
 function wp_api_extension_before_delete_post($postid) {
 	$post = get_post( $postid );
 	//if( $_GET['action'] == "delete" ) { //can be used instead of following line, depends on GET
-	if ( 'page' == $post->post_type ) { //we can delete everything but the initial page, independent from loaded page
+	if ( 'page' == $post->post_type && !is_super_admin() ) { //we can delete everything but the initial page, independent from loaded page
 		wp_redirect(admin_url('edit.php?post_type=page'));
 		exit();
 	}
@@ -74,8 +74,11 @@ add_action('before_delete_post', 'wp_api_extension_before_delete_post', 1);
 
 function wp_api_extension_hide_delete_css()
 {
-	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
-	{
+	if( is_super_admin() ){
+		//superadmins are allowed to delete posts. This feature is "dangerous".
+		return;
+	}
+	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ){
 		echo "<style>
 			.alignleft.actions:first-child, #delete_all {
 				display: none;
@@ -87,9 +90,11 @@ add_action( 'admin_head-edit.php', 'wp_api_extension_hide_delete_css' );
 
 function wp_api_extension_hide_row_action( $actions, $post ) 
 {
-	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] ) 
+	if( is_super_admin() ) {
+		return $actions;
+	}
+	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] )
 		unset( $actions['delete'] );
-
 	return $actions; 
 }
 add_filter( 'post_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
