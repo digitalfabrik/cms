@@ -14,14 +14,16 @@
 	 * Copy text from the text editor
 	 */
 	mobilePreview.copyTextContent = function () {
-		var editorContent = mobilePreview.postContent.text();
-		jQuery.post( "index.php", { mpvwpautop: editorContent })
-			.done(function( data ) {
-				mobilePreview.content.html( data );
-			});
+		mobilePreviewWPAutoP(jQuery("#content").html());
 	};
 }(window.mobilePreview = window.mobilePreview || {}, jQuery));
 
+function mobilePreviewWPAutoP( editorContent ){
+	jQuery.post( "index.php", { 'mpvwpautop': editorContent })
+	.done(function( data ) {
+		mobilePreview.content.html( data );
+	});
+}
 
 jQuery(document).ready(function () {
 	mobilePreview.postTitle = jQuery('#title');
