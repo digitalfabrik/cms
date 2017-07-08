@@ -90,6 +90,10 @@
           "example": {
             "de": 828
           }
+        },
+        "automatic_translation": {
+          "type": "string",
+          "example": ""
         }
       },
       "required": [
@@ -105,7 +109,8 @@
         "order",
         "thumbnail",
         "author",
-        "available_languages"
+        "available_languages",
+        "automatic_translation"
       ]
     }
   }
