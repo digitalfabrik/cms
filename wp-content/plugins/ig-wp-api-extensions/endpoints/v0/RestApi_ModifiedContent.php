@@ -89,7 +89,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 
 		$result = [];
 		foreach ($query_result as $post) {
-			if( $_GET['no_trash'] == '1' && $post->status == "trash" ) {
+			if( $_GET['no_trash'] == '1' && $post->post_status == "trash" ) {
 				continue;
 			}
 			$result[] = $this->prepare_item($post);
@@ -197,12 +197,12 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		$output_post = [
 			'id' => $post->ID,
 			'permalink' => $this->prepare_url($post),
-			'title' => ( $post->status != "trash" ? $post->post_title : "" ),
+			'title' => ( $post->post_status != "trash" ? $post->post_title : "" ),
 			'type' => $post->post_type,
 			'status' => $post->post_status,
 			'modified_gmt' => $post->post_modified_gmt,
-			'excerpt' => $content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post),
-			'content' => ( $post->status != "trash" ? $content : "" ),
+			'excerpt' => ( $post->post_status != "trash" ? ($content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post)) : ""),
+			'content' => ( $post->post_status != "trash" ? $content : "" ),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
 			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
