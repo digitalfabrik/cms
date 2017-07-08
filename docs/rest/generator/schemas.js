@@ -6,5 +6,6 @@ export default fromJS([
     require('../schemata/pages.json'),
     require('../schemata/event_pages.json'),
     require('../schemata/locations.json'),
-    require('../schemata/languages.json')
+    require('../schemata/languages.json'),
+    require('../schemata/disclaimer.json')
 ]);
