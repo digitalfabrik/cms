@@ -43,7 +43,7 @@ if (isset($_POST['function'])) {
     $result = array();
 
     switch ($function) {
-        case( 'getStae' ):
+        case( 'getState' ):
             $result = $wpdb->get_var("SELECT COUNT(*) FROM $author_chat_table");
             break;
 
