@@ -154,7 +154,7 @@
       "title": "Available events",
       "description": "Get all available event pages since a specific point in time",
       "rel": "instances",
-      "href": "/{city}/{language}/wp-json/extensions/v0/modified_content/events",
+      "href": "/{location}/{language}/wp-json/extensions/v0/modified_content/events",
       "method": "GET",
       "required": [
         "since"
