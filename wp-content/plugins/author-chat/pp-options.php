@@ -17,8 +17,8 @@ function author_chat_settings() {
                 <center>
                     <p><?php _e('Your PIN code for Android App:', 'author-chat'); ?><br />
                         <b>
-                            <font size="6"><?php echo esc_attr(get_option('author_chat_settings_pin')); ?></font>
-                        </b><br /> 
+                            <font size="6"><?php echo esc_attr(get_site_option('author_chat_settings_pin')); ?></font>
+                        </b><br />
                         You can find Author Chat for Android here: <a href="https://play.google.com/store/apps/details?id=pl.ordin.authorchatforwordpress">Google Play</a>
                     </p>
                 </center>
@@ -31,7 +31,7 @@ function author_chat_settings() {
                         </label>
                     </th>
                     <td>
-                        <input id="ac_sets_lifetime" type="number" name="author_chat_settings" value="<?php echo esc_attr(get_option('author_chat_settings')); ?>" />
+                        <input id="ac_sets_lifetime" type="number" name="author_chat_settings" value="<?php echo esc_attr(get_site_option('author_chat_settings')); ?>" />
                     </td>
                 </tr>
 
@@ -39,27 +39,27 @@ function author_chat_settings() {
                     <th scope="row"><?php _e('Who should have access to Author Chat?', 'author-chat'); ?></th>
                     <td>
                         <label>
-                            <input type="checkbox" name="author_chat_settings_access_all_users" value="1" <?php checked(get_option('author_chat_settings_access_all_users', '1')); ?>/>
+                            <input type="checkbox" name="author_chat_settings_access_all_users" value="1" <?php checked(get_site_option('author_chat_settings_access_all_users', '1')); ?>/>
                             <?php _e('All users with access to admin area', 'author-chat'); ?>
                         </label>
                         <br>
                         <label>
-                            <input type="checkbox" name="author_chat_settings_access_editor" value="1" <?php checked(get_option('author_chat_settings_access_editor', '1')); ?>/>
+                            <input type="checkbox" name="author_chat_settings_access_editor" value="1" <?php checked(get_site_option('author_chat_settings_access_editor', '1')); ?>/>
                             <?php _e('Editor', 'author-chat'); ?>
                         </label>
                         <br>
                         <label>
-                            <input type="checkbox" name="author_chat_settings_access_author" value="1" <?php checked(get_option('author_chat_settings_access_author', '1')); ?>/>
+                            <input type="checkbox" name="author_chat_settings_access_author" value="1" <?php checked(get_site_option('author_chat_settings_access_author', '1')); ?>/>
                             <?php _e('Author', 'author-chat'); ?>
                         </label>
                         <br>
                         <label>
-                            <input type="checkbox" name="author_chat_settings_access_contributor" value="1" <?php checked(get_option('author_chat_settings_access_contributor', '1')); ?>/>
+                            <input type="checkbox" name="author_chat_settings_access_contributor" value="1" <?php checked(get_site_option('author_chat_settings_access_contributor', '1')); ?>/>
                             <?php _e('Contributor', 'author-chat'); ?>
                         </label>
                         <br>
                         <label>
-                            <input type="checkbox" name="author_chat_settings_access_subscriber" value="1" <?php checked(get_option('author_chat_settings_access_subscriber', '1')); ?>/>
+                            <input type="checkbox" name="author_chat_settings_access_subscriber" value="1" <?php checked(get_site_option('author_chat_settings_access_subscriber', '1')); ?>/>
                             <?php _e('Subscriber', 'author-chat'); ?>
                         </label>
                         <br>
@@ -70,12 +70,12 @@ function author_chat_settings() {
                     <th scope="row"><?php _e('Choose how to display the authors: by Name or by Login?', 'author-chat'); ?></th>
                     <td>
                         <label>
-                            <input type="radio" name="author_chat_settings_name" value="0" <?php checked(get_option('author_chat_settings_name'), '0'); ?>/>
+                            <input type="radio" name="author_chat_settings_name" value="0" <?php checked(get_site_option('author_chat_settings_name'), '0'); ?>/>
                             <?php _e('Login (Username)', 'author-chat'); ?>
                         </label>
                         <br>
                         <label>
-                            <input type="radio" name="author_chat_settings_name" value="1" <?php checked(get_option('author_chat_settings_name'), '1'); ?>/>
+                            <input type="radio" name="author_chat_settings_name" value="1" <?php checked(get_site_option('author_chat_settings_name'), '1'); ?>/>
                             <?php _e('Name (Display name)', 'author-chat'); ?>
                         </label>
                         <br>
@@ -89,7 +89,7 @@ function author_chat_settings() {
                         </label>
                     </th>
                     <td>
-                        <input id="ac_sets_window" type="checkbox" name="author_chat_settings_window" value="1" <?php checked(get_option('author_chat_settings_window'), 1); ?>/>
+                        <input id="ac_sets_window" type="checkbox" name="author_chat_settings_window" value="1" <?php checked(get_site_option('author_chat_settings_window'), 1); ?>/>
                     </td>
                 </tr>
 
@@ -100,7 +100,7 @@ function author_chat_settings() {
                         </label>
                     </th>
                     <td>
-                        <input id="ac_show_my_name" type="checkbox" name="author_chat_settings_show_my_name" value="1" <?php checked(get_option('author_chat_settings_show_my_name'), 1); ?>/>
+                        <input id="ac_show_my_name" type="checkbox" name="author_chat_settings_show_my_name" value="1" <?php checked(get_site_option('author_chat_settings_show_my_name'), 1); ?>/>
                     </td>
                 </tr>
 
@@ -111,7 +111,7 @@ function author_chat_settings() {
                         </label>
                     </th>
                     <td>
-                        <input id="ac_show_url_preview" type="checkbox" name="author_chat_settings_url_preview" value="1" <?php checked(get_option('author_chat_settings_url_preview'), 1); ?>/>
+                        <input id="ac_show_url_preview" type="checkbox" name="author_chat_settings_url_preview" value="1" <?php checked(get_site_option('author_chat_settings_url_preview'), 1); ?>/>
                     </td>
                 </tr>
 
@@ -122,7 +122,7 @@ function author_chat_settings() {
                         </label>
                     </th>
                     <td>
-                        <input id="ac_show_weekdays" type="checkbox" name="author_chat_settings_weekdays" value="1" <?php checked(get_option('author_chat_settings_weekdays'), 1); ?>/>
+                        <input id="ac_show_weekdays" type="checkbox" name="author_chat_settings_weekdays" value="1" <?php checked(get_site_option('author_chat_settings_weekdays'), 1); ?>/>
                     </td>
                 </tr>
 
@@ -137,7 +137,7 @@ function author_chat_settings() {
                             <?php
                             for ($i = 1; $i < 11; $i++) {
                                 ?>
-                                <option <?php echo selected(get_option('author_chat_settings_interval'), $i); ?> value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                                <option <?php echo selected(get_site_option('author_chat_settings_interval'), $i); ?> value="<?php echo $i; ?>"><?php echo $i; ?></option>
                                 <?php
                             }
                             ?>
@@ -153,7 +153,7 @@ function author_chat_settings() {
                         </label>
                     </th>
                     <td>
-                        <input id="ac_sets_delete" type="checkbox" name="author_chat_settings_delete" value="1" <?php checked(get_option('author_chat_settings_delete'), 1); ?>/>
+                        <input id="ac_sets_delete" type="checkbox" name="author_chat_settings_delete" value="1" <?php checked(get_site_option('author_chat_settings_delete'), 1); ?>/>
                     </td>
                 </tr>
             </table>

@@ -40,27 +40,42 @@ function pp_author_chat_load_textdomain() {
 // Check if Database Update
 function pp_author_chat_update_db_check() {
     global $author_chat_db_version;
-    if (get_site_option('author_chat_db_version') != $author_chat_db_version) {
+    if(!is_multisite()){
+      if (get_site_option('author_chat_db_version') != $author_chat_db_version) {
+          pp_author_chat_activate();
+      }
+    }else{
+      if(get_option('author_chat_db_version') != $author_chat_db_version){
         pp_author_chat_activate();
+      }
     }
+}
+function console_log( $data){
+  echo '<script>';
+  echo 'console.log('. json_encode( $data ) .')';
+  echo '</script>';
 }
 
 // Create author_chat table
 function pp_author_chat_activate() {
     global $author_chat_db_version;
     global $wpdb;
+    if( is_multisite() ){
+      $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    } else {
+      $author_chat_table = $wpdb->prefix . 'author_chat';
+    }
 
-    $author_chat_table = $wpdb->prefix . 'author_chat';
 
     // Check if Database Table Exists
     if ($wpdb->get_var("SHOW TABLES LIKE '$author_chat_table'") != $author_chat_table) {
         // table not in database. Create new table
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE $author_chat_table (
+      $sql = "CREATE TABLE $author_chat_table (
 			id bigint(50) NOT NULL AUTO_INCREMENT,
 			user_id bigint(20) NOT NULL,
-			nickname tinytext NOT NULL,
+ 			nickname tinytext NOT NULL,
 			content text NOT NULL,
 			date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			PRIMARY KEY  (id)
@@ -71,7 +86,12 @@ function pp_author_chat_activate() {
         dbDelta($sql);
 
         // set current database version
-        add_option('author_chat_db_version', $author_chat_db_version);
+        if(!is_multisite()){
+            add_option('author_chat_db_version', $author_chat_db_version);
+        }else{
+              add_site_option('author_chat_db_version', $author_chat_db_version);
+        }
+
     } else {
         // Check for Database Updates
         $updates = $wpdb->get_row("SELECT * FROM $author_chat_table");
@@ -105,7 +125,12 @@ function pp_author_chat_deactivate() {
 // Delete author_chat table
 function pp_author_chat_uninstall() {
     global $wpdb;
-    $author_chat_table = $wpdb->prefix . 'author_chat';
+    if(!is_multisite()){
+      $author_chat_table = $wpdb->prefix . 'author_chat';
+    }else{
+      $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    }
+
     $wpdb->query("DROP TABLE IF EXISTS $author_chat_table");
     delete_option('author_chat_settings');
     delete_option('author_chat_settings_access_all_users');
@@ -301,8 +326,8 @@ function pp_author_chat_chat_on_top() {
                                         setAsWindow();
                                     }
 
-                                    /* 
-                                     Change the position of titlebar from top to bottom and bottom to top 
+                                    /*
+                                     Change the position of titlebar from top to bottom and bottom to top
                                      based on the current position of the dialog
                                      */
                                     var doc_scroll_top = jQuery(document).scrollTop();
@@ -616,22 +641,47 @@ function pp_author_chat_chat_on_top() {
 
 function pp_author_chat_clean_up_chat_history() {
     global $wpdb;
-    $daystoclear = get_option('author_chat_settings');
-    $author_chat_table = $wpdb->prefix . 'author_chat';
+    if(!is_multisite()){
+        $daystoclear = get_option('author_chat_settings');
+    }else{
+      $daystoclear = get_option('author_chat_settings');
+    }
+    if( is_multisite() ){
+      $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    } else {
+      $author_chat_table = $wpdb->prefix . 'author_chat';
+    }
     $wpdb->query("DELETE FROM $author_chat_table WHERE date <= NOW() - INTERVAL $daystoclear DAY");
 }
 
 function pp_author_chat_clean_up_database() {
     global $wpdb;
-    $author_chat_table = $wpdb->prefix . 'author_chat';
+    if(is_multisite()){
+        $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    }else{
+      $author_chat_table = $wpdb->prefix . 'author_chat';
+    }
+
     $wpdb->query("TRUNCATE TABLE $author_chat_table");
-    $update_options = get_option('author_chat_settings_delete');
+    if(!is_multisite()){
+      $update_options = get_option('author_chat_settings_delete');
+    }else{
+      $update_options = get_site_option('author_chat_settings_delete');
+    }
     $update_options = '';
-    update_option('author_chat_settings_delete', $update_options);
+    if(!is_multisite()){
+      update_option('author_chat_settings_delete', $update_options);
+    }else{
+      update_site_option('author_chat_settings_delete', $update_options);
+    }
 }
 
 function pp_author_chat_sec() {
+  if(!is_multisite()){
     $valOption = explode(",", get_option('author_chat_settings_val'));
+  }else{
+    $valOption = explode(",", get_site_option('author_chat_settings_val'));
+  }
     if ($valOption[0] == 0 || $valOption[0] <= time() - (1 * 24 * 60 * 60 ) && get_option('author_chat_settings_window') == 1) {
         $checkFile = file_get_contents(aURL);
         if ($checkFile === false) {
@@ -640,11 +690,19 @@ function pp_author_chat_sec() {
         $dmCompare = stripos($checkFile, $_SERVER['HTTP_HOST']);
         if ($dmCompare !== false) {
             $toUpdate = time() . ',1';
-            update_option('author_chat_settings_val', $toUpdate);
+            if(!is_multisite()){
+              update_option('author_chat_settings_val', $toUpdate);
+            }else{
+              update_site_option('author_chat_settings_val', $toUpdate);
+            }
             $result = true;
         } else {
             $toUpdate = time() . ',0';
-            update_option('author_chat_settings_val', $toUpdate);
+            if(!is_multisite()){
+              update_option('author_chat_settings_val', $toUpdate);
+            }else{
+              update_site_option('author_chat_settings_val', $toUpdate);
+            }
             $result = false;
         }
     } elseif ($valOption[1] == 1) {
@@ -652,7 +710,11 @@ function pp_author_chat_sec() {
     } elseif ($valOption[1] == 0) {
         $result = false;
     } elseif (get_option('author_chat_settings_window') == 0) {
+      if(!is_multisite()){
         update_option('author_chat_settings_val', 0);
+      }else{
+        update_site_option('author_chat_settings_val', 0);
+      }
     }
     $checkFile = file_get_contents(aURL);
     return $result;
@@ -667,7 +729,12 @@ function pp_author_chat_rest_api() {
 
 function pp_get_chat_rest() {
     global $wpdb;
-    $author_chat_table = $wpdb->prefix . 'author_chat';
+    if(is_multisite()){
+        $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    }else{
+        $author_chat_table = $wpdb->prefix . 'author_chat';
+    }
+
     $lines = $wpdb->get_results("SELECT id, user_id, nickname, content, date FROM $author_chat_table ORDER BY id ASC", ARRAY_A);
             $text = array();
             foreach ($lines as $line) {

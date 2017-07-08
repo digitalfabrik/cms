@@ -29,17 +29,21 @@ if (!function_exists('array_column')) {
         }
         return $array;
     }
-
 }
 
 if (isset($_POST['function'])) {
     global $wpdb;
-    $author_chat_table = $wpdb->prefix . 'author_chat';
+    if(!is_multisite()){
+        $author_chat_table = $wpdb->prefix . 'author_chat';
+    }else{
+      $author_chat_table = $wpdb->base_prefix . 'author_chat';
+    }
+
     $function = filter_var($_POST['function'], FILTER_SANITIZE_STRING);
     $result = array();
 
     switch ($function) {
-        case( 'getState' ):
+        case( 'getStae' ):
             $result = $wpdb->get_var("SELECT COUNT(*) FROM $author_chat_table");
             break;
 
