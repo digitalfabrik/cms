@@ -12,7 +12,7 @@
       "title": "Available pages",
       "description": "Get all available pages since a specific point in time",
       "rel": "instances",
-      "href": "/{city}/{language}/wp-json/extensions/v0/modified_content/pages",
+      "href": "/{location}/{language}/wp-json/extensions/v0/modified_content/pages",
       "method": "GET",
       "required": [
         "since"

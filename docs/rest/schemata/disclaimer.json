@@ -12,7 +12,7 @@
       "title": "Disclaimer",
       "description": "Get all disclaimers since a specific point in time",
       "rel": "instances",
-      "href": "/{city}/{language}/wp-json/extensions/v0/modified_content/disclaimer?since={since}",
+      "href": "/{location}/{language}/wp-json/extensions/v0/modified_content/disclaimer?since={since}",
       "method": "GET",
       "required": [
         "since"
