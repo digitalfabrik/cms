@@ -1,0 +1,178 @@
+{
+  "definitions": {
+    "event_location": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "town": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "postcode": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "address",
+        "town",
+        "state",
+        "region",
+        "country",
+        "latitude",
+        "longitude",
+        "postcode",
+        "id"
+      ]
+    },
+    "event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "start_date": {
+          "type": "string"
+        },
+        "end_date": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string"
+        },
+        "end_time": {
+          "type": "string"
+        },
+        "all_day": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "start_date",
+        "end_date",
+        "start_time",
+        "end_time",
+        "all_day"
+      ]
+    },
+    "event_page": {
+      "allOf": [
+        {
+          "$ref": "page.json#/definitions/page"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "location": {
+              "$ref": "event_pages.json#/definitions/event_location"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "$ref": "event_pages.json#/definitions/event_tag"
+              }
+            },
+            "categories": {
+              "type": "array",
+              "items": {
+                "$ref": "event_pages.json#/definitions/event_category"
+              }
+            }
+          },
+          "required": [
+            "location",
+            "tags",
+            "categories"
+          ]
+        }
+      ]
+    },
+    "event_category": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "event_tag": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "name",
+        "id"
+      ]
+    }
+  },
+  "id": "events",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Event pages",
+  "description": "",
+  "type": "array",
+  "items": {
+    "$ref": "#/definitions/event_page"
+  },
+  "links": [
+    {
+      "title": "Available events",
+      "description": "Get all available event pages since a specific point in time",
+      "rel": "instances",
+      "href": "/{location}/{language}/wp-json/extensions/v0/modified_content/events",
+      "method": "GET",
+      "required": [
+        "since"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "since": {
+            "$ref": "page.json#/definitions/since"
+          }
+        }
+      },
+      "hrefSchema": {
+        "$ref": "common.json#/definitions/hrefScheme"
+      },
+      "targetSchema": {
+        "rel": "self"
+      }
+    }
+  ]
+}
