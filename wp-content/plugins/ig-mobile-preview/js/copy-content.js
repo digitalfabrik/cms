@@ -10,18 +10,20 @@
 		mobilePreview.title.html(titleContent);
 	};
 
-	/**
-	 * Copy text from the text editor
-	 */
 	mobilePreview.copyTextContent = function () {
-		var editorContent = mobilePreview.postContent.text();
-		// replace all \n with surrounding p tags
-		// split-join is faster than replace: http://jsperf.com/replace-all-vs-split-join
-		editorContent = editorContent.replace("\n","<br>");
-		mobilePreview.content.html(editorContent);
+		mobilePreviewWPAutoP(jQuery("#content").html());
 	};
 }(window.mobilePreview = window.mobilePreview || {}, jQuery));
 
+function mobilePreviewWPAutoP( editorContent ){
+	if(editorContent == "") {
+		return;
+	}
+	jQuery.post( "index.php", { 'mpvwpautop': editorContent })
+	.done(function( data ) {
+		mobilePreview.content.html( data );
+	});
+}
 
 jQuery(document).ready(function () {
 	mobilePreview.postTitle = jQuery('#title');
@@ -30,19 +32,6 @@ jQuery(document).ready(function () {
 	mobilePreview.title = jQuery('#mobile-preview-title');
 	mobilePreview.content = jQuery('#mobile-preview-content');
 
-	mobilePreview.postTitle.on("keyup", mobilePreview.copyTitle);
 	mobilePreview.copyTitle();
-
-	mobilePreview.postContent.on("keyup", mobilePreview.copyTextContent);
 	mobilePreview.copyTextContent();
 });
-
-
-/**
- * Copy text from the tinyMCE editor
- * @param editor the tinyMCE editor
- */
-function mobilePreviewCopyTinymceContent(editor) {
-	var editorContent = editor.getContent();
-	mobilePreview.content.html(editorContent);
-}
