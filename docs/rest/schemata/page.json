@@ -1,0 +1,117 @@
+{
+  "definitions": {
+    "author": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "example": "integrationsstelle"
+        },
+        "first_name": {
+          "type": "string",
+          "example": "John"
+        },
+        "last_name": {
+          "type": "string",
+          "example": "Doe"
+        }
+      },
+      "required": [
+        "login",
+        "first_name",
+        "last_name"
+      ]
+    },
+    "since": {
+      "type": "string",
+      "description": "Attribute to specify the time range",
+      "example": "2017-05-10T11:30:00Z"
+    },
+    "page": {
+      "type": "object",
+      "properties": {
+        "parent": {
+          "type": "integer",
+          "example": 7894
+        },
+        "id": {
+          "type": "integer",
+          "example": 7894
+        },
+        "title": {
+          "type": "string",
+          "example": "This is a title!"
+        },
+        "type": {
+          "enum": [
+            "page"
+          ],
+          "example": "page"
+        },
+        "status": {
+          "enum": [
+            "publish"
+          ],
+          "example": "publish"
+        },
+        "modified_gmt": {
+          "type": "string",
+          "example": "2016-09-15 07:49:09"
+        },
+        "excerpt": {
+          "type": "string",
+          "example": "<p>An excerpt!</p>"
+        },
+        "content": {
+          "type": "string",
+          "example": "<p>The content!</p>"
+        },
+        "order": {
+          "type": "integer",
+          "example": 0
+        },
+        "thumbnail": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "example": "http://cms.integreat-app.de/regensburg/wp-content/uploads/sites/10/2016/08/info22-150x150.png"
+        },
+        "author": {
+          "$ref": "#/definitions/author"
+        },
+        "available_languages": {
+          "type": "object",
+          "allOf": [
+            {
+              "type": "integer"
+            }
+          ],
+          "example": {
+            "de": 828
+          }
+        },
+        "automatic_translation": {
+          "type": "string",
+          "example": ""
+        }
+      },
+      "required": [
+        "parent",
+        "parentId",
+        "id",
+        "title",
+        "type",
+        "status",
+        "modified_gmt",
+        "excerpt",
+        "content",
+        "order",
+        "thumbnail",
+        "author",
+        "available_languages",
+        "automatic_translation"
+      ]
+    }
+  }
+}

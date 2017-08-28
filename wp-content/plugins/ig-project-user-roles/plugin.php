@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name: Projektspezifische Benutzerrollen
- * Description: Benutzerrollen fuer das Integreat Projekt: Verwalter, Vertrauenswuerdige Organisation, Organisation
- * Version: 0.1
- * Author: Martin Schrimpf
+ * Description: Benutzerrollen fuer das Integreat Projekt: Verwalter, Vertrauenswuerdige Organisation, Organisation, Eventplaner
+ * Version: 0.2
+ * Author: Martin Schrimpf, Jan-Ulrich Holtgrave
  * Author URI: https://github.com/Meash
  * License: MIT
  */
@@ -20,7 +20,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 		// which would have to be changed.
 		'manager' => 'Verwaltung',
 		'organizer' => 'Organisation',
-		'trustworthy_organization' => 'Vertrauenswuerdige Organisation'
+		'trustworthy_organization' => 'Vertrauenswuerdige Organisation',
+		'event_planer' => 'Eventplaner'
 	];
 	$role_capabilities = [
 		'manager' => [
@@ -150,6 +151,67 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'upload_event_images' => true,
 			/* PDF */
 			'create_and_download_pdf' => true,
+		],
+		'event_planer' => [
+			/* Users */
+			'create_users' => false,
+			'edit_users' => false,
+			'delete_users' => false,
+			'promote_users' => false,
+			'list_users' => false,
+			/* Pages */
+			'edit_pages' => false,
+			'edit_others_pages' => false,
+			'edit_private_pages' => false,
+			'edit_published_pages' => false,
+			'read_private_pages' => false,
+			'delete_pages' => false,
+			'delete_posts' => false,
+			'delete_others_pages' => false,
+			'delete_published_pages' => false,
+			'publish_pages' => false,
+			'upload_files' => true,
+			/* Profile */
+			'read' => true,
+			/* WPML */
+			'wpml_manage_translation_management' => true,
+			'wpml_manage_languages' => true,
+			'wpml_manage_navigation' => true,
+			'wpml_manage_media_translation' => true,
+			/* Events */
+			'publish_events' => true,
+			'delete_others_events' => true,
+			'edit_others_events' => true,
+			'delete_events' => true,
+			'edit_events' => true,
+			'read_private_events' => true,
+
+			'publish_recurring_events' => true,
+			'delete_others_recurring_events' => true,
+			'edit_others_recurring_events' => true,
+			'delete_recurring_events' => true,
+			'edit_recurring_events' => true,
+
+			'publish_locations' => true,
+			'delete_others_locations' => true,
+			'edit_others_locations' => true,
+			'delete_locations' => true,
+			'edit_locations' => true,
+			'read_private_locations' => true,
+			'read_others_locations' => true,
+			'manage_others_bookings' => true, // necessary to publish others events
+
+			'delete_event_categories' => true,
+			'edit_event_categories' => true,
+			'upload_event_images' => true,
+			/* Push Notifications */
+			'send_push_notifications' => true,
+			/* PDF */
+			'create_and_download_pdf' => true,
+			/* Disclaimer */
+			'manage_disclaimer' => false,
+			/* Clickguide */
+			'manage_clickguide' => false,
 		]
 	];
 
