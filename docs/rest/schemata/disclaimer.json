@@ -1,18 +1,18 @@
 {
-  "id": "pages",
+  "id": "disclaimer",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Pages",
-  "description": "Array containing pages",
+  "title": "Disclaimer",
+  "description": "Array containing disclaimers",
   "type": "array",
   "items": {
     "$ref": "page.json#/definitions/page"
   },
   "links": [
     {
-      "title": "Available pages",
-      "description": "Get all available pages since a specific point in time",
+      "title": "Disclaimer",
+      "description": "Get all disclaimers since a specific point in time",
       "rel": "instances",
-      "href": "/{location}/{language}/wp-json/extensions/v0/modified_content/pages",
+      "href": "/{location}/{language}/wp-json/extensions/v0/modified_content/disclaimer?since={since}",
       "method": "GET",
       "required": [
         "since"
