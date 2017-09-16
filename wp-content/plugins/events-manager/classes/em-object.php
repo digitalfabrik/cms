@@ -1162,25 +1162,6 @@ class EM_Object {
 		}
 		return apply_filters('em_object_get_fields', array(), $this, $inverted_array);
 	}
-
-	/**
-	 * Sanitize text before inserting into database
-	 * @param string $value
-	 * @return string
-	 */
-	function sanitize( $value ) {
-		if( get_magic_quotes_gpc() ) 
-	      $value = wp_unslash( $value );
-	
-		//check if this function exists
-		if( function_exists( "mysql_real_escape_string" ) ) {
-	    	$value = mysql_real_escape_string( $value );
-			//for PHP version < 4.3.0 use addslashes
-		} else {
-	      $value = addslashes( $value );
-		}
-		return apply_filters('em_object_sanitize', $value);
-	}
 	
 	/**
 	 * Cleans arrays that contain id lists. Takes an array of items and will clean the keys passed in second argument so that if they keep numbers, explode comma-separated numbers, and unsets the key if there's any other value
@@ -1537,7 +1518,16 @@ class EM_Object {
 		return em_get_currency_formatted( $price );
 	}
 	
-	function get_tax_rate(){
-		return get_option('dbem_bookings_tax');
+	/**
+	 * Returns contextual tax rate of object, which may be global or instance-specific. By default a number representing percentage is provided, e.g. 21% returns 21. 
+	 * If $decimal is set to true, 21% is returned as 0.21  
+	 * @param boolean $decimal If set to true, a decimal representation will be returned.
+	 * @return float
+	 */
+	function get_tax_rate( $decimal = false ){
+		$tax_rate = get_option('dbem_bookings_tax');
+		$tax_rate = ($tax_rate > 0) ? $tax_rate : 0;
+		if( $decimal && $tax_rate > 0 ) $tax_rate = $tax_rate / 100;
+		return $tax_rate;
 	}
 }

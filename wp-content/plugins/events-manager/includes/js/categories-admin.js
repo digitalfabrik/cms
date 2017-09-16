@@ -1,68 +1,69 @@
 jQuery(document).ready(function($) {
 	//color picker
-    var f = $.farbtastic('#picker');
-    var p = $('#picker').css('opacity', 0.25);
-    var selected;
-    $('.colorwell').each(function () { f.linkTo(this); $(this).css('opacity', 0.75); }).focus(function() {
-        if (selected) { $(selected).css('opacity', 0.75).removeClass('colorwell-selected'); }
-        f.linkTo(this);
-        p.css('opacity', 1);
-        $(selected = this).css('opacity', 1).addClass('colorwell-selected');
-    });
-    $('.colorwell').click(function() {
-		var position = $(selected = this).position();
-    	$('#picker').css('left', (position.left + 150) );
-    	$('#picker').css('top', position.top); 
-    	$('#picker').fadeIn(900,function (){
-    		$('#picker').css('display', 'inline');
-	    });
-	}).blur(function(){
-    	  $('#picker').fadeOut('fast');
-    	  $('#picker').css('display', 'none');
-    });
-
-	//image button upload - thanks Brad Williams, Ozh Richard, and Justin Tadlock!
-	var formfield = null;
-	
-	$('#upload_image_button').click(function() {
-		$('html').addClass('Image');
-		formfield = $('#category-image').attr('name');
-		tb_show('', 'media-upload.php?type=image&TB_iframe=true');
-		return false;
+	var f = $.farbtastic('#picker');
+	var p = $('#picker').css('opacity', 0.25);
+	var selected;
+	$('.colorwell').each(function () { f.linkTo(this); $(this).css('opacity', 0.75); }).focus(function() {
+		if (selected) { $(selected).css('opacity', 0.75).removeClass('colorwell-selected'); }
+		f.linkTo(this);
+		p.css('opacity', 1);
+		$(selected = this).css('opacity', 1).addClass('colorwell-selected');
 	});
-	
-	// user inserts file into post. only run custom if user started process using the above process
-	// window.send_to_editor(html) is how wp would normally handle the received data
-	window.original_send_to_editor = window.send_to_editor;
-	window.send_to_editor = function(html){
-	    var fileurl;
+	$('.colorwell').click(function() {
+		var position = $(selected = this).position();
+		$('#picker').css('left', (position.left + 150) );
+		$('#picker').css('top', position.top); 
+		$('#picker').fadeIn(900,function (){
+			$('#picker').css('display', 'inline');
+		});
+	}).blur(function(){
+		$('#picker').fadeOut('fast');
+		$('#picker').css('display', 'none');
+	});
 
-		if (formfield != null) {
-			var img = $(html).find('img');
-			fileurl = img.attr('src');
-			$('#category-image').val(fileurl);
-			$('#category-image-img img').attr('src', fileurl);
-			//get the attachment id if possible
-			var fileIdClass = img.attr('class');
-			var pattern = /wp\-image\-[0-9]+/;
-			var fileIdFull = pattern.exec(fileIdClass);
-			if( fileIdFull[0] != '' ){
-				var fileId = fileIdFull[0].replace('wp-image-','');
-				$('#category-image-id').val(fileId);
-			}			
-
-			tb_remove();
-
-			$('html').removeClass('Image');
-			formfield = null;
-		} else {
-			window.original_send_to_editor(html);
+	//Event Taxonomy Image Picker
+	var frame;	
+	// ADD IMAGE LINK
+	$('#event-tax-image .upload-img-button').on( 'click', function( event ){
+		event.preventDefault();
+		// If the media frame already exists, reopen it.
+		if ( frame ) {
+		frame.open();
+		return;
 		}
-	};
-	
-	//detach/remove image from category for saving
-	$('#delete_image_button').on('click', function(){
-		$('#category-image-img').remove();
-		$('#category-image, #category-image-id').val('');
-	}); 
+		// Create a new media frame
+		frame = wp.media({
+			library: {
+				type: 'image'
+			},
+			title: wp.media.view.l10n.chooseImage,
+			multiple: false  // Set to true to allow multiple files to be selected
+		});
+		// When an image is selected in the media frame...
+		frame.on( 'select', function() {
+			// Get media attachment details from the frame state
+			var attachment = frame.state().get('selection').first().toJSON();
+			// Send the attachment URL to our custom image input field.
+			$( '#event-tax-image .img-container').empty().append( '<img src="'+attachment.url+'" alt="" style="max-width:100%;"/>' );
+			// Send the attachment id to our hidden input
+			$( '#event-tax-image .img-id' ).val( attachment.id );
+			$( '#event-tax-image .img-url' ).val( attachment.url );
+			// Unhide the remove image link
+			$( '#event-tax-image .delete-img-button').show();
+		});
+		// Finally, open the modal on click
+		frame.open();
+	});
+	// DELETE IMAGE LINK
+	$( '#event-tax-image .delete-img-button').on( 'click', function( event ){
+		event.preventDefault();
+		// Clear out the preview image
+		$( '#event-tax-image .img-container').html( '' );
+		// Un-hide the add image link
+		$(this).hide();
+		// Delete the image id from the hidden input
+		$( '#event-tax-image .img-id' ).val( '' );
+		$( '#event-tax-image .img-url' ).val( '' );
+	});
+
 });

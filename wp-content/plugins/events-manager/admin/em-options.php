@@ -139,9 +139,34 @@ function em_options_save(){
 			}
 			//go back to plugin options page
 			$EM_Notices->add_confirm(__('Settings have been reset back to default. Your events, locations and categories have not been modified.','events-manager'), true);
-			wp_redirect(EM_ADMIN_URL.'&page=events-manager-options');
+			wp_redirect(em_wp_get_referer());
 			exit();
 		}
+	}
+	//Cleanup Event Orphans
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'cleanup_event_orphans' && check_admin_referer('em_cleanup_event_orphans_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+		//Firstly, get all orphans
+		global $wpdb;
+		$sql = 'SELECT event_id FROM '.EM_EVENTS_TABLE.' WHERE post_id NOT IN (SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type="'. EM_POST_TYPE_EVENT .'" OR post_type="event-recurring")';
+		if( EM_MS_GLOBAL ){
+			if( is_main_site() ){
+				$sql .= $wpdb->prepare(' AND (blog_id=%d or blog_id IS NULL)', get_current_blog_id());
+			}else{
+				$sql .= $wpdb->prepare(' AND blog_id=%d', get_current_blog_id());
+			}
+		}
+		$results = $wpdb->get_col($sql);
+		$deleted_events = 0;
+		foreach( $results as $event_id ){
+			$EM_Event = new EM_Event($event_id);
+			if( !empty($EM_Event->orphaned_event) && $EM_Event->delete() ){
+				$deleted_events++;
+			}
+		}
+		//go back to plugin options page
+		$EM_Notices->add_confirm(sprintf(__('Found %d orphaned events, deleted %d successfully','events-manager'), count($results), $deleted_events), true);
+		wp_redirect(em_wp_get_referer());
+		exit();
 	}
 	//Force Update Recheck - Workaround for now
 	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'recheck_updates' && check_admin_referer('em_recheck_updates_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
@@ -160,6 +185,56 @@ function em_options_save(){
 		update_option('em_check_dev_version', true);
 		$EM_Notices->add_confirm(__('Checking for dev versions.','events-manager').' '. __('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','events-manager'), true);
 		wp_redirect(em_wp_get_referer());
+		exit();
+	}
+	//import EM settings
+	if( !empty($_REQUEST['action']) && ( ($_REQUEST['action'] == 'import_em_settings' && check_admin_referer('import_em_settings')) || (is_multisite() && $_REQUEST['action'] == 'import_em_ms_settings' && check_admin_referer('import_em_ms_settings')) ) && is_super_admin() ){
+		//upload uniquely named file to system for usage later
+		if( !empty($_FILES['import_settings_file']['size']) && is_uploaded_file($_FILES['import_settings_file']['tmp_name']) ){
+			$settings = file_get_contents($_FILES['import_settings_file']['tmp_name']);
+			$settings = json_decode($settings, true);
+			if( is_array($settings) ){
+				if( is_multisite() && $_REQUEST['action'] == 'import_em_ms_settings' ){
+					global $EM_MS_Globals, $wpdb;
+					$sitewide_options = $EM_MS_Globals->get_globals();
+					foreach( $settings as $k => $v ){
+						if( in_array($k, $sitewide_options) ) update_site_option($k, $v);
+					}
+				}else{
+					foreach( $settings as $k => $v ){
+						if( preg_match('/^(?:db)emp?_/', $k) ){
+							update_option($k, $v);
+						}
+					}
+				}
+				$EM_Notices->add_confirm(__('Settings imported.','events-manager'), true);
+				wp_redirect(em_wp_get_referer());
+				exit();
+			}
+		}
+		$EM_Notices->add_error(__('Please upload a valid txt file containing Events Manager import settings.','events-manager'), true);
+		wp_redirect(em_wp_get_referer());
+		exit();
+	}
+	//export EM settings
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_em_settings' && check_admin_referer('export_em_settings') && is_super_admin() ){
+		global $wpdb;
+		$results = $wpdb->get_results('SELECT option_name, option_value FROM '.$wpdb->options ." WHERE option_name LIKE 'dbem_%' OR option_name LIKE 'emp_%' OR option_name LIKE 'em_%'", ARRAY_A);
+		$options = array();
+		foreach( $results as $result ) $options[$result['option_name']] = $result['option_value'];
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Content-Disposition: attachment; filename="events-manager-settings.txt"');
+		echo json_encode($options);
+		exit();
+	}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_em_ms_settings' && check_admin_referer('export_em_ms_settings') && is_multisite() && is_super_admin() ){
+		//delete transients, and add a flag to recheck dev version next time round
+		global $EM_MS_Globals, $wpdb;
+		$options = array();
+		$sitewide_options = $EM_MS_Globals->get_globals();
+		foreach( $sitewide_options as $option ) $options[$option] = get_site_option($option);
+		header('Content-Type: text/plain; charset=utf-8');
+		header('Content-Disposition: attachment; filename="events-manager-settings.txt"');
+		echo json_encode($options);
 		exit();
 	}
 	
@@ -270,7 +345,7 @@ function em_admin_options_page() {
 	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','events-manager'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
 	global $save_button;
-	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" class="button-primary" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'events-manager') .' ('. __('All','events-manager') .')" /></p></ts></td></tr>';
+	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" class="button-primary" name="Submit" value="'. __( 'Save Changes', 'events-manager') .' ('. __('All','events-manager') .')" /></p></td></tr>';
 	
 	if( defined('EM_SETTINGS_TABS') && EM_SETTINGS_TABS ){
 	    $tabs_enabled = true;
@@ -340,7 +415,7 @@ function em_admin_options_page() {
 			*/ ?>
 
 			<p class="submit">
-				<input type="submit" id="dbem_options_submit" class="button-primary" name="Submit" value="<?php esc_attr_e( 'Save Changes', 'events-manager'); ?>" />
+				<input type="submit" class="button-primary" name="Submit" value="<?php esc_attr_e( 'Save Changes', 'events-manager'); ?>" />
 				<input type="hidden" name="em-submitted" value="1" />
 				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('events-manager-options'); ?>" />
 			</p>  
@@ -566,17 +641,24 @@ function em_admin_option_box_uninstall(){
 		$uninstall_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=uninstall&amp;_wpnonce='.wp_create_nonce('em_uninstall_'.get_current_user_id().'_wpnonce');
 		$reset_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=reset&amp;_wpnonce='.wp_create_nonce('em_reset_'.get_current_user_id().'_wpnonce');
 		$recheck_updates_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=recheck_updates&amp;_wpnonce='.wp_create_nonce('em_recheck_updates_'.get_current_user_id().'_wpnonce');
+		$cleanup_event_orphans_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=cleanup_event_orphans&amp;_wpnonce='.wp_create_nonce('em_cleanup_event_orphans_'.get_current_user_id().'_wpnonce');
 		$check_devs = admin_url().'network/admin.php?page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs_wpnonce');
+		$export_settings_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=export_em_ms_settings&amp;_wpnonce='.wp_create_nonce('export_em_ms_settings');
+		$import_nonce = wp_create_nonce('import_em_ms_settings');
 	}else{
 		$uninstall_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=uninstall&amp;_wpnonce='.wp_create_nonce('em_uninstall_'.get_current_user_id().'_wpnonce');
 		$reset_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=reset&amp;_wpnonce='.wp_create_nonce('em_reset_'.get_current_user_id().'_wpnonce');
 		$recheck_updates_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=recheck_updates&amp;_wpnonce='.wp_create_nonce('em_recheck_updates_'.get_current_user_id().'_wpnonce');
+		$cleanup_event_orphans_url= EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=cleanup_event_orphans&amp;_wpnonce='.wp_create_nonce('em_cleanup_event_orphans_'.get_current_user_id().'_wpnonce');
 		$check_devs = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs_wpnonce');
+		$export_settings_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=export_em_settings&amp;_wpnonce='.wp_create_nonce('export_em_settings');
+		$import_nonce = wp_create_nonce('import_em_settings');
 	}
 	?>
 	<div  class="postbox" id="em-opt-admin-tools" >
 		<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Admin Tools', 'events-manager'); ?> (<?php _e ( 'Advanced', 'events-manager'); ?>)</span></h3>
 		<div class="inside">
+			
 			<table class="form-table">
     		    <tr class="em-header"><td colspan="2">
         			<h4><?php _e ( 'Development Versions &amp; Updates', 'events-manager'); ?></h4>
@@ -592,6 +674,69 @@ function em_admin_option_box_uninstall(){
     			    <td><?php _e('If you would like to download a dev version, but just as a one-off, you can force a dev version check by clicking the button below. If there is one available, it should appear in your plugin updates page as a regular update.','events-manager'); ?></td>
 				</tr>
 			</table>
+			
+			<table class="form-table">
+    		    <tr class="em-header"><td colspan="2">
+        			<h4><?php esc_html_e( 'Import/Export Settings', 'events-manager'); ?></h4>
+        			<?php if( is_multisite() && is_network_admin() ): ?>
+        			<p><?php esc_html_e("Within the network admin area, only network-specific settings will be exported or imported. For individual site settings please visit the relevant site within your network.", 'events-manager'); ?></p>
+        			<?php endif; ?>
+    			</td></tr>
+				<tr>
+    			    <th style="text-align:right;">
+    			    	<a href="#" class="button-secondary" id="em-admin-import-settings"><?php esc_html_e('Import Settings','events-manager'); ?></a>
+    			    </th>
+    			    <td>
+    			    	<input type="file" name="import_settings_file" id="em-admin-import-settings-file" />
+    			    	<p><em><?php echo esc_html(sprintf(__('Choose a settings file saved from a backup or another Events Manager installation and click the \'%s\' button.','events-manager'), __('Import Settings','events-manager'))); ?></em></p>
+    			    </td>
+					<script type="text/javascript" charset="utf-8">
+						jQuery(document).ready(function($){
+							$('a#em-admin-import-settings').click(function(e,el){
+								var thisform = $(this).closest('form');
+								thisform.find('input[type=text], textarea, select, input[type=radio], input[type=hidden]').prop('disabled', true);
+								thisform.find('input[name=_wpnonce]').val('<?php echo esc_attr($import_nonce); ?>').prop('disabled', false);
+								thisform.append($('<input type="hidden" name="action" value="<?php echo is_multisite() ? 'import_em_ms_settings':'import_em_settings'; ?>" />'));
+								thisform.attr('enctype', 'multipart/form-data').submit();
+							});
+						});
+					</script>
+    			</tr>
+    			<tr>
+    			    <th style="text-align:right;">
+    			    	<a href="<?php echo $export_settings_url; ?>" class="button-secondary"><?php esc_html_e('Export Settings','events-manager'); ?></a>
+    			    </th>
+    			    <td><?php esc_html_e('Export your Events Manager settings and restore them here or on another website running this plugin.','events-manager'); ?></td>
+				</tr>
+			</table>
+			
+			
+			<table class="form-table">
+    		    <tr class="em-header"><td colspan="2">
+    		        <h4><?php esc_html_e( 'Database Cleanup', 'events-manager'); ?></h4>
+    		    </td></tr>
+				<tr>
+    			    <th style="text-align:right;"><a href="<?php echo $cleanup_event_orphans_url; ?>" class="button-secondary admin-tools-db-cleanup"><?php _e('Remove Orphaned Events','events-manager'); ?></a></th>
+    			    <td>
+    			    	<?php 
+    			    		global $wpdb;
+    			    		$sql = 'SELECT count(*) FROM '.EM_EVENTS_TABLE.' WHERE post_id NOT IN (SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type="'. EM_POST_TYPE_EVENT .'" OR post_type="event-recurring")';
+    			    		if( EM_MS_GLOBAL ){
+    			    			if( is_main_site() ){
+    			    				$sql .= $wpdb->prepare(' AND (blog_id=%d or blog_id IS NULL)', get_current_blog_id());
+    			    			}else{
+    			    				$sql .= $wpdb->prepare(' AND blog_id=%d', get_current_blog_id());
+    			    			}
+    			    		}
+    			    		$results = $wpdb->get_var($sql);
+    			    		echo sprintf(esc_html__('Orphaned events may show on your event lists but not point to real event pages, and can be deleted. %d potentially orphaned events have been found.', 'events-manager'), $results);
+    			    	?>
+    			    </td>
+    			</tr>
+			</table>
+			<script type="text/javascript">
+				if( typeof EM == 'object' ){ EM.admin_db_cleanup_warning = '<?php echo esc_js(__('Are you sure you want to proceed? We recommend you back up your database first, just in case!', 'events-manager')); ?>'; }
+			</script>
 			
 			<table class="form-table">
     		    <tr class="em-header"><td colspan="2">

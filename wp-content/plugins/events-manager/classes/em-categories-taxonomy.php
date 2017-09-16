@@ -32,16 +32,14 @@ class EM_Categories_Taxonomy{
 	public static function admin_init(){
 		global $pagenow;
 		if( ($pagenow == 'edit-tags.php' || $pagenow == 'term.php') && !empty($_GET['taxonomy']) && $_GET['taxonomy'] == EM_TAXONOMY_CATEGORY){
-			wp_enqueue_style( 'farbtastic' );
-			wp_enqueue_style( 'thickbox' );
-			
+			wp_enqueue_media();
 			wp_enqueue_script( 'em-categories-admin', plugins_url().'/events-manager/includes/js/categories-admin.js', array( 'jquery','media-upload','thickbox','farbtastic' ) );
 		}
 	}
 	
 	public static function form($tag){ 
 		$category_color = '#FFFFFF';
-		$category_image = '';
+		$category_image = $category_image_id = '';
 		if( $tag != EM_TAXONOMY_CATEGORY ){ //not an add new tag form
 			$EM_Category = new EM_Category($tag);
 			$category_color = $EM_Category->get_color();
@@ -59,16 +57,18 @@ class EM_Categories_Taxonomy{
 	    </tr>
 	    <tr class="form-field">
 	        <th scope="row" valign="top"><label for="category-image"><?php esc_html_e('Image','events-manager'); ?></label></th>
-	        <td>
-	        	<?php if( !empty($category_image) ): ?>
-	        	<p id="category-image-img"><img src="<?php echo $category_image; ?>" /></p>
-	        	<?php endif; ?>
-	            <input type="text" name="category_image" id="category-image" value="<?php echo esc_attr($category_image); ?>" style="width:300px;" />
-	            <input type="hidden" name="category_image_id" id="category-image-id" value="<?php echo esc_attr($category_image); ?>" />
-	            <input id="upload_image_button" type="button" value="<?php _e('Choose/Upload Image','events-manager'); ?>" class="button-secondary" style="width:auto;" />
-	            <?php if( !empty($category_image) ): ?>
-	        	<input id="delete_image_button" type="button" value="<?php _e('Remove Image','events-manager'); ?>" class="button-secondary" style="width:auto;" />
-	        	<?php endif; ?>
+	        <td id="event-tax-image">
+	        	<div class="img-container">
+	        		<?php if( !empty($category_image) ): ?>
+	        		<img src="<?php echo $category_image; ?>" />
+	        		<?php endif; ?>
+	        	</div>
+	            <input type="text" name="category_image" id="category-image" class="img-url" value="<?php echo esc_attr($category_image); ?>" />
+	            <input type="hidden" name="category_image_id" id="category-image-id" class="img-id" value="<?php echo esc_attr($category_image_id); ?>" />
+	            <p class="hide-if-no-js">
+		            <input id="upload_image_button" type="button" value="<?php _e('Choose/Upload Image','events-manager'); ?>" class="upload-img-button button-secondary" />
+		            <input id="delete_image_button" type="button" value="<?php _e('Remove Image','events-manager'); ?>" class="delete-img-button button-secondary" <?php if( empty($category_image) ) echo 'style="display:none;"'; ?> />
+				</p>
 	            <br />
 	            <p class="description"><?php echo sprintf(__('Choose an image for your category, which can be displayed using the %s placeholder.','events-manager'),'<code>#_CATEGORYIMAGE</code>'); ?></p>
 	        </td>

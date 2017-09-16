@@ -6,7 +6,7 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 	.em-warning p { margin:10px 0px !important; padding:0px; color:#333 }
 	.em-warning-errors { background-color:#FFEBE8; border:1px solid #C00; }
 	.em-warning-confirms { background-color:#f1fff0; border:1px solid #a8d144; }
-	a.em-button { float:right; padding:5px 10px; margin:5px; background:#EEE; color:#333; border:1px solid #CCC; border-radius:3px; display:inline-block; text-decoration:none; }
+	a.em-button { padding:5px 10px; margin:5px; background:#EEE; color:#333; border:1px solid #CCC; border-radius:3px; display:inline-block; text-decoration:none; }
 	a.em-button:hover { text-decoration:none; }	
 	
 /* Search Form */
@@ -17,15 +17,16 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 		div.em-search.css-search label { display:inline; } 
 		div.em-search.css-search div { display:block; }
 		div.css-search input, div.css-search select, div.css-search option, div.css-search div, div.css-search span, div.css-search button { 
-			width:auto; height:auto; margin:0; padding:0; float:none; display:auto; font-size:14px; /* reset everything */
+			width:auto; height:auto; margin:0; padding:0; float:none; display:inline-block; font-size:14px; /* reset everything */
 		}
+		div.css-search option { display:block; }
 		div.css-search input, div.css-search select { padding:5px; }
 		div.css-search { background:#fff; border:1px solid #dedede; border-radius:3px; padding:5px; min-height:40px; position:relative; -moz-border-radius:3px; -webkit-border-radius:3px; }	
 		/* Main Search */
 			div.css-search.has-advanced div.em-search-main { padding-bottom:8px; border-bottom:1px solid #dedede; }
 			div.css-search div.em-search-main div { display:inline; }
 			div.css-search div.em-search-field { padding:5px 0px; }
-			div.css-search input.em-search-text, div.css-search input.em-search-geo { width:90%; font-size:16px; line-height:16px; padding:8px; border:none; outline:none !important; color:#666; text-overflow: ellipsis; }
+			div.css-search input.em-search-text, div.css-search input.em-search-geo { width:90%; font-size:16px; line-height:16px; padding:8px; border:none; outline:none !important; color:#666; text-overflow: ellipsis; display:inline-block; }
 			div.css-search div.em-search-geo { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-geo.png) 0px 3px no-repeat; }
 			div.css-search div.em-search-text { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-mag-ico.png) 0px 4px no-repeat; }
 			/* Placeholder text in main section */ 
@@ -110,6 +111,7 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 		
 /* Events Admin */
 #em-wrapper #posts-filter .subsubsub .current { font-weight:bold; }		
+#em-wrapper .em-events-admin-list .em-button, #em-wrapper .em-events-admin-list .em-button { float:right; }
 		
 /* Add Event Form */
 	#event-form h4 { margin:25px 0px 15px 0px; font-weight:bold; }
@@ -122,6 +124,12 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 		#event-form #event-name { width:80%; padding:2px; }
 		#event-form .event-extra-details { margin-top:20px; }
 		#event-form .event-extra-details select { vertical-align:top; }
+	/* Recurring Event Rescheduling */
+	#event-form .reschedule-hidden, #post .reschedule-hidden { display:none; visibility:hidden; }
+	#event-form .em-recurrence-reschedule, #post .em-recurrence-reschedule { padding:15px 20px; border-left: 4px solid #ffa500; }
+	#event-form .em-recurrence-reschedule h4, #post .em-recurrence-reschedule h4 { margin-top:0px; }
+	#event-form .recurrence-reschedule-warning, #post .recurrence-reschedule-warning { margin-bottom:25px; color:#c45500; }
+	#event-form .recurrence-reschedule-warning p, #post .recurrence-reschedule-warning p { margin-top:0px; font-size:14px; }
 	/*Tickets*/
 		#event-rsvp-box { margin:10px; }
 		#event-rsvp-options label { font-weight:bold; }

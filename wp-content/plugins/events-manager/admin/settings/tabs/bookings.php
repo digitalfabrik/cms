@@ -133,24 +133,14 @@
 	<div class="inside">
 		<table class='form-table'>
 			<tr><td colspan='2'>
+				<p><?php _e('The option below allows you to disable user accounts, yet you will still see the supplied personal information for each booking.','events-manager'); ?></p>
 				<p><?php _e('By default, when a booking is made by a user, this booking is tied to a user account, if the user is not registered nor logged in and guest bookings are enabled, an account will be created for them.','events-manager'); ?></p>
-				<p><?php _e('The option below allows you to disable user accounts and assign all bookings to a parent user, yet you will still see the supplied booking personal information for each booking. When this mode is enabled, extra booking information about the person is stored alongside the booking record rather than as a WordPress user.','events-manager'); ?></p>
 				<p><?php _e('Users with accounts (which would be created by other means when this mode is enabled) will still be able to log in and make bookings linked to their account as normal.','events-manager'); ?></p>
 				<p><?php _e('<strong>Warning : </strong> Various features afforded to users with an account will not be available, e.g. viewing bookings. Once you enable this and select a user, modifying these values will prevent older non-user bookings from displaying the correct information.','events-manager'); ?></p>
 			</td></tr>
 			<?php
 			em_options_radio_binary ( __( 'Enable No-User Booking Mode?', 'events-manager'), 'dbem_bookings_registration_disable', __( 'This disables user registrations for bookings.', 'events-manager') );
 			em_options_radio_binary ( __( 'Allow bookings with registered emails?', 'events-manager'), 'dbem_bookings_registration_disable_user_emails', __( 'By default, if a guest tries to book an event using the email of a user account on your site they will be asked to log in, selecting yes will bypass this security measure.', 'events-manager').'<br />'.__('<strong>Warning : </strong> By enabling this, registered users will not be able to see bookings they make as guests in their "My Bookings" page.','events-manager') );
-			$current_user = array();
-			if( get_option('dbem_bookings_registration_user') ){
-				$user = get_user_by('id',get_option('dbem_bookings_registration_user'));
-				$current_user[$user->ID] = $user->display_name;
-			}
-			if( defined('EM_OPTIMIZE_SETTINGS_PAGE_USERS') && EM_OPTIMIZE_SETTINGS_PAGE_USERS ){
-            	em_options_input_text ( __( 'Assign bookings to', 'events-manager'), 'dbem_bookings_registration_user', __('Please add a User ID.','events-manager').' '.__( 'Choose a parent user to assign bookings to. People making their booking will be unaware of this and will never have access to those user details. This should be a subscriber user you do not use to log in with yourself.', 'events-manager') );
-            }else{
-            	em_options_select ( __( 'Assign bookings to', 'events-manager'), 'dbem_bookings_registration_user', em_get_wp_users(array('role' => 'subscriber'), $current_user), __( 'Choose a parent user to assign bookings to. People making their booking will be unaware of this and will never have access to those user details. This should be a subscriber user you do not use to log in with yourself.', 'events-manager') );
-			}
 			echo $save_button; 
 			?>
 		</table>

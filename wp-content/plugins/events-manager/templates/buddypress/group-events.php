@@ -28,7 +28,7 @@
 		// TODO localize
 		echo "<p>". __( 'No Events','events-manager') ."</p>";
 	} else {
-	    foreach( $EM_Events as $EM_Event ) break;
+	    foreach( $EM_Events as $EM_Event ){ break; }
 	    $can_edit_events = $EM_Event->can_manage('edit_events','edit_others_events');
 	?>
 	<table class="widefat events-table">

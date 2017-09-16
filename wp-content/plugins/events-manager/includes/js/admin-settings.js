@@ -107,4 +107,11 @@ jQuery(document).ready(function($){
 		el.val() == '1' ? $(el.attr('data-trigger')).show() : $(el.attr('data-trigger')).hide();
 	});
 	$('input.em-trigger:checked').trigger('change');
+	//admin tools confirm
+	$('a.admin-tools-db-cleanup').click( function( e ){
+		if( !confirm(EM.admin_db_cleanup_warning) ){
+			e.preventDefault();
+			return false;
+		}
+	});
 });

@@ -446,7 +446,8 @@ class EM_Calendar extends EM_Object {
 			'orderby' => get_option('dbem_display_calendar_orderby'),
 			'order' => get_option('dbem_display_calendar_order'),
 			'number_of_weeks' => false, //number of weeks to be displayed in the calendar
-		    'limit' => get_option('dbem_display_calendar_events_limit')
+		    'limit' => get_option('dbem_display_calendar_events_limit'),
+			'post_id' => false
 		);
 		//sort out whether defaults were supplied or just the array of search values
 		if( empty($array) ){

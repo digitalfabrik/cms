@@ -23,7 +23,14 @@ table.events-table tr.past { background:#E4E4E4 }
 table.events-table .category { color:#888; }
 
 /* Events Add Page */
+#post-body .misc-pub-post-status.misc-event-duplicate-link:before { content: "\f132"; }
 #event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 98%; }
+	/* Recurring Event Rescheduling */
+	#event-form .reschedule-hidden, #post .reschedule-hidden { display:none; visibility:hidden; }
+	#event-form .em-recurrence-reschedule, #post .em-recurrence-reschedule { padding:15px 20px; border-left: 4px solid #ffa500; }
+	#event-form .em-recurrence-reschedule h4, #post .em-recurrence-reschedule h4 { margin-top:0px; }
+	#event-form .recurrence-reschedule-warning, #post .recurrence-reschedule-warning { margin-bottom:25px; color:#c45500; }
+	#event-form .recurrence-reschedule-warning p, #post .recurrence-reschedule-warning p { margin-top:0px; font-size:14px; }
 	/*Locations*/
 	div.em-location-data table { float:left; margin:0px 15px 0px 0px; }
 	/* Location form */
