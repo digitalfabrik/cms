@@ -3,6 +3,8 @@ php:
   - '5.5'
   - '5.6'
 
+group: deprecated-2017Q3
+
 before_script:
   # install dependencies
   - composer install --no-interaction
@@ -13,7 +15,6 @@ before_script:
   - shopt -u dotglob
   - working_dir=$(pwd)/wordpress
   # Set up website according to https://docs.travis-ci.com/user/languages/php#Apache-%2B-PHP
-  - group deprecated-2017Q3
   - sudo apt-get update
   - sudo apt-get install apache2 libapache2-mod-fastcgi mysql-server
   ## enable php-fpm
