@@ -216,11 +216,9 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	protected function prepare_content($post) {
 		$children = get_pages( array( 'child_of' => $post->ID ) );
 		if( "" == $post->post_content && count( $children ) == 0 ) {
-			$content = "empty";
-		} else {
-			$content = $post->post_content;
+			$post->post_content = "empty";
 		}
-		return wpautop($content);
+		return wpautop( $post->post_content );
 	}
 
 	protected function prepare_excerpt($post) {
