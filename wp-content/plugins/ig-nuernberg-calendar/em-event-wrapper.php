@@ -1,23 +1,52 @@
 <?php
 
-function compute_number_events() {
-
+/**
+ * Event dates come in 3 different formats. The format is defined by the TYP attribute in the OEFFNUNGSZEITEN tag.
+ */
+function ig_ncal_get_type( $xml_element ) {
+	
+	if ( ((string) $xml_element->OEFFNUNGSZEITEN->attributes()['TYP']) == "1" )
+		return 1;
+	elseif ( ((string) $xml_element->OEFFNUNGSZEITEN->attributes()['TYP']) == "2" )
+		return 2;
+	elseif ( ((string) $xml_element->OEFFNUNGSZEITEN->attributes()['TYP']) == "3" )
+		return 3;
+	else
+		return 0;
 }
 
-function parse_oeffnungszeiten_type1() {
-
+function ig_ncal_parse_dates ( $xml_element ) {
+	$date_type = ig_ncal_get_type( $xml_element );
+	if ( 1 == $date_type ) {
+		return ig_ncal_parse_oeffnungszeiten_type1( $xml_element );
+	}
+	elseif ( 2 == $date_type ) {
+		return ig_ncal_parse_oeffnungszeiten_type2( $xml_element );
+	}
+	elseif ( 3 == $date_type ) {
+		return ig_ncal_parse_oeffnungszeiten_type3( $xml_element );
+	}
 }
 
-function parse_oeffnungszeiten_type2() {
-
+function ig_ncal_parse_oeffnungszeiten_type1( $xml_element ) {
+	$dates = array(array());
+	$dates[0]['event_start_date'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM;
+	$dates[0]['event_end_date'] 	=	$dates[0]['event_start_date'];
+	$dates[0]['event_start_time'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM->attributes()['BEGINN'];
+	$dates[0]['event_end_time'] 	=	(string) $xml_element->OEFFNUNGSZEITEN->DATUM->attributes()['ENDE'];
+	return $dates;
 }
 
-function parse_oeffnungszeiten_type3() {
+function ig_ncal_parse_oeffnungszeiten_type2( $xml_element ) {
+	$dates = array();
+}
 
+function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
+	$dates = array();
 }
 
 
-class IG_NUE_Event extends EM_Event {
+class IG_NCAL_Event extends EM_Event {
 	var $ig_nue_source_id;
 
 
@@ -57,6 +86,9 @@ class IG_NUE_Event extends EM_Event {
 		$this->location = new EM_Location;
 		
 		$this->location->location_name = (string) $xml_element->ORT;
+
+		//echo "<p>" + (string) $xml_element->OEFFNUNGSZEITEN->attributes()['TYP'] + "</p>";
+
 	}
 
 	function save_nue_event () {
