@@ -2,6 +2,10 @@
 
 /**
  * Event dates come in 3 different formats. The format is defined by the TYP attribute in the OEFFNUNGSZEITEN tag.
+ *
+ * @param SimpleXMLElement  $xml_element	Part of parsed XML
+ * 
+ * @return Integer  Type of event, 0 is no event
  */
 function ig_ncal_get_type( $xml_element ) {
 	
@@ -15,6 +19,13 @@ function ig_ncal_get_type( $xml_element ) {
 		return 0;
 }
 
+/**
+ * Determine date type and parse into array of dates.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return 
+ */ 
 function ig_ncal_parse_dates ( $xml_element ) {
 	$date_type = ig_ncal_get_type( $xml_element );
 	if ( 1 == $date_type ) {
@@ -28,8 +39,15 @@ function ig_ncal_parse_dates ( $xml_element ) {
 	}
 }
 
+/**
+ * Parse event format type 1 into array of events.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return Array
+ */ 
 function ig_ncal_parse_oeffnungszeiten_type1( $xml_element ) {
-	$dates = array(array());
+	$dates = array();
 	$dates[0]['event_start_date'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM;
 	$dates[0]['event_end_date'] 	=	$dates[0]['event_start_date'];
 	$dates[0]['event_start_time'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM->attributes()['BEGINN'];
@@ -37,12 +55,55 @@ function ig_ncal_parse_oeffnungszeiten_type1( $xml_element ) {
 	return $dates;
 }
 
+/**
+ * Parse event format type 2 into array of events.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return Array
+ */ 
 function ig_ncal_parse_oeffnungszeiten_type2( $xml_element ) {
 	$dates = array();
+	$n = 0;
+	foreach ( $xml_element->OEFFNUNGSZEITEN->DATUM as $date ) {
+		$dates[$n]['event_start_date'] 	= 	(string) $date;
+		$dates[$n]['event_end_date'] 	=	$dates[$n]['event_start_date'];
+		$dates[$n]['event_start_time'] 	= 	(string) $date->attributes()['BEGINN'];
+		$dates[$n]['event_end_time'] 	=	(string) $date->attributes()['ENDE'];
+		$n++;
+	}
+	return $dates;
 }
 
+/**
+ * Parse event format type 3 into array of events.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return Array
+ */ 
 function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
 	$dates = array();
+
+	// create list of dates between start and end
+	$begin = new DateTime( (string) $xml_element->OEFFNUNGSZEITEN->DATUM1 );
+	$end = new DateTime( (string) $xml_element->OEFFNUNGSZEITEN->DATUM2 );
+	$interval = new DateInterval('P1D');
+	$daterange = new DatePeriod($begin, $interval ,$end);
+
+	$exceptions = split(';', (string) $xml_element->OEFFNUNGSZEITEN->AUSNAHMEN );
+
+	$n = 0;
+	/*
+	 * Iterate through list of dates and skip exception dates
+	 */
+	foreach($daterange as $date){
+		if ( !in_array( $date->format("Y-m-d"), $exceptions ) )
+			echo $date->format("Y-m-d") . "<br>";
+			
+			// drop days that are not listed weekdays and add start and end time
+
+	}
 }
 
 
@@ -60,7 +121,7 @@ class IG_NCAL_Event extends EM_Event {
 		$this->event_all_day;
 		$this->event_start_date;
 		$this->event_end_date;
-		$this->post_content = (string) $xml_element->UNTERTITEL + "<br><a href='" + (string) $xml_element->DETAILLINK + "'>" + (string) $xml_element->DETAILLINK + "</a>";
+		$this->post_content = (string) $xml_element->UNTERTITEL . "<br><a href='" . (string) $xml_element->DETAILLINK . "'>" . (string) $xml_element->DETAILLINK . "</a>";
 		$this->event_rsvp;
 		$this->event_rsvp_date;
 		$this->event_rsvp_time = "00:00:00";

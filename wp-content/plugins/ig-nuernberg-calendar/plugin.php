@@ -10,7 +10,6 @@
 
 
 require_once("sort-events.php");
-require_once("em-event-wrapper.php");
 register_activation_hook(__FILE__, 'ig_ncal_activation');
 
 function ig_ncal_activation() {
@@ -18,7 +17,6 @@ function ig_ncal_activation() {
 		//wp_schedule_event(time(), 'daily', 'ig_ncal_import_event');
 	}
 }
-
 
 /*
  * The ig_ncal_import() function is usually called by a WP cron job.
@@ -28,6 +26,11 @@ function ig_ncal_activation() {
 add_action('ig_ncal_import_event', 'ig_ncal_import');
 function ig_ncal_import() {
 	/*
+	 * Include PHP file containing class for handling EM events and parsing XML.
+	 */
+	require_once("em-event-wrapper.php");
+
+	/*
 	 * Get data from API and parse XML
 	 */
 	$cal_xml_file = file_get_contents('https://www.meine-veranstaltungen.net/export.php5');
@@ -35,6 +38,8 @@ function ig_ncal_import() {
 
 
 	foreach( $events as $event ) {
+		$dates = ig_ncal_parse_dates ( $event );
+		//var_dump ( $dates );
 		$post = get_posts( array(
 			'meta_key'   => 'ncal_event_id',
 			'meta_value' => $events['ID'],
@@ -48,11 +53,12 @@ function ig_ncal_import() {
 
 		/*
 		 * Create a new event, import XML data and save
-		 */
+		 *
 		$newEMEvent = new IG_NUE_Event;
 		$newEMEvent->import_xml_data( $event );
 		$newEMEvent->save_nue_event();
 		unset( $newEMEvent );
+		/* */
 	}
 }
 
