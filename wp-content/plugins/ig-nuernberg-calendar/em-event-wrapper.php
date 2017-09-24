@@ -92,18 +92,53 @@ function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
 	$daterange = new DatePeriod($begin, $interval ,$end);
 
 	$exceptions = split(';', (string) $xml_element->OEFFNUNGSZEITEN->AUSNAHMEN );
+	$day = 0;
+	$weekdays = array();
+	foreach ( $xml_element->OEFFNUNGSZEITEN->OFFENETAGE->OFFENERTAG as $date ) {
+		var_dump( (string) $date );
+		if( (string) $date == "mo" )
+		{
+			$day = 1;
+			echo "day1<br>";
+		}
+		elseif( (string) $date == "di" )
+			$day = 2;
+		elseif( (string) $date == "mi" )
+			$day = 3;
+		elseif( (string) $date == "do" )
+			$day = 4;
+		elseif( (string) $date == "fr" )
+			$day = 5;
+		elseif( (string) $date == "sa" )
+			$day = 6;
+		elseif( (string) $date == "so" )
+			$day = 7;
+		else
+			continue;
+		echo "fill array $day<br>";
+		$weekdays[$day]['day'] 					=	$day;
+		$weekdays[$day]['event_start_time'] 	= 	(string) $date->attributes()['BEGINN'];
+		$weekdays[$day]['event_end_time'] 		=	(string) $date->attributes()['ENDE'];
+	}
+	var_dump( $weekday );
 
 	$n = 0;
 	/*
 	 * Iterate through list of dates and skip exception dates
 	 */
 	foreach($daterange as $date){
-		if ( !in_array( $date->format("Y-m-d"), $exceptions ) )
-			echo $date->format("Y-m-d") . "<br>";
-			
-			// drop days that are not listed weekdays and add start and end time
-
+		$day = $date->format("N");
+		$date = $date->format("Y-m-d");
+		if ( !in_array( $date, $exceptions ) ) {		
+			$dates[$n]['event_start_date'] 	= 	$date;
+			$dates[$n]['event_end_date'] 	=	$date;
+			$dates[$n]['event_start_time'] 	= 	$weekdays[$day]['event_start_time'];
+			$dates[$n]['event_end_time'] 	=	$weekdays[$day]['event_end_time'];
+			$n++;
+		}
 	}
+	//var_dump($dates);
+	return $dates;
 }
 
 
