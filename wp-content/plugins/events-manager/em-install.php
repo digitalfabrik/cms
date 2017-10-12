@@ -39,7 +39,8 @@ function em_install() {
 			}			
 			//set caps and options
 			em_set_capabilities();
-			em_add_options();			
+			em_add_options();
+			em_upgrade_current_installation();
 			//Update Version
 		  	update_option('dbem_version', EM_VERSION);
 			delete_option('dbem_upgrade_throttle');
@@ -663,7 +664,6 @@ function em_add_options() {
 		//Bookings
 		'dbem_bookings_registration_disable' => 0,
 		'dbem_bookings_registration_disable_user_emails' => 0,
-		'dbem_bookings_registration_user' => '',
 		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
@@ -822,7 +822,22 @@ function em_add_options() {
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);
 	}
-	
+		
+	//set time localization for first time depending on current settings
+	if( get_option('dbem_time_24h','not set') == 'not set'){
+		//Localise vars regardless
+		$locale_code = substr ( get_locale(), 0, 2 );
+		if (preg_match('/^en_(?:GB|IE|AU|NZ|ZA|TT|JM)$/', get_locale())) {
+		    $locale_code = 'en-GB';
+		}
+		//Set time
+		$show24Hours = ( !preg_match("/en|sk|zh|us|uk/", $locale_code ) );	// Setting 12 hours format for those countries using it
+		update_option('dbem_time_24h', $show24Hours);
+	}
+}
+
+function em_upgrade_current_installation(){
+	global $wpdb, $wp_locale;
 	if( !get_option('dbem_version') ){ add_option('dbem_credits',1); }
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5 ){
 		//make events, cats and locs pages
@@ -851,77 +866,77 @@ function em_add_options() {
 		if( defined('EM_CATEGORIES_SLUG') && EM_CATEGORIES_SLUG != 'categories' ) update_option('dbem_taxonomy_category_slug', $events_page->post_name.'/'.EM_CATEGORIES_SLUG);
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.19 ){
-	    update_option('dbem_event_reapproved_email_subject',  get_option('dbem_event_approved_email_subject'));
-	    update_option('dbem_event_reapproved_email_body', get_option('dbem_event_approved_email_body'));
+		update_option('dbem_event_reapproved_email_subject',  get_option('dbem_event_approved_email_subject'));
+		update_option('dbem_event_reapproved_email_body', get_option('dbem_event_approved_email_body'));
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 5.21 ){
-	    //just remove all rsvp cut-off info
-	    $wpdb->query("UPDATE ".$wpdb->postmeta." SET meta_value = NULL WHERE meta_key IN ('_event_rsvp_date','_event_rsvp_time') AND post_id IN (SELECT post_id FROM ".EM_EVENTS_TABLE." WHERE recurrence_id > 0)");
-	    $wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_rsvp_time = NULL, event_rsvp_date = NULL WHERE recurrence_id > 0");
+		//just remove all rsvp cut-off info
+		$wpdb->query("UPDATE ".$wpdb->postmeta." SET meta_value = NULL WHERE meta_key IN ('_event_rsvp_date','_event_rsvp_time') AND post_id IN (SELECT post_id FROM ".EM_EVENTS_TABLE." WHERE recurrence_id > 0)");
+		$wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_rsvp_time = NULL, event_rsvp_date = NULL WHERE recurrence_id > 0");
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.364 ){
-	    if( get_option('dbem_cp_events_template_page') ){
-	        update_option('dbem_cp_events_template', 'page');
-	        delete_option('dbem_cp_events_template_page');
-	    }
-	    if( get_option('dbem_cp_locations_template_page') ){
-	        update_option('dbem_cp_locations_template', 'page');
-	        delete_option('dbem_cp_locations_template_page');
-	    }
-	    update_option('dbem_events_archive_scope', get_option('dbem_events_page_scope'));
-	    update_option('em_last_modified', current_time('timestamp', true));
-	    update_option('dbem_category_event_single_format',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_event_list_item_format').get_option('dbem_category_event_list_item_footer_format'));
-	    update_option('dbem_category_no_event_message',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_no_events_message').get_option('dbem_category_event_list_item_footer_format'));
-	    update_option('dbem_location_event_single_format',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_event_list_item_format').get_option('dbem_location_event_list_item_footer_format'));
-	    update_option('dbem_location_no_event_message',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format'));
-	    update_option('dbem_tag_event_single_format',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_event_list_item_format').get_option('dbem_tag_event_list_item_footer_format'));
-	    update_option('dbem_tag_no_event_message',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_no_events_message').get_option('dbem_tag_event_list_item_footer_format'));
+		if( get_option('dbem_cp_events_template_page') ){
+			update_option('dbem_cp_events_template', 'page');
+			delete_option('dbem_cp_events_template_page');
+		}
+		if( get_option('dbem_cp_locations_template_page') ){
+			update_option('dbem_cp_locations_template', 'page');
+			delete_option('dbem_cp_locations_template_page');
+		}
+		update_option('dbem_events_archive_scope', get_option('dbem_events_page_scope'));
+		update_option('em_last_modified', current_time('timestamp', true));
+		update_option('dbem_category_event_single_format',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_event_list_item_format').get_option('dbem_category_event_list_item_footer_format'));
+		update_option('dbem_category_no_event_message',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_no_events_message').get_option('dbem_category_event_list_item_footer_format'));
+		update_option('dbem_location_event_single_format',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_event_list_item_format').get_option('dbem_location_event_list_item_footer_format'));
+		update_option('dbem_location_no_event_message',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format'));
+		update_option('dbem_tag_event_single_format',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_event_list_item_format').get_option('dbem_tag_event_list_item_footer_format'));
+		update_option('dbem_tag_no_event_message',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_no_events_message').get_option('dbem_tag_event_list_item_footer_format'));
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.38 ){
-	    update_option('dbem_dates_separator', get_option('dbem_dates_Seperator', get_option('dbem_dates_seperator',' - ')));
-	    update_option('dbem_times_separator', get_option('dbem_times_Seperator', get_option('dbem_times_seperator',' - ')));
-	    delete_option('dbem_dates_Seperator');
-	    delete_option('dbem_times_Seperator');
-	    delete_option('dbem_dates_seperator');
-	    delete_option('dbem_times_seperator');
+		update_option('dbem_dates_separator', get_option('dbem_dates_Seperator', get_option('dbem_dates_seperator',' - ')));
+		update_option('dbem_times_separator', get_option('dbem_times_Seperator', get_option('dbem_times_seperator',' - ')));
+		delete_option('dbem_dates_Seperator');
+		delete_option('dbem_times_Seperator');
+		delete_option('dbem_dates_seperator');
+		delete_option('dbem_times_seperator');
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.4 ){
-	    //tax rates now saved at booking level, so that alterations to tax rates don't change previous booking prices
-	    //any past bookings that don't get updated will adhere to these two values when calculating prices
-	    update_option('dbem_legacy_bookings_tax_auto_add', get_option('dbem_bookings_tax_auto_add'));
-	    update_option('dbem_legacy_bookings_tax', get_option('dbem_bookings_tax'));
+		//tax rates now saved at booking level, so that alterations to tax rates don't change previous booking prices
+		//any past bookings that don't get updated will adhere to these two values when calculating prices
+		update_option('dbem_legacy_bookings_tax_auto_add', get_option('dbem_bookings_tax_auto_add'));
+		update_option('dbem_legacy_bookings_tax', get_option('dbem_bookings_tax'));
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.422 ){
-	    //copy registration email content into new setting
-	    update_option('dbem_rss_limit',0);
+		//copy registration email content into new setting
+		update_option('dbem_rss_limit',0);
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.4425 ){
-	    //copy registration email content into new setting
-	    update_option('dbem_css_editors',0);
-	    update_option('dbem_css_rsvp',0);
-	    update_option('dbem_css_evlist',0);
-	    update_option('dbem_css_loclist',0);
-	    update_option('dbem_css_rsvpadmin',0);
-	    update_option('dbem_css_catlist',0);
-	    update_option('dbem_css_taglist',0);
-	    if( locate_template('plugins/events-manager/templates/events-search.php') ){
-	    	update_option('dbem_css_search', 0);
-	    	update_option('dbem_search_form_hide_advanced',0);
-	    }
-	    update_option('dbem_events_page_search_form',get_option('dbem_events_page_search'));
-	    update_option('dbem_search_form_dates_separator',get_option('dbem_dates_separator'));
-	    delete_option('dbem_events_page_search'); //avoids the double search form on overridden templates
-	    update_option('dbem_locations_page_search_form',0); //upgrades shouldn't get extra surprises  
+		//copy registration email content into new setting
+		update_option('dbem_css_editors',0);
+		update_option('dbem_css_rsvp',0);
+		update_option('dbem_css_evlist',0);
+		update_option('dbem_css_loclist',0);
+		update_option('dbem_css_rsvpadmin',0);
+		update_option('dbem_css_catlist',0);
+		update_option('dbem_css_taglist',0);
+		if( locate_template('plugins/events-manager/templates/events-search.php') ){
+			update_option('dbem_css_search', 0);
+			update_option('dbem_search_form_hide_advanced',0);
+		}
+		update_option('dbem_events_page_search_form',get_option('dbem_events_page_search'));
+		update_option('dbem_search_form_dates_separator',get_option('dbem_dates_separator'));
+		delete_option('dbem_events_page_search'); //avoids the double search form on overridden templates
+		update_option('dbem_locations_page_search_form',0); //upgrades shouldn't get extra surprises
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.512 ){
 		update_option('dbem_search_form_geo_units',0); //don't display units search for previous installs
 		//correcting the typo
 		update_option('dbem_search_form_submit', get_option('dbem_serach_form_submit'));
 		//if template isn't overridden, assume it is still being used
-	    if( !locate_template('plugins/events-manager/templates/events-search.php') ){
-	    	delete_option('dbem_serach_form_submit', 0);
-	    }
-	    //ML translation
+		if( !locate_template('plugins/events-manager/templates/events-search.php') ){
+			delete_option('dbem_serach_form_submit', 0);
+		}
+		//ML translation
 		if( get_option('dbem_serach_form_submit_ml') ){
 			update_option('dbem_search_form_submit_ml', get_option('dbem_serach_form_submit_ml'));
 			delete_option('dbem_serach_form_submit_ml'); //we can assume this isn't used in templates
@@ -932,47 +947,48 @@ function em_add_options() {
 		update_option('dbem_cp_locations_excerpt_formats',0);
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.55 ){
-	    //rename email templates sent to admins on new bookings
-	    update_option('dbem_bookings_contact_email_cancelled_subject',get_option('dbem_contactperson_email_cancelled_subject'));
-	    update_option('dbem_bookings_contact_email_cancelled_body',get_option('dbem_contactperson_email_cancelled_body'));
-	    if( get_option('dbem_bookings_approval') ){
-	        //if approvals ENABLED, we should make the old 'New Booking' email the one for a pending booking
-    	    update_option('dbem_bookings_contact_email_pending_subject',get_option('dbem_bookings_contact_email_subject'));
-    	    update_option('dbem_bookings_contact_email_pending_body',get_option('dbem_bookings_contact_email_body'));
-	    }else{
-	        //if approvals DISABLED, we should make the old 'New Booking' email the one for a confirmed booking
-    	    update_option('dbem_bookings_contact_email_confirmed_subject',get_option('dbem_bookings_contact_email_subject'));
-    	    update_option('dbem_bookings_contact_email_confirmed_body',get_option('dbem_bookings_contact_email_body'));	        
-	    }
-	    delete_option('dbem_contactperson_email_cancelled_subject');
-	    delete_option('dbem_contactperson_email_cancelled_body');
-	    delete_option('dbem_bookings_contact_email_subject');
-	    delete_option('dbem_bookings_contact_email_body');
+		//rename email templates sent to admins on new bookings
+		update_option('dbem_bookings_contact_email_cancelled_subject',get_option('dbem_contactperson_email_cancelled_subject'));
+		update_option('dbem_bookings_contact_email_cancelled_body',get_option('dbem_contactperson_email_cancelled_body'));
+		if( get_option('dbem_bookings_approval') ){
+			//if approvals ENABLED, we should make the old 'New Booking' email the one for a pending booking
+			update_option('dbem_bookings_contact_email_pending_subject',get_option('dbem_bookings_contact_email_subject'));
+			update_option('dbem_bookings_contact_email_pending_body',get_option('dbem_bookings_contact_email_body'));
+		}else{
+			//if approvals DISABLED, we should make the old 'New Booking' email the one for a confirmed booking
+			update_option('dbem_bookings_contact_email_confirmed_subject',get_option('dbem_bookings_contact_email_subject'));
+			update_option('dbem_bookings_contact_email_confirmed_body',get_option('dbem_bookings_contact_email_body'));
+		}
+		delete_option('dbem_contactperson_email_cancelled_subject');
+		delete_option('dbem_contactperson_email_cancelled_body');
+		delete_option('dbem_bookings_contact_email_subject');
+		delete_option('dbem_bookings_contact_email_body');
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.62 ){
-	    //delete all _event_created_date and _event_date_modified records in post_meta, we don't need them anymore, they were never accurate to begin with, refer to the records in em_events table if still needed 
-	    $wpdb->query('DELETE FROM '.$wpdb->postmeta." WHERE (meta_key='_event_date_created' OR meta_key='_event_date_modified') AND post_id IN (SELECT ID FROM ".$wpdb->posts." WHERE post_type='".EM_POST_TYPE_EVENT."' OR post_type='event-recurring')");
-	    $wpdb->query('ALTER TABLE '. $wpdb->prefix.'em_bookings CHANGE event_id event_id BIGINT(20) UNSIGNED NULL');
+		//delete all _event_created_date and _event_date_modified records in post_meta, we don't need them anymore, they were never accurate to begin with, refer to the records in em_events table if still needed
+		$wpdb->query('DELETE FROM '.$wpdb->postmeta." WHERE (meta_key='_event_date_created' OR meta_key='_event_date_modified') AND post_id IN (SELECT ID FROM ".$wpdb->posts." WHERE post_type='".EM_POST_TYPE_EVENT."' OR post_type='event-recurring')");
+		$wpdb->query('ALTER TABLE '. $wpdb->prefix.'em_bookings CHANGE event_id event_id BIGINT(20) UNSIGNED NULL');
 	}
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.66 ){
 		if( get_option('dbem_ical_description_format') == "#_EVENTNAME - #_LOCATIONNAME - #_EVENTDATES - #_EVENTTIMES" ) update_option('dbem_ical_description_format',"#_EVENTNAME");
 		if( get_option('dbem_ical_location_format') == "#_LOCATION" ) update_option('dbem_ical_location_format', "#_LOCATIONNAME, #_LOCATIONFULLLINE, #_LOCATIONCOUNTRY");
 		$old_values = array(
-			'dbem_ical_description_format' => "#_EVENTNAME - #_LOCATIONNAME - #_EVENTDATES - #_EVENTTIMES",
-			'dbem_ical_location_format' => "#_LOCATION",			
+				'dbem_ical_description_format' => "#_EVENTNAME - #_LOCATIONNAME - #_EVENTDATES - #_EVENTTIMES",
+				'dbem_ical_location_format' => "#_LOCATION",
 		);
 	}
-		
-	//set time localization for first time depending on current settings
-	if( get_option('dbem_time_24h','not set') == 'not set'){
-		//Localise vars regardless
-		$locale_code = substr ( get_locale(), 0, 2 );
-		if (preg_match('/^en_(?:GB|IE|AU|NZ|ZA|TT|JM)$/', get_locale())) {
-		    $locale_code = 'en-GB';
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.6636 ){
+		$sql = $wpdb->prepare("DELETE FROM {$wpdb->postmeta} WHERE meta_key='_post_id' AND post_id IN (SELECT ID FROM {$wpdb->posts} WHERE post_type=%s OR post_type=%s)", array(EM_POST_TYPE_EVENT, 'event-recurring'));
+		$wpdb->query($sql);
+		remove_filter('pre_option_dbem_bookings_registration_user', 'EM_People::dbem_bookings_registration_user');
+		$no_user = get_option('dbem_bookings_registration_user');
+		if( get_option('dbem_bookings_registration_disable') && is_numeric($no_user) ){
+			if( $wpdb->update(EM_BOOKINGS_TABLE, array('person_id'=>0), array('person_id'=>$no_user), '%d', '%d') ){
+				delete_option('dbem_bookings_registration_user');
+			}
+		}else{
+			delete_option('dbem_bookings_registration_user');
 		}
-		//Set time
-		$show24Hours = ( !preg_match("/en|sk|zh|us|uk/", $locale_code ) );	// Setting 12 hours format for those countries using it
-		update_option('dbem_time_24h', $show24Hours);
 	}
 }
 

@@ -79,7 +79,7 @@ function bp_em_add_booking_notification($result, $EM_Booking){
 	}elseif( $EM_Booking->get_status() == 3 ){
 		$action = 'cancelled_booking';
 	}
-	if( !empty($action) && !(get_option('dbem_bookings_registration_disable') && get_option('dbem_bookings_registration_user') == $EM_Booking->get_event()->get_contact()->ID) ){
+	if( !empty($action) && !$EM_Booking->is_no_user() ){
 	    bp_notifications_add_notification( array(
 	        'item_id' => $EM_Booking->booking_id,
 	        'secondary_item_id' => $EM_Booking->event_id,

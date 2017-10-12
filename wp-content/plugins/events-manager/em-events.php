@@ -10,7 +10,7 @@
  */
 function em_content($page_content) {
 	global $post, $wpdb, $wp_query, $EM_Event, $EM_Location, $EM_Category;
-	if( empty($post) ) return $page_content; //fix for any other plugins calling the_content outside the loop
+	if( empty($post) || empty($post->ID) ) return $page_content; //fix for any other plugins calling the_content outside the loop
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
@@ -59,6 +59,7 @@ function em_content($page_content) {
 						$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 						if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //AJAX wrapper open
 						if( get_option('dbem_event_list_groupby') ){
+							$args['date_format'] = get_option('dbem_event_list_groupby_format');
 							em_locate_template('templates/events-list-grouped.php', true, array('args'=>$args));
 						}else{
 							em_locate_template('templates/events-list.php', true, array('args'=>$args));

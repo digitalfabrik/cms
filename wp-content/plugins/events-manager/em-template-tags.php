@@ -219,7 +219,7 @@ function em_get_event_form( $args = array() ){
  * @param array $args
  */
 function em_events_admin($args = array()){
-	global $EM_Event, $bp;
+	global $EM_Event, $EM_Notices, $bp;
 	if( is_user_logged_in() && current_user_can('edit_events') ){
 		if( !empty($_GET['action']) && $_GET['action']=='edit' ){
 			if( empty($_REQUEST['redirect_to']) ){
@@ -228,11 +228,6 @@ function em_events_admin($args = array()){
 			em_event_form();
 		}else{
 			if( get_option('dbem_css_editors') ) echo '<div class="css-events-admin">';
-			//template $args for different views
-		    $args_views['pending'] = array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all', 'recurring'=>'include');
-		    $args_views['draft'] = array('status'=>null, 'owner' =>get_current_user_id(), 'scope' => 'all', 'recurring'=>'include');
-		    $args_views['past'] = array('status'=>'all', 'owner' =>get_current_user_id(), 'scope' => 'past');
-		    $args_views['future'] = array('status'=>'1', 'owner' =>get_current_user_id(), 'scope' => 'future');
 		    //get listing options for $args
 			$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
 			$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
@@ -242,6 +237,20 @@ function em_events_admin($args = array()){
 			//deal with view or scope/status combinations
 			$show_add_new = isset($args['show_add_new']) ? $args['show_add_new']:true;
 			$args = array('order' => $order, 'search' => $search, 'owner' => get_current_user_id());
+			if( !empty($_REQUEST['recurrence_id']) ){
+				$Event = em_get_event($_REQUEST['recurrence_id']);
+				$EM_Notices->add_alert(sprintf(esc_html__('You are viewing individual recurrences of recurring event %s.', 'events-manager'), '<a href="'.$Event->get_edit_url().'">'.$Event->event_name.'</a>'));
+				$EM_Notices->add_alert(esc_html__('You can edit individual recurrences and disassociate them with this recurring event.', 'events-manager'));
+				$args['recurrence_id'] = $_REQUEST['recurrence_id'];
+			}
+			$args = apply_filters('em_events_admin_args', $args);
+			//template $args for different views
+			$args_views = array();
+			$args_views['pending'] = array_merge($args, array('status'=>0, 'scope' => 'all', 'recurring'=>'include'));
+			$args_views['draft'] = array_merge($args, array('status'=>null, 'scope' => 'all', 'recurring'=>'include'));
+			$args_views['past'] = array_merge($args, array('status'=>'all', 'scope' => 'past'));
+			$args_views['future'] = array_merge($args, array('status'=>'1', 'scope' => 'future'));
+			//modify $args for current view
 			if( !empty($_REQUEST['view']) && in_array($_REQUEST['view'], array('future','draft','past','pending')) ){
 	    	    $args = array_merge($args, $args_views[$_REQUEST['view']]);
 			}else{
@@ -256,7 +265,10 @@ function em_events_admin($args = array()){
 				}
 				$args['status'] = $status;
 			}
+			//reset the limit and offset to allow for filter
+			unset($args['limit']); unset($args['offset']);
 			$events_count = EM_Events::count( $args ); //count events without limits for pagination
+			//add limit and offset again to args
 			$args['limit'] = $limit;
 			$args['offset'] = $offset;
 			$EM_Events = EM_Events::get( $args ); //now get the limited events to display
@@ -296,7 +308,6 @@ function em_get_events_admin( $args = array() ){
 	em_events_admin($args);
 	return ob_get_clean();
 }
-
 /**
  * Outputs the event search form.
  * @param array $args

@@ -8,7 +8,7 @@ class EM_Event_Post_Admin{
 		if($pagenow == 'post.php' || $pagenow == 'post-new.php' ){ //only needed if editing post
 			add_action('admin_head', array('EM_Event_Post_Admin','admin_head')); //I don't think we need this anymore?
 			//Meta Boxes
-			add_action('add_meta_boxes', array('EM_Event_Post_Admin','meta_boxes'));
+			add_action('add_meta_boxes_'.EM_POST_TYPE_EVENT, array('EM_Event_Post_Admin','meta_boxes'), 10, 1);
 			//Notices
 			add_action('admin_notices',array('EM_Event_Post_Admin','admin_notices'));
 		}
@@ -36,7 +36,9 @@ class EM_Event_Post_Admin{
 		if( $pagenow == 'post.php' && ($post->post_type == EM_POST_TYPE_EVENT || $post->post_type == 'event-recurring') ){
 			if ( $EM_Event->is_recurring() ) {
 				$warning = "<p><strong>".__( 'WARNING: This is a recurring event.', 'events-manager')."</strong></p>";
-				$warning .= "<p>". __( 'Modifications to this event will cause all recurrences of this event to be deleted and recreated and previous bookings will be deleted! You can edit individual recurrences and disassociate them with this recurring event.', 'events-manager');
+				$warning .= "<p>". __( 'Modifications to recurring events will be applied to all recurrences and will overwrite any changes made to those individual event recurrences.', 'events-manager') . '</p>';
+				$warning .= "<p>". __( 'Bookings to individual event recurrences will be preserved if event times and ticket settings are not modified.', 'events-manager') . '</p>';
+				$warning .= '<p><a href="'. esc_url( add_query_arg(array('scope'=>'all', 'recurrence_id'=>$EM_Event->event_id), em_get_events_admin_url()) ).'">'. esc_html__('You can edit individual recurrences and disassociate them with this recurring event.','events-manager') . '</a></p>';
 				?><div class="updated"><?php echo $warning; ?></div><?php
 			} elseif ( $EM_Event->is_recurrence() ) {
 				$warning = "<p><strong>".__('WARNING: This is a recurrence in a set of recurring events.', 'events-manager')."</strong></p>";
@@ -223,10 +225,8 @@ class EM_Event_Post_Admin{
 		}
 	}
 	
-	public static function meta_boxes(){
-		global $EM_Event, $post;
-		//no need to proceed if we're not dealing with an event
-		if( $post->post_type != EM_POST_TYPE_EVENT ) return;
+	public static function meta_boxes( $post ){
+		global $EM_Event;
 		//since this is the first point when the admin area loads event stuff, we load our EM_Event here
 		if( empty($EM_Event) && !empty($post) ){
 			$EM_Event = em_get_event($post->ID, 'post_id');
@@ -253,7 +253,17 @@ class EM_Event_Post_Admin{
 		if( EM_MS_GLOBAL && !is_main_site() && get_option('dbem_categories_enabled') ){
 			add_meta_box('em-event-categories', __('Site Categories','events-manager'), array('EM_Event_Post_Admin','meta_box_ms_categories'),EM_POST_TYPE_EVENT, 'side','low');
 		}
+		add_action('post_submitbox_misc_actions', 'EM_Event_Post_Admin::meta_box_action_post_submitbox_start');
 	}
+	
+	public static function meta_box_action_post_submitbox_start(){
+		global $EM_Event;
+		?>
+		<div class="misc-pub-section misc-pub-post-status misc-event-duplicate-link">
+			<a href="<?php echo esc_url($EM_Event->duplicate_url()); ?>"><?php echo esc_html(sprintf(__('Duplicate %s','events-manager'), __('Event','events-manager'))); ?></a>
+		</div>
+		<?php
+	}		
 	
 	public static function meta_box_metadump(){
 		global $post,$EM_Event;
@@ -327,7 +337,7 @@ class EM_Event_Recurring_Post_Admin{
 		if($pagenow == 'post.php' || $pagenow == 'post-new.php' ){ //only needed if editing post
 			add_action('admin_head', array('EM_Event_Recurring_Post_Admin','admin_head'));
 			//Meta Boxes
-			add_action('add_meta_boxes', array('EM_Event_Recurring_Post_Admin','meta_boxes'));
+			add_action('add_meta_boxes_event-recurring', array('EM_Event_Recurring_Post_Admin','meta_boxes'), 10, 1);
 			//Notices
 			add_action('admin_notices',array('EM_Event_Post_Admin','admin_notices')); //shared with posts
 		}
@@ -372,7 +382,7 @@ class EM_Event_Recurring_Post_Admin{
 			$EM_Event = em_get_event($post_id, 'post_id');
 			$EM_Event->post_type = $post_type;
 			//get the list post IDs for recurrences this recurrence
-		 	if( !$EM_Event->save_events() && $EM_Event->is_published() ){
+		 	if( !$EM_Event->save_events() && ( $EM_Event->is_published() || 'future' == $EM_Event->post_status ) ){
 				$EM_Event->set_status(null, true);
 				$EM_Notices->add_error(__ ( 'Something went wrong with the recurrence update...', 'events-manager'). __ ( 'There was a problem saving the recurring events.', 'events-manager'));
 		 	}
@@ -447,10 +457,8 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 	
-	public static function meta_boxes(){
-		global $EM_Event, $post;
-		//no need to proceed if we're not dealing with a recurring event
-		if( $post->post_type != 'event-recurring' ) return;
+	public static function meta_boxes( $post ){
+		global $EM_Event;
 		//since this is the first point when the admin area loads event stuff, we load our EM_Event here
 		if( empty($EM_Event) && !empty($post) ){
 			$EM_Event = em_get_event($post->ID, 'post_id');
@@ -476,6 +484,7 @@ class EM_Event_Recurring_Post_Admin{
 	}
 	
 	public static function meta_box_recurrence(){
+	    ?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_event'); ?>" /><?php
 		em_locate_template('forms/event/recurring-when.php', true);
 	}
 }

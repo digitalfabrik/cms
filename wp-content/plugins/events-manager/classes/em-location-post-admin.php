@@ -6,7 +6,7 @@ class EM_Location_Post_Admin{
 			add_action('admin_head', array('EM_Location_Post_Admin','admin_head'));
 		}
 		//Meta Boxes
-		add_action('add_meta_boxes', array('EM_Location_Post_Admin','meta_boxes'));
+		add_action('add_meta_boxes_'.EM_POST_TYPE_LOCATION, array('EM_Location_Post_Admin','meta_boxes'), 10, 1);
 		//Save/Edit actions
 		add_filter('wp_insert_post_data',array('EM_Location_Post_Admin','wp_insert_post_data'),100,2); //validate post meta before saving is done
 		add_action('save_post',array('EM_Location_Post_Admin','save_post'),1,1); //set to 1 so metadata gets saved ASAP
@@ -148,10 +148,8 @@ class EM_Location_Post_Admin{
 		}
 	}
 	
-	public static function meta_boxes(){
-		global $EM_Location, $post;
-		//no need to proceed if we're not dealing with a location
-		if( $post->post_type != EM_POST_TYPE_LOCATION ) return;
+	public static function meta_boxes( $post ){
+		global $EM_Location;
 		//since this is the first point when the admin area loads location stuff, we load our EM_Event here
 		if( empty($EM_Location) && !empty($post) ){
 			$EM_Location = em_get_location($post->ID, 'post_id');

@@ -9,6 +9,8 @@ class EM_Event_Posts_Admin{
 					$_REQUEST['category_id'] = $term->slug;
 				}
 			}
+			//admin warnings
+            add_action('admin_notices', 'EM_Event_Posts_Admin::admin_notices');
 			//hide some cols by default:
 			$screen = 'edit-'.EM_POST_TYPE_EVENT;
 			$hidden = get_user_option( 'manage' . $screen . 'columnshidden' );
@@ -57,6 +59,18 @@ class EM_Event_Posts_Admin{
 		</style>
 		<?php
 	}
+	
+    public static function admin_notices(){
+        if( !empty($_REQUEST['recurrence_id']) && is_numeric($_REQUEST['recurrence_id']) ){
+            $EM_Event = em_get_event($_REQUEST['recurrence_id']);
+            ?>
+            <div class="updated">
+                <p><?php echo sprintf(esc_html__('You are viewing individual recurrences of recurring event %s.', 'events-manager'), '<a href="'.$EM_Event->get_edit_url().'">'.$EM_Event->event_name.'</a>'); ?></p>
+                <p><?php esc_html_e('You can edit individual recurrences and disassociate them with this recurring event.', 'events-manager'); ?></p>
+            </div>
+            <?php
+        }
+    }
 	
 	/**
 	 * Handles WP_Query filter option in the admin area, which gets executed before EM_Event_Post::parse_query
@@ -194,7 +208,12 @@ class EM_Event_Posts_Admin{
 				//get meta value to see if post has location, otherwise
 				$EM_Location = $EM_Event->get_location();
 				if( !empty($EM_Location->location_id) ){
-					echo "<strong>" . $EM_Location->location_name . "</strong><br/>" . $EM_Location->location_address . " - " . $EM_Location->location_town;
+					echo "<strong><a href='". $EM_Location->get_permalink()."'>" . $EM_Location->location_name . "</a></strong> 
+						<span class='row-actions'> - 
+							<a href='". esc_url($EM_Location->get_edit_url())."'>". esc_html__('Edit') ."</a> | 
+							<a href='". esc_url($EM_Location->get_permalink())."'>". esc_html__('View') ."</a>
+						</span>
+						<br/>" . $EM_Location->location_address . " - " . $EM_Location->location_town;
 				}else{
 					echo __('None','events-manager');
 				}
@@ -270,12 +289,24 @@ class EM_Event_Recurring_Posts_Admin{
 			add_filter('manage_edit-event-recurring_columns' , array('EM_Event_Recurring_Posts_Admin','columns_add'));
 			add_filter('manage_posts_custom_column' , array('EM_Event_Recurring_Posts_Admin','columns_output'),10,1 );
 			add_action('restrict_manage_posts', array('EM_Event_Posts_Admin','restrict_manage_posts'));
+			//actions
+			$row_action_type = is_post_type_hierarchical( EM_POST_TYPE_EVENT ) ? 'page_row_actions' : 'post_row_actions';
+			add_filter($row_action_type, array('EM_Event_Recurring_Posts_Admin','row_actions'),10,2);
 		}
 	}
 	
 	public static function admin_notices(){
-		$warning = sprintf(__( 'Modifications to these events will cause all recurrences of each event to be deleted and recreated and previous bookings will be deleted! You can edit individual recurrences and detach them from recurring events by visiting the <a href="%s">events page</a>.', 'events-manager'), admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT);
-		?><div class="updated"><p><?php echo $warning; ?></p></div><?php
+		?>
+		<div class="updated">
+			<p><?php esc_html_e( 'Modifications to recurring events will be applied to all recurrences and will overwrite any changes made to those individual event recurrences.', 'events-manager'); ?></p>
+			<p><?php esc_html_e( 'Bookings to individual event recurrences will be preserved if event times and ticket settings are not modified.', 'events-manager'); ?></p>
+			<p>
+				<a href="<?php echo esc_url( em_get_events_admin_url() ); ?>">
+					<strong><?php esc_html_e('You can edit individual recurrences and disassociate them with a recurring event to prevent getting overwritten.', 'events-manager'); ?></strong>
+				</a>
+	    	</p>
+		</div>
+		<?php
 	}
 	
 	public static function admin_head(){
@@ -328,16 +359,35 @@ class EM_Event_Recurring_Posts_Admin{
 					//get meta value to see if post has location, otherwise
 					$EM_Location = $EM_Event->get_location();
 					if( !empty($EM_Location->location_id) ){
-						echo "<strong>" . $EM_Location->location_name . "</strong><br/>" . $EM_Location->location_address . " - " . $EM_Location->location_town;
+						echo "<strong><a href='". $EM_Location->get_permalink()."'>" . $EM_Location->location_name . "</a></strong> 
+							<span class='row-actions'> - 
+								<a href='". esc_url($EM_Location->get_edit_url())."'>". esc_html__('Edit') ."</a> | 
+								<a href='". esc_url($EM_Location->get_permalink())."'>". esc_html__('View') ."</a>
+							</span>
+							<br/>" . $EM_Location->location_address . " - " . $EM_Location->location_town;
 					}else{
 						echo __('None','events-manager');
 					}
 					break;
 				case 'date-time':
 					echo $EM_Event->get_recurrence_description();
+					$edit_url = add_query_arg(array('scope'=>'all', 'recurrence_id'=>$EM_Event->event_id), em_get_events_admin_url());
+					$link_text = sprintf(__('View %s', 'events-manager'), __('Recurrences', 'events-manager'));
+					echo "<br /><span class='row-actions'>
+							<a href='". esc_url($edit_url) ."'>". esc_html($link_text) ."</a>
+						</span>";
 					break;
 			}
 		}
-	}	
+	}
+	
+	public static function row_actions($actions, $post){
+		if($post->post_type == 'event-recurring'){
+			global $post, $EM_Event;
+			$EM_Event = em_get_event($post, 'post_id');
+			$actions['duplicate'] = '<a href="'.$EM_Event->duplicate_url().'" title="'.sprintf(__('Duplicate %s','events-manager'), __('Event','events-manager')).'">'.__('Duplicate','events-manager').'</a>';
+		}
+		return $actions;
+	}
 }
 add_action('admin_init', array('EM_Event_Recurring_Posts_Admin','init'));

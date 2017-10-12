@@ -101,7 +101,7 @@ function em_admin_dashicon(){
 		  font-style: normal;
 		}
 		.menu-icon-event .dashicons-calendar:before, #toplevel_page_events-manager-options .dashicons-calendar:before {
-		  font-family: 'em_dashicons' !important;
+		  font-family: 'em_dashicons';
 		  content: '\e600';
 		}
 	</style>

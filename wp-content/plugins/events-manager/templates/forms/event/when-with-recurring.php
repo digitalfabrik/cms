@@ -5,7 +5,6 @@ $days_names = em_get_days_names();
 $hours_format = em_get_hour_format();
 $admin_recurring = is_admin() && $EM_Event->is_recurring();
 ?>
-<?php if( is_admin() ): ?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_event'); ?>" /><?php endif; ?>
 <!-- START recurrence postbox -->
 <div id="em-form-with-recurrence" class="event-form-with-recurrence event-form-when">
 	<p><?php _e('This is a recurring event.', 'events-manager'); ?> <input type="checkbox" id="em-recurrence-checkbox" name="recurring" value="1" <?php if($EM_Event->is_recurring()) echo 'checked' ?> /></p>
