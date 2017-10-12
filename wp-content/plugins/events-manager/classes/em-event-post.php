@@ -28,10 +28,8 @@ class EM_Event_Post {
 			    add_filter('body_class', array('EM_Event_Post','body_class'), 10, 3);
 			}
 			//Override post template tags
-			add_filter('the_date',array('EM_Event_Post','the_date'),10,2);
-			add_filter('get_the_date',array('EM_Event_Post','the_date'),10,2);
-			add_filter('the_time',array('EM_Event_Post','the_time'),10,2);
-			add_filter('get_the_time',array('EM_Event_Post','the_time'),10,2);
+			add_filter('get_the_date',array('EM_Event_Post','the_date'),10,3);
+			add_filter('get_the_time',array('EM_Event_Post','the_time'),10,3);
 			add_filter('the_category',array('EM_Event_Post','the_category'),10,3);
 		}
 		add_action('parse_query', array('EM_Event_Post','parse_query'));
@@ -132,7 +130,8 @@ class EM_Event_Post {
 				}elseif( !post_password_required() ){
 					$EM_Event = em_get_event($post);
 					if( $EM_Event->event_rsvp && (!defined('EM_DISABLE_AUTO_BOOKINGSFORM') || !EM_DISABLE_AUTO_BOOKINGSFORM) ){
-					    $content .= $EM_Event->output('<h2>Bookings</h2>#_BOOKINGFORM');
+						$content .= '<h2>'.esc_html__('Bookings','events-manager').'</h2>';
+					    $content .= $EM_Event->output('#_BOOKINGFORM');
 					}
 				}
 			}
@@ -140,8 +139,8 @@ class EM_Event_Post {
 		return $content;
 	}
 	
-	public static function the_date( $the_date, $d = '' ){
-		global $post;
+	public static function the_date( $the_date, $d = '', $post = null ){
+		$post = get_post( $post );
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
 			if ( '' == $d ){
@@ -153,8 +152,8 @@ class EM_Event_Post {
 		return $the_date;
 	}
 	
-	public static function the_time( $the_time, $f = '' ){
-		global $post;
+	public static function the_time( $the_time, $f = '', $post = null ){
+		$post = get_post( $post );
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
 			if ( '' == $f ){
@@ -232,10 +231,14 @@ class EM_Event_Post {
 		}
 		//Scoping
 		if( !empty($wp_query->query_vars['post_type']) && ($wp_query->query_vars['post_type'] == EM_POST_TYPE_EVENT || $wp_query->query_vars['post_type'] == 'event-recurring') && (empty($wp_query->query_vars['post_status']) || !in_array($wp_query->query_vars['post_status'],array('trash','pending','draft'))) ) {
+		    $query = array();
 			//Let's deal with the scope - default is future
 			if( is_admin() ){
 				$scope = $wp_query->query_vars['scope'] = (!empty($_REQUEST['scope'])) ? $_REQUEST['scope']:'future';
 				//TODO limit what a user can see admin side for events/locations/recurring events
+				if( !empty($wp_query->query_vars['recurrence_id']) && is_numeric($wp_query->query_vars['recurrence_id']) ){
+				    $query[] = array( 'key' => '_recurrence_id', 'value' => $wp_query->query_vars['recurrence_id'], 'compare' => '=' );
+				}
 			}else{
 				if( !empty($wp_query->query_vars['calendar_day']) ) $wp_query->query_vars['scope'] = $wp_query->query_vars['calendar_day'];
 				if( empty($wp_query->query_vars['scope']) ){
@@ -248,7 +251,6 @@ class EM_Event_Post {
 					$scope = $wp_query->query_vars['scope'];
 				}
 			}
-			$query = array();
 			$time = current_time('timestamp');
 			if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 				$today = strtotime($scope);

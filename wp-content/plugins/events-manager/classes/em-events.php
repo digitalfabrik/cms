@@ -33,7 +33,7 @@ class EM_Events extends EM_Object {
 		$args = self::get_default_search($args);
 		$limit = ( $args['limit'] && is_numeric($args['limit'])) ? "LIMIT {$args['limit']}" : '';
 		$offset = ( $limit != "" && is_numeric($args['offset']) ) ? "OFFSET {$args['offset']}" : '';
-		$groupby_sql = '';
+		$groupby_sql = array();
 		
 		//Get the default conditions
 		$conditions = self::build_sql_conditions($args);
@@ -241,7 +241,6 @@ class EM_Events extends EM_Object {
 
 		$args['mode'] = !empty($args['mode']) ? $args['mode'] : get_option('dbem_event_list_groupby');
 		$args['header_format'] = !empty($args['header_format']) ? $args['header_format'] :  get_option('dbem_event_list_groupby_header_format', '<h2>#s</h2>');
-		$args['date_format'] = !empty($args['date_format']) ? $args['date_format'] :  get_option('dbem_event_list_groupby_format');
 		//Reset some vars for counting events and displaying set arrays of events
 		$atts = (array) $args;
 		$atts['pagination'] = false;
@@ -459,6 +458,12 @@ class EM_Events extends EM_Object {
 				$conditions['post_id'] = "(".EM_EVENTS_TABLE.".post_id={$args['post_id']})";
 			}
 		}
+		//events with or without locations
+		if( !empty($args['has_location']) ){
+			$conditions['has_location'] = '('.EM_EVENTS_TABLE.'.location_id IS NOT NULL AND '.EM_EVENTS_TABLE.'.location_id != 0)';
+		}elseif( !empty($args['no_location']) ){
+			$conditions['no_location'] = '('.EM_EVENTS_TABLE.'.location_id IS NULL OR '.EM_EVENTS_TABLE.'.location_id = 0)';			
+		}
 		return apply_filters( 'em_events_build_sql_conditions', $conditions, $args );
 	}
 	
@@ -490,6 +495,8 @@ class EM_Events extends EM_Object {
 			'state' => false,
 			'country' => false,
 			'region' => false,
+			'has_location' => false,
+			'no_location' => false,
 			'blog' => get_current_blog_id(),
 			'private' => current_user_can('read_private_events'),
 			'private_only' => false,

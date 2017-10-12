@@ -17,7 +17,7 @@
     <?php do_action('login_form'); ?>
 	<input type="submit" name="wp-submit" id="em_wp-submit" value="<?php esc_html_e('Log In', 'events-manager'); ?>" tabindex="100" />
 	<input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php esc_html_e( 'Remember Me','events-manager') ?></label>
-	<input type="hidden" name="redirect_to" value="<?php echo esc_url($_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']); ?>#em-booking" />
+	<input type="hidden" name="redirect_to" value="<?php echo esc_url( get_site_url(false, $_SERVER['REQUEST_URI']) ); ?>#em-booking" />
 	<br />
 	<?php
 	//Signup Links

@@ -387,7 +387,7 @@ function em_booking_add_registration( $EM_Booking ){
     	//Validate name, phone and email
     	if( $EM_Booking->get_person_post() ){
 	    	//Save default person to booking
-	    	$EM_Booking->person_id = get_option('dbem_bookings_registration_user');
+	    	$EM_Booking->person_id = 0;
     	}else{
     	    $registration = false;
     	}
@@ -555,8 +555,8 @@ function em_get_search_form_defaults($args = array()){
 	$search_args['category_label'] = get_option('dbem_search_form_category_label'); //field label
 	$search_args['categories_label'] = get_option('dbem_search_form_categories_label'); //select default
 	//countries
-	$search_args['country'] = get_option('dbem_search_form_advanced') ? get_option('dbem_search_form_default_country'):''; //default country
 	$search_args['search_countries'] = get_option('dbem_search_form_countries');
+	$search_args['country'] = $search_args['search_countries'] ? get_option('dbem_search_form_default_country'):''; //default country
 	$search_args['country_label'] = get_option('dbem_search_form_country_label'); //field label
 	$search_args['countries_label'] = get_option('dbem_search_form_countries_label'); //select default
 	//regions

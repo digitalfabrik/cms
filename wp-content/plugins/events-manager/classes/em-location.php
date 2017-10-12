@@ -465,38 +465,47 @@ class EM_Location extends EM_Object {
 	
 	/**
 	 * Change the status of the location. This will save to the Database too. 
-	 * @param int $status
-	 * @param boolean $set_post_status
+	 * @param int $status 				A number to change the status to, which may be -1 for trash, 1 for publish, 0 for pending or null if draft.
+	 * @param boolean $set_post_status 	If set to true the wp_posts table status will also be changed to the new corresponding status.
 	 * @return string
 	 */
 	function set_status($status, $set_post_status = false){
 		global $wpdb;
+		//decide on what status to set and update wp_posts in the process
 		if($status === null){ 
-			$set_status='NULL'; 
+			$set_status='NULL'; //draft post
 			if($set_post_status){
+				//if the post is trash, don't untrash it!
 				$wpdb->update( $wpdb->posts, array( 'post_status' => 'draft' ), array( 'ID' => $this->post_id ) );
 			} 
 			$this->post_status = 'draft';
 		}elseif( $status == -1 ){ //trashed post
 			$set_status = -1;
 			if($set_post_status){
+				//set the post status of the location in wp_posts too
 				$wpdb->update( $wpdb->posts, array( 'post_status' => 'trash' ), array( 'ID' => $this->post_id ) );
 			}
 			$this->post_status = 'trash'; //set post status in this instance
 		}else{
-			$set_status = $status ? 1:0;
+			$set_status = $status ? 1:0; //published or pending post
 			$post_status = $set_status ? 'publish':'pending';
+			if( empty($this->post_name) ){
+				//published or pending posts should have a valid post slug
+				$this->post_name = sanitize_title($this->post_title);
+				$set_post_name = true;
+			}
 			if($set_post_status){
-				if($this->post_status == 'pending' && empty($this->post_name)){
-					$this->post_name = sanitize_title($this->post_title);
-				}
 				$wpdb->update( $wpdb->posts, array( 'post_status' => $post_status, 'post_name' => $this->post_name ), array( 'ID' => $this->post_id ) );
+			}elseif( $set_post_name ){
+				//if we've added a post slug then update wp_posts anyway
+				$wpdb->update( $wpdb->posts, array( 'post_name' => $this->post_name ), array( 'ID' => $this->post_id ) );
 			}
 			$this->post_status = $post_status;
 		}
+		//save in the wp_em_locations table
 		$this->previous_status = $wpdb->get_var('SELECT location_status FROM '.EM_LOCATIONS_TABLE.' WHERE location_id='.$this->location_id); //get status from db, not post_status, as posts get saved quickly
 		$result = $wpdb->query($wpdb->prepare("UPDATE ".EM_LOCATIONS_TABLE." SET location_status=$set_status, location_slug=%s WHERE location_id=%d", array($this->post_name, $this->location_id)));
-		$this->get_status();
+		$this->get_status(); //reload status
 		return apply_filters('em_location_set_status', $result !== false, $status, $this);
 	}	
 	
@@ -618,6 +627,22 @@ class EM_Location extends EM_Object {
 			$return = em_add_get_params($this->get_permalink(), array('feed'=>1));
 		}
 		return apply_filters('em_location_get_rss_url', $return);
+	}
+	
+	/*
+	 * Extends the default EM_Object function by switching blogs as needed if in MS Global mode
+	 * @param string $size
+	 * @return string
+	 * @see EM_Object::get_image_url()
+	 */
+	function get_image_url($size = 'full'){
+		if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+			switch_to_blog($this->blog_id);
+			$switch_back = true;
+		}
+		$return = parent::get_image_url($size);
+		if( !empty($switch_back) ){ restore_current_blog(); }
+		return $return;
 	}
 	
 	function get_edit_url(){
@@ -756,7 +781,7 @@ class EM_Location extends EM_Object {
 					$glue = $result == '#_LOCATIONFULLLINE' ? ', ':'<br />';
 					$replace = $this->get_full_address($glue);
 					break;
-				case '#_MAP': //Depricated (but will remain)
+				case '#_MAP': //Deprecated (but will remain)
 				case '#_LOCATIONMAP':
 					ob_start();
 					$args = array();
@@ -806,10 +831,11 @@ class EM_Location extends EM_Object {
 					break;
 				case '#_LOCATIONIMAGEURL':
 				case '#_LOCATIONIMAGE':
-	        		if($this->get_image_url() != ''){
-	        			$image_url = esc_url($this->get_image_url());
+					$image_url = $this->get_image_url();
+	        		if( $image_url != ''){
+	        			$image_url = esc_url($image_url);
 	        			if($result == '#_LOCATIONIMAGEURL'){
-		        			$replace =  $this->get_image_url();
+		        			$replace =  $image_url;
 						}else{
 							if( empty($placeholders[3][$key]) ){
 								$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";

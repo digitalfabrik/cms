@@ -32,8 +32,17 @@ $price_summary = $EM_Booking->get_price_summary_array();
 (<?php echo $discount_summary['name']; ?>) : -<?php echo $discount_summary['amount']; ?>
 
 <?php endforeach; ?>
-
 <?php endif; ?>
+<?php if( count($price_summary['surcharges_pre_tax']) > 0 ): ?>
+
+<?php _e('Surcharges Before Taxes','events-manager'); ?>
+
+<?php foreach( $price_summary['surcharges_pre_tax'] as $surcharge_summary ): ?>
+(<?php echo $surcharge_summary['name']; ?>) : <?php echo $surcharge_summary['amount']; ?>
+
+<?php endforeach; ?>
+<?php endif; ?>
+
 <?php if( !empty($price_summary['taxes']['amount'])  ): ?>
 <?php _e('Taxes','events-manager'); ?> ( <?php echo $price_summary['taxes']['rate']; ?> ) : <?php echo $price_summary['taxes']['amount']; ?>
 <?php endif; ?>
@@ -44,6 +53,15 @@ $price_summary = $EM_Booking->get_price_summary_array();
 
 <?php foreach( $price_summary['discounts_post_tax'] as $discount_summary ): ?>
 <?php echo $discount_summary['name']; ?> : -<?php echo $discount_summary['amount']; ?>
+ 
+<?php endforeach; ?>
+<?php endif; ?>
+<?php if( count($price_summary['surcharges_post_tax']) > 0 ): ?>
+
+<?php _e('Surcharges (After Taxes)','events-manager'); ?>
+
+<?php foreach( $price_summary['surcharges_post_tax'] as $surcharge_summary ): ?>
+<?php echo $surcharge_summary['name']; ?> : <?php echo $surcharge_summary['amount']; ?>
  
 <?php endforeach; ?>
 <?php endif; ?>

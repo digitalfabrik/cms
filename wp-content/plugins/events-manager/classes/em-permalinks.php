@@ -4,6 +4,7 @@ if( !class_exists('EM_Permalinks') ){
 	class EM_Permalinks {
 		static $em_queryvars = array(
 			'event_id','event_slug', 'em_redirect',
+		    'recurrence_id',
 			'location_id','location_slug',
 			'person_id',
 			'booking_id',
@@ -287,6 +288,7 @@ if( !class_exists('EM_Permalinks') ){
  */
 function em_get_my_bookings_url(){
 	global $bp, $wp_rewrite;
+	// @todo add filter for bookings url, remove bp condition and add it to bp-em-core.php
 	if( !empty($bp->events->link) ){
 		//get member url
 		return $bp->events->link.'attending/';
@@ -299,4 +301,18 @@ function em_get_my_bookings_url(){
 			return preg_match('/\?/',EM_URI) ? EM_URI.'&bookings_page=1':EM_URI.'?bookings_page=1';
 		}
 	}
+}
+
+/**
+ * Gets the admin URL for editing events. If called from front-end and there's a front-end edit events page, that will be
+ * returned, otherwise a url to the dashboard will be returned.
+ */
+function em_get_events_admin_url(){
+    $admin_url = admin_url('edit.php?post_type=event');
+    if( !is_admin() ){
+        if( get_option('dbem_edit_events_page') ){
+            $admin_url = get_permalink(get_option( 'dbem_edit_events_page' ));
+        }
+    }
+    return apply_filters('em_get_events_admin_url', $admin_url);
 }

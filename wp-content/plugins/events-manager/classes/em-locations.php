@@ -61,18 +61,18 @@ class EM_Locations extends EM_Object {
 			$selectors = ( $count ) ?  'COUNT('.$locations_table.'.location_id)':$locations_table.'.post_id';
 		}
 		//Create the SQL statement and execute
-		$sql = "
+		$sql = apply_filters('em_locations_get_sql', "
 			SELECT $selectors FROM $locations_table
 			LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
 			GROUP BY {$locations_table}.location_id
 			$orderby_sql
 			$limit $offset
-		";
+		", $args);
 		
 		//If we're only counting results, return the number of results
 		if( $count ){
-			return apply_filters('em_locations_get_array', count($wpdb->get_col($sql)), $args);	
+			return apply_filters('em_locations_get_count', count($wpdb->get_col($sql)), $args);	
 		}
 		$results = $wpdb->get_results($sql, ARRAY_A);
 		

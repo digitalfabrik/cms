@@ -115,7 +115,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 				$result = false;
 				$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','events-manager'));
 			}else{
-				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id IN (".implode(',',$ticket_ids).")");
+				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
 			}
 		}
 		return ($result !== false);
@@ -137,7 +137,11 @@ class EM_Tickets extends EM_Object implements Iterator{
 					$EM_Ticket = new EM_Ticket();
 					$ticket_data['event_id'] = $this->event_id;
 					$EM_Ticket->get_post($ticket_data);
-					$this->tickets[] = $EM_Ticket;
+					if( $EM_Ticket->ticket_id ){
+						$this->tickets[$EM_Ticket->ticket_id] = $EM_Ticket;
+					}else{
+						$this->tickets[] = $EM_Ticket;
+					}
 			    }
 			}
 		}else{
