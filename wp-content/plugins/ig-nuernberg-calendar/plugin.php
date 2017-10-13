@@ -50,15 +50,15 @@ function ig_ncal_import() {
 			 */
 			continue;
 		}
-
 		/*
-		 * Create a new event, import XML data and save
-		 *
-		$newEMEvent = new IG_NUE_Event;
-		$newEMEvent->import_xml_data( $event );
-		$newEMEvent->save_nue_event();
-		unset( $newEMEvent );
-		/* */
+		 * Create a new event for each date, import XML data and save
+		 */
+		foreach( $dates as $date ) {
+			$newEMEvent = new IG_NUE_Event;
+			$newEMEvent->import_xml_data( $event );
+			//$newEMEvent->save_nue_event();
+			unset( $newEMEvent );
+		}
 	}
 }
 

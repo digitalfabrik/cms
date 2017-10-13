@@ -85,22 +85,25 @@ function ig_ncal_parse_oeffnungszeiten_type2( $xml_element ) {
 function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
 	$dates = array();
 
-	// create list of dates between start and end
+	/*
+	 * create list of dates between start and end
+	 */
 	$begin = new DateTime( (string) $xml_element->OEFFNUNGSZEITEN->DATUM1 );
 	$end = new DateTime( (string) $xml_element->OEFFNUNGSZEITEN->DATUM2 );
 	$interval = new DateInterval('P1D');
 	$daterange = new DatePeriod($begin, $interval ,$end);
 
 	$exceptions = split(';', (string) $xml_element->OEFFNUNGSZEITEN->AUSNAHMEN );
+
+	/*
+	 * Event start and end times are defined per weekday. Get number of weekday and the start and end times.
+	 */
 	$day = 0;
 	$weekdays = array();
 	foreach ( $xml_element->OEFFNUNGSZEITEN->OFFENETAGE->OFFENERTAG as $date ) {
 		var_dump( (string) $date );
 		if( (string) $date == "mo" )
-		{
 			$day = 1;
-			echo "day1<br>";
-		}
 		elseif( (string) $date == "di" )
 			$day = 2;
 		elseif( (string) $date == "mi" )
@@ -115,16 +118,14 @@ function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
 			$day = 7;
 		else
 			continue;
-		echo "fill array $day<br>";
 		$weekdays[$day]['day'] 					=	$day;
 		$weekdays[$day]['event_start_time'] 	= 	(string) $date->attributes()['BEGINN'];
 		$weekdays[$day]['event_end_time'] 		=	(string) $date->attributes()['ENDE'];
 	}
-	var_dump( $weekday );
 
 	$n = 0;
 	/*
-	 * Iterate through list of dates and skip exception dates
+	 * Iterate through list of dates and skip exception dates. Set start and end time for each day.
 	 */
 	foreach($daterange as $date){
 		$day = $date->format("N");
@@ -134,10 +135,10 @@ function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
 			$dates[$n]['event_end_date'] 	=	$date;
 			$dates[$n]['event_start_time'] 	= 	$weekdays[$day]['event_start_time'];
 			$dates[$n]['event_end_time'] 	=	$weekdays[$day]['event_end_time'];
+			$dates[$n];
 			$n++;
 		}
 	}
-	//var_dump($dates);
 	return $dates;
 }
 
