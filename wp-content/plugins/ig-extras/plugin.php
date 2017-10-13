@@ -8,13 +8,15 @@
  * License: MIT
  */
 function ig_extras_settings() {
-	$ig_extras_settings['ige-srl'] = "0";
-	$ig_extras_settings['ige-sbt'] = "0";
-	$ig_extras_settings['ige-evts'] = "0";
-	$ig_extras_settings['ige-pn'] = "0";
-	$ig_extras_settings['ige-c4r'] = "0";
-	$ig_extras_settings['ige-lr'] = "0";
-	$ig_extras_settings['ige-zip'] = "0";
+	$ig_extras_settings['ige-srl'] = "0";	// Serlo
+	$ig_extras_settings['ige-sbt'] = "0";	// Sprungbrett
+	$ig_extras_settings['ige-evts'] = "0";	// Events
+	$ig_extras_settings['ige-pn'] = "0";	// Pushnachrichten
+	$ig_extras_settings['ige-c4r'] = "0";	// Career for Refugees
+	$ig_extras_settings['ige-lr'] = "0";	// Lehrstellrenradar 
+	$ig_extras_settings['ige-zip'] = "0";	// ZIP Code / Postleitzahl
+	$ig_extras_settings['ige-ilb'] = "0";	// IHK Lehrstellenboerse
+	$ig_extras_settings['ige-ipb'] = "0";	// IHG Praktikumsboerse
 	return $ig_extras_settings;
 }
 
