@@ -538,19 +538,20 @@ class EM_Bookings extends EM_Object implements Iterator{
 		$selectors = ( $count ) ?  'COUNT(*)':'*';
 		
 		//Create the SQL statement and execute
-		$sql = "
+		$sql = apply_filters('em_bookings_get_sql',"
 			SELECT $selectors FROM $bookings_table 
 			LEFT JOIN $events_table ON {$events_table}.event_id={$bookings_table}.event_id 
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
 			$orderby_sql
 			$limit $offset
-		";
+		", $args);
+		
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return apply_filters('em_bookings_get_count', $wpdb->get_var($sql), $args);		
 		}
-		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
+		$results = $wpdb->get_results($sql, ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){

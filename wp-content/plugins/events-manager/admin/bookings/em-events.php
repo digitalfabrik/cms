@@ -80,7 +80,7 @@ function em_bookings_events_table() {
 				}
 				?>
 			</div>
-				
+			<div class="clear"></div>
 			<?php
 			if (empty ( $events )) {
 				// TODO localize

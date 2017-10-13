@@ -70,7 +70,7 @@ class BP_EM_Component extends BP_Component {
 			$can_manage_events = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_events');
 			$can_manage_locations = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_locations');
 			$can_manage_bookings = current_user_can_for_blog(BP_ROOT_BLOG, 'manage_bookings');
-			switch_to_blog($current_blog);
+			restore_current_blog();
 		}else{
 			$can_manage_events = current_user_can('edit_events');
 			$can_manage_locations = current_user_can('edit_locations');
@@ -176,7 +176,7 @@ class BP_EM_Component extends BP_Component {
 				$can_manage_events = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_events');
 				$can_manage_locations = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_locations');
 				$can_manage_bookings = current_user_can_for_blog(BP_ROOT_BLOG, 'manage_bookings');
-				switch_to_blog($current_blog);
+				restore_current_blog();
 			}else{
 				$can_manage_events = current_user_can('edit_events');
 				$can_manage_locations = current_user_can('edit_locations');
@@ -288,8 +288,13 @@ if( !is_admin() || ( defined('DOING_AJAX') && !empty($_REQUEST['is_public'])) ){
 		global $bp;
 		return $bp->events->link.'my-events/?action=edit&event_id='.$EM_Event->event_id;
 	}
+	function em_bp_rewrite_events_admin_url( $url ){
+		global $bp;
+	    return $bp->events->link.'my-events/';
+	}
 	if( !get_option('dbem_edit_events_page') ){
 		add_filter('em_event_get_edit_url','em_bp_rewrite_edit_url',10,2);
+		add_filter('em_get_events_admin_url','em_bp_rewrite_edit_url',10,2);
 	}	
 	
 	function em_bp_rewrite_bookings_url($url, $EM_Event){
