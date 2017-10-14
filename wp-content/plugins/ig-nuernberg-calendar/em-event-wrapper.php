@@ -90,8 +90,10 @@ function ig_ncal_parse_oeffnungszeiten_type2_multiple( $xml_element ) {
  */ 
 function ig_ncal_parse_oeffnungszeiten_type2_single( $xml_element ) {
 	$dates = array();
-	$n = 0;
-
+	$dates[$n]['event_start_time'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
+	$dates[$n]['event_end_time'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
+	$dates[$n]['event_start_time'] 	= 	"00:00";
+	$dates[$n]['event_end_time'] 	=	"23:59";
 	return $dates;
 }
 
@@ -172,7 +174,10 @@ function ig_ncal_parse_oeffnungszeiten_type3_multiple( $xml_element ) {
  */ 
 function ig_ncal_parse_oeffnungszeiten_type3_single( $xml_element ) {
 	$dates = array();
-
+	$dates[$n]['event_start_time'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
+	$dates[$n]['event_end_time'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
+	$dates[$n]['event_start_time'] 	= 	"00:00";
+	$dates[$n]['event_end_time'] 	=	"23:59";
 	return $dates;
 }
 
