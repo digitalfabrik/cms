@@ -26,23 +26,29 @@ function ig_ncal_get_type( $xml_element ) {
  * 
  * @return 
  */ 
-function ig_ncal_parse_dates ( $xml_element ) {
+function ig_ncal_parse_dates ( $xml_element, $multiple = false ) {
 	$date_type = ig_ncal_get_type( $xml_element );
 	if ( 1 == $date_type ) {
 		return ig_ncal_parse_oeffnungszeiten_type1( $xml_element );
 	}
-	elseif ( 2 == $date_type ) {
-		return ig_ncal_parse_oeffnungszeiten_type2( $xml_element );
+	elseif ( 2 == $date_type) {
+		if ( $multiple == true )
+			return ig_ncal_parse_oeffnungszeiten_type2_multiple( $xml_element );
+		else
+			return ig_ncal_parse_oeffnungszeiten_type2_single( $xml_element );
 	}
 	elseif ( 3 == $date_type ) {
-		return ig_ncal_parse_oeffnungszeiten_type3( $xml_element );
+		if ( $multiple == true )
+			return ig_ncal_parse_oeffnungszeiten_type3_multiple( $xml_element );
+		else
+			return ig_ncal_parse_oeffnungszeiten_type3_single( $xml_element );
 	}
 }
 
 /**
- * Parse event format type 1 into array of events.
+ * Parse event format type 1 into array of events. Array contains a single element.
  *
- * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * @param SimpleXMLElement $xml_element Part of parsed XML
  * 
  * @return Array
  */ 
@@ -56,13 +62,13 @@ function ig_ncal_parse_oeffnungszeiten_type1( $xml_element ) {
 }
 
 /**
- * Parse event format type 2 into array of events.
+ * Parse event format type 2 into array of events. Array can contain multiple elements.
  *
  * @param SimpleXMLElement $xml_element  Part of parsed XML
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type2( $xml_element ) {
+function ig_ncal_parse_oeffnungszeiten_type2_multiple( $xml_element ) {
 	$dates = array();
 	$n = 0;
 	foreach ( $xml_element->OEFFNUNGSZEITEN->DATUM as $date ) {
@@ -76,13 +82,27 @@ function ig_ncal_parse_oeffnungszeiten_type2( $xml_element ) {
 }
 
 /**
- * Parse event format type 3 into array of events.
+ * Parse event format type 2 into array of events. Array contains a single element.
  *
  * @param SimpleXMLElement $xml_element  Part of parsed XML
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
+function ig_ncal_parse_oeffnungszeiten_type2_single( $xml_element ) {
+	$dates = array();
+	$n = 0;
+
+	return $dates;
+}
+
+/**
+ * Parse event format type 3 into array of events. Array can contain multiple elements.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return Array
+ */ 
+function ig_ncal_parse_oeffnungszeiten_type3_multiple( $xml_element ) {
 	$dates = array();
 
 	/*
@@ -139,6 +159,20 @@ function ig_ncal_parse_oeffnungszeiten_type3( $xml_element ) {
 			$n++;
 		}
 	}
+	return $dates;
+}
+
+
+/**
+ * Parse event format type 3 into array of events. Array contains a single element.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return Array
+ */ 
+function ig_ncal_parse_oeffnungszeiten_type3_single( $xml_element ) {
+	$dates = array();
+
 	return $dates;
 }
 
