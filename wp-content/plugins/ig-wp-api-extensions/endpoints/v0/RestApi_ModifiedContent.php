@@ -207,7 +207,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			'order' => $post->menu_order,
 			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
 			'thumbnail' => $this->prepare_thumbnail($post),
-			'author' => $this->prepare_author($post),
 		];
 		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
 		return $output_post;
