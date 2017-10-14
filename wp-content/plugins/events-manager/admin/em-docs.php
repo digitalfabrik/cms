@@ -31,7 +31,9 @@ function em_docs_init($force_init = false){
 					'search' => array( 'desc'=> 'Do a search for this string within event name, details and location address.' ),
 					'status' => array( 'desc' => sprintf('Limit search to %s with a spefic status (1 is active, 0 is pending approval)','events'), 'default'=>1),
 					'tag' => array( 'desc'=> str_replace('%s', 'tags', 'Supply a single id, slug or comma-separated ids or slugs (e.g. "1,%s-slug,3") to limit the search to events in any of these %s. You can also use negative numbers and slugs to exclude specific %s (e.g. -1,-exclude-%s,-3). If you mix inclusions and exclusions, all events with included %s AND without excluded %s will be shown. You can also use &amp; to separate ids and slugs, in which case events must contain (or not contain) both %s to be shown.'), 'default'=>0),
-					'year' => array( 'desc'=> 'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'default'=>'')
+					'year' => array( 'desc'=> 'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'default'=>''),
+					'has_location' => array( 'desc'=> 'When set to true, only events WITH an assigned location will be shown, has priority over no_location.', 'default'=>''),
+					'no_location' => array( 'desc'=> 'When set to true, only events WITHOUT an assigned location will be shown.', 'default'=>'')
 				),
 				'locations' => array(
 					'blog' => array( 'desc' => sprintf('Limit search to %s created in a specific blog id (MultiSite only)','locations')),				    
@@ -88,6 +90,7 @@ function em_docs_init($force_init = false){
 							'#_EVENTNOTES' => array( 'desc' => 'Shows the description of the event.' ),
 							'#_EVENTEXCERPT' => array( 'desc' => 'If an excerpt has been added to the event, it will be used. If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show.' ),
 							'#_EVENTEXCERPT{words,...}' => array( 'desc' => 'If an excerpt has not been added to the event you can use this format <code>#_EVENTEXCERPT{10,...}</code>, where 10 is the number of words to show and ... is what is used at the cut-off point.' ),
+							'#_EVENTEXCERPTCUT' => array( 'desc' => 'Same as <code>#_EVENTEXCERPT</code> (and also accepts the <code>{words,...}</code> arguments) but will also cut excerpts as well as post content. Default word limit is 55 and cut-off is <code>[...]</code>' ),
 							'#_EVENTIMAGE' => array( 'desc' => 'Shows the event image, if available.' ),
 							'#_EVENTIMAGE{x,y}' => array( 'desc' => 'Shows the event image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_EVENTIMAGE{100,100}</code>. If 0 is used for either width or height, the corresponding dimension will be proportionally sized' ),
 							'#_EVENTCATEGORIES' => array( 'desc' => 'Shows a list of category links this event belongs to.' ),
@@ -213,9 +216,6 @@ function em_docs_init($force_init = false){
 							'#_TAGNAME' => array( 'desc' => 'Shows the tag name.' ),
 							'#_TAGID' => array( 'desc' => 'Shows the tag ID.' ),
 							'#_TAGSLUG' => array( 'desc' => 'Shows the tag slug.' ),
-							'#_TAGIMAGE' => array( 'desc' => 'Shows the tag image, if available.' ),
-							'#_TAGIMAGE{x,y}' => array( 'desc' => 'Shows the tag image thumbnail if available, x and y are width and height respectively, both being numbers e.g. <code>#_TAGIMAGE{100,100}</code>. If 0 is used for either width or height, the corresponding dimension will be proportionally sized.' ),
-							'#_TAGIMAGEURL' => array( 'desc' => 'Shows the tag image url, if available.' ),
 							'#_TAGNOTES' => array( 'desc' => 'Shows the tag description.' )
 						)
 					),			

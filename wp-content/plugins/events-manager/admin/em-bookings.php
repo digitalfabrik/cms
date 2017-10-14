@@ -222,14 +222,13 @@ function em_bookings_single(){
 							<?php esc_html_e( 'Personal Details', 'events-manager'); ?>
 						</h3>
 						<div class="inside">
-							<?php $no_user = get_option('dbem_bookings_registration_disable') && $EM_Booking->get_person()->ID == get_option('dbem_bookings_registration_user'); ?>
 							<div class="em-booking-person-details">
 								<?php echo $EM_Booking->get_person()->display_summary(); ?>
-								<?php if( $no_user ): ?>
-								<input type="button" id="em-booking-person-modify" value="<?php esc_attr_e('Edit Details','events-manager'); ?>" />
+								<?php if( $EM_Booking->is_no_user() ): ?>
+								<input type="button" class="button-secondary" id="em-booking-person-modify" value="<?php esc_attr_e('Edit Details','events-manager'); ?>" />
 								<?php endif; ?>
 							</div>
-							<?php if( $no_user ): ?>
+							<?php if( $EM_Booking->is_no_user() ): ?>
 							<form action="" method="post" class="em-booking-person-form">
 								<div class="em-booking-person-editor" style="display:none;">
 									<?php echo $EM_Booking->get_person_editor(); ?>
@@ -237,8 +236,8 @@ function em_bookings_single(){
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_modify_person_'.$EM_Booking->booking_id); ?>'/>
-									<input type="submit" class="em-booking-person-modify-submit" id="em-booking-person-modify-submit" value="<?php esc_attr_e('Submit Changes', 'events-manager'); ?>" />
-									<input type="button" id="em-booking-person-modify-cancel" value="<?php esc_attr_e('Cancel','events-manager'); ?>" />
+									<input type="submit" class="button-primary em-button em-booking-person-modify-submit" id="em-booking-person-modify-submit" value="<?php esc_attr_e('Submit Changes', 'events-manager'); ?>" />
+									<input type="button" id="em-booking-person-modify-cancel" class="button-secondary em-button" value="<?php esc_attr_e('Cancel','events-manager'); ?>" />
 								</div>
 							</form>	
 							<script type="text/javascript">
@@ -272,8 +271,8 @@ function em_bookings_single(){
 								<form action="" method="post" class="em-booking-single-status-info">
 									<strong><?php esc_html_e('Status','events-manager'); ?> : </strong>
 									<?php echo $EM_Booking->get_status(); ?>
-									<input type="button" class="em-booking-submit-status-modify" id="em-booking-submit-status-modify" value="<?php esc_attr_e('Change', 'events-manager'); ?>" />
-									<input type="submit" class="em-booking-resend-email" id="em-booking-resend-email" value="<?php esc_attr_e('Resend Email', 'events-manager'); ?>" />
+									<input type="button" class="button-secondary em-button em-booking-submit-status-modify" id="em-booking-submit-status-modify" value="<?php esc_attr_e('Change', 'events-manager'); ?>" />
+									<input type="submit" class="button-primary em-button em-booking-resend-email" id="em-booking-resend-email" value="<?php esc_attr_e('Resend Email', 'events-manager'); ?>" />
 								 	<input type='hidden' name='action' value='booking_resend_email'/>
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
@@ -288,8 +287,8 @@ function em_bookings_single(){
 									</select>
 									<input type="checkbox" checked="checked" name="send_email" value="1" />
 									<?php esc_html_e('Send Email','events-manager'); ?>
-									<input type="submit" class="em-booking-submit-status" id="em-booking-submit-status" value="<?php esc_attr_e('Submit Changes', 'events-manager'); ?>" />
-									<input type="button" class="em-booking-submit-status-cancel" id="em-booking-submit-status-cancel" value="<?php esc_attr_e('Cancel', 'events-manager'); ?>" />
+									<input type="submit" class="button-primary em-button em-booking-submit-status" id="em-booking-submit-status" value="<?php esc_attr_e('Submit Changes', 'events-manager'); ?>" />
+									<input type="button" class="button-secondary em-button em-booking-submit-status-cancel" id="em-booking-submit-status-cancel" value="<?php esc_attr_e('Cancel', 'events-manager'); ?>" />
 								 	<input type='hidden' name='action' value='booking_set_status'/>
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
@@ -328,7 +327,7 @@ function em_bookings_single(){
 													<td class="ticket-type"><a class="row-title" href="<?php echo em_add_get_params($EM_Event->get_bookings_url(), array('ticket_id'=>$EM_Ticket->ticket_id)); ?>"><?php echo $EM_Ticket->ticket_name ?></a></td>
 													<td>
 														<span class="em-booking-single-info">0</span>
-														<div class="em-booking-single-edit"><input name="em_tickets[<?php echo $EM_Ticket->ticket_id; ?>][spaces]" class="em-ticket-select" id="em-ticket-spaces-<?php echo $EM_Ticket_Booking->ticket_id; ?>" value="0" /></div>
+														<div class="em-booking-single-edit"><input name="em_tickets[<?php echo $EM_Ticket->ticket_id; ?>][spaces]" class="em-ticket-select" id="em-ticket-spaces-<?php echo $EM_Ticket->ticket_id; ?>" value="0" /></div>
 													</td>
 													<td><?php echo em_get_currency_symbol() ?>0.00</td>
 												</tr>
@@ -352,8 +351,17 @@ function em_bookings_single(){
 											<?php foreach( $price_summary['discounts_pre_tax'] as $discount_summary ): ?>
 											<tr>
 												<th><?php echo $discount_summary['name']; ?></th>
-												<th><?php echo $discount_summary['discount']; ?></th>
+												<th><?php echo $discount_summary['adjustment']; ?></th>
 												<th>- <?php echo $discount_summary['amount']; ?></th>
+											</tr>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										<?php if( count($price_summary['surcharges_pre_tax']) > 0 ): ?>
+											<?php foreach( $price_summary['surcharges_pre_tax'] as $surcharge_summary ): ?>
+											<tr>
+												<th><?php echo $surcharge_summary['name']; ?></th>
+												<th><?php echo $surcharge_summary['adjustment']; ?></th>
+												<th><?php echo $surcharge_summary['amount']; ?></th>
 											</tr>
 											<?php endforeach; ?>
 										<?php endif; ?>
@@ -371,8 +379,17 @@ function em_bookings_single(){
 											<?php foreach( $price_summary['discounts_post_tax'] as $discount_summary ): ?>
 											<tr>
 												<th><?php echo $discount_summary['name']; ?></th>
-												<th><?php echo $discount_summary['discount']; ?></th>
+												<th><?php echo $discount_summary['adjustment']; ?></th>
 												<th>- <?php echo $discount_summary['amount']; ?></th>
+											</tr>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										<?php if( count($price_summary['surcharges_post_tax']) > 0 ): ?>
+											<?php foreach( $price_summary['surcharges_post_tax'] as $surcharge_summary ): ?>
+											<tr>
+												<th><?php echo $surcharge_summary['name']; ?></th>
+												<th><?php echo $surcharge_summary['adjustment']; ?></th>
+												<th><?php echo $surcharge_summary['amount']; ?></th>
 											</tr>
 											<?php endforeach; ?>
 										<?php endif; ?>
@@ -397,13 +414,13 @@ function em_bookings_single(){
 									<?php endif; ?>
 								</table>
 								<p class="em-booking-single-info">
-									<input type="button" class="em-booking-submit-modify" id="em-booking-submit-modify" value="<?php esc_attr_e('Modify Booking', 'events-manager'); ?>" />
+									<input type="button" class="button-secondary em-button em-booking-submit-modify" id="em-booking-submit-modify" value="<?php esc_attr_e('Modify Booking', 'events-manager'); ?>" />
 								</p>
 								<p class="em-booking-single-edit">
 									<em><?php _e('<strong>Notes:</strong> Ticket availability not taken into account (i.e. you can overbook). Emails are not resent automatically.','events-manager'); ?></em>
 									<br /><br />
-									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php esc_attr_e('Submit Changes', 'events-manager'); ?>" />
-									<input type="button" class="em-booking-submit-cancel" id="em-booking-submit-cancel" value="<?php esc_attr_e('Cancel', 'events-manager'); ?>" />
+									<input type="submit" class="button-primary em-button em-booking-submit" id="em-booking-submit" value="<?php esc_attr_e('Submit Changes', 'events-manager'); ?>" />
+									<input type="button" class="button-secondary em-button em-booking-submit-cancel" id="em-booking-submit-cancel" value="<?php esc_attr_e('Cancel', 'events-manager'); ?>" />
 								 	<input type='hidden' name='action' value='booking_save'/>
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
@@ -455,7 +472,7 @@ function em_bookings_single(){
 								<textarea class="widefat" rows="5" name="booking_note"></textarea>
 								<input type="hidden" name="action" value="bookings_add_note" />
 								<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('bookings_add_note'); ?>" />
-								<input type="submit" value="Add Note" />
+								<input type="submit" class="em-button button-primary" value="<?php esc_html_e('Add Note', 'events-manager'); ?>" />
 							</form>
 						</div>
 					</div> 

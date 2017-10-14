@@ -43,17 +43,24 @@ while ( count($EM_Events) > 0 ){
 		}
 		
 		//formats
-		$summary = $EM_Event->output($summary_format,'ical');
-		$description = $EM_Event->output($description_format,'ical');
-		$location = $geo = $apple_geo = $apple_location = $apple_location_title = $categories = false;
+		$summary = em_mb_ical_wordwrap('SUMMARY:'.$EM_Event->output($summary_format,'ical'));
+		$description = em_mb_ical_wordwrap('DESCRIPTION:'.$EM_Event->output($description_format,'ical'));
+		$url = 'URL:'.$EM_Event->get_permalink();
+		$url = wordwrap($url, 74, "\n ", true);
+		$location = $geo = $apple_geo = $apple_location = $apple_location_title = $apple_structured_location = $categories = false;
 		if( $EM_Event->location_id ){
-			$location = $EM_Event->output($location_format, 'ical');
+			$location = em_mb_ical_wordwrap('LOCATION:'.$EM_Event->output($location_format, 'ical'));
 			if( $EM_Event->get_location()->location_latitude || $EM_Event->get_location()->location_longitude ){
-				$geo = $EM_Event->get_location()->location_latitude.";".$EM_Event->get_location()->location_longitude;
+				$geo = 'GEO:'.$EM_Event->get_location()->location_latitude.";".$EM_Event->get_location()->location_longitude;
 			}
-			$apple_location = $EM_Event->output('#_LOCATIONFULLLINE, #_LOCATIONCOUNTRY', 'ical');
-			$apple_location_title = $EM_Event->get_location()->location_name;
-			$apple_geo = !empty($geo) ? $geo:'0,0';
+			if( !defined('EM_ICAL_APPLE_STRUCT') || !EM_ICAL_APPLE_STRUCT ){
+				$apple_location = $EM_Event->output('#_LOCATIONFULLLINE, #_LOCATIONCOUNTRY', 'ical');
+				$apple_location_title = $EM_Event->output('#_LOCATIONNAME', 'ical');
+				$apple_geo = !empty($geo) ? $EM_Event->get_location()->location_latitude.",".$EM_Event->get_location()->location_longitude:'0,0';
+				$apple_structured_location = "X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS={$apple_location};X-APPLE-RADIUS=100;X-TITLE={$apple_location_title}:geo:{$apple_geo}";
+				$apple_structured_location = str_replace('"', '\"', $apple_structured_location); //google chucks a wobbly with these on this line
+				$apple_structured_location = em_mb_ical_wordwrap($apple_structured_location);
+			}
 		}
 		$categories = array();
 		foreach( $EM_Event->get_categories() as $EM_Category ){ /* @var EM_Category $EM_Category */
@@ -64,43 +71,46 @@ while ( count($EM_Events) > 0 ){
 		//create a UID, make it unique and update independent
 		$UID = $EM_Event->event_id . '@' . $site_domain;
 		if( is_multisite() ) $UID = absint($EM_Event->blog_id) . '-' . $UID;
+		$UID = wordwrap("UID:".$UID, 74, "\r\n ", true);
 		
 //output ical item		
-$output = "
-BEGIN:VEVENT
-UID:{$UID}
+$output = "\r\n"."BEGIN:VEVENT
+{$UID}
 DTSTART{$dateStart}
 DTEND{$dateEnd}
 DTSTAMP:{$dateModified}
-URL:{$EM_Event->get_permalink()}
-SUMMARY:{$summary}";
+{$url}
+{$summary}";
 //Description if available
 if( $description ){
-    $output .= "
-DESCRIPTION:{$description}";
+    $output .= "\r\n" . $description;
 }
 //add featured image if exists
 if( $image ){
+	$image = wordwrap("ATTACH;FMTTYPE=image/jpeg:".esc_url_raw($image), 74, "\n ", true);
     $output .= "
-ATTACH;FMTTYPE=image/jpeg:".esc_url_raw($image);
+{$image}";
 }
 //add categories if there are any
 if( !empty($categories) ){
+	$categories = wordwrap("CATEGORIES:".implode(',', $categories), 74, "\n ", true);
     $output .= "
-CATEGORIES:".implode(',', $categories);
+{$categories}";
 }
 //Location if there is one
 if( $location ){
 	$output .= "
-LOCATION:{$location}";
+{$location}";
 	//geo coordinates if they exist
 	if( $geo ){
 	$output .= "
-GEO:{$geo}";
+{$geo}";
 	}
 	//create apple-compatible feature for locations
+	if( !empty($apple_structured_location) ){
 	$output .= "
-X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS={$apple_location};X-APPLE-RADIUS=100;X-TITLE={$apple_location_title}:geo:{$apple_geo}";
+{$apple_structured_location}";
+	}
 }
 //end the event
 $output .= "
@@ -121,6 +131,5 @@ END:VEVENT";
 }
 
 //calendar footer
-$output = "
-END:VCALENDAR";
+$output = "\r\n"."END:VCALENDAR";
 echo preg_replace("/([^\r])\n/", "$1\r\n", $output);

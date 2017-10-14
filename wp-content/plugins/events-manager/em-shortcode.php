@@ -39,12 +39,60 @@ function em_get_locations_map_shortcode($args){
 	$args['height'] = $height;
 	//assign random number for element id reference
 	$args['random_id'] = substr(md5(rand().rand()),0,5);
+	//add JSON style to map
+	$style = '';
+	if( !empty($args['map_style']) ){
+		$style= base64_decode($args['map_style']);
+		$style_json= json_decode($style);
+		if( is_array($style_json) || is_object($style_json) ){
+			$style = preg_replace('/[\r\n\t\s]/', '', $style);
+		}else{
+			$style = '';
+		}
+		unset($args['map_style']);
+	}
 	ob_start();
-	em_locate_template('templates/map-global.php',true, array('args'=>$args)); 
+	em_locate_template('templates/map-global.php',true, array('args'=>$args, 'map_json_style' => $style)); 
 	return ob_get_clean();
 }
 add_shortcode('locations_map', 'em_get_locations_map_shortcode');
 add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //deprecate this... confusing for WordPress 
+
+
+/**
+ * Generates a map of locations that match given query attributes. Accepts any location query attributes.
+ * @param array $args
+ * @return string
+ */
+function em_get_events_map_shortcode($args){
+	$args['em_ajax'] = true;
+	$args['query'] = 'GlobalEventsMapData';
+	//get dimensions with px or % added in
+	$width = (!empty($args['width'])) ? $args['width']:get_option('dbem_map_default_width','400px');
+	$width = preg_match('/(px)|%/', $width) ? $width:$width.'px';
+	$height = (!empty($args['height'])) ? $args['height']:get_option('dbem_map_default_height','300px');
+	$height = preg_match('/(px)|%/', $height) ? $height:$height.'px';
+	$args['width'] = $width;
+	$args['height'] = $height;
+	//assign random number for element id reference
+	$args['random_id'] = substr(md5(rand().rand()),0,5);
+	//add JSON style to map
+	$style = '';
+	if( !empty($args['map_style']) ){
+		$style= base64_decode($args['map_style']);
+		$style_json= json_decode($style);
+		if( is_array($style_json) || is_object($style_json) ){
+			$style = preg_replace('/[\r\n\t\s]/', '', $style);
+		}else{
+			$style = '';
+		}
+		unset($args['map_style']);
+	}
+	ob_start();
+	em_locate_template('templates/map-global.php',true, array('args'=>$args, 'map_json_style' => $style));
+	return ob_get_clean();
+}
+add_shortcode('events_map', 'em_get_events_map_shortcode');
 
 /**
  * Shows a list of events according to given specifications. Accepts any event query attribute.
@@ -108,9 +156,8 @@ add_shortcode ( 'events_list_grouped', 'em_get_events_list_grouped_shortcode' );
  * @return string
  */
 function em_get_event_shortcode($atts, $format='') {
-    global $EM_Event, $post;
+    global $post;
 	$return = '';
-    $the_event = is_object($EM_Event) ? clone($EM_Event):null; //save global temporarily
 	$atts = (array) $atts;
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
 	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
@@ -128,7 +175,6 @@ function em_get_event_shortcode($atts, $format='') {
 	    $EM_Event = em_get_event($post->ID, 'post_id');
 	    $return = ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
 	}
-    $EM_Event = is_object($the_event) ? $the_event:$EM_Event; //reset global
     return $return;
 }
 add_shortcode ( 'event', 'em_get_event_shortcode' );

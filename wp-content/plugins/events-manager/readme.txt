@@ -1,11 +1,11 @@
 === Events Manager ===
 Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
-Tags: bookings, buddypress, calendar, event, event management, events, google maps, maps, locations, registration, registration, tickets
+Tags: bookings, calendar, tickets, events, buddypress, event management, google maps, maps, locations, registration
 Text Domain: events-manager
 Requires at least: 3.5
-Tested up to: 4.7
-Stable tag: 5.6.6.1
+Tested up to: 4.8
+Stable tag: 5.7.3
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -99,6 +99,93 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.7.3 =
+* fixed previous meta not getting deleted from recurrences resulting in non-saved information such as a changed featured image or location
+* fixed newly submitted recurrences first saved in draft or pending mode not creating new events without a reschedule
+* fixed export settings button not working in MultiSite
+* fixed CSS issue in search form advanced field dropdowns on firefox
+* fixed PHP warning when displaying locations and events map via shortcode (kudos @Beee) 
+* fixed minor PHP warning on category admin pages where image isn't defined (kudos @Beee)
+* fixed booking admin 'Add Note' button not being translatable
+* added fifth day of month in recurrences pattern
+* added ability to change event times on recurring events without recreating recurrences
+
+= 5.7.2 =
+* fixed subsite events in MS Global mode not being able to save new events and resulting in orphaned entries in wp_em_events table
+* added admin tool to allow removal of orphaned events in wp_em_events database table
+* improved detection and handling of orphaned events when being displayed
+
+= 5.7.1 =
+* fix for wierd headers PHP error due to corrupted <?php on line 1 of admin/em-ms-options.php
+* fixed minor PHP warning on settings page
+
+= 5.7 =
+* added em_events_admin_args filter allowing modification of event search arguments
+* removed jQuery UI localize files for the datepicker in favor of WP 4.6 native localization
+* fixed potential bug where modified ticket spaces aren't saving correctly when editing a booking
+* added is_user_attendee, not_user_attendee and variations of both proceeding with _0 or another number representing booking status
+* added edit/view shortcut links for each event location in events list admin area
+* fixed conflict with BuddyPress Group Extras and potentially other plugins when one or more of our list pages aren't assigned a page (e.g. locations page) resulting in a blank page
+* fixed ical feed not serving wrapped content lines,
+* added EM_ICAL_APPLE_STRUCT constant to allow ommitting of X-APPLE-STRUCTURED-LOCATION lines in the ical file
+* fixed formatting issues with ical X-APPLE-STRUCTURED-LOCATION line
+* fixed instances where locations or events automatically creating a post slug if needed when published
+* fixed location image display issues on other blogs when in MultiSite Global mode
+* corrected and updated docs
+* fixed switch_to_blog() being used instead of restore_current_blog() in buddypress/bp-em-core.php (props @mikegillihan)
+* fixed search form CSS inconsistencies for Twenty Seventeen theme
+* fixed locations map breaking when provided with object versions of JSON response (such as with WPML compat add-on)
+* updated maps google library to always use most stable version
+* fixed issues when creating MS Global Events programmatically
+* moved some logic out of the EM_Event->output() function into their own function for easier future use in templates
+* fixed google calendar links not including full location address
+* added an import/export settings option in settings page
+* added ability to use post_id in calendar shortcode and PHP functions
+* added has_location and no_location to event search attributes
+* added [events_map] shortcode which searches by event rather than location
+* changed behaviour of zooming when mouse is over a map so a click is required first to avoid catching whilst scrolling the page
+* fixed all errors and warnings for PHP 7 and others highlighted by PHP Compatibility Checker plugin
+* added decimal parameter to get_tax_rate functions which allows fixing of minor PHP warning when tax is set to 0
+* fixed filter typos and _get_sql positions in EM_Bookings::get() and EM_Locations::get()
+* removed unnecessary storage of _post_id in postmeta for recurring events
+* fixed bug where tickets aren't deleted with event
+* fixed incompatibility with WP Fastest Cache for bookings on cached pages
+* fixed EM_Categories not removing categories if none are selected when resaving an event
+* added em_get_events_admin_url() function
+* added major improvements to recurring events including ability to duplicate templates and also make changes without deleting previous recurrences,
+* changed various event editor templates to accommodate new recurring event changes
+* changed no-user bookings feature to not require a dummy user
+* changed no-user bookings so previous bookings appear correctly regardless of whether NU bookings is enabled or disabled
+* tweaked PHP Mail sending method to go through WP PHPMailer class for better encoding
+* fixed overly aggressive filtering of get_the_date and get_the_time filters (kudos @boonebgorges)
+* fixed missing map markers array variable to be supplied in JS hook em_maps_locations_hook (kudos @raruto)
+* changed booking discount php functions into price adjustment functions which will now allow for surcharges to be implemented
+* fixed guest submissions with bookings enabled producing false permission errors instead of a confirmation
+* fixed/updated media uploader JS interface for category image
+* added more booking price filters to individual functions
+* fixed minor nuance where upcoming events scope filter not selectable on mobile view
+* fixed JS not being loaded automatically on events list when JS performance loading enabled
+* fixed regex matching preventing use of a #_LATT attribute within an #_ATT default value bracket
+* fixed confirmation message not showing for event duplication
+* added duplicate shortcut link on dashboard edit event page
+* fixed issues with selection of Sunday on monthly recurrences and the generated pattern summary
+* changed/fixed events_list_grouped using date format for sub-section titles from settings page if no date_format supplied regardless of grouping mode
+* added em_scripts_and_styles_public_enqueue_pages filter for custom pages to automatically include EM script/styles when limiting for performance is enabled
+* fixed PHP non-object notices on certain non-EM dashboard pages
+* changed booking form scrolling JS to scroll to booking message feedback element and added EM_BOOKING_MSG_JS_OFFSET constant to allow adjusting the offset in wp-config.php
+* fixed redirect link on booking form login not taking into account SSL pages
+* added #_EVENTEXCERPTCUT to allow cutting of both excerpts and post content
+* changed event all day times to start at 00:00:00 and end at 23:59:59 when saved (kudos @cliffpaulick)
+* changed default search form settings behaviour to ignore country filtering if search option is not enabled
+* fixed scheduled recurring events not publishing recurrences
+* improved google maps JS for multiple events/locations maps and auto-zooming of included locations (kudos @benklocek)
+* fixed minor php warning on user profile page
+* tweaked booking JS to allow a redirect variable passed on with a successful response
+* fixed 'Bookings' header not being translated when formats are disabled and booking form is added just after content
+* fixed ticket availability status indicator showing false to admins when ticket is restricted to guests
+* added get_total_paid function (mainly for hooking purposes in Pro add-ons)
+* added support for Google Maps styles via services like the Google Maps Style Wizard or Snazzy Maps
+
 = 5.6.6.1 =
 * fixed search forms disappearing in latest update when Styling Options for search forms are turned off (props @factchecker)
 

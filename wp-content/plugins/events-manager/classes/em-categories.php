@@ -78,19 +78,17 @@ class EM_Categories extends EM_Object implements Iterator{
 			$default_term = get_term_by('id',get_option('dbem_default_category'), EM_TAXONOMY_CATEGORY);
 			if($default_term) $term_slugs[] = $default_term->slug;
 		}
-		if( count($term_slugs) > 0 ){
-			if( is_multisite() ){
-				//In MS Global mode, we also save category meta information for global lookups
-				if( EM_MS_GLOBAL && !empty($this->event_id) ){
-					//delete categories
-					$this->save_index();
-				}
-				if( !EM_MS_GLOBAL || is_main_site() ){
-					wp_set_object_terms($this->post_id, $term_slugs, EM_TAXONOMY_CATEGORY);
-				}
-			}else{
+		if( is_multisite() ){
+			//In MS Global mode, we also save category meta information for global lookups
+			if( EM_MS_GLOBAL && !empty($this->event_id) ){
+				//delete categories
+				$this->save_index();
+			}
+			if( !EM_MS_GLOBAL || is_main_site() ){
 				wp_set_object_terms($this->post_id, $term_slugs, EM_TAXONOMY_CATEGORY);
-			}			
+			}
+		}else{
+			wp_set_object_terms($this->post_id, $term_slugs, EM_TAXONOMY_CATEGORY);
 		}
 		do_action('em_categories_save', $this);
 	}

@@ -44,24 +44,6 @@ class EM_Mailer {
 				$this->errors[] = $phpmailer->ErrorInfo;
 			}
 			return $send;
-		}elseif ( $emails_ok && get_option('dbem_rsvp_mail_send_method') == 'mail' ){
-			if(is_array($receiver)){
-				$receiver = implode(', ', $receiver);
-			}
-			$headers = '';
-			if( get_option('dbem_smtp_html') ){
-				$headers  = 'MIME-Version: 1.0' . "\r\n";
-				$headers .= 'Content-type: text/html; charset="UTF-8"' . "\r\n";
-			}else{
-			    $headers = 'Content-Type: text/plain; charset="UTF-8"' . "\r\n";
-			}
-			$from = get_option('dbem_mail_sender_address');
-			$headers .= get_option('dbem_mail_sender_name') ? 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>':'From: '.$from;
-			$send = mail($receiver, $subject, $body, $headers);
-			if(!$send){
-				$this->errors[] = __('Could not send email.', 'events-manager');
-			}
-			return $send;
 		}elseif( $emails_ok ){
 			$this->load_phpmailer();
 			$mail = new PHPMailer();
@@ -106,7 +88,9 @@ class EM_Mailer {
 		
 			//Protocols
 		 	if( get_option('dbem_rsvp_mail_send_method') == 'qmail' ){       
-				$mail->IsQmail();
+				$mail->isQmail();
+			}elseif( get_option('dbem_rsvp_mail_send_method') == 'sendmail' ){       
+				$mail->isSendmail();
 			}else {
 				$mail->Mailer = get_option('dbem_rsvp_mail_send_method');
 			}                     

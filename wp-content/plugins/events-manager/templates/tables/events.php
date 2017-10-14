@@ -11,10 +11,12 @@
 	/* @var $show_add_new bool */
 	/* @var $limit int */
 	//add new button will only appear if called from em_event_admin template tag, or if the $show_add_new var is set
-	if(!empty($show_add_new) && current_user_can('edit_events')) echo '<a class="em-button button add-new-h2" href="'.em_add_get_params($_SERVER['REQUEST_URI'],array('action'=>'edit','scope'=>null,'status'=>null,'event_id'=>null, 'success'=>null)).'">'.__('Add New','events-manager').'</a>';
 	?>
-	<div class="wrap">
-		<?php echo $EM_Notices; ?>
+	<div class="em-events-admin-list">
+		<?php
+			echo $EM_Notices;
+			if(!empty($show_add_new) && current_user_can('edit_events')) echo '<a class="em-button button add-new-h2" href="'.em_add_get_params($_SERVER['REQUEST_URI'],array('action'=>'edit','scope'=>null,'status'=>null,'event_id'=>null, 'success'=>null)).'">'.__('Add New','events-manager').'</a>';
+		?>
 		<form id="posts-filter" action="" method="get">
 			<div class="subsubsub">
 				<?php $default_params = array('scope'=>null,'status'=>null,'em_search'=>null,'pno'=>null); //template for cleaning the link for each view below ?>
