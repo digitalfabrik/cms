@@ -29,19 +29,19 @@ function ig_ncal_get_type( $xml_element ) {
 function ig_ncal_parse_dates ( $xml_element, $multiple = false ) {
 	$date_type = ig_ncal_get_type( $xml_element );
 	if ( 1 == $date_type ) {
-		return ig_ncal_parse_oeffnungszeiten_type1( $xml_element );
+		return ig_ncal_get_oez_type1( $xml_element );
 	}
 	elseif ( 2 == $date_type) {
 		if ( $multiple == true )
-			return ig_ncal_parse_oeffnungszeiten_type2_multiple( $xml_element );
+			return ig_ncal_get_oez_type2_multiple( $xml_element );
 		else
-			return ig_ncal_parse_oeffnungszeiten_type2_single( $xml_element );
+			return ig_ncal_get_oez_type2_single( $xml_element );
 	}
 	elseif ( 3 == $date_type ) {
 		if ( $multiple == true )
-			return ig_ncal_parse_oeffnungszeiten_type3_multiple( $xml_element );
+			return ig_ncal_get_oez_type3_multiple( $xml_element );
 		else
-			return ig_ncal_parse_oeffnungszeiten_type3_single( $xml_element );
+			return ig_ncal_get_oez_type3_single( $xml_element );
 	}
 }
 
@@ -52,7 +52,7 @@ function ig_ncal_parse_dates ( $xml_element, $multiple = false ) {
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type1( $xml_element ) {
+function ig_ncal_get_oez_type1( $xml_element ) {
 	$dates = array();
 	$dates[0]['event_start_date'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM;
 	$dates[0]['event_end_date'] 	=	$dates[0]['event_start_date'];
@@ -68,7 +68,7 @@ function ig_ncal_parse_oeffnungszeiten_type1( $xml_element ) {
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type2_multiple( $xml_element ) {
+function ig_ncal_get_oez_type2_multiple( $xml_element ) {
 	$dates = array();
 	$n = 0;
 	foreach ( $xml_element->OEFFNUNGSZEITEN->DATUM as $date ) {
@@ -88,7 +88,7 @@ function ig_ncal_parse_oeffnungszeiten_type2_multiple( $xml_element ) {
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type2_single( $xml_element ) {
+function ig_ncal_get_oez_type2_single( $xml_element ) {
 	$dates = array();
 	$dates[$n]['event_start_time'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
 	$dates[$n]['event_end_time'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
@@ -104,7 +104,7 @@ function ig_ncal_parse_oeffnungszeiten_type2_single( $xml_element ) {
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type3_multiple( $xml_element ) {
+function ig_ncal_get_oez_type3_multiple( $xml_element ) {
 	$dates = array();
 
 	/*
@@ -172,7 +172,7 @@ function ig_ncal_parse_oeffnungszeiten_type3_multiple( $xml_element ) {
  * 
  * @return Array
  */ 
-function ig_ncal_parse_oeffnungszeiten_type3_single( $xml_element ) {
+function ig_ncal_get_oez_type3_single( $xml_element ) {
 	$dates = array();
 	$dates[$n]['event_start_time'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
 	$dates[$n]['event_end_time'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
