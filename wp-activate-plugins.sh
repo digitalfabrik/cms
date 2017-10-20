@@ -32,6 +32,7 @@ ig-simplify-ui \
 ig-text-dir \
 ig-wp-api-extensions \
 ig-wpml-lock-media-checkboxes \
+ig-hide-preview-button \
 multisite-clone-duplicator \
 pdf-creator-lite \
 revisionary \
