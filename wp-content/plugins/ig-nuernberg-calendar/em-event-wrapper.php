@@ -306,7 +306,8 @@ class IG_NCAL_Event extends EM_Event {
 		}
 
 		if( $dry_run == false) {
-			$save_return = $this->save();
+			if ( $this->save() )
+				echo "<div class='notice notice-success'>Neues Event: <i>".$this->event_name."</i></div>";
 		} else {
 			echo "<p>Not saving event: <b>".$this->event_name."</b><br>".$this->post_content."</p>";
 		}

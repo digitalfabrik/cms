@@ -39,18 +39,25 @@ function ig_ncal_import() {
 
 	foreach( $events as $event ) {
 		$id = (string) $event->attributes()['ID'];
-		$post = get_posts( array(
-			'meta_key'   => 'ncal_event_id',
+		$args = array(
+			'meta_key' => 'ncal_event_id',
 			'meta_value' => $id,
-		) );
-		$dates = ig_ncal_get_dates ( $event );
-		if( count( $post ) > 0 || $id == "") {
+			'post_type' => 'event',
+			'post_status' => 'any',
+			'posts_per_page' => -1
+		);
+		$posts = get_posts($args);
+		if( count( $posts ) > 0 || $id == "") {
 			/* 
 			 * Event already stored or has no event ID, continue with next event,
 			 * We may want to update existing posts in the future.
 			 */
+			//echo "<p><font style='color: #f00; font-weight: bold;'>Event existiert bereits:</font> ".$posts[0]->post_title."</p>";
+			echo "<div class='notice notice-warning'>Event existiert bereits: <i>".$posts[0]->post_title."</i></div>";
 			continue;
 		}
+
+		$dates = ig_ncal_get_dates ( $event );
 
 		/*
 		 * For now we only want one EM event per source event
@@ -58,8 +65,8 @@ function ig_ncal_import() {
 		$multiple = false;
 		if ( $multiple == true ) {
 			/*
-			* Create a new event for each date, import XML data and save
-			*/
+			 * Create a new event for each date, import XML data and save
+			 */
 			foreach( $dates as $date ) {
 				$newEMEvent = new IG_NCAL_Event;
 				$newEMEvent->import_xml_data( $date, $event );
