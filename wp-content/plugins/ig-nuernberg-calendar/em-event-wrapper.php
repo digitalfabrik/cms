@@ -300,7 +300,9 @@ class IG_NCAL_Event extends EM_Event {
 		 * Finally, store the source (API) event ID to detect already processed events.
 		**/
 		if( $dry_run == false) {
-			$this->location_id = $this->location->save();
+			if( $this->location->save() ) {
+				$this->location_id = $this->location->location_id;
+			}
 		} else {
 			echo "<p>Not saving location ".$this->location->location_name."</p>";
 		}
