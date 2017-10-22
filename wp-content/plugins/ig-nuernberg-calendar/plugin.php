@@ -38,8 +38,7 @@ function ig_ncal_import() {
 
 
 	foreach( $events as $event ) {
-		$dates = ig_ncal_parse_dates ( $event );
-		//var_dump ( $dates );
+		$dates = ig_ncal_get_dates ( $event );
 		$post = get_posts( array(
 			'meta_key'   => 'ncal_event_id',
 			'meta_value' => $events['ID'],
@@ -54,8 +53,10 @@ function ig_ncal_import() {
 		 * Create a new event for each date, import XML data and save
 		 */
 		foreach( $dates as $date ) {
-			$newEMEvent = new IG_NUE_Event;
-			$newEMEvent->import_xml_data( $event );
+			$newEMEvent = new IG_NCAL_Event;
+			$newEMEvent->import_xml_data( $date, $event );
+			var_dump( $newEMEvent );
+			echo "<br><br>";
 			//$newEMEvent->save_nue_event();
 			unset( $newEMEvent );
 		}

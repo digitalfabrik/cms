@@ -23,10 +23,11 @@ function ig_ncal_get_type( $xml_element ) {
  * Determine date type and parse into array of dates.
  *
  * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * @param boolean $multiple  Create multiple events if true
  * 
  * @return 
  */ 
-function ig_ncal_parse_dates ( $xml_element, $multiple = false ) {
+function ig_ncal_get_dates ( $xml_element, $multiple = false ) {
 	$date_type = ig_ncal_get_type( $xml_element );
 	if ( 1 == $date_type ) {
 		return ig_ncal_get_oez_type1( $xml_element );
@@ -123,7 +124,7 @@ function ig_ncal_get_oez_type3_multiple( $xml_element ) {
 	$day = 0;
 	$weekdays = array();
 	foreach ( $xml_element->OEFFNUNGSZEITEN->OFFENETAGE->OFFENERTAG as $date ) {
-		var_dump( (string) $date );
+		//var_dump( (string) $date );
 		if( (string) $date == "mo" )
 			$day = 1;
 		elseif( (string) $date == "di" )
@@ -174,29 +175,64 @@ function ig_ncal_get_oez_type3_multiple( $xml_element ) {
  */ 
 function ig_ncal_get_oez_type3_single( $xml_element ) {
 	$dates = array();
-	$dates[$n]['event_start_time'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
-	$dates[$n]['event_end_time'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
+	$dates[$n]['event_start_date'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
+	$dates[$n]['event_end_date'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
 	$dates[$n]['event_start_time'] 	= 	"00:00";
 	$dates[$n]['event_end_time'] 	=	"23:59";
 	return $dates;
 }
 
 
+/**
+ * Parse event format type 2 and 3 dates into text.
+ *
+ * @param SimpleXMLElement $xml_element  Part of parsed XML
+ * 
+ * @return string
+ */ 
+function ig_ncal_dates_to_text( $type, $xml_element, $multiple = false ) {
+	$text = "<p>&Ouml;ffnungszeiten<br>";
+	if( $type == 2 )
+		$dates = ig_ncal_get_oez_type2_multiple( $xml_element );
+	else
+		$dates = ig_ncal_get_oez_type3_multiple( $xml_element );
+	foreach ( $dates as $date ) {
+		$text .= $date['event_start_date'] . ": " . $date['event_start_time'] . " Uhr " . ( $date['event_end_time'] != "" ? " bis " . $date['event_end_time'] . " Uhr" : "" ) . "<br>";
+	}
+	return $text;
+}
+
+
 class IG_NCAL_Event extends EM_Event {
-	var $ig_nue_source_id;
+	function import_xml_data( $date, $xml_element ) {
+		/*
+		 * Type as defined by API (OEFFNUNGSZEIT TYPE)
+		 */
+		$this->event_type = ig_ncal_get_type( $xml_element );
 
-
-	function import_xml_data( $xml_element ) {
-		$this->ig_nue_source_id = (int) $xml_element['ID'];
+        $this->ig_nue_source_id = (int) $xml_element['ID'];
 		// $this->event_slug;
 		$this->event_owner = get_current_user_id();
 		$this->event_name = (string) $xml_element->TITEL;
-		$this->event_start_time;
-		$this->event_end_time;
-		$this->event_all_day;
-		$this->event_start_date;
-		$this->event_end_date;
+		$this->event_start_time = $date['event_start_time'];
+		$this->event_end_time = $date['event_end_time'];
+		$this->event_start_date = $date['event_start_time'];
+		$this->event_end_date = $date['event_start_time'];
 		$this->post_content = (string) $xml_element->UNTERTITEL . "<br><a href='" . (string) $xml_element->DETAILLINK . "'>" . (string) $xml_element->DETAILLINK . "</a>";
+		$multiple = false;
+		if( $this->event_type == 1 ) {
+			/*
+			 * If this is an event type 1 it contains only one timeslot. Nothing special has to be done.
+			 */
+			$this->event_all_day = False;
+		} elseif( $multiple == false ) {
+			/*
+			 * Event types 2 and 3 contain long lists of timeslots. Parse them to text and add them to the description text.
+			 */
+			
+			$this->event_all_day = True;
+			$this->post_content .=  ig_ncal_dates_to_text( $this->event_type, $xml_element, $multiple );
+		}
 		$this->event_rsvp;
 		$this->event_rsvp_date;
 		$this->event_rsvp_time = "00:00:00";
@@ -223,28 +259,32 @@ class IG_NCAL_Event extends EM_Event {
 		
 		$this->location->location_name = (string) $xml_element->ORT;
 
-		//echo "<p>" + (string) $xml_element->OEFFNUNGSZEITEN->attributes()['TYP'] + "</p>";
-
 	}
 
-	function save_nue_event () {
-		//var_dump($this);
-
-		/**
-		 * return, we do not want to spam the database during testing (yet)
-		**/
-		//return true;
-
+	function save_nue_event ( $dry_run = false ) {
 		/**
 		 * Use the EM saving function. But we need to create an additional post meta with the source ID.
 		**/
 		//$save_location_return = $this->location->save();
-		$this->location_id = $this->location->id;
-		echo "<p>Location: $save_location_return</p>";
-		//$save_return = $this->save();
-		echo "<p>Event: $save_return</p>";
+		if( $dry_run == false) {
+			$this->location_id = $this->location->save();
+		} else {
+			echo "<p>Not saving location ".$this->location->location_name."</p>";
+		}
+
+		if( $dry_run == false) {
+			$save_return = $this->save();
+		} else {
+			echo "<p>Not saving event:<br>";
+			var_dump($this);
+			echo "</p>";
+		}
 		if( $this->post_id ) {
-			
+			if( $dry_run == false) {
+				update_post_meta( $this->post_id, 'ncal_event_id', $this->ig_nue_source_id );
+			} else {
+				echo "<p>Not saving post meta: ".$this->post_id." ".'ncal_event_id'." ".$this->ig_nue_source_id;
+			}
 		}
 	}
 }
