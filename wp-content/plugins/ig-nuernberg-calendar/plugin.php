@@ -72,7 +72,7 @@ function ig_ncal_import() {
 			*/
 			$newEMEvent = new IG_NCAL_Event;
 			$newEMEvent->import_xml_data( $date, $event );
-			$newEMEvent->save_nue_event( true );
+			$newEMEvent->save_nue_event();
 			unset( $newEMEvent );
 		}
 	}
