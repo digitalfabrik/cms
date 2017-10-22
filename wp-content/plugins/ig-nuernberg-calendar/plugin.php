@@ -9,21 +9,17 @@
  */
 
 
-require_once("sort-events.php");
-register_activation_hook(__FILE__, 'ig_ncal_activation');
-
-function ig_ncal_activation() {
-	if (! wp_next_scheduled ( 'ig_ncal_import_event' )) {
-		//wp_schedule_event(time(), 'daily', 'ig_ncal_import_event');
-	}
+function ig_ncal_menu() {
+	add_submenu_page('edit.php?post_type=event', 'N&uuml;rnberg Import', 'N&uuml;rnberg Import', 'edit_events', 'ig_ncal_import','ig_ncal_import');
 }
+add_action( 'admin_menu', 'ig_ncal_menu' );
+
 
 /*
  * The ig_ncal_import() function is usually called by a WP cron job.
  * It fetches the data from the Nuremberg region event calendar and stores all events as Event Manager event posts.
  * The source ID is saved as a meta value. If the source ID is already stored, the event will not be processed again.
  */
-add_action('ig_ncal_import_event', 'ig_ncal_import');
 function ig_ncal_import() {
 	/*
 	 * Include PHP file containing class for handling EM events and parsing XML.
@@ -52,7 +48,6 @@ function ig_ncal_import() {
 			 * Event already stored or has no event ID, continue with next event,
 			 * We may want to update existing posts in the future.
 			 */
-			//echo "<p><font style='color: #f00; font-weight: bold;'>Event existiert bereits:</font> ".$posts[0]->post_title."</p>";
 			echo "<div class='notice notice-warning'>Event existiert bereits: <i>".$posts[0]->post_title."</i></div>";
 			continue;
 		}
