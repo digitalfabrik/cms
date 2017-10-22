@@ -38,26 +38,41 @@ function ig_ncal_import() {
 
 
 	foreach( $events as $event ) {
-		$dates = ig_ncal_get_dates ( $event );
+		$id = (string) $event->attributes()['ID'];
 		$post = get_posts( array(
 			'meta_key'   => 'ncal_event_id',
-			'meta_value' => $events['ID'],
+			'meta_value' => $id,
 		) );
-		if( count( $post ) > 0 ) {
+		$dates = ig_ncal_get_dates ( $event );
+		if( count( $post ) > 0 || $id == "") {
 			/* 
-			 * Event already stored, continue with next event
+			 * Event already stored or has no event ID, continue with next event,
+			 * We may want to update existing posts in the future.
 			 */
 			continue;
 		}
+
 		/*
-		 * Create a new event for each date, import XML data and save
+		 * For now we only want one EM event per source event
 		 */
-		foreach( $dates as $date ) {
+		$multiple = false;
+		if ( $multiple == true ) {
+			/*
+			* Create a new event for each date, import XML data and save
+			*/
+			foreach( $dates as $date ) {
+				$newEMEvent = new IG_NCAL_Event;
+				$newEMEvent->import_xml_data( $date, $event );
+				$newEMEvent->save_nue_event( true );
+				unset( $newEMEvent );
+			}
+		} else {
+			/*
+			* Create one event per source event ID
+			*/
 			$newEMEvent = new IG_NCAL_Event;
 			$newEMEvent->import_xml_data( $date, $event );
-			var_dump( $newEMEvent );
-			echo "<br><br>";
-			//$newEMEvent->save_nue_event();
+			$newEMEvent->save_nue_event( true );
 			unset( $newEMEvent );
 		}
 	}
