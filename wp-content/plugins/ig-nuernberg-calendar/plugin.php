@@ -29,30 +29,37 @@ function ig_ncal_import() {
 	/*
 	 * Get data from API and parse XML
 	 */
-	$cal_xml_file = file_get_contents('https://www.meine-veranstaltungen.net/export.php5');
+    $cal_xml_file = file_get_contents('https://www.meine-veranstaltungen.net/export.php5');
+    if ( ! $cal_xml_file ) {
+        echo "<div class='notice notice-error'>Can not connect to source. Please try again later or contact the admin.</div>";
+        return false;
+    }
 	$events = new SimpleXMLElement($cal_xml_file);
 
 
 	foreach( $events as $event ) {
-		$id = (string) $event->attributes()['ID'];
+        $id = (string) $event->attributes()['ID'];
+        if( "" == $id ) {
+            continue;
+        }
 		$args = array(
 			'meta_key' => 'ncal_event_id',
 			'meta_value' => $id,
 			'post_type' => 'event',
 			'post_status' => 'any',
 			'posts_per_page' => -1
-		);
+        );
 		$posts = get_posts($args);
 		if( count( $posts ) > 0 || $id == "") {
 			/* 
 			 * Event already stored or has no event ID, continue with next event,
 			 * We may want to update existing posts in the future.
 			 */
-			echo "<div class='notice notice-warning'>Event existiert bereits: <i>".$posts[0]->post_title."</i></div>";
-			continue;
+            echo "<div class='notice notice-warning'>Event existiert bereits: <i>".$posts[0]->post_title."</i></div>";
+            continue;
 		}
 
-		$dates = ig_ncal_get_dates ( $event );
+        $dates = ig_ncal_get_dates ( $event );
 
 		/*
 		 * For now we only want one EM event per source event
@@ -63,7 +70,7 @@ function ig_ncal_import() {
 			 * Create a new event for each date, import XML data and save
 			 */
 			foreach( $dates as $date ) {
-				$newEMEvent = new IG_NCAL_Event;
+                $newEMEvent = new IG_NCAL_Event;
 				$newEMEvent->import_xml_data( $date, $event );
 				$newEMEvent->save_nue_event( true );
 				unset( $newEMEvent );
@@ -71,7 +78,8 @@ function ig_ncal_import() {
 		} else {
 			/*
 			* Create one event per source event ID
-			*/
+            */
+            $date = $dates[0];
 			$newEMEvent = new IG_NCAL_Event;
 			$newEMEvent->import_xml_data( $date, $event );
 			$newEMEvent->save_nue_event();
