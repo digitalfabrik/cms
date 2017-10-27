@@ -93,9 +93,10 @@ function ig_ncal_get_oez_type2_multiple( $xml_element ) {
  * @return Array
  */ 
 function ig_ncal_get_oez_type2_single( $xml_element ) {
-	$dates = array();
-	$dates[$n]['event_start_time'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
-	$dates[$n]['event_end_time'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
+    $dates = array();
+    $n = 0;
+	$dates[$n]['event_start_date'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM1;
+	$dates[$n]['event_end_date'] 	=	(string) $xml_element->OEFFNUNGSZEITEN->DATUM2;
 	$dates[$n]['event_start_time'] 	= 	"00:00";
 	$dates[$n]['event_end_time'] 	=	"23:59";
 	return $dates;
@@ -154,7 +155,7 @@ function ig_ncal_get_oez_type3_multiple( $xml_element ) {
 	 */
 	foreach($daterange as $date){
 		$day = $date->format("N");
-		$date = $date->format("Y-m-d");
+        $date = $date->format("Y-m-d");
 		if ( !in_array( $date, $exceptions ) ) {		
 			$dates[$n]['event_start_date'] 	= 	$date;
 			$dates[$n]['event_end_date'] 	=	$date;
@@ -176,9 +177,10 @@ function ig_ncal_get_oez_type3_multiple( $xml_element ) {
  * @return Array
  */ 
 function ig_ncal_get_oez_type3_single( $xml_element ) {
-	$dates = array();
-	$dates[$n]['event_start_date'] 	= 	$xml_element->OEFFNUNGSZEITEN->DATUM1;
-	$dates[$n]['event_end_date'] 	=	$xml_element->OEFFNUNGSZEITEN->DATUM2;
+    $dates = array();
+    $n = 0;
+	$dates[$n]['event_start_date'] 	= 	(string) $xml_element->OEFFNUNGSZEITEN->DATUM1;
+	$dates[$n]['event_end_date'] 	=	(string) $xml_element->OEFFNUNGSZEITEN->DATUM2;
 	$dates[$n]['event_start_time'] 	= 	"00:00";
 	$dates[$n]['event_end_time'] 	=	"23:59";
 	return $dates;
@@ -241,13 +243,13 @@ class IG_NCAL_Event extends EM_Event {
 		$this->event_type = ig_ncal_get_type( $xml_element );
 
         $this->ig_nue_source_id = (int) $xml_element['ID'];
-		// $this->event_slug;
+		$this->post_status = 'draft';
 		$this->event_owner = get_current_user_id();
-		$this->event_name = (string) $xml_element->TITEL;
-		$this->event_start_time = $date['event_start_time'];
-		$this->event_end_time = $date['event_end_time'];
-		$this->event_start_date = $date['event_start_time'];
-		$this->event_end_date = $date['event_start_time'];
+        $this->event_name = (string) $xml_element->TITEL;
+        $this->event_start_time = $date['event_start_time'] . ":00";
+        $this->event_end_time = $date['event_end_time'] . ":00";
+        $this->event_start_date = $date['event_start_date'];
+        $this->event_end_date = $date['event_end_date'];
 		$this->post_content = (string) $xml_element->UNTERTITEL . "<br>Mehr Informationen: <a href='" . (string) $xml_element->DETAILLINK . "'>" . (string) $xml_element->DETAILLINK . "</a>";
 		$multiple = false;
 		if( $this->event_type == 1 ) {
@@ -308,7 +310,8 @@ class IG_NCAL_Event extends EM_Event {
 		}
 
 		if( $dry_run == false) {
-			if ( $this->save() )
+            if ( $this->save() )
+                $this->set_status(NULL, true);
 				echo "<div class='notice notice-success'>Neues Event: <i>".$this->event_name."</i></div>";
 		} else {
 			echo "<p>Not saving event: <b>".$this->event_name."</b><br>".$this->post_content."</p>";
