@@ -1,41 +1,20 @@
 language: php
 php:
-  - '5.5'
+  - '5.4'
   - '5.6'
-
-services:
-  - mysql
-
-sudo: required
 
 before_script:
   - sudo apt-get update
-  - sudo apt-get install apache2 wget
-  # install dependencies
-  - composer install --no-interaction
-  # move contents to directory 'wordpress'
-  - mkdir wordpress
-  - shopt -s extglob dotglob # turn on shell expansion and move hidden files
-  - cp -R !(wordpress) wordpress
-  - shopt -u dotglob
-  - working_dir=$(pwd)/wordpress
-  # Set up website according to https://docs.travis-ci.com/user/languages/php#Apache-%2B-PHP
-  ## enable php-fpm
+  - sudo apt-get install apache2 libapache2-mod-fastcgi
+  # enable php-fpm
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
-  - sudo a2enmod rewrite actions alias
+  - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf
+  - sudo a2enmod rewrite actions fastcgi alias
   - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - sudo sed -i -e "s,www-data,travis,g" /etc/apache2/envvars
+  - sudo chown -R travis:travis /var/lib/apache2/fastcgi
   - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
-  ## configure apache virtual hosts
-  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/default
-  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/default
+  # configure apache virtual hosts
+  - sudo cp -f build/travis-ci-apache /etc/apache2/sites-available/000-default.conf
+  - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
-  ## set up database
-  - mysql -u root -e "CREATE DATABASE wordpress;"
-  - mysql -u root -e "CREATE USER wordpress@localhost IDENTIFIED BY 'dummy';"
-  - mysql -u root -e "GRANT ALL PRIVILEGES ON wordpress.* TO wordpress@localhost;"
-  - mysql -u root -e "FLUSH PRIVILEGES;"
-  - sed -i "s|C:\\xampp\\htdocs\\wordpress|$working_dir|g" database.sql
-  - mysql -u root wordpress < database.sql
-  ## activate wordpress plugins
-  - source ./wp-activate-plugins.sh
-  - wget http://localhost/wordpress/
