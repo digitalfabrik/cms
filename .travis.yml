@@ -10,7 +10,7 @@ sudo: required
 
 before_script:
   - sudo apt-get update
-  - sudo apt-get install apache2
+  - sudo apt-get install apache2 wget
   # install dependencies
   - composer install --no-interaction
   # move contents to directory 'wordpress'
@@ -38,3 +38,4 @@ before_script:
   - mysql -u root wordpress < database.sql
   ## activate wordpress plugins
   - source ./wp-activate-plugins.sh
+  - wget http://localhost/wordpress/
