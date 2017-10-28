@@ -10,7 +10,7 @@ sudo: required
 
 before_script:
   - sudo apt-get update
-  - sudo apt-get install apache2 libachape2-mod-fastcgi
+  - sudo apt-get install apache2
   # install dependencies
   - composer install --no-interaction
   # move contents to directory 'wordpress'
