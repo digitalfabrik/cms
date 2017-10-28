@@ -16,6 +16,7 @@ before_script:
   - working_dir=$(pwd)/wordpress
   # Set up website according to https://docs.travis-ci.com/user/languages/php#Apache-%2B-PHP
   - sudo apt-get update
+  - sudo apt search mysql-server
   - sudo apt-get install apache2 libapache2-mod-fastcgi mysql-server
   ## enable php-fpm
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
