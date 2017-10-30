@@ -9,6 +9,14 @@ sudo: required
 
 
 before_script:
+  # install dependencies
+  - composer install --no-interaction
+  # move contents to directory 'wordpress'
+  - mkdir wordpress
+  - shopt -s extglob dotglob # turn on shell expansion and move hidden files
+  - cp -R !(wordpress) wordpress
+  - shopt -u dotglob
+- working_dir=$(pwd)/wordpress
   - sudo apt-get update
   - sudo apt-get install apache2 libapache2-mod-fastcgi
   # enable php-fpm
