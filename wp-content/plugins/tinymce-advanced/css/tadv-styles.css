@@ -84,7 +84,8 @@ ul.container,
 	color: #555;
 }
 
-.tadvitem i.mce-ico.mce-i-ltr {
+.tadvitem i.mce-ico.mce-i-ltr,
+.tadvitem i.mce-ico.mce-i-tadv_mark {
 	font-family: tinymce;
 	font-size: 16px;
 	vertical-align: text-top;
@@ -92,6 +93,15 @@ ul.container,
 
 .tadvitem i.mce-ico.mce-i-ltr:before {
 	content: "\e02f";
+}
+
+.tadvitem i.mce-ico.mce-i-tadv_mark:before {
+    content: "\e01a";
+}
+
+.tadvitem i.mce-ico.mce-i-tadv_mark {
+    text-shadow: none;
+    background: #ddd;
 }
 
 #tadv-mce-menu {

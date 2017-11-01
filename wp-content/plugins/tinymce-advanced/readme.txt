@@ -1,9 +1,9 @@
 === TinyMCE Advanced ===
 Contributors: azaozz
 Tags: wysiwyg, formatting, tinymce, write, editor
-Requires at least: 4.7
-Tested up to: 4.7
-Stable tag: 4.4.3
+Requires at least: 4.8
+Tested up to: 4.8
+Stable tag: 4.6.3
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,13 @@ With this plugin you can also enable the TinyMCE menu above the toolbars. This w
 Best is to install directly from WordPress. If manual installation is required, please make sure that the plugin files are in a folder named "tinymce-advanced" (not two nested folders) in the WordPress plugins folder, usually "wp-content/plugins".
 
 == Changelog ==
+
+= 4.6.3 =
+* Updated for WordPress 4.8 and TinyMCE 4.6.3.
+
+= 4.5.6 =
+* Updated for WordPress 4.7.4 and TinyMCE 4.5.6.
+* Fixed PHP notice after importing settings.
 
 = 4.4.3 =
 * Updated for WordPress 4.7 and TinyMCE 4.4.3.
