@@ -242,7 +242,7 @@ class URE_View {
     // end of advertisement()
 
 
-    public function output_confirmation_dialog() {
+    public static function output_confirmation_dialog() {
         ?>
         <div id="ure_confirmation_dialog" class="ure-modal-dialog">
             <div id="ure_cd_html" style="padding:10px;"></div>
@@ -252,17 +252,41 @@ class URE_View {
     // end of output_confirmation_dialog()
  
     
+    private function show_select_all() {
+        $multisite = $this->lib->get('multisite');
+        $current_role = $this->lib->get('current_role');
+        $show = true;
+        if ($multisite) { 
+            if ($current_role=='administrator' && !$this->lib->is_super_admin()) {
+                $show = false;
+            }
+        } elseif ($current_role=='administrator') {
+            $show = false;
+        }
+        
+        return $show;
+    }
+    // end of show_select_all()
+    
+    
     public function display_caps($for_role = true, $edit_mode=true) {
-        $caps_columns_quant = $this->lib->get('caps_columns_quant');
+        $caps_columns_quant = $this->lib->get('caps_columns_quant');                                    
+
 ?>        
     <table id="ure_caps_container" cellpadding="0" cellspacing="0">
         <tr> 
             <td id="ure_caps_groups_title"><span style="font-weight: bold;"><?php esc_html_e('Group', 'user-role-editor');?></span> (<?php esc_html_e('Total', 'user-role-editor');?>/<?php esc_html_e('Granted', 'user-role-editor');?>)</td>
             <td id="ure_caps_select">
                 <div class="ure-table">
+<?php
+        if ($this->show_select_all()) {
+?>
                     <div class="ure-table-cell">
                         <input type="checkbox" id="ure_select_all_caps" name="ure_select_all_caps" value="ure_select_all_caps"/>                
                     </div>
+<?php
+        }
+?>
                     <div class="ure-table-cell ure-caps-option nowrap">
                         <?php esc_html_e('Quick filter:', 'user-role-editor'); ?>&nbsp;
                         <input type="text" id="quick_filter" name="quick_filter" value="" size="10" onkeyup="ure_filter_capabilities(this.value);" />&nbsp;&nbsp;&nbsp;

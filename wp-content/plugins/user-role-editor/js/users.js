@@ -67,7 +67,7 @@ function ure_move_users_from_no_role() {
             if (typeof data.result !== 'undefined') {
                 if (data.result === 'success') {                    
                     ure_post_move_users_command(data);
-                } else if (data.result === 'failure') {
+                } else if (data.result==='error' || data.result==='failure') {
                     alert(data.message);
                 } else {
                     alert('Wrong response: ' + response)

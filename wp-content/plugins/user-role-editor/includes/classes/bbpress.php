@@ -16,7 +16,7 @@ class URE_bbPress {
     protected $lib = null;
     
     
-    protected function __construct(Ure_Lib $lib) {
+    protected function __construct(URE_Lib $lib) {
         
         $this->lib = $lib;
         
@@ -24,7 +24,7 @@ class URE_bbPress {
     // end of __construct()
     
     
-    static public function get_instance(Ure_Lib $lib) {
+    static public function get_instance(URE_Lib $lib) {
         if (!function_exists('bbp_filter_blog_editable_roles')) {  // bbPress plugin is not active
             return null;            
         }
@@ -73,5 +73,40 @@ class URE_bbPress {
     }
     // end of get_caps()
     
+    
+    /**
+     * Return empty array in order do not include bbPress roles into selectable lists: supported by Pro version only
+     * @return array
+     */
+    public function get_bbp_editable_roles() {
+        
+        $all_bbp_roles = array();
+        
+        return $all_bbp_roles;        
+    }
+    // end of get_bbp_editable_roles()
+    
+    
+    /**
+     * Return bbPress roles found at $roles array. Used to exclude bbPress roles from processing as free version should not support them
+     * 
+     * @param array $roles
+     * @return array
+     */
+    public function extract_bbp_roles($roles) {
+                
+        $all_bbp_roles = array_keys(bbp_get_dynamic_roles());
+        $user_bbp_roles = array();
+        foreach($roles as $role) {
+            if (in_array($role, $all_bbp_roles)) {
+                $user_bbp_roles[] = $role;                    
+            }            
+        }
+        
+        return $user_bbp_roles;        
+    }
+    // end of extract_bbp_roles()
+
+
 }
 // end of URE_bbPress class
