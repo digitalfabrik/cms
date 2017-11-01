@@ -7,7 +7,6 @@ author-chat \
 cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
-events-manager-wpml \
 firebase-notifications \
 ig-automatic-translation \
 ig-automatic-translation-button \
