@@ -1,7 +1,7 @@
 <?php
 global $wpdb;
 
-require WPML_TM_PATH . '/menu/basket-tab/wpml-basket-tab-ajax.class.php';
+require_once WPML_TM_PATH . '/menu/basket-tab/wpml-basket-tab-ajax.class.php';
 
 $basket_ajax = new WPML_Basket_Tab_Ajax( TranslationProxy::get_current_project(),
                                          wpml_tm_load_basket_networking(),
@@ -31,9 +31,10 @@ function wpml_save_job_ajax() {
 	if ( ! wpml_is_action_authenticated( 'wpml_save_job' ) ) {
 		die( 'Wrong Nonce' );
 	}
-	$data    = array();
-	parse_str( $_POST['data'], $data );
-	
+	$data      = array();
+	$post_data = WPML_TM_Post_Data::strip_slashes_for_single_quote( $_POST['data'] );
+	parse_str( $post_data, $data );
+
 	$job = new WPML_TM_Editor_Job_Save( );
 	
 	$job_details = array( 'job_type'             => $data[ 'job_post_type' ],
@@ -70,9 +71,9 @@ function icl_pickup_translations() {
 	if ( ! wpml_is_action_authenticated( 'icl_pickup_translations' ) ) {
 		die( 'Wrong Nonce' );
 	}
-	global $ICL_Pro_Translation, $wpdb;
+	global $ICL_Pro_Translation, $wpdb, $wpml_post_translations, $wpml_term_translations;
 	$job_factory         = wpml_tm_load_job_factory();
-	$wpml_tm_records     = new WPML_TM_Records( $wpdb );
+	$wpml_tm_records     = new WPML_TM_Records( $wpdb, $wpml_post_translations, $wpml_term_translations );
 	$cms_id_helper       = new WPML_TM_CMS_ID( $wpml_tm_records, $job_factory );
 	$project             = TranslationProxy::get_current_project();
 	$remote_sync_factory = new WPML_TP_Remote_Sync_Factory( $project,

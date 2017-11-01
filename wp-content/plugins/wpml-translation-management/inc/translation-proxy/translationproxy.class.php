@@ -134,9 +134,9 @@ class TranslationProxy {
 		if ( $service ) {
 			$service_info = array();
 			if ( icl_do_not_promote() ) {
-				$service_info['name']        = __( 'Translation Service', 'sitepress' );
+				$service_info['name']        = __( 'Translation Service', 'wpml-translation-management' );
 				$service_info['logo']        = false;
-				$service_info['header']      = __( 'Translation Service', 'sitepress' );
+				$service_info['header']      = __( 'Translation Service', 'wpml-translation-management' );
 				$service_info['description'] = false;
 				$service_info['contact_url'] = false;
 			} else {
@@ -327,7 +327,7 @@ class TranslationProxy {
 	public static function get_current_service_name() {
 
 		if ( icl_do_not_promote() ) {
-			return __( 'Translation Service', 'sitepress' );
+			return __( 'Translation Service', 'wpml-translation-management' );
 		}
 
 		$translation_service = self::get_current_service();
@@ -529,7 +529,7 @@ class TranslationProxy {
 	}
 
 	/**
-	 * @return bool|array
+	 * @return array
 	 */
 	public static function get_extra_fields_local() {
 		global $sitepress;
@@ -538,9 +538,40 @@ class TranslationProxy {
 
 		if ( isset( $icl_translation_projects[ TranslationProxy_Project::generate_service_index( $service ) ]['extra_fields'] ) && ! empty( $icl_translation_projects[ TranslationProxy_Project::generate_service_index( $service ) ]['extra_fields'] ) ) {
 			return $icl_translation_projects[ TranslationProxy_Project::generate_service_index( $service ) ]['extra_fields'];
-		} else {
-			return false;
 		}
+
+		return array();
+	}
+
+	public static function maybe_convert_extra_fields( $extra_fields ) {
+		$extra_fields_typed = array();
+
+		if ( $extra_fields && is_array( $extra_fields ) ) {
+			/** @var array $extra_fields */
+			/** @var stdClass $extra_field */
+			foreach ( $extra_fields as $extra_field ) {
+				if ( $extra_field instanceof WPML_TP_Extra_Field ) {
+					$extra_field_typed = $extra_field;
+				} else {
+					$extra_field_typed = new WPML_TP_Extra_Field();
+					if ( isset( $extra_field->type ) ) {
+						$extra_field_typed->type = $extra_field->type;
+					}
+					if ( isset( $extra_field->label ) ) {
+						$extra_field_typed->label = $extra_field->label;
+					}
+					if ( isset( $extra_field->name ) ) {
+						$extra_field_typed->name = $extra_field->name;
+					}
+					if ( isset( $extra_field->items ) ) {
+						$extra_field_typed->items = $extra_field->items;
+					}
+				}
+				$extra_fields_typed[] = $extra_field_typed;
+			}
+		}
+
+		return $extra_fields_typed;
 	}
 
 	public static function get_custom_fields_data() {

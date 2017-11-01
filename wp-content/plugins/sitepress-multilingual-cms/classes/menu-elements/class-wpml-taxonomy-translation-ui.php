@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Class WPML_Taxonomy_Translation_UI
+ */
 class WPML_Taxonomy_Translation_UI extends WPML_SP_User {
 
 	private $taxonomy = '';
@@ -9,6 +13,7 @@ class WPML_Taxonomy_Translation_UI extends WPML_SP_User {
 	/**
 	 * WPML_Taxonomy_Translation constructor.
 	 *
+	 * @param SitePress $sitepress
 	 * @param string $taxonomy if given renders a specific taxonomy,
 	 *                         otherwise renders a placeholder
 	 * @param bool[] $args array with possible indices:
@@ -22,17 +27,16 @@ class WPML_Taxonomy_Translation_UI extends WPML_SP_User {
 		if ( $taxonomy ) {
 			$this->taxonomy_obj = get_taxonomy( $taxonomy );
 		}
-		
+
 		if ( $screen_options_factory ) {
-			$this->screen_options = $screen_options_factory->create_pagination( 'taxonomy_translation_per_page',
-				ICL_TM_DOCS_PER_PAGE );
-			$this->help_tab = $screen_options_factory->create_help_tab(
+			$this->screen_options = $screen_options_factory->create_pagination( 'taxonomy_translation_per_page', ICL_TM_DOCS_PER_PAGE );
+			$this->help_tab       = $screen_options_factory->create_help_tab(
 				'taxonomy_translation_help_tab',
-				__( 'Taxonomy Translation', 'sitepress' ),
-				'<p>' . __( 'Descriptive content that will show in My Help Tab-body goes here.' ) . '</p>'
-				);
+				esc_html__( 'Taxonomy Translation', 'sitepress' ),
+				'<p>' . esc_html__( 'Descriptive content that will show in My Help Tab-body goes here.' ) . '</p>'
+			);
 		}
-		
+
 	}
 
 	/**
@@ -49,8 +53,7 @@ class WPML_Taxonomy_Translation_UI extends WPML_SP_User {
 			$output .= '<input type="hidden" id="tax-selector-hidden" value="1"/>';
 		}
 		if ( $this->tax_selector ) {
-			$output .= '<h1>' . __( 'Taxonomy Translation',
-					'sitepress' ) . '</h1>';
+			$output .= '<h1>' . esc_html__( 'Taxonomy Translation', 'sitepress' ) . '</h1>';
 			$output .= '<br/>';
 		}
 		$output .= '<div id="wpml_tt_taxonomy_translation_wrap" data-items_per_page="' . $this->get_items_per_page() . '">';
@@ -59,12 +62,16 @@ class WPML_Taxonomy_Translation_UI extends WPML_SP_User {
 		do_action( 'icl_menu_footer' );
 		echo $output . '</div>';
 	}
-	
+
+	/**
+	 * @return int
+	 */
 	private function get_items_per_page() {
 		$items_per_page = 10;
 		if ( $this->screen_options ) {
 			$items_per_page = $this->screen_options->get_items_per_page();
 		}
+
 		return $items_per_page;
 	}
 }

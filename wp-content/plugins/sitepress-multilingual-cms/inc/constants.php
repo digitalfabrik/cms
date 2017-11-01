@@ -1,6 +1,6 @@
 <?php
-if ( file_exists( ICL_PLUGIN_PATH . '/inc/sandbox.inc' ) ) {
-	require ICL_PLUGIN_PATH . '/inc/sandbox.inc';
+if ( file_exists( WPML_PLUGIN_PATH . '/inc/sandbox.inc' ) ) {
+	require WPML_PLUGIN_PATH . '/inc/sandbox.inc';
 	define( 'OTG_SANDBOX', true );
 } else {
 	define( 'OTG_SANDBOX', false );
@@ -88,7 +88,6 @@ define( 'ICL_PRO_TRANSLATION_COST_PER_WORD', 0.09 );
 define( 'ICL_PRO_TRANSLATION_PICKUP_XMLRPC', 0 );
 define( 'ICL_PRO_TRANSLATION_PICKUP_POLLING', 1 );
 
-define( 'ICL_WP_UPDATE_LOCALE', 'en_US' );
 define( 'ICL_REMOTE_WPML_CONFIG_FILES_INDEX', 'https://d2salfytceyqoe.cloudfront.net/' );
 
 define( 'ICL_ICONS_URL', ICL_PLUGIN_URL . '/res/img/' );
@@ -117,6 +116,7 @@ define( 'WPML_TT_TERMS_PER_PAGE', 10 );
 define( 'WPML_TRANSLATE_CUSTOM_FIELD', 2 );
 define( 'WPML_COPY_CUSTOM_FIELD', 1 );
 define( 'WPML_IGNORE_CUSTOM_FIELD', 0 );
+define( 'WPML_COPY_ONCE_CUSTOM_FIELD', 3 );
 
 define( 'WPML_POST_META_CONFIG_INDEX_SINGULAR', 'custom-field' );
 define( 'WPML_POST_META_SETTING_INDEX_SINGULAR', 'custom_field' );
@@ -139,3 +139,9 @@ define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN',     2 );
 define( 'WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER',  3 );
 
 define( 'WPML_ELEMENT_TRANSLATIONS_CACHE_GROUP', 'element_translations' );
+
+define('WEBSITE_DETAILS_TRANSIENT_KEY', 'wpml_icl_query_website_details');
+
+if ( ! defined('WPML_COMPATIBILITY_ENDPOINT' ) ) {
+	define( 'WPML_COMPATIBILITY_ENDPOINT', 'https://wpml.org/account/wpml-compatibility/' );
+}

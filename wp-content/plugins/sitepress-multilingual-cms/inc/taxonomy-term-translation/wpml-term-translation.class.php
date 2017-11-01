@@ -115,6 +115,10 @@ class WPML_Term_Translation extends WPML_Element_Translation {
 						AND t.element_type = CONCAT('tax_', tax.taxonomy)";
 	}
 
+	protected function get_type_prefix() {
+		return 'tax_';
+	}
+
 	private function maybe_warm_term_id_cache() {
 
 		if ( ! isset( $this->ttids ) || ! isset( $this->term_ids ) ) {
@@ -133,5 +137,20 @@ class WPML_Term_Translation extends WPML_Element_Translation {
 				$this->term_ids[ $row['element_id'] ]               = $row['term_id'];
 			}
 		}
+	}
+
+	/**
+	 * @param $term
+	 * @param string $slug
+	 * @param $taxonomy
+	 * @param $lang_code
+	 *
+	 * @return string
+	 */
+	public function generate_unique_term_slug( $term, $slug = '', $taxonomy, $lang_code ) {
+		if ( '' === trim( $slug ) ) {
+			$slug = sanitize_title( $term );
+		}
+		return WPML_Terms_Translations::term_unique_slug( $slug, $taxonomy, $lang_code );
 	}
 }

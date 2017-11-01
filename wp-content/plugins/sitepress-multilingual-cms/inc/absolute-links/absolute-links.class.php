@@ -76,7 +76,12 @@ class AbsoluteLinks{
 			}
 			array_unshift( $this->active_languages, $current_language );
 		}
-		
+
+		$blacklist_requests = apply_filters( 'wpml_sl_blacklist_requests', array(), $sitepress );
+		if ( ! is_array( $blacklist_requests ) ) {
+			$blacklist_requests = array();
+		}
+
 		foreach ( $this->active_languages as $test_language ) {
 
 			$rewrite = $this->initialize_rewrite( $current_language, $default_language, $sitepress );
@@ -153,7 +158,7 @@ class AbsoluteLinks{
 						$request = $req_uri;
 					}
 
-					if ( ! $request ) {
+					if ( ! $request || in_array( $request, $blacklist_requests, true ) ) {
 						continue;
 					}
 	
@@ -188,7 +193,7 @@ class AbsoluteLinks{
 					$post_name = $category_name = $tax_name = false;
 	
 					if ( isset( $permalink_query_vars[ 'pagename' ] ) ) {
-						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress );
+						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress, new WPML_Debug_BackTrace( phpversion(), 7 ) );
 						$page_by_path = $get_page_by_path->get( $permalink_query_vars[ 'pagename' ], $test_language );
 
 						$post_name = $permalink_query_vars[ 'pagename' ];
@@ -228,7 +233,7 @@ class AbsoluteLinks{
 	
 					if ( $post_name && isset( $post_type ) ) {
 
-						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress );
+						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress, new WPML_Debug_BackTrace( phpversion(), 7 ) );
 						$p = $get_page_by_path->get( $post_name, $test_language, OBJECT, $post_type );
 
 						if ( empty( $p ) ) { // fail safe
@@ -521,23 +526,26 @@ class AbsoluteLinks{
 		
 		return array( $lang, $dir_path );
 	}
-	
-	
-	function process_string( $st_id, $translation = true ) {
+
+
+	function process_string( $st_id ) {
 		global $wpdb;
 		if ( $st_id ) {
-			if ( $translation ) {
-				$string_value = $wpdb->get_var( "SELECT value FROM {$wpdb->prefix}icl_string_translations WHERE id=" . $st_id );
+
+			$table = $wpdb->prefix . 'icl_string_translations';
+
+			$data         = $wpdb->get_row( $wpdb->prepare( "SELECT value, string_id, language FROM {$table} WHERE id=%d", $st_id ) );
+			$string_value = $data->value;
+			$string_type  = $wpdb->get_var( $wpdb->prepare( "SELECT type FROM {$wpdb->prefix}icl_strings WHERE id=%d", $data->string_id ) );
+
+			if ( 'LINK' === $string_type ) {
+				$string_value_up = $this->convert_url( $string_value, $data->language );
 			} else {
-				$string_value = $wpdb->get_var( "SELECT value FROM {$wpdb->prefix}icl_strings WHERE id=" . $st_id );
+				$string_value_up = $this->convert_text( $string_value );
 			}
-			$string_value_up  = $this->convert_text( $string_value );
+
 			if ( $string_value_up != $string_value ) {
-				if ( $translation ) {
-					$wpdb->update( $wpdb->prefix . 'icl_string_translations', array( 'value' => $string_value_up ), array( 'id' => $st_id ) );
-				} else {
-					$wpdb->update( $wpdb->prefix . 'icl_strings', array( 'value' => $string_value_up ), array( 'id' => $st_id ) );
-				}
+				$wpdb->update( $table, array( 'value' => $string_value_up, 'status' => ICL_STRING_TRANSLATION_COMPLETE ), array( 'id' => $st_id ) );
 			}
 		}
 	}
@@ -551,7 +559,6 @@ class AbsoluteLinks{
 
 		$this_post_language = $sitepress->get_language_for_element($post_id, 'post_' . $post->post_type);
 		$current_language = $sitepress->get_current_language();
-		
 		$sitepress->switch_lang($this_post_language);
 		
 		$post_content = $this->convert_text( $post->post_content );
@@ -571,6 +578,25 @@ class AbsoluteLinks{
 	function convert_text ( $text ) {
 		$alp_broken_links = array();
 		return $this->_process_generic_text( $text, $alp_broken_links );
+	}
+
+	public function convert_url( $url, $lang = null ) {
+		global $sitepress;
+
+		if ( $this->is_home( $url ) ) {
+			$absolute_url = $sitepress->convert_url( $url, $lang );
+		} else {
+
+			$html         = '<a href="' . $url . '">removeit</a>';
+			$html         = $this->convert_text( $html );
+			$absolute_url = str_replace( array( '<a href="', '">removeit</a>' ), array( '', '' ), $html );
+		}
+
+		return $absolute_url;
+	}
+
+	public function is_home( $url ) {
+		return untrailingslashit( get_home_url() ) ===  untrailingslashit( $url );
 	}
 
 }

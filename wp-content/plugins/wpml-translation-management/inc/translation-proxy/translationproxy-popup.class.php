@@ -2,7 +2,7 @@
 class TranslationProxy_Popup {
 
 	public static function display() {
-		include WPML_TM_PATH . '/inc/translation-proxy/translationproxy-popup.php';
+		include_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-popup.php';
 		exit;
 	}
 

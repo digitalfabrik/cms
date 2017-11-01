@@ -16,13 +16,13 @@ function icl_import_xml() {
 	}
 	$default = $sitepress->get_default_language();
 	
-		$out = '<h3>' . __('Select Language', 'sitepress') . '</h3><p><select name="icl_post_language">';
+		$out = '<h3>' . esc_html__('Select Language', 'sitepress') . '</h3><p><select name="icl_post_language">';
 		foreach ($langs as $lang) {
-			$out .= '<option value="' . $lang['code'] . '"';
+			$out .= '<option value="' . esc_attr( $lang['code'] ) . '"';
 			if ($default == $lang['code']) {
 				$out .= ' selected="selected"';
 			}
-			$out .= '>' . $lang['native_name'] . '<\/option>';
+			$out .= '>' . esc_html( $lang['native_name'] ) . '<\/option>';
 		}
 		$out .= '<\/select><\/p>';
 	

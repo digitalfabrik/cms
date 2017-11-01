@@ -72,7 +72,8 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 			if ( ! $this->sitepress->get_setting( 'tm_xliff_version' ) ) {
 				$this->sitepress->set_setting( 'tm_xliff_version', '12', true );
 			}
-			if ( 1 < count( $this->sitepress->get_active_languages() ) ) {
+
+			if ( 1 < count( $this->sitepress->get_languages( false, true ) ) ) {
 				add_filter( 'wpml_translation_queue_actions', array(
 					$this,
 					'translation_queue_add_actions'
@@ -249,8 +250,8 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 		global $wpdb, $current_user;
 
 		if ( empty( $job_ids ) && isset( $_GET['xliff_export_data'] ) ) {
-			$data = unserialize( base64_decode( $_GET['xliff_export_data'] ) );
-			$job_ids = isset( $data['job'] ) ? array_keys( $data['job'] ) : array();
+			$data = json_decode( base64_decode( $_GET['xliff_export_data'] ) );
+			$job_ids = isset( $data->job ) ? array_keys( (array) $data->job ) : array();
 		}
 
 		$archive = new wpml_zip();
@@ -341,40 +342,61 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 		$this->success = array();
 		$contents      = array();
 
-		if ( isset( $file['tmp_name'] ) && $file['tmp_name'] ) {
+		if ( 0 === (int) $file['size'] ) {
+			$this->error = new WP_Error( 'empty_file', __( 'You are trying to import an empty file.', 'wpml-translation-management' ) );
+
+			return false;
+		} elseif ( isset( $file['tmp_name'] ) && $file['tmp_name'] ) {
 			$fh   = fopen( $file['tmp_name'], 'r' );
 			$data = fread( $fh, 4 );
 			fclose( $fh );
 			if ( $data[0] == 'P' && $data[1] == 'K' && $data[2] == chr( 03 ) && $data[3] == chr( 04 ) ) {
 				if ( class_exists( 'ZipArchive' ) ) {
 					$z     = new ZipArchive();
-					$zopen = $z->open( $file['tmp_name'],
-						4 );
+					$zopen = $z->open( $file['tmp_name'], 4 );
 					if ( true !== $zopen ) {
-						return new WP_Error( 'incompatible_archive', __( 'Incompatible Archive.' ) );
+						$this->error =  new WP_Error( 'incompatible_archive', __( 'Incompatible Archive.', 'wpml-translation-management' ) );
+						return false;
 					}
+					$empty_files = array();
 					for ( $i = 0; $i < $z->numFiles; $i ++ ) {
 						if ( ! $info = $z->statIndex( $i ) ) {
-							return new WP_Error( 'stat_failed', __( 'Could not retrieve file from archive.' ) );
+							$this->error = new WP_Error( 'stat_failed', __( 'Could not retrieve file from archive.', 'wpml-translation-management' ) );
+							return false;
 						}
 						$content = $z->getFromIndex( $i );
-						if ( false === $content ) {
-							return new WP_Error( 'extract_failed', __( 'Could not extract file from archive.' ), $info['name'] );
+						if ( false === (bool) $content ) {
+							$empty_files[] = $info['name'];
 						}
 						$contents[ $info['name'] ] = $content;
 					}
+					if ( $empty_files ) {
+						$this->error = new WP_Error( 'extract_failed', __( 'The archive contains one or more empty files.', 'wpml-translation-management' ), $empty_files );
+						return false;
+					}
+
 				} else {
 					require_once( ABSPATH . 'wp-admin/includes/class-pclzip.php' );
 					$archive = new PclZip( $file['tmp_name'] );
 					// Is the archive valid?
 					if ( false == ( $archive_files = $archive->extract( PCLZIP_OPT_EXTRACT_AS_STRING ) ) ) {
-						return new WP_Error( 'incompatible_archive', __( 'Incompatible Archive.' ), $archive->errorInfo( true ) );
+						$this->error = new WP_Error( 'incompatible_archive', __( 'You are trying to import an incompatible Archive.', 'wpml-translation-management' ), $archive->errorInfo( true ) );
+						return false;
 					}
 					if ( 0 == count( $archive_files ) ) {
-						return new WP_Error( 'empty_archive', __( 'Empty archive.' ) );
+						$this->error = new WP_Error( 'empty_archive', __( 'You are trying to import an empty archive.', 'wpml-translation-management' ) );
+						return false;
 					}
+					$empty_files = array();
 					foreach ( $archive_files as $content ) {
+						if ( false === (bool) $content['content'] ) {
+							$empty_files[] = $content['filename'];
+						}
 						$contents[ $content['filename'] ] = $content['content'];
+					}
+					if ( $empty_files ) {
+						$this->error = new WP_Error( 'extract_failed', __( 'The archive contains one or more empty files.', 'wpml-translation-management' ), $empty_files );
+						return false;
 					}
 				}
 			} else {
@@ -385,17 +407,18 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 			}
 
 			foreach ( $contents as $name => $content ) {
-				list( $job, $job_data ) = $this->validate_file( $name, $content, $current_user );
-
-				if ( null !== $this->error ) {
-					return $job_data;
+				if( $this->validate_file_name( $name ) ) {
+					list( $job, $job_data ) = $this->validate_file( $name, $content, $current_user );
+					if ( null !== $this->error ) {
+						return $job_data;
+					}
+					wpml_tm_save_data( $job_data );
+					$this->success[] = sprintf( __( 'Translation of job %s has been uploaded and completed.', 'wpml-translation-management' ), $job->job_id );
 				}
-				wpml_tm_save_data( $job_data );
-				$this->success[] = sprintf( __( 'Translation of job %s has been uploaded and completed.', 'wpml-translation-management' ), $job->job_id );
 			}
+
 			if ( count( $this->success ) ) {
 				add_action( 'admin_notices', array( $this, '_success' ) );
-
 				return true;
 			}
 		}
@@ -469,7 +492,7 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 			<?php
 			if (isset( $data['job'] )) { ?>
 
-			var xliff_export_data = "<?php echo base64_encode( serialize( $data ) ); ?>";
+			var xliff_export_data = "<?php echo base64_encode( json_encode( $data ) ); ?>";
 			var xliff_export_nonce = "<?php echo wp_create_nonce( 'xliff-export' ); ?>";
 			var xliff_version = "<?php echo $xliff_version; ?>";
 			addLoadEvent(function () {
@@ -490,8 +513,18 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	function _error() {
 		if ( is_wp_error( $this->error ) ) {
 			?>
-			<div class="message error">
-				<p><?php echo $this->error->get_error_message() ?></p></div>
+            <div class="message error">
+                <p><?php echo $this->error->get_error_message() ?></p>
+				<?php
+				if ( $this->error->get_error_data() ) {
+					?>
+                    <ol>
+                        <li><?php echo implode( '</li><li>', $this->error->get_error_data() ); ?></li>
+                    </ol>
+					<?php
+				}
+				?>
+            </div>
 			<?php
 		}
 	}
@@ -514,13 +547,16 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 		$export_label = esc_html__( 'Export all jobs:', 'wpml-translation-management' );
 
 		if ( isset( $_SESSION['translation_ujobs_filter'] ) ) {
+			$type = __( 'All types', 'wpml-translation-management' );
 
 			if ( ! empty( $_SESSION['translation_ujobs_filter']['type'] ) ) {
-				$post_slug = preg_replace( '/^post_/', '', $_SESSION['translation_ujobs_filter']['type'], 1 );
-				$post_type = get_post_type_object( $post_slug );
-				$type      = $post_type->label;
-			} else {
-				$type      = __( 'All types', 'wpml-translation-management' );
+				$post_slug  = preg_replace( '/^post_|^package_/', '', $_SESSION['translation_ujobs_filter']['type'], 1 );
+				$post_types = $this->sitepress->get_translatable_documents( true );
+				$post_types = apply_filters( 'wpml_get_translatable_types', $post_types );
+
+				if ( array_key_exists( $post_slug, $post_types ) ) {
+					$type = $post_types[ $post_slug ]->label;
+				}
 			}
 
 			$from   = ! empty( $_SESSION['translation_ujobs_filter']['from'] )

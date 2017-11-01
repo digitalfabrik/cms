@@ -551,7 +551,8 @@ return __p
 
 this["WPML_core"]["templates/taxonomy-translation/term-popup.html"] = function(obj) {
 obj || (obj = {});
-var __t, __p = '', __e = _.escape;
+var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
+function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<div class="icl_tt_form wpml-dialog" id="icl_tt_form_' +
 ((__t = ( trid + '_' + lang )) == null ? '' : __t) +
@@ -593,11 +594,31 @@ __p += '<div class="icl_tt_form wpml-dialog" id="icl_tt_form_' +
 ((__t = ( labels.copyFromOriginal )) == null ? '' : __t) +
 '"/>\n\t\t\t<textarea id="term-description" cols="22" rows="4">' +
 ((__t = ( term.description )) == null ? '' : __t) +
-'</textarea>\n\t\t</div>\n\t\t<div class="wpml-dialog-footer ">\n\t\t\t<span class="errors icl_error_text"></span>\n\t\t\t<input class="cancel wpml-dialog-close-button alignleft" value="' +
+'</textarea>\n\t\t</div>\n\t\t';
+ if ( original_term_meta.length ) { ;
+__p += '\n\t\t\t<hr>\n\t\t\t<label>' +
+((__t = ( labels.termMetaLabel)) == null ? '' : __t) +
+'</label>\n\t\t\t<div class="wpml-form-row">\n\t\t\t\t';
+ _.each(original_term_meta, function(meta_data){ ;
+__p += '\n\t\t\t\t\t<label for="term-meta">' +
+((__t = ( meta_data.meta_key )) == null ? '' : __t) +
+'</label>\n\t\t\t\t\t<input readonly value="' +
+__e( meta_data.meta_value ) +
+'" type="text">\n\t\t\t\t\t<button class="button-copy button-secondary js-button-copy otgs-ico-copy" title="' +
+((__t = ( labels.copyFromOriginal )) == null ? '' : __t) +
+'"/>\n\t\t\t\t\t<input name="term-meta" class="term-meta" data-meta-key="' +
+((__t = ( meta_data.meta_key )) == null ? '' : __t) +
+'" value="' +
+__e( term_meta[meta_data.meta_key] ) +
+'" type="text">\n\t\t\t\t';
+ }); ;
+__p += '\n\t\t\t</div>\n\t\t';
+ } ;
+__p += '\n\t\t<div class="wpml-dialog-footer ">\n\t\t\t<span class="errors icl_error_text"></span>\n\t\t\t<input class="cancel wpml-dialog-close-button alignleft" value="' +
 ((__t = ( labels.cancel )) == null ? '' : __t) +
 '" type="button">\n\t\t\t<input class="button-primary term-save alignright" value="' +
 ((__t = ( labels.save )) == null ? '' : __t) +
-'" type="submit">\n\t\t\t<span class="spinner alignright"></span>\n\t\t</div>\t\n\t</div>\n</div>\n';
+'" type="submit">\n\t\t\t<span class="spinner alignright"></span>\n\t\t</div>\n\t</div>\n</div>\n';
 
 }
 return __p

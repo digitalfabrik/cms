@@ -20,7 +20,7 @@ global $sitepress;
 			        <?php _e('Choose default format for XLIFF file:', 'wpml-translation-management'); ?>
 
 			        <select name="icl_xliff_version">
-				        <option value="false"><?php echo __("Please choose", "wpml-xliff"); ?></option>
+				        <option value="false"><?php echo __("Please choose", "wpml-translation-management"); ?></option>
 				        <?php
 				        $xliff_instance = setup_xliff_frontend();
 				        $available_xliff_versions = $xliff_instance->get_available_xliff_versions();

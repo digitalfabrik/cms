@@ -356,32 +356,39 @@ class WPML_Translations_Queue extends WPML_SP_User {
 		$trid                 = filter_var( isset( $_GET[ 'trid' ] ) ? $_GET[ 'trid' ] : '', FILTER_SANITIZE_NUMBER_INT );
 		$language_code        = filter_var( isset( $_GET[ 'language_code' ] ) ? $_GET[ 'language_code' ] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 		$source_language_code = filter_var( isset( $_GET[ 'source_language_code' ] ) ? $_GET[ 'source_language_code' ] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$update_needed        = filter_var( isset( $_GET[ 'update_needed' ] ) ? $_GET[ 'update_needed' ] : '', FILTER_SANITIZE_NUMBER_INT );
 
-		if ( ! $job_id && $trid && $language_code ) {
-			$job_id = $iclTranslationManagement->get_translation_job_id( $trid,
-				$language_code );
+		if ( $trid && $language_code ) {
 			if ( ! $job_id ) {
-				if ( ! $source_language_code ) {
-					$post_id = SitePress::get_original_element_id_by_trid( $trid );
-				} else {
-					$posts_in_trid = $wpml_post_translations->get_element_translations( false,
-						$trid );
-					$post_id       = isset( $posts_in_trid[ $source_language_code ] ) ? $posts_in_trid[ $source_language_code ] : false;
+				$job_id = $iclTranslationManagement->get_translation_job_id( $trid,
+					$language_code );
+				if ( ! $job_id ) {
+					if ( ! $source_language_code ) {
+						$post_id = SitePress::get_original_element_id_by_trid( $trid );
+					} else {
+						$posts_in_trid = $wpml_post_translations->get_element_translations( false,
+							$trid );
+						$post_id       = isset( $posts_in_trid[ $source_language_code ] ) ? $posts_in_trid[ $source_language_code ] : false;
+					}
+					$blog_translators = wpml_tm_load_blog_translators();
+					$args             = array(
+						'lang_from' => $source_language_code,
+						'lang_to'   => $language_code,
+						'job_id'    => $job_id
+					);
+					if ( $post_id && $blog_translators->is_translator( $sitepress->get_current_user()->ID,
+							$args )
+					) {
+						$job_id = $wpml_translation_job_factory->create_local_post_job( $post_id,
+							$language_code );
+					}
 				}
-				$blog_translators = wpml_tm_load_blog_translators();
-				$args             = array(
-					'lang_from' => $source_language_code,
-					'lang_to'   => $language_code,
-					'job_id'    => $job_id
-				);
-				if ( $post_id && $blog_translators->is_translator( $sitepress->get_current_user()->ID,
-						$args )
-				) {
-					$job_id = $wpml_translation_job_factory->create_local_post_job( $post_id,
-						$language_code );
-				}
+			} else if ( $update_needed ) {
+				$post_id = SitePress::get_original_element_id_by_trid( $trid );
+				$job_id = $wpml_translation_job_factory->create_local_post_job( $post_id, $language_code );
 			}
 		}
+
 
 		return $job_id;
 	}

@@ -78,8 +78,9 @@ class WPML_Post_Status_Display {
 	private function generate_edit_allowed_data( $post_id, $update = false ) {
 		global $wpml_post_translations;
 
-		$lang_code = $wpml_post_translations->get_element_lang_code ( $post_id );
-		$icon      = $update ? 'needs-update.png' : 'edit_translation.png';
+		$lang_code    = $wpml_post_translations->get_element_lang_code( $post_id );
+		$post_type    = $wpml_post_translations->get_type( $post_id );
+		$icon         = $update && ! $wpml_post_translations->is_a_duplicate( $post_id ) ? 'needs-update.png' : 'edit_translation.png';
 
 		$text = sprintf (
 			$update
@@ -91,7 +92,7 @@ class WPML_Post_Status_Display {
 		$link = 'post.php?' . http_build_query (
 				array( 'lang'      => $lang_code,
 				       'action'    => 'edit',
-				       'post_type' => get_post_type ( $post_id ),
+				       'post_type' => $post_type,
 				       'post'      => $post_id
 				)
 			);
