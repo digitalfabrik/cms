@@ -40,4 +40,4 @@ before_script:
   - mysql -u root wordpress < database.sql
   ## activate wordpress plugins
   - source ./wp-activate-plugins.sh
-  - wget http://localhost/
+  - wget http://localhost/test.php
