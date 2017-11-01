@@ -26,7 +26,7 @@ class WPML_TM_Job_Layout extends WPML_WPDB_User {
 		$this->append_grouped_custom_fields();
 		$this->append_custom_fields();
 
-		return array_values( $this->layout );
+		return apply_filters( 'wpml_tm_job_layout', array_values( $this->layout ) );
 	}
 
 	private function order_main_fields() {

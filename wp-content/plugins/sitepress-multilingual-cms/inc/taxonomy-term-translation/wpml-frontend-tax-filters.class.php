@@ -27,7 +27,7 @@ class WPML_Frontend_Tax_Filters{
 		$taxonomy = $term->taxonomy;
 		$templates = array();
 
-		remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1 );
+		$has_filter = remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1 );
 
 		$current_language = $sitepress->get_current_language();
 		$default_language = $sitepress->get_default_language();
@@ -42,7 +42,9 @@ class WPML_Frontend_Tax_Filters{
 			$templates[ ] = 'taxonomy.php';
 		}
 
-		add_filter ( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+		if ( $has_filter ) {
+			add_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+		}
 
 		$new_template = locate_template( array_unique($templates) );
 		$template = $new_template ? $new_template : $template;

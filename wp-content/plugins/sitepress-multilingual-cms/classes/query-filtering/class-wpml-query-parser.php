@@ -5,7 +5,15 @@
  *
  * @since 3.2.3
  */
-class WPML_Query_Parser extends WPML_Full_Translation_API {
+class WPML_Query_Parser {
+	/** @var  WPML_Post_Translation $post_translations */
+	protected $post_translationss;
+	/** @var  WPML_Term_Translation $post_translations */
+	protected $term_translations;
+	/** @var SitePress $sitepress */
+	protected $sitepress;
+	/** @var WPDB $wpdb */
+	public $wpdb;
 
 	/** @var WPML_Query_Filter $query_filter */
 	private $query_filter;
@@ -14,13 +22,12 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 	 * @param SitePress         $sitepress
 	 * @param WPML_Query_Filter $query_filter
 	 */
-	public function __construct( &$sitepress, &$query_filter ) {
-		$wpdb             = $sitepress->wpdb();
-		$post_translation = $sitepress->post_translations();
-		$term_translation = $sitepress->term_translations();
-		parent::__construct( $sitepress, $wpdb, $post_translation,
-			$term_translation );
-		$this->query_filter = &$query_filter;
+	public function __construct( $sitepress, $query_filter ) {
+		$this->sitepress         = $sitepress;
+		$this->wpdb              = $sitepress->wpdb();
+		$this->post_translations = $sitepress->post_translations();
+		$this->term_translations = $sitepress->term_translations();
+		$this->query_filter      = $query_filter;
 	}
 
 	/**
@@ -103,7 +110,7 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 		if ( $type === 'ids' ) {
 
 			foreach ( $values as $id ) {
-				$sign                = intval( $id ) < 0 ? - 1 : 1;
+				$sign                = (int) $id < 0 ? - 1 : 1;
 				$id                  = abs( $id );
 				$translated_values[] = $sign * (int) $this->term_translations->term_id_in( $id, $lang, true );
 			}
@@ -111,37 +118,53 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 		} else if ( $type === 'slugs' ) {
 
 			foreach ( $values as $slug ) {
-				$slug = preg_replace( '#((.*)/)#', '', $slug );
+				$slug_elements = explode( '/', $slug );
 
-				$id = $this->wpdb->get_var(
-					$this->wpdb->prepare(
-						"SELECT t.term_id FROM {$this->wpdb->terms} t
-								 JOIN {$this->wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-								 WHERE tt.taxonomy = %s AND t.slug = %s LIMIT 1",
-						$taxonomy,
-						$slug
-					)
-				);
-
-				$term_id = (int) $this->term_translations->term_id_in( $id, $lang, true );
-
-				if ( $term_id !== $id ) {
-
-					$slug = $this->wpdb->get_var(
-						$this->wpdb->prepare(
-							"SELECT slug FROM {$this->wpdb->terms}
-								 WHERE term_id = %d LIMIT 1",
-							$term_id
-						)
-					);
-
+				foreach ( $slug_elements as &$slug_element ) {
+					$slug_element = $this->translate_term_slug( $slug_element, $taxonomy, $lang );
 				}
+
+				$slug = implode( '/', $slug_elements );
 
 				$translated_values[] = $slug;
 			}
 		}
 
 		return $translated_values;
+	}
+
+	/**
+	 * @param string $slug
+	 * @param string $taxonomy
+	 * @param string $lang
+	 *
+	 * @return null|string
+	 */
+	private function translate_term_slug( $slug, $taxonomy, $lang ) {
+		$id = $this->wpdb->get_var(
+			$this->wpdb->prepare(
+				"SELECT t.term_id FROM {$this->wpdb->terms} t
+								 JOIN {$this->wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+								 WHERE tt.taxonomy = %s AND t.slug = %s LIMIT 1",
+				$taxonomy,
+				$slug
+			)
+		);
+
+		$term_id = (int) $this->term_translations->term_id_in( $id, $lang, true );
+
+		if ( $term_id !== $id ) {
+
+			$slug = $this->wpdb->get_var(
+				$this->wpdb->prepare(
+					"SELECT slug FROM {$this->wpdb->terms}
+								 WHERE term_id = %d LIMIT 1",
+					$term_id
+				)
+			);
+		}
+
+		return $slug;
 	}
 
 	/**
@@ -173,9 +196,11 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 	 * @return WP_Query
 	 */
 	private function adjust_taxonomy_query( $q ) {
-		if ( isset( $q->query_vars['tax_query'] ) && is_array( $q->query_vars['tax_query'] )
-		     && isset( $q->tax_query->queries ) && is_array( $q->tax_query->queries )
-		     && isset( $q->query['tax_query'] ) && is_array( $q->query['tax_query'] )
+		if ( isset( $q->query_vars['tax_query'], $q->tax_query->queries, $q->query['tax_query'] ) &&
+		     is_array( $q->query_vars['tax_query'] ) &&
+		     is_array( $q->tax_query->queries ) &&
+		     is_array( $q->query['tax_query'] ) &&
+		     empty( $q->query_vars['suppress_filters'] )
 		) {
 
 			$new_conditions = $this->adjust_tax_query_conditions( $q->query['tax_query'] );
@@ -250,20 +275,25 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 			return $q;
 		}
 
+		$q = apply_filters( 'wpml_pre_parse_query', $q );
+
 		list( $q, $redir_pid ) = $this->maybe_adjust_name_var( $q );
 		/** @var WP_Query $q */
 		if ( $q->is_main_query() && (bool) $redir_pid === true ) {
-			if ( (bool) ( $redir_target = $this->is_redirected( $redir_pid ) ) ) {
+			if ( (bool) ( $redir_target = $this->is_redirected( $redir_pid, $q ) ) ) {
 				$this->sitepress->get_wp_api()->wp_safe_redirect( $redir_target, 301 );
 			}
 		}
 
-		$current_language = $this->sitepress->get_current_language();
-		if ( $current_language !== $this->sitepress->get_default_language() ) {
+		$post_type = 'post';
+		if ( ! empty( $q->query_vars['post_type'] ) ) {
+			$post_type = $q->query_vars['post_type'];
+		}
 
+		$current_language = $this->sitepress->get_current_language();
+		if ( 'attachment' === $post_type || $current_language !== $this->sitepress->get_default_language() ) {
 			$q = $this->adjust_default_taxonomies_query_vars( $q, $current_language );
 
-			$post_type = ! empty( $q->query_vars['post_type'] ) ? $q->query_vars['post_type'] : 'post';
 			if ( ! is_array( $post_type ) ) {
 				$post_type = (array) $post_type;
 			}
@@ -279,35 +309,39 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 				                                                               $current_language,
 				                                                               true );
 			}
-			if ( $this->sitepress->is_translated_post_type( $post_type[0] ) && ! empty( $q->query_vars['name'] ) ) {
-				if ( is_post_type_hierarchical( $post_type[0] ) ) {
-					$reqpage = get_page_by_path( $q->query_vars['name'], OBJECT, $post_type[0] );
-					if ( $reqpage ) {
-						$q->query_vars['p'] = $this->post_translations->element_id_in( $reqpage->ID,
-						                                                               $current_language,
-						                                                               true );
-						unset( $q->query_vars['name'] );
-						// We need to set this to an empty string otherwise WP will derive the pagename from this.
-						$q->query_vars[ $post_type[0] ] = '';
-					}
-				} else {
-					$pid_prepared = $this->wpdb->prepare( "SELECT ID FROM {$this->wpdb->posts} WHERE post_name=%s AND post_type=%s LIMIT 1",
-					                                      array( $q->query_vars['name'], $post_type[0] ) );
-					$pid          = $this->wpdb->get_var( $pid_prepared );
-					if ( ! empty( $pid ) ) {
-						$q->query_vars['p'] = $this->post_translations->element_id_in( $pid, $current_language, true );
-						unset( $q->query_vars['name'] );
+
+			if ( $post_type ) {
+				$first_post_type = reset( $post_type );
+
+				if ( $this->sitepress->is_translated_post_type( $first_post_type ) && ! empty( $q->query_vars['name'] ) ) {
+					if ( is_post_type_hierarchical( $first_post_type ) ) {
+						$requested_page = get_page_by_path( $q->query_vars['name'], OBJECT, $first_post_type );
+						if ( $requested_page ) {
+							$q->query_vars['p'] = $this->post_translations->element_id_in( $requested_page->ID, $current_language, true );
+							unset( $q->query_vars['name'] );
+							// We need to set this to an empty string otherwise WP will derive the pagename from this.
+							$q->query_vars[ $first_post_type ] = '';
+						}
+					} else {
+						$pid_prepared = $this->wpdb->prepare( "SELECT ID FROM {$this->wpdb->posts} WHERE post_name=%s AND post_type=%s LIMIT 1", array( $q->query_vars['name'], $first_post_type ) );
+						$pid          = $this->wpdb->get_var( $pid_prepared );
+						if ( ! empty( $pid ) ) {
+							$q->query_vars['p'] = $this->post_translations->element_id_in( $pid, $current_language, true );
+							unset( $q->query_vars['name'] );
+						}
 					}
 				}
+				$q = $this->adjust_q_var_pids( $q, $post_type, 'post__in' );
+				$q = $this->adjust_q_var_pids( $q, $post_type, 'post__not_in' );
+				$q = $this->maybe_adjust_parent( $q, $post_type, $current_language );
 			}
-			$q = $this->adjust_q_var_pids( $q, $post_type, 'post__in' );
-			$q = $this->adjust_q_var_pids( $q, $post_type, 'post__not_in' );
-			$q = $this->maybe_adjust_parent( $q, $post_type, $current_language );
 			//TODO: [WPML 3.3] Discuss this. Why WP assumes it's there if query vars are altered? Look at wp-includes/query.php line #2468 search: if ( $this->query_vars_changed ) {
 			$q->query_vars['meta_query'] = isset( $q->query_vars['meta_query'] ) ? $q->query_vars['meta_query'] : array();
 
 			$q = $this->adjust_taxonomy_query( $q );
 		}
+
+		$q = apply_filters( 'wpml_post_parse_query', $q );
 
 		return $q;
 	}
@@ -411,20 +445,23 @@ class WPML_Query_Parser extends WPML_Full_Translation_API {
 
 	/**
 	 * @param int $post_id
+	 * @param WP_Query $q
 	 *
 	 * @return false|string redirect target url if redirect is needed, false otherwise
 	 */
-	private function is_redirected( $post_id ) {
+	private function is_redirected( $post_id, $q ) {
 		$request_uri = explode( '?', $_SERVER['REQUEST_URI'] );
 		$redirect    = false;
 		$permalink   = $this->sitepress->get_wp_api()->get_permalink( $post_id );
 		if ( ! $this->is_permalink_part_of_request( $permalink, $request_uri[0] ) ) {
 			if ( isset( $request_uri[1] ) ) {
-				$permalink .= '?' . $request_uri[1];
+				$lang = substr( $request_uri[1], strpos( $request_uri[1], '=' ) + 1 );
+				$permalink = add_query_arg( array( 'lang' => $lang ), $permalink );
 			}
 			$redirect = $permalink;
 		}
-		return $redirect;
+
+		return apply_filters( 'wpml_is_redirected', $redirect, $post_id, $q );
 	}
 
 	private function is_permalink_part_of_request( $permalink, $request_uri ) {

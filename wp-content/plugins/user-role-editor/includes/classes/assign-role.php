@@ -12,13 +12,15 @@
 class URE_Assign_Role {
     
     const MAX_USERS_TO_PROCESS = 50;
+
+    private static $counter = 0;    
     
     protected $lib = null;
     
     
-    function __construct($lib) {
+    function __construct() {
         
-        $this->lib = $lib;
+        $this->lib = URE_Lib::get_instance();
     }
     // end of __construct()
 
@@ -50,7 +52,8 @@ class URE_Assign_Role {
         $where = "where not exists (select user_id from {$usermeta}
                                           where user_id=users.ID and meta_key='{$blog_prefix}capabilities') or
                           exists (select user_id from {$usermeta}
-                                    where user_id=users.ID and meta_key='{$blog_prefix}capabilities' and meta_value='a:0:{}')";
+                                    where user_id=users.ID and meta_key='{$blog_prefix}capabilities' and 
+                                          (meta_value='a:0:{}' or meta_value is NULL))";
                                     
         return $where;                            
     }
@@ -88,6 +91,31 @@ class URE_Assign_Role {
         return $users0;        
     }
     // end of get_users_without_role()
+    
+    
+    public function show_html() {
+        
+      $users_quant = $this->count_users_without_role();
+      if ($users_quant==0) {
+          return;
+      }
+      $button_number =  (self::$counter>0) ? '_2': '';
+      
+?>          
+        &nbsp;&nbsp;<input type="button" name="move_from_no_role<?php echo $button_number;?>" id="move_from_no_role<?php echo $button_number;?>" class="button"
+                        value="Without role (<?php echo $users_quant;?>)" onclick="ure_move_users_from_no_role_dialog()">
+<?php
+    if (self::$counter==0) {
+?>
+        <div id="move_from_no_role_dialog" class="ure-dialog">
+            <div id="move_from_no_role_content" style="padding: 10px;"></div>                
+        </div>
+<?php
+        self::$counter++;
+    }
+        
+    }
+    // end of show_html()
        
 }
 // end of URE_Assign_Role class

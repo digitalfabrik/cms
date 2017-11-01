@@ -34,6 +34,9 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 		$trid = apply_filters( 'wpml_tm_save_post_trid_value', isset( $trid ) ? $trid : '', $post_id );
 		$lang = apply_filters( 'wpml_tm_save_post_lang_value', isset( $lang ) ? $lang : '', $post_id );
 
+		$trid = $this->maybe_retrive_trid_again( $trid, $post );
+		$needs_second_update = array_key_exists( 'needs_second_update', $_POST ) ? (bool) $_POST['needs_second_update'] : false;
+
 		// is this the original document?
 		$is_original = empty( $trid )
 			? false
@@ -62,7 +65,7 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 						                                                                                            'translation_id'      => $translation_id,
 						                                                                                            'status'              => isset( $force_set_status ) && $force_set_status > 0 ? $force_set_status : ICL_TM_COMPLETE,
 						                                                                                            'translator_id'       => $user_id,
-						                                                                                            'needs_update'        => 0,
+						                                                                                            'needs_update'        => $needs_second_update,
 						                                                                                            'md5'                 => $md5,
 						                                                                                            'translation_service' => 'local',
 						                                                                                            'translation_package' => serialize( $translation_package )
@@ -105,7 +108,7 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 								'translation_id'      => $translation->translation_id,
 								'needs_update'        => 1,
 								'md5'                 => $md5,
-								'translation_package' => serialize( $translation_package )
+								'translation_package' => serialize( $translation_package ),
 							);
 							$this->action_helper->get_tm_instance()->update_translation_status( $data );
 						}
@@ -148,5 +151,15 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 		}
 
 		return $lang;
+	}
+
+	private function maybe_retrive_trid_again( $trid, $post ) {
+		global $wpdb, $sitepress;
+		$element_type_from_trid = $wpdb->get_var( $wpdb->prepare( "SELECT element_type FROM {$wpdb->prefix}icl_translations WHERE trid=%d", $trid ) );
+		if ( $element_type_from_trid && $post->post_type !== $element_type_from_trid ) {
+			$trid = $sitepress->get_element_trid( $post->ID, 'post_' . $post->post_type );
+		}
+
+		return $trid;
 	}
 }

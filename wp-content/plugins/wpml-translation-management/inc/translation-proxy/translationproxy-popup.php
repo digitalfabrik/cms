@@ -23,9 +23,9 @@ if ( preg_match( '|^@select-translators;([^;]+);([^;]+)@|', $target, $matches ) 
 		$target = $project->select_translator_iframe_url( $source_language, $target_language );
 	} catch ( Exception $e ) {
 		if ( $e->getCode() == ICL_LANGUAGE_NOT_SUPPORTED ) {
-			printf( __( '<p>Requested languages are not supported by the translation service (%s). Please <a%s>contact us</a> for support. </p>', 'sitepress' ), $e->getMessage(), ' target="_blank" href="http://wpml.org/?page_id=5255"' );
+			printf( __( '<p>Requested languages are not supported by the translation service (%s). Please <a%s>contact us</a> for support. </p>', 'wpml-translation-management' ), $e->getMessage(), ' target="_blank" href="http://wpml.org/?page_id=5255"' );
 		} else {
-			printf( __( '<p>Could not add the requested languages. Please <a%s>contact us</a> for support. </p><p>Show <a%s>debug information</a>.</p>', 'sitepress' ), ' target="_blank" href="http://wpml.org/?page_id=5255"',
+			printf( __( '<p>Could not add the requested languages. Please <a%s>contact us</a> for support. </p><p>Show <a%s>debug information</a>.</p>', 'wpml-translation-management' ), ' target="_blank" href="http://wpml.org/?page_id=5255"',
 				' a href="admin.php?page=' .
 				ICL_PLUGIN_FOLDER .
 				'/menu/troubleshooting.php&icl_action=icl-connection-test' .

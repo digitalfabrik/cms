@@ -29,76 +29,105 @@ class WPML_TM_Action_Helper {
 	 * @todo full support for custom posts and custom taxonomies
 	 */
 	public function post_md5( $post ) {
-		global $iclTranslationManagement, $wpdb, $sitepress_settings;
+		$post_key = '';
 
 		//TODO: [WPML 3.2] Make it work with PackageTranslation: this is not the right way anymore
 		if ( isset( $post->external_type ) && $post->external_type ) {
-			$md5str = '';
 			foreach ( $post->string_data as $key => $value ) {
-				$md5str .= $key . $value;
+				$post_key .= $key . $value;
 			}
 		} else {
-			$post_tags = $post_categories = $custom_fields_values = array();
 			if ( is_numeric( $post ) ) {
 				$post = get_post( $post );
 			}
-			foreach ( wp_get_object_terms( $post->ID, 'post_tag' ) as $tag ) {
-				$post_tags[] = $tag->name;
-			}
-			if ( is_array( $post_tags ) ) {
-				sort( $post_tags, SORT_STRING );
-			}
-			foreach ( wp_get_object_terms( $post->ID, 'category' ) as $cat ) {
-				$post_categories[] = $cat->name;
-			}
-			if ( is_array( $post_categories ) ) {
-				sort( $post_categories, SORT_STRING );
-			}
 
-			// get custom taxonomies
-			$taxonomies = $wpdb->get_col( $wpdb->prepare( "
+			$post_tags            = $this->get_post_terms( $post, 'post_tag' );
+			$post_categories      = $this->get_post_terms( $post, 'category' );
+			$post_taxonomies      = $this->get_post_taxonomies( $post );
+			$custom_fields_values = $this->get_post_custom_fields( $post );
+
+			$content = $post->post_content;
+			$content = apply_filters( 'wpml_pb_shortcode_content_for_translation', $content, $post->ID );
+
+			$post_key = $post->post_title . ';' . $content . ';' . $post->post_excerpt . ';' . implode( ',', $post_tags ) . ';' . implode( ',', $post_categories ) . ';' . implode( ',', $custom_fields_values );
+
+			if ( ! empty( $post_taxonomies ) ) {
+				$post_key .= ';' . implode( ';', $post_taxonomies );
+			}
+			if ( wpml_get_setting_filter( false, 'translated_document_page_url' ) === 'translate' ) {
+				$post_key .= $post->post_name . ';';
+			}
+		}
+
+		$post_key = apply_filters( 'wpml_post_md5_key', $post_key, $post );
+
+		return md5( $post_key );
+	}
+
+	private function get_post_terms( $post, $taxonomy, $sort = false ) {
+		$terms               = array();
+		$post_taxonomy_terms = wp_get_object_terms( $post->ID, $taxonomy );
+		if ( ! is_wp_error( $post_taxonomy_terms ) ) {
+			foreach ( $post_taxonomy_terms as $trm ) {
+				$terms[] = $trm->name;
+			}
+		}
+
+		if ( $terms ) {
+			sort( $terms, SORT_STRING );
+		}
+
+		return $terms;
+	}
+
+	private function get_post_taxonomies( $post ) {
+		global $wpdb, $sitepress_settings;
+
+		$post_taxonomies = array();
+
+		// get custom taxonomies
+		$taxonomies = $wpdb->get_col(
+			$wpdb->prepare(
+				"
 				SELECT DISTINCT tx.taxonomy
 				FROM {$wpdb->term_taxonomy} tx JOIN {$wpdb->term_relationships} tr ON tx.term_taxonomy_id = tr.term_taxonomy_id
 				WHERE tr.object_id =%d ",
-			                                              $post->ID ) );
-			sort( $taxonomies, SORT_STRING );
-			if ( isset( $sitepress_settings['taxonomies_sync_option'] ) ) {
-				foreach ( $taxonomies as $t ) {
-					if ( taxonomy_exists( $t ) && isset( $sitepress_settings['taxonomies_sync_option'][ $t ] ) && $sitepress_settings['taxonomies_sync_option'][ $t ] == 1 ) {
-						$taxs = array();
-						foreach ( wp_get_object_terms( $post->ID, $t ) as $trm ) {
-							$taxs[] = $trm->name;
-						}
-						if ( $taxs ) {
-							sort( $taxs, SORT_STRING );
-							$all_taxs[] = '[' . $t . ']:' . join( ',', $taxs );
-						}
+				$post->ID
+			)
+		);
+		sort( $taxonomies, SORT_STRING );
+		if ( isset( $sitepress_settings['taxonomies_sync_option'] ) ) {
+			foreach ( $taxonomies as $t ) {
+				if ( taxonomy_exists( $t ) && isset( $sitepress_settings['taxonomies_sync_option'][ $t ] ) && $sitepress_settings['taxonomies_sync_option'][ $t ] == 1 ) {
+					$taxs = $this->get_post_terms( $post, $t );
+
+					if ( $taxs ) {
+						$post_taxonomies[] = '[' . $t . ']:' . implode( ',', $taxs );
 					}
 				}
-			}
-			$custom_fields_values = array();
-			if ( isset( $iclTranslationManagement->settings['custom_fields_translation'] ) && is_array( $iclTranslationManagement->settings['custom_fields_translation'] ) ) {
-				foreach ( $iclTranslationManagement->settings['custom_fields_translation'] as $cf => $op ) {
-					if ( $op == 2 || $op == 1 ) {
-						$value = get_post_meta( $post->ID, $cf, true );
-						if ( ! is_array( $value ) && ! is_object( $value ) ) {
-							$custom_fields_values[] = $value;
-						}
-					}
-				}
-			}
-			$md5str = $post->post_title . ';' . $post->post_content . ';' . join( ',', $post_tags ) . ';' . join( ',',
-			                                                                                                      $post_categories ) . ';' . join( ',', $custom_fields_values );
-			if ( ! empty( $all_taxs ) ) {
-				$md5str .= ';' . join( ';', $all_taxs );
-			}
-			if ( wpml_get_setting_filter( false, 'translated_document_page_url' ) === 'translate' ) {
-				$md5str .= $post->post_name . ';';
 			}
 		}
-		$md5 = md5( $md5str );
 
-		return $md5;
+		return $post_taxonomies;
+	}
+
+	private function get_post_custom_fields( $post ) {
+		global $iclTranslationManagement;
+
+		$custom_fields_values = array();
+		if ( isset( $iclTranslationManagement->settings['custom_fields_translation'] ) && is_array( $iclTranslationManagement->settings['custom_fields_translation'] ) ) {
+			foreach ( $iclTranslationManagement->settings['custom_fields_translation'] as $cf => $op ) {
+				if ( in_array( (int) $op, array( 1, 2 ), true ) ) {
+					$value = get_post_meta( $post->ID, $cf, true );
+					if ( ! is_array( $value ) && ! is_object( $value ) ) {
+						$custom_fields_values[] = $value;
+					}
+				}
+			}
+		}
+
+		$custom_fields_values = apply_filters( 'wpml_custom_field_values_for_post_signature', $custom_fields_values, $post->ID );
+		return $custom_fields_values;
 	}
 
 	private function get_update_translation_action( $translation_package ) {

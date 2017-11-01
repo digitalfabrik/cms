@@ -16,9 +16,9 @@ global $wp_taxonomies;
 function prepare_synchronization_needed_warning( $elements, $type ) {
 	$notice = '';
 	if ( $elements ) {
-		$msg = __( "You haven't set your synchronization preferences for these $type: %s. Default value was selected.",  'sitepress' );
+		$msg = esc_html( __( "You haven't set your synchronization preferences for these %s: %s. Default value was selected.", 'sitepress' ) );
 		$notice .= '<div class="updated below-h2"><p>';
-		$notice .= sprintf( $msg, '<i>' . implode( '</i>, <i>', $elements ) . '</i>' );
+		$notice .= sprintf( $msg, $type, '<i>' . implode( '</i>, <i>', $elements ) . '</i>' );
 		$notice .= '</p></div>';
 	}
 
@@ -61,7 +61,7 @@ if ( $custom_posts ) {
     <div class="wpml-section" id="ml-content-setup-sec-7">
 
         <div class="wpml-section-header">
-            <h3><?php _e('Custom posts', 'sitepress');?></h3>
+            <h3><?php esc_html_e( 'Custom posts', 'sitepress' );?></h3>
         </div>
 
         <div class="wpml-section-content">
@@ -80,7 +80,7 @@ if ( $custom_posts ) {
                     <thead>
                         <tr>
                             <th colspan="3">
-                                <?php _e('Custom post types', 'sitepress');?>
+                                <?php esc_html_e( 'Custom post types', 'sitepress' ); ?>
                             </th>
                         </tr>
                     </thead>
@@ -98,29 +98,29 @@ if ( $custom_posts ) {
                                 <td>
 
                                     <p>
-                                        <?php echo $custom_post->labels->name; ?>
+                                        <?php echo esc_html( $custom_post->labels->name ); ?>
                                     </p>
 									
                                 </td>
                                 <td align="right">
                                     <p>
                                         <label>
-	                                        <input class="icl_sync_custom_posts" type="radio" name="icl_sync_custom_posts[<?php echo $k ?>]" value="1" <?php echo $rdisabled; ?>
+	                                        <input class="icl_sync_custom_posts" type="radio" name="icl_sync_custom_posts[<?php echo esc_attr( $k ) ?>]" value="1" <?php echo $rdisabled; ?>
 		                                        <?php checked( true, $is_translated ) ?> />
-                                            <?php _e('Translate', 'sitepress') ?>
+                                            <?php esc_html_e( 'Translate', 'sitepress' ) ?>
                                         </label>
                                     </p>
                                 </td>
                                 <td>
                                    <p>
                                         <label>
-	                                        <input class="icl_sync_custom_posts" type="radio" name="icl_sync_custom_posts[<?php echo $k ?>]" value="0" <?php echo $rdisabled; ?>
+	                                        <input class="icl_sync_custom_posts" type="radio" name="icl_sync_custom_posts[<?php echo esc_attr( $k ) ?>]" value="0" <?php echo $rdisabled; ?>
 		                                        <?php checked( false, $is_translated ) ?> />
-                                            <?php _e('Do nothing', 'sitepress') ?>
+                                            <?php esc_html_e( 'Do nothing', 'sitepress' ) ?>
                                         </label>
                                    </p>
                                     <?php if ($rdisabled): ?>
-	                                    <input type="hidden" name="icl_sync_custom_posts[<?php echo $k ?>]" value="<?php echo $is_translated ? 1 : 0 ?>"/>
+	                                    <input type="hidden" name="icl_sync_custom_posts[<?php echo esc_attr( $k ) ?>]" value="<?php echo $is_translated ? 1 : 0 ?>"/>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -143,8 +143,8 @@ if ( $custom_posts ) {
                     <input type="submit"
 						   id="js_custom_posts_sync_button"
 						   class="button button-primary"
-						   value="<?php _e('Save', 'sitepress') ?>"
-						   data-message="<?php echo esc_attr(__("You haven't entered translations for all slugs. Are you sure you want to save these settings?", 'sitepress' ) );?>" />
+						   value="<?php esc_attr_e( 'Save', 'sitepress' ) ?>"
+						   data-message="<?php esc_attr_e( "You haven't entered translations for all slugs. Are you sure you want to save these settings?", 'sitepress' );?>" />
                 </p>
 
             </form>
@@ -163,7 +163,7 @@ if ( $custom_taxonomies ) {
 	<div class="wpml-section" id="ml-content-setup-sec-8">
 
 	    <div class="wpml-section-header">
-	        <h3><?php _e('Custom taxonomies', 'sitepress');?></h3>
+	        <h3><?php esc_html_e( 'Custom taxonomies', 'sitepress' ); ?></h3>
 	    </div>
 
 	    <div class="wpml-section-content">
@@ -181,7 +181,7 @@ if ( $custom_taxonomies ) {
 	                <thead>
 	                    <tr>
 	                        <th colspan="3">
-	                            <?php _e('Custom taxonomies', 'sitepress');?>
+	                            <?php esc_html_e( 'Custom taxonomies', 'sitepress' ); ?>
 	                        </th>
 	                    </tr>
 	                </thead>
@@ -198,21 +198,21 @@ if ( $custom_taxonomies ) {
 	                    ?>
 	                    <tr>
 	                        <td>
-	                            <p><?php echo $wp_taxonomies[$ctax]->label; ?> (<i><?php echo $ctax; ?></i>)</p>
+	                            <p><?php echo esc_html( $wp_taxonomies[ $ctax ]->label ); ?> (<i><?php echo esc_html( $ctax ); ?></i>)</p>
 	                        </td>
 	                        <td align="right">
 	                            <p>
 	                                <label>
-	                                    <input type="radio" name="icl_sync_tax[<?php echo $ctax ?>]" value="1" <?php echo $rdisabled; ?> <?php checked( true, $is_translated ) ?> />
-	                                    <?php _e('Translate', 'sitepress') ?>
+	                                    <input type="radio" name="icl_sync_tax[<?php echo esc_attr( $ctax ) ?>]" value="1" <?php echo $rdisabled; ?> <?php checked( true, $is_translated ) ?> />
+	                                    <?php esc_html_e( 'Translate', 'sitepress' ) ?>
 	                                </label>
 	                            </p>
 	                        </td>
 	                        <td>
 	                            <p>
 	                                <label>
-	                                    <input type="radio" name="icl_sync_tax[<?php echo $ctax ?>]" value="0" <?php echo $rdisabled ?> <?php checked( false, $is_translated ) ?> />
-	                                    <?php _e('Do nothing', 'sitepress') ?>
+	                                    <input type="radio" name="icl_sync_tax[<?php echo esc_attr( $ctax ) ?>]" value="0" <?php echo $rdisabled ?> <?php checked( false, $is_translated ) ?> />
+	                                    <?php esc_html_e( 'Do nothing', 'sitepress' ) ?>
 	                                </label>
 	                            </p>
 	                        </td>
@@ -222,7 +222,7 @@ if ( $custom_taxonomies ) {
 	            </table>
 	            <p class="buttons-wrap">
 	                <span class="icl_ajx_response" id="icl_ajx_response_ct"></span>
-	                <input type="submit" class="button-primary" value="<?php _e('Save', 'sitepress') ?>" />
+	                <input type="submit" class="button-primary" value="<?php esc_html_e( 'Save', 'sitepress' ) ?>" />
 	            </p>
 	        </form>
 	    </div> <!-- .wpml-section-content -->

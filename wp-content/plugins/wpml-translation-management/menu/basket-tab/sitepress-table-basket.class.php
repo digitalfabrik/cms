@@ -1,5 +1,5 @@
 <?php
-require WPML_TM_PATH . '/menu/sitepress-table.class.php';
+require_once WPML_TM_PATH . '/menu/sitepress-table.class.php';
 
 class SitePress_Table_Basket extends SitePress_Table {
 
@@ -11,8 +11,8 @@ class SitePress_Table_Basket extends SitePress_Table {
             WPML_TM_VERSION
         );
 
-	    $message = esc_html_x( 'You are about to translate duplicated posts.', '1/2 Confirm to disconnect duplicates', 'sitepress' ) . "\n";
-	    $message .= esc_html_x( 'These items will be automatically disconnected from originals, so translation is not lost when you update the originals.', '2/2 Confirm to disconnect duplicates', 'sitepress' );
+	    $message = esc_html_x( 'You are about to translate duplicated posts.', '1/2 Confirm to disconnect duplicates', 'wpml-translation-management' ) . "\n";
+	    $message .= esc_html_x( 'These items will be automatically disconnected from originals, so translation is not lost when you update the originals.', '2/2 Confirm to disconnect duplicates', 'wpml-translation-management' );
 
         $tm_basket_data = array(
             'nonce' => array(),

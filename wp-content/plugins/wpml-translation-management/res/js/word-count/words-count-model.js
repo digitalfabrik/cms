@@ -20,19 +20,14 @@ var WPMLWordsCount = function () {
 	};
 
     self.init = function () {
-        self.box = jQuery('.wpml-accordion');
-        self.toolDialog = self.box.find('.inside').find('.dialog');
+        self.box = jQuery('.js-wpml-wc');
+        self.toolDialog = self.box.find('.dialog');
         self.languageSelector = self.box.find('#source-language-selector');
         self.summary = self.box.find('.summary');
         self.cachedRows = {};
 
         if (self.box) {
-            self.box.accordion({
-                active: 0,
-                collapsible: true,
-                heightStyle: "content"
-            });
-            self.box.find('.button-primary').on('click', self.openTool);
+            self.box.find('.js-wc-dialog-init').on('click', self.openTool);
             if ('#words-count' === window.location.hash) {
                 self.openDialog();
             }

@@ -4,23 +4,23 @@ this["WPML_TM"]["templates/translation-editor/footer.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="alignleft">\n\t<button class="cancel wpml-dialog-close-button js-dialog-cancel">' +
+__p += '<div class="alignleft">\r\n\t<button class="cancel wpml-dialog-close-button js-dialog-cancel">' +
 ((__t = (cancel)) == null ? '' : __t) +
-'</button>\n\t<button class="button-secondary wpml-resign-button js-resign">' +
+'</button>\r\n\t<button class="button-secondary wpml-resign-button js-resign">' +
 ((__t = (resign)) == null ? '' : __t) +
-'</button>\n</div>\n<div class = "alignright">\n\t<span class = "js-saving-message" style = "display:none"><img src="' +
+'</button>\r\n</div>\r\n<div class = "alignright">\r\n\t<span class = "js-saving-message" style = "display:none"><img src="' +
 ((__t = (loading_url)) == null ? '' : __t) +
 '" alt="' +
 ((__t = (saving)) == null ? '' : __t) +
 '" height="16" width="16"/>' +
 ((__t = (saving)) == null ? '' : __t) +
-'</span>\n\t<button class = "button button-primary button-large wpml-dialog-close-button js-save-and-close">' +
+'</span>\r\n\t<button class = "button button-primary button-large wpml-dialog-close-button js-save-and-close">' +
 ((__t = (save_and_close)) == null ? '' : __t) +
-'</button>\n\t<button class = "button button-primary button-large wpml-dialog-close-button js-save">' +
+'</button>\r\n\t<button class = "button button-primary button-large wpml-dialog-close-button js-save">' +
 ((__t = (save)) == null ? '' : __t) +
-'</button>\n</div>\n<div class="text-center">\n\t<div class="progress-bar js-progress-bar"><div class="progress-bar-text"></div></div>\n\t<label><input class="js-translation-complete" name="complete" type="checkbox"/>' +
+'</button>\r\n</div>\r\n<div class="text-center">\r\n\t<div class="progress-bar js-progress-bar"><div class="progress-bar-text"></div></div>\r\n\t<label><input class="js-translation-complete" name="complete" type="checkbox"/>' +
 ((__t = (translation_complete)) == null ? '' : __t) +
-'</label>\n</div>';
+'</label>\r\n</div>';
 
 }
 return __p
@@ -36,11 +36,11 @@ with (obj) {
 __p +=
 ((__t = ( title )) == null ? '' : __t);
  } ;
-__p += '\n<div class="inside">\n</div>\n\n';
+__p += '\r\n<div class="inside">\r\n</div>\r\n\r\n';
  if ( divider ) { ;
-__p += '\n<hr />\n';
+__p += '\r\n<hr />\r\n';
  } ;
-__p += '\n<button class="button-copy button-secondary js-button-copy-group">\n\t<i class="otgs-ico-copy"></i>\n</button>\n';
+__p += '\r\n<button class="button-copy button-secondary js-button-copy-group">\r\n\t<i class="otgs-ico-copy"></i>\r\n</button>\r\n';
 
 }
 return __p
@@ -52,11 +52,11 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p +=
 ((__t = ( title )) == null ? '' : __t) +
-'\n<a href="' +
+'\r\n<a href="' +
 ((__t = ( link_url )) == null ? '' : __t) +
 '" class="view" target="_blank">' +
 ((__t = ( link_text )) == null ? '' : __t) +
-'</a>\n';
+'</a>\r\n';
 
 }
 return __p
@@ -67,13 +67,13 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '\t<div class="inside">\n\t\t<img src="' +
+__p += '\t<div class="inside">\r\n\t\t<img src="' +
 ((__t = ( image_src )) == null ? '' : __t) +
-'">\n\t</div>\n\n\n';
+'">\r\n\t</div>\r\n\r\n\r\n';
  if ( divider ) { ;
-__p += '\n<hr />\n';
+__p += '\r\n<hr />\r\n';
  } ;
-__p += '\n';
+__p += '\r\n';
 
 }
 return __p
@@ -85,29 +85,29 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '\t<input type="hidden" name="source_lang" value="' +
 ((__t = ( language.source )) == null ? '' : __t) +
-'" />\n\t<input type="hidden" name="target_lang" value="' +
+'" />\r\n\t<input type="hidden" name="target_lang" value="' +
 ((__t = ( language.target )) == null ? '' : __t) +
-'" />\n\t<h3 class="wpml-header-original">' +
+'" />\r\n\t<h3 class="wpml-header-original">' +
 ((__t = ( labels.source_lang )) == null ? '' : __t) +
-':\n\t\t<span class="wpml-title-flag">\n\t\t\t<img src="' +
+':\r\n\t\t<span class="wpml-title-flag">\r\n\t\t\t<img src="' +
 ((__t = ( language.img.source_url )) == null ? '' : __t) +
-'"\n\t\t\t\t alt="' +
+'"\r\n\t\t\t\t alt="' +
 ((__t = ( language.source_lang )) == null ? '' : __t) +
-'"/>\n\t\t</span>\n\t\t<strong>' +
+'"/>\r\n\t\t</span>\r\n\t\t<strong>' +
 ((__t = ( language.source_lang )) == null ? '' : __t) +
-'</strong>\n\t</h3>\n\n\t<h3 class="wpml-header-translation">' +
+'</strong>\r\n\t</h3>\r\n\r\n\t<h3 class="wpml-header-translation">' +
 ((__t = ( labels.target_lang )) == null ? '' : __t) +
-':\n\t\t<span class="wpml-title-flag">\n\t\t\t<img src="' +
+':\r\n\t\t<span class="wpml-title-flag">\r\n\t\t\t<img src="' +
 ((__t = ( language.img.target_url )) == null ? '' : __t) +
-'"\n\t\t\t\t alt="' +
+'"\r\n\t\t\t\t alt="' +
 ((__t = ( language.target_lang )) == null ? '' : __t) +
-'"/>\n\t\t</span>\n\t\t<strong>' +
+'"/>\r\n\t\t</span>\r\n\t\t<strong>' +
 ((__t = ( language.target_lang )) == null ? '' : __t) +
-'</strong>\n\t</h3>\n\n\t<div class="wpml-copy-container">\n\t\t<button class="button-secondary button-copy-all js-button-copy-all" title="' +
+'</strong>\r\n\t</h3>\r\n\r\n\t<div class="wpml-copy-container">\r\n\t\t<button class="button-secondary button-copy-all js-button-copy-all" title="' +
 ((__t = ( labels.copy_from_original )) == null ? '' : __t) +
-'">\n\t\t\t<i class="otgs-ico-copy"></i> ' +
+'">\r\n\t\t\t<i class="otgs-ico-copy"></i> ' +
 ((__t = ( labels.copy_all )) == null ? '' : __t) +
-'\n\t\t</button>\n\t</div>\n';
+'\r\n\t\t</button>\r\n\t</div>\r\n';
 
 }
 return __p
@@ -119,7 +119,7 @@ var __t, __p = '', __e = _.escape;
 with (obj) {
 __p += '<p>' +
 ((__t = ( note )) == null ? '' : __t) +
-'</p>\n\n';
+'</p>\r\n\r\n';
 
 }
 return __p
@@ -130,20 +130,20 @@ obj || (obj = {});
 var __t, __p = '', __e = _.escape, __j = Array.prototype.join;
 function print() { __p += __j.call(arguments, '') }
 with (obj) {
-__p += '<div class="handlediv button-link"><br></div>\n<h3 class="hndle">\n\t<span>' +
+__p += '<div class="handlediv button-link"><br></div>\r\n<h3 class="hndle">\r\n\t<span>' +
 ((__t = ( section.title )) == null ? '' : __t) +
 ' ';
  if ( section.empty ) { ;
 __p += '&nbsp;<i>' +
 ((__t = ( section.empty_message )) == null ? '' : __t);
  } ;
-__p += '</span>\n\t';
+__p += '</span>\r\n\t';
  if ( section.sub_title ) { ;
-__p += '\n\t<span class="subtitle"><i class="otgs-ico-warning"></i>' +
+__p += '\r\n\t<span class="subtitle"><i class="otgs-ico-warning"></i>' +
 ((__t = ( section.sub_title )) == null ? '' : __t) +
-'</span>\n\t';
+'</span>\r\n\t';
  } ;
-__p += '\n</h3>\n\n<div class="inside">\n</div>\n';
+__p += '\r\n</h3>\r\n\r\n<div class="inside">\r\n</div>\r\n';
 
 }
 return __p
@@ -156,21 +156,21 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<label>' +
 ((__t = (field.title)) == null ? '' : __t) +
-'</label>\n<input readonly class="original_value js-original-value" value="' +
+'</label>\r\n<input readonly class="original_value js-original-value" value="' +
 __e( field.field_data ) +
 '" type="text" ' +
 ((__t = (field.original_direction)) == null ? '' : __t) +
-'/>\n<button class="button-copy button-secondary js-button-copy icl_tm_copy_link otgs-ico-copy" id="icl_tm_copy_link_' +
+'/>\r\n<button class="button-copy button-secondary js-button-copy icl_tm_copy_link otgs-ico-copy" id="icl_tm_copy_link_' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '" title="' +
 ((__t = ( labels.copy_from_original )) == null ? '' : __t) +
-'"/>\n<input class="translated_value js-translated-value" name="fields[' +
+'"/>\r\n<input class="translated_value js-translated-value" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][data]" value="' +
 __e( field.field_data_translated ) +
 '" type="text" ' +
 ((__t = (field.translation_direction)) == null ? '' : __t) +
-'/>\n<div class="field_translation_complete">\n\t<label><input class="icl_tm_finished js-field-translation-complete" name="fields[' +
+'/>\r\n\r\n<div class="field_translation_complete">\r\n\t<label><input class="icl_tm_finished js-field-translation-complete" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][finished]" type="checkbox" ';
  if (field.field_finished) { ;
@@ -178,13 +178,21 @@ __p += ' checked="checked" ';
  } ;
 __p += ' />' +
 ((__t = (labels.translation_complete)) == null ? '' : __t) +
-'</label>\n</div>\n<input type="hidden" name="fields[' +
+'</label>\r\n</div>\r\n\r\n';
+ if (field.diff) { ;
+__p += '\r\n<a class="js-toggle-diff toggle-diff">' +
+((__t = (labels.show_diff)) == null ? '' : __t) +
+'</a>\r\n' +
+((__t = (field.diff)) == null ? '' : __t) +
+'\r\n';
+ } ;
+__p += '\r\n\r\n\r\n<input type="hidden" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][tid]" value="' +
 ((__t = (field.tid)) == null ? '' : __t) +
-'">\n<input type="hidden" name="fields[' +
+'">\r\n<input type="hidden" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
-'][format]" value="base64">\n';
+'][format]" value="base64">\r\n';
 
 }
 return __p
@@ -197,21 +205,21 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<label>' +
 ((__t = (field.title)) == null ? '' : __t) +
-'</label>\n<textarea class="original_value js-original-value" readonly cols="22" rows="10" ' +
+'</label>\r\n<textarea class="original_value js-original-value" readonly cols="22" rows="10" ' +
 ((__t = (field.original_direction)) == null ? '' : __t) +
 '>' +
 ((__t = ( field.field_data )) == null ? '' : __t) +
-'</textarea>\n<button class="button-copy button-secondary js-button-copy icl_tm_copy_link otgs-ico-copy" id="icl_tm_copy_link_' +
+'</textarea>\r\n<button class="button-copy button-secondary js-button-copy icl_tm_copy_link otgs-ico-copy" id="icl_tm_copy_link_' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '" title="' +
 ((__t = ( labels.copy_from_original )) == null ? '' : __t) +
-'"/>\n<textarea class="translated_value js-translated-value cols="22" rows="10" name="fields[' +
+'"/>\r\n<textarea class="translated_value js-translated-value cols="22" rows="10" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][data]" ' +
 ((__t = (field.translation_direction)) == null ? '' : __t) +
 '>' +
 ((__t = ( field.field_data_translated )) == null ? '' : __t) +
-'</textarea>\n<div class="field_translation_complete">\n\t<label><input class="icl_tm_finished js-field-translation-complete" name="fields[' +
+'</textarea>\r\n\r\n<div class="field_translation_complete">\r\n\t<label><input class="icl_tm_finished js-field-translation-complete" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][finished]" type="checkbox" ';
  if (field.field_finished) { ;
@@ -219,13 +227,21 @@ __p += ' checked="checked" ';
  } ;
 __p += ' />' +
 ((__t = (labels.translation_complete)) == null ? '' : __t) +
-'</label>\n</div>\n<input type="hidden" name="fields[' +
+'</label>\r\n</div>\r\n\r\n';
+ if (field.diff) { ;
+__p += '\r\n<a class="js-toggle-diff toggle-diff">' +
+((__t = (labels.show_diff)) == null ? '' : __t) +
+'</a>\r\n' +
+((__t = (field.diff)) == null ? '' : __t) +
+'\r\n';
+ } ;
+__p += '\r\n\r\n\r\n<input type="hidden" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][tid]" value="' +
 ((__t = (field.tid)) == null ? '' : __t) +
-'">\n<input type="hidden" name="fields[' +
+'">\r\n<input type="hidden" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
-'][format]" value="base64">\n';
+'][format]" value="base64">\r\n';
 
 }
 return __p
@@ -238,21 +254,21 @@ function print() { __p += __j.call(arguments, '') }
 with (obj) {
 __p += '<label>' +
 ((__t = (field.title)) == null ? '' : __t) +
-'</label>\n<div id="original_' +
+'</label>\r\n<div id="original_' +
 ((__t = (field.field_type)) == null ? '' : __t) +
-'_placeholder"></div>\n<button class="button-copy button-secondary js-button-copy icl_tm_copy_link otgs-ico-copy" id="icl_tm_copy_link_' +
+'_placeholder"></div>\r\n<button class="button-copy button-secondary js-button-copy icl_tm_copy_link otgs-ico-copy" id="icl_tm_copy_link_' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '" title="' +
 ((__t = ( labels.copy_from_original )) == null ? '' : __t) +
-'"/>\n<div id="translated_' +
+'"/>\r\n<div id="translated_' +
 ((__t = (field.field_type)) == null ? '' : __t) +
-'_placeholder"></div>\n<input type="hidden" name="fields[' +
+'_placeholder"></div>\r\n<input type="hidden" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][tid]" value="' +
 ((__t = (field.tid)) == null ? '' : __t) +
-'">\n<input type="hidden" name="fields[' +
+'">\r\n<input type="hidden" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
-'][format]" value="base64">\n<div class="field_translation_complete">\n    <label><input class="icl_tm_finished js-field-translation-complete" name="fields[' +
+'][format]" value="base64">\r\n\r\n<div class="field_translation_complete">\r\n  <label><input class="icl_tm_finished js-field-translation-complete" name="fields[' +
 ((__t = (field.field_type)) == null ? '' : __t) +
 '][finished]" type="checkbox" ';
  if (field.field_finished) { ;
@@ -260,7 +276,15 @@ __p += ' checked="checked" ';
  } ;
 __p += ' />' +
 ((__t = (labels.translation_complete)) == null ? '' : __t) +
-'</label>\n</div>\n';
+'</label>\r\n</div>\r\n\r\n';
+ if (field.diff) { ;
+__p += '\r\n<a class="js-toggle-diff toggle-diff">' +
+((__t = (labels.show_diff)) == null ? '' : __t) +
+'</a>\r\n' +
+((__t = (field.diff)) == null ? '' : __t) +
+'\r\n';
+ } ;
+__p += '\r\n\r\n\r\n';
 
 }
 return __p

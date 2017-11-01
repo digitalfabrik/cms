@@ -67,6 +67,10 @@ class WPML_Taxonomy_Translation_Screen_Data extends WPML_WPDB_And_SP_User {
 		$where_clause      = $this->build_where_clause( $attributes_to_select );
 		$full_statement    = "SELECT {$select_clause} FROM {$from_clause} WHERE {$where_clause}";
 		$all_terms         = $this->wpdb->get_results( $full_statement );
+//		We are not going to add term meta support in 3.6.3.
+//		if ( function_exists( 'get_term_meta' ) ) {
+//			$all_terms         = $this->add_metadata( $all_terms );
+//		}
 		if ( $all_terms ) {
 			$all_terms = $this->order_terms_list( $this->index_terms_array( $all_terms ) );
 		}
@@ -193,5 +197,15 @@ class WPML_Taxonomy_Translation_Screen_Data extends WPML_WPDB_And_SP_User {
 		$where_clause = join( ' AND  ', $where_clauses );
 
 		return $where_clause;
+	}
+
+	private function add_metadata( $all_terms ) {
+		foreach ( $all_terms as $term ) {
+			$meta_data = get_term_meta( $term->term_id );
+			foreach ( $meta_data as $meta_key => $meta_data ) {
+				$term->meta_data[ $meta_key ] = $meta_data;
+			}
+		}
+		return $all_terms;
 	}
 }

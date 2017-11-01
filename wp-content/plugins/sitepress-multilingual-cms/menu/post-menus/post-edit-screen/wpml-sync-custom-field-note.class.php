@@ -14,18 +14,15 @@ class WPML_Sync_Custom_Field_Note extends WPML_SP_User {
 			$lang_details     = $this->sitepress->get_language_details( $source_lang );
 			$user_preferences = $this->sitepress->get_user_preferences();
 			if ( (bool) $copied_cf === true && ( ! isset( $user_preferences['notices']['hide_custom_fields_copy'] ) || ! $user_preferences['notices']['hide_custom_fields_copy'] ) ) {
-				$ccf_note = '<img src="' . ICL_PLUGIN_URL . '/res/img/alert.png" alt="Notice" width="16" height="16" style="margin-right:8px" />';
-				$ccf_note .= '<a class="icl_user_notice_hide" href="#hide_custom_fields_copy" style="float:right;margin-left:20px;">' . __(
-						'Never show this.',
-						'sitepress'
-					) . '</a>';
+				$ccf_note = '<i class="otgs-ico-warning"></i> ';
 				$ccf_note .= wp_nonce_field( 'save_user_preferences_nonce', '_icl_nonce_sup', false, false );
 				$ccf_note .= sprintf(
-					__( 'WPML will copy %s from %s when you save this post.', 'sitepress' ),
+					esc_html__( 'WPML will copy %s from %s when you save this post.', 'sitepress' ),
 					'<i><strong>' . join( '</strong>, <strong>', $copied_cf ) . '</strong></i>',
 					$lang_details['display_name']
 				);
-				$this->sitepress->admin_notices( $ccf_note, 'error' );
+				$ccf_note .= '<a class="icl_user_notice_hide notice-dismiss" href="#hide_custom_fields_copy"><span class="screen-reader-text">'. esc_html__( 'Never show this', 'sitepress' ) . '</span></a>';
+				$this->sitepress->admin_notices( $ccf_note, 'notice notice-info otgs-notice otgs-is-dismissible' );
 			}
 		}
 	}

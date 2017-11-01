@@ -39,4 +39,5 @@ before_script:
   - sed -i "s|C:\\xampp\\htdocs\\wordpress|$working_dir|g" database.sql
   - mysql -u root wordpress < database.sql
   ## activate wordpress plugins
+  - ls -lah /home/travis/build/Integreat/cms/wp-content/plugins/sitepress-multilingual-cms/vendor/
   - source ./wp-activate-plugins.sh

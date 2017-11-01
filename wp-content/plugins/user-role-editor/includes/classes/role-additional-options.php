@@ -8,7 +8,7 @@ class URE_Role_Additional_Options {
     private $active_items = null;
     const STORAGE_ID = 'ure_role_additional_options_values';
     
-    public function __construct($lib) {
+    private function __construct($lib) {
     
         $this->lib = $lib;
         $this->init();
@@ -78,12 +78,12 @@ class URE_Role_Additional_Options {
 
     
     public function set_active_items_hooks() {
-        global $current_user;
         
         if (current_user_can('ure_edit_roles')) {
             return;
         }
                 
+        $current_user = wp_get_current_user();
         foreach($current_user->roles as $role) {
             if (!isset($this->active_items[$role])) {
                 continue;

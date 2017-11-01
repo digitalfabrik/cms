@@ -18,7 +18,7 @@ class WPML_TP_Service_Action extends WPML_SP_User {
 	 * @param object $service
 	 */
 	protected function set_current_service( $service ) {
-		$this->sitepress->set_setting( 'translation_service', $service,
-			true );
+		do_action( 'wpml_tm_before_set_translation_service', $service );
+		$this->sitepress->set_setting( 'translation_service', $service, true );
 	}
 }

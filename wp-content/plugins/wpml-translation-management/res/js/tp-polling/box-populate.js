@@ -37,7 +37,7 @@ function WpmlTpPollingPickupPopulateAction(jQuery, TranslationProxyPolling) {
                         if (!response.data.wait_text) {
                             icl_tm_pickup_wrap_button.removeAttr('disabled');
                             icl_tm_pickup_wrap_button.val(response.data.button_text);
-                            pickup_nof_jobs.text(response.data.jobs_in_progress_text);
+                            pickup_nof_jobs.html(response.data.jobs_in_progress_text);
                             pickup_last_pickup.text(response.data.last_pickup_text);
                             jQuery('#tp_polling_job').text(JSON.stringify(response.data.polling_data));
                             TranslationProxyPolling.init(icl_tm_pickup_wrap_button, icl_ajxloaderimg);

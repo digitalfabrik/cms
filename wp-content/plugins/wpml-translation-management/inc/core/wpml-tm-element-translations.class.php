@@ -143,13 +143,22 @@ class WPML_TM_Element_Translations extends WPML_TM_Record_User {
 	private function fallback_type_prefix( $trid ) {
 		global $wpdb;
 
-		return isset( $this->element_type_prefix_cache[ $trid ] ) && (bool) $this->element_type_prefix_cache[ $trid ] === true
-			? $this->element_type_prefix_cache[ $trid ]
-			: $wpdb->get_var( $wpdb->prepare( "SELECT SUBSTRING_INDEX(element_type, '_', 1)
-                                                FROM {$wpdb->prefix}icl_translations
-                                                WHERE trid = %d
-                                                LIMIT 1",
-											  $trid ) );
+		if ( isset( $this->element_type_prefix_cache[ $trid ] ) && (bool) $this->element_type_prefix_cache[ $trid ] === true ) {
+			$prefix = $this->element_type_prefix_cache[ $trid ];
+		} else if ( (bool) $this->tm_records->get_post_translations()->get_element_translations( null, $trid ) ) {
+			$prefix = 'post';
+		} else {
+			$prefix = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT SUBSTRING_INDEX(element_type, '_', 1)
+					FROM {$wpdb->prefix}icl_translations
+					WHERE trid = %d
+					LIMIT 1",
+					$trid )
+			);
+		}
+
+		return $prefix;
 	}
 
 	/**

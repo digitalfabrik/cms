@@ -1,6 +1,7 @@
 <?php
 
 class WPML_Language_Domain_Validation {
+	const VALIDATE_DOMAIN_KEY = '____icl_validate_domain';
 
 	/** @var WPML_WP_API $wp_api */
 	private $wp_api;
@@ -8,56 +9,89 @@ class WPML_Language_Domain_Validation {
 	private $http;
 	/** @var  string $url */
 	private $url;
-	/** @var string $language_code */
-	private $language_code;
+	/** @var  string $validation_url */
+	private $validation_url;
 
 	/**
-	 * WPML_Language_Domain_Validation constructor.
-	 *
 	 * @param WPML_WP_API $wp_api
 	 * @param WP_Http     $http
 	 * @param string      $url
-	 * @param string      $language_code
+	 *
+	 * @throws \InvalidArgumentException
 	 */
-	public function __construct( &$wp_api, &$http, $url, $language_code ) {
-		$this->wp_api = &$wp_api;
-		$this->http   = &$http;
-		$this->url    = $url;
-		if ( $this->validate_url_string() === false ) {
+
+	public function __construct( $wp_api, $http, $url ) {
+		$this->wp_api         = $wp_api;
+		$this->http           = $http;
+		$this->url            = $url;
+		$this->validation_url = $this->get_validation_url();
+		if ( ! $this->has_scheme_and_host() ) {
 			throw new InvalidArgumentException( 'Invalid URL :' . $this->url );
 		}
-		$this->language_code = $language_code;
 	}
 
 	/**
-	 * Makes a http request to the url this points at and checks if the requests
-	 * returns the correct validation result.
-	 *
 	 * @return bool
 	 */
 	public function is_valid() {
-		$url_glue = false === strpos( $this->url, '?' ) ? '?' : '&';
-		$url      = trailingslashit( $this->url )
-		            . (
-		            $this->language_code ? '/' . $this->language_code . '/' : ''
-		            ) . $url_glue . '____icl_validate_domain=1';
-		$response = $this->http->request( $url, 'timeout=15' );
+		if( is_multisite() && defined( 'SUBDOMAIN_INSTALL' ) && SUBDOMAIN_INSTALL ) {
+			return true;
+		}
 
-		return ! is_wp_error( $response )
-		       && ( $response['response']['code'] == '200' )
-		       && ( ( $response['body'] === '<!--' . untrailingslashit( $this->wp_api->get_home_url() ) . '-->' )
-		            || $response['body'] === '<!--' . untrailingslashit( $this->wp_api->get_site_url() ) . '-->' );
+		$response = $this->get_validation_response();
+
+		if ( $this->is_valid_response( $response ) ) {
+			return in_array( $response['body'], $this->get_accepted_responses( $this->validation_url ), true );
+		}
+
+		return false;
 	}
 
 	/**
-	 * Checks that the input url is valid in so far that it contains schema
-	 * and host at least.
+	 * @return bool
+	 */
+	private function has_scheme_and_host() {
+		$url_parts = wpml_parse_url( $this->url );
+		return array_key_exists( 'scheme', $url_parts ) && array_key_exists( 'host', $url_parts );
+	}
+
+	/**
+	 * @return string
+	 */
+	private function get_validation_url() {
+		return add_query_arg( array( self::VALIDATE_DOMAIN_KEY => 1 ), trailingslashit( $this->url ) );
+	}
+
+	/**
+	 * @param string $url
+	 *
+	 * @return array
+	 */
+	private function get_accepted_responses( $url ) {
+		$accepted_responses = array(
+			'<!--' . untrailingslashit( $this->wp_api->get_home_url() ) . '-->',
+			'<!--' . untrailingslashit( $this->wp_api->get_site_url() ) . '-->',
+		);
+		if ( defined( 'SUNRISE' ) && SUNRISE === 'on' ) {
+			$accepted_responses[] = '<!--' . str_replace( '?' . self::VALIDATE_DOMAIN_KEY . '=1', '', $url ) . '-->';
+			return $accepted_responses;
+		}
+		return $accepted_responses;
+	}
+
+	/**
+	 * @return array|WP_Error
+	 */
+	private function get_validation_response() {
+		return $this->http->request( $this->validation_url, 'timeout=15' );
+	}
+
+	/**
+	 * @param array|WP_Error $response
 	 *
 	 * @return bool
 	 */
-	private function validate_url_string() {
-		$url_parts = wpml_parse_url( $this->url );
-
-		return isset( $url_parts['scheme'] ) && isset( $url_parts['host'] );
+	private function is_valid_response( $response ) {
+		return ! is_wp_error( $response ) && '200' === (string) $response['response']['code'];
 	}
 }
