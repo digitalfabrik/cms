@@ -39,6 +39,8 @@ class WPML_TM_Update_Post_Translation_Data_Action extends WPML_TM_Update_Transla
 					}
 				}
 			}
+			$prev_translation = apply_filters( 'wpml_tm_populate_prev_translation', $prev_translation, $package, $lang );
+
 		}
 
 		return $prev_translation;

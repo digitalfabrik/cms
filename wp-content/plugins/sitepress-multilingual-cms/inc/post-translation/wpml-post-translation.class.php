@@ -46,7 +46,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * Filters the sticky posts option. If synchronization of sticky posts is activated it will translated
 	 * wrong language values, if deactivated filter out wrong language values.
 	 *
-	 * @param int[]     $posts
+	 * @param array     $posts
 	 * @param SitePress $sitepress
 	 *
 	 * @used-by \SitePress::option_sticky_posts which uses this function to filter the sticky posts array after
@@ -55,6 +55,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 * @return int[]
 	 */
 	public function pre_option_sticky_posts_filter( $posts, &$sitepress ) {
+		/** @var array $posts */
 		$posts                       = $posts ? $posts : get_option( 'sticky_posts' );
 		$this->filtered_sticky_posts = array();
 		if ( $posts ) {
@@ -244,7 +245,9 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		$original_id      = $this->get_original_element( $post_vars['ID'] );
 		$translation_sync->sync_with_translations( $original_id ? $original_id : $post_vars['ID'], $post_vars );
 		$translation_sync->sync_with_duplicates( $post_vars['ID'] );
-		require_once ICL_PLUGIN_PATH . '/inc/cache.php';
+		if ( ! function_exists( 'icl_cache_clear' ) ) {
+			require_once WPML_PLUGIN_PATH . '/inc/cache.php';
+		}
 		icl_cache_clear( $post_vars['post_type'] . 's_per_language', true );
 		wp_defer_term_counting( false );
 		if ( $post_vars['post_type'] !== 'nav_menu_item' ) {
@@ -252,6 +255,8 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		}
 		// Flush object cache.
 		$this->flush_object_cache_for_groups( array( 'ls_languages', 'element_translations' ) );
+
+		do_action( 'wpml_after_save_post', $post_vars['ID'], $trid, $language_code, $source_language );
 	}
 
 	/**
@@ -297,20 +302,29 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		return $res;
 	}
 
-	protected function has_save_post_action( $post ) {
+	public function has_save_post_action( $post ) {
+		if ( ! $post ) {
+			return false;
+		}
+		$is_auto_draft              = isset( $post->post_status ) && $post->post_status === 'auto-draft';
+		$is_editing_different_post  = array_key_exists( 'post_ID', $_POST ) && (int) $_POST['post_ID']
+		                              && $post->ID != $_POST['post_ID'];
+		$is_saving_a_revision       = array_key_exists( 'post_type', $_POST ) && 'revision' === $_POST['post_type'];
+		$is_untrashing              = array_key_exists( 'action', $_GET ) && 'untrash' === $_GET['action'];
+		$is_auto_save               = array_key_exists( 'autosave', $_POST );
+		$skip_sitepress_actions     = array_key_exists( 'skip_sitepress_actions', $_POST );
+		$is_post_a_revision         = 'revision' === $post->post_type;
+		$is_scheduled_to_be_trashed = get_post_meta( $post->ID, '_wp_trash_meta_status', true );
 
-		return !( !$this->is_translated_type ( $post->post_type )
-		          || ( isset( $post->post_status ) && $post->post_status === "auto-draft" )
-		          || isset( $_POST[ 'autosave' ] )
-		          || isset( $_POST[ 'skip_sitepress_actions' ] )
-		          || ( isset( $_POST[ 'post_ID' ] )
-		               && $_POST[ 'post_ID' ] != $post->ID )
-		          || ( isset( $_POST[ 'post_type' ] )
-		               && $_POST[ 'post_type' ] === 'revision' )
-		          || $post->post_type === 'revision'
-		          || get_post_meta ( $post->ID, '_wp_trash_meta_status', true )
-		          || ( isset( $_GET[ 'action' ] )
-		               && $_GET[ 'action' ] === 'untrash' ) );
+		return $this->is_translated_type( $post->post_type )
+		       && ! ( $is_auto_draft
+		              || $is_auto_save
+		              || $skip_sitepress_actions
+		              || $is_editing_different_post
+		              || $is_saving_a_revision
+		              || $is_post_a_revision
+		              || $is_scheduled_to_be_trashed
+		              || $is_untrashing );
 	}
 
 	protected function get_element_join() {
@@ -320,6 +334,11 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 					ON t.element_id = p.ID
 						AND t.element_type = CONCAT('post_', p.post_type)";
 	}
+
+	protected function get_type_prefix() {
+		return 'post_';
+	}
+
 
 	public function is_translated_type( $post_type ) {
 		global $sitepress;

@@ -12,7 +12,8 @@
 			'click .term-save': 'saveTerm',
 			'click .js-button-copy': 'copyOriginal',
 			'keydown': 'handleEnter',
-			'input #term-name': 'updateUI'
+			'input #term-name': 'updateUI',
+            'focusout input#term-name': 'generateSlug'
 		},
 		initialize: function () {
 			var self = this;
@@ -27,6 +28,8 @@
 			var self = this,
 				trid = self.model.get('trid'),
 				term = self.model.getNameSlugAndDescription(),
+				term_meta = self.model.getMetaData(),
+				original_term_meta = TaxonomyTranslation.classes.taxonomy.getOriginalTermMeta( trid ),
 				original_term = TaxonomyTranslation.classes.taxonomy.getOriginalTerm( trid );
 
 			self.$el.html(
@@ -37,7 +40,9 @@
 					langs: TaxonomyTranslation.data.activeLanguages,
 					ttid: self.model.get('term_taxonomy_id'),
 					term: term,
-					original_term: original_term.getNameSlugAndDescription()
+					original_term: original_term.getNameSlugAndDescription(),
+					term_meta: term_meta,
+					original_term_meta: original_term_meta
 				})
 			);
 
@@ -52,20 +57,27 @@
 			return self;
 		},
 		saveTerm: function (e) {
-			var self = this;
+			var self = this,
+				meta_data = {};
 
 			self.undelegateEvents();
 
 			e.preventDefault();
-			var name = self.$el.find('#term-name').val();
-			var slug = self.$el.find('#term-slug').val();
-			var description = self.$el.find('#term-description').val();
+			var name = self.$el.find('#term-name').val(),
+				slug = self.$el.find('#term-slug').val(),
+				description = self.$el.find('#term-description').val();
+
+
+			var term_metas = self.$el.find('.term-meta');
+			_.each( term_metas, function ( meta_object ) {
+				meta_data[ meta_object.dataset.metaKey ] = meta_object.value;
+			});
 
 			if (name) {
 				self.$el.find('.spinner').show();
 				self.$el.find('.term-save').prop( 'disabled', true );
 				self.$el.find('.cancel').prop( 'disabled', true );
-				self.model.save(name, slug, description);
+				self.model.save(name, slug, description, meta_data);
 			}
 
 			return self;
@@ -105,11 +117,39 @@
 			var self = this,
 				original = jQuery( e.currentTarget ).prev().val();
 			jQuery( e.currentTarget ).next().val( original );
+			self.generateSlug();
 			self.updateUI();
 		},
 		updateUI: function ( ) {
 			var self = this;
 			self.$el.find( '.term-save' ).prop( 'disabled', self.$el.find( '#term-name').val() === '' );
+		},
+		generateSlug: function() {
+            var self = this,
+				term_slug = self.$el.find( '#term-slug' ),
+				term_name = self.$el.find( '#term-name' );
+            if ('' === term_slug.val() && '' !== term_name.val()) {
+                term_slug.prop('disabled', true);
+                term_slug.css('background', 'url(' + window.icl_ajxloaderimg_src + ') no-repeat left center');
+                jQuery.ajax({
+                    url: ajaxurl,
+                    type: "POST",
+                    data: {
+                        action: 'wpml_generate_term_slug',
+                        term: term_name.val(),
+                        nonce: labels.wpml_generate_unique_slug_nonce,
+                        language_code: self.model.get('language_code'),
+                        taxonomy: TaxonomyTranslation.classes.taxonomy.get("taxonomy"),
+                    },
+                    success: function(response) {
+                    	if( true === response.success ) {
+                            term_slug.val( response.data.slug );
+                        }
+                        term_slug.prop('disabled', false);
+                        term_slug.css('background', '');
+                    }
+                });
+            }
 		}
 
 	});

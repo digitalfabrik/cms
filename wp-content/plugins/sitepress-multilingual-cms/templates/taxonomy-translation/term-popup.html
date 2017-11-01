@@ -24,11 +24,23 @@
 			<button class="button-copy button-secondary js-button-copy otgs-ico-copy" title="<%= labels.copyFromOriginal %>"/>
 			<textarea id="term-description" cols="22" rows="4"><%= term.description %></textarea>
 		</div>
+		<% if ( original_term_meta.length ) { %>
+			<hr>
+			<label><%= labels.termMetaLabel%></label>
+			<div class="wpml-form-row">
+				<% _.each(original_term_meta, function(meta_data){ %>
+					<label for="term-meta"><%= meta_data.meta_key %></label>
+					<input readonly value="<%- meta_data.meta_value %>" type="text">
+					<button class="button-copy button-secondary js-button-copy otgs-ico-copy" title="<%= labels.copyFromOriginal %>"/>
+					<input name="term-meta" class="term-meta" data-meta-key="<%= meta_data.meta_key %>" value="<%- term_meta[meta_data.meta_key] %>" type="text">
+				<% }); %>
+			</div>
+		<% } %>
 		<div class="wpml-dialog-footer ">
 			<span class="errors icl_error_text"></span>
 			<input class="cancel wpml-dialog-close-button alignleft" value="<%= labels.cancel %>" type="button">
 			<input class="button-primary term-save alignright" value="<%= labels.save %>" type="submit">
 			<span class="spinner alignright"></span>
-		</div>	
+		</div>
 	</div>
 </div>

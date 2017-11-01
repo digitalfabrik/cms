@@ -8,8 +8,8 @@ class WPML_SEO_HeadLangs {
 	 *
 	 * @param SitePress $sitepress
 	 */
-	public function __construct( &$sitepress ) {
-		$this->sitepress = &$sitepress;
+	public function __construct( $sitepress ) {
+		$this->sitepress = $sitepress;
 	}
 
 	private function get_seo_settings() {
@@ -41,10 +41,12 @@ class WPML_SEO_HeadLangs {
 
 		if ( $this->must_render( $languages ) ) {
 			$hreflang_items = array();
-			foreach ( $languages as $code => $lang ) {
-				$alternate_hreflang               = apply_filters( 'wpml_alternate_hreflang', $lang['url'], $code );
-				$hreflang_code                    = $this->sitepress->get_language_tag( $code );
-				if($hreflang_code) {
+			foreach ( $languages as $lang ) {
+				$alternate_hreflang = apply_filters( 'wpml_alternate_hreflang', $lang['url'], $lang['code'] );
+
+				$hreflang_code = $this->get_hreflang_code( $lang );
+
+				if ( $hreflang_code ) {
 					$hreflang_items[ $hreflang_code ] = str_replace( '&amp;', '&', $alternate_hreflang );
 				}
 			}
@@ -66,7 +68,7 @@ class WPML_SEO_HeadLangs {
 		foreach ( array( 1, 10 ) as $priority ) {
 			$label    = __( 'As early as possible', 'sitepress' );
 			if ( $priority > 1 ) {
-				$label = sprintf( __( 'Later in the head section (priority %d)', 'sitepress' ), $priority );
+				$label = sprintf( esc_html__( 'Later in the head section (priority %d)', 'sitepress' ), $priority );
 			}
 			$options[ $priority ] = array(
 				'selected' => ( $priority == $seo['head_langs_priority'] ),
@@ -77,7 +79,7 @@ class WPML_SEO_HeadLangs {
 		?>
 		<div class="wpml-section wpml-section-seo-options" id="lang-sec-9-5">
 			<div class="wpml-section-header">
-				<h3><?php _e( 'SEO Options', 'sitepress' ) ?></h3>
+				<h3><?php esc_html_e( 'SEO Options', 'sitepress' ) ?></h3>
 			</div>
 			<div class="wpml-section-content">
 				<form id="icl_seo_options" name="icl_seo_options" action="">
@@ -85,15 +87,15 @@ class WPML_SEO_HeadLangs {
 					<p>
 						<input type="checkbox" id="icl_seo_head_langs" name="icl_seo_head_langs" <?php if ( $seo['head_langs'] )
 							echo 'checked="checked"' ?> value="1"/>
-						<label for="icl_seo_head_langs"><?php _e( "Display alternative languages in the HEAD section.", 'sitepress' ); ?></label>
+						<label for="icl_seo_head_langs"><?php esc_html_e( "Display alternative languages in the HEAD section.", 'sitepress' ); ?></label>
 					</p>
 					<p>
-						<label for="wpml-seo-head-langs-priority"><?php echo __( 'Position of hreflang links', 'sitepress' ); ?></label>
+						<label for="wpml-seo-head-langs-priority"><?php esc_html_e( 'Position of hreflang links', 'sitepress' ); ?></label>
 						<select name="wpml_seo_head_langs_priority" id="wpml-seo-head-langs-priority" <?php if ( ! $seo['head_langs'] ) echo 'disabled="disabled"' ?>>
 							<?php
 							foreach ($options as $priority => $option ) {
 								?>
-								<option value="<?php echo $priority; ?>" <?php echo $option['selected'] ? 'selected="selected"' :''; ?>><?php echo $option['label']; ?></option>
+								<option value="<?php echo esc_html( $priority ); ?>" <?php echo $option['selected'] ? 'selected="selected"' :''; ?>><?php echo esc_html( $option['label'] ); ?></option>
 								<?php
 							}
 							?>
@@ -101,7 +103,7 @@ class WPML_SEO_HeadLangs {
 					</p>
 					<p class="buttons-wrap">
 						<span class="icl_ajx_response" id="icl_ajx_response_seo"></span>
-						<input class="button button-primary" name="save" value="<?php _e( 'Save', 'sitepress' ) ?>" type="submit"/>
+						<input class="button button-primary" name="save" value="<?php esc_attr_e( 'Save', 'sitepress' ) ?>" type="submit"/>
 					</p>
 				</form>
 			</div>
@@ -127,5 +129,39 @@ class WPML_SEO_HeadLangs {
 		            || ( $this->sitepress->get_wp_api()->is_home()
 		                 || $this->sitepress->get_wp_api()->is_front_page()
 		                 || $this->sitepress->get_wp_api()->is_archive() ) );
+	}
+
+	/**
+	 * @param array $lang
+	 *
+	 * @return string
+	 */
+	private function get_hreflang_code( $lang ) {
+		$tag           = $lang['tag'];
+		$locale        = $lang['default_locale'];
+		$hreflang_code = $this->get_best_code( array( $tag, $locale ) );
+		$hreflang_code = str_replace( '_', '-', $hreflang_code );
+		$hreflang_code = strtolower( $hreflang_code );
+
+		if ( $this->is_valid_hreflang_code( $hreflang_code ) ) {
+			return trim( $hreflang_code );
+		}
+
+		return '';
+	}
+
+	private function is_valid_hreflang_code( $code ) {
+		return strlen( trim( $code ) ) >= 2;
+	}
+
+	private function get_best_code( array $codes ) {
+		$best_code = null;
+		foreach ( $codes as $code ) {
+			if ( strlen( $code ) > strlen( $best_code ) ) {
+				$best_code = $code;
+			}
+		}
+
+		return $best_code;
 	}
 }

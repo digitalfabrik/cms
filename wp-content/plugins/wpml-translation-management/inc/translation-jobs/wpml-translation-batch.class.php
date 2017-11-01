@@ -196,4 +196,8 @@ class WPML_Translation_Batch extends WPML_Abstract_Job_Collection{
 		$translation_service = TranslationProxy::get_current_service();
 		return $supports_notifications = isset($translation_service->notification) ? $translation_service->notification : true;
 	}
+
+	public function clear_batch_data() {
+		TranslationProxy_Basket::set_batch_data( null );
+	}
 }

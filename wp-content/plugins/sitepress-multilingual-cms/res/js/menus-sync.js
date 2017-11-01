@@ -147,7 +147,6 @@ var WPML_core = WPML_core || {};
 			jQuery('.spinner').remove();
 			jQuery('#icl_msync_cancel').fadeOut();
 			icl_msync_message.fadeIn('slow');
-
 			jQuery.ajax({
 										url:     ajaxurl,
 										data:    {
@@ -156,7 +155,8 @@ var WPML_core = WPML_core || {};
 										success: function (response) {
 											if (response.success && response.data.items) {
 												var element = jQuery('<p></p>');
-												element.text(response.data.label + ' ');
+												element.text(menus_sync.text1);
+                                                element.append('<br>' + menus_sync.text2 + ' ' );
 												var items = 0;
 
 												for (var key in response.data.items) {
@@ -171,6 +171,7 @@ var WPML_core = WPML_core || {};
 														items++;
 													}
 												}
+                                                element.append( '<br>' + menus_sync.text3);
 
 												element.appendTo(jQuery('#icl_msync_confirm_form'));
 											}

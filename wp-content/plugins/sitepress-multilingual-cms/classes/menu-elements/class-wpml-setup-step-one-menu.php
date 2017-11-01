@@ -18,8 +18,9 @@ class WPML_Setup_Step_One_Menu extends WPML_SP_User {
 
 			<div class="wpml-section-content">
 				<form id="icl_initial_language" method="post">
+					<div class="wpml-section-content-inner">
 					<?php wp_nonce_field( 'icl_initial_language', 'icl_initial_languagenonce' ) ?>
-					<p>
+					<p class="wpml-wizard-instruction">
 						<label for="icl_initial_language_code"><?php esc_html_e( 'Before adding other languages, please select the language existing contents are written in:', 'sitepress' ) ?></label>
 					</p>
 					<?php
@@ -35,10 +36,11 @@ class WPML_Setup_Step_One_Menu extends WPML_SP_User {
 							<?php endforeach; ?>
 						</select>
 					</p>
-					<p class="buttons-wrap">
-						<input class="button-primary" name="save" value="<?php esc_html_e( 'Next', 'sitepress' ) ?>"
+					</div>
+					<footer class="clearfix text-right">
+						<input class="button-primary alignright" name="save" value="<?php esc_html_e( 'Next', 'sitepress' ) ?>"
 						       type="submit"/>
-					</p>
+					</footer>
 				</form>
 			</div>
 		</div> <!-- .wpml-section -->

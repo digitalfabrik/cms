@@ -1,6 +1,17 @@
 <?php
 
-class WPML_Abstract_Job_Collection extends WPML_WPDB_User {
+class WPML_Abstract_Job_Collection {
+	/** @var WPDB $wpdb */
+	public $wpdb;
+
+	/**
+	 * WPML_Abstract_Job_Collection constructor.
+	 *
+	 * @param WPDB $wpdb
+	 */
+	public function __construct( WPDB $wpdb ) {
+		$this->wpdb = $wpdb;
+	}
 
 	protected function get_table_join(
 		$single = false,

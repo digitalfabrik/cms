@@ -9,7 +9,18 @@ var WPML_TM = WPML_TM || {};
 		tagName: 'div',
 		className: 'wpml-form-row',
 		events: {
-			'click .icl_tm_copy_link': 'copyField'
+			'click .icl_tm_copy_link': 'copyField',
+			'click .js-toggle-diff': 'toggleDiff'
+		},
+		toggleDiff: function(e) {
+			e.preventDefault();
+			var diff = this.$el.find('.diff');
+			if(diff.is(':visible')) {
+				diff.fadeOut();
+			} else {
+				diff.fadeIn();
+			}
+			this.updateUI();
 		},
 		copyField: function () {
 			var self = this;
@@ -19,17 +30,22 @@ var WPML_TM = WPML_TM || {};
 		updateUI: function () {
 			var self = this;
 			if (self.$el.is(':visible')) {
-				var original = self.getOriginal();
-				var translation = self.getTranslation();
+				try {
+					var original = self.getOriginal();
+					var translation = self.getTranslation();
 
-				self.$el.find('.icl_tm_copy_link').prop('disabled', translation !== '' || original === '');
-				self.translationCompleteCheckbox.prop('disabled', translation === '');
-				if ('' === translation) {
-					self.translationCompleteCheckbox.prop('checked', false);
-					self.translationCompleteCheckbox.trigger('change');
+					self.$el.find('.icl_tm_copy_link').prop('disabled', translation !== '' || original === '');
+					self.translationCompleteCheckbox.prop('disabled', translation === '');
+					if ('' === translation) {
+						self.translationCompleteCheckbox.prop('checked', false);
+						self.translationCompleteCheckbox.trigger('change');
+					}
+					self.sendMessageToGroupView();
+					jQuery(document).trigger('WPML_TM.editor.field_update_ui', self);
 				}
-				self.sendMessageToGroupView();
-				jQuery(document).trigger('WPML_TM.editor.field_update_ui', self);
+				catch(err) {
+					// this try - catch block is needed because this is sometimes called before tiny MCE editor is completely initialized
+				}
 			}
 		},
 		render: function (field, labels) {
@@ -53,6 +69,7 @@ var WPML_TM = WPML_TM || {};
 				self.translationCompleteCheckbox.hide();
 				self.translationCompleteCheckbox.parent().hide();
 			}
+			self.$el.find('.field-diff').find('.diff').hide();
 
 			jQuery(document).trigger('WPML_TM.editor.field_view_ready', self);
 		},

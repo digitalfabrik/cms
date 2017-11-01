@@ -5,6 +5,6 @@ var wpml_xliff_ajxloaderimg = '<img src="'+wpml_xliff_ajxloaderimg_src+'" alt="l
 </script>
 
 <div class="wrap">
-    <h2><?php echo __('XLIFF translation', 'wpml-xliff') ?></h2>    
+    <h2><?php echo __('XLIFF translation', 'wpml-translation-management') ?></h2>    
 
 </div>

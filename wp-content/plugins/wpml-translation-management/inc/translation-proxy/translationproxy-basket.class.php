@@ -27,6 +27,16 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			self::$messages[] = $array;
 		}
 
+		public static function remove_message( $text ) {
+			if( is_array( self::$messages ) ) {
+				foreach ( self::$messages as $key => $message ) {
+					if ( array_key_exists( 'text', $message ) && $message['text'] === $text ) {
+						unset( self::$messages[ $key ] );
+					}
+				}
+			}
+		}
+
 		public static function get_basket( $force = false ) {
 			if ( ! isset( self::$basket ) || $force ) {
 				self::$basket = get_option( self::ICL_TRANSLATION_JOBS_BASKET );
@@ -347,15 +357,6 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 									self::$messages[ ] = array(
 										'type' => 'update',
 										'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already in progress.',
-										                       'wpml-translation-management' ),
-										                   $post_title,
-										                   $language_name )
-									);
-									$send_to_basket    = false;
-								} elseif ( $job_details->status == ICL_TM_WAITING_FOR_TRANSLATOR ) {
-									self::$messages[ ] = array(
-										'type' => 'update',
-										'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already waiting for translator.',
 										                       'wpml-translation-management' ),
 										                   $post_title,
 										                   $language_name )
@@ -764,36 +765,35 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 				'st_dashboard_bottom' => 'string-translation-under',
 			);
 		}
-		
+
 		public static function get_basket_extra_fields_section() {
 			$extra_fields = TranslationProxy::get_extra_fields_local();
-			
+
 			$html = '';
-			
-			if ($extra_fields) {
-			
-				$html .= "<h3>3. " . __( 'Select additional options', 'wpml-translation-management' ) . " <a href='#' id='basket_extra_fields_refresh'>(". __("Refresh", 'wpml-translation-management' ) .")</a></h3>";
-				
-				$html .= "<div id='basket_extra_fields_list'>";
-				
-				$html .= self::get_basket_extra_fields_inputs($extra_fields, false);
-				
-				$html .= "</div>";
-				
-			} 
-			
+
+			if ( $extra_fields ) {
+
+				$html .= '<h3>3. ' . __( 'Select additional options', 'wpml-translation-management' ) . ' <a href="#" id="basket_extra_fields_refresh">(' . __( "Refresh", 'wpml-translation-management' ) . ')</a></h3>';
+
+				$html .= '<div id="basket_extra_fields_list">';
+
+				$html .= self::get_basket_extra_fields_inputs( $extra_fields, false );
+
+				$html .= '</div>';
+			}
+
 			return $html;
 		}
-		
-		public static function get_basket_extra_fields_inputs($extra_fields = array(), $force_refresh = false) {
-			if ( empty($extra_fields) ) {
-				if ( ( defined('DOING_AJAX') && DOING_AJAX ) ) {
+
+		public static function get_basket_extra_fields_inputs( array $extra_fields = array(), $force_refresh = false ) {
+			if ( ! $extra_fields ) {
+				if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 					$force_refresh = true;
 				}
-				$extra_fields = self::get_basket_extra_fields_array($force_refresh);
+				$extra_fields = self::get_basket_extra_fields_array( $force_refresh );
 			}
-			
-			return self::extra_fields_build_inputs($extra_fields);
+
+			return self::extra_fields_build_inputs( $extra_fields );
 		}
 		
 		public static function get_basket_extra_fields_array($force_refresh = false) {
@@ -804,43 +804,33 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			} else {
 				$extra_fields = TranslationProxy::get_extra_fields_local();
 			}
-			return $extra_fields;
+
+			return TranslationProxy::maybe_convert_extra_fields( $extra_fields );
 		}
-		
-		public static function extra_fields_build_inputs($extra_fields) {
-			if (! $extra_fields ) {
-				return false;
+
+		public static function extra_fields_build_inputs( array $extra_fields ) {
+			if ( ! $extra_fields ) {
+				return '';
 			}
-			
+
+			$rows = array();
+			/** @var WPML_TP_Extra_Field $field */
+			$field_diplay = new WPML_TP_Extra_Field_Display();
+			foreach ( $extra_fields as $field ) {
+				$rows[] = $field_diplay->render( $field );
+			}
+
+			$rows = array_filter($rows);
+
 			$html = '';
-			
-			foreach ($extra_fields as $field) {
-				$html .= "<label for='{$field->name}'>{$field->label}</label><br>";
-				switch ($field->type) {
-					case 'select':
-						$html .= "<select name='{$field->name}'>";
-						foreach ($field->items as $id => $name) {
-							$html .= "<option value='{$id}'>{$name}</option>";
-						}
-						$html .= "</select>";
-						break;
-					case 'textarea':
-						$html .= "<textarea name='{$field->name}'></textarea><br>";
-						break;
-					case 'radio':
-					case 'checkbox':
-						foreach ($field->items as $id => $name) {
-							$html .= "<input type='{$field->type}' name='{$field->name}' value='{$id}' > $name <br>";
-						}
-						break;
-					case 'text':
-					default:
-						$type = isset($field->type) ? $field->type : 'text';
-						$html .= "<input type='{$type}' name='{$field->name}'><br>";
-						break;
-				}
+			if ( $rows ) {
+				$html = '<table class="form-table">';
+				$html .= '<tbody>';
+				$html .= implode( PHP_EOL, $rows );
+				$html .= '</tbody>';
+				$html .= '</table>';
 			}
-			
+
 			return $html;
 		}
 

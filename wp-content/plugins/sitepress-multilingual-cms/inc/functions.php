@@ -154,9 +154,8 @@ function icl_get_settings() {
  * @return array
  */
 function icl_plugin_action_links( $links, $file ) {
-	$this_plugin = basename( ICL_PLUGIN_PATH ) . '/sitepress.php';
-	if ( $file == $this_plugin ) {
-		$links[ ] = '<a href="admin.php?page=' . basename( ICL_PLUGIN_PATH ) . '/menu/languages.php">' . __( 'Configure', 'sitepress' ) . '</a>';
+	if ( $file == WPML_PLUGIN_BASENAME ) {
+		$links[ ] = '<a href="admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php">' . __( 'Configure', 'sitepress' ) . '</a>';
 	}
 
 	return $links;
@@ -223,17 +222,21 @@ function _icl_trash_restore_prompt() {
 		$post = get_post( intval( $_GET[ 'post' ] ) );
 		if ( isset( $post->post_status ) && $post->post_status == 'trash' ) {
 			$post_type_object = get_post_type_object( $post->post_type );
-			$ret              = '<p>';
-			$ret .= sprintf( __( 'This translation is currently in the trash. You need to either <a href="%s">delete it permanently</a> or <a href="%s">restore</a> it in order to continue.' ), get_delete_post_link( $post->ID, '', true ), wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link
-			                                                                                                                                                                                                                                                                    . '&amp;action=untrash', $post->ID ) ),
-			                                                                                                                                                                                                                                                'untrash-post_'
-			                                                                                                                                                                                                                                                . $post->ID ) );
-			$ret .= '</p>';
+
+			$delete_post_link  = '<a href="' . esc_url( get_delete_post_link( $post->ID, '', true ) ) . '">' . esc_html( 'delete it permanently', 'sitepress' ) . '</a>';
+			$restore_post_link = '<a href="' . wp_nonce_url( admin_url( sprintf( $post_type_object->_edit_link . '&amp;action=untrash', $post->ID ) ), 'untrash-post_' . $post->ID ) . '">' . esc_html( 'restore', 'sitepress' ) . '</a>';
+			$ret               = '<p>' . sprintf( esc_html__( 'This translation is currently in the trash. You need to either %s or %s it in order to continue.' ), $delete_post_link, $restore_post_link );
+
 			wp_die( $ret );
 		}
 	}
 }
 
+/**
+ * @param string $message should be already escaped as it might contain HTML
+ * @param string $icon
+ * @param array $args
+ */
 function icl_pop_info( $message, $icon = 'info', $args = array() ) {
 	switch ( $icon ) {
 		case 'info':
@@ -257,10 +260,11 @@ function icl_pop_info( $message, $icon = 'info', $args = array() ) {
 	$close_icon = ICL_PLUGIN_URL . '/res/img/ico-close.png';
 	?>
 	<div class="icl_pop_info_wrap">
-		<img class="icl_pop_info_but <?php echo join( ' ', $but_style )?>" src="<?php echo $icon ?>" width="<?php echo $icon_size ?>" height="<?php echo $icon_size ?>" alt="info"/>
+		<img class="icl_pop_info_but <?php echo esc_attr( join( ' ', $but_style ) ); ?>" src="<?php echo esc_url( $icon ); ?>"
+		     width="<?php echo esc_attr( $icon_size ) ?>" height="<?php echo esc_attr( $icon_size ); ?>" alt="info"/>
 
 		<div class="icl_cyan_box icl_pop_info">
-			<img class="icl_pop_info_but_close" align="right" src="<?php echo $close_icon; ?>" width="12" height="12" alt="x"/>
+			<img class="icl_pop_info_but_close" align="right" src="<?php echo esc_url( $close_icon ); ?>" width="12" height="12" alt="x"/>
 			<?php echo $message; ?>
 		</div>
 	</div>
@@ -503,9 +507,9 @@ function is_not_installing_plugins() {
 		return true;
 	} elseif ( $_REQUEST[ 'action' ] != 'activate' && $_REQUEST[ 'action' ] != 'activate-selected' ) {
 		return true;
-	} elseif ( ( ! isset( $_REQUEST[ 'plugin' ] ) || $_REQUEST[ 'plugin' ] != basename( ICL_PLUGIN_PATH ) . '/' . basename( __FILE__ ) ) && ! in_array( ICL_PLUGIN_FOLDER . '/' . basename( __FILE__ ), $checked ) ) {
+	} elseif ( ( ! isset( $_REQUEST[ 'plugin' ] ) || $_REQUEST[ 'plugin' ] != WPML_PLUGIN_FOLDER . '/' . basename( __FILE__ ) ) && ! in_array( WPML_PLUGIN_FOLDER . '/' . basename( __FILE__ ), $checked ) ) {
 		return true;
-	} elseif ( in_array( ICL_PLUGIN_FOLDER . '/' . basename( __FILE__ ), $checked ) && ! isset( $sitepress ) ) {
+	} elseif ( in_array( WPML_PLUGIN_FOLDER . '/' . basename( __FILE__ ), $checked ) && ! isset( $sitepress ) ) {
 		return true;
 	}
 
@@ -540,34 +544,19 @@ function wpml_version_is( $version_to_check, $comparison = '==' ) {
 	return version_compare( ICL_SITEPRESS_VERSION, $version_to_check, $comparison ) && function_exists( 'wpml_site_uses_icl' );
 }
 
-function wpml_site_uses_icl_message_notice() {
-	$plugin_download_url = 'https://wpml.org/account/downloads/#migrate-icanlocalize-translation-to-wpml-3-2';
-	$plugin_download_label = _x('Download from WPML.org', 'Site Uses ICL: message notice, plugin download button', 'sitepress');
-	$plugin_download_anchor = '<a href="' . $plugin_download_url . '" class="button-primary" target="_blank">' . $plugin_download_label . '</a>';
-
-	$messages[] = _x( 'Your website is using ICanLocalize for professional translation. This version of WPML requires an update to your ICanLocalize project. We prepared a plugin that will do this update for you.', 'Site Uses ICL: message notice line 1', 'sitepress' );
-	$messages[] = $plugin_download_anchor;
-	$messages[] = _x( 'After you log-in, go to Downloads and get the plugin called "Migrate ICanLocalize Translation to WPML 3.2". Install and activate it, then follow the instructions to migrate your translation project.', 'Site Uses ICL: message notice line 2', 'sitepress' );
-	?>
-	<div class="error">
-		<p><?php echo implode( '</p><p>', $messages ); ?></p>
-	</div>
-<?php
-}
-
 /**
  * Interrupts the plugin activation process if the WPML Core Plugin could not be activated
  */
 function icl_suppress_activation() {
 	$active_plugins    = get_option( 'active_plugins' );
-	$icl_sitepress_idx = array_search( ICL_PLUGIN_FOLDER . '/sitepress.php', $active_plugins );
+	$icl_sitepress_idx = array_search( WPML_PLUGIN_BASENAME, $active_plugins );
 	if ( false !== $icl_sitepress_idx ) {
 		unset( $active_plugins[ $icl_sitepress_idx ] );
 		update_option( 'active_plugins', $active_plugins );
 		unset( $_GET[ 'activate' ] );
 		$recently_activated = get_option( 'recently_activated' );
-		if ( ! isset( $recently_activated[ ICL_PLUGIN_FOLDER . '/sitepress.php' ] ) ) {
-			$recently_activated[ ICL_PLUGIN_FOLDER . '/sitepress.php' ] = time();
+		if ( ! isset( $recently_activated[ WPML_PLUGIN_BASENAME ] ) ) {
+			$recently_activated[ WPML_PLUGIN_BASENAME ] = time();
 			update_option( 'recently_activated', $recently_activated );
 		}
 	}
@@ -578,7 +567,7 @@ function icl_suppress_activation() {
  */
 function activate_installer( $sitepress = null ) {
 	// installer hook - start
-	include_once ICL_PLUGIN_PATH . '/embedded/otgs/installer/loader.php'; //produces global variable $wp_installer_instance
+	include_once WPML_PLUGIN_PATH . '/vendor/otgs/installer/loader.php'; //produces global variable $wp_installer_instance
 	$args = array(
 		'plugins_install_tab' => 1,
 		'high_priority'       => 1,
@@ -602,25 +591,25 @@ function activate_installer( $sitepress = null ) {
 function wpml_missing_filter_input_notice() {
 	?>
 	<div class="message error">
-		<h3><?php _e( "WPML can't be functional because it requires a disabled PHP extension!", 'sitepress' ) ?></h3>
+		<h3><?php esc_html_e( "WPML can't be functional because it requires a disabled PHP extension!", 'sitepress' ); ?></h3>
 
-		<p><?php _e( "To ensure and improve the security of your website, WPML makes use of the ", 'sitepress' ) ?><a href="http://php.net/manual/en/book.filter.php">PHP Data Filtering</a> extension.<br><br>
-			<?php _e( "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was
-            used, however, the PECL version is no longer recommended to be used or updated. (source: ", 'sitepress' ) ?><a href="http://php.net/manual/en/filter.installation.php">PHP Manual Function Reference Variable and
+		<p><?php esc_html_e( "To ensure and improve the security of your website, WPML makes use of the ", 'sitepress' ); ?><a href="http://php.net/manual/en/book.filter.php">PHP Data Filtering</a> extension.<br><br>
+			<?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2.0. Before this time an experimental PECL extension was
+            used, however, the PECL version is no longer recommended to be used or updated. (source: ", 'sitepress' ); ?><a href="http://php.net/manual/en/filter.installation.php">PHP Manual Function Reference Variable and
 			                                                                                                                                                                       Type Related Extensions Filter
 			                                                                                                                                                                       Installing/Configuring</a>)<br>
 			<br>
-			<?php _e( "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host.", 'sitepress' ) ?>
-			<br><?php _e( "To enable it, either you or your host will need to open your website's php.ini file and either:", 'sitepress' ) ?><br>
+			<?php esc_html_e( "The filter extension is enabled by default as of PHP 5.2, therefore it must have been disabled by either you or your host.", 'sitepress' ); ?>
+			<br><?php esc_html_e( "To enable it, either you or your host will need to open your website's php.ini file and either:", 'sitepress' ); ?><br>
 		<ol>
-			<li><?php _e( "Remove the 'filter_var' string from the 'disable_functions' directive or...", 'sitepress' ) ?>
+			<li><?php esc_html_e( "Remove the 'filter_var' string from the 'disable_functions' directive or...", 'sitepress' ); ?>
 			</li>
-			<li><?php _e( "Add the following line:", 'sitepress' ) ?> <code class="inline-code">extension=filter.so</code></li>
+			<li><?php esc_html_e( "Add the following line:", 'sitepress' ); ?> <code class="inline-code">extension=filter.so</code></li>
 		</ol>
 		<?php $ini_location = php_ini_loaded_file();
 		if ( $ini_location !== false ) {
 			?>
-			<strong><?php echo __( "Your php.ini file is located at", 'sitepress' ) . ' ' . $ini_location ?>.</strong>
+			<strong><?php esc_html_e( "Your php.ini file is located at", 'sitepress' ) . ' ' . esc_html( $ini_location); ?>.</strong>
 		<?php
 		}
 		?>
@@ -632,21 +621,24 @@ function repair_el_type_collate() {
 	global $wpdb;
 
 	$correct_collate = $wpdb->get_var (
-		"SELECT collation_name
-          FROM information_schema.COLUMNS
-          WHERE TABLE_NAME = '{$wpdb->posts}'
-                AND COLUMN_NAME = 'post_type'
-                    AND table_schema = (SELECT DATABASE())
-          LIMIT 1"
+		$wpdb->prepare(
+			"SELECT collation_name
+	          FROM information_schema.COLUMNS
+	          WHERE TABLE_NAME = '%s'
+	                AND COLUMN_NAME = 'post_type'
+	                    AND table_schema = (SELECT DATABASE())
+	          LIMIT 1",
+			$wpdb->posts
+		)
 	);
 
 	// translations
 	$table_name = $wpdb->prefix . 'icl_translations';
-	$sql
-	            = "
-             ALTER TABLE `{$table_name}`
-                CHANGE `element_type` `element_type` VARCHAR( 36 ) NOT NULL DEFAULT 'post_post' COLLATE {$correct_collate}
-            ";
+	$sql = $wpdb->prepare(
+		"ALTER TABLE `$table_name` CHANGE `element_type` `element_type` VARCHAR( 36 ) NOT NULL DEFAULT 'post_post' COLLATE %s",
+		$correct_collate
+	);
+
 	if ( $wpdb->query ( $sql ) === false ) {
 		throw new Exception( $wpdb->last_error );
 	}
@@ -719,3 +711,14 @@ if ( ! function_exists( 'wp_parse_url' ) ) {
 	}
 }
 
+/**
+ * Wrapper function to prevent ampersand to be encoded (depending on some PHP versions)
+ * @link http://php.net/manual/en/function.http-build-query.php#102324
+ *
+ * @param array|object $query_data
+ *
+ * @return string
+ */
+function wpml_http_build_query( $query_data ) {
+	return http_build_query( $query_data, '', '&' );
+}
