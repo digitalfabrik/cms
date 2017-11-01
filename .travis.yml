@@ -40,3 +40,4 @@ before_script:
   - mysql -u root wordpress < database.sql
   ## activate wordpress plugins
   - source ./wp-activate-plugins.sh
+  - ls -lah /home/travis/build/Integreat/cms/wp-content/plugins/sitepress-multilingual-cms/vendor/
