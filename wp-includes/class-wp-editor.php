@@ -986,8 +986,8 @@ final class _WP_Editors {
 		$version = 'ver=' . get_bloginfo( 'version' );
 
 		// Default stylesheets
-		$settings['content_css'] = includes_url( "css/dashicons$suffix.css?$version" ) . ',' .
-			includes_url( "js/tinymce/skins/wordpress/wp-content.css?$version" );
+		//$settings['content_css'] = includes_url( "css/dashicons$suffix.css?$version" ) . ',' .
+		//	includes_url( "js/tinymce/skins/wordpress/wp-content.css?$version" );
 
 		return $settings;
 	}
