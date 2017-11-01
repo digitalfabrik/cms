@@ -49,7 +49,7 @@ if ( version_compare( PHP_VERSION, '5.3.0' ) >= 0 ) {
 } else {
 	$autoloader = $autoloader_dir . '/autoload_52.php';
 }
-require_once("vendor/autoload.php");
+require_once $autoloader;
 
 $WPML_Dependencies = WPML_Dependencies::get_instance();
 
