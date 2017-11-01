@@ -82,7 +82,7 @@ class URE_User_View extends URE_View {
     // end of get_user_info()
     
     
-    private function show_primary_role_dropdown_list($user_roles) {
+    public function show_primary_role_dropdown_list($user_roles) {
 ?>        
         <select name="primary_role" id="primary_role">
 <?php
@@ -103,7 +103,7 @@ class URE_User_View extends URE_View {
     // end of show_primary_role_dropdown_list()
     
     
-    private function show_secondary_roles() {
+    protected function show_secondary_roles() {
         $show_admin_role = $this->lib->show_admin_role_allowed();
         $values = array_values($this->user_to_edit->roles);
         $primary_role = array_shift($values);  // get 1st element from roles array
@@ -129,7 +129,8 @@ class URE_User_View extends URE_View {
         $show_deprecated_caps = $this->lib->get('show_deprecated_caps');
         $edit_user_caps_mode = $this->lib->get_edit_user_caps_mode();
         $caps_access_restrict_for_simple_admin = $this->lib->get_option('caps_access_restrict_for_simple_admin', 0);        
-        $user_info = $this->get_user_info();        
+        $user_info = $this->get_user_info();  
+        $select_primary_role = apply_filters('ure_users_select_primary_role', true);
 ?>
 
 <div class="postbox" style="float:left;min-width:1000px;width: 100%;">
@@ -169,10 +170,13 @@ class URE_User_View extends URE_View {
 	</tr>	
 	<tr>
 		<td id="ure_user_roles">
+<?php
+    if ($select_primary_role || $this->lib->is_super_admin()) {
+?>
 			<div class="ure-user-role-section-title"><?php esc_html_e('Primary Role:', 'user-role-editor'); ?></div>
 <?php 
-    $this->show_primary_role_dropdown_list($this->user_to_edit->roles);
-
+        $this->show_primary_role_dropdown_list($this->user_to_edit->roles);
+    }
     if (function_exists('bbp_filter_blog_editable_roles') ) {  // bbPress plugin is active
 ?>	
 	<div class="ure-user-role-section-title" style="margin-top: 5px;"><?php esc_html_e('bbPress Role:', 'user-role-editor'); ?></div>

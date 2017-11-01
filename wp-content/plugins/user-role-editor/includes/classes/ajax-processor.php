@@ -39,6 +39,19 @@ class URE_Ajax_Processor {
     }
     
     
+    protected function get_required_cap() {
+        
+        if ($this->action=='grant_roles' || $this->action=='get_user_roles') {
+            $cap = 'edit_users';
+        } else {
+            $cap = URE_Own_Capabilities::get_key_capability();
+        }
+        
+        return $cap;
+    }
+    // end of get_required_cap()
+    
+    
     protected function ajax_check_permissions() {
         
         if (!wp_verify_nonce($_REQUEST['wp_nonce'], 'user-role-editor')) {
@@ -46,8 +59,8 @@ class URE_Ajax_Processor {
             die;
         }
         
-        $key_capability = URE_Own_Capabilities::get_key_capability();
-        if (!current_user_can($key_capability)) {
+        $capability = $this->get_required_cap();                
+        if (!current_user_can($capability)) {
             echo json_encode(array('result'=>'error', 'message'=>'URE: Insufficient permissions'));
             die;
         }
@@ -71,7 +84,7 @@ class URE_Ajax_Processor {
         
         $new_role = filter_input(INPUT_POST, 'new_role', FILTER_SANITIZE_STRING);
         if (empty($new_role)) {
-            $answer = array('result'=>'failure', 'message'=>'Provide new role');
+            $answer = array('result'=>'error', 'message'=>'Provide new role');
             return $answer;
         }
         
@@ -84,7 +97,7 @@ class URE_Ajax_Processor {
             $wp_roles = new WP_Roles();
         }
         if (!isset($wp_roles->roles[$new_role])) {
-            $answer = array('result'=>'failure', 'message'=>'Selected new role does not exist');
+            $answer = array('result'=>'error', 'message'=>'Selected new role does not exist');
             return $answer;
         }
                 
@@ -99,12 +112,22 @@ class URE_Ajax_Processor {
     
     protected function grant_roles() {
         
-        $answer = URE_Grant_Roles::process_user_request();
+        $answer = URE_Grant_Roles::grant_roles();
         
         return $answer;
         
     }
     // end of grant_roles()
+    
+    
+    protected function get_user_roles() {
+        
+        $answer = URE_Grant_Roles::get_user_roles();
+        
+        return $answer;
+        
+    }
+    // end of get_user_roles()
     
     
     protected function _dispatch() {
@@ -118,6 +141,10 @@ class URE_Ajax_Processor {
             case 'grant_roles':
                 $answer = $this->grant_roles();
                 break;
+            case 'get_user_roles':
+                $answer = $this->get_user_roles();
+                break;
+
             default:
                 $answer = array('result' => 'error', 'message' => 'unknown action "' . $this->action . '"');
         }

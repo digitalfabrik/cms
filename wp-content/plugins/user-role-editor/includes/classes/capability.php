@@ -28,15 +28,31 @@ class URE_Capability {
 
     
     // sanitize user input for security
+    // do not allow to use internally used capabilities
     public static function validate($cap_id_raw) {
         $match = array();
         $found = preg_match('/[A-Za-z0-9_\-]*/', $cap_id_raw, $match);
-        if ( !$found || ($found && ($match[0]!=$cap_id_raw)) ) { // some non-alphanumeric charactes found!    
-            $result = false;
-        } else {
-            $result = true;
+        if (!$found || ($found && ($match[0]!=$cap_id_raw))) { // some non-alphanumeric charactes found!    
+            $data = array(
+                'result'=>false, 
+                'message'=>esc_html__('Error: Capability name must contain latin characters and digits only!', 'user-role-editor'),
+                'cap_id'=>'');
+            return $data;
+        } 
+        
+        $cap_id = strtolower($match[0]);
+        if ($cap_id=='do_not_allow') {
+            $data = array(
+                'result'=>false, 
+                'message'=>esc_html__('Error: this capability is used internally by WordPress', 'user-role-editor'),
+                'cap_id'=>'do_not_allow');
+            return $data;
         }
-        $data = array('result'=>$result, 'cap_id'=>strtolower($match[0]));
+        
+        $data = array(
+            'result'=>true, 
+            'message'=>'Success',
+            'cap_id'=>$cap_id);
         
         return $data;
     }
@@ -63,7 +79,7 @@ class URE_Capability {
         
         $data = self::validate($_POST['capability_id']);                
         if (!$data['result']) {
-            return esc_html__('Error: Capability name must contain latin characters and digits only!', 'user-role-editor');
+            return $data['message'];
         }
         
         $cap_id = $data['cap_id'];                
@@ -75,7 +91,7 @@ class URE_Capability {
             $admin_role = $lib->get_admin_role();            
             $wp_roles->use_db = true;
             $wp_roles->add_cap($admin_role, $cap_id);
-            $mess = sprintf(esc_html__('Capability %s is added successfully', 'user-role-editor'), $cap_id);
+            $mess = sprintf(esc_html__('Capability %s was added successfully', 'user-role-editor'), $cap_id);
         } else {
             $mess = sprintf(esc_html__('Capability %s exists already', 'user-role-editor'), $cap_id);
         }

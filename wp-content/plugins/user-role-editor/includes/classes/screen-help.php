@@ -22,6 +22,8 @@ class URE_Screen_Help {
                 esc_html__('Capabilities like "level_0", "level_1" are deprecated and are not used by WordPress. '
                         . 'They are left at the user roles for the compatibility purpose with the old themes and plugins code. '
                         . 'Turning on this option will show those deprecated capabilities.', 'user-role-editor') . '</li>
+            <li><strong>' . esc_html__('Confirm role update','user-role-editor').'</strong> - ' .
+                esc_html__('Show confirmation dialog before save changes made to a current role.') . '</li>
             <li><strong>' . esc_html__('Edit user capabilities','user-role-editor').'</strong> - '.
                 esc_html__('If turned off - capabilities section of selected user is shown in readonly mode. '
                         . 'Administrator can not assign capabilities to the user directly. '

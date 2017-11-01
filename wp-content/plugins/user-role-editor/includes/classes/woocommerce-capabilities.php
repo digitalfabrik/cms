@@ -34,8 +34,8 @@ class URE_Woocommerce_Capabilities {
     private static function add_base_caps(&$caps, $group, $subgroup, $cap_type) {
         
         $cap_types = $cap_type .'s';
-        $caps['edit_'. $cap_type] = array('custom', $group, $subgroup, $cap_type);
-        $caps['read_'. $cap_type] = array('custom', $group, $subgroup, $cap_type);
+        $caps['edit_'. $cap_type] = array('custom', 'custom_post_types', $group, $subgroup, $cap_type);
+        $caps['read_'. $cap_type] = array('custom', 'custom_post_types', $group, $subgroup, $cap_type);
         $caps['delete_'. $cap_type] = array('custom', $group, $subgroup, $cap_type);
         $caps['edit_'. $cap_types] = array('custom', $group, $subgroup, $cap_type);
         $caps['edit_others_'. $cap_types] = array('custom', $group, $subgroup, $cap_type);
@@ -49,7 +49,8 @@ class URE_Woocommerce_Capabilities {
         $caps['edit_published_'. $cap_types] = array('custom', $group, $subgroup, $cap_type);
         
     }
-    // end of add_caps()
+    // end of add_base_caps()
+    
     
     /**
      * Returns full list of WooCommerce plugin user capabilities
@@ -101,7 +102,7 @@ class URE_Woocommerce_Capabilities {
     
     /**
      * This custom post types use capabilities from the other custom post types
-     * So we should define capabilities set for theme manually
+     * So we should define capabilities set for them manually
      * @return array()
      */
     public static function get_post_types_without_caps() {
