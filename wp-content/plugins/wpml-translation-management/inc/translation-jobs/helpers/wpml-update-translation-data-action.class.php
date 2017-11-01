@@ -68,29 +68,25 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 	 */
 	protected function get_translated_field_values( $rid, array $package ) {
 		global $wpdb;
-		
+
 		$prev_translations = $this->populate_prev_translation( $rid, $package );
-		
+
+		if ( ! $prev_translations ) {
+			return array();
+		}
+
 		// if we have a previous job_id for this rid mark it as the top (last) revision
 		list( $prev_job_id, $prev_job_translated ) = $this->get_prev_job_data( $rid );
+
 		if ( ! is_null( $prev_job_id ) ) {
-
-			if ( ! $prev_job_translated ) {
-				// Job id needed to generate the xliff file
-				return $prev_job_id;
-			}
-
-			$last_rev = $wpdb->get_var( $wpdb->prepare( "
+			$last_rev_prepare = $wpdb->prepare( "
 				SELECT MAX(revision)
 				FROM {$wpdb->prefix}icl_translate_job
 				WHERE rid=%d
 					AND ( revision IS NOT NULL OR translated = 1 )
-			",
-			                                            $rid ) );
-			$wpdb->update( $wpdb->prefix . 'icl_translate_job',
-			               array( 'revision' => $last_rev + 1 ),
-			               array( 'job_id' => $prev_job_id ) );
-
+			", $rid );
+			$last_rev         = $wpdb->get_var( $last_rev_prepare );
+			$wpdb->update( $wpdb->prefix . 'icl_translate_job', array( 'revision' => $last_rev + 1 ), array( 'job_id' => $prev_job_id ) );
 		}
 
 		return $prev_translations;

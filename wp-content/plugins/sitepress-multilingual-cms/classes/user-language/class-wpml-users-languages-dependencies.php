@@ -13,6 +13,7 @@ class WPML_Users_Languages_Dependencies {
 	private $WPML_User_Language_Switcher;
 	private $WPML_Language_Code;
 	private $WPML_WP_API;
+	private $WPML_Upgrade_Admin_Users_Languages;
 
 	function __construct( &$sitepress ) {
 
@@ -24,5 +25,6 @@ class WPML_Users_Languages_Dependencies {
 		$this->WPML_User_Language_Switcher_Resources = new WPML_User_Language_Switcher_Resources();
 		$this->WPML_User_Language_Switcher_UI        = new WPML_User_Language_Switcher_UI( $this->WPML_User_Language_Switcher, $this->WPML_User_Language_Switcher_Resources );
 		$this->WPML_User_Language_Switcher_Hooks     = new WPML_User_Language_Switcher_Hooks( $this->WPML_User_Language_Switcher, $this->WPML_User_Language_Switcher_UI );
+		$this->WPML_Upgrade_Admin_Users_Languages    = new WPML_Upgrade_Admin_Users_Languages( $sitepress );
 	}
 }

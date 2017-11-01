@@ -37,7 +37,7 @@ class WPML_Translation_Proxy_Basket_Networking {
 		$basket_data = $this->basket->get_basket();
 		$batch  = (bool) $batch === true ? $batch : $this->generate_batch( $basket_data );
 		if ( (bool) $batch === false ) {
-			return array( true, false, array( __( 'Batch is empty', 'sitepress' ) ) );
+			return array( true, false, array( __( 'Batch is empty', 'wpml-translation-management' ) ) );
 		}
 
 		foreach ( $batch as $batch_item ) {
@@ -76,6 +76,7 @@ class WPML_Translation_Proxy_Basket_Networking {
 		$basket_name = $basket_name ? $basket_name : $posted_basket_name;
 		$batch       = $this->basket->get_basket_batch( $basket_name );
 		$batch->cancel_all_remote_jobs();
+		$batch->clear_batch_data();
 	}
 
 	/**

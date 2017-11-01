@@ -7,8 +7,6 @@ class ICanLocalizeQuery{
 	private $sitepress;
 	private $wpml_icl_client;
 
-	const WEBSITE_DETAILS_TRANSIENT_KEY = 'wpml_icl_query_website_details';
-
 	function __construct( $site_id = null, $access_key = null, SitePress $sitepress = null, $wpml_icl_client = null ) {
 		$this->site_id    = $site_id;
 		$this->access_key = $access_key;
@@ -17,7 +15,7 @@ class ICanLocalizeQuery{
 		}
 		$this->sitepress = $sitepress;
 		if ( null === $wpml_icl_client ) {
-			$wpml_icl_client = new WPML_ICL_Client( $this->sitepress );
+			$wpml_icl_client = new WPML_ICL_Client( new WP_Http(), new WPML_WP_API() );
 		}
 		$this->wpml_icl_client = $wpml_icl_client;
 	}
@@ -33,7 +31,7 @@ class ICanLocalizeQuery{
     function updateAccount($data){        
         $request = ICL_API_ENDPOINT . '/websites/'.$data['site_id'].'/update_by_cms.xml';
         unset($data['site_id']);
-        $response = $this->_request($request, 'POST', $data);        
+        $response = $this->request($request, 'POST', $data);
         if(!$response){
             return $this->error;
         }else{
@@ -47,38 +45,32 @@ class ICanLocalizeQuery{
 	 * @return array of website details returned from a direct API call to ICL
 	 */
 	function get_website_details( $force = false ) {
-		$res = $this->sitepress->get_wp_api()->get_transient( self::WEBSITE_DETAILS_TRANSIENT_KEY );
+		$res = $this->sitepress->get_wp_api()->get_transient( WEBSITE_DETAILS_TRANSIENT_KEY );
 
 		if ( ! $res || $force ) {
 			$website_details_cache_index = '_last_valid_icl_website_details';
 			$request_url                 = ICL_API_ENDPOINT . '/websites/' . $this->site_id . '.xml?accesskey=' . $this->access_key;
-			$res                         = $this->_request( $request_url );
+			$res                         = $this->request( $request_url );
 			if ( isset( $res['info']['website'] ) ) {
 				$res = $res['info']['website'];
 				$this->sitepress->set_setting( $website_details_cache_index, $res, true );
 			} else {
 				$res = $this->sitepress->get_setting( $website_details_cache_index, array() );
 			}
-			$this->sitepress->get_wp_api()->set_transient( self::WEBSITE_DETAILS_TRANSIENT_KEY, $res, DAY_IN_SECONDS );
+			$this->sitepress->get_wp_api()->set_transient( WEBSITE_DETAILS_TRANSIENT_KEY, $res, DAY_IN_SECONDS );
 		}
 		return $res;
 	}
-    
-    function _request($request, $method='GET', $formvars=null, $formfiles=null, $gzipped = false){
-	    $this->wpml_icl_client->set_gzipped( $gzipped );
-	    $this->wpml_icl_client->set_method( $method );
-	    $this->wpml_icl_client->set_post_data( $formvars );
-	    $this->wpml_icl_client->set_post_files( $formfiles );
 
-	    return $this->wpml_icl_client->request( $request );
-    }
+	private function request( $request, $method = 'GET', $formvars = null ) {
+		$this->wpml_icl_client->set_method( $method );
+		$this->wpml_icl_client->set_post_data( $formvars );
+
+		return $this->wpml_icl_client->request( $request );
+	}
     
-    function _gzdecode($data){
-        
-        return icl_gzdecode($data);
-    }
 }
-  
+
 /**
  * gzdecode implementation
  *

@@ -27,6 +27,8 @@ class WPML_Term_Hierarchy_Sync extends WPML_Hierarchy_Sync {
 		global $wpml_term_filters_general;
 
 		parent::sync_element_hierarchy( $element_types, $ref_lang );
+		do_action( 'wpml_sync_term_hierarchy_done' );
+
 		$element_types = (array) $element_types;
 
 		foreach ( $element_types as $taxonomy ) {

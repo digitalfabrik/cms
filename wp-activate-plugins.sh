@@ -39,7 +39,7 @@ sitepress-multilingual-cms \
 tinymce-advanced \
 use-google-libraries \
 user-role-editor \
-wpml-media \
+wpml-media-translation \
 wpml-translation-management \
 wp-rtl \
 wp-sync-db-1.5

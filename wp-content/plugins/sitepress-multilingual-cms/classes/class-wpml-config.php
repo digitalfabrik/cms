@@ -14,9 +14,9 @@ class WPML_Config {
 			'theme_options',
 			'plugins.php',
 			'themes.php',
-			ICL_PLUGIN_FOLDER . '/menu/languages.php',
-			ICL_PLUGIN_FOLDER . '/menu/theme-localization.php',
-			ICL_PLUGIN_FOLDER . '/menu/translation-options.php',
+			WPML_PLUGIN_FOLDER . '/menu/languages.php',
+			WPML_PLUGIN_FOLDER . '/menu/theme-localization.php',
+			WPML_PLUGIN_FOLDER . '/menu/translation-options.php',
 		);
 		if (defined('WPML_ST_FOLDER')) {
 			$white_list_pages[] = WPML_ST_FOLDER . '/menu/string-translation.php';
@@ -59,9 +59,9 @@ class WPML_Config {
 		return $result;
 	}
 
-	static function parse_wpml_config( $config ) {
+	static function parse_wpml_config_post_process( $config ) {
 		/* @var TranslationManagement $iclTranslationManagement */
-		global $sitepress, $sitepress_settings, $iclTranslationManagement;
+		global $sitepress, $iclTranslationManagement;
 
 		self::parse_custom_fields( $config );
 		$settings_helper = wpml_load_settings_helper();
@@ -79,24 +79,7 @@ class WPML_Config {
 			$tm_settings->update_from_config( $config['wpml-config'] );
 		}
 
-		// language-switcher-settings
-		if ( empty( $sitepress_settings[ 'language_selector_initialized' ] ) || ( isset( $_GET[ 'restore_ls_settings' ] ) && $_GET[ 'restore_ls_settings' ] == 1 ) ) {
-			if ( !empty( $config[ 'wpml-config' ][ 'language-switcher-settings' ] ) ) {
-
-				if ( !is_numeric( key( $config[ 'wpml-config' ][ 'language-switcher-settings' ][ 'key' ] ) ) ) {
-					$cfgsettings[ 0 ] = $config[ 'wpml-config' ][ 'language-switcher-settings' ][ 'key' ];
-				} else {
-					$cfgsettings = $config[ 'wpml-config' ][ 'language-switcher-settings' ][ 'key' ];
-				}
-				$iclsettings = $iclTranslationManagement->read_settings_recursive( $cfgsettings );
-				$iclsettings[ 'language_selector_initialized' ] = 1;
-				$sitepress->save_settings( $iclsettings );
-
-				if ( !empty( $sitepress_settings[ 'setup_complete' ] ) && !empty( $_GET[ 'page' ] ) ) {
-					wp_redirect( admin_url( 'admin.php?page=' . urlencode( $_GET['page'] ) . '&icl_ls_reset=default#icl_save_language_switcher_options' ) );
-				}
-			}
-		}
+		do_action( 'wpml_reset_ls_settings', $config[ 'wpml-config' ][ 'language-switcher-settings' ] );
 
 		return $config;
 	}
@@ -141,7 +124,7 @@ class WPML_Config {
 			$plugins = get_site_option( 'active_sitewide_plugins' );
 			if ( !empty( $plugins ) ) {
 				foreach ( $plugins as $p => $dummy ) {
-                    if(!self::check_on_config_file($dummy)){
+                    if(!self::check_on_config_file($p)){
                         continue;
                     }
 					$plugin_slug = dirname( $p );
@@ -197,7 +180,7 @@ class WPML_Config {
             if ( ! function_exists( 'get_plugins' ) ) {
                 require_once ABSPATH . 'wp-admin/includes/plugin.php';
             }
-            self::$active_plugins = get_plugins();
+	        self::$active_plugins = get_plugins();
         }
         $config_index_file_data = maybe_unserialize(get_option('wpml_config_index'));
         $config_files_arr = maybe_unserialize(get_option('wpml_config_files_arr'));
@@ -249,6 +232,11 @@ class WPML_Config {
             return self::$wpml_config_files;
         }
 
+		$parent_theme = $theme_data->parent_theme;
+		if ( $parent_theme && ! self::check_on_config_file( $parent_theme ) ) {
+			return self::$wpml_config_files;
+		}
+
 		if ( get_template_directory() != get_stylesheet_directory() ) {
 			$config_file = get_stylesheet_directory() . '/wpml-config.xml';
 			if ( file_exists( $config_file ) ) {
@@ -288,46 +276,118 @@ class WPML_Config {
 			'custom-types'               => array(),
 			'taxonomies'                 => array(),
 			'admin-texts'                => array(),
-			'language-switcher-settings' => array()
+			'language-switcher-settings' => array(),
+			'shortcodes'                 => array(),
 		);
+
+		$config_all_updated = false;
+
+		$validate  = new WPML_XML_Config_Validate( WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd' );
+		$transform = new WPML_XML2Array();
 
 		if ( !empty( self::$wpml_config_files ) ) {
 			foreach ( self::$wpml_config_files as $file ) {
-				$config = is_object( $file ) ? $file->config : icl_xml2array( file_get_contents( $file ) );
-				do_action( 'wpml_parse_config_file', $file );
-				if ( isset( $config[ 'wpml-config' ] ) ) {
-                    $wpml_config     = $config[ 'wpml-config' ];
-                    $wpml_config_all = $config_all[ 'wpml-config' ];
-                    $wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'custom-field', 'custom-fields');
-                    $wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'custom-term-field', 'custom-term-fields');
-					$wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'custom-type', 'custom-types');
-                    $wpml_config_all = self::parse_config_index($wpml_config_all, $wpml_config, 'taxonomy', 'taxonomies');
-
-					//language-switcher-settings
-					if ( isset( $wpml_config[ 'language-switcher-settings' ][ 'key' ] ) ) {
-						if ( !is_numeric( key( $wpml_config[ 'language-switcher-settings' ][ 'key' ] ) ) ) { //single
-							$wpml_config_all[ 'language-switcher-settings' ][ 'key' ][ ] = $wpml_config[ 'language-switcher-settings' ][ 'key' ];
-						} else {
-							foreach ( $wpml_config[ 'language-switcher-settings' ][ 'key' ] as $cf ) {
-								$wpml_config_all[ 'language-switcher-settings' ][ 'key' ][ ] = $cf;
-							}
-						}
-					}
-                    $config_all[ 'wpml-config' ] = $wpml_config_all;
+				if ( is_object( $file ) ) {
+					$config = $file->config;
+				} else {
+					$xml_config_file = new WPML_XML_Config_Read_File( $file, $validate, $transform );
+					$config = $xml_config_file->get();
 				}
+				do_action( 'wpml_parse_config_file', $file );
+				$config_all         = self::merge_with( $config_all, $config );
+				$config_all_updated = true;
 			}
+		}
 
+		$config_all = self::append_custom_xml_config( $config_all, $config_all_updated );
+
+		if ( $config_all_updated ) {
 			$config_all = apply_filters( 'icl_wpml_config_array', $config_all );
 			$config_all = apply_filters( 'wpml_config_array', $config_all );
 		}
 
-		self::parse_wpml_config( $config_all );
+		self::parse_wpml_config_post_process( $config_all );
+	}
+
+	/**
+	 * @param array     $config_files
+	 *
+	 * @param bool|null $updated
+	 *
+	 * @return array
+	 */
+	private static function append_custom_xml_config( $config_files, &$updated = null ) {
+		$validate      = new WPML_XML_Config_Validate( WPML_PLUGIN_PATH . '/res/xsd/wpml-config.xsd' );
+		$transform     = new WPML_XML2Array();
+		$custom_config = self::get_custom_xml_config( $validate, $transform );
+		if ( $custom_config ) {
+			$config_files = self::merge_with( $config_files, $custom_config );
+			$updated      = true;
+		}
+
+		return $config_files;
+	}
+
+	/**
+	 * @param      $validate
+	 * @param      $transform
+	 *
+	 * @return mixed
+	 */
+	private static function get_custom_xml_config( $validate, $transform ) {
+		if ( class_exists( 'WPML_Custom_XML' ) ) {
+			$custom_xml_option = new WPML_Custom_XML();
+			$custom_xml_config = new WPML_XML_Config_Read_Option( $custom_xml_option, $validate, $transform );
+			$custom_config     = $custom_xml_config->get();
+			if ( $custom_config ) {
+				$config_object = (object) array(
+					'config'             => $custom_config,
+					'type'               => 'wpml-custom-xml',
+					'admin_text_context' => 'wpml-custom-xml',
+				);
+
+				do_action( 'wpml_parse_custom_config', $config_object );
+				return $custom_config;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param $all_configs
+	 * @param $config
+	 *
+	 * @return mixed
+	 */
+	private static function merge_with( $all_configs, $config ) {
+		if ( isset( $config['wpml-config'] ) ) {
+			$wpml_config     = $config['wpml-config'];
+			$wpml_config_all = $all_configs['wpml-config'];
+			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'custom-field', 'custom-fields' );
+			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'custom-term-field', 'custom-term-fields' );
+			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'custom-type', 'custom-types' );
+			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'taxonomy', 'taxonomies' );
+			$wpml_config_all = self::parse_config_index( $wpml_config_all, $wpml_config, 'shortcode', 'shortcodes' );
+
+			//language-switcher-settings
+			if ( isset( $wpml_config['language-switcher-settings']['key'] ) ) {
+				if ( ! is_numeric( key( $wpml_config['language-switcher-settings']['key'] ) ) ) { //single
+					$wpml_config_all['language-switcher-settings']['key'][] = $wpml_config['language-switcher-settings']['key'];
+				} else {
+					foreach ( $wpml_config['language-switcher-settings']['key'] as $cf ) {
+						$wpml_config_all['language-switcher-settings']['key'][] = $cf;
+					}
+				}
+			}
+			$all_configs['wpml-config'] = $wpml_config_all;
+		}
+
+		return $all_configs;
 	}
 
 	/**
 	 * @param $config
-	 *
-	 * @return mixed
 	 */
 	protected static function parse_custom_fields( $config ) {
 		/** @var TranslationManagement $iclTranslationManagement */

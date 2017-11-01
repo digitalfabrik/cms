@@ -14,10 +14,9 @@ class WPML_XMLRPC extends WPML_SP_User {
 	public function __construct( SitePress $sitepress ) {
 		parent::__construct( $sitepress );
 		$this->xmlrpc_call_methods_for_save_post = array( 'wp.newPost', 'wp.editPost', 'wp.newPage', 'wp.editPage' );
-		$this->init_hooks();
 	}
 
-	private function init_hooks() {
+	public function init_hooks() {
 		add_action( 'xmlrpc_call_success_mw_newPost', array( $this, 'meta_weblog_xmlrpc_post_update_action' ), 10, 2 );
 		add_action( 'xmlrpc_call_success_mw_editPost', array( $this, 'meta_weblog_xmlrpc_post_update_action' ), 10, 2 );
 		add_action( 'xmlrpc_call', array( $this, 'xmlrpc_call' ) );
