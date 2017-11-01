@@ -3,8 +3,8 @@ Contributors: jczorkmid
 Donate link: http://jasonpenney.net/donate
 Tags: javascript, performance, CDN, Google, jQuery, Prototype, MooTools, Dojo, Google AJAX Libraries API, YSlow, Page Speed
 Requires at least: 3.4
-Tested up to: 4.1.3
-Stable tag: 1.6.2.1
+Tested up to: 4.7.4
+Stable tag: 1.6.2.3
 
 Allows your site to use common javascript libraries from Google's AJAX 
 Libraries CDN, rather than from WordPress's own copies.
@@ -25,7 +25,7 @@ This provides numerous potential performance benefits:
 
 For a more detailed look see Dave Ward's [3 reasons why you should let
 Google host jQuery for
-you](http://encosia.com/2008/12/10/3-reasons-why-you-should-let-google-host-jquery-for-you/).
+you](https://web-beta.archive.org/web/20101216143500/encosia.com/2008/12/10/3-reasons-why-you-should-let-google-host-jquery-for-you/).
 
 = Supported Libraries and Components =
 
@@ -125,6 +125,11 @@ I've had scattered reports that UGL is stepping out of the way when
 using K2.
 
 == Changelog ==
+
+= 1.6.2.3 =
+
++ Updated supported version. 
++ used archive.org to get around link that's now malware
 
 = 1.6.2.1 =
 
@@ -246,9 +251,9 @@ from  [Peter  Wilson](http://peterwilson.cc/).
 
 == Upgrade Notice ==
 
-= 1.6.2.1 =
+= 1.6.2.3 =
 
-Bypass UGL in unsupported versions of WordPress (update now, and UGL will start working again when it's ready).
+Changed supported version to < WP 4.8
 
 == A Request ==
 
