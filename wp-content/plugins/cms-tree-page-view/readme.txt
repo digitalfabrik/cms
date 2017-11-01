@@ -4,8 +4,8 @@ Donate link: http://eskapism.se/sida/donate/
 Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and-drop, rearrange, management, manage, admin
 Text Domain: cms-tree-page-view
 Requires at least: 3.8
-Tested up to: 4.4.2
-Stable tag: 1.3.4
+Tested up to: 4.8
+Stable tag: 1.4
 
 Adds a tree view of all pages & custom posts. Get a great overview + options to drag & drop to reorder & option to add multiple pages.
 
@@ -116,6 +116,10 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 
 
 == Changelog ==
+
+= 1.4 (October 2017) =
+
+- Check that a user is allowed to edit pages/posts when making AJAX call, making sure users with subscribers role can't move pages.
 
 = 1.3.4 (June 2016) =
 
