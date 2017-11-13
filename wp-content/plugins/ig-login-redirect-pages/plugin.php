@@ -16,7 +16,3 @@ function login_redirect_pages() {
 	return $url;
 }
 
-add_action('admin_menu', 'remove_dashboard_menu');
-function remove_dashboard_menu() {
-	remove_menu_page('index.php');
-}
