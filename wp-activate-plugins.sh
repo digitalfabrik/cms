@@ -8,8 +8,6 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 firebase-notifications \
-ig-automatic-translation \
-ig-automatic-translation-button \
 ig-click-guide \
 ig-cms-tree-page-view-extensions \
 ig-content-loader-base \
