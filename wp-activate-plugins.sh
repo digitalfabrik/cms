@@ -8,8 +8,6 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 firebase-notifications \
-ig-automatic-translation \
-ig-automatic-translation-button \
 ig-click-guide \
 ig-cms-tree-page-view-extensions \
 ig-content-loader-base \
@@ -21,7 +19,6 @@ ig-enhanced-help-menu \
 ig-extras \
 ig-login-redirect-pages \
 ig-menu-help \
-ig-mobile-preview \
 ig-pdf-creator-lite-font-extension \
 ig-plugin-adjustment \
 ig-project-user-roles \
