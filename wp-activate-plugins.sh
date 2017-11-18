@@ -21,7 +21,6 @@ ig-enhanced-help-menu \
 ig-extras \
 ig-login-redirect-pages \
 ig-menu-help \
-ig-mobile-preview \
 ig-pdf-creator-lite-font-extension \
 ig-plugin-adjustment \
 ig-project-user-roles \
