@@ -11,14 +11,14 @@
 add_action('wp_dashboard_setup', 'ig-dashboard-widget');
 
 // Define Functione for Widget-Creation
-function ig-dashboard-widget() {
+function ig_dashboard_widget() {
 global $wp_meta_boxes;
 
-wp_add_dashboard_widget('ig-welcome-widget', 'Wilkommen im Integreat-CMS', 'ig-welcome');
+wp_add_dashboard_widget('ig_welcome_widget', 'Wilkommen im Integreat-CMS', 'ig_welcome');
 }
 
 // Create visible Content 
-function ig-welcome() {
+function ig_welcome() {
 echo '<p>Wilkommen im Content-Bereich von Integreat. Von hier aus haben Sie die Möglichkeit Ihre Inthalte entsprechend anzupassen.</p>';
 }
 
