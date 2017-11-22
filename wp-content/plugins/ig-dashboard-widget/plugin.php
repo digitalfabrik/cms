@@ -8,7 +8,7 @@
  * License: MIT
  */
 
-add_action('wp_dashboard_setup', 'ig-dashboard-widget');
+add_action('wp_dashboard_setup', 'ig_dashboard_widget');
 
 // Define Functione for Widget-Creation
 function ig_dashboard_widget() {
