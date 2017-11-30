@@ -112,3 +112,9 @@ if (!defined('ABSPATH'))
 require_once(ABSPATH . 'wp-settings.php');
 
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
+
+if ( defined( 'WP_CLI' ) ) {
+    if ( !function_exists ( 'getallheaders' ) ) {
+        function getallheaders() {return array();}
+    }
+}
