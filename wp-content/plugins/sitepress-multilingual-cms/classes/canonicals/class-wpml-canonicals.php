@@ -8,14 +8,18 @@ class WPML_Canonicals {
 	const CANONICAL_FOR_NON_TRANSLATABLE_POST = 'non-translatable';
 	/** @var SitePress */
 	private $sitepress;
+	/** @var WPML_Translations */
+	private $wpml_translations;
 
 	/**
 	 * WPML_Canonicals constructor.
 	 *
-	 * @param SitePress $sitepress
+	 * @param SitePress         $sitepress
+	 * @param WPML_Translations $wpml_translations
 	 */
-	public function __construct( SitePress $sitepress ) {
-		$this->sitepress = $sitepress;
+	public function __construct( SitePress $sitepress, WPML_Translations $wpml_translations = null ) {
+		$this->sitepress         = $sitepress;
+		$this->wpml_translations = $wpml_translations;
 	}
 
 	/**
@@ -25,12 +29,12 @@ class WPML_Canonicals {
 	 * @throws \InvalidArgumentException
 	 */
 	private function must_filter_permalink( $post_id ) {
-		$wpml_translations      = new WPML_Translations( $this->sitepress );
+		$this->init_wpml_translations();
 		$post_element           = new WPML_Post_Element( $post_id, $this->sitepress );
 		$must_handle_canonicals = $this->must_handle_a_canonical_url();
 
 		if ( $post_element->is_translatable() ) {
-			if ( $must_handle_canonicals && $wpml_translations->is_a_duplicate_of( $post_element ) && $this->is_permalink_filter_from_rel_canonical() ) {
+			if ( $must_handle_canonicals && $this->wpml_translations->is_a_duplicate_of( $post_element ) && $this->is_permalink_filter_from_rel_canonical() ) {
 				return self::CANONICAL_FOR_DUPLICATED_POST;
 			}
 		} elseif ( $must_handle_canonicals ) {
@@ -67,18 +71,25 @@ class WPML_Canonicals {
 	 * @param WP_Post     $post
 	 *
 	 * @return string|bool
+	 * @throws \InvalidArgumentException
 	 */
 	public function get_canonical_url( $canonical_url, $post ) {
 		if ( $post && $this->sitepress->get_wp_api()->is_front_end() ) {
-			$post_element = new WPML_Post_Element( $post->ID, $this->sitepress );
+			try {
+				$post_element = new WPML_Post_Element( $post->ID, $this->sitepress );
 
-			if ( ! $post_element->is_translatable() ) {
-				$canonical_url = $this->sitepress->convert_url( $canonical_url, $this->sitepress->get_default_language() );
-			} else {
-				$wpml_translations = new WPML_Translations( $this->sitepress );
-				if ( $wpml_translations->is_a_duplicate_of( $post_element ) ) {
-					$canonical_url = (string) $this->get_canonical_of_duplicate( $post_element );
+				if ( ! $post_element->is_translatable() ) {
+					global $wpml_url_filters;
+					$wpml_url_filters->remove_global_hooks();
+					$canonical_url = $this->sitepress->convert_url_string( $canonical_url, $this->sitepress->get_default_language() );
+					$wpml_url_filters->add_global_hooks();
+				} else {
+					$this->init_wpml_translations();
+					if ( $this->wpml_translations->is_a_duplicate_of( $post_element ) ) {
+						$canonical_url = (string) $this->get_canonical_of_duplicate( $post_element );
+					}
 				}
+			} catch ( InvalidArgumentException $e ) {
 			}
 		}
 
@@ -151,5 +162,11 @@ class WPML_Canonicals {
 	 */
 	private function must_handle_a_canonical_url() {
 		return ! $this->has_wp_get_canonical_url() && $this->sitepress->get_wp_api()->is_front_end();
+	}
+
+	private function init_wpml_translations() {
+		if ( ! $this->wpml_translations ) {
+			$this->wpml_translations = new WPML_Translations( $this->sitepress );
+		}
 	}
 }

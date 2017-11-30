@@ -19,6 +19,11 @@
  * used or accessed.
  */
 
+/**
+ * NOTE: This is no longer needed for WP 4.7 and above as WP now handles the states correctly.
+ * Check whether $wp_filter[ $key ] is an array or not to decide whether this is still needed or not.
+ */
+
 class WPML_WP_Filter_State {
 
 	private $tag;
@@ -31,14 +36,14 @@ class WPML_WP_Filter_State {
 		global $wp_filter;
 
 		$this->tag = $tag;
-		if ( isset( $wp_filter[ $tag ] ) ) {
+		if ( isset( $wp_filter[ $tag ] ) && is_array( $wp_filter[ $tag ] ) ) {
 			$this->pointer = current( $wp_filter[ $tag ] );
 		}
 	}
 
 	public function restore() {
 		global $wp_filter;
-		if ( $this->pointer && isset( $wp_filter[ $this->tag ] ) ) {
+		if ( $this->pointer && isset( $wp_filter[ $this->tag ] ) && is_array( $wp_filter[ $this->tag ] ) ) {
 			reset( $wp_filter[ $this->tag ] );
 			while( $this->pointer != current( $wp_filter[ $this->tag ] ) ) {
 				if ( next( $wp_filter[ $this->tag ] ) === false ) {

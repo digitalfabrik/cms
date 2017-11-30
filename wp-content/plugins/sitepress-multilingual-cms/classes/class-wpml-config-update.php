@@ -5,12 +5,19 @@
  *
  * @package wpml-core
  */
-class WPML_Config_Update extends WPML_SP_User {
+class WPML_Config_Update {
+	/** @var  SitePress $sitepress */
+	protected $sitepress;
+
 	/**
 	 * @var WP_Http $http
 	 */
 	private $http;
 
+	/**
+	 * @var WPML_Active_Plugin_Provider
+	 */
+	private $active_plugin_provider;
 
 	/**
 	 * WPML_Config_Update constructor.
@@ -18,10 +25,32 @@ class WPML_Config_Update extends WPML_SP_User {
 	 * @param SitePress $sitepress
 	 * @param WP_Http $http
 	 */
-	public function __construct( &$sitepress, &$http ) {
-		parent::__construct( $sitepress );
+	public function __construct( $sitepress, $http ) {
+		$this->sitepress = $sitepress;
+		$this->http = $http;
+	}
 
-		$this->http = &$http;
+	/**
+	 * @param WPML_Active_Plugin_Provider $active_plugin_provider
+	 */
+	public function set_active_plugin_provider( WPML_Active_Plugin_Provider $active_plugin_provider ) {
+		$this->active_plugin_provider = $active_plugin_provider;
+	}
+
+	/**
+	 * @return WPML_Active_Plugin_Provider
+	 */
+	public function get_active_plugin_provider() {
+		if ( null === $this->active_plugin_provider ) {
+
+			if ( ! class_exists( 'WPML_Active_Plugin_Provider' ) ) {
+				require_once WPML_PLUGIN_PATH . '/classes/class-wpml-active-plugin-provider.php';
+			}
+
+			$this->active_plugin_provider = new WPML_Active_Plugin_Provider();
+		}
+
+		return $this->active_plugin_provider;
 	}
 
 	public function run() {
@@ -53,11 +82,28 @@ class WPML_Config_Update extends WPML_SP_User {
 						}
 					}
 
+					$current_theme_name = $this->sitepress->get_wp_api()->get_theme_name();
+
+					$current_theme_parent = '';
+					if( method_exists( $this->sitepress->get_wp_api(), 'get_theme_parent_name' ) ) {
+						$current_theme_parent = $this->sitepress->get_wp_api()->get_theme_parent_name();
+					}
+
+					$active_theme_names = array( $current_theme_name );
+					if ( $current_theme_parent ) {
+						$active_theme_names[] = $current_theme_parent;
+					}
 					foreach ( $arr->themes as $theme ) {
-						if ( $this->sitepress->get_wp_api()->get_theme_name() == $theme->name && ( ! isset( $config_files_for_themes[ $theme->name ] ) || md5( $config_files_for_themes[ $theme->name ] ) != $theme->hash ) ) {
-							$response = $this->http->get( ICL_REMOTE_WPML_CONFIG_FILES_INDEX . $theme->path );
-							if ( $response['response']['code'] == 200 ) {
-								$config_files_for_themes[ $theme->name ] = $response['body'];
+
+						if ( in_array( $theme->name, $active_theme_names ) ) {
+
+							unset( $deleted_configs_for_themes[ $theme->name ] );
+
+							if ( ! isset( $config_files_for_themes[ $theme->name ] ) || md5( $config_files_for_themes[ $theme->name ] ) != $theme->hash ) {
+								$response = $this->http->get( ICL_REMOTE_WPML_CONFIG_FILES_INDEX . $theme->path );
+								if ( $response['response']['code'] == 200 ) {
+									$config_files_for_themes[ $theme->name ] = $response['body'];
+								}
 							}
 						}
 					}
@@ -66,20 +112,20 @@ class WPML_Config_Update extends WPML_SP_User {
 						unset( $config_files_for_themes[ $key ] );
 					}
 
-					$active_plugins = $this->sitepress->get_wp_api()->get_plugins();
-
-					$active_plugins_names = array();
-					foreach ( $active_plugins as $active_plugin ) {
-						$active_plugins_names[] = $active_plugin['Name'];
-					}
+					$active_plugins_names = $this->get_active_plugin_provider()->get_active_plugin_names();
 
 					foreach ( $arr->plugins as $plugin ) {
 
-						if ( in_array( $plugin->name, $active_plugins_names ) && ( ! isset( $config_files_for_plugins[ $plugin->name ] ) || md5( $config_files_for_plugins[ $plugin->name ] ) != $plugin->hash ) ) {
-							$response = $this->http->get( ICL_REMOTE_WPML_CONFIG_FILES_INDEX . $plugin->path );
+						if ( in_array( $plugin->name, $active_plugins_names ) ) {
 
-							if ( ! is_wp_error( $response ) && $response['response']['code'] == 200 ) {
-								$config_files_for_plugins[ $plugin->name ] = $response['body'];
+							unset( $deleted_configs_for_plugins[ $plugin->name ] );
+
+							if ( ! isset( $config_files_for_plugins[ $plugin->name ] ) || md5( $config_files_for_plugins[ $plugin->name ] ) != $plugin->hash )  {
+								$response = $this->http->get( ICL_REMOTE_WPML_CONFIG_FILES_INDEX . $plugin->path );
+
+								if ( ! is_wp_error( $response ) && $response['response']['code'] == 200 ) {
+									$config_files_for_plugins[ $plugin->name ] = $response['body'];
+								}
 							}
 						}
 					}

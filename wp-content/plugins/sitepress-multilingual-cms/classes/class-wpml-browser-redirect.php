@@ -21,10 +21,9 @@ class WPML_Browser_Redirect extends WPML_SP_User {
 	public function init(){
 		$root_page = $this->sitepress->get_root_page_utils();
         if( !is_admin() && !isset( $_GET['redirect_to'] ) && !preg_match( '#wp-login\.php$#', preg_replace("@\?(.*)$@", '', $_SERVER['REQUEST_URI'] ) )
-            && !( $root_page->is_url_root_page( $_SERVER['REQUEST_URI'] ) && $root_page->get_root_page_id() > 0 )
         ) {
                 add_action( 'wp_print_scripts', array( $this, 'scripts' ) );
-        }  
+        }
     }
     
     public function scripts(){

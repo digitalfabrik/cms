@@ -1,6 +1,8 @@
 <?php
 
-class WPML_Lang_URL_Validator extends WPML_SP_User {
+class WPML_Lang_URL_Validator {
+	/** @var  SitePress $sitepress */
+	private $sitepress;
 
 	/** @var WP_Http $http_client */
 	private $http_client;
@@ -17,10 +19,10 @@ class WPML_Lang_URL_Validator extends WPML_SP_User {
 	 * @param  string             $posted_url
 	 * @param  SitePress          $sitepress
 	 */
-	public function __construct( &$client, &$wpml_url_converter, $posted_url, &$sitepress ) {
-		parent::__construct( $sitepress );
-		$this->url_converter = &$wpml_url_converter;
-		$this->http_client   = &$client;
+	public function __construct( $client, $wpml_url_converter, $posted_url, $sitepress ) {
+		$this->sitepress     = $sitepress;
+		$this->url_converter = $wpml_url_converter;
+		$this->http_client   = $client;
 	}
 
 	public function get_validation_url( $sample_lang_code ) {
@@ -30,18 +32,23 @@ class WPML_Lang_URL_Validator extends WPML_SP_User {
 	}
 
 	public function validate_langs_in_dirs( $sample_lang ) {
-		$response = $this->do_request ( $this->get_validation_url ( $sample_lang ) );
-		if ( ( !is_wp_error ( $response )
-		       && ( $response[ 'response' ][ 'code' ] == '200' )
-		       && ( $response[ 'body' ] === '<!--' . $this->get_sample_url ( $sample_lang ) . '-->' ) )
-		     || ( is_wp_error ( $response )
-		          && isset( $response->errors[ 'http_request_failed' ] )
-		          && $response->errors[ 'http_request_failed' ][ 0 ]
-		             === 'SSL certificate problem: self signed certificate' )
-		) {
-			$icl_folder_url_disabled = false;
-		} else {
-			$icl_folder_url_disabled = true;
+		$icl_folder_url_disabled = true;
+
+		$validation_url = $this->get_validation_url( $sample_lang );
+		$response       = $this->do_request( $validation_url );
+
+		if ( $response ) {
+			$validation_token = '<!--' . $this->get_sample_url( $sample_lang ) . '-->';
+			$is_wp_error      = is_wp_error( $response );
+
+			$is_self_signed_certificate_error = isset( $response->errors['http_request_failed'] ) && $response->errors['http_request_failed'][0] === 'SSL certificate problem: self signed certificate';
+			$is_valid_response                = ! $is_wp_error && isset( $response['response']['code'] ) && ( '200' === (string) $response['response']['code'] );
+
+			if ( ( $is_valid_response && false !== strpos( $response['body'], $validation_token ) )
+			     || ( $is_wp_error && $is_self_signed_certificate_error )
+			) {
+				$icl_folder_url_disabled = false;
+			}
 		}
 
 		return $icl_folder_url_disabled;

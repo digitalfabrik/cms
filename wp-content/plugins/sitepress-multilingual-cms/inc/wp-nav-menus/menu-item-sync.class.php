@@ -105,7 +105,7 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 					$icl_st_label_exists = false;
 					$icl_st_url_exists   = false;
 					if ( $object_type === 'custom' && ( function_exists( 'icl_t' ) || ! $this->string_translation_default_language_ok() ) ) {
-						if ( function_exists( 'icl_t' ) && $this->string_translation_default_language_ok() ) {
+						if ( function_exists( 'icl_t' ) ) {
 							$this->sitepress->switch_lang( $language, false );
 							$item             = new stdClass();
 							$item->url        = $object_url;
@@ -119,12 +119,22 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 							$this->sitepress->switch_lang( $current_language, false );
 
 							if ( ! $icl_st_label_exists ) {
-								icl_register_string( $menu_name . ' menu',
-								                     'Menu Item Label ' . $item_id,
-								                     $object_title );
+								if( isset( $current_language ) ) {
+									icl_register_string( $menu_name . ' menu',
+										'Menu Item Label ' . $item_id,
+										$object_title, false, $current_language );
+								} else {
+									icl_register_string( $menu_name . ' menu',
+										'Menu Item Label ' . $item_id,
+										$object_title );
+								}
 							}
 							if ( ! $icl_st_url_exists ) {
-								icl_register_string( $menu_name . ' menu', 'Menu Item URL ' . $item_id, $object_url );
+								if( isset( $current_language ) ) {
+									icl_register_string( $menu_name . ' menu', 'Menu Item URL ' . $item_id, $object_url, false, $current_language );
+								} else {
+									icl_register_string( $menu_name . ' menu', 'Menu Item URL ' . $item_id, $object_url );
+								}
 							}
 						} else {
 							$object_title = $name;
@@ -209,12 +219,25 @@ class WPML_Menu_Item_Sync extends WPML_Menu_Sync_Functionality {
 																		$trid,
 																		$language );
 					}
+
+					$translated_menu_id = $menus[ $menu_id ]['translations'][ $language ]['id'];
+					$this->assign_orphan_item_to_menu( $translated_item_id, $translated_menu_id );
 				}
 			}
 		}
 		$this->fix_hierarchy_moved_items( $moved_data );
 
 		return $menus;
+	}
+
+	/**
+	 * @param int $item_id
+	 * @param int $menu_id
+	 */
+	private function assign_orphan_item_to_menu( $item_id, $menu_id ) {
+		if ( ! wp_get_object_terms( $item_id, 'nav_menu' ) ) {
+			wp_set_object_terms( $item_id, array( $menu_id ), 'nav_menu' );
+		}
 	}
 
 	function sync_caption( $label_change_data ) {
