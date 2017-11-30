@@ -1,6 +1,6 @@
 language: php
 php:
-  - '7.0'
+  - '7.1'
 
 services:
   - mysql
@@ -38,6 +38,5 @@ before_script:
   - mysql -u root -e "FLUSH PRIVILEGES;"
   - sed -i "s|C:\\xampp\\htdocs\\wordpress|$working_dir|g" database.sql
   - mysql -u root wordpress < database.sql
-  - php composer dump-autoload
   ## activate wordpress plugins
   - source ./wp-activate-plugins.sh
