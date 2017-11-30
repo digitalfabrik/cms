@@ -20,6 +20,12 @@
 
 $configuration = parse_ini_file("config.ini", true);
 
+if ( defined( 'WP_CLI' ) ) {
+    if ( !function_exists ( 'getallheaders' ) ) {
+        function getallheaders() {return array();}
+    }
+}
+
 // ** MySQL settings - You can get this info from your web host ** //
 $db_configuration = $configuration['database'];
 /** The name of the database for WordPress */
@@ -113,8 +119,3 @@ require_once(ABSPATH . 'wp-settings.php');
 
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
 
-if ( defined( 'WP_CLI' ) ) {
-    if ( !function_exists ( 'getallheaders' ) ) {
-        function getallheaders() {return array();}
-    }
-}
