@@ -15,15 +15,15 @@
 				description: false,
 				level: 0,
 				correctedLevel: 0,
-				source_language_code: false
+				source_language_code: false,
+				meta_data: false
 			};
 		},
 
-		save: function (name, slug, description) {
-
+		save: function (name, slug, description, meta_data) {
 			var self = this;
-			slug = slug ? slug : "";
-			description = description ? description : "";
+			slug = slug ? slug : '';
+			description = description ? description : '';
 
 			if (name) {
 				jQuery.ajax({
@@ -38,6 +38,7 @@
 						trid: self.get("trid"),
 						term_language_code: self.get("language_code"),
 						taxonomy: TaxonomyTranslation.classes.taxonomy.get("taxonomy"),
+						meta_data: meta_data,
 						force_hierarchical_sync: true
 					},
 					success: function (response) {
@@ -88,6 +89,9 @@
 			slug = decodeURIComponent(slug);
 
 			return slug;
+		},
+		getMetaData: function() {
+			return this.get('meta_data');
 		}
 	});
 })(TaxonomyTranslation);

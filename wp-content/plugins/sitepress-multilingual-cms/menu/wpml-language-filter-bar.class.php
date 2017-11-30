@@ -43,8 +43,10 @@ abstract class WPML_Language_Filter_Bar extends WPML_WPDB_And_SP_User {
 
 	protected function extra_conditions_snippet() {
 
-		return " AND t.language_code IN (" . wpml_prepare_in( array_keys( $this->active_languages ) ) . ")
+		$sql = " AND t.language_code IN (" . wpml_prepare_in( array_keys( $this->active_languages ) ) . ")
 				 GROUP BY language_code";
+
+		return apply_filters( 'wpml_language_filter_extra_conditions_snippet', $sql );
 	}
 
 	protected function get_counts( $element_type ) {

@@ -17,23 +17,27 @@ var WPMLBrowserRedirect = function () {
 		return date;
 	};
 
-	self.getRedirectUrl = function (browserLanguage) {
-		var redirectUrl = false;
-		var languageUrls = wpml_browser_redirect_params.languageUrls;
-		var languageFirstPart = browserLanguage.substr(0, 2);
-		var languageLastPart = browserLanguage.substr(3, 2);
+    self.getRedirectUrl = function (browserLanguage) {
+        var redirectUrl = false;
+        var languageUrls = wpml_browser_redirect_params.languageUrls;
+        var languageFirstPart = browserLanguage.substr(0, 2);
+        var languageLastPart = browserLanguage.substr(3, 2);
 
-		if (languageUrls[browserLanguage] === undefined) {
-			if (languageUrls[languageFirstPart] !== undefined) {
-				redirectUrl = languageUrls[languageFirstPart];
-			} else if (languageUrls[languageLastPart] !== undefined) {
-				redirectUrl = languageUrls[languageLastPart];
-			}
-		} else {
-			redirectUrl = languageUrls[browserLanguage];
-		}
-		return redirectUrl;
-	};
+        if (languageUrls[browserLanguage] === undefined) {
+            if (languageUrls[languageLastPart] !== undefined) {
+                redirectUrl = languageUrls[languageLastPart];
+            } else if (languageUrls[languageFirstPart] !== undefined) {
+                redirectUrl = languageUrls[languageFirstPart];
+            }
+        } else {
+            redirectUrl = languageUrls[browserLanguage];
+        }
+        if ( window.location.href === redirectUrl ) {
+            return false;
+        } else {
+            return redirectUrl;
+        }
+    };
 
 	self.init = function () {
 
@@ -43,22 +47,23 @@ var WPMLBrowserRedirect = function () {
 				var pageLanguage;
                 var browserLanguage;
 
-				pageLanguage = wpml_browser_redirect_params.pageLanguage;
+				pageLanguage = wpml_browser_redirect_params.pageLanguage.toLowerCase();
 
                 var browserLanguagesLength = browserLanguages.length;
                 for (var i = 0; i < browserLanguagesLength; i++) {
                     browserLanguage = browserLanguages[i];
 
-					if (pageLanguage === browserLanguage.substr(0, 2)) {
+					if ( pageLanguage === browserLanguage || self.referrerBelongsToSiteURLs()) {
+						self.setCookie(browserLanguage);
 						break;
-					} else if (pageLanguage !== browserLanguage.substr(0, 2)) {
-                        redirectUrl = self.getRedirectUrl(browserLanguage);
-                        if (false !== redirectUrl) {
-                            self.setCookie(browserLanguage);
-                            window.location = redirectUrl;
-                            break;
-                        }
-                    }
+					} else {
+						redirectUrl = self.getRedirectUrl(browserLanguage);
+						if (false !== redirectUrl) {
+							self.setCookie(browserLanguage);
+							window.location = redirectUrl;
+							break;
+						}
+					}
                 }
 
             });
@@ -69,6 +74,15 @@ var WPMLBrowserRedirect = function () {
 		var cookieParams = wpml_browser_redirect_params.cookie;
 		var cookieName = cookieParams.name;
 		return jQuery.cookie(cookieName);
+	};
+
+	self.referrerBelongsToSiteURLs = function () {
+		for(var languageCode in wpml_browser_redirect_params.languageUrls) {
+			if ( document.referrer === wpml_browser_redirect_params.languageUrls[languageCode]) {
+				return true;
+			}
+		}
+		return false;
 	};
 
 	self.setCookie = function (browserLanguage) {
@@ -116,12 +130,14 @@ var WPMLBrowserRedirect = function () {
                     if (response.success) {
                         browserLanguages = response.data;
                         if (success && "function" === typeof success) {
+							browserLanguages = browserLanguages.join('|').toLowerCase().split('|');
                             success(browserLanguages);
                         }
                     }
                 }
             });
         } else {
+			browserLanguages = browserLanguages.join('|').toLowerCase().split('|');
             success(browserLanguages);
         }
 	};

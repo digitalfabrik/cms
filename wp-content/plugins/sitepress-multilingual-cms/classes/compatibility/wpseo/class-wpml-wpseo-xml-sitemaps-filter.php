@@ -15,15 +15,24 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 	private $wpml_url_converter;
 
 	/**
+	 * @var WPML_Debug_BackTrace
+	 */
+	private $back_trace;
+
+	/**
 	 * WPSEO_XML_Sitemaps_Filter constructor.
 	 *
-	 * @param SitePress $sitepress
-	 * @param object    $wpml_url_converter
+	 * @param SitePress            $sitepress
+	 * @param object               $wpml_url_converter
+	 * @param WPML_Debug_BackTrace $back_trace
 	 */
-	public function __construct( &$sitepress, &$wpml_url_converter ) {
-		$this->sitepress = &$sitepress;
-		$this->wpml_url_converter = &$wpml_url_converter;
+	public function __construct( $sitepress, $wpml_url_converter, WPML_Debug_BackTrace $back_trace = null ) {
+		$this->sitepress          = $sitepress;
+		$this->wpml_url_converter = $wpml_url_converter;
+		$this->back_trace         = $back_trace;
+	}
 
+	public function init_hooks() {
 		global $wpml_query_filter;
 
 		if ( $this->is_per_domain() ) {
@@ -38,9 +47,14 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 			add_filter( 'wpseo_xml_sitemap_post_url', array( $this, 'exclude_hidden_language_posts' ), 10, 2 );
 		}
 
+		if ( $this->is_per_directory() ) {
+			add_filter( 'wpml_get_home_url', array( $this, 'maybe_return_original_url_in_get_home_url_filter' ), 10, 2 );
+		}
+
 		add_filter( 'wpseo_enable_xml_sitemap_transient_caching', array( $this, 'transient_cache_filter' ), 10, 0 );
 		add_filter( 'wpseo_build_sitemap_post_type', array( $this, 'wpseo_build_sitemap_post_type_filter' ) );
 		add_action( 'wpseo_xmlsitemaps_config', array( $this, 'list_domains' ) );
+		add_filter( 'wpseo_sitemap_entry', array( $this, 'exclude_translations_of_static_home_page' ), 10, 3 );
 	}
 
 	/**
@@ -54,7 +68,7 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 		unset( $active_langs[ $default_lang ] );
 
 		foreach ( $active_langs as $lang_code => $lang_data ) {
-			$output .= $this->sitemap_url_filter( $this->wpml_url_converter->convert_url( home_url(), $lang_code ) );
+			$output .= $this->sitemap_url_filter( $this->wpml_url_converter->convert_url( home_url( '/' ), $lang_code ) );
 		}
 		return $output;
 	}
@@ -67,10 +81,10 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 	}
 
 	public function list_domains() {
-		if ( $this->is_per_domain() || $this->has_root_page() ) {
+		if ( $this->is_per_domain() ) {
 
-			echo '<h3>' . __( 'WPML', 'sitepress' ) . '</h3>';
-			echo __( 'Sitemaps for each languages can be accessed here:', 'sitepress' );
+			echo '<h3>' . esc_html__( 'WPML', 'sitepress' ) . '</h3>';
+			echo esc_html__( 'Sitemaps for each language can be accessed below. You need to submit all these sitemaps to Google.', 'sitepress' );
 			echo '<table class="wpml-sitemap-translations" style="margin-left: 1em; margin-top: 1em;">';
 
 			$base_style = "style=\"
@@ -88,12 +102,12 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 				echo '<tr>';
 				echo '<td>';
 				echo '<a ';
-				echo 'href="' . $url . '" ';
+				echo 'href="' . esc_url( $url ) . '" ';
 				echo 'target="_blank" ';
 				echo 'class="button-secondary" ';
-				echo sprintf( $base_style, $lang['country_flag_url'] );
+				echo sprintf( $base_style, esc_url( $lang['country_flag_url'] ) );
 				echo '>';
-				echo $lang['translated_name'];
+				echo esc_html( $lang['translated_name'] );
 				echo '</a>';
 				echo '</td>';
 				echo '</tr>';
@@ -102,8 +116,18 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_per_domain() {
-		return 2 === (int) $this->sitepress->get_setting( 'language_negotiation_type', false );
+		return WPML_LANGUAGE_NEGOTIATION_TYPE_DOMAIN === (int) $this->sitepress->get_setting( 'language_negotiation_type', false );
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function is_per_directory() {
+		return WPML_LANGUAGE_NEGOTIATION_TYPE_DIRECTORY === (int) $this->sitepress->get_setting( 'language_negotiation_type', false );
 	}
 
 	public function transient_cache_filter() {
@@ -117,15 +141,13 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 		// The setting should not be updated in DB
 		$sitepress_settings['auto_adjust_ids'] = 0;
 
-		if ( !$this->is_per_domain() && !$this->has_root_page() ) {
+		if ( ! $this->is_per_domain() ) {
 			remove_filter( 'terms_clauses', array( $this->sitepress, 'terms_clauses' ), 10 );
 		}
 
-		return $type;
-	}
+		remove_filter( 'category_link', array( $this->sitepress, 'category_link_adjust_id' ), 1 );
 
-	private function has_root_page() {
-		return (bool) $this->sitepress->get_root_page_utils()->get_root_page_id();
+		return $type;
 	}
 
 	/**
@@ -179,5 +201,60 @@ class WPML_WPSEO_XML_Sitemaps_Filter extends WPML_SP_User {
 		$output .= "\t</url>\n";
 
 		return $output;
+	}
+
+	/**
+	 * @param $url
+	 * @param $type
+	 * @param $post_object
+	 *
+	 * @return string|bool
+	 */
+	public function exclude_translations_of_static_home_page( $url, $type, $post_object ) {
+		if ( 'post' !== $type || $this->is_per_domain() ) {
+			return $url;
+		}
+		$page_on_front = (int) get_option( 'page_on_front' );
+		if ( $page_on_front ) {
+			$translations = $this->sitepress->post_translations()->get_element_translations( $page_on_front );
+			unset( $translations[ $this->sitepress->get_default_language() ] );
+			if ( in_array( $post_object->ID, $translations ) ) {
+				$url = false;
+			}
+		}
+		return $url;
+	}
+
+	/**
+	 * @param string $home_url
+	 * @param string $original_url
+	 *
+	 * @return string
+	 */
+	public function maybe_return_original_url_in_get_home_url_filter( $home_url, $original_url ) {
+		$places = array(
+			array( 'WPSEO_Post_Type_Sitemap_Provider', 'get_home_url' ),
+			array( 'WPSEO_Sitemaps_Router', 'get_base_url' ),
+			array( 'WPSEO_Sitemaps_Renderer', '__construct' ),
+		);
+
+		foreach ( $places as $place ) {
+			if ( $this->get_back_trace()->is_class_function_in_call_stack( $place[0], $place[1] ) ) {
+				return $original_url;
+			}
+		}
+
+		return $home_url;
+	}
+
+	/**
+	 * @return WPML_Debug_BackTrace
+	 */
+	private function get_back_trace() {
+		if ( null === $this->back_trace ) {
+			$this->back_trace = new WPML_Debug_BackTrace( phpversion() );
+		}
+
+		return $this->back_trace;
 	}
 }

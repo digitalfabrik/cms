@@ -278,7 +278,7 @@ function wpml_get_content($content_type, $content_id, $return_original = true){
  *
  * @internal   param bool $return_original return the original id when translation not found.
  *
- * @return int trid or error code
+ * @return array|int translations or error code
  */
 function wpml_get_content_translations($content_type, $content_id, $skip_missing = true){
     global $sitepress;
@@ -290,12 +290,12 @@ function wpml_get_content_translations($content_type, $content_id, $skip_missing
 
     $translations = $sitepress->get_element_translations($trid, $content_type, $skip_missing);
 
-    $tr = array();
-    foreach($translations as $k=>$v){
-        $tr[$k] = $v->element_id;
-    }
+	$tr = array();
+	foreach($translations as $k=>$v){
+		$tr[$k] = $v->element_id;
+	}
 
-    return $tr;
+	return $tr;
 }
 
 /**

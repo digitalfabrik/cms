@@ -64,6 +64,7 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 				if ( isset( $pid ) ) {
 					if ( ! isset( $page_query->queried_object_id ) || $pid != $page_query->queried_object_id ) {
 						$page_query = $this->maybe_adjust_query_by_pid( $page_query, $pid, $index );
+						break;
 					} else {
 						unset( $pid );
 					}
@@ -101,8 +102,9 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 			}
 			$page_query->is_page                       = false;
 			if ( isset( $page_query->query_vars[ $this->post_type ] )
-				 && $this->post_type !== 'page'
+			     && $this->post_type !== 'page'
 			) {
+				$this->set_query_var_to_restore( $this->post_type, $page_query );
 				unset( $page_query->query_vars[ $this->post_type ] );
 			}
 			unset( $page_query->query_vars[ $index ] );
@@ -177,6 +179,26 @@ abstract class WPML_Name_Query_Filter extends WPML_Slug_Resolution {
 	 * @return array
 	 */
 	private function get_single_slug_adjusted_IDs( $page_name_for_query ) {
+		$cache = new WPML_WP_Cache( get_class( $this ) );
+		$cache_key =  'get_single_slug_adjusted_IDs' . $page_name_for_query;
+		$found = false;
+
+		$pages_with_name = $cache->get( $cache_key, $found );
+
+		if ( ! $found ) {
+			$pages_with_name = $this->get_single_slug_adjusted_IDs_from_DB( $page_name_for_query );
+			$cache->set( $cache_key, $pages_with_name );
+		}
+
+		return $pages_with_name;
+	}
+
+	/**
+	 * @param string $page_name_for_query
+	 *
+	 * @return array
+	 */
+	private function get_single_slug_adjusted_IDs_from_DB( $page_name_for_query ) {
 		$pages_with_name = $this->wpdb->get_col(
 			$this->wpdb->prepare(
 				"
