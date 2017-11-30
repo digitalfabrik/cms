@@ -1,165 +1,79 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Author Chat 1.6.0\n"
-"POT-Creation-Date: 2017-05-07 20:38+0200\n"
-"PO-Revision-Date: 2017-05-07 20:38+0200\n"
-"Last-Translator: Pablo Custo <pablocusto@gmail.com>\n"
+"Project-Id-Version: Author Chat 1.4.1\n"
+"POT-Creation-Date: 2016-07-19 20:49+0200\n"
+"PO-Revision-Date: 2016-07-19 20:49+0200\n"
+"Last-Translator: \n"
 "Language-Team: Piotr Pesta\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.1\n"
-"X-Poedit-Basepath: ..\n"
+"X-Generator: Poedit 1.8.8\n"
+"X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Poedit-KeywordsList: _e;__;esc_html__\n"
+"X-Poedit-KeywordsList: _e\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-SearchPath-0: pp-author-chat.php\n"
-"X-Poedit-SearchPath-1: pp-options.php\n"
+"X-Poedit-SearchPath-0: ..\n"
 
-#: pp-author-chat.php:139
-msgid "You are:"
-msgstr "Jesteś jako:"
-
-#: pp-author-chat.php:140
-msgid "Today"
-msgstr "Dzisiaj"
-
-#: pp-author-chat.php:141
-msgid "Yesterday"
-msgstr "Wczoraj"
-
-#: pp-author-chat.php:142
-msgid "Sunday"
-msgstr "Niedziela"
-
-#: pp-author-chat.php:143
-msgid "Monday"
-msgstr "Poniedziałek"
-
-#: pp-author-chat.php:144
-msgid "Tuesday"
-msgstr "Wtorek"
-
-#: pp-author-chat.php:145
-msgid "Wednesday"
-msgstr "Środa"
-
-#: pp-author-chat.php:146
-msgid "Thursday"
-msgstr "Czwartek"
-
-#: pp-author-chat.php:147
-msgid "Friday"
-msgstr "Piątek"
-
-#: pp-author-chat.php:148
-msgid "Saturday"
-msgstr "Sobota"
-
-#: pp-author-chat.php:160 pp-options.php:7
-msgid "Author Chat Options"
-msgstr "Opcje Author Chat"
-
-#: pp-author-chat.php:161 pp-author-chat.php:168 pp-author-chat.php:206
-#: pp-author-chat.php:578 pp-author-chat.php:599
+#: ../pp-author-chat.php:108
 msgid "Author Chat"
 msgstr "Chat autorów"
 
-#: pp-author-chat.php:191
-msgid "Settings"
-msgstr "Ustawienia"
-
-#: pp-author-chat.php:219
+#: ../pp-author-chat.php:115
 msgid "Your message..."
 msgstr "Twoja wiadomość..."
 
-#: pp-author-chat.php:223
-msgid "To send text from here you need to buy premium version of that plugin"
-msgstr ""
+#: ../pp-author-chat.php:126
+msgid "You are:"
+msgstr "Jesteś jako:"
 
-#: pp-author-chat.php:225
-msgid "for lifetime 1 domain licence"
-msgstr ""
+#: ../pp-options.php:6
+msgid "Author Chat Options"
+msgstr "Opcje Author Chat"
 
-#: pp-author-chat.php:226
-msgid "future premium features included"
-msgstr ""
-
-#: pp-author-chat.php:581
-msgid "Buy Premium Version"
-msgstr ""
-
-#: pp-author-chat.php:587
-msgid "If your domain name is correct, do not change it"
-msgstr ""
-
-#: pp-options.php:16
+#: ../pp-options.php:13
 msgid "Delete chat history older than how many days?"
 msgstr "Wykasować historię chatu starszą niż ile dni?"
 
-#: pp-options.php:25
+#: ../pp-options.php:20
 msgid "Who should have access to Author Chat?"
 msgstr "Kto ma dostęp do Author Chat?"
 
-#: pp-options.php:29
+#: ../pp-options.php:22
 msgid "All users with access to admin area"
 msgstr "Wszyscy użytkownicy z dostępem do adminki"
 
-#: pp-options.php:34
+#: ../pp-options.php:23
 msgid "Editor"
 msgstr "Edytor"
 
-#: pp-options.php:39
+#: ../pp-options.php:24
 msgid "Author"
 msgstr "Autor"
 
-#: pp-options.php:44
+#: ../pp-options.php:25
 msgid "Contributor"
 msgstr "Kontrybutor"
 
-#: pp-options.php:49
+#: ../pp-options.php:26
 msgid "Subscriber"
 msgstr "Subskrybent"
 
-#: pp-options.php:56
+#: ../pp-options.php:31
 msgid "Choose how to display the authors: by Name or by Login?"
 msgstr "Wybierz jak wyświetlać autorów: z Nazwy czy Loginu?"
 
-#: pp-options.php:60
+#: ../pp-options.php:33
 msgid "Login (Username)"
 msgstr "Login (Nazwa użytkownika)"
 
-#: pp-options.php:65
+#: ../pp-options.php:34
 msgid "Name (Display name)"
 msgstr "Nazwa (Nazwa wyświetlana)"
 
-#: pp-options.php:74
-msgid "Show chat window everywhere (Premium Function)?"
-msgstr "Pokazać okno chatu wszędzie (Funkcja Płatna)?"
-
-#: pp-options.php:85
-msgid "Show my name in the messages?"
-msgstr "Pokazać moją nazwę w wiadomościach?"
-
-#: pp-options.php:96
-msgid "Show thumb preview of the URLs?"
-msgstr "Pokazać miniaturkę URLi?"
-
-#: pp-options.php:107
-msgid "Show weekday names of recent days?"
-msgstr "Pokazywać nazwy dni tygodnia w oknie chatu?"
-
-#: pp-options.php:118
-msgid "Refresh interval to check new messages"
-msgstr "Czas odświeżania nowych wiadomości"
-
-#: pp-options.php:131
-msgid "second(s)"
-msgstr "sek."
-
-#: pp-options.php:138
+#: ../pp-options.php:39
 msgid ""
 "Permanently delete chat history? (data will be deleted when you check this "
 "box and click \"Save Changes\")"
