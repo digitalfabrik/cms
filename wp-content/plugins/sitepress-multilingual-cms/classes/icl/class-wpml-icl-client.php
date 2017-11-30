@@ -4,60 +4,45 @@
  * @author OnTheGo Systems
  */
 class WPML_ICL_Client {
-	private $display_errors_backup;
-	private $error_reporting_backup;
 	private $error;
-	private $gzipped = false;
-	private $post_files;
-	private $sitepress;
+	/** @var WP_HTTP $http */
+	private $http;
+	/** @var  WPML_WP_API $wp_api */
+	private $wp_api;
 	private $method  = 'GET';
 	private $post_data;
 
 	/**
 	 * WPML_ICL_Client constructor.
 	 *
-	 * @param SitePress $sitepress
+	 * @param WP_HTTP $http
+	 * @param WPML_WP_API
 	 */
-	public function __construct( SitePress $sitepress ) {
-		$this->sitepress              = $sitepress;
-		$this->display_errors_backup  = ini_get( 'display_errors' );
-		$this->error_reporting_backup = ini_get( 'error_reporting' );
+	public function __construct( $http, $wp_api ) {
+		$this->http   = $http;
+		$this->wp_api = $wp_api;
 	}
 
 	function request( $request_url ) {
 
-		$results = false;
+		$results     = false;
+		$this->error = false;
 
 		$request_url = $this->get_adjusted_request_url( $request_url );
 
 		$this->adjust_post_data();
 
-		$this->disable_error_reporting();
-
-		$icanSnoopy = new IcanSnoopy();
-		if ( ! is_readable( $icanSnoopy->curl_path ) || ! is_executable( $icanSnoopy->curl_path ) ) {
-			$icanSnoopy->curl_path = '/usr/bin/curl';
-		}
-
-		$this->reset_error_reporting();
-
-		$icanSnoopy->_fp_timeout  = 3;
-		$icanSnoopy->read_timeout = 5;
 		if ( 'GET' === $this->method ) {
-			$icanSnoopy->fetch( $request_url );
+			$result = $this->http->get( $request_url );
 		} else {
-			$icanSnoopy->set_submit_multipart();
-			$icanSnoopy->submit( $request_url, $this->post_data, $this->post_files );
+			$result = $this->http->post( $request_url, array( 'body' => $this->post_data ) );
 		}
 
-		if ( $icanSnoopy->error || $icanSnoopy->timed_out ) {
-			$this->error = $icanSnoopy->error;
+		if ( is_wp_error( $result ) ) {
+			$this->error = $result->get_error_message();
 		} else {
 
-			if ( $this->gzipped ) {
-				$icanSnoopy->results = $this->gzdecode( $icanSnoopy->results );
-			}
-			$results = icl_xml2array( $icanSnoopy->results, 1 );
+			$results = icl_xml2array( $result['body'], 1 );
 
 			if ( array_key_exists( 'info', $results ) && '-1' === $results['info']['status']['attr']['err_code'] ) {
 				$this->error = $results['info']['status']['value'];
@@ -73,19 +58,14 @@ class WPML_ICL_Client {
 		return $this->error;
 	}
 
-	private function gzdecode( $data ) {
-
-		return icl_gzdecode( $data );
-	}
-
 	/**
 	 * @return array
 	 */
 	private function get_debug_data() {
 		$debug_vars = array(
 			'debug_cms'    => 'WordPress',
-			'debug_module' => 'WPML ' . ICL_SITEPRESS_VERSION,
-			'debug_url'    => get_bloginfo( 'url' ),
+			'debug_module' => 'WPML ' . $this->wp_api->constant( 'ICL_SITEPRESS_VERSION' ),
+			'debug_url'    => $this->wp_api->get_bloginfo( 'url' ),
 		);
 
 		return $debug_vars;
@@ -103,12 +83,6 @@ class WPML_ICL_Client {
 			$request_url .= '&' . http_build_query( $this->get_debug_data() );
 		}
 
-		$troubleshooting_options = $this->sitepress->get_setting( 'troubleshooting_options' );
-		$http_communication      = array_key_exists( 'http_communication', $troubleshooting_options ) ? $troubleshooting_options['http_communication'] : false;
-		if ( $http_communication ) {
-			$request_url = str_replace( 'https://', 'http://', $request_url );
-		}
-
 		return $request_url;
 	}
 
@@ -116,23 +90,6 @@ class WPML_ICL_Client {
 		if ( 'GET' !== $this->method ) {
 			$this->post_data = array_merge( $this->post_data, $this->get_debug_data() );
 		}
-	}
-
-	private function reset_error_reporting() {
-		ini_set( 'display_errors', $this->display_errors_backup );
-		ini_set( 'error_reporting', $this->error_reporting_backup );
-	}
-
-	private function disable_error_reporting() {
-		ini_set( 'display_errors', '0' );
-		ini_set( 'error_reporting', 0 );
-	}
-
-	/**
-	 * @param bool $value
-	 */
-	public function set_gzipped( $value ) {
-		$this->gzipped = $value;
 	}
 
 	/**
@@ -146,7 +103,4 @@ class WPML_ICL_Client {
 		$this->post_data = $post_data;
 	}
 
-	public function set_post_files( $post_files ) {
-		$this->post_files = $post_files;
-	}
 }

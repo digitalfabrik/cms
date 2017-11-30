@@ -73,7 +73,7 @@ abstract class WPML_Translation_Element extends WPML_SP_User {
 	 */
 	public function get_translation( $language_code ) {
 		if ( ! $language_code ) {
-			throw new InvalidArgumentException( 'Argument $language_code must a non empty string.' );
+			throw new InvalidArgumentException( 'Argument $language_code must be a non empty string.' );
 		}
 		$this->maybe_init_translations();
 
@@ -93,8 +93,12 @@ abstract class WPML_Translation_Element extends WPML_SP_User {
 			$this->element_translations = array();
 			$translations               = $this->get_element_translations();
 			foreach ( $translations as $language_code => $element_data ) {
-				$instance                                     = $this->get_new_instance( $element_data );
-				$this->element_translations[ $language_code ] = $instance;
+
+				if ( ! isset( $element_data->element_id ) ) {
+					continue;
+				}
+
+				$this->element_translations[ $language_code ] = $this->get_new_instance( $element_data );
 			}
 		}
 
@@ -113,10 +117,10 @@ abstract class WPML_Translation_Element extends WPML_SP_User {
 	function get_wp_element_type() {
 		$element = $this->get_wp_object();
 		if ( is_wp_error( $element ) ) {
-			throw new UnexpectedValueException( $element->get_error_message() );
+			return $element;
 		}
 		if ( false === (bool) $element ) {
-			throw new UnexpectedValueException( 'Element does not exists.' );
+			return new WP_Error( 1, 'Element does not exists.' );
 		}
 
 		return $this->get_type( $element );

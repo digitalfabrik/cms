@@ -1,10 +1,10 @@
-/*globals jQuery, icl_vars */
+/*globals jQuery, icl_vars, wpml_xdomain_data */
 
 (function () {
 	"use strict";
 
 	jQuery(document).ready(function () {
-		jQuery('#lang_sel a, #lang_sel_footer a, .menu-item-language a').on('click', function (event) {
+		jQuery('.' + wpml_xdomain_data.css_selector + ' a').on('click', function (event) {
 
 			var originalUrl;
 			var currentUrl = window.location.href;
@@ -20,12 +20,12 @@
 
 				/** @namespace icl_vars.current_language */
 				jQuery.ajax({
-					url:      icl_vars.ajax_url,
+					url:      wpml_xdomain_data.ajax_url,
 					type:     'post',
 					dataType: 'json',
 					data:     {
 						action:        'switching_language',
-						from_language: icl_vars.current_language
+						from_language: wpml_xdomain_data.current_language
 					},
 					success:  function (response) {
 						var argsGlue;

@@ -1,30 +1,32 @@
 <?php
 
 class WPML_Post_Edit_Ajax {
+	const AJAX_ACTION_SWITCH_POST_LANGUAGE = 'wpml_switch_post_language';
 
 	/**
 	 * Ajax handler for adding a term via Ajax.
 	 */
 	public static function wpml_save_term_action() {
-		if ( !wpml_is_action_authenticated ( 'wpml_save_term' ) ) {
-			wp_send_json_error ( 'Wrong Nonce' );
-		}
-
 		global $sitepress;
 
-		$lang        = filter_input ( INPUT_POST, 'term_language_code', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-		$taxonomy    = filter_input ( INPUT_POST, 'taxonomy' );
-		$slug        = filter_input ( INPUT_POST, 'slug' );
-		$name        = filter_input ( INPUT_POST, 'name' );
-		$trid        = filter_input ( INPUT_POST, 'trid', FILTER_SANITIZE_NUMBER_INT );
-		$description = filter_input ( INPUT_POST, 'description' );
-		
-		$new_term_object = self::save_term_ajax( $sitepress, $lang, $taxonomy, $slug, $name, $trid, $description );
+		if ( ! wpml_is_action_authenticated( 'wpml_save_term' ) ) {
+			wp_send_json_error( 'Wrong Nonce' );
+		}
+
+		$lang        = filter_var( $_POST['term_language_code'], FILTER_SANITIZE_STRING );
+		$taxonomy    = filter_var( $_POST['taxonomy'], FILTER_SANITIZE_STRING );
+		$slug        = filter_var( $_POST['slug'], FILTER_SANITIZE_STRING );
+		$name        = filter_var( $_POST['name'], FILTER_SANITIZE_STRING );
+		$trid        = filter_var( $_POST['trid'], FILTER_SANITIZE_NUMBER_INT );
+		$description = filter_var( $_POST['description'], FILTER_SANITIZE_STRING );
+		$meta_data   = isset( $_POST['meta_data'] ) ? $_POST['meta_data'] : array();
+
+		$new_term_object = self::save_term_ajax( $sitepress, $lang, $taxonomy, $slug, $name, $trid, $description, $meta_data );
 		$sitepress->get_wp_api()->wp_send_json_success( $new_term_object );
 
 	}
 
-	public static function save_term_ajax( $sitepress, $lang, $taxonomy, $slug, $name, $trid, $description ) {
+	public static function save_term_ajax( $sitepress, $lang, $taxonomy, $slug, $name, $trid, $description, $meta_data ) {
 		$new_term_object = false;
 
 		if ( $name !== "" && $taxonomy && $trid && $lang ) {
@@ -56,14 +58,17 @@ class WPML_Post_Edit_Ajax {
 				$lang_details                   = $sitepress->get_element_language_details( $new_term_object->term_taxonomy_id, 'tax_' . $new_term_object->taxonomy );
 				$new_term_object->trid          = $lang_details->trid;
 				$new_term_object->language_code = $lang_details->language_code;
+				if ( self::add_term_metadata( $res, $meta_data ) ) {
+					$new_term_object->meta_data = get_term_meta( $res['term_id'] );
+				}
 
 				WPML_Terms_Translations::icl_save_term_translation_action( $taxonomy, $res );
 			}
 		}
-		
+
 		return $new_term_object;
 	}
-	
+
 	/**
 	 * Gets the content of a post, its excerpt as well as its title and returns it as an array
 	 *
@@ -113,7 +118,7 @@ class WPML_Post_Edit_Ajax {
 							$html_pre = wp_htmledit_pre( $post->$editor_field );
 						}
 					}
-					
+
 					$fields_contents[$editor_key] = htmlspecialchars_decode( $html_pre );
 				} elseif ( $editor_key === 'title' ) {
 					$fields_contents[ $editor_key ] = strip_tags( $post->$editor_field );
@@ -155,6 +160,11 @@ class WPML_Post_Edit_Ajax {
 	public static function wpml_switch_post_language() {
 		global $sitepress, $wpdb;
 
+		$nonce = $_POST['nonce'];
+		if ( ! wp_verify_nonce( $nonce, self::AJAX_ACTION_SWITCH_POST_LANGUAGE ) ) {
+			wp_send_json_error();
+		}
+
 		$to      = false;
 		$post_id = false;
 
@@ -191,7 +201,7 @@ class WPML_Post_Edit_Ajax {
 				$sitepress->set_element_language_details( $post_id, $wpml_post_type, $trid, $to );
 				// Synchronize the posts terms languages. Do not create automatic translations though.
 				WPML_Terms_Translations::sync_post_terms_language( $post_id );
-				require_once ICL_PLUGIN_PATH . '/inc/cache.php';
+				require_once WPML_PLUGIN_PATH . '/inc/cache.php';
 				icl_cache_clear( $post_type . 's_per_language', true );
 
 				$result = $to;
@@ -204,5 +214,17 @@ class WPML_Post_Edit_Ajax {
 	public static function wpml_get_default_lang() {
 		global $sitepress;
 		wp_send_json_success( $sitepress->get_default_language() );
+	}
+
+	private static function add_term_metadata( $term, $meta_data ) {
+		foreach ( $meta_data as $meta_key => $meta_value ) {
+			delete_term_meta( $term['term_id'], $meta_key );
+			$data = maybe_unserialize( stripslashes( $meta_value ) );
+			if ( ! add_term_meta( $term['term_id'], $meta_key, $data ) ) {
+				throw new RuntimeException( sprintf( 'Unable to add term meta form term: %d', $term['term_id'] ) );
+			}
+		}
+
+		return true;
 	}
 }

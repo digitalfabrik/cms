@@ -70,9 +70,9 @@
 
 		processData: function (termsData) {
 
-			var parentTermIDs = [];
-			var parents = {};
-			var termNames = {};
+			var parentTermIDs = [],
+				parents = {},
+				termNames = {};
 
 			_.each(termsData, function (tridGroup) {
 				var termsObject = {};
@@ -119,6 +119,21 @@
 				}
 			});
 			return originalTerm;
+		},
+		getOriginalTermMeta: function( trid ) {
+			var originalTerm = this.getOriginalTerm(trid),
+				term_metas = [],
+				original_meta_data;
+
+			original_meta_data = originalTerm.get('meta_data');
+			_.each( original_meta_data, function ( meta_data, meta_key ) {
+				term_metas.push({
+					'meta_key': meta_key,
+					'meta_value': meta_data
+				});
+			});
+
+			return term_metas;
 		},
 		getTermName: function (termID) {
 

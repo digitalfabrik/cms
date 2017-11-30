@@ -38,6 +38,8 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 				$icl_taxonomy = 'tax_' . $taxonomy;
 				$trid         = $this->term_translation->trid_from_tax_and_id( $term_id, $taxonomy );
 				$translations = $this->sitepress->get_element_translations( $trid, $icl_taxonomy, false );
+			} elseif ( 'post_format' === $taxonomy ) {
+				$translations = $this->get_post_format_translations( $taxonomy, $term_id );
 			} else {
 				$translations[ $this->sitepress->get_current_language() ] = (object) array(
 					'translation_id' => 0,
@@ -77,10 +79,20 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 			$translations          = null;
 		}
 
+		$translations = apply_filters( 'wpml_get_ls_translations', $translations, $wp_query );
 		return array( $translations, $wp_query );
 	}
 
-	public function add_tax_url_to_ls_lang( $lang, $translations, $icl_lso_link_empty, $skip_lang ) {
+	/**
+	 * @param array  $lang
+	 * @param array  $translations
+	 * @param bool   $icl_lso_link_empty
+	 * @param bool   $skip_lang
+	 * @param string $link_empty_to
+	 *
+	 * @return array
+	 */
+	public function add_tax_url_to_ls_lang( $lang, $translations, $icl_lso_link_empty, $skip_lang, $link_empty_to ) {
 		if ( isset( $translations[ $lang['code'] ] ) ) {
 			// force  the taxonomy id adjustment to not modify this
 			$queried_object = $this->sitepress->get_wp_api()->get_queried_object();
@@ -90,11 +102,23 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 				$lang['translated_url'] = $this->sitepress->get_wp_api()
 				                                          ->get_term_link( (int) $translations[ $lang['code'] ]->term_id, $taxonomy );
 				$lang['missing']        = 0;
+
+				if ( 'post_format' === $taxonomy  ) {
+					$lang['translated_url'] = $this->sitepress->convert_url( $lang['translated_url'], $lang['code'] );
+				}
 			}
 		}
 
 		if ( ! isset( $translations[ $lang['code'] ] ) || ! isset( $taxonomy ) ) {
-			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $skip_lang, $icl_lso_link_empty );
+
+			$args = array(
+				'skip_lang'        => $skip_lang,
+				'link_empty'       => $icl_lso_link_empty,
+				'override_missing' => false,
+				'link_empty_to'    => $link_empty_to,
+			);
+
+			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $args );
 		}
 
 		return array( $lang, $skip_lang );
@@ -105,16 +129,25 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	 * @param object|WP_User $author_data
 	 * @param bool           $icl_lso_link_empty
 	 * @param bool           $skip_lang
+	 * @param bool           $link_empty_to
 	 *
 	 * @return array
 	 */
-	public function add_author_url_to_ls_lang( $lang, $author_data, $icl_lso_link_empty, $skip_lang ) {
+	public function add_author_url_to_ls_lang( $lang, $author_data, $icl_lso_link_empty, $skip_lang, $link_empty_to ) {
 		$post_type = get_query_var( 'post_type' ) ? get_query_var( 'post_type' ) : 'post';
 		if ( $this->query_utils->author_query_has_posts( $post_type, $author_data, $lang['code'] ) ) {
 			$lang['translated_url'] = $this->sitepress->convert_url( $this->sitepress->get_wp_api()->get_author_posts_url( $author_data->ID ), $lang['code'] );
 			$lang['missing']        = 0;
 		} else {
-			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $skip_lang, $icl_lso_link_empty );
+
+			$args = array(
+				'skip_lang'        => $skip_lang,
+				'link_empty'       => $icl_lso_link_empty,
+				'override_missing' => false,
+				'link_empty_to'    => $link_empty_to,
+			);
+
+			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $args );
 		}
 
 		return array( $lang, $skip_lang );
@@ -125,10 +158,11 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	 * @param WP_Query $current_query
 	 * @param bool     $icl_lso_link_empty
 	 * @param bool     $skip_lang
+	 * @param string   $link_empty_to
 	 *
 	 * @return array
 	 */
-	public function add_date_or_cpt_url_to_ls_lang( $lang, $current_query, $icl_lso_link_empty, $skip_lang ) {
+	public function add_date_or_cpt_url_to_ls_lang( $lang, $current_query, $icl_lso_link_empty, $skip_lang, $link_empty_to ) {
 		list( $year, $month, $day ) = $this->extract_date_data_from_query( $current_query );
 		$query_helper = new WPML_WP_Query_API( $current_query );
 		$post_type    = ( $_type = $query_helper->get_post_type_if_single() ) ? $_type : 'post';
@@ -164,10 +198,16 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 		}
 
 		if ( $mark_missing ) {
-			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang,
-			                                                            $skip_lang,
-			                                                            $icl_lso_link_empty,
-			                                                            $override );
+
+			$args = array(
+				'skip_lang'        => $skip_lang,
+				'link_empty'       => $icl_lso_link_empty,
+				'override_missing' => $override,
+				'link_empty_to'    => $link_empty_to,
+			);
+
+			list( $lang, $skip_lang ) = $this->maybe_mark_lang_missing( $lang, $args );
+
 		} elseif ( isset( $date_archive_url ) ) {
 			$lang['translated_url'] = $this->sitepress->convert_url( $date_archive_url, $lang_code );
 		}
@@ -195,12 +235,15 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 			$ls_language['url'] = $this->sitepress->language_url( $lang_code );
 		}
 
+		$flag_url = '';
 		$flag = $this->sitepress->get_flag( $lang_code );
-		if ( $flag->from_template ) {
-			$wp_upload_dir = wp_upload_dir();
-			$flag_url      = $wp_upload_dir['baseurl'] . '/flags/' . $flag->flag;
-		} else {
-			$flag_url = ICL_PLUGIN_URL . '/res/flags/' . $flag->flag;
+		if ( is_object( $flag ) ) {
+			if ( $flag->from_template ) {
+				$wp_upload_dir = wp_upload_dir();
+				$flag_url      = $wp_upload_dir['baseurl'] . '/flags/' . $flag->flag;
+			} else {
+				$flag_url = ICL_PLUGIN_URL . '/res/flags/' . $flag->flag;
+			}
 		}
 		$ls_language['country_flag_url'] = $flag_url;
 		$ls_language['active']           = $current_language === $lang_code ? '1' : 0;
@@ -235,30 +278,42 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 	}
 
 	/**
-	 * @param array         $lang
-	 * @param      bool     $skip_lang
-	 * @param      bool|int $icl_lso_link_empty
-	 * @param bool|false    $override_missing if true language will always be shown ( Example: untranslated CPT archives)
+	 * @param array $lang
+	 * @param array $args with keys below
+	 * - `skip_lang`        bool|int
+	 * - `link_empty`       bool|int
+	 * - `link_empty_to`    string a URL possibly with a {%lang} placeholder (e.g. http://example.tld/{%lang}/notify-no-translation/)
+	 * - `override_missing` bool if true language will always be shown ( Example: untranslated CPT archives)
 	 *
 	 * @return array
 	 */
-	private function maybe_mark_lang_missing( $lang, $skip_lang, $icl_lso_link_empty, $override_missing = false ) {
-		if ( $icl_lso_link_empty ) {
-			if ( ! empty( $template_args['link_empty_to'] ) ) {
+	private function maybe_mark_lang_missing( $lang, $args ) {
+
+		$args = array_merge( array(
+				'skip_lang'        => 0,
+				'link_empty'       => 0,
+				'link_empty_to'    => '',
+				'override_missing' => false,
+			),
+			$args
+		);
+
+		if ( $args['link_empty'] ) {
+			if ( ! empty( $args['link_empty_to'] ) ) {
 				$lang['translated_url'] = str_replace( '{%lang}',
 				                                       $lang['code'],
-				                                       $template_args['link_empty_to'] );
+					                                   $args['link_empty_to'] );
 			} else {
 				$lang['translated_url'] = $this->sitepress->language_url( $lang['code'] );
 			}
 		} else {
 			if ( $this->sitepress->get_current_language() != $lang['code'] ) {
-				$skip_lang = true;
+				$args['skip_lang'] = true;
 			}
 		}
-		$lang['missing'] = $override_missing ? 0 : 1;
+		$lang['missing'] = $args['override_missing'] ? 0 : 1;
 
-		return array( $lang, $skip_lang );
+		return array( $lang, $args['skip_lang'] );
 	}
 
 	/**
@@ -298,11 +353,34 @@ class WPML_Languages extends WPML_SP_And_PT_User {
 			$taxonomy = 'post_tag';
 			$term_id  = $wp_query->get( 'tag_id' );
 		} elseif ( $wp_query->is_tax() ) {
-			$taxonomy = $wp_query->get( 'taxonomy' );
-			$term_id  = $wp_query->get_queried_object_id();
+			$term     = $wp_query->get_queried_object();
+			$taxonomy = $term->taxonomy;
+			$term_id  = $term->term_id;
 		}
 
 		return array( $taxonomy, $term_id );
+	}
+
+	/**
+	 * @param $taxonomy
+	 * @param $term_id
+	 *
+	 * @return array
+	 */
+	private function get_post_format_translations( $taxonomy, $term_id ) {
+		$translations = array();
+
+		foreach ( $this->sitepress->get_active_languages() as $code => $active_language ) {
+			$translations[ $code ] = (object) array(
+				'translation_id' => 0,
+				'language_code'  => $code,
+				'original'       => 1,
+				'name'           => $taxonomy,
+				'term_id'        => $term_id
+			);
+		}
+
+		return $translations;
 	}
 
 	private function sort_by_id( $array_a, $array_b ) {
