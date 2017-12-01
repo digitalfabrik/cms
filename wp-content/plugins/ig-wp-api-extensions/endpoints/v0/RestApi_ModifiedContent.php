@@ -207,7 +207,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			'id' => $post->ID,
 			'permalink' => $this->prepare_url($post),
 			'title' => ( $post->post_status != "trash" ? $post->post_title : "" ),
-			'type' => $post->post_type,
+			'type' => ( $post->post_type == 'event-recurring' ? 'event' : $post->post_type ),
 			'status' => $post->post_status,
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => ( $post->post_status != "trash" ? ($content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post)) : ""),
