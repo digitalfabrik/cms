@@ -30,8 +30,6 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			em_locations.location_latitude, em_locations.location_longitude,
 			GROUP_CONCAT(CONCAT(terms.term_id, ':', terms.name)) AS terms";
 	}
-	/*
-			*/
 
 	protected function build_query_from() {
 		global $wpdb;
