@@ -1,17 +1,22 @@
 <?php
 
-class WPML_TM_Blog_Translators extends WPML_SP_User {
+class WPML_TM_Blog_Translators {
 
 	/** @var WPML_TM_Records $tm_records */
 	private $tm_records;
 
 	/**
+	 * @var SitePress;
+	 */
+	private $sitepress;
+
+	/**
 	 * @param SitePress       $sitepress
 	 * @param WPML_TM_Records $tm_records
 	 */
-	public function __construct( &$sitepress, &$tm_records ) {
-		parent::__construct( $sitepress );
-		$this->tm_records = &$tm_records;
+	public function __construct( $sitepress, $tm_records ) {
+		$this->sitepress = $sitepress;
+		$this->tm_records = $tm_records;
 	}
 
 	/**
@@ -29,6 +34,13 @@ class WPML_TM_Blog_Translators extends WPML_SP_User {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function get_raw_blog_translators() {
+		return TranslationManagement::get_blog_translators();
+	}
+
+	/**
 	 * @param int   $user_id
 	 * @param array $args
 	 *
@@ -41,7 +53,7 @@ class WPML_TM_Blog_Translators extends WPML_SP_User {
 		                                 ->user_can( $user_id, 'translate' );
 		// check if user is administrator and return true if he is
 		if ( $admin_override && $this->sitepress->get_wp_api()
-		                                        ->user_can( $user_id, 'activate_plugins' )
+		                                        ->user_can( $user_id, 'manage_options' )
 		) {
 			$is_translator = true;
 		} else {
@@ -52,6 +64,8 @@ class WPML_TM_Blog_Translators extends WPML_SP_User {
 						if ( array_key_exists( $lang_to, $user_lang_to ) ) {
 							$is_translator = true;
 							break;
+						} else {
+							$is_translator = false;
 						}
 					}
 				} else {
@@ -62,7 +76,7 @@ class WPML_TM_Blog_Translators extends WPML_SP_User {
 				$job_record    = $this->tm_records->icl_translate_job_by_job_id( $job_id );
 				$translator_id = in_array( $job_record->service(), array(
 					'local',
-					0
+					0,
 				) ) ? $job_record->translator_id() : - 1;
 				$is_translator = $translator_id == $user_id
 				                 || ( $is_translator && empty( $translator_id ) );

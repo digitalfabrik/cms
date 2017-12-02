@@ -35,11 +35,11 @@ class WPML_TP_Pickup_Box_Ajax_Action extends WPML_SP_User {
 			$time_left          = floor( $translation_offset / 60 );
 			if ( $time_left == 0 ) {
 				$wait_text = '<p><i>' . sprintf( __( 'You can check again in %s seconds.',
-						'sitepress' ),
+						'wpml-translation-management' ),
 						'<span id="icl_sec_tic">' . $translation_offset . '</span>' ) . '</i></p>';
 			} else {
 				$wait_text = sprintf( __( 'You can check again in %s minutes.',
-						'sitepress' ),
+						'wpml-translation-management' ),
 						'<span id="icl_sec_tic">' . $time_left . '</span>' ) . '</i></p>';
 			}
 			$result = array(
@@ -53,7 +53,7 @@ class WPML_TP_Pickup_Box_Ajax_Action extends WPML_SP_User {
 			} catch ( Exception $e ) {
 				$result   = array(
 					'error' => __( 'The below exception has occurred while communicating with Translation Proxy, please try again later or contact support if the problem persists:',
-							'sitepress' ) . "\n" . $e->getMessage()
+							'wpml-translation-management' ) . "\n" . $e->getMessage()
 				);
 				$callback = 'wp_send_json_error';
 			}
