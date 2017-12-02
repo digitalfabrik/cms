@@ -29,11 +29,11 @@ jQuery(document).ready(function($){
 	});
 	var navUrl = document.location.toString();
 	if (navUrl.match('#')) { //anchor-based navigation
-		var nav_tab = navUrl.split('#');
-		var current_tab = 'a#em-menu-' + nav_tab[1];
+		var nav_tab = navUrl.split('#').pop().split('+');
+		var current_tab = 'a#em-menu-' + nav_tab[0];
 		$(current_tab).trigger('click');
-		if( nav_tab.length > 2 ){
-			section = $("#em-opt-"+nav_tab[2]);
+		if( nav_tab.length > 1 ){
+			section = $("#em-opt-"+nav_tab[1]);
 			if( section.length > 0 ){
 				section.children('h3').trigger('click');
 		    	$('html, body').animate({ scrollTop: section.offset().top - 30 }); //sends user back to current section
@@ -49,13 +49,15 @@ jQuery(document).ready(function($){
 		var docloc = document.location.toString().split('#');
 		var newloc = docloc[0];
 		if( docloc.length > 1 ){
-			var nav_tab = docloc[1].split('#');
-			newloc = newloc + "#" + nav_tab[0];
+			var nav_tab = docloc[1].split('+');
+			var tab_path = nav_tab[0];
 			if( el.attr('id') ){
-				newloc = newloc + "#" + el.attr('id').replace('em-opt-','');
+				tab_path = tab_path + "+" + el.attr('id').replace('em-opt-','');
 			}
+			newloc = newloc + "#" + tab_path;
 		}
 		document.location = newloc;
+		$(this).closest('form').append('<input type="hidden" name="tab_path" value="'+ tab_path +'" />');
 	});
 	//Page Options
 	$('input[name="dbem_cp_events_has_archive"]').change(function(){ //event archives
@@ -107,6 +109,11 @@ jQuery(document).ready(function($){
 		el.val() == '1' ? $(el.attr('data-trigger')).show() : $(el.attr('data-trigger')).hide();
 	});
 	$('input.em-trigger:checked').trigger('change');
+	$('input.em-untrigger').change(function(e){
+		var el = $(this);
+		el.val() == '0' ? $(el.attr('data-trigger')).show() : $(el.attr('data-trigger')).hide();
+	});
+	$('input.em-untrigger:checked').trigger('change');
 	//admin tools confirm
 	$('a.admin-tools-db-cleanup').click( function( e ){
 		if( !confirm(EM.admin_db_cleanup_warning) ){
@@ -114,4 +121,6 @@ jQuery(document).ready(function($){
 			return false;
 		}
 	});
+	//color pickers
+	$('#dbem_category_default_color, #dbem_tag_default_color').wpColorPicker();
 });

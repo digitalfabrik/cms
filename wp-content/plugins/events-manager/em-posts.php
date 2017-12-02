@@ -115,6 +115,7 @@ function wp_events_plugin_init(){
 			)
 		));
 	}
+	$event_post_type_supports = apply_filters('em_cp_event_supports', array('custom-fields','title','editor','excerpt','comments','thumbnail','author'));
 	$event_post_type = array(	
 		'public' => true,
 		'hierarchical' => false,
@@ -126,7 +127,7 @@ function wp_events_plugin_init(){
 		'publicly_queryable' => true,
 		'rewrite' => array('slug' => EM_POST_TYPE_EVENT_SLUG,'with_front'=>false),
 		'has_archive' => get_option('dbem_cp_events_has_archive', false) == true,
-		'supports' => apply_filters('em_cp_event_supports', array('custom-fields','title','editor','excerpt','comments','thumbnail','author')),
+		'supports' => $event_post_type_supports,
 		'capability_type' => 'event',
 		'capabilities' => array(
 			'publish_posts' => 'publish_events',
@@ -172,7 +173,7 @@ function wp_events_plugin_init(){
 			'has_archive' => false,
 			'can_export' => true,
 			'hierarchical' => false,
-			'supports' => apply_filters('em_cp_event_supports', array('custom-fields','title','editor','excerpt','comments','thumbnail','author')),
+			'supports' => $event_post_type_supports,
 			'capability_type' => 'recurring_events',
 			'rewrite' => array('slug' => 'events-recurring','with_front'=>false),
 			'capabilities' => array(
@@ -306,7 +307,12 @@ function em_map_meta_cap( $caps, $cap, $user_id, $args ) {
     if( !empty( $args[0]) ){
 		/* Handle event reads */
 		if ( 'edit_event' == $cap || 'delete_event' == $cap || 'read_event' == $cap ) {
-			$EM_Event = em_get_event($args[0],'post_id');
+			$post = get_post($args[0]);
+			//check for revisions and deal with non-event post types
+			if( !empty($post->post_type) && $post->post_type == 'revision' ) $post = get_post($post->post_parent);
+			if( empty($post->post_type) || !in_array($post->post_type, array(EM_POST_TYPE_EVENT, 'event-recurring')) ) return $caps;
+			//continue with getting post type and assigning caps
+			$EM_Event = em_get_event($post);
 			$post_type = get_post_type_object( $EM_Event->post_type );
 			/* Set an empty array for the caps. */
 			$caps = array();
@@ -335,7 +341,12 @@ function em_map_meta_cap( $caps, $cap, $user_id, $args ) {
 			}
 		}
 		if ( 'edit_recurring_event' == $cap || 'delete_recurring_event' == $cap || 'read_recurring_event' == $cap ) {
-			$EM_Event = em_get_event($args[0],'post_id');
+			$post = get_post($args[0]);
+			//check for revisions and deal with non-event post types
+			if( !empty($post->post_type) && $post->post_type == 'revision' ) $post = get_post($post->post_parent);
+			if( empty($post->post_type) || $post->post_type != 'event-recurring' ) return $caps;
+			//continue with getting post type and assigning caps
+			$EM_Event = em_get_event($post);
 			$post_type = get_post_type_object( $EM_Event->post_type );
 			/* Set an empty array for the caps. */
 			$caps = array();
@@ -364,7 +375,12 @@ function em_map_meta_cap( $caps, $cap, $user_id, $args ) {
 			}
 		}
 		if ( 'edit_location' == $cap || 'delete_location' == $cap || 'read_location' == $cap ) {
-			$EM_Location = em_get_location($args[0],'post_id');
+			$post = get_post($args[0]);
+			//check for revisions and deal with non-location post types
+			if( !empty($post->post_type) && $post->post_type == 'revision' ) $post = get_post($post->post_parent);
+			if( empty($post->post_type) || $post->post_type != EM_POST_TYPE_LOCATION ) return $caps;
+			//continue with getting post type and assigning caps
+			$EM_Location = em_get_location($post);
 			$post_type = get_post_type_object( $EM_Location->post_type );
 			/* Set an empty array for the caps. */
 			$caps = array();

@@ -149,11 +149,9 @@ function em_create_events_table() {
 		event_private bool NOT NULL DEFAULT 0,
 		location_id bigint(20) unsigned NULL DEFAULT NULL,
 		recurrence_id bigint(20) unsigned NULL DEFAULT NULL,
-  		event_category_id bigint(20) unsigned NULL DEFAULT NULL,
-  		event_attributes text NULL DEFAULT NULL,
   		event_date_created datetime NULL DEFAULT NULL,
   		event_date_modified datetime NULL DEFAULT NULL,
-		recurrence bool NOT NULL DEFAULT 0,
+		recurrence bool NULL DEFAULT 0,
 		recurrence_interval int(4) NULL DEFAULT NULL,
 		recurrence_freq tinytext NULL DEFAULT NULL,
 		recurrence_byday tinytext NULL DEFAULT NULL,
@@ -179,7 +177,7 @@ function em_create_events_table() {
 		em_migrate_events($wpdb->get_results('SELECT * FROM '.$table_name, ARRAY_A));
 		*/
 	}else{
-		if( get_option('dbem_version') < 4.939 ){
+		if( get_option('dbem_version') != '' && get_option('dbem_version') < 4.939 ){
 			//if updating from version 4 (4.934 is beta v5) then set all statuses to 1 since it's new
 			$wpdb->query("ALTER TABLE $table_name CHANGE event_notes post_content longtext NULL DEFAULT NULL");
 			$wpdb->query("ALTER TABLE $table_name CHANGE event_name event_name text NULL DEFAULT NULL");
@@ -256,11 +254,11 @@ function em_create_locations_table() {
 		em_migrate_locations($wpdb->get_results('SELECT * FROM '.$table_name, ARRAY_A));
 		*/
 	}else{
-		if( get_option('dbem_version') < 4.938 ){
+		if( get_option('dbem_version') != '' && get_option('dbem_version') < 4.938 ){
 			$wpdb->query("ALTER TABLE $table_name CHANGE location_description post_content longtext NULL DEFAULT NULL");
 		}
 		dbDelta($sql);
-		if( get_option('dbem_version') < 4.93 ){
+		if( get_option('dbem_version') != '' && get_option('dbem_version') < 4.93 ){
 			//if updating from version 4 (4.93 is beta v5) then set all statuses to 1 since it's new
 			$wpdb->query("UPDATE ".$table_name." SET location_status=1");
 		}
@@ -550,6 +548,8 @@ function em_add_options() {
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_location_event_list_item_footer_format' => "</ul>",
 		'dbem_location_event_list_limit' => 20,
+		'dbem_location_event_list_orderby' => 'event_start_date,event_start_time,event_name',
+		'dbem_location_event_list_order' => 'ASC',
 		'dbem_location_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
 		'dbem_location_no_event_message' => __('No events in this location', 'events-manager'),
 		//Category page options
@@ -569,6 +569,8 @@ function em_add_options() {
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_category_event_list_item_footer_format' => '</ul>',
 		'dbem_category_event_list_limit' => 20,
+		'dbem_category_event_list_orderby' => 'event_start_date,event_start_time,event_name',
+		'dbem_category_event_list_order' => 'ASC',
 		'dbem_category_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
 		'dbem_category_no_event_message' => __('No events in this category', 'events-manager'),
 		'dbem_category_default_color' => '#a8d144',
@@ -591,6 +593,9 @@ function em_add_options() {
 		'dbem_tag_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
 		'dbem_tag_no_event_message' => __('No events with this tag', 'events-manager'),
 		'dbem_tag_event_list_limit' => 20,
+		'dbem_tag_event_list_orderby' => 'event_start_date,event_start_time,event_name',
+		'dbem_tag_event_list_order' => 'ASC',
+		'dbem_tag_default_color' => '#a8d145',
 		//RSS Stuff
 		'dbem_rss_limit' => 0,
 		'dbem_rss_scope' => 'future',
@@ -808,7 +813,9 @@ function em_add_options() {
 	    //optimization options
 	    'dbem_disable_thumbnails'=> false,
 	    //feedback reminder
-	    'dbem_feedback_reminder' => time()
+	    'dbem_feedback_reminder' => time(),
+	    'dbem_events_page_ajax' => 0,
+	    'dbem_conditional_recursions' => 1
 	);
 	
 	//do date js according to locale:
@@ -1214,7 +1221,7 @@ function em_migrate_v4(){
 	}
 	//-- CATEGORIES --
 	//Create the terms according to category table, use the category owner for the term ids to store this
-	$categories = $wpdb->get_results("SELECT * FROM ".EM_CATEGORIES_TABLE, ARRAY_A); //taking a wild-hope guess that there aren't too many categories on one site/blog
+	$categories = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.'em_categories', ARRAY_A); //taking a wild-hope guess that there aren't too many categories on one site/blog
 	foreach( $categories as $category ){
 		//get all events with this category before resetting ids
 		$sql = "SELECT post_id FROM ".EM_EVENTS_TABLE.", ".EM_META_TABLE." WHERE event_id=object_id AND meta_key='event-category' AND meta_value='{$category['category_id']}'";

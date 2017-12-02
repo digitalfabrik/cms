@@ -46,38 +46,6 @@ $has_deprecated = false;
 				?>
 			</tbody>
 		</table>
-		<?php if( count(array_diff(array_keys($EM_Location->location_attributes), $attributes['names'])) > 0 ): ?>
-		<p><strong><?php _e('Deprecated Attributes', 'events-manager')?></strong></p>
-		<p><em><?php _e("If you see any attributes under here, that means they're not used in Locations Manager formats. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these deprecated attributes, give it a blank value and save.",'events-manager') ?></em></p>
-		<table class="form-table">
-			<thead>
-				<tr valign="top">
-					<td><strong>Attribute Name</strong></td>
-					<td><strong>Value</strong></td>
-				</tr>
-			</thead> 
-			<tbody id="mtm_body">
-				<?php
-				if( is_array($EM_Location->location_attributes) and count($EM_Location->location_attributes) > 0){
-					foreach( $EM_Location->location_attributes as $name => $value){
-						if( is_array($value) ) $value = serialize($value);
-						if( !in_array($name, $attributes['names']) ){
-							?>
-							<tr valign="top" id="em_attribute_<?php echo $count ?>">
-								<td scope="row"><?php echo $name ?></td>
-								<td>
-									<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo esc_attr($value, ENT_QUOTES); ?>" />
-								</td>
-							</tr>
-							<?php
-							$count++;
-						}
-					}
-				}
-				?>
-			</tbody>
-		</table>
-		<?php endif; ?>
 	<?php else : ?>
 		<p>
 		<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings > General to add attribute placeholders.', 'events-manager'); ?>

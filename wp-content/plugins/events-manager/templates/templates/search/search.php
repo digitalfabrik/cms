@@ -5,7 +5,7 @@ $args = !empty($args) ? $args:array(); /* @var $args array */
 <!-- START General Search -->
 <div class="em-search-text em-search-field">
 	<script type="text/javascript">
-	EM.search_term_placeholder = '<?php echo esc_attr($args['search_term_label']); ?>';
+	EM.search_term_placeholder = '<?php echo esc_js($args['search_term_label']); ?>';
 	</script>
 	<label>
 		<span class="screen-reader-text"><?php echo esc_html($args['search_term_label']); ?></span>

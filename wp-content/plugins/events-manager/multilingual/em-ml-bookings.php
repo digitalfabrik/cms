@@ -29,15 +29,18 @@ class EM_ML_Bookings {
     			$EM_Bookings = new EM_Bookings($event);
     			$EM_Bookings->event_id = $event->event_id;
     			$EM_Bookings->translated = true;
-    			//go through tickets and translate to appropriate language
-    			$event_lang = EM_ML::get_the_language($EM_Event);
-    			foreach($EM_Bookings->get_tickets()->tickets as $EM_Ticket){ /* @var $EM_Ticket EM_Ticket */
-    			    if( !empty($EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_name']) ){
-    			        $EM_Ticket->ticket_name = $EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_name'];
-    			    }
-    			    if( !empty($EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_description']) ){
-    			        $EM_Ticket->ticket_description = $EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_description'];
-    			    }
+    			//go through tickets and translate to appropriate language if we're not in a saving loop
+    			global $EM_EVENT_SAVE_POST, $EM_SAVING_EVENT;
+    			if( empty($EM_SAVING_EVENT) && empty($EM_EVENT_SAVE_POST) ){
+	    			$event_lang = EM_ML::get_the_language($EM_Event);
+	    			foreach($EM_Bookings->get_tickets()->tickets as $EM_Ticket){ /* @var $EM_Ticket EM_Ticket */
+	    			    if( !empty($EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_name']) ){
+	    			        $EM_Ticket->ticket_name = $EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_name'];
+	    			    }
+	    			    if( !empty($EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_description']) ){
+	    			        $EM_Ticket->ticket_description = $EM_Ticket->ticket_meta['langs'][$event_lang]['ticket_description'];
+	    			    }
+	    			}
     			}
 		    }
 		}

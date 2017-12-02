@@ -16,7 +16,7 @@ if( EMP_VERSION < 2.377 && (!defined('EMP_2376_FIXED') || !EMP_2376_FIXED) ){
 		</div>
 		<?php
 	}
-	if( is_super_admin() ){
+	if( em_wp_is_super_admin() ){
 		add_action ( 'admin_notices', 'em_empro_lt_2376_notice', 100 );
 		add_action ( 'network_admin_notices', 'em_empro_lt_2376_notice', 100 );
 	}

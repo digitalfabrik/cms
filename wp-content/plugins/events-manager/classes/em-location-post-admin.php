@@ -84,7 +84,7 @@ class EM_Location_Post_Admin{
 		$is_post_type = get_post_type($post_id) == EM_POST_TYPE_LOCATION;
 		if(!defined('UNTRASHING_'.$post_id) && $is_post_type && $saving_status){
 			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_location')){
-				$EM_Location = em_get_location($post_id, 'post_id');
+				$EM_Location = new EM_Location($post_id, 'post_id');
 				$get_meta = $EM_Location->get_post_meta(false);
 				$validate_meta = $EM_Location->validate_meta();
 				do_action('em_location_save_pre', $EM_Location);

@@ -69,20 +69,20 @@
 			em_options_textarea ( __( 'Booking pending email', 'events-manager'), 'dbem_bookings_email_pending_body','') ;
 			?>
 			<tr class="em-subheader"><td colspan='2'>
-				<h5><?php _e('Rejected booking email','events-manager') ?></h5>
-				<em><?php echo __( 'This will be sent automatically when a booking is rejected. Not relevant if bookings don\'t require approval.', 'events-manager').$bookings_placeholder_tip ?></em>
-			</td></tr>
-			<?php
-			em_options_input_text ( __( 'Booking rejected email subject', 'events-manager'), 'dbem_bookings_email_rejected_subject', $email_subject_tip );
-			em_options_textarea ( __( 'Booking rejected email', 'events-manager'), 'dbem_bookings_email_rejected_body', '' );
-			?>
-			<tr class="em-subheader"><td colspan='2'>
 				<h5><?php _e('Booking cancelled','events-manager') ?></h5>
 				<em><?php echo __('This will be sent when a user cancels their booking.','events-manager').$bookings_placeholder_tip ?></em>
 			</td></tr>
 			<?php
 			em_options_input_text ( __( 'Booking cancelled email subject', 'events-manager'), 'dbem_bookings_email_cancelled_subject', $email_subject_tip );
 			em_options_textarea ( __( 'Booking cancelled email', 'events-manager'), 'dbem_bookings_email_cancelled_body', '' );
+			?>
+			<tr class="em-subheader"><td colspan='2'>
+				<h5><?php _e('Rejected booking email','events-manager') ?></h5>
+				<em><?php echo __( 'This will be sent automatically when a booking is rejected. Not relevant if bookings don\'t require approval.', 'events-manager').$bookings_placeholder_tip ?></em>
+			</td></tr>
+			<?php
+			em_options_input_text ( __( 'Booking rejected email subject', 'events-manager'), 'dbem_bookings_email_rejected_subject', $email_subject_tip );
+			em_options_textarea ( __( 'Booking rejected email', 'events-manager'), 'dbem_bookings_email_rejected_body', '' );
 			?>
 			</tbody>
 	        <?php do_action('em_options_page_booking_email_templates_options_bottom'); ?>
