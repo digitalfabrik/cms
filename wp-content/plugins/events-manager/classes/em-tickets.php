@@ -104,18 +104,31 @@ class EM_Tickets extends EM_Object implements Iterator{
 		global $wpdb;
 		//get all the ticket ids
 		$result = false;
-		$ticket_ids = array();
-		foreach( $this->tickets as $EM_Ticket ){
-			$ticket_ids[] = $EM_Ticket->ticket_id;
-		}
-		//check that tickets don't have bookings
-		if(count($ticket_ids) > 0){
-			$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
+		if( !empty($this->tickets) ){
+			//get ticket ids if tickets are already preloaded into the object
+			$ticket_ids = array();
+			foreach( $this->tickets as $EM_Ticket ){
+				$ticket_ids[] = $EM_Ticket->ticket_id;
+			}
+			//check that tickets don't have bookings
+			if(count($ticket_ids) > 0){
+				$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
+				if( $bookings > 0 ){
+					$result = false;
+					$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','events-manager'));
+				}else{
+					$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
+				}
+			}
+		}elseif( !empty($this->event_id) ){
+			//if tickets aren't preloaded into object and this belongs to an event, delete via the event ID without loading any tickets
+			$event_id = absint($this->event_id);
+			$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (SELECT ticket_id FROM ".EM_TICKETS_TABLE." WHERE event_id='$event_id')");
 			if( $bookings > 0 ){
 				$result = false;
 				$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','events-manager'));
 			}else{
-				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
+				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id='$event_id'");
 			}
 		}
 		return ($result !== false);
@@ -128,13 +141,18 @@ class EM_Tickets extends EM_Object implements Iterator{
 	function get_post(){
 		//Build Event Array
 		do_action('em_tickets_get_post_pre', $this);
+		$current_tickets = $this->tickets; //save previous tickets so things like ticket_meta doesn't get overwritten
 		$this->tickets = array(); //clean current tickets out
 		if( !empty($_POST['em_tickets']) && is_array($_POST['em_tickets']) ){
 			//get all ticket data and create objects
 			global $allowedposttags;
 			foreach($_POST['em_tickets'] as $row => $ticket_data){
 			    if( $row > 0 ){
-					$EM_Ticket = new EM_Ticket();
+			    	if( !empty($ticket_data['ticket_id']) && !empty($current_tickets[$ticket_data['ticket_id']]) ){
+			    		$EM_Ticket = $current_tickets[$ticket_data['ticket_id']];
+			    	}else{
+			    		$EM_Ticket = new EM_Ticket();
+			    	}
 					$ticket_data['event_id'] = $this->event_id;
 					$EM_Ticket->get_post($ticket_data);
 					if( $EM_Ticket->ticket_id ){

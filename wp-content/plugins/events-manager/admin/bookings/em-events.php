@@ -36,8 +36,8 @@ function em_bookings_events_table() {
 			$scope = "future";
 	}
 	$owner = !current_user_can('manage_others_bookings') ? get_current_user_id() : false;
-	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>$limit, 'offset' => $offset, 'order'=>$order, 'bookings'=>true, 'owner' => $owner ) );
-	$events_count = EM_Events::count( array('scope'=>$scope, 'limit'=>0, 'order'=>$order, 'bookings'=>true, 'owner' => $owner ) );
+	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>$limit, 'offset' => $offset, 'order'=>$order, 'bookings'=>true, 'owner' => $owner, 'pagination' => 1 ) );
+	$events_count = EM_Events::$num_rows_found;
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );
 	?>

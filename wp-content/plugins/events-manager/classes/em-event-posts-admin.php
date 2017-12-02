@@ -22,10 +22,14 @@ class EM_Event_Posts_Admin{
 			$row_action_type = is_post_type_hierarchical( EM_POST_TYPE_EVENT ) ? 'page_row_actions' : 'post_row_actions';
 			add_filter($row_action_type, array('EM_Event_Posts_Admin','row_actions'),10,2);
 			add_action('admin_head', array('EM_Event_Posts_Admin','admin_head'));
-			//collumns
-			add_filter('manage_edit-'.EM_POST_TYPE_EVENT.'_columns' , array('EM_Event_Posts_Admin','columns_add'));
-			add_filter('manage_'.EM_POST_TYPE_EVENT.'_posts_custom_column' , array('EM_Event_Posts_Admin','columns_output'),10,2 );
+			
+			if( empty($_GET['orderby']) ) $_GET['orderby'] = 'date-time';
+			if( empty($_GET['order']) ) $_GET['order'] = 'asc';
 		}
+		//collumns
+		add_filter('manage_edit-'.EM_POST_TYPE_EVENT.'_columns' , array('EM_Event_Posts_Admin','columns_add'));
+		add_filter('manage_'.EM_POST_TYPE_EVENT.'_posts_custom_column' , array('EM_Event_Posts_Admin','columns_output'),10,2 );
+		add_filter('manage_edit-'.EM_POST_TYPE_EVENT.'_sortable_columns', array('EM_Event_Posts_Admin','sortable_columns') );
 		//clean up the views in the admin selection area - WIP
 		//add_filter('views_edit-'.EM_POST_TYPE_EVENT, array('EM_Event_Posts_Admin','restrict_views'),10,2);
 		//add_filter('views_edit-event-recurring', array('EM_Event_Posts_Admin','restrict_views'),10,2);
@@ -265,6 +269,12 @@ class EM_Event_Posts_Admin{
 		}
 		return $actions;
 	}
+	
+	public static function sortable_columns( $columns ){
+		$columns['date-time'] = 'date-time';
+		return $columns;
+	}
+	
 }
 add_action('admin_init', array('EM_Event_Posts_Admin','init'));
 
@@ -285,14 +295,15 @@ class EM_Event_Recurring_Posts_Admin{
 			//notices			
 			add_action('admin_notices',array('EM_Event_Recurring_Posts_Admin','admin_notices'));
 			add_action('admin_head', array('EM_Event_Recurring_Posts_Admin','admin_head'));
-			//collumns
-			add_filter('manage_edit-event-recurring_columns' , array('EM_Event_Recurring_Posts_Admin','columns_add'));
-			add_filter('manage_posts_custom_column' , array('EM_Event_Recurring_Posts_Admin','columns_output'),10,1 );
-			add_action('restrict_manage_posts', array('EM_Event_Posts_Admin','restrict_manage_posts'));
 			//actions
 			$row_action_type = is_post_type_hierarchical( EM_POST_TYPE_EVENT ) ? 'page_row_actions' : 'post_row_actions';
 			add_filter($row_action_type, array('EM_Event_Recurring_Posts_Admin','row_actions'),10,2);
 		}
+		//collumns
+		add_filter('manage_edit-event-recurring_columns' , array('EM_Event_Recurring_Posts_Admin','columns_add'));
+		add_filter('manage_posts_custom_column' , array('EM_Event_Recurring_Posts_Admin','columns_output'),10,1 );
+		add_action('restrict_manage_posts', array('EM_Event_Posts_Admin','restrict_manage_posts'));
+		add_filter( 'manage_edit-event-recurring_sortable_columns', array('EM_Event_Posts_Admin','sortable_columns') );
 	}
 	
 	public static function admin_notices(){

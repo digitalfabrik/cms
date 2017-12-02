@@ -7,7 +7,7 @@ function em_admin_menu(){
 		$bookings_num = '';
 		$bookings_pending_count = apply_filters('em_bookings_pending_count',0);
 		if( get_option('dbem_bookings_approval') == 1){ 
-			$bookings_pending_count += count(EM_Bookings::get(array('status'=>'0', 'blog'=>get_current_blog_id()))->bookings);
+			$bookings_pending_count += EM_Bookings::count(array('status'=>'0', 'blog'=>get_current_blog_id()));
 		}
 		if($bookings_pending_count > 0){
 			$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
@@ -173,7 +173,7 @@ function em_admin_warnings() {
 			<?php
 		}
 	
-		if( is_multisite() && !empty($_REQUEST['page']) && $_REQUEST['page']=='events-manager-options' && is_super_admin() && get_option('dbem_ms_update_nag') ){
+		if( is_multisite() && !empty($_REQUEST['page']) && $_REQUEST['page']=='events-manager-options' && em_wp_is_super_admin() && get_option('dbem_ms_update_nag') ){
 			if( !empty($_GET['disable_dbem_ms_update_nag']) ){
 				delete_site_option('dbem_ms_update_nag');
 			}else{
@@ -185,7 +185,7 @@ function em_admin_warnings() {
 			}
 		}
 		
-		if( is_super_admin() && get_option('dbem_migrate_images_nag') ){
+		if( em_wp_is_super_admin() && get_option('dbem_migrate_images_nag') ){
 			if( !empty($_GET['disable_dbem_migrate_images_nag']) ){
 				delete_site_option('dbem_migrate_images_nag');
 			}else{

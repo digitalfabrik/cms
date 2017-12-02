@@ -30,13 +30,9 @@ class WPML_TM_Words_Count_Box_UI extends WPML_Templates_Factory {
 	public function get_model() {
 		$model = array(
 			'strings' => array(
-				'title'               => __( 'Translation Cost Estimate', 'wpml-translation-management' ),
-				'messages'            => array(
-					__( 'To estimate the total cost of translating your site, use the word count tool.', 'wpml-translation-management' ),
-					__( 'Get the total volume of text to translate and multiply it by the cost per word.', 'wpml-translation-management' ),
-				),
+				'message'            => __( 'To estimate the total cost of translating your site, use the word count tool', 'wpml-translation-management' ),
 				'openDialogButton'    => __( 'Word count tool', 'wpml-translation-management' ),
-				'openDialogButtonURL' => '#',
+				'openDialogButtonURL' => '',
 				'callToAction'        => array(
 					'Title'    => _x( 'Need help translating?', 'Need help translating?: 00 Title', 'wpml-translation-management' ),
 					'Text'     => _x( "Find the service that's right for you, among", 'Need help translating?: 01 Sentence begins', 'wpml-translation-management' ),

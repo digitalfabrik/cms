@@ -11,13 +11,14 @@ if( user_can($bp->displayed_user->id,'edit_events') ){
 		'format_header' => get_option('dbem_bp_events_list_format_header'),
 		'format' => get_option('dbem_bp_events_list_format'),
 		'format_footer' => get_option('dbem_bp_events_list_format_footer'),
+		'no_results_msg' => false,
 		'owner' => $bp->displayed_user->id,
 		'pagination'=>1
 	);
 	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
-	if( EM_Events::count($args) > 0 ){
-		echo EM_Events::output($args);
-	}else{
+	echo EM_Events::output($args);
+	if( EM_Events::$num_rows_found == 0 ){
+		//no events output on last function
 		?>
 		<p><?php _e('No Events', 'events-manager'); ?>.
 		<?php if( get_current_user_id() == $bp->displayed_user->id ): ?> 

@@ -10,6 +10,8 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 	 *
 	 * @param WPML_Translation_Job_Factory $job_factory
 	 * @param int                          $job_id
+	 *
+	 * @throws \InvalidArgumentException
 	 */
 	public function __construct( &$job_factory, $job_id ) {
 		parent::__construct( $job_factory );
@@ -23,15 +25,16 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 	 * Returns an array containing job fields
 	 *
 	 * @return array
+	 * @throws \RuntimeException
 	 */
 	public function run() {
 		try {
-			$job = $this->job_factory->get_translation_job( $this->job_id );
+			$job = $this->job_factory->get_translation_job( $this->job_id, false, 1 );
 			if ( ! $job ) {
-				throw new Exception( 'No job found for id: ' . $this->job_id );
+				throw new RuntimeException( 'No job found for id: ' . $this->job_id );
 			}
 
-			return $this->content_from_elements( $job->elements );
+			return $this->content_from_elements( $job );
 		} catch ( Exception $e ) {
 			throw new RuntimeException(
 				'Could not retrieve field contents for job_id: ' . $this->job_id,
@@ -43,24 +46,57 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 	/**
 	 * Extracts the to be retrieved content from given job elements
 	 *
-	 * @param array $elements
+	 * @param stdClass $job
 	 *
 	 * @return array
 	 */
-	private function content_from_elements( array $elements ) {
+	private function content_from_elements( $job ) {
+		/**
+		 * @var array    $elements
+		 * @var array    $previous_version_element
+		 * @var stdClass $element
+		 */
+
+		$elements                  = $job->elements;
+		$previous_version_elements = isset( $job->prev_version ) ? $job->prev_version->elements : array();
 		$data = array();
-		foreach ( $elements as $element ) {
+		foreach ( $elements as $index => $element ) {
+			$previous_element = null;
+			if ( array_key_exists( $index, $previous_version_elements ) ) {
+				$previous_element = $previous_version_elements[ $index ];
+			}
 			$data[] = array(
-				'field_type'            => sanitize_title( $element->field_type ),
+				'field_type'            => sanitize_title( str_replace( WPML_Element_Translation_Package::CUSTOM_FIELD_KEY_SEPARATOR, '-', $element->field_type ) ),
 				'tid'                   => $element->tid,
 				'field_style'           => $element->field_type === 'body' ? '2' : '0',
 				'field_finished'        => $element->field_finished,
 				'field_data'            => $this->sanitize_field_content( $element->field_data ),
-				'field_data_translated' => $this->sanitize_field_content( $element->field_data_translated )
+				'field_data_translated' => $this->sanitize_field_content( $element->field_data_translated ),
+				'diff'                  => $this->get_diff( $element, $previous_element ),
 			);
 		}
 
 		return $data;
+	}
+
+	private function has_diff( $element, $previous_element ) {
+		if ( null === $previous_element ) {
+			return false;
+		}
+		$current_data  = $this->sanitize_field_content( $element->field_data );
+		$previous_data = $this->sanitize_field_content( $previous_element->field_data );
+
+		return $current_data !== $previous_data;
+	}
+
+	private function get_diff( $element, $previous_element ) {
+		if ( null === $previous_element || ! $this->has_diff( $element, $previous_element ) ) {
+			return null;
+		}
+		$current_data  = $this->sanitize_field_content( $element->field_data );
+		$previous_data = $this->sanitize_field_content( $previous_element->field_data );
+
+		return wp_text_diff( $previous_data, $current_data, $element->field_format );
 	}
 
 	/**
@@ -72,8 +108,14 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 	private function sanitize_field_content( $content ) {
 		$decoded = base64_decode( $content );
 
-		return strpos( $decoded,
-			"\n" ) !== false ? wpautop( $decoded )
-			: $decoded;
+		if ( ! $this->is_html( $decoded ) && false !== strpos( $decoded, '\n' ) ) {
+			$decoded = wpautop( $decoded );
+		}
+
+		return $decoded;
+	}
+
+	private function is_html( $string ) {
+		return $string !== strip_tags( $string );
 	}
 }

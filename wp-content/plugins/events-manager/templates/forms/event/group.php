@@ -3,7 +3,7 @@ global $EM_Event;
 if( !function_exists('bp_is_active') || !bp_is_active('groups') ) return false;
 $user_groups = array();
 $group_data = groups_get_user_groups(get_current_user_id());
-if( !is_super_admin() ){
+if( !em_wp_is_super_admin() ){
 	foreach( $group_data['groups'] as $group_id ){
 		if( groups_is_user_admin(get_current_user_id(), $group_id) ){
 			$user_groups[] = groups_get_group( array('group_id'=>$group_id)); 
@@ -39,7 +39,7 @@ if( count($user_groups) > 0 ){
 	<br />
 	<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking.', 'events-manager')?></em>
 	</p>
-	<?php if( is_super_admin() ): ?>
+	<?php if( em_wp_is_super_admin() ): ?>
 	<p><em><?php _e ( 'As a site admin, you see all group events, users will only be able to choose groups they are admins of.', 'events-manager')?></em></p>
 	<?php endif; 
 	

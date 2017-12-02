@@ -64,7 +64,7 @@
 			<tbody class="em-event-page-options">
 				<?php 
 				em_options_radio_binary ( __( 'Show events search?', 'events-manager'), 'dbem_events_page_search_form', __( "If set to yes, a search form will appear just above your list of events.", 'events-manager') );
-				em_options_radio_binary ( __( 'Display calendar in events page?', 'events-manager'), 'dbem_display_calendar_in_events_page', __( 'This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page.','events-manager').' '.__('If you would like to show events that span over more than one day, see the Calendar section on this page.','events-manager') );
+				em_options_radio_binary ( __( 'Display calendar in events page?', 'events-manager'), 'dbem_display_calendar_in_events_page', __( 'This options allows to display the full-sized calendar on the events page, instead of the default list.','events-manager') );
 				em_options_radio_binary ( __( 'Disable title rewriting?', 'events-manager'), 'dbem_disable_title_rewrites', __( "Some WordPress themes don't follow best practices when generating navigation menus, and so the automatic title rewriting feature may cause problems, if your menus aren't working correctly on the event pages, try setting this to 'Yes', and provide an appropriate HTML title format below.",'events-manager') );
 				em_options_input_text ( __( 'Event Manager titles', 'events-manager'), 'dbem_title_html', __( "This only setting only matters if you selected 'Yes' to above. You will notice the events page titles aren't being rewritten, and you have a new title underneath the default page name. This is where you control the HTML of this title. Make sure you keep the #_PAGETITLE placeholder here, as that's what is rewritten by events manager. To control what's rewritten in this title, see settings further down for page titles.", 'events-manager') );
 				?>				
@@ -143,14 +143,14 @@
 		   		<td>   
 					<select name="dbem_events_default_orderby" >
 						<?php 
-							$orderby_options = apply_filters('em_settings_events_default_orderby_ddm', array(
+							$event_list_orderby_options = apply_filters('em_settings_events_default_orderby_ddm', array(
 								'event_start_date,event_start_time,event_name' => __('Order by start date, start time, then event name','events-manager'),
 								'event_name,event_start_date,event_start_time' => __('Order by name, start date, then start time','events-manager'),
 								'event_name,event_end_date,event_end_time' => __('Order by name, end date, then end time','events-manager'),
 								'event_end_date,event_end_time,event_name' => __('Order by end date, end time, then event name','events-manager'),
 							)); 
 						?>
-						<?php foreach($orderby_options as $key => $value) : ?>   
+						<?php foreach($event_list_orderby_options as $key => $value) : ?>   
 		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_orderby')) ? "selected='selected'" : ''; ?>>
 		 					<?php echo esc_html($value); ?>
 		 				</option>
@@ -160,7 +160,7 @@
 						<?php 
 						$ascending = __('Ascending','events-manager');
 						$descending = __('Descending','events-manager');
-						$order_options = apply_filters('em_settings_events_default_order_ddm', array(
+						$event_list_order_options = apply_filters('em_settings_events_default_order_ddm', array(
 							'ASC' => __('All Ascending','events-manager'),
 							'DESC,ASC,ASC' => __("$descending, $ascending, $ascending",'events-manager'),
 							'DESC,DESC,ASC' => __("$descending, $descending, $ascending",'events-manager'),
@@ -171,7 +171,7 @@
 							'DESC,ASC,DESC' => __("$descending, $ascending, $descending",'events-manager'),
 						)); 
 						?>
-						<?php foreach( $order_options as $key => $value) : ?>   
+						<?php foreach( $event_list_order_options as $key => $value) : ?>   
 		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_order')) ? "selected='selected'" : ''; ?>>
 		 					<?php echo esc_html($value); ?>
 		 				</option>
@@ -202,6 +202,35 @@
         	em_options_input_text( __('Post Classes','events-manager'), 'dbem_cp_locations_post_class', $post_class_tip );
         	em_options_radio_binary ( __( 'Override with Formats?', 'events-manager'), 'dbem_cp_locations_formats', sprintf($format_override_tip,__('locations','events-manager')));
         	em_options_radio_binary ( __( 'Enable Comments?', 'events-manager'), 'dbem_cp_locations_comments', sprintf(__('If you would like to disable comments entirely, disable this, otherwise you can disable comments on each single %s. Note that %s with comments enabled will still be until you resave them.','events-manager'),__('location','events-manager'),__('locations','events-manager')));
+        	?>
+			<tr class="em-header">
+				<td colspan="2">
+					<h4><?php echo sprintf(esc_html__('Default %s list options','events-manager'), __('event','events-manager')); ?></h4>
+					<p><?php echo sprintf(esc_html__('The options below are applied to the %s placeholders.', 'events-manager'), '<code>#_LOCATIONNEXTEVENTS</code>, <code>#_LOCATIONPASTEVENTS</code>, <code>#_LOCATIONALLEVENTS</code>'); ?></p>
+				</td>
+			</tr>
+			<tr valign="top" id='dbem_location_events_default_orderby_row'>
+		   		<th scope="row"><?php _e('Default event list ordering','events-manager'); ?></th>
+		   		<td>   
+					<select name="dbem_location_event_list_orderby" >
+						<?php foreach($event_list_orderby_options as $key => $value) : ?>   
+		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_location_event_list_orderby')) ? "selected='selected'" : ''; ?>>
+		 					<?php echo esc_html($value); ?>
+		 				</option>
+						<?php endforeach; ?>
+					</select> 
+					<select name="dbem_location_event_list_order" >
+						<?php foreach( $event_list_order_options as $key => $value) : ?>   
+		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_location_event_list_order')) ? "selected='selected'" : ''; ?>>
+		 					<?php echo esc_html($value); ?>
+		 				</option>
+						<?php endforeach; ?>
+					</select>
+					<br/>
+					<em><?php _e('When Events Manager displays lists of events the default behavior is ordering by start date in ascending order. To change this, modify the values above.','events-manager'); ?></em>
+				</td>
+		   	</tr>
+			<?php
 			em_options_input_text ( __( 'Event List Limits', 'events-manager'), 'dbem_location_event_list_limit', sprintf(__( "Controls how many events being held at a location are shown per page when using placeholders such as %s. Leave blank for no limit.", 'events-manager'), '<code>#_LOCATIONNEXTEVENTS</code>') );
         	echo $save_button;
 			?>
@@ -242,13 +271,13 @@
 			   		<td>   
 						<select name="dbem_locations_default_archive_orderby" >
 							<?php 
-								$orderby_options = apply_filters('em_settings_locations_default_archive_orderby_ddm', array(
+								$locations_list_orderby_options = apply_filters('em_settings_locations_default_archive_orderby_ddm', array(
 									'_location_country' => sprintf(__('Order by %s','events-manager'),__('Country','events-manager')),
 									'_location_town' => sprintf(__('Order by %s','events-manager'),__('Town','events-manager')),
 									'title' => sprintf(__('Order by %s','events-manager'),__('Name','events-manager'))
 								)); 
 							?>
-							<?php foreach($orderby_options as $key => $value) : ?>   
+							<?php foreach($locations_list_orderby_options as $key => $value) : ?>   
 			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
 			 					<?php echo esc_html($value) ?>
 			 				</option>
@@ -258,12 +287,12 @@
 							<?php 
 							$ascending = __('Ascending','events-manager');
 							$descending = __('Descending','events-manager');
-							$order_options = apply_filters('em_settings_locations_default_archive_order_ddm', array(
+							$locations_list_order_options = apply_filters('em_settings_locations_default_archive_order_ddm', array(
 								'ASC' => __('Ascending','events-manager'),
 								'DESC' => __('Descending','events-manager')
 							)); 
 							?>
-							<?php foreach( $order_options as $key => $value) : ?>   
+							<?php foreach( $locations_list_order_options as $key => $value) : ?>   
 			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_archive_order')) ? "selected='selected'" : ''; ?>>
 			 					<?php echo esc_html($value) ?>
 			 				</option>
@@ -293,13 +322,13 @@
 		   		<td>   
 					<select name="dbem_locations_default_orderby" >
 						<?php 
-							$orderby_options = apply_filters('em_settings_locations_default_orderby_ddm', array(
+							$locations_list_orderby_options = apply_filters('em_settings_locations_default_orderby_ddm', array(
 								'location_country' => sprintf(__('Order by %s','events-manager'),__('Country','events-manager')),
 								'location_town' => sprintf(__('Order by %s','events-manager'),__('Town','events-manager')),
 								'location_name' => sprintf(__('Order by %s','events-manager'),__('Name','events-manager'))
 							)); 
 						?>
-						<?php foreach($orderby_options as $key => $value) : ?>
+						<?php foreach($locations_list_orderby_options as $key => $value) : ?>
 		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_orderby')) ? "selected='selected'" : ''; ?>>
 		 					<?php echo esc_html($value) ?>
 		 				</option>
@@ -309,12 +338,12 @@
 						<?php 
 						$ascending = __('Ascending','events-manager');
 						$descending = __('Descending','events-manager');
-						$order_options = apply_filters('em_settings_locations_default_order_ddm', array(
+						$locations_list_order_options = apply_filters('em_settings_locations_default_order_ddm', array(
 							'ASC' => __('Ascending','events-manager'),
 							'DESC' => __('Descending','events-manager')
 						)); 
 						?>
-						<?php foreach( $order_options as $key => $value) : ?>   
+						<?php foreach( $locations_list_order_options as $key => $value) : ?>   
 		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_order')) ? "selected='selected'" : ''; ?>>
 		 					<?php echo esc_html($value) ?>
 		 				</option>
@@ -357,13 +386,14 @@
 			<tr class="em-header">
 				<td colspan="2">
 					<h4><?php echo _e('General settings','events-manager'); ?></h4>
+					<p><?php echo esc_html(sprintf(__('Viewing a general WordPress taxonomy page such as %s will show a list of events just like it would regular posts for a regular category or tag. Below you can edit things such as the order events are displayed, or completely override the archive look with our formats feature.','events-manager'), __('categories', 'events-manager'))); ?></p>
 				</td>
 			</tr>
 			<?php
-			em_options_radio_binary ( __( 'Override with Formats?', 'events-manager'), 'dbem_cp_categories_formats', sprintf($format_override_tip,__('categories','events-manager'))." ".__('Setting this to yes will make categories display as a page rather than an archive.', 'events-manager'));
+			em_options_radio_binary ( __( 'Override with Formats?', 'events-manager'), 'dbem_cp_categories_formats', sprintf($format_override_tip,__('categories','events-manager'))." ".__('Setting this to yes will make categories display as a page rather than an archive.', 'events-manager'), '', '.em-default-categories-archive-ordering', true);
 			?>
-			<tr valign="top">
-		   		<th scope="row"><?php _e('Default archive ordering','events-manager'); ?></th>
+			<tr valign="top" class="em-default-categories-archive-ordering">
+		   		<th scope="row"><?php _e('Default event archive ordering','events-manager'); ?></th>
 		   		<td>   
 					<select name="dbem_categories_default_archive_orderby" >
 						<?php foreach($event_archive_orderby_options as $key => $value) : ?>   
@@ -379,7 +409,7 @@
 		 				</option>
 						<?php endforeach; ?>
 					</select>
-					<br /><?php echo __('When listing events for a category, this order is applied.', 'events-manager'); ?>
+					<br /><?php echo esc_html(sprintf(__('When listing event archives for a %s, this order is applied.', 'events-manager'), __('category', 'events-manager'))); ?>
 				</td>
 		   	</tr>
 			<tr class="em-header">
@@ -393,7 +423,7 @@
 		   		<td>   
 					<select name="dbem_categories_default_orderby" >
 						<?php 
-							$orderby_options = apply_filters('em_settings_categories_default_orderby_ddm', array(
+							$categories_list_orderby_options = apply_filters('em_settings_categories_default_orderby_ddm', array(
 								'id' => sprintf(__('Order by %s','events-manager'),__('ID','events-manager')),
 								'count' => sprintf(__('Order by %s','events-manager'),__('Count','events-manager')),
 								'name' => sprintf(__('Order by %s','events-manager'),__('Name','events-manager')),
@@ -401,7 +431,7 @@
 								'term_group' => sprintf(__('Order by %s','events-manager'),'term_group'),
 							)); 
 						?>
-						<?php foreach($orderby_options as $key => $value) : ?>
+						<?php foreach($categories_list_orderby_options as $key => $value) : ?>
 		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_categories_default_orderby')) ? "selected='selected'" : ''; ?>>
 		 					<?php echo esc_html($value) ?>
 		 				</option>
@@ -411,12 +441,12 @@
 						<?php 
 						$ascending = __('Ascending','events-manager');
 						$descending = __('Descending','events-manager');
-						$order_options = apply_filters('em_settings_categories_default_order_ddm', array(
+						$categories_list_order_options = apply_filters('em_settings_categories_default_order_ddm', array(
 							'ASC' => __('Ascending','events-manager'),
 							'DESC' => __('Descending','events-manager')
 						)); 
 						?>
-						<?php foreach( $order_options as $key => $value) : ?>   
+						<?php foreach( $categories_list_order_options as $key => $value) : ?>   
 		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_categories_default_order')) ? "selected='selected'" : ''; ?>>
 		 					<?php echo esc_html($value) ?>
 		 				</option>
@@ -427,8 +457,37 @@
 		   	</tr>
 			<?php
 			em_options_input_text ( __( 'List Limits', 'events-manager'), 'dbem_categories_default_limit', sprintf(__( "This will control how many %s are shown on one list by default.", 'events-manager'),__('categories','events-manager')) );
+			?>
+			<tr class="em-header">
+				<td colspan="2">
+					<h4><?php echo sprintf(esc_html__('Default %s list options','events-manager'), __('event','events-manager')); ?></h4>
+					<p><?php echo sprintf(esc_html__('The options below are applied to the %s placeholders.', 'events-manager'), '<code>#_CATEGORYPASTEVENTS</code>, <code>#_CATEGORYNEXTEVENTS</code>, <code>#_CATEGORYALLEVENTS</code>'); ?></p>
+				</td>
+			</tr>							
+			<tr valign="top" id='dbem_category_events_default_orderby_row'>
+		   		<th scope="row"><?php _e('Default event list ordering','events-manager'); ?></th>
+		   		<td>   
+					<select name="dbem_category_event_list_orderby" >
+						<?php foreach($event_list_orderby_options as $key => $value) : ?>   
+		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_category_event_list_orderby')) ? "selected='selected'" : ''; ?>>
+		 					<?php echo esc_html($value); ?>
+		 				</option>
+						<?php endforeach; ?>
+					</select> 
+					<select name="dbem_category_event_list_order" >
+						<?php foreach( $event_list_order_options as $key => $value) : ?>   
+		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_category_event_list_order')) ? "selected='selected'" : ''; ?>>
+		 					<?php echo esc_html($value); ?>
+		 				</option>
+						<?php endforeach; ?>
+					</select>
+					<br/>
+					<em><?php _e('When Events Manager displays lists of events the default behavior is ordering by start date in ascending order. To change this, modify the values above.','events-manager'); ?></em>
+				</td>
+		   	</tr>
+			<?php
 			em_options_input_text ( __( 'Event List Limits', 'events-manager'), 'dbem_category_event_list_limit', sprintf(__( "Controls how many events belonging to a category are shown per page when using placeholders such as %s. Leave blank for no limit.", 'events-manager'), '<code>#_CATEGORYNEXTEVENTS</code>') );
-        	echo $save_button;
+			echo $save_button;
 			?>
         	</table>
 		</div> <!-- . inside --> 
@@ -461,13 +520,14 @@
 				<tr class="em-header">
 					<td colspan="2">
 						<h4><?php echo _e('General settings','events-manager'); ?></h4>
+						<p><?php echo esc_html(sprintf(__('Viewing a general WordPress taxonomy page such as %s will show a list of events just like it would regular posts for a regular category or tag. Below you can edit things such as the order events are displayed, or completely override the archive look with our formats feature.','events-manager'), __('tags', 'events-manager'))); ?></p>
 					</td>
 				</tr>
 				<?php
-				em_options_radio_binary ( __( 'Override with Formats?', 'events-manager'), 'dbem_cp_tags_formats', sprintf($format_override_tip,__('tags','events-manager')));
+				em_options_radio_binary ( __( 'Override with Formats?', 'events-manager'), 'dbem_cp_tags_formats', sprintf($format_override_tip,__('tags','events-manager')), '', '.em-default-tags-archive-ordering', true);
 				?>
-				<tr valign="top">
-			   		<th scope="row"><?php _e('Default archive ordering','events-manager'); ?></th>
+				<tr valign="top" class="em-default-tags-archive-ordering">
+			   		<th scope="row"><?php _e('Default event archive ordering','events-manager'); ?></th>
 			   		<td>   
 						<select name="dbem_tags_default_archive_orderby" >
 							<?php foreach($event_archive_orderby_options as $key => $value) : ?>   
@@ -483,6 +543,7 @@
 			 				</option>
 							<?php endforeach; ?>
 						</select>
+						<br /><?php echo esc_html(sprintf(__('When listing event archives for a %s, this order is applied.', 'events-manager'), __('tag', 'events-manager'))); ?>
 					</td>
 			   	</tr>	
 				<tr class="em-header">
@@ -496,7 +557,7 @@
 			   		<td>   
 						<select name="dbem_tags_default_orderby" >
 							<?php 
-								$orderby_options = apply_filters('em_settings_tags_default_orderby_ddm', array(
+								$tags_list_orderby_options = apply_filters('em_settings_tags_default_orderby_ddm', array(
 									'id' => sprintf(__('Order by %s','events-manager'),__('ID','events-manager')),
 									'count' => sprintf(__('Order by %s','events-manager'),__('Count','events-manager')),
 									'name' => sprintf(__('Order by %s','events-manager'),__('Name','events-manager')),
@@ -504,7 +565,7 @@
 									'term_group' => sprintf(__('Order by %s','events-manager'),'term_group'),
 								)); 
 							?>
-							<?php foreach($orderby_options as $key => $value) : ?>
+							<?php foreach($tags_list_orderby_options as $key => $value) : ?>
 			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tags_default_orderby')) ? "selected='selected'" : ''; ?>>
 			 					<?php echo esc_html($value) ?>
 			 				</option>
@@ -514,12 +575,12 @@
 							<?php 
 							$ascending = __('Ascending','events-manager');
 							$descending = __('Descending','events-manager');
-							$order_options = apply_filters('em_settings_tags_default_order_ddm', array(
+							$tags_list_order_options = apply_filters('em_settings_tags_default_order_ddm', array(
 								'ASC' => __('Ascending','events-manager'),
 								'DESC' => __('Descending','events-manager')
 							)); 
 							?>
-							<?php foreach( $order_options as $key => $value) : ?>   
+							<?php foreach( $tags_list_order_options as $key => $value) : ?>   
 			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tags_default_order')) ? "selected='selected'" : ''; ?>>
 			 					<?php echo esc_html($value) ?>
 			 				</option>
@@ -530,6 +591,35 @@
 			   	</tr>
 				<?php
 				em_options_input_text ( __( 'List Limits', 'events-manager'), 'dbem_tags_default_limit', sprintf(__( "This will control how many %s are shown on one list by default.", 'events-manager'),__('tags','events-manager')) );
+				?>
+				<tr class="em-header">
+					<td colspan="2">
+						<h4><?php echo sprintf(esc_html__('Default %s list options','events-manager'), __('event','events-manager')); ?></h4>
+						<p><?php echo sprintf(esc_html__('The options below are applied to the %s placeholders.', 'events-manager'), '<code>#_TAGPASTEVENTS</code>, <code>#_TAGNEXTEVENTS</code>, <code>#_TAGALLEVENTS</code>'); ?></p>
+					</td>
+				</tr>
+				<tr valign="top" id='dbem_tag_events_default_orderby_row'>
+			   		<th scope="row"><?php _e('Default event list ordering','events-manager'); ?></th>
+			   		<td>   
+						<select name="dbem_tag_event_list_orderby" >
+							<?php foreach($event_list_orderby_options as $key => $value) : ?>   
+			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tag_event_list_orderby')) ? "selected='selected'" : ''; ?>>
+			 					<?php echo esc_html($value); ?>
+			 				</option>
+							<?php endforeach; ?>
+						</select> 
+						<select name="dbem_tag_event_list_order" >
+							<?php foreach( $event_list_order_options as $key => $value) : ?>   
+			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tag_event_list_order')) ? "selected='selected'" : ''; ?>>
+			 					<?php echo esc_html($value); ?>
+			 				</option>
+							<?php endforeach; ?>
+						</select>
+						<br/>
+						<em><?php _e('When Events Manager displays lists of events the default behavior is ordering by start date in ascending order. To change this, modify the values above.','events-manager'); ?></em>
+					</td>
+			   	</tr>
+				<?php
 				em_options_input_text ( __( 'Event List Limits', 'events-manager'), 'dbem_tag_event_list_limit', sprintf(__( "Controls how many events belonging to a tag are shown per page when using placeholders such as %s. Leave blank for no limit.", 'events-manager'), '<code>#_TAGNEXTEVENTS</code>') );
 		   		echo $save_button; ?>
             </table>					    

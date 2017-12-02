@@ -7,7 +7,7 @@ class EM_Calendar extends EM_Object {
 	
 	public static function get( $args ){
 	
-	 	global $wpdb; 
+		global $wpdb, $wp_rewrite;
 	 	
 		$calendar_array = array();
 		$calendar_array['cells'] = array();
@@ -32,8 +32,7 @@ class EM_Calendar extends EM_Object {
 		$long_events = $args['long_events'];
 		$limit = $args['limit']; //limit arg will be used per day and not for events search
 		
-		$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
-	   	$start_of_week = get_option('start_of_week');
+		$start_of_week = get_option('start_of_week');
 		
 		if( !(is_numeric($month) && $month <= 12 && $month > 0) )   {
 			$month = date('m', current_time('timestamp')); 
@@ -158,9 +157,16 @@ class EM_Calendar extends EM_Object {
 		}
 	   
 		$days_initials_array = array();
-		foreach($weekdays as $weekday) {
-			$days_initials_array[] = esc_html(self::translate_and_trim($weekday, $day_initials_length));
-		} 
+		//translate day names, some languages may have special circumstances
+		if( $day_initials_length == 1 && in_array(EM_ML::$current_language, array('zh_CN', 'zh_TW')) ){
+			//Chinese single initial day names are different
+			$days_initials_array = array('日','一','二','三','四','五','六');
+		}else{
+			//all other languages
+			foreach($weekdays as $weekday) {
+				$days_initials_array[] = esc_html(self::translate_and_trim($weekday, $day_initials_length));
+			}
+		}
 		
 		$calendar_array['links'] = array( 'previous_url'=>$previous_url, 'next_url'=>$next_url);
 		$calendar_array['row_headers'] = $days_initials_array;
@@ -279,6 +285,18 @@ class EM_Calendar extends EM_Object {
 		}
 		//generate a link argument string containing event search only
 		$day_link_args = self::get_query_args( array_intersect_key($original_args, EM_Events::get_post_search($args, true) ));
+		//get event link 
+		if( get_option("dbem_events_page") > 0 ){
+			$event_page_link = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
+		}else{
+			if( $wp_rewrite->using_permalinks() ){
+				$event_page_link = trailingslashit(home_url()).EM_POST_TYPE_EVENT_SLUG.'/'; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+			}else{
+			    //not needed atm anyway, but we use esc_url later on, in case you're wondering ;) 
+				$event_page_link = add_query_arg(array('post_type'=>EM_POST_TYPE_EVENT), home_url()); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+			}
+		}
+		$event_page_link_parts = explode('?', $event_page_link); //in case we have other plugins (e.g. WPML) adding querystring params to the end 
 		foreach($eventful_days as $day_key => $events) {
 			if( array_key_exists($day_key, $calendar_array['cells']) ){
 				//Get link title for this date
@@ -294,20 +312,10 @@ class EM_Calendar extends EM_Object {
 				$calendar_array['cells'][$day_key]['link_title'] = implode( $event_title_separator_format, $events_titles);
 							
 				//Get the link to this calendar day
-				global $wp_rewrite;
 				if( $eventful_days_count[$day_key] > 1 || !get_option('dbem_calendar_direct_links')  ){
-					if( get_option("dbem_events_page") > 0 ){
-						$event_page_link = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
-					}else{
-						if( $wp_rewrite->using_permalinks() ){
-							$event_page_link = trailingslashit(home_url()).EM_POST_TYPE_EVENT_SLUG.'/'; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
-						}else{
-						    //not needed atm anyway, but we use esc_url later on, in case you're wondering ;) 
-							$event_page_link = add_query_arg(array('post_type'=>EM_POST_TYPE_EVENT), home_url()); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
-						}
-					}
 					if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
-						$calendar_array['cells'][$day_key]['link'] = trailingslashit($event_page_link).$day_key."/";
+						$calendar_array['cells'][$day_key]['link'] = trailingslashit($event_page_link_parts[0]).$day_key."/";
+						if( !empty($event_page_link_parts[1]) ) $calendar_array['cells'][$day_key]['link'] .= '?' . $event_page_link_parts[1];
     					//add query vars to end of link
     					if( !empty($day_link_args) ){
     						$calendar_array['cells'][$day_key]['link'] = esc_url_raw(add_query_arg($day_link_args, $calendar_array['cells'][$day_key]['link']));
@@ -434,6 +442,7 @@ class EM_Calendar extends EM_Object {
 	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
 		//These defaults aren't for db queries, but flags for what to display in calendar output
 		$defaults = array( 
+			'recurring' => false, //we don't initially look for recurring events only events and recurrences of recurring events
 			'full' => 0, //Will display a full calendar with event names
 			'long_events' => 0, //Events that last longer than a day
 			'scope' => false,

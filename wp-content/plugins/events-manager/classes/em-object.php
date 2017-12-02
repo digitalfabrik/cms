@@ -28,26 +28,32 @@ class EM_Object {
 			'scope' => 'future',
 			'order' => 'ASC', //hard-coded at end of this function
 			'orderby' => false,
+			'groupby' => false,
+			'groupby_orderby' => false,
+			'groupby_order' => 'ASC',
 			'format' => '', 
 			'format_header' => '', //custom html above the list
 			'format_footer' => '', //custom html below the list
+			'no_results_msg' => '', //default message if no results used in output() function
 			'category' => 0,
 			'tag' => 0,
 			'location' => false,
-			'event' => false, 
+			'event' => false,
+			'event_status' => false, //automatically set to 'status' value if in EM_Events, useful only for EM_Locations
+			'location_status' => false,  //automatically set to 'status' value if in EM_Locations, useful only for EM_Events
 			'offset'=>0,
 			'page'=>1,//basically, if greater than 0, calculates offset at end
 			'page_queryvar'=>null,
-			'recurrence'=>0,
-			'recurrences'=>null,
-			'recurring'=>false,
+			'recurrence' => 0, //look for a specific recurrence by ID
+			'recurrences' => null, //if set, exclusively show (true) or omit (false) recurrences
+			'recurring' => null, //if set to 'include' it'll only show recurring event templates, if set to false, it'll omit them from results, null or true will include in results
 			'month'=>'',
 			'year'=>'',
 			'pagination'=>false,
 			'array'=>false,
 			'owner'=>false,
 			'rsvp'=>false, //deprecated for bookings
-			'bookings'=>false,
+			'bookings' => false, //if set to true, only events with bookings enabled are returned
 			'search'=>false,
 			'geo'=>false, //reserved for future searching via name
 			'near'=>false, //lat,lng coordinates in array or comma-separated format
@@ -102,13 +108,6 @@ class EM_Object {
 			if( !empty($array['country']) && is_string($array['country']) && preg_match('/^( ?.+ ?,?)+$/', $array['country']) ){
 			    $array['country'] = explode(',',$array['country']);
 			}
-			
-			//OrderBy - can be a comma-separated array of field names to order by (field names of object, not db)
-			if( array_key_exists('orderby', $array)){
-				if( !is_array($array['orderby']) && preg_match('/,/', $array['orderby']) ) {
-					$array['orderby'] = explode(',', $array['orderby']);
-				}
-			}
 			//TODO validate search query array
 			//Clean the supplied array, so we only have allowed keys
 			foreach( array_keys($array) as $key){
@@ -149,22 +148,31 @@ class EM_Object {
 				$defaults['scope'] = $super_defaults['scope'];
 			}
 		}
-		//Order - it's either ASC or DESC, so let's just validate
-		if( !is_array($defaults['order']) && preg_match('/,/', $defaults['order']) ) {
-			$defaults['order'] = explode(',', $defaults['order']);
-		}elseif( !in_array($defaults['order'], array('ASC','DESC','asc','desc')) ){
-			$defaults['order'] = $super_defaults['order'];
+		//ORDER and GROUP BY ORDER - split up string array, if just text do a quick validation and set to default if upon failure
+		foreach( array('order', 'groupby_order') as $order_arg ){
+			if( !is_array($defaults[$order_arg]) && preg_match('/,/', $defaults[$order_arg]) ) {
+				$defaults[$order_arg] = str_replace(' ', '', $defaults[$order_arg]);
+				$defaults[$order_arg] = explode(',', $defaults[$order_arg]);
+			}elseif( !is_array($defaults[$order_arg]) && !in_array($defaults[$order_arg], array('ASC','DESC','asc','desc')) ){
+				$defaults[$order_arg] = $super_defaults[$order_arg];
+			}
 		}
-		//ORDER BY, split if an array
-		if( !is_array($defaults['orderby']) && preg_match('/,/', $defaults['orderby']) ) {
-			$defaults['orderby'] = explode(',', $defaults['orderby']);
+		//ORDER BY, GROUP BY and GROUP BY ORDER ensure we have a valid array, splitting by commas if present
+		foreach( array('orderby', 'groupby', 'groupby_orderby') as $orderby_arg ){
+			if( !is_array($defaults[$orderby_arg]) && preg_match('/,/', $defaults[$orderby_arg]) ) {
+				$defaults[$orderby_arg] = str_replace(' ', '', $defaults[$orderby_arg]);
+				$defaults[$orderby_arg] = explode(',', $defaults[$orderby_arg]);
+			}elseif( !empty($defaults[$orderby_arg]) && !is_array($defaults[$orderby_arg]) ){
+				$defaults[$orderby_arg] = array($defaults[$orderby_arg]);
+			}
+			if( is_array($defaults[$orderby_arg]) ) $defaults[$orderby_arg] = array_values($defaults[$orderby_arg]); //reset array keys because we want an index 0 present
 		}
-		//TODO should we clean format of malicious code over here and run everything thorugh this?
+		//TODO should we clean format of malicious code over here and run everything through this?
 		$defaults['array'] = ($defaults['array'] == true);
 		$defaults['pagination'] = ($defaults['pagination'] == true);
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
-		$defaults['recurring'] = $defaults['recurring'] === 'include' ?  $defaults['recurring']:($defaults['recurring'] == true);
+		if( $defaults['recurring'] !== null ) $defaults['recurring'] = $defaults['recurring'] === 'include' ?  $defaults['recurring']:($defaults['recurring'] == true);
 		$defaults['search'] = ($defaults['search']) ? trim($defaults['search']):false;
 		//Calculate offset if event page is set
 		if($defaults['page'] > 1){
@@ -206,21 +214,61 @@ class EM_Object {
 		$year = $args['year'];
 		$today = date('Y-m-d', current_time('timestamp'));
 		//Create the WHERE statement
+		$conditions = array();
+		
+		//Statuses - we search for the 'status' based on the context of current object (i.e. is it an event or location for the moment)
+		// if we define the alternative status such as location_status in event context, if set to true it matches the event 'status'
+		// if a specific status search value is given i.e. not true and not false then that's used to generate the right condition for that specific field
+		// e.g. if in events, search for 'publish' events and 0 location_status, it'll find events with a location pending review.
+		foreach( array('event_status', 'location_status') as $status_type ){
+			//find out whether the main status context we're after is an event or location i.e. are we running an events or location query
+			$is_location_status = $status_type == "location_status" && self::$context == EM_POST_TYPE_LOCATION;
+			$is_event_status = $status_type == "event_status" && self::$context == EM_POST_TYPE_EVENT;
+			//$is_joined_status decides whether this status we're dealing with is part of a joined table or the main table
+			$is_joined_status = (!$is_location_status || !$is_event_status) && $args[$status_type] !== false;
+			//we add a status condition if this is the main status context or if joining a table and joined status arg is not exactly false
+			if( $is_location_status || $is_event_status || $args[$status_type] !== false ){
+				$condition_status = $is_joined_status ? $status_type : 'status'; //the key for this condition type
+				//if this is the status belonging to the joined table, if set to true we match the main context status otherwise we check the specific status
+				$status_arg = $is_joined_status && $args[$status_type] !== true ? $args[$status_type] : $args['status'];
+				//if joining by event or location, we may mistakenly omit any results without a complementing event or location, we need to account for that here
+				//other parts of the condition can negate whether or not eventful locations or events with/without locations should be included
+				$conditions[$condition_status] = "(`{$status_type}` >= 0 )"; //shows pending & published if not defined
+				if( is_numeric($status_arg) ){
+					$conditions[$condition_status] = "(`{$status_type}`={$status_arg})"; //pending or published
+				}elseif( $status_arg == 'pending' ){
+				    $conditions[$condition_status] = "(`{$status_type}`=0)"; //pending
+				}elseif( $status_arg == 'publish' ){
+				    $conditions[$condition_status] = "(`{$status_type}`=1)"; //published
+				}elseif( $status_arg === null || $status_arg == 'draft' ){
+				    $conditions[$condition_status] = "(`{$status_type}` IS NULL )"; //show draft items
+				}elseif( $status_arg == 'trash' ){
+				    $conditions[$condition_status] = "(`{$status_type}` = -1 )"; //show trashed items
+				}elseif( $status_arg == 'all'){
+					$conditions[$condition_status] = "(`{$status_type}` >= 0 OR `{$status_type}` IS NULL)"; //search all statuses that aren't trashed
+				}elseif( $status_arg == 'everything'){
+					unset($conditions[$condition_status]); //search all statuses
+				}
+			}
+		}
 		
 		//Recurrences
-		$conditions = array();
 		if( $recurring ){
-			//we show recurring event templates here, if 'recurring' is 'include' then we show both recurring and normal events.
+			//we show recurring event templates as well within results, if 'recurring' is 'include' then we show both recurring and normal events.
 			if( $recurring !== 'include' ){
 				$conditions['recurring'] = "`recurrence`=1";
 			}
 		}elseif( $recurrence > 0 ){
 			$conditions['recurrence'] = $wpdb->prepare("`recurrence_id`=%d", $recurrence);
 		}else{
+			//we choose to either exclusively show or completely omit recurrences, if not set then both are shown
 		    if( $recurrences !== null ){
 		    	$conditions['recurrences'] = $recurrences ? "(`recurrence_id` > 0 )":"(`recurrence_id` IS NULL OR `recurrence_id`=0 )";
 		    }
-			$conditions['recurring'] = "(`recurrence`!=1 OR `recurrence` IS NULL)";			
+		    //if we get here and $recurring is not exactly null (meaning ignored), it was set to false or 0 meaning recurring events shouldn't be included
+		    if( $recurring !== null ){
+		    	$conditions['recurring'] = "(`recurrence`!=1 OR `recurrence` IS NULL)";
+		    }
 		}
 		//Dates - first check 'month', and 'year', and adjust scope if needed
 		if( !($month=='' && $year=='') ){
@@ -331,33 +379,34 @@ class EM_Object {
 		}
 		
 		//Filter by Location - can be object, array, or id
+		$location_id_table = self::$context == EM_POST_TYPE_EVENT ? $events_table:$locations_table;
 		if ( is_numeric($location) && $location > 0 ) { //Location ID takes precedence
-			$conditions['location'] = " {$locations_table}.location_id = $location";
+			$conditions['location'] = " {$location_id_table}.location_id = $location";
 		}elseif ( $location === 0 ) { //only helpful is searching events
 			$conditions['location'] = " {$events_table}.location_id = $location OR {$events_table}.location_id IS NULL";
 		}elseif ( self::array_is_numeric($location) ){
-			$conditions['location'] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location) .' )';
+			$conditions['location'] = "{$location_id_table}.location_id IN (" . implode(',', $location) .')';
 		}elseif ( is_object($location) && get_class($location)=='EM_Location' ){ //Now we deal with objects
-			$conditions['location'] = " {$locations_table}.location_id = $location->location_id";
+			$conditions['location'] = " {$location_id_table}.location_id = $location->location_id";
 		}elseif ( is_array($location) && @get_class(current($location)=='EM_Location') ){ //we can accept array of ids or EM_Location objects
 			foreach($location as $EM_Location){
 				$location_ids[] = $EM_Location->location_id;
 			}
-			$conditions['location'] = "( {$locations_table}.location_id=". implode(" {$locations_table}.location_id=", $location_ids) ." )";
+			$conditions['location'] = "{$location_id_table}.location_id IN (" . implode(',', $location_ids) .')';
 		}
 		
 		//Filter by Event - can be object, array, or id
 		if ( is_numeric($event) && $event > 0 ) { //event ID takes precedence
 			$conditions['event'] = " {$events_table}.event_id = $event";
 		}elseif ( self::array_is_numeric($event) ){ //array of ids
-			$conditions['event'] = "( {$events_table}.event_id = " . implode(" OR {$events_table}.event_id = ", $event) .' )';
+			$conditions['event'] = "{$events_table}.event_id IN (" . implode(',', $event) .')';
 		}elseif ( is_object($event) && get_class($event)=='EM_Event' ){ //Now we deal with objects
 			$conditions['event'] = " {$events_table}.event_id = $event->event_id";
 		}elseif ( is_array($event) && @get_class(current($event)=='EM_Event') ){ //we can accept array of ids or EM_event objects
 			foreach($event as $EM_Event){
 				$event_ids[] = $EM_Event->event_id;
 			}
-			$conditions['event'] = "( {$events_table}.event_id=". implode(" {$events_table}.event_id=", $event_ids) ." )";
+			$conditions['event'] = "{$events_table}.event_id IN (" . implode(',', $event_ids) .')';
 		}
 
 		//Location specific filters
@@ -502,6 +551,15 @@ class EM_Object {
 		//If we want rsvped items, we usually check the event
 		if( $bookings == 1 ){
 			$conditions['bookings'] = 'event_rsvp=1';
+		}elseif( $bookings === 'user' && is_user_logged_in()){
+			//get bookings of user
+			$EM_Person = new EM_Person(get_current_user_id());
+			$booking_ids = $EM_Person->get_bookings(true);
+			if( count($booking_ids) > 0 ){
+				$conditions['bookings'] = "(event_id IN (SELECT event_id FROM ".EM_BOOKINGS_TABLE." WHERE booking_id IN (".implode(',',$booking_ids).")))";
+			}else{
+				$conditions['bookings'] = "(event_id = 0)";
+			}
 		}
 		//Default ownership belongs to an event, child objects can just overwrite this if needed.
 		if( is_numeric($owner) ){
@@ -843,42 +901,114 @@ class EM_Object {
 		return apply_filters('em_object_build_wp_query_conditions', $wp_query);
 	}
 	
+	/**
+	 * Sanitizes the ORDER BY part of the SQL statement so only valid fields are supplied for ordering.
+	 * Also combines default orders which can be an array which is applied to each specific ordering field, or just one value applied to all ordering fields.
+	 * @uses EM_Object::build_sql_x_by_helper()
+	 * @param array $args
+	 * @param array $accepted_fields
+	 * @param string|array $default_order
+	 * @return array
+	 */
 	public static function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
 		//First, ORDER BY
-		$args = apply_filters('em_object_build_sql_orderby_args', $args);
-		$orderby = array();
-		if(is_array($args['orderby'])){
+		$args = apply_filters('em_object_build_sql_orderby_args', $args, $accepted_fields, $default_order );
+		$orderby = self::build_sql_x_by_helper($args['orderby'], $args['order'], $accepted_fields, $default_order);
+		return apply_filters('em_object_build_sql_orderby', $orderby, $args, $accepted_fields, $default_order );
+	}
+	
+	/**
+	 * Returns a set of further fields this query should be grouped by. Not required for straight-forward GROUP BY SQL queries. 
+	 * This is supplementary for build_sql_groupby in cases such as events, where ordering and grouping are mixed due to complex SQL sub-queries and partitions. 
+	 * @uses EM_Object::build_sql_x_by_helper()
+	 * @param unknown $args
+	 * @param unknown $accepted_fields
+	 * @param string $default_order
+	 * @return mixed|unknown
+	 */
+	public static function build_sql_groupby_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+		$args = apply_filters('em_object_build_sql_groupby_orderby_args', $args, $accepted_fields, $default_order );
+		$orderby = self::build_sql_x_by_helper($args['groupby_orderby'], $args['groupby_order'], $accepted_fields, $default_order);
+		return apply_filters('em_object_build_sql_groupby_orderby', $orderby, $args, $accepted_fields, $default_order );
+	}
+	
+	/**
+	 * Sanitizes the group by statement so it includes only accepted fields. Returns an array of valid field names to group by.
+	 * Optionally, if a $groupby_order value is provided then ASC/DESC values will be added to each field similar to EM_Object::build_sql_orderby
+	 * @uses EM_Object::build_sql_x_by_helper()
+	 * @param unknown $args
+	 * @param unknown $accepted_fields
+	 * @param string $groupby_order
+	 * @param string $default_order
+	 * @return mixed|unknown
+	 */
+	public static function build_sql_groupby( $args, $accepted_fields, $groupby_order = false, $default_order = 'ASC' ){
+		//First, ORDER BY
+		$args = apply_filters('em_object_build_sql_groupby_args', $args);
+		$groupby = self::build_sql_x_by_helper($args['groupby'], $groupby_order, $accepted_fields, $default_order);
+		return apply_filters('em_object_build_sql_groupby', $groupby, $args, $accepted_fields);
+	}
+	
+	/**
+	 * Helper for building arrays of fields 
+	 * @param unknown $x_by_field
+	 * @param unknown $order
+	 * @param unknown $accepted_fields
+	 * @param string $default_order
+	 * @return array
+	 */
+	protected static function build_sql_x_by_helper($x_by_field, $order, $accepted_fields, $default_order = 'ASC' ){
+		$x_by = array();
+		if(is_array($x_by_field)){
 			//Clean orderby array so we only have accepted values
-			foreach( $args['orderby'] as $key => $field ){
+			foreach( $x_by_field as $key => $field ){
 				if( array_key_exists($field, $accepted_fields) ){
-					$orderby[] = $accepted_fields[$field];
+					//maybe cases we're given an array where keys are shortcut names e.g. id => event_id - this way will be deprecated at one point
+					$x_by[] = $accepted_fields[$field];
 				}elseif( in_array($field,$accepted_fields) ){
-					$orderby[] = $field;
+					$x_by[] = $field;
 				}else{
-					unset($args['orderby'][$key]);
+					unset($x_by[$key]);
 				}
 			}
-		}elseif( $args['orderby'] != '' && array_key_exists($args['orderby'], $accepted_fields) ){
-			$orderby[] = $accepted_fields[$args['orderby']];
-		}elseif( $args['orderby'] != '' && in_array($args['orderby'], $accepted_fields) ){
-			$orderby[] = $args['orderby'];
+		}elseif( $x_by_field != '' && array_key_exists($x_by_field, $accepted_fields) ){
+			$x_by[] = $accepted_fields[$x_by_field];
+		}elseif( $x_by_field != '' && in_array($x_by_field, $accepted_fields) ){
+			$x_by[] = $x_by_field;
 		}
 		//ORDER
-		//If order is an array, we'll go through the orderby array and match the order values (in order of array) with orderby values
-		//If orders don't match up, or it's not ASC/DESC, the default events search in EM settings/options page will be used.
-		foreach($orderby as $i => $field){
-			$orderby[$i] .= ' ';
-			if(is_array($args['order'])){
-				if( in_array($args['order'][$i], array('ASC','DESC','asc','desc')) ){
-					$orderby[$i] .= $args['order'][$i];
+		if( $order !== false ){
+			foreach($x_by as $i => $field){
+				$x_by[$i] .= ' ';
+				if(is_array($order)){
+					//If order is an array, we'll go through the orderby array and match the order values (in order of array) with orderby values
+					if( in_array($order[$i], array('ASC','DESC','asc','desc')) ){
+						$x_by[$i] .= $order[$i];
+					}else{
+						//If orders don't match up, or it's not ASC/DESC, the default events search in EM settings/options page will be used.
+						$x_by[$i] .= $default_order;
+					}
 				}else{
-					$orderby[$i] .= $default_order;
+					$x_by[$i] .= ( in_array($order, array('ASC','DESC','asc','desc')) ) ? $order : $default_order;
 				}
-			}else{
-				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC','asc','desc')) ) ? $args['order'] : $default_order;
 			}
 		}
-		return apply_filters('em_object_build_sql_orderby', $orderby);
+		return $x_by;
+	}
+	
+	/**
+	 * Fixes ambiguous fields in a given array (which can contain prefixed ASC/DESC arguments) and give them scope of events table
+	 * @param array $fields
+	 * @return array
+	 */
+	protected static function build_sql_ambiguous_fields_helper( $fields, $reserved_fields = array(), $prefix = 'table_name' ){
+		foreach($fields as $k => $v){
+			$needle = trim(str_replace(array('ASC','DESC'), '', $v)); //remove ASC DESC for searching/comparison arrays such as order by
+			if( in_array($needle, $reserved_fields) ){
+				$fields[$k] = $prefix.'.'.$v;
+			}
+		}
+		return $fields;
 	}
 	
 	/**
@@ -1028,7 +1158,7 @@ class EM_Object {
 	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
 		global $em_capabilities_array;
 		//if multisite and super admin, just return true
-		if( is_multisite() && is_super_admin() ){ return true; }
+		if( is_multisite() && em_wp_is_super_admin() ){ return true; }
 		//set user to the desired user we're verifying, otherwise default to current user
 	    if( $user_to_check ){
 	    	$user = new WP_User($user_to_check);	
@@ -1053,7 +1183,7 @@ class EM_Object {
 		}elseif( $admin_capability && array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
 		}
-		
+		$can_manage = apply_filters('em_object_can_manage', $can_manage, $this, $owner_capability, $admin_capability, $user_to_check);
 		if( !$can_manage && !$is_owner && !empty($error_msg) ){
 			$this->add_error($error_msg);
 		}
@@ -1118,6 +1248,8 @@ class EM_Object {
 			if($db){
 				if( !empty($this->$key) || $this->$key === 0 || $this->$key === '0' || empty($val['null']) ){
 					$array[$key] = $this->$key;
+				}elseif( $this->$key === null && !empty($val['null']) ){
+					$array[$key] = null;
 				}
 			}else{
 				$array[$key] = $this->$key;
@@ -1495,6 +1627,27 @@ class EM_Object {
 	/*
 	 * END IMAGE UPlOAD FUNCTIONS
 	 */
+	
+	function output_excerpt($excerpt_length = 55, $excerpt_more = '[...]', $cut_excerpt = true){
+		if( !empty($this->post_excerpt) ){
+			$replace = $this->post_excerpt;
+		}else{
+			$replace = $this->post_content;
+		}
+		if( empty($this->post_excerpt) || $cut_excerpt ){
+			if ( preg_match('/<!--more(.*?)?-->/', $replace, $matches) ) {
+				$content = explode($matches[0], $replace, 2);
+				$replace = force_balance_tags($content[0]);
+			}
+			if( !empty($excerpt_length) ){
+				//shorten content by supplied number - copied from wp_trim_excerpt
+				$replace = strip_shortcodes( $replace );
+				$replace = str_replace(']]>', ']]&gt;', $replace);
+				$replace = wp_trim_words( $replace, $excerpt_length, $excerpt_more );
+			}
+		}
+		return $replace;
+	}
 
 	function sanitize_time( $time ){
 		if( !empty($time) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d) ?(AM|PM)?$/', $time, $match ) ){

@@ -87,7 +87,7 @@
 	
 	<?php if ( !is_multisite() ){ em_admin_option_box_image_sizes(); } ?>
 	
-	<?php if ( !is_multisite() || (is_super_admin() && !get_site_option('dbem_ms_global_caps')) ){ em_admin_option_box_caps(); } ?>
+	<?php if ( !is_multisite() || (em_wp_is_super_admin() && !get_site_option('dbem_ms_global_caps')) ){ em_admin_option_box_caps(); } ?>
 	
 	<div  class="postbox" id="em-opt-event-submissions" >
 	<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Forms', 'events-manager'); ?></span></h3>

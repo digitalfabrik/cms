@@ -1,6 +1,12 @@
 <?php
 
-class WPML_Translation_Basket extends WPML_WPDB_User {
+class WPML_Translation_Basket {
+
+	private $wpdb;
+
+	public function __construct( $wpdb ) {
+		$this->wpdb = $wpdb;
+	}
 
 	/**
 	 * Returns an array representation of the current translation basket

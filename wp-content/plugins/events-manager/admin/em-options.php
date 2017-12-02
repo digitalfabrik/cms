@@ -17,7 +17,7 @@ function em_options_save(){
 				if( in_array($postKey, array('dbem_bookings_notify_admin','dbem_event_submitted_email_admin','dbem_js_limit_events_form','dbem_js_limit_search','dbem_js_limit_general','dbem_css_limit_include','dbem_css_limit_exclude','dbem_search_form_geo_distance_options')) ){ $postValue = str_replace(' ', '', $postValue); } //clean up comma separated emails, no spaces needed
 				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
 					//Do nothing, keep old setting.
-				}elseif( $postKey == 'dbem_category_default_color' && !preg_match("/^#([abcdef0-9]{3}){1,2}?$/i",$postValue)){
+				}elseif( ($postKey == 'dbem_category_default_color' || $postKey == 'dbem_tag_default_color') && !preg_match("/^#([abcdef0-9]{3}){1,2}?$/i",$postValue)){
 					$EM_Notices->add_error( sprintf(esc_html_x('Colors must be in a valid %s format, such as #FF00EE.', 'hex format', 'events-manager'), '<a href="http://en.wikipedia.org/wiki/Web_colors">hex</a>').' '. esc_html__('This setting was not changed.', 'events-manager'), true);					
 				}else{
 					//TODO slashes being added?
@@ -31,7 +31,7 @@ function em_options_save(){
 			}
 		}
 		//set capabilities
-		if( !empty($_POST['em_capabilities']) && is_array($_POST['em_capabilities']) && (!is_multisite() || is_multisite() && is_super_admin()) ){
+		if( !empty($_POST['em_capabilities']) && is_array($_POST['em_capabilities']) && (!is_multisite() || is_multisite() && em_wp_is_super_admin()) ){
 			global $em_capabilities_array, $wp_roles;
 			if( is_multisite() && is_network_admin() && $_POST['dbem_ms_global_caps'] == 1 ){
 			    //apply_caps_to_blog
@@ -67,7 +67,13 @@ function em_options_save(){
 		update_option('dbem_flush_needed',1);
 		do_action('em_options_save');
 		$EM_Notices->add_confirm('<strong>'.__('Changes saved.', 'events-manager').'</strong>', true);
-		wp_redirect(em_wp_get_referer());
+		$referrer = em_wp_get_referer();
+		//add tab hash path to url if supplied
+		if( !empty($_REQUEST['tab_path']) ){
+			$referrer_array = explode('#', $referrer);
+			$referrer = esc_url_raw($referrer_array[0] . '#' . $_REQUEST['tab_path']);
+		}
+		wp_redirect($referrer);
 		exit();
 	}
 	//Migration
@@ -84,7 +90,7 @@ function em_options_save(){
 		delete_option('dbem_migrate_images');
 	}
 	//Uninstall
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'uninstall' && current_user_can('activate_plugins') && !empty($_REQUEST['confirmed']) && check_admin_referer('em_uninstall_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'uninstall' && current_user_can('activate_plugins') && !empty($_REQUEST['confirmed']) && check_admin_referer('em_uninstall_'.get_current_user_id().'_wpnonce') && em_wp_is_super_admin() ){
 		if( check_admin_referer('em_uninstall_'.get_current_user_id().'_confirmed','_wpnonce2') ){
 			//We have a go to uninstall
 			global $wpdb;
@@ -112,7 +118,6 @@ function em_options_save(){
 			$wpdb->query('DROP TABLE '.EM_TICKETS_TABLE);
 			$wpdb->query('DROP TABLE '.EM_TICKETS_BOOKINGS_TABLE);
 			$wpdb->query('DROP TABLE '.EM_RECURRENCE_TABLE);
-			$wpdb->query('DROP TABLE '.EM_CATEGORIES_TABLE);
 			$wpdb->query('DROP TABLE '.EM_META_TABLE);
 			
 			//delete options
@@ -124,7 +129,7 @@ function em_options_save(){
 		}
 	}
 	//Reset
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'reset' && !empty($_REQUEST['confirmed']) && check_admin_referer('em_reset_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'reset' && !empty($_REQUEST['confirmed']) && check_admin_referer('em_reset_'.get_current_user_id().'_wpnonce') && em_wp_is_super_admin() ){
 		if( check_admin_referer('em_reset_'.get_current_user_id().'_confirmed','_wpnonce2') ){
 			//We have a go to uninstall
 			global $wpdb;
@@ -144,7 +149,7 @@ function em_options_save(){
 		}
 	}
 	//Cleanup Event Orphans
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'cleanup_event_orphans' && check_admin_referer('em_cleanup_event_orphans_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'cleanup_event_orphans' && check_admin_referer('em_cleanup_event_orphans_'.get_current_user_id().'_wpnonce') && em_wp_is_super_admin() ){
 		//Firstly, get all orphans
 		global $wpdb;
 		$sql = 'SELECT event_id FROM '.EM_EVENTS_TABLE.' WHERE post_id NOT IN (SELECT ID FROM ' .$wpdb->posts. ' WHERE post_type="'. EM_POST_TYPE_EVENT .'" OR post_type="event-recurring")';
@@ -169,7 +174,7 @@ function em_options_save(){
 		exit();
 	}
 	//Force Update Recheck - Workaround for now
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'recheck_updates' && check_admin_referer('em_recheck_updates_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'recheck_updates' && check_admin_referer('em_recheck_updates_'.get_current_user_id().'_wpnonce') && em_wp_is_super_admin() ){
 		//force recheck of plugin updates, to refresh dl links
 		delete_transient('update_plugins');
 		delete_site_transient('update_plugins');
@@ -178,7 +183,7 @@ function em_options_save(){
 		exit();
 	}
 	//Flag version checking to look at trunk, not tag
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'check_devs' && check_admin_referer('em_check_devs_wpnonce') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'check_devs' && check_admin_referer('em_check_devs_wpnonce') && em_wp_is_super_admin() ){
 		//delete transients, and add a flag to recheck dev version next time round
 		delete_transient('update_plugins');
 		delete_site_transient('update_plugins');
@@ -188,7 +193,7 @@ function em_options_save(){
 		exit();
 	}
 	//import EM settings
-	if( !empty($_REQUEST['action']) && ( ($_REQUEST['action'] == 'import_em_settings' && check_admin_referer('import_em_settings')) || (is_multisite() && $_REQUEST['action'] == 'import_em_ms_settings' && check_admin_referer('import_em_ms_settings')) ) && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && ( ($_REQUEST['action'] == 'import_em_settings' && check_admin_referer('import_em_settings')) || (is_multisite() && $_REQUEST['action'] == 'import_em_ms_settings' && check_admin_referer('import_em_ms_settings')) ) && em_wp_is_super_admin() ){
 		//upload uniquely named file to system for usage later
 		if( !empty($_FILES['import_settings_file']['size']) && is_uploaded_file($_FILES['import_settings_file']['tmp_name']) ){
 			$settings = file_get_contents($_FILES['import_settings_file']['tmp_name']);
@@ -217,7 +222,7 @@ function em_options_save(){
 		exit();
 	}
 	//export EM settings
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_em_settings' && check_admin_referer('export_em_settings') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_em_settings' && check_admin_referer('export_em_settings') && em_wp_is_super_admin() ){
 		global $wpdb;
 		$results = $wpdb->get_results('SELECT option_name, option_value FROM '.$wpdb->options ." WHERE option_name LIKE 'dbem_%' OR option_name LIKE 'emp_%' OR option_name LIKE 'em_%'", ARRAY_A);
 		$options = array();
@@ -226,7 +231,7 @@ function em_options_save(){
 		header('Content-Disposition: attachment; filename="events-manager-settings.txt"');
 		echo json_encode($options);
 		exit();
-	}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_em_ms_settings' && check_admin_referer('export_em_ms_settings') && is_multisite() && is_super_admin() ){
+	}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_em_ms_settings' && check_admin_referer('export_em_ms_settings') && is_multisite() && em_wp_is_super_admin() ){
 		//delete transients, and add a flag to recheck dev version next time round
 		global $EM_MS_Globals, $wpdb;
 		$options = array();
@@ -284,7 +289,7 @@ function em_admin_email_test_ajax(){
 add_action('wp_ajax_em_admin_test_email','em_admin_email_test_ajax');
 
 function em_admin_options_reset_page(){
-	if( check_admin_referer('em_reset_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( check_admin_referer('em_reset_'.get_current_user_id().'_wpnonce') && em_wp_is_super_admin() ){
 		?>
 		<div class="wrap">		
 			<div id='icon-options-general' class='icon32'><br /></div>
@@ -300,7 +305,7 @@ function em_admin_options_reset_page(){
 	}
 }
 function em_admin_options_uninstall_page(){
-	if( check_admin_referer('em_uninstall_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( check_admin_referer('em_uninstall_'.get_current_user_id().'_wpnonce') && em_wp_is_super_admin() ){
 		?>
 		<div class="wrap">		
 			<div id='icon-options-general' class='icon32'><br /></div>

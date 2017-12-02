@@ -7,6 +7,20 @@
 class EM_Locations extends EM_Object {
 	
 	/**
+	 * Like WPDB->num_rows it holds the number of results found on the last query.
+	 * @var int
+	 */
+	public static $num_rows;
+	
+	/**
+	 * If $args['pagination'] is true or $args['offset'] or $args['page'] is greater than one, and a limit is imposed when using a get() query, 
+	 * this will contain the total records found without a limit for the last query.
+	 * If no limit was used or pagination was not enabled, this will be the same as self::$num_rows
+	 * @var int
+	 */
+	public static $num_rows_found;
+	
+	/**
 	 * Returns an array of EM_Location objects
 	 * @param boolean $eventful
 	 * @param boolean $return_objects
@@ -40,42 +54,150 @@ class EM_Locations extends EM_Object {
 		$limit = ( $args['limit'] && is_numeric($args['limit'])) ? "LIMIT {$args['limit']}" : '';
 		$offset = ( $limit != "" && is_numeric($args['offset']) ) ? "OFFSET {$args['offset']}" : '';
 		
-		//Get the default conditions
-		$conditions = self::build_sql_conditions($args);
-		
-		//Put it all together
-		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
-		
-		//Get ordering instructions
+		//Get fields that we can use in ordering and grouping, which can be event and location (excluding ambiguous) fields
 		$EM_Event = new EM_Event(); //blank event for below
 		$EM_Location = new EM_Location(0); //blank location for below
-		$accepted_fields = $EM_Location->get_fields(true);
-		$accepted_fields = array_merge($EM_Event->get_fields(true),$accepted_fields);
+		$location_fields = array_keys($EM_Location->fields);
+		$event_fields = array(); //will contain event-specific fields, not ambiguous ones
+		foreach( array_keys($EM_Event->fields) as $field_name ){
+			if( !in_array($field_name, $location_fields) ) $event_fields[] = $field_name;
+		}
+		$accepted_fields = array_merge($event_fields, $location_fields);
+
+		//add selectors
+		$calc_found_rows = $limit && ( $args['pagination'] || $args['offset'] > 0 || $args['page'] > 0 );
+		if( $count ){
+			$selectors = 'COUNT(DISTINCT '.$locations_table . '.location_id)'; //works in MS Global mode since location_id is always unique, post_id is not
+			$limit = 'LIMIT 1';
+			$offset = 'OFFSET 0';
+		}else{
+			if( $args['array'] ){
+				//get all fields from table, add events table prefix to avoid ambiguous fields from location
+				$selectors = $locations_table . '.*';
+			}elseif( EM_MS_GLOBAL ){
+				$selectors = $locations_table.'.post_id, '.$locations_table.'.blog_id';
+			}else{
+				$selectors = $locations_table.'.post_id';
+			}
+			if( $calc_found_rows ) $selectors = 'SQL_CALC_FOUND_ROWS ' . $selectors; //for storing total rows found
+			$selectors = 'DISTINCT ' . $selectors; //duplicate avoidance
+		}
+		
+		//check if we need to join a location table for this search, which is necessary if any location-specific are supplied, or if certain arguments such as orderby contain location fields
+		$join_events_table = false;
+		//for we only will check optional joining by default for groupby searches, and for the original searches if EM_DISABLE_OPTIONAL_JOINS is set to true in wp-config.php
+		if( !empty($args['groupby']) || (defined('EM_DISABLE_OPTIONAL_JOINS') && EM_DISABLE_OPTIONAL_JOINS) ){
+			$event_specific_args = array('eventful', 'eventless', 'tag', 'category', 'event', 'recurrence', 'month', 'year', 'rsvp', 'bookings');
+			$join_events_table = $args['scope'] != 'all'; //only value where false is not default so we check that first
+			foreach( $event_specific_args as $arg ) if( !empty($args[$arg]) ) $join_events_table = true;
+			//if set to false the following would provide a false negative in the line above
+			if( $args['recurrences'] !== null ) $join_events_table = true;
+			if( $args['recurring'] !== null ) $join_events_table = true;
+			if( $args['event_status'] !== false ){ $join_events_table = true; }
+			//check ordering and grouping arguments for precense of event fields requiring a join
+			if( !$join_events_table ){
+				foreach( array('groupby', 'orderby', 'groupby_orderby') as $arg ){
+					if( !is_array($args[$arg]) ) continue; //ignore this argument if set to false
+					//we assume all these arguments are now array thanks to self::get_search_defaults() cleaning it up
+					foreach( $args[$arg] as $field_name ){
+						if( in_array($field_name, $event_fields) ){
+							$join_events_table = true;
+							break; //we join, no need to keep searching
+						}
+					}
+				}
+			}
+			//EM_Events has a special argument for recurring events (the template), where it automatically omits recurring event templates. If we are searching events, and recurring was not explicitly set, we set it to the same as in EM_Events default 
+			if( $join_events_table && $args['recurring'] === null ) $args['recurring'] = false;
+		}else{ $join_events_table = true; }//end temporary if( !empty($args['groupby']).... wrapper 
+		//plugins can override this optional joining behaviour here in case they add custom WHERE conditions or something like that
+		$join_events_table = apply_filters('em_locations_get_join_events_table', $join_events_table, $args, $count);
+		//depending on whether to join we do certain things like add a join SQL, change specific values like status search
+		$event_optional_join = $join_events_table ? "LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id" : '';
+		
+		//Build ORDER BY and WHERE SQL statements here, after we've done all the pre-processing necessary
+		$conditions = self::build_sql_conditions($args);
+		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
 		$orderby = self::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
-		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		
-		if( EM_MS_GLOBAL ){
-			$selectors = ( $count ) ?  'COUNT('.$locations_table.'.location_id)':$locations_table.'.post_id, '.$locations_table.'.blog_id';
-		}else{
-			$selectors = ( $count ) ?  'COUNT('.$locations_table.'.location_id)':$locations_table.'.post_id';
+		//Build GROUP BY SQL statement, which will be very different if we group things due to how we need to filter out by event date
+		if( !empty($args['groupby']) ){
+			//get groupby field(s)
+			$groupby_fields = self::build_sql_groupby($args, $accepted_fields);
+			if( !empty($groupby_fields[0]) ){
+				//we can safely assume we've been passed at least one array item with index of 0 containing a valid field due to build_sql_groupby()
+				$groupby_field = $groupby_fields[0]; //we only support one field for events
+				$groupby_orderby = self::build_sql_groupby_orderby($args, $accepted_fields);
+				$groupby_orderby_sql = !empty($groupby_orderby) ? ', '. implode(', ', $groupby_orderby) : '';
+				//get minimum required selectors within the inner query to shorten query length as much as possible
+				$inner_selectors = $locations_table . '.*';
+				if( $event_optional_join ){
+					//we're selecting all fields from events table so add only location fields required in the outer ORDER BY statement
+					if( in_array($groupby_field, $event_fields) && !in_array($groupby_field, $args['orderby']) ){
+						//we may not have included the grouped field if it's not in the outer ORDER BY clause, so we add it for this specific query
+						$inner_selectors .= ', '. $events_table .'.'. $groupby_field;
+					}
+					foreach( $args['orderby'] as $orderby_field ){
+						if( in_array($orderby_field, $event_fields) ){
+							$inner_selectors .= ', '. $events_table .'.'. $orderby_field;
+						}
+					}
+				}
+				//THE Query - Grouped
+				$sql = "
+SELECT DISTINCT $selectors
+FROM (
+	SELECT *,
+		@cur := IF($groupby_field = @id, @cur+1, 1) AS RowNumber,
+		@id := $groupby_field AS IdCache
+	FROM (
+		SELECT {$inner_selectors} FROM {$locations_table}
+		$event_optional_join
+		$where
+		ORDER BY {$groupby_field} $groupby_orderby_sql
+	) DataSet
+	INNER JOIN (
+		SELECT @id:='', @cur:=0
+	) AS lookup
+) {$locations_table}
+WHERE RowNumber = 1
+$orderby_sql
+$limit $offset";
+			}
 		}
-		//Create the SQL statement and execute
-		$sql = apply_filters('em_locations_get_sql', "
-			SELECT $selectors FROM $locations_table
-			LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id
-			$where
-			GROUP BY {$locations_table}.location_id
-			$orderby_sql
-			$limit $offset
-		", $args);
+
+		//build the SQL statement if not already built for group
+		if( empty($sql) ){
+			//THE query
+			$sql = "
+SELECT DISTINCT $selectors FROM $locations_table
+$event_optional_join
+$where
+$orderby_sql
+$limit $offset
+			";
+		}
+		
+		//the query filter
+		$sql = apply_filters('em_locations_get_sql', $sql, $args); 
+		//if( em_wp_is_super_admin() && WP_DEBUG_DISPLAY ){ echo "<pre>"; print_r($sql); echo '</pre>'; }
 		
 		//If we're only counting results, return the number of results
 		if( $count ){
-			return apply_filters('em_locations_get_count', count($wpdb->get_col($sql)), $args);	
+			self::$num_rows_found = self::$num_rows = $wpdb->get_var($sql);
+			return apply_filters('em_locations_get_count', self::$num_rows, $args);	
 		}
-		$results = $wpdb->get_results($sql, ARRAY_A);
 		
+		//get the result and count results
+		$results = $wpdb->get_results( $sql, ARRAY_A);
+		self::$num_rows = $wpdb->num_rows;
+		if( $calc_found_rows ){
+			self::$num_rows_found = $wpdb->get_var('SELECT FOUND_ROWS()');
+		}else{
+			self::$num_rows_found = self::$num_rows;
+		}
+
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
 			return apply_filters('em_locations_get_array', $results, $args);
@@ -109,7 +231,7 @@ class EM_Locations extends EM_Object {
 		//Can be either an array for the get search or an array of EM_Location objects
 		$page_queryvar = !empty($args['page_queryvar']) ? $args['page_queryvar'] : 'pno';
 		if( !empty($args['pagination']) && !array_key_exists('page',$args) && !empty($_REQUEST[$page_queryvar]) && is_numeric($_REQUEST[$page_queryvar]) ){
-			$page = $args['page'] = $_REQUEST[$page_queryvar];
+			$args['page'] = $_REQUEST[$page_queryvar];
 		}
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
 			$func_args = func_get_args();
@@ -117,20 +239,12 @@ class EM_Locations extends EM_Object {
 			$args = (!empty($func_args[1])) ? $func_args[1] : array();
 			$args = apply_filters('em_locations_output_args', self::get_default_search($args), $locations);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
-			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
-			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 			$locations_count = count($locations);
 		}else{
 			$args = apply_filters('em_locations_output_args', self::get_default_search($args) );
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
-			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
-			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
-			$args_count = $args;
-			$args_count['limit'] = 0;
-			$args_count['offset'] = 0;
-			$args_count['page'] = 1;
-			$locations_count = self::count($args_count);
 			$locations = self::get( $args );
+			$locations_count = self::$num_rows_found;
 		}
 		//What format shall we output this to, or use default
 		$format = empty($args['format']) ? get_option( 'dbem_location_list_item_format' ) : $args['format'] ;
@@ -158,8 +272,8 @@ class EM_Locations extends EM_Object {
 				//output pagination links
 				$output .= self::get_pagination_links($args, $locations_count);
 			}
-		} else {
-			$output = get_option ( 'dbem_no_locations_message' );
+		}elseif( $args['no_results_msg'] !== false ){
+			$output = !empty($args['no_results_msg']) ? $args['no_results_msg'] : get_option('dbem_no_locations_message');
 		}
 		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Location_old= $EM_Location;
@@ -225,7 +339,7 @@ class EM_Locations extends EM_Object {
 		}
 		//eventful locations
 		if( true == $args['eventful'] ){
-			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL AND event_status=1";
+			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL";
 		}elseif( true == $args['eventless'] ){
 			$conditions['eventless'] = "{$events_table}.event_id IS NULL";
 			if( !empty($conditions['scope']) ) unset($conditions['scope']); //scope condition would render all queries return no results
@@ -254,25 +368,6 @@ class EM_Locations extends EM_Object {
 			    }
 		    }
 		}
-		//status
-		$conditions['status'] = "(`location_status` >= 0)"; //pending and published if status is not explicitly defined (Default is 1)
-		if( array_key_exists('status',$args) ){ 
-		    if( is_numeric($args['status']) ){
-				$conditions['status'] = "(`location_status`={$args['status']} )"; //trash (-1), pending, (0) or published (1)
-			}elseif( $args['status'] == 'pending' ){
-			    $conditions['status'] = "(`location_status`=0)"; //pending
-			}elseif( $args['status'] == 'publish' ){
-			    $conditions['status'] = "(`location_status`=1)"; //published
-		    }elseif( $args['status'] === null || $args['status'] == 'draft' ){
-			    $conditions['status'] = "(`location_status` IS NULL )"; //show draft items
-			}elseif( $args['status'] == 'trash' ){
-			    $conditions['status'] = "(`location_status` = -1 )"; //show trashed items
-			}elseif( $args['status'] == 'all'){
-				$conditions['status'] = "(`location_status` >= 0 OR `location_status` IS NULL)"; //search all statuses that aren't trashed
-			}elseif( $args['status'] == 'everything'){
-				unset($conditions['status']); //search all statuses
-			}
-		}
 		//private locations
 		if( empty($args['private']) ){
 			$conditions['private'] = "(`location_private`=0)";
@@ -290,12 +385,45 @@ class EM_Locations extends EM_Object {
 		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
 	}
 	
-	/* Overrides EM_Object method to apply a filter to result
-	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
+	/**
+	 * Overrides EM_Object method to clean ambiguous fields and apply a filter to result.
+	 * @see EM_Object::build_sql_orderby()
 	 */
-	public static function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
-	    self::$context = EM_POST_TYPE_LOCATION;
-		return apply_filters( 'em_locations_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
+	 public static function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+		$orderby = parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
+		$orderby = self::build_sql_ambiguous_fields_helper($orderby); //fix ambiguous fields
+		return apply_filters( 'em_locations_build_sql_orderby', $orderby, $args, $accepted_fields, $default_order );
+	}
+	
+	/**
+	 * Overrides EM_Object method to clean ambiguous fields and apply a filter to result.
+	 * @see EM_Object::build_sql_groupby()
+	 */
+	public static function build_sql_groupby( $args, $accepted_fields, $groupby_order = false, $default_order = 'ASC' ){
+		$groupby = parent::build_sql_groupby($args, $accepted_fields);
+		//fix ambiguous fields and give them scope of events table
+		$groupby = self::build_sql_ambiguous_fields_helper($groupby);
+		return apply_filters( 'em_locations_build_sql_groupby', $groupby, $args, $accepted_fields );
+	}
+	
+	/**
+	 * Overrides EM_Object method to clean ambiguous fields and apply a filter to result.
+	 * @see EM_Object::build_sql_groupby_orderby()
+	 */
+	 public static function build_sql_groupby_orderby($args, $accepted_fields, $default_order = 'ASC' ){
+	    $group_orderby = parent::build_sql_groupby_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
+		//fix ambiguous fields and give them scope of events table
+		$group_orderby = self::build_sql_ambiguous_fields_helper($group_orderby);
+		return apply_filters( 'em_locations_build_sql_groupby_orderby', $group_orderby, $args, $accepted_fields, $default_order );
+	}
+	
+	/**
+	 * Overrides EM_Object method to provide specific reserved fields and locations table.
+	 * @see EM_Object::build_sql_ambiguous_fields_helper()
+	 */
+	protected static function build_sql_ambiguous_fields_helper( $fields, $reserved_fields = array(), $prefix = 'table_name' ){
+		//This will likely be removed when PHP 5.3 is the minimum and LSB is a given
+		return parent::build_sql_ambiguous_fields_helper($fields, array('post_id', 'location_id', 'blog_id'), EM_LOCATIONS_TABLE);
 	}
 	
 	/* 
@@ -308,9 +436,10 @@ class EM_Locations extends EM_Object {
 	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
 	    self::$context = EM_POST_TYPE_LOCATION;
 		$defaults = array(
-			'eventful' => false, //Locations that have an event (scope will also play a part here
-			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
 			'orderby' => 'location_name',
+			'groupby' => false,
+			'groupby_orderby' => 'location_name', //groups according to event start time, i.e. by default shows earliest event in a scope
+			'groupby_order' => 'ASC', //groups according to event start time, i.e. by default shows earliest event in a scope
 			'town' => false,
 			'state' => false,
 			'country' => false,
@@ -320,7 +449,11 @@ class EM_Locations extends EM_Object {
 			'blog' => get_current_blog_id(),
 			'private' => current_user_can('read_private_locations'),
 			'private_only' => false,
-			'post_id' => false
+			'post_id' => false,
+			//location-specific attributes
+			'eventful' => false, //Locations that have an event (scope will also play a part here
+			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
+			'event_status' => false //search locations with events of a specific publish status
 		);
 		//sort out whether defaults were supplied or just the array of search values
 		if( empty($array) ){

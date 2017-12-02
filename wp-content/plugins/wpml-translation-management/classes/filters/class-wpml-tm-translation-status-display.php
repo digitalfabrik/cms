@@ -1,17 +1,35 @@
 <?php
 
-class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
+class WPML_TM_Translation_Status_Display {
+
+	const BLOCKED_LINK = '###';
 
 	private $statuses = array();
 
-	/** @var  WPML_Post_Status $status_helper */
+	/**
+	 * @var WPML_Post_Status
+	 */
 	private $status_helper;
 
-	/** @var WPML_Translation_Job_Factory $job_factory */
+	/**
+	 * @var WPML_Translation_Job_Factory
+	 */
 	private $job_factory;
 
-	/** @var WPML_TM_API $tm_api */
+	/**
+	 * @var WPML_TM_API
+	 */
 	private $tm_api;
+
+	/**
+	 * @var WPML_Post_Translation
+	 */
+	private $post_translations;
+
+	/**
+	 * @var SitePress
+	 */
+	private $sitepress;
 
 	/**
 	 * WPML_TM_Translation_Status_Display constructor.
@@ -29,11 +47,12 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 		&$job_factory,
 		&$tm_api
 	) {
-		$post_translation = $sitepress->post_translations();
-		parent::__construct( $wpdb, $sitepress, $post_translation );
+		$this->post_translations = $sitepress->post_translations();
+		$this->wpdb = $wpdb;
 		$this->status_helper = &$status_helper;
 		$this->job_factory   = &$job_factory;
 		$this->tm_api        = &$tm_api;
+		$this->sitepress     = $sitepress;
 	}
 
 	public function init() {
@@ -51,6 +70,34 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 			'filter_status_text'
 		), 10, 4 );
 		$this->statuses = array();
+
+		$this->maybe_preload_stats();
+	}
+
+	private function maybe_preload_stats() {
+		$trids = $this->post_translations->get_trids();
+		$this->load_stats( $trids );
+	}
+
+	private function load_stats( $trids ) {
+		$trids = implode( ',', $trids );
+		$trids_query = $trids ? "i.trid IN ( {$trids} )" : '1=1';
+		$stats = $this->wpdb->get_results(
+			"SELECT st.status, l.code, st.translator_id, st.translation_service, i.trid
+				FROM {$this->wpdb->prefix}icl_languages l
+				LEFT JOIN {$this->wpdb->prefix}icl_translations i
+					ON l.code = i.language_code
+				JOIN {$this->wpdb->prefix}icl_translation_status st
+					ON i.translation_id = st.translation_id
+				WHERE l.active = 1
+					AND {$trids_query}
+					OR i.trid IS NULL",
+			ARRAY_A
+		);
+		foreach ( $stats as $element ) {
+			$this->statuses[ $element['trid'] ][ $element['code'] ] = $element;
+		}
+
 	}
 
 	public function filter_status_icon( $icon, $post_id, $lang, $trid ) {
@@ -78,7 +125,7 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 			$text     = sprintf(
 				__(
 					"You can't edit this translation, because this translation to %s is already in progress.",
-					'sitepress'
+					'wpml-translation-management'
 				),
 				$language['display_name']
 			);
@@ -86,11 +133,11 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 		} elseif ( $this->is_in_basket( $trid, $lang ) ) {
 			$text = __(
 				'Cannot edit this item, because it is currently in the translation basket.',
-				'sitepress'
+				'wpml-translation-management'
 			);
 		} elseif ( $this->is_lang_pair_allowed( $lang ) && $this->is_in_progress( $trid, $lang ) ) {
 			$language = $this->sitepress->get_language_details( $lang );
-			$text     = sprintf( __( 'Edit the %s translation', 'sitepress' ), $language['display_name'] );
+			$text     = sprintf( __( 'Edit the %s translation', 'wpml-translation-management' ), $language['display_name'] );
 		}
 
 		return $text;
@@ -116,13 +163,13 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 		$this->maybe_load_stats( $trid );
 		$is_remote        = $this->is_remote( $trid, $lang );
 		$is_in_progress   = $this->is_in_progress( $trid, $lang );
-		$use_tm_editor    = $this->sitepress->get_setting( 'doc_translation_method' );
+		$use_tm_editor    = $this->is_using_tm_editor();
 		$use_tm_editor    = apply_filters( 'wpml_use_tm_editor', $use_tm_editor );
 		$source_lang_code = $this->post_translations->get_element_lang_code( $post_id );
 		if ( ( $is_remote && $is_in_progress ) || $this->is_in_basket( $trid,
 				$lang ) || ! $this->is_lang_pair_allowed( $lang, $source_lang )
 		) {
-			$link = '###';
+			$link = self::BLOCKED_LINK;
 		} elseif ( $source_lang_code !== $lang ) {
 			if ( ( $is_in_progress && ! $is_remote ) || ( $use_tm_editor && $translated_element_id ) ) {
 				$job_id = $this->job_factory->job_id_by_trid_and_lang( $trid, $lang );
@@ -137,6 +184,20 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 		}
 
 		return $link;
+	}
+
+	private function is_using_tm_editor() {
+		$tm_settings = $this->sitepress->get_setting( 'translation-management' );
+		$sitepress_settings = $this->sitepress->get_settings();
+		$use_tm_editor = 0;
+
+		if( array_key_exists( 'doc_translation_method', $tm_settings ) ) {
+			$use_tm_editor = $tm_settings['doc_translation_method'];
+		} elseif ( array_key_exists( 'doc_translation_method', $sitepress_settings ) ) {
+			$use_tm_editor = $this->sitepress->get_setting( 'doc_translation_method' );
+		}
+
+		return $use_tm_editor;
 	}
 
 	private function get_link_for_new_job( $trid, $lang, $source_lang_code ) {
@@ -166,6 +227,14 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 
 	private function get_return_url() {
 		$args = array( 'wpml_tm_saved', 'wpml_tm_cancel' );
+
+		if ( wpml_is_ajax() ) {
+			if ( isset( $_SERVER['HTTP_REFERER'] ) ) {
+				return remove_query_arg( $args, $_SERVER['HTTP_REFERER'] );
+			}
+
+			return null;
+		}
 
 		return remove_query_arg( $args );
 	}
@@ -200,25 +269,8 @@ class WPML_TM_Translation_Status_Display extends WPML_Full_PT_API {
 	 */
 	private function maybe_load_stats( $trid ) {
 		if ( ! isset( $this->statuses[ $trid ] ) ) {
-			$stats                   = $this->wpdb->get_results(
-				$this->wpdb->prepare(
-					"SELECT st.status, l.code, st.translator_id, st.translation_service
-								FROM {$this->wpdb->prefix}icl_languages l
-								LEFT JOIN {$this->wpdb->prefix}icl_translations i
-									ON l.code = i.language_code
-								JOIN {$this->wpdb->prefix}icl_translation_status st
-									ON i.translation_id = st.translation_id
-								WHERE l.active = 1
-									AND i.trid = %d
-									OR i.trid IS NULL",
-					$trid
-				),
-				ARRAY_A
-			);
 			$this->statuses[ $trid ] = array();
-			foreach ( $stats as $element ) {
-				$this->statuses[ $trid ][ $element['code'] ] = $element;
-			}
+			$this->load_stats( array( $trid ) );
 		}
 	}
 

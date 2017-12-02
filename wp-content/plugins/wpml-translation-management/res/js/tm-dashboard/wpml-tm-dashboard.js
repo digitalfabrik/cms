@@ -1,21 +1,21 @@
-/*global wpml_tm_strings, jQuery, Backbone, icl_ajxloaderimg, ajaxurl */
+/*global wpml_tm_strings, jQuery, Backbone, icl_ajxloaderimg, ajaxurl, ProgressBar */
 /*jslint laxbreak: true */
 
 (function () {
 	'use strict';
 
 var WPMLTMDashboard = Backbone.View.extend({
-    events: {
-        "click td :checkbox": 'update_td',
-        "click th :checkbox": 'icl_tm_select_all_documents',
-        "change #icl_tm_languages :radio": 'change_radio',
-        "change #icl_parent_filter_control": 'iclTmPopulateParentFilter',
-        "change #icl_language_selector": 'iclTmPopulateParentFilter',
-        "click #duplicate-all": 'icl_tm_bulk_batch_selection',
-        "click #translate-all": 'icl_tm_bulk_batch_selection',
-        "click #update-none": 'icl_tm_bulk_batch_selection',
-        "submit #icl_tm_dashboard_form": 'submit'
-    },
+		events: {
+			'click td[scope="row"] :checkbox':   'update_td',
+			"click td.check-column :checkbox":   'icl_tm_select_all_documents',
+			"change #icl_tm_languages :radio":   'change_radio',
+			"change #icl_parent_filter_control": 'iclTmPopulateParentFilter',
+			"change #icl_language_selector":     'iclTmPopulateParentFilter',
+			"click #duplicate-all":              'icl_tm_bulk_batch_selection',
+			"click #translate-all":              'icl_tm_bulk_batch_selection',
+			"click #update-none":                'icl_tm_bulk_batch_selection',
+			"submit #icl_tm_dashboard_form":     'submit'
+		},
     counts: {
         all: 0,
         duplicate: 0,
@@ -42,7 +42,7 @@ var WPMLTMDashboard = Backbone.View.extend({
 
 				var languagesCount = langs.length;
 				if (0 < languagesCount) {
-					var post_id_boxes = self.$el.find('td :checkbox:checked');
+					var post_id_boxes = self.$el.find('#icl-tm-translation-dashboard tbody td :checkbox:checked');
 					var post_ids_count = post_id_boxes.length;
 
 					for (var p = 0; p < post_ids_count; p++) {
@@ -53,9 +53,6 @@ var WPMLTMDashboard = Backbone.View.extend({
 														});
 						}
 					}
-					//post_id_boxes.each(function () {
-					//		post_ids.push(jQuery(this).val());
-					//});
 					var duplication_ui = new PostDuplication(post_ids, jQuery('#icl_dup_ovr_warn'));
 					duplication_ui.sendBatch();
 				}
@@ -64,8 +61,8 @@ var WPMLTMDashboard = Backbone.View.extend({
     iclTmUpdateDashboardSelection: function () {
         var self = this;
         if (self.$el.find(':checkbox:checked').length > 0) {
-            var checked_items = self.$el.find('th :checkbox');
-            if (self.$el.find('td :checkbox:checked').length === self.$el.find('td :checkbox').length) {
+            var checked_items = self.$el.find('td.check-column :checkbox');
+            if (self.$el.find('td[scope="row"] :checkbox:checked').length === self.$el.find('td[scope="row"] :checkbox').length) {
                 checked_items.attr('checked', 'checked');
             } else {
                 checked_items.removeAttr('checked');
@@ -200,7 +197,7 @@ var WPMLTMDashboard = Backbone.View.extend({
     },
     icl_tm_update_doc_count: function () {
         var self = this;
-        var dox = self.$el.find('td :checkbox:checked').length;
+        var dox = self.$el.find('tbody td :checkbox:checked').length;
         jQuery('#icl-tm-sel-doc-count').html(dox);
         if (dox) {
             jQuery('#icl-tm-doc-wrap').fadeIn();

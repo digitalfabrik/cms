@@ -22,6 +22,7 @@ var ProgressBar = Backbone.View.extend({
         self.ajax_loader_img.appendTo(self.progress_label);
         self.getDomElement().progressbar({value: false, max: 100});
         self.getDomElement().fadeIn();
+		self.progress_label_value.text('');
 
         return self;
     },
@@ -52,7 +53,7 @@ var ProgressBar = Backbone.View.extend({
     },
     stop: function () {
         var self = this;
-        self.getDomElement().disable();
+        self.getDomElement().hide();
 
         return self;
     }

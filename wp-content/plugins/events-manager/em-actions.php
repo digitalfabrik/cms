@@ -41,21 +41,19 @@ function em_init_actions() {
 				$json_locations[$location_key]['location_balloon'] = $EM_Location->output(get_option('dbem_map_text_format'));
 			}
 			echo EM_Object::json_encode($json_locations);
-		 	die();   
+		 	die();
 	 	}
 		if(isset($_REQUEST['query']) && $_REQUEST['query'] == 'GlobalEventsMapData') {
 			$_REQUEST['has_location'] = true; //we're looking for locations in this context, so locations necessary
+			$_REQUEST['groupby'] = 'location_id'; //grouping will generally produce much faster processing
 			$EM_Events = EM_Events::get( $_REQUEST );
 			$json_locations = array();
 			$locations = array();
 			foreach($EM_Events as $EM_Event) {
-				if( !empty($EM_Event->location_id) && empty($locations[$EM_Event->location_id]) ){
-					$EM_Location = $EM_Event->get_location();
-					$location_array = $EM_Event->get_location()->to_array();
-					$location_array['location_balloon'] = $EM_Location->output(get_option('dbem_map_text_format'));
-					$json_locations[] = $location_array;
-					$locations[$EM_Event->location_id] = true;
-				}
+				$EM_Location = $EM_Event->get_location();
+				$location_array = $EM_Event->get_location()->to_array();
+				$location_array['location_balloon'] = $EM_Location->output(get_option('dbem_map_text_format'));
+				$json_locations[] = $location_array;
 			}
 			echo EM_Object::json_encode($json_locations);
 		 	die();   
@@ -307,7 +305,7 @@ function em_init_actions() {
 	  	}elseif ( $_REQUEST['action'] == 'booking_add_one' && is_object($EM_Event) && is_user_logged_in() ) {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add_one');
-			if( !$EM_Event->get_bookings()->has_booking(get_current_user_id()) || get_option('dbem_bookings_double')){
+			if( get_option('dbem_bookings_double') || !$EM_Event->get_bookings()->has_booking(get_current_user_id()) ){
 				$EM_Booking = em_get_booking(array('person_id'=>get_current_user_id(), 'event_id'=>$EM_Event->event_id, 'booking_spaces'=>1)); //new booking
 				$EM_Ticket = $EM_Event->get_bookings()->get_tickets()->get_first();	
 				//get first ticket in this event and book one place there. similar to getting the form values in EM_Booking::get_post_values()
@@ -649,7 +647,7 @@ function em_init_actions() {
 		$EM_Bookings = $EM_Bookings_Table->get_bookings();
 		$handle = fopen("php://output", "w");
 		fputcsv($handle, $EM_Bookings_Table->get_headers(true), $delimiter);
-		while(!empty($EM_Bookings->bookings)){
+		while( !empty($EM_Bookings->bookings) ){
 			foreach( $EM_Bookings->bookings as $EM_Booking ) {
 				//Display all values
 				/* @var $EM_Booking EM_Booking */
