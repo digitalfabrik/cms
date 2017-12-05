@@ -7,6 +7,7 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
  * Retrieve only content that has been modified since a given datetime
  */
 class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
+	
 	protected function get_subpath() {
 		return '/events/';
 	}
@@ -20,6 +21,9 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			em_events.event_id,
 			em_events.event_start_date, em_events.event_end_date,
 			em_events.event_all_day, em_events.event_start_time, em_events.event_end_time,
+			em_events.recurrence_id, em_events.recurrence, em_events.recurrence_interval,
+			em_events.recurrence_freq, em_events.recurrence_byday, em_events.recurrence_byweekno,
+			em_events.recurrence_days, em_events.recurrence_rsvp_days,
 			em_locations.location_id, em_locations.location_name,
 			em_locations.location_address, em_locations.location_town, em_locations.location_state, em_locations.location_postcode,
 			em_locations.location_region, em_locations.location_country,
@@ -60,7 +64,8 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			'location' => $this->prepare_location($post),
 			'tags' => $this->prepare_tags($post),
 			'categories' => $this->prepare_categories($post),
-			'page' => $this->prepare_page($post)
+			'page' => $this->prepare_page($post),
+			'recurrence' => $this->prepare_recurrence($post)
 		];
 	}
 
@@ -99,6 +104,20 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			$pair = explode(":", $idname);
 			return ["id" => $pair[0], "name" => $pair[1]];
 		}, $elements);
+	}
+
+	// just additional information about recurring events
+	private function prepare_recurrence($post) {
+		return [
+			'id' => $post->recurrence_id,
+			'initial_event' => $post->recurrence,
+			'interval' => $post->recurrence_interval,
+			'frequency' => $post->recurrence_freq,
+			'day' => $post->recurrence_byday,
+			'week' => $post->recurrence_byweekno,
+			'duration_in_days' => $post->recurrence_days,
+			'rsvp_days' => $post->recurrence_rsvp_days
+		];
 	}
 
 	private function prepare_categories($post) {

@@ -67,18 +67,34 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	 * @return bool
 	 */
 	public function user_can_translate( $user ) {
-		$translator_id                     = $this->get_translator_id();
-		$user_can_take_this_job            = $translator_id === 0 || ( $translator_id === (int) $user->ID );
-		$translator_has_job_language_pairs = $this->blog_translators->is_translator( $user->ID,
-		                                                                        array(
-			                                                                        'lang_from' => $this->get_source_language_code(),
-			                                                                        'lang_to'   => $this->get_language_code()
-		                                                                        ) );
+		$translator_id          = $this->get_translator_id();
+		$user_can_take_this_job = 0 === $translator_id || $this->is_current_user_allowed_to_translate( $user, $translator_id );
+
+		$translator_has_job_language_pairs = $this->blog_translators->is_translator(
+			$user->ID,
+			array(
+				'lang_from' => $this->get_source_language_code(),
+				'lang_to'   => $this->get_language_code(),
+			)
+		);
 
 		return ( $user_can_take_this_job && $translator_has_job_language_pairs )
 		       || ( method_exists( $user, 'has_cap' ) && $user->has_cap( 'manage_options' ) )
 		       || ( ! method_exists( $user, 'has_cap' ) && user_can( $user->ID, 'manage_options' ) );
 	}
+
+	/**
+	 * @param WP_User $user
+	 * @param int     $translator_id
+	 *
+	 * @return bool
+	 */
+	private function is_current_user_allowed_to_translate( WP_User $user, $translator_id ) {
+		$allowed_translators   = apply_filters( 'wpml_tm_allowed_translators_for_job', array(), $this );
+		$allowed_translators[] = $translator_id;
+		return in_array( (int) $user->ID, $allowed_translators, true );
+	}
+
 
 	public function get_batch_id() {
 		if ( ! isset( $this->batch_id ) ) {

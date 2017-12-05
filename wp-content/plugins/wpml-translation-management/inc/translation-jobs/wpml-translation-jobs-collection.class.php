@@ -1,8 +1,8 @@
 <?php
-require WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-element-translation-job.class.php';
-require WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-external-translation-job.class.php';
-require WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-post-translation-job.class.php';
-require WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-string-translation-job.class.php';
+require_once WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-element-translation-job.class.php';
+require_once WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-external-translation-job.class.php';
+require_once WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-post-translation-job.class.php';
+require_once WPML_TM_PATH . '/inc/translation-jobs/jobs/wpml-string-translation-job.class.php';
 
 class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 

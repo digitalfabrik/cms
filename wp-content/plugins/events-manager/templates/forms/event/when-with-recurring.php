@@ -55,7 +55,7 @@ $admin_recurring = is_admin() && $EM_Event->is_recurring();
 		<p class="alternate-selector" id="monthly-selector" style="display:inline;">
 			<select id="monthly-modifier" name="recurrence_byweekno">
 				<?php
-					$weekno_options = array ("1" => __ ( 'first', 'events-manager'), '2' => __ ( 'second', 'events-manager'), '3' => __ ( 'third', 'events-manager'), '4' => __ ( 'fourth', 'events-manager'), '-1' => __ ( 'last', 'events-manager') ); 
+					$weekno_options = array ("1" => __ ( 'first', 'events-manager'), '2' => __ ( 'second', 'events-manager'), '3' => __ ( 'third', 'events-manager'), '4' => __ ( 'fourth', 'events-manager'), '5' => __ ( 'fifth', 'events-manager'), '-1' => __ ( 'last', 'events-manager') ); 
 					em_option_items ( $weekno_options, $EM_Event->recurrence_byweekno  ); 
 				?>
 			</select>

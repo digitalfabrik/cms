@@ -13,6 +13,11 @@ class TranslationProxy_Translator {
 		/** @var WPML_Pro_Translation $ICL_Pro_Translation */
 		global $sitepress, $ICL_Pro_Translation;
 
+		if ( ! $ICL_Pro_Translation ) {
+			$job_factory         = wpml_tm_load_job_factory();
+			$ICL_Pro_Translation = new WPML_Pro_Translation( $job_factory );
+		}
+
 		if ( ! TranslationProxy::translator_selection_available() ) {
 			return array();
 		}
@@ -163,7 +168,6 @@ class TranslationProxy_Translator {
 	 */
 	private static function get_website_details( $project, $force = false ) {
 
-		require_once ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
 		require_once ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
 		require_once ICL_PLUGIN_PATH . '/lib/icl_api.php';
 
@@ -207,7 +211,7 @@ class TranslationProxy_Translator {
 		}
 
 		$action_link_args = array(
-			'title'     => __( 'Contact translator', 'sitepress' ),
+			'title'     => __( 'Contact translator', 'wpml-translation-management' ),
 			'unload_cb' => 'icl_thickbox_refresh',
 			'ar'        => 1
 		);
@@ -231,7 +235,7 @@ class TranslationProxy_Translator {
 						$url                                          = $project->translator_contact_iframe_url( $translator['id'] );
 						$action_link                                  = '';
 						if ( $url ) {
-							$action_link = TranslationProxy_Popup::get_link( $url, $action_link_args ) . __( 'Contact translator', 'sitepress' ) . '</a>';
+							$action_link = TranslationProxy_Popup::get_link( $url, $action_link_args ) . __( 'Contact translator', 'wpml-translation-management' ) . '</a>';
 						}
 						$translator_item['action'] = $action_link;
 					}
@@ -309,7 +313,6 @@ class TranslationProxy_Translator {
 			}
 		}
 
-		require_once ICL_PLUGIN_PATH . '/lib/Snoopy.class.php';
 		require_once ICL_PLUGIN_PATH . '/inc/utilities/xml2array.php';
 		require_once ICL_PLUGIN_PATH . '/lib/icl_api.php';
 		$icl_query = new ICanLocalizeQuery();
@@ -317,7 +320,7 @@ class TranslationProxy_Translator {
 	}
 
 	public static function flush_website_details_cache() {
-		delete_transient( ICanLocalizeQuery::WEBSITE_DETAILS_TRANSIENT_KEY );
+		delete_transient( WEBSITE_DETAILS_TRANSIENT_KEY );
 	}
 
 	public static function flush_website_details_cache_action() {

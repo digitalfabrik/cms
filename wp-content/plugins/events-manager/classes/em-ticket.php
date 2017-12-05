@@ -49,6 +49,15 @@ class EM_Ticket extends EM_Object{
 	var $spaces_limit = true;
 	
 	/**
+	 * An associative array containing event IDs as the keys and pending spaces as values.
+	 * This is in array form for future-proofing since at one point tickets could be used for multiple events.
+	 * @var array
+	 */
+	protected $pending_spaces = array();
+	protected $booked_spaces = array();
+	protected $bookings_count = array();
+	
+	/**
 	 * Creates ticket object and retreives ticket data (default is a blank ticket object). Accepts either array of ticket data (from db) or a ticket id.
 	 * @param mixed $ticket_data
 	 * @return null
@@ -203,6 +212,8 @@ class EM_Ticket extends EM_Object{
 				//timestamp - calculated only for purposes of not screwing up interfaces that use timestamps for outputting cut-off times such as booking settings for event
 				$this->start_timestamp  = strtotime($this->ticket_start, current_time('timestamp'));
 			}else{
+				unset($this->ticket_meta['recurrences']['start_days']);
+				unset($this->ticket_meta['recurrences']['start_time']);
 				$this->ticket_start = $this->start_timestamp = '';
 			}
 			//end of ticket cut-off
@@ -219,11 +230,13 @@ class EM_Ticket extends EM_Object{
 				//timestamp - calculated only for purposes of not screwing up interfaces that use timestamps for outputting cut-off times such as booking settings for event
 				$this->end_timestamp  = strtotime($this->ticket_end, current_time('timestamp')); //we save these timestamps for quicker loading on construct
 			}else{
+				unset($this->ticket_meta['recurrences']['end_days']);
+				unset($this->ticket_meta['recurrences']['end_time']);
 				$this->ticket_end = $this->end_timestamp = '';
 			}
 		}
 		$this->compat_keys();
-		do_action('em_ticket_get_post', $this);
+		do_action('em_ticket_get_post', $this, $post);
 	}
 	
 
@@ -371,38 +384,56 @@ class EM_Ticket extends EM_Object{
 		return apply_filters('em_ticket_get_available_spaces', $return, $this);
 	}
 	
-	function get_pending_spaces(){
-	    $spaces = 0;
-		foreach( $this->get_bookings()->get_pending_bookings()->bookings as $EM_Booking ){ //get_bookings() is used twice so we get the confirmed (or all if confirmation disabled) bookings of this ticket's total bookings.
-			//foreach booking, get this ticket booking info if found
-			foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
-				if( $EM_Ticket_Booking->ticket_id == $this->ticket_id ){
-					$spaces += $EM_Ticket_Booking->get_spaces();
-				}
-			}
+	/**
+	 * Get total number of pending spaces for this ticket.
+	 * @param boolean $force_refresh
+	 * @return int
+	 */
+	function get_pending_spaces( $force_refresh = false ){
+		global $wpdb;
+		if( !array_key_exists($this->event_id, $this->pending_spaces) || $force_refresh ){
+			$sub_sql = 'SELECT booking_id FROM '.EM_BOOKINGS_TABLE." WHERE event_id=%d AND booking_status=0";
+			$sql = 'SELECT SUM(ticket_booking_spaces) FROM '.EM_TICKETS_BOOKINGS_TABLE. " WHERE booking_id IN ($sub_sql) AND ticket_id=%d";
+			$pending_spaces = $wpdb->get_var($wpdb->prepare($sql, $this->event_id, $this->ticket_id));
+			$this->pending_spaces[$this->event_id] = $pending_spaces > 0 ? $pending_spaces : 0;
+			$this->pending_spaces[$this->event_id] = apply_filters('em_ticket_get_pending_spaces', $this->pending_spaces[$this->event_id], $this, $force_refresh);  
 		}
-		return apply_filters('em_ticket_get_pending_spaces', $spaces, $this);
+		return $this->pending_spaces[$this->event_id];
 	}
 
 	/**
 	 * Returns the number of booked spaces in this ticket.
+	 * @param boolean $force_refresh
 	 * @return int
 	 */
-	function get_booked_spaces($force_reload=false){
-		//get all bookings for this event
-		$spaces = 0;
-		if( is_object($this->bookings) && $force_reload ){
-			//return $this->bookings;
+	function get_booked_spaces( $force_refresh = false ){
+		global $wpdb;
+		if( !array_key_exists($this->event_id, $this->pending_spaces) || $force_refresh ){
+			$status_cond = !get_option('dbem_bookings_approval') ? 'booking_status IN (0,1)' : 'booking_status = 1';
+			$sub_sql = 'SELECT booking_id FROM '.EM_BOOKINGS_TABLE." WHERE event_id=%d AND $status_cond";
+			$sql = 'SELECT SUM(ticket_booking_spaces) FROM '.EM_TICKETS_BOOKINGS_TABLE. " WHERE booking_id IN ($sub_sql) AND ticket_id=%d";
+			$booked_spaces = $wpdb->get_var($wpdb->prepare($sql, $this->event_id, $this->ticket_id));
+			$this->booked_spaces[$this->event_id] = $booked_spaces > 0 ? $booked_spaces : 0;
+			$this->booked_spaces[$this->event_id] = apply_filters('em_ticket_get_booked_spaces', $this->booked_spaces[$this->event_id], $this, $force_refresh);
 		}
-		foreach( $this->get_bookings()->get_bookings()->bookings as $EM_Booking ){ //get_bookings() is used twice so we get the confirmed (or all if confirmation disabled) bookings of this ticket's total bookings.
-			//foreach booking, get this ticket booking info if found
-			foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
-				if( $EM_Ticket_Booking->ticket_id == $this->ticket_id ){
-					$spaces += $EM_Ticket_Booking->get_spaces();
-				}
-			}
+		return $this->booked_spaces[$this->event_id];
+	}
+
+	/**
+	 * Returns the total number of bookings of all statuses for this ticket
+	 * @param int $status
+	 * @param boolean $force_refresh
+	 * @return int
+	 */
+	function get_bookings_count( $status = false, $force_refresh = false ){
+		global $wpdb;
+		if( !array_key_exists($this->event_id, $this->bookings_count) || $force_refresh ){
+			$sql = 'SELECT COUNT(*) FROM '.EM_TICKETS_BOOKINGS_TABLE. ' WHERE booking_id IN (SELECT booking_id FROM '.EM_BOOKINGS_TABLE.' WHERE event_id=%d) AND ticket_id=%d';
+			$bookings_count = $wpdb->get_var($wpdb->prepare($sql, $this->event_id, $this->ticket_id));
+			$this->bookings_count[$this->event_id] = $bookings_count > 0 ? $bookings_count : 0;
+			$this->bookings_count[$this->event_id] = apply_filters('em_ticket_get_bookings_count', $this->bookings_count[$this->event_id], $this, $force_refresh);
 		}
-		return apply_filters('em_ticket_get_booked_spaces', $spaces, $this);
+		return $this->bookings_count[$this->event_id];
 	}
 	
 	/**

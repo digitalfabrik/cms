@@ -28,6 +28,7 @@ add_shortcode('events_gcal', 'em_get_gcal_shortcode');
  * @return string
  */
 function em_get_locations_map_shortcode($args){
+	$args = (array) $args;
 	$args['em_ajax'] = true;
 	$args['query'] = 'GlobalMapData';
     //get dimensions with px or % added in
@@ -65,6 +66,7 @@ add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //deprecate th
  * @return string
  */
 function em_get_events_map_shortcode($args){
+	$args = (array) $args;
 	$args['em_ajax'] = true;
 	$args['query'] = 'GlobalEventsMapData';
 	//get dimensions with px or % added in
@@ -372,6 +374,6 @@ add_shortcode ( 'locations_search', 'em_get_location_search_form_shortcode');
  * @return string
  */
 function em_get_my_bookings_shortcode(){
-	return em_my_bookings();
+	return em_get_my_bookings();
 }
 add_shortcode ( 'my_bookings', 'em_get_my_bookings_shortcode');

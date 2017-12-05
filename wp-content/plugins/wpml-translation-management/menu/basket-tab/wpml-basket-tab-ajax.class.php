@@ -102,6 +102,8 @@ class WPML_Basket_Tab_Ajax {
 			$errors[] = $e->getMessage();
 		}
 
+		do_action( 'wpml_tm_basket_committed' );
+
 		$this->send_json_response( $response, $errors );
 	}
 
@@ -182,7 +184,7 @@ class WPML_Basket_Tab_Ajax {
 		$basket             = $this->basket->get_basket();
 		$basket_items_types = $this->basket->get_item_types();
 		if ( ! $basket ) {
-			$message_content = __( 'No items found in basket', 'sitepress' );
+			$message_content = __( 'No items found in basket', 'wpml-translation-management' );
 		} else {
 			$total_count             = 0;
 			$message_content_details = '';
@@ -194,7 +196,7 @@ class WPML_Basket_Tab_Ajax {
 					$message_content_details .= '- ' . $item_type_name . '(s): ' . $count_item_type;
 				}
 			}
-			$message_content = sprintf( __( '%s items in basket:', 'sitepress' ), $total_count );
+			$message_content = sprintf( __( '%s items in basket:', 'wpml-translation-management' ), $total_count );
 			$message_content .= $message_content_details;
 		}
 		$container = $message_content;

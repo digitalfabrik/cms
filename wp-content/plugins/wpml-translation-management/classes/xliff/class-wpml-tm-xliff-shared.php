@@ -25,6 +25,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		$job_identifier_parts = explode( '-', (string) $identifier );
 		if ( sizeof( $job_identifier_parts ) == 2 && is_numeric( $job_identifier_parts[0] ) ) {
 			$job_id = $job_identifier_parts[0];
+			$job_id = apply_filters( 'wpml_job_id', $job_id );
 			$md5    = $job_identifier_parts[1];
 			/** @var stdClass $job */
 			$job = $this->job_factory->get_translation_job( (int) $job_id, false, 1, false );
@@ -65,7 +66,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 			$type   = (string) $attr['id'];
 			$target = $this->get_xliff_node_target( $node );
 
-			if ( ! $this->is_valid_target( $target ) ) {
+			if ( ! $this->is_valid_unit_content( $target ) ) {
 				return $this->invalid_xliff_error( array( 'target' ) );
 			}
 
@@ -117,6 +118,15 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		}
 
 		return array( $job, $job_data );
+	}
+
+	/**
+	 * @param string $filename 
+	 * @return bool
+	 */
+	function validate_file_name( $filename ) {
+		$ignored_files = apply_filters( 'wpml_xliff_ignored_files', array( '__MACOSX' ) );
+		return !( preg_match( '/(\/)/', $filename ) || in_array( $filename, $ignored_files, false ) );
 	}
 
 	protected function is_user_the_job_owner( $current_user, $job ) {
@@ -188,15 +198,5 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	protected function does_not_belong_error() {
 
 		return new WP_Error( 'xliff_does_not_match', __( "The uploaded xliff file doesn't belong to this system.", 'wpml-translation-management' ) );
-	}
-
-	/**
-	 * @param $target
-	 *
-	 * @return bool
-	 */
-	protected function is_valid_target( $target ) {
-		$target = preg_replace( '/^[\s\t\n\r]+$/m', '', $target );
-		return $target || '0' === $target;
 	}
 }

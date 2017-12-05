@@ -13,8 +13,12 @@ class EM_Event_Post {
 			//override single page with formats? 
 			add_filter('the_content', array('EM_Event_Post','the_content'));
 			add_filter('the_excerpt_rss', array('EM_Event_Post','the_excerpt_rss'));
+			//excerpts can trigger the_content which isn't ideal, so we disable the_content between the first and last excerpt calls within WP logic
+			add_filter('get_the_excerpt', array('EM_Event_Post','disable_the_content'), 1);
+			add_filter('get_the_excerpt', array('EM_Event_Post','enable_the_content'), 100);
 			if( get_option('dbem_cp_events_excerpt_formats') ){
-			    add_filter('the_excerpt', array('EM_Event_Post','the_excerpt'));
+				//important add this before wp_trim_excerpt hook, as it can screw up things like wp_editor() for WordPress SEO plugin
+			    add_filter('get_the_excerpt', array('EM_Event_Post','get_the_excerpt'));
 			}
 			//display as page template?
 			if( get_option('dbem_cp_events_template') ){
@@ -91,7 +95,7 @@ class EM_Event_Post {
 	/**
 	 * Overrides the_excerpt if this is an event post type
 	 */
-	public static function the_excerpt($content){
+	public static function get_the_excerpt($content){
 		global $post;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
@@ -100,6 +104,7 @@ class EM_Event_Post {
 		}
 		return $content;
 	}
+	public static function the_excerpt($content){ return self::get_the_excerpt($content); }
 	
 	public static function the_excerpt_rss( $content ){
 		global $post;
@@ -110,6 +115,15 @@ class EM_Event_Post {
 				$content = ent2ncr(convert_chars($content)); //Some RSS filtering
 			}
 		}
+		return $content;
+	}
+	
+	public static function enable_the_content( $content ){
+		add_filter('the_content', array('EM_Event_Post','the_content'));
+		return $content;
+	}
+	public static function disable_the_content( $content ){
+		remove_filter('the_content', array('EM_Event_Post','the_content'));
 		return $content;
 	}
 	
@@ -330,8 +344,8 @@ class EM_Event_Post {
 		  	}
 		  	if( is_admin() ){
 		  		//admin areas don't need special ordering, so make it simple
-			  	$wp_query->query_vars['orderby'] = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby']:'meta_value_num';
-			  	$wp_query->query_vars['meta_key'] = '_start_ts'; 
+			  	$wp_query->query_vars['orderby'] = (!empty($_REQUEST['orderby']) && $_REQUEST['orderby'] != 'date-time') ? $_REQUEST['orderby']:'meta_value_num';
+			  	$wp_query->query_vars['meta_key'] = '_start_ts';
 				$wp_query->query_vars['order'] = (!empty($_REQUEST['order'])) ? $_REQUEST['order']:'ASC';
 		  	}else{
 			  	if( get_option('dbem_events_default_archive_orderby') == 'title'){

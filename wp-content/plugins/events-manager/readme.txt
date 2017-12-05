@@ -4,8 +4,8 @@ Donate link: http://wp-events-plugin.com
 Tags: bookings, calendar, tickets, events, buddypress, event management, google maps, maps, locations, registration
 Text Domain: events-manager
 Requires at least: 3.5
-Tested up to: 4.8
-Stable tag: 5.7.3
+Tested up to: 4.9
+Stable tag: 5.8.1.1
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -99,6 +99,93 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 5.8.1.1 =
+* fixed a bug that arose in 5.8.1 where tag/category pages using formatting will still show the tags/categories list page instead
+
+= 5.8.1 =
+* fixed recurring events booking cut-off dates not being taken into consideration when creating/editing recurrences
+* fixes various issues that arose in 5.8 update:
+ * removed use of is_main_query() and in_the_loop() within the_content filter of em_the_content due to conflicts with certain theme builders
+ * fixed locations without attached events not showing up in autocomplete and dropdowns for creating/editing events
+ * fixed multisite issues loading single event pages in MS Global mode
+ * fixed dropdown custom #_ATT fields not saving properly
+
+= 5.8.0.1 =
+* fixed bug introduced in 5.8 which did not correctly return content in get_the_excerpt filters
+
+= 5.8 =
+* fixed category color picker and image uploader problems
+* created base classes for EM taxonomies to make adding custom EM taxonomies even easier in the future,
+* added tag image and color settings/data
+* added sortable option for date columns of events and recurring events in the admin area
+* fixed saving an event recreating ticket_meta and wiping out ML settings
+* fixed multilingual translations of event in WPML not hiding/showing right meta boxes
+* fixed saving multilingual translation of event overwriting original language ticket names
+* changed admin headers to use new and accessible WP inline HTML structure
+* fixed serialization problems for deprecated event/location attributes and attributes with multiple post meta entries for one post
+* removed deprecated attributes editor from admin area as this is confusing and error prone when combined with other plugins manipulating custom fields
+* fixed #_EVENTEXCERPT without arguments stripping HTML since 5.7
+* added ability to list multiple categories/tags in conditional placeholders e.g. {has_tag_123,1234,tagname}...
+* added #_EVENTPRICEMINALL and #_EVENTPRICEMAXALL to show prices of unavailable tickets as well
+* fixed JS issues with MS Global mode and JS file limiting when displaying subsite single event pages on main blog
+* fixed single initial abbreviation issues in Chinese calendars
+* fixed duplicate events not being published to social networks via jetpack publicize (kudos @gnaag)
+* fixed potential incompatibilities with other plugins using wp_query_reset() on category pages, preventing our page formats from showing
+* fixed taxonomy archive pages returning zero results if taxonomy formatting is disabled and events are excluded from searches (WP Bug workaround)
+* fixed inconsistent line ending causing warnings with PHP compatibility checker
+* unified Tag and Category class functions into sets of parent class functionn
+* fixed PHP fatal error with BP when disabling notifications
+* fixed calendar day links being incorrect if another plugin adds querystring params to permalinks
+* added groupby, groupby_orderby and groupby_order arguments allowing grouping in search results for events and locations
+* improved validation and sanitization of orderby arguments to avoid ambiguous field SQL errors
+* added optimization to optionally join event/location tables when needed for grouped searches or if EM_DISABLE_OPTIONAL_JOINS is defined and set to true
+* moved condition of when argument 'bookings' = 'user' to EM_Object so it's accessible by EM_Location too
+* changed default 'recurring' argument to null so that non EM_Events searches can by default avoid the recurring conditional being generated
+* added grouping to AJAX response for event_map shortcode and function resulting in performance improvements
+* fixed use of get_terms via deprecated two argument method
+* fixed recreation of tickets for a recurring event having wrong start/end ticket dates
+* fixed custom fields with a 0 value getting deleted instead of saved
+* fixed/changed - shortened SQL search conditions when filtering by array or comma list of event/location ids
+* fixed escaping of apostrophes on search term placeholder
+* added optimized result counts (EM_Events::$num_rows and EM_Events::$num_rows_total) in EM_Events::get() to reduce number of SQL calls
+* added optimized result counts (EM_Locations::$num_rows and EM_Locations::$num_rows_total) in EM_Locations::get() to reduce number of SQL calls
+* changed as a result of the above two additions above we tweaked various event list areas to half number of SQL queries run per list
+* added no_results_msg argument to EM_Events::output() functions for custom 'no events found'
+* added location_status and event_status search arguments to event and location searches respectively
+* fixed column alignment issues when using quick edit for events in wp dashboard
+* tweaked excerpt filters and reduced redundant calls to our the_content filters (reducing overhead)
+* changed event page the_content loading so it only shows when in_the_loop() and is_main_query() is true
+* fixed issues with WordPress SEO plugin breaking the wp editor front-end
+* added event list default sorting options to locations, tags and categories
+* added em_wp_is_super_admin() replacing is_super_admin() in anticipation of its deprecation 
+* changed and optimized postmeta saving process to reduce number of rows by up to 80% per event,
+* optimized events table to save NULL values when possible
+* changed/removed unused event_category_id field from events table
+* added em_object_can_manage filter
+* fixed nested attributes such as {cond}#_ATT{name}{/cond} not being parsed properly
+* fixed some installation SQL PHP errors/warnings
+* fixed capability mapping problems if revisions enabled for events or locations
+* added WEBCAL placeholders to events, locations, categories and tags (e.g. #_EVENTICALLINK > #_EVENTWEBCALLINK)
+* removed unnecessary SQL queries for undeclared wp_options reducing number of queries made per page load
+* tweaked settings page textarea elements to be wider
+* added (possibly temporary) EM_FORCE_RECURRENCES_SAVE constant forcing status save for when recurrences change status,
+* fixed EM_Event::set_status_events() which was not working correctly and now also runs a em_event_set_status_events filter
+* fixed recurring events warning text not appearing in front-end editor if first submission produced validation errors
+* performance improvements to EM_Bookings and EM_Ticket objects by preventing pre-loading of all bookings on instantiation and when querying availability
+* added cache optimization for event and location loading,
+* improved optimized loading of EM_Location via em_get_location() by checking globals first,
+* changed bookings/tickets template for event editor to avoid loading all bookings for counting purposes
+* added $include_adjustments argument to get_price_pre_taxes and get_price_post_taxes for calculation of prices without discounts/surcharges (those making use of the em_booking_get_price_post_taxes and em_booking_get_price_pre_taxes filters should check for this passed argument in their custom code)
+* fixed bug where event categories saved via quick or bulk edit in multisite global mode aren't reflected in subsite event lists filtering by that category
+* fixed events created before changing to multisite and enabling global mode not displaying images via placeholders
+* fixed bug in filter em_ticket_get_post where function argument $post was not passed on
+* improved taxonomy color retrieval so it makes use of caching
+* improved/optimized deletion of multiple bookings and tickets at once if belonging to an event
+* fixed my_bookings shortcode outputting content at top of content irrespective of where it is located within content
+* fixed invalid recurrence ticket start/end cut-off date/times if both are not set for the recurring event
+* fixed bug where ticket start/end dates cannot be unset in recurring events
+
 = 5.7.3 =
 * fixed previous meta not getting deleted from recurrences resulting in non-saved information such as a changed featured image or location
 * fixed newly submitted recurrences first saved in draft or pending mode not creating new events without a reschedule

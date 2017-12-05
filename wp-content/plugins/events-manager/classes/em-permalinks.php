@@ -34,7 +34,7 @@ if( !class_exists('EM_Permalinks') ){
 		public static function flush(){
 			global $wp_rewrite;
 			$wp_rewrite->flush_rules();
-			delete_option('dbem_flush_needed');
+			update_option('dbem_flush_needed', 0);
 		}
 		
 		public static function post_type_archive_link($link, $post_type){

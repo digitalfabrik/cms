@@ -129,6 +129,7 @@ table.events-table .category { color:#888; }
 #em-options-form tr.em-subheader h5 { font-style:normal; margin:10px 0; padding:0 0 5px; font-weight:bold; font-size:15px; border-bottom: 1px solid #efefef; color:#000; }
 #em-options-form tbody.em-subsection th { padding-left:35px; }
 table.em-caps-table th, table.em-caps-table td { width:auto !important; }
+#em-options-form textarea, #em-options-form input[type="text"] { width:95%; }
 .em-translatable { display:inline-block; width:20px; height:20px; font-size:20px; padding:0px 5px 0px 0px; cursor:pointer; }
 .em-ml-options { display:none; }
 .em-ml-options table { width:95%; }

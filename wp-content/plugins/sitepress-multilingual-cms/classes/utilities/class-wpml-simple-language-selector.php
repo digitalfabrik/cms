@@ -14,7 +14,7 @@ class WPML_Simple_Language_Selector extends WPML_SP_User {
 															'id'                 => '',
 															'name'               => '',
 															'show_please_select' => true,
-															'please_select_text' => __( '-- Please select --', 'wpml-string-translation' ),
+															'please_select_text' => __( '-- Please select --', 'sitepress' ),
 															'selected'           => '',
 															'echo'               => false,
 															'class'              => '',
@@ -56,17 +56,17 @@ class WPML_Simple_Language_Selector extends WPML_SP_User {
 			title="wpml-simple-language-selector"
 			<?php
 			if ( $options['id'] ) {
-				echo ' id="' . $options['id'] . '"';
+				echo ' id="' . esc_attr( $options['id'] ) . '"';
 			}
 
 			if ( $options['name'] ) {
-				echo ' name="' . $options['name'] . '"';
+				echo ' name="' . esc_attr( $options['name'] ) . '"';
 			}
 			?>
-			class="wpml-simple-lang-selector js-simple-lang-selector <?php echo $options['class']; ?>"
-			<?php echo $data; ?>
-			<?php echo $disabled; ?>
-			style="<?php echo $options['style']; ?>">
+			class="wpml-simple-lang-selector js-simple-lang-selector <?php echo esc_attr( $options['class'] ); ?>"
+			<?php echo esc_attr( $data ); ?>
+			<?php echo esc_attr( $disabled ); ?>
+			style="<?php echo esc_attr( $options['style'] ); ?>">
 			<?php
 			if ( $options['show_please_select'] ) {
 				?>
@@ -76,19 +76,19 @@ class WPML_Simple_Language_Selector extends WPML_SP_User {
 				}
 				?>
 					>
-					<?php echo $options['please_select_text']; ?>
+					<?php echo esc_html( $options['please_select_text'] ); ?>
 				</option>
 				<?php
 			}
 			foreach ( $languages as $lang ) {
 				?>
-				<option value="<?php echo $lang['code']; ?>" <?php
+				<option value="<?php echo esc_attr( $lang['code'] ); ?>" <?php
 				if ( $options['selected'] == $lang['code'] ) {
 					echo 'selected="selected"';
 				}
 				?>
-								data-flag_url="<?php echo $this->sitepress->get_flag_url( $lang['code'] ); ?>" data-status="<?php echo in_array( $lang['code'], array_keys( $active_languages ) ) ? 'active' : ''; ?>">
-					<?php echo $lang['display_name']; ?>
+								data-flag_url="<?php echo esc_url( $this->sitepress->get_flag_url( $lang['code'] ) ); ?>" data-status="<?php echo in_array( $lang['code'], array_keys( $active_languages ) ) ? 'active' : ''; ?>">
+					<?php echo esc_html( $lang['display_name'] ); ?>
 				</option>
 				<?php
 			}

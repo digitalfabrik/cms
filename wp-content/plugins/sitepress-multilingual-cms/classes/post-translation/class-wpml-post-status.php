@@ -4,6 +4,7 @@ class WPML_Post_Status extends WPML_WPDB_User {
 
 	private $needs_update = array();
 	private $status       = array();
+	private $preload_done = false;
 	private $wp_api;
 	
 	public function __construct( &$wpdb, $wp_api ) {
@@ -12,28 +13,86 @@ class WPML_Post_Status extends WPML_WPDB_User {
 	}
 
 	public function needs_update( $post_id ) {
-		if ( !isset( $this->needs_update[ $post_id ] ) ) {
-			global $wpml_post_translations;
+		global $wpml_post_translations, $wpml_cache_factory;
 
-			$this->needs_update[ $post_id ] = (bool) $this->wpdb->get_var (
-				$this->wpdb->prepare (
-					"SELECT ts.needs_update
-                     FROM {$this->wpdb->prefix}icl_translation_status ts
-		             JOIN {$this->wpdb->prefix}icl_translations it
-						ON it.translation_id = ts.translation_id
-					 WHERE it.trid = %d AND it.language_code = %s",
-					$wpml_post_translations->get_element_trid ( $post_id ),
-					$wpml_post_translations->get_element_lang_code ( $post_id )
-				)
-			);
+		if ( !isset( $this->needs_update[ $post_id ] ) ) {
+			$this->maybe_preload();
+
+			$trid = $wpml_post_translations->get_element_trid ( $post_id );
+
+			$cache = $wpml_cache_factory->get( 'WPML_Post_Status::needs_update' );
+			$found = false;
+			$results = $cache->get( $trid, $found );
+			if ( ! $found ) {
+				$results = $this->wpdb->get_results(
+					$this->wpdb->prepare(
+						"SELECT ts.needs_update, it.language_code
+	                     FROM {$this->wpdb->prefix}icl_translation_status ts
+			             JOIN {$this->wpdb->prefix}icl_translations it
+							ON it.translation_id = ts.translation_id
+						 WHERE it.trid = %d",
+						$trid
+					)
+				);
+				$cache->set( $trid, $results );
+			}
+			$language = $wpml_post_translations->get_element_lang_code ( $post_id );
+
+			$needs_update = false;
+			foreach( $results as $result ) {
+				if ( $result->language_code == $language ) {
+					$needs_update = $result->needs_update;
+					break;
+				}
+
+			}
+			$this->needs_update [ $post_id ] = $needs_update;
+
 		}
 
 		return $this->needs_update [ $post_id ];
 	}
 
+	private function maybe_preload() {
+		global $wpml_post_translations, $wpml_cache_factory;
+
+		if ( ! $this->preload_done ) {
+
+			$trids = $wpml_post_translations->get_trids();
+			$trids = implode( ',', $trids );
+
+			if ( $trids ) {
+
+				$cache = $wpml_cache_factory->get( 'WPML_Post_Status::needs_update' );
+
+				$results = $this->wpdb->get_results(
+					"SELECT ts.needs_update, it.language_code, it.trid
+					FROM {$this->wpdb->prefix}icl_translation_status ts
+					JOIN {$this->wpdb->prefix}icl_translations it
+					ON it.translation_id = ts.translation_id
+					WHERE it.trid IN ( {$trids} )"
+				);
+
+				$groups = array();
+				foreach ( $results as $result ) {
+					if ( ! isset( $groups[ $result->trid ] ) ) {
+						$groups[ $result->trid ] = array();
+					}
+					$groups[ $result->trid ][] = $result;
+				}
+				foreach ( $groups as $trid => $group ) {
+					$cache->set( $trid, $group );
+				}
+
+			}
+
+			$this->preload_done = true;
+		}
+	}
 	public function reload() {
 		$this->needs_update = array();
 		$this->status       = array();
+		$this->preload_done = false;
 	}
 
 	public function set_update_status( $post_id, $update ) {
@@ -61,6 +120,14 @@ class WPML_Post_Status extends WPML_WPDB_User {
 		}
 
 		$this->needs_update[ $post_id ] = (bool) $update;
+
+		do_action( 'wpml_translation_status_update',
+			array(
+				'post_id' => $post_id,
+				'type' => 'needs_update',
+				'value' => $update
+			)
+		);
 
 		return isset( $res );
 	}
@@ -105,6 +172,15 @@ class WPML_Post_Status extends WPML_WPDB_User {
 				array( 'status' => $status, 'translation_id' => $translation_id->transid )
 			);
 		}
+
+		do_action( 'wpml_translation_status_update',
+			array(
+				'post_id' => $post_id,
+				'type' => 'status',
+				'value' => $status
+			)
+		);
+
 
 		return isset( $res );
 	}

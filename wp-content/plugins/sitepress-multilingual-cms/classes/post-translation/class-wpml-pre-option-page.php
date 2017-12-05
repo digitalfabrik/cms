@@ -1,7 +1,9 @@
 <?php
 
 class WPML_Pre_Option_Page extends WPML_WPDB_And_SP_User {
-
+	
+	const CACHE_GROUP = 'wpml_pre_option_page';
+	
 	private $switched;
 	private $lang;
 	
@@ -15,10 +17,9 @@ class WPML_Pre_Option_Page extends WPML_WPDB_And_SP_User {
 	public function get( $type, $from_language = null ) {
 
 		$cache_key   = $type;
-		$cache_group = 'wpml_pre_option_page';
 		$cache_found = false;
 		
-		$cache       = new WPML_WP_Cache( $cache_group );
+		$cache       = new WPML_WP_Cache( self::CACHE_GROUP );
 		$results     = $cache->get( $cache_key, $cache_found );
 
 		if ( ( ( ! $cache_found || ! isset ( $results[ $type ] ) ) && ! $this->switched )
@@ -43,24 +44,27 @@ class WPML_Pre_Option_Page extends WPML_WPDB_And_SP_User {
 				)
 			);
 
-			if(count($values)) {
+			if ( count( $values ) ) {
 				foreach ( $values as $lang_result ) {
 					$results [ $type ] [ $lang_result->language_code ] = $lang_result->element_id;
 				}
-
-				if ( $results ) {
-					$cache->set( $cache_key, $results );
-				}
 			}
+
+			$cache->set( $cache_key, $results );
 		}
 
 		$target_language = $from_language ? $from_language : $this->lang;
 
-		return isset( $results[ $type ][ $target_language ] ) ? $results[ $type ][ $target_language ] : '';
+		return isset( $results[ $type ][ $target_language ] ) ? $results[ $type ][ $target_language ] : false;
+	}
+
+	public function clear_cache() {
+		$cache = new WPML_WP_Cache( self::CACHE_GROUP );
+		$cache->flush_group_cache();
 	}
 
 	function fix_trashed_front_or_posts_page_settings( $post_id ) {
-
+		$post_id = (int) $post_id;
 		$page_on_front_current  = (int) $this->get( 'page_on_front' );
 		$page_for_posts_current = (int) $this->get( 'page_for_posts' );
 

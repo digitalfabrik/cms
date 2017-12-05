@@ -302,6 +302,9 @@ function em_get_wp_users( $args = array(), $extra_users = array() ) {
 }
 
 function em_get_attributes($lattributes = false){
+	$attributes = array('names'=>array(), 'values'=>array());
+	if( !$lattributes && !get_option('dbem_attributes_enabled') ) return $attributes;
+	if( $lattributes && !get_option('dbem_location_attributes_enabled') ) return $attributes;
 	//We also get a list of attribute names and create a ddm list (since placeholders are fixed)
 	$formats =
 		get_option ( 'dbem_placeholders_custom' ).
@@ -324,7 +327,6 @@ function em_get_attributes($lattributes = false){
 		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
 	}
 	//Now grab all the unique attributes we can use in our event.
-	$attributes = array('names'=>array(), 'values'=>array());
 	foreach($matches[1] as $key => $attribute) {
 		if( !in_array($attribute, $attributes['names']) ){
 			$attributes['names'][] = $attribute ;
@@ -519,6 +521,22 @@ function em_new_user_notification() {
 }
 
 /**
+ * Transitional function to handle WP's eventual move away from the is_super_user() function 
+ */
+function em_wp_is_super_admin( $user_id = false ){
+	$user = ( ! $user_id || $user_id == get_current_user_id() ) ? wp_get_current_user() : get_userdata( $user_id );
+
+	if ( ! $user || ! $user->exists() ) return false;
+
+	if ( is_multisite() ) {
+		if( $user->has_cap('manage_network_options') ) return true;
+	} else {
+		if ( $user->has_cap('delete_users') ) return true;
+	}
+	return false;
+}
+
+/**
  * Returns an array of flags that are used in search forms.
  * @return array
  */
@@ -639,7 +657,7 @@ function em_options_input_text($title, $name, $description ='', $default='') {
 	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
 		<th scope="row"><?php echo esc_html($title); ?></th>
 	    <td>
-			<input name="<?php echo esc_attr($name) ?>" type="text" id="<?php echo esc_attr($name) ?>" style="width: 95%" value="<?php echo esc_attr(get_option($name, $default), ENT_QUOTES); ?>" size="45" />			
+			<input name="<?php echo esc_attr($name) ?>" type="text" id="<?php echo esc_attr($name) ?>" value="<?php echo esc_attr(get_option($name, $default), ENT_QUOTES); ?>" size="45" />			
 	    	<?php if( $translate ): ?><span class="em-translatable dashicons dashicons-admin-site"></span><?php endif; ?>
 	    	<br />
 			<?php 
@@ -686,7 +704,7 @@ function em_options_textarea($title, $name, $description ='') {
 	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
 		<th scope="row"><?php echo esc_html($title); ?></th>
 			<td>
-				<textarea name="<?php echo esc_attr($name) ?>" id="<?php echo esc_attr($name) ?>" rows="6" cols="60"><?php echo esc_attr(get_option($name), ENT_QUOTES);?></textarea>			
+				<textarea name="<?php echo esc_attr($name) ?>" id="<?php echo esc_attr($name) ?>" rows="6"><?php echo esc_attr(get_option($name), ENT_QUOTES);?></textarea>			
 		    	<?php if( $translate ): ?><span class="em-translatable  dashicons dashicons-admin-site"></span><?php endif; ?>
 		    	<br />
 				<?php 
@@ -738,14 +756,18 @@ function em_options_radio($name, $options, $title='') {
 <?php
 }
 
-function em_options_radio_binary($title, $name, $description='', $option_names = '', $trigger='') {
+function em_options_radio_binary($title, $name, $description='', $option_names = '', $trigger='', $untrigger=false) {
 	if( empty($option_names) ) $option_names = array(0 => __('No','events-manager'), 1 => __('Yes','events-manager'));
 	if( substr($name, 0, 7) == 'dbem_ms' ){
 		$list_events_page = get_site_option($name);
 	}else{
 		$list_events_page = get_option($name);
 	}
-	$trigger_att = ($trigger) ? 'data-trigger="'.esc_attr($trigger).'" class="em-trigger"':'';
+	if( $untrigger ){
+		$trigger_att = ($trigger) ? 'data-trigger="'.esc_attr($trigger).'" class="em-untrigger"':'';
+	}else{
+		$trigger_att = ($trigger) ? 'data-trigger="'.esc_attr($trigger).'" class="em-trigger"':'';
+	}
 	?>
    	<tr valign="top" id='<?php echo $name;?>_row'>
    		<th scope="row"><?php echo esc_html($title); ?></th>

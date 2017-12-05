@@ -2,7 +2,9 @@
 class EM_ML_Admin{
     
 	public static function init(){
-		add_action('add_meta_boxes', 'EM_ML_Admin::meta_boxes',100);
+		add_action('add_meta_boxes_'.EM_POST_TYPE_EVENT, 'EM_ML_Admin::meta_boxes',100);
+		add_action('add_meta_boxes_event-recurring', 'EM_ML_Admin::meta_boxes', 100, 1);
+		add_action('add_meta_boxes_'.EM_POST_TYPE_LOCATION, 'EM_ML_Admin::meta_boxes', 100, 1);
 		if( !defined('EM_SETTINGS_TABS') && count(EM_ML::$langs) > 3 ) define('EM_SETTINGS_TABS',true);
 	}
 	

@@ -1,285 +1,358 @@
 <?php
 
-class WPML_TM_Dashboard extends WPML_WPDB_User {
+/**
+ * Class WPML_TM_Dashboard
+ */
+class WPML_TM_Dashboard {
 
 	/**
 	 * @var array
 	 */
-	private $active_languages;
+	private $translatable_post_types = null;
+
 	/**
-	 * @var string[]
+	 * @var wpdb
 	 */
-	private $translatable_types;
+	private $wpdb;
+
+	/**
+	 * @var SitePress
+	 */
+	private $sitepress;
+
+	/**
+	 * @var int
+	 */
+	private $found_documents = 0;
 
 	/**
 	 * WPML_TM_Dashboard constructor.
 	 *
-	 * @param wpdb     $wpdb
-	 * @param array[]  $active_languages
-	 * @param string[] $translatable_types
+	 * @param wpdb $wpdb
+	 * @param SitePress $sitepress
 	 */
-	public function __construct( &$wpdb, $active_languages, $translatable_types ) {
-		parent::__construct( $wpdb );
-		$this->active_languages   = array_keys( $active_languages );
-		$this->translatable_types = $translatable_types;
-		$this->wpdb               = $wpdb;
+	public function __construct( wpdb $wpdb, SitePress $sitepress ) {
+		$this->wpdb = $wpdb;
+		$this->sitepress = $sitepress;
+		add_filter( 'posts_where', array( $this, 'add_dashboard_filter_conditions' ), 10, 2 );
 	}
 
-    /**
-     * get documents
-     *
-     * @param array $args
-     *
-     * @return mixed
-     */
-    public function get_documents( $args ) {
-        $parent_id   = false;
-        $parent_type = false;
-        $to_lang     = false;
-        $from_lang   = false;
-        $tstatus     = false;
-        $title       = false;
-        $sort_by     = false;
-        $sort_order  = false;
-        $status      = false;
-        $type        = array();
-        $limit_no    = 0;
+	/**
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	public function get_documents( $args = array() ) {
+		$results = array();
+		$documents = array();
 
-        extract( $args );
+		$defaults = array(
+			'from_lang'   => 'en',
+			'to_lang'     => '',
+			'tstatus'     => -1,
+			'sort_by'     => 'date',
+			'sort_order'  => 'DESC',
+			'limit_no'    => ICL_TM_DOCS_PER_PAGE,
+			'type'        => '',
+			'title'       => '',
+			'status'      => array( 'publish', 'pending', 'draft', 'future', 'private', 'inherit' ),
+			'page'        => 0,
+		);
 
-        global $wp_query;
-        $wpdb = $this->wpdb;
+		$args = $this->remove_empty_arguments( $args );
+		$args = wp_parse_args( $args, $defaults );
 
-        if ( !$type ) {
-            $type = $this->translatable_types;
-        } elseif ( !is_array( $type ) ) {
-            $found = false;
-            foreach ( $this->translatable_types as $prefixed_type ) {
-                if ( strpos( $prefixed_type, '_' . $type ) > 0 ) {
-                    $type  = array( $prefixed_type );
-                    $found = true;
-                    break;
-                }
-            }
-            if ( !$found ) {
-                $type = array( $type );
-            }
-        }
+		$documents                  = $this->add_string_packages( $documents, $args );
+		$documents                  = $this->add_translatable_posts( $documents, $args );
+		$filtered_documents         = apply_filters( 'wpml_tm_dashboard_documents', $documents );
+		$filtered_documents         = array_slice( $filtered_documents, 0, $args['limit_no'] );
+		$results['documents']       = $filtered_documents;
+		$results['found_documents'] = $this->found_documents - ( count( $documents ) - count( $filtered_documents ) );
 
-        $title_snippet = $this->build_title_date_snippet( $title );
+		return $results;
+	}
 
-        $sql = "SELECT  SQL_CALC_FOUND_ROWS
-						DISTINCT trid,
-						i.element_id AS ID,
-						i.element_type AS translation_element_type,
-						tr.title,
-						(i.source_language_code IS NOT NULL) AS is_translation,
-						i.language_code
-				FROM {$wpdb->prefix}icl_translations i
-				" . $title_snippet . "
-				WHERE i.element_id IS NOT NULL
-				  AND i.element_type IN (" . wpml_prepare_in( $type, '%s' ) . ")
-				";
+	/**
+	 * @param $args
+	 *
+	 * @return array
+	 */
+	private function remove_empty_arguments( $args ) {
+		$output = array();
+		foreach ( $args as $argument_name => $argument_value ) {
+			if ( '' !== $argument_value ) {
+				$output[ $argument_name ] = $argument_value;
+			}
+		}
 
-        $sql = $this->add_from_lang_where( $sql, $from_lang );
-        if ( $to_lang ) {
-            $sql = $this->add_to_lang_where( $sql, $to_lang );
-        }
+		return $output;
+	}
 
-        $sql = $this->add_status_where( $sql, $status );
-        $sql = $this->add_tstatus_where( $sql, $tstatus );
-        if ( count( $type ) === 1 ) {
-            $sql = $this->add_element_type_where( $sql, array_pop( $type ) );
-        }
-        if ( $parent_id && $parent_type ) {
-            if ( $parent_type === 'page' ) {
-                $sql = $this->add_parent_where( $sql, $parent_id );
-            } elseif ( $parent_type === 'category' ) {
-                $sql = $this->add_category_where( $sql, $parent_id );
-            }
-        }
-        $sql = $this->add_order_snippet( $sql, $sort_by, $sort_order );
-        $sql = $this->add_pagination_snippet( $sql, $limit_no );
+	/**
+	 * Add list of translatable post types to dashboard.
+	 *
+	 * @param array $results
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	private function add_translatable_posts( $results, $args ) {
+		$post_types = $this->get_translatable_post_types();
+		$offset = 0;
+		if ( $this->is_cpt_type( $args ) ) {
+			$post_types = array( $args['type'] );
+			$offset = $args['page'] * $args['limit_no'];
+		} elseif ( ! empty( $args['type'] ) ) {
+			return $results;
+		}
 
-        $results = $wpdb->get_results( $sql );
-        $count   = $wpdb->get_var( "SELECT FOUND_ROWS()" );
+		$query_args = array(
+			'post_type'                => $post_types,
+			'order_by'                 => $args['sort_by'],
+			'order'                    => $args['sort_order'],
+			'posts_per_page'           => $args['limit_no'] + 1,
+			'post_status'              => $args['status'],
+			'post_language'            => $args['from_lang'],
+			'post_language_to'         => $args['to_lang'],
+			'post_translation_status'  => $args['tstatus'],
+			'suppress_filters'         => false,
+			'update_post_meta_cache'   => false,
+			'update_post_term_cache'   => false,
+			'no_found_rows'            => true,
+			'offset'                   => $offset,
+		);
 
-        $wp_query->found_posts                    = $count;
-        $wp_query->query_vars[ 'posts_per_page' ] = $limit_no;
-        $wp_query->max_num_pages                  = ceil( $wp_query->found_posts / $limit_no );
+		if ( ! empty( $args['title'] ) ) {
+			$query_args['post_title_like'] = $args['title'];
+		}
 
-        return $results;
-    }
+		$lang = $this->sitepress->get_current_language();
+		$this->sitepress->switch_lang( $args['from_lang'] );
+		$query_args = apply_filters( 'wpml_tm_dashboard_post_query_args', $query_args, $args );
+		$query = new WPML_TM_WP_Query( $query_args );
+		$this->sitepress->switch_lang( $lang );
+		if ( ! empty( $query->posts ) ) {
+			foreach ( $query->posts as $post ) {
+				$language_details                   = $this->sitepress->get_element_language_details( $post->ID, 'post_' . $post->post_type );
+				$post_obj                           = new stdClass();
+				$post_obj->ID                       = $post->ID;
+				$post_obj->translation_element_type = 'post_' . $post->post_type;
+				$post_obj->title                    = $post->post_title;
+				$post_obj->is_translation           = ( null === $language_details->source_language_code ) ? '0' : '1';
+				$post_obj->language_code            = $language_details->language_code;
+				$post_obj->trid                     = $language_details->trid;
+				$results[]                          = $post_obj;
+			}
+		}
+		$this->found_documents += $query->get_found_count();
+		wp_reset_query();
+		return $results;
+	}
 
-    private function build_title_date_snippet( $title ) {
-        $wpdb = $this->wpdb;
+	/**
+	 * Add additional where conditions to support the following query arguments:
+	 *  - post_title_like         - Allow query posts with SQL LIKE in post title.
+	 *  - post_language_to        - Allow query posts with language they are translated to.
+	 *  - post_translation_status - Allow to query posts by their translation status.
+	 * @param string $where
+	 * @param object $wp_query
+	 *
+	 * @return string
+	 */
+	public function add_dashboard_filter_conditions( $where, $wp_query ) {
+		$post_title_like = $wp_query->get( 'post_title_like' );
+		$post_language = $wp_query->get( 'post_language_to' );
+		$post_translation_status = (int) $wp_query->get( 'post_translation_status' );
+		$translations_table_name = $this->wpdb->prefix . 'icl_translations';
 
-        $title_locations = array(
-            $wpdb->posts => array(
-                'id_column' => 'ID',
-                'title_column' => 'post_title',
-                'element_type_prefix' => 'post',
-                'date_column' => 'post_date'
-            )
-        );
-        $title_locations = apply_filters( 'wpml_tm_dashboard_title_locations', $title_locations );
-        $snippets        = array();
-        foreach ( $title_locations as $table => $title_info ) {
-            $title_info[ 'date_column' ] = $title_info[ 'date_column' ] ? $title_info[ 'date_column' ] : "'none'";
-            $snippets[ ]                 = "  SELECT " . $title_info[ 'title_column' ] . " AS title, "
-                                           . $title_info[ 'date_column' ] . " AS date, ni.translation_id AS trans_id
-                            FROM " . $table . " p JOIN {$wpdb->prefix}icl_translations ni"
-                                           . " ON ni.element_type LIKE '" . $title_info[ 'element_type_prefix' ]
-                                           . "%' WHERE p." . $title_info[ 'id_column' ] . " = ni.element_id "
-                                           . $this->add_search_where(
-                    $title_info[ 'title_column' ],
-                    $title
-                );
-        }
+		if ( $post_title_like ) {
+			$where .= $this->wpdb->prepare( " AND {$this->wpdb->posts}.post_title LIKE '%s'", '%' . $this->wpdb->esc_like( $post_title_like ) . '%' );
+		}
 
-        return " JOIN ( " . join( ' UNION ALL', $snippets ) . " ) tr ON tr.trans_id = i.translation_id ";
-    }
+		if ( ! empty( $post_language ) ) {
+			$where .= $this->wpdb->prepare( " AND t.trid IN (SELECT trid FROM {$translations_table_name} 
+			WHERE {$translations_table_name}.language_code='%s')", $post_language );
+		}
 
-    private function add_element_type_where( $sql, $type ) {
-        if ( $type ) {
-            $sql .= $this->wpdb->prepare( " AND i.element_type LIKE %s ", '%' . $type );
-        }
+		$post_type = $wp_query->get( 'post_type' );
+		if ( $post_translation_status >= 0 && $this->is_cpt_type( array(), $post_type[0] ) ) {
+			$where .= $this->build_translation_status_where( $post_translation_status );
+		}
+		return $where;
+	}
 
-        return $sql;
-    }
+	/**
+	 * Add string packages to translation dashboard.
+	 * @param array $results
+	 * @param array $args
+	 *
+	 * @return array
+	 */
+	private function add_string_packages( $results, $args ) {
+		$string_packages_table = $this->wpdb->prefix . 'icl_string_packages';
+		$translations_table = $this->wpdb->prefix . 'icl_translations';
+		$offset = 0;
 
-    private function add_status_where( $sql, $status ) {
+		if ( $this->is_cpt_type( $args ) ) {
+			return array();
+		}
 
-        $status_snippet = $status ? $this->wpdb->prepare( " = %s ", $status ) : " NOT IN ('auto-draft', 'trash')";
-        $sql .=
-            " AND ( i.element_type NOT LIKE 'post%' OR (SELECT COUNT(ID)
-                                                        FROM {$this->wpdb->posts}
-                                                        WHERE ID = i.element_id
-                                                            AND post_status {$status_snippet} ) = 1 ) ";
+		if ( array_key_exists( 'type', $args ) && ! empty( $args['type'] ) ) {
+			$offset = $args['page'] * $args['limit_no'];
+		}
 
-        return $sql;
-    }
+		if ( ! is_plugin_active( 'wpml-string-translation/plugin.php' ) ) {
+			return $results;
+		}
 
-    private function add_from_lang_where( $sql, $lang ) {
-        $sql .= $this->wpdb->prepare( " AND i.language_code = %s ", $lang );
+		// Exit if *icl_string_packages table doesn't exist.
+		if ( $this->wpdb->get_var( "SHOW TABLES LIKE '$string_packages_table'" ) !== $string_packages_table ) {
+			return $results;
+		}
 
-        return $sql;
-    }
+		$where = $this->create_string_packages_where( $args );
+		$sql = "SELECT DISTINCT 
+				 st_table.ID, 
+				 st_table.kind_slug, 
+				 st_table.title, 
+				 t.element_type, 
+				 t.language_code, 
+				 t.source_language_code,
+				 t.trid 
+				 FROM {$string_packages_table} AS st_table
+				 LEFT JOIN {$translations_table} AS t 
+				 ON t.element_id=st_table.ID OR t.element_id = null 
+				 WHERE 1 = 1 {$where} 
+				 GROUP BY st_table.ID
+				 ORDER BY st_table.ID ASC 
+				 LIMIT {$args['limit_no']} 
+				 OFFSET {$offset}";
+		$sql = apply_filters( 'wpml_tm_dashboard_external_type_sql_query', $sql, $args );
+		$packages = $this->wpdb->get_results( $sql );
+		$this->found_documents += $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
+		foreach ( $packages as $package ) {
+			$package_obj                           = new stdClass();
+			$package_obj->ID                       = $package->ID;
+			$package_obj->translation_element_type = $package->element_type;
+			$package_obj->title                    = $package->title;
+			$package_obj->is_translation           = ( null === $package->source_language_code ) ? '0' : '1';
+			$package_obj->language_code            = $package->language_code;
+			$package_obj->trid                     = $package->trid;
+			$results[] = $package_obj;
+		}
 
-    private function add_to_lang_where( $sql, $lang ) {
-        $wpdb = $this->wpdb;
-        if ( $lang ) {
-            $sql .= $wpdb->prepare(
-                " AND (   SELECT COUNT(translation_id)
-												FROM {$wpdb->prefix}icl_translations
-												WHERE trid = i.trid AND language_code = %s ) > 0 ",
-                $lang
-            );
-        }
+		return $results;
+	}
 
-        return $sql;
-    }
+	/**
+	 * Create additional where clause for querying string packages based on filters.
+	 * @param array $args
+	 *
+	 * @return string
+	 */
+	private function create_string_packages_where( $args ) {
+		$where = " AND t.element_type LIKE 'package%' AND st_table.post_id IS NULL";
+		if ( ! $this->is_cpt_type( $args ) && ! empty( $args['type'] ) ) {
+			$where .= $this->wpdb->prepare( " AND kind_slug='%s'", $args['type'] );
+		}
 
-    private function add_parent_where( $sql, $parent_id ) {
-        $wpdb = $this->wpdb;
-        $sql .= $this->wpdb->prepare(
-            " AND i.element_type LIKE 'post%%'
-		                                AND ( SELECT post_parent
-                                              FROM {$wpdb->posts}
-                                              WHERE ID = i.element_id
-                                          ) = %d ",
-            $parent_id
-        );
+		if ( ! empty( $args['title'] ) ) {
+			$where .= $this->wpdb->prepare( " AND title LIKE '%s'", '%' . $this->wpdb->esc_like( $args['title'] ) . '%' );
+		}
 
-        return $sql;
-    }
+		if ( ! empty( $args['to_lang'] ) ) {
+			$where .= $this->wpdb->prepare( " AND t.language_code='%s'", $args['to_lang'] );
+			$where .= $this->wpdb->prepare( " AND t.source_language_code='%s'", $args['from_lang'] );
+		} else {
+			$where .= $this->wpdb->prepare( " AND t.language_code='%s'" , $args['from_lang'] );
+		}
 
-    private function add_category_where( $sql, $cat_id ) {
-        $wpdb = $this->wpdb;
-        $sql .= $wpdb->prepare(
-            " AND i.element_type LIKE 'post%%' AND i.element_id IN
-									(   SELECT object_id
-										FROM {$wpdb->term_relationships} r JOIN {$wpdb->term_taxonomy} tt
-											ON tt.term_taxonomy_id = r.term_taxonomy_id
-										WHERE tt.taxonomy = 'category' AND tt.term_id = %d ) ",
-            $cat_id
-        );
+		if ( $args['tstatus'] >= 0 ) {
+			$where .= $this->build_translation_status_where( $args['tstatus'] );
+		}
 
-        return $sql;
-    }
+		return $where;
+	}
 
-    private function add_search_where( $column_name, $search ) {
-        $wpdb = $this->wpdb;
-        return $search ? " AND " . $column_name . " LIKE '%" . $wpdb->esc_like( $search ) . "%' " : "";
-    }
+	/**
+	 * @param integer $post_translation_status
+	 *
+	 * @return string
+	 */
+	private function build_translation_status_where( $post_translation_status ) {
+		$post_translation_status = (int) $post_translation_status;
+		$translation_status_table = $this->wpdb->prefix . 'icl_translation_status';
+		$translations_table_name = $this->wpdb->prefix . 'icl_translations';
+		$where = '';
+		if ( ICL_TM_NEEDS_UPDATE === $post_translation_status ) {
+			$where .= " AND t.trid IN (SELECT trid FROM {$translations_table_name} WHERE {$translations_table_name}.translation_id IN ";
+			$where .= "(SELECT {$translation_status_table}.translation_id FROM {$translation_status_table} WHERE {$translation_status_table}.needs_update=1 ) )";
+		} else {
+			$status = false;
+			if ( in_array( $post_translation_status, array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ) ) ) {
+				$status = wpml_prepare_in( array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ), '%d' );
+			} elseif ( ICL_TM_COMPLETE === $post_translation_status ) {
+				$status = wpml_prepare_in( array( ICL_TM_COMPLETE, ICL_TM_DUPLICATE ), '%d' );
+			} elseif ( in_array( $post_translation_status, array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ) ) ) {
+				$status = wpml_prepare_in( array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ), '%d' );
+			} else {
+				$where .= $this->wpdb->prepare( " AND t.trid IN ( SELECT trid FROM {$translations_table_name} iclt  
+					LEFT OUTER JOIN {$translation_status_table} tls ON iclt.translation_id = tls.translation_id 
+					WHERE 
+					element_type NOT LIKE 'tax_%%' 
+					AND (
+					tls.status IN (0) 
+					OR tls.status IS NULL 
+					AND (
+							SELECT 
+								COUNT(trid) 
+							FROM 
+								{$translations_table_name} 
+							WHERE 
+								trid = t.trid
+							) < %d
+						)
+					) ", count( $this->sitepress->get_active_languages() ) );
+			}
+			if ( $status ) {
+				$where .= " AND t.trid IN (SELECT trid FROM {$translations_table_name} WHERE {$translations_table_name}.translation_id IN ";
+				$where .= "(SELECT {$translation_status_table}.translation_id 
+							FROM {$translation_status_table} 
+							WHERE {$translation_status_table}.status IN (" . $status . ") ) )";
+			}
+		}
 
-    private function add_tstatus_where( $sql, $tstatus ) {
-        $wpdb = $this->wpdb;
+		return $where;
+	}
 
-        if ( $tstatus >= 0 ) {
-            if ( $tstatus == ICL_TM_NEEDS_UPDATE ) {
-                $condition = " tls.needs_update = 1 ";
-            } else {
-                if ( in_array( $tstatus, array( ICL_TM_IN_PROGRESS, ICL_TM_WAITING_FOR_TRANSLATOR ) ) ) {
-                    $status       = array(
-                        ICL_TM_IN_PROGRESS,
-                        ICL_TM_WAITING_FOR_TRANSLATOR
-                    );
-                    $null_snippet = "";
-                } elseif ( $tstatus == ICL_TM_COMPLETE ) {
-                    $status       = array(
-                        ICL_TM_COMPLETE,
-                        ICL_TM_DUPLICATE
-                    );
-                    $null_snippet = "";
-                } else {
-                    $status       = array( $tstatus );
-                    $null_snippet = $wpdb->prepare(
-                        "OR tls.status IS NULL AND (SELECT COUNT( trid ) FROM {$wpdb->prefix}icl_translations WHERE trid = i.trid ) < %d ",
-                        count( $this->active_languages )
-                    );
-                }
-                $status    = wpml_prepare_in( $status, '%d' );
-                $condition = "tls.status IN ({$status}) {$null_snippet}";
-            }
+	/**
+	 * @param array $args
+	 * @param string $post_type
+	 *
+	 * @return bool
+	 */
+	private function is_cpt_type( $args = array(), $post_type = '' ) {
+		$is_cpt_type = false;
+		if ( ! empty( $args ) && '' === $post_type && array_key_exists( 'type', $args ) && ! empty( $args['type'] ) ) {
+			$post_type = $args['type'];
+		}
 
-            $sql .= " AND  i.trid IN
-									(   SELECT trid
-										FROM {$wpdb->prefix}icl_translations iclt
-											LEFT OUTER JOIN {$wpdb->prefix}icl_translation_status tls
-												ON iclt.translation_id = tls.translation_id
-										WHERE element_type NOT LIKE 'tax_%%'
-											AND ( {$condition} ) ) ";
+		if ( in_array( $post_type, $this->get_translatable_post_types() ) ) {
+			$is_cpt_type = true;
+		}
 
-        }
+		return $is_cpt_type;
+	}
 
-        return $sql;
-    }
+	/**
+	 * @return array
+	 */
+	private function get_translatable_post_types() {
+		if ( null === $this->translatable_post_types ) {
+			$translatable_post_types = $this->sitepress->get_translatable_documents();
+			$this->translatable_post_types = array_keys( apply_filters( 'wpml_tm_dashboard_translatable_types', $translatable_post_types ) );
+		}
 
-    private function add_order_snippet( $sql, $sort_by, $sort_order ) {
-        if ( $sort_by ) {
-            $order = "tr.{$sort_by} ";
-        } else {
-            $order = " tr.date ";
-        }
-        if ( $sort_order ) {
-            $order .= $sort_order;
-        } else {
-            $order .= ' DESC ';
-        }
-
-        $sql .= " ORDER BY {$order} ";
-
-        return $sql;
-    }
-
-    private function add_pagination_snippet( $sql, $limit_no ) {
-        $paged  = filter_input( INPUT_GET, 'paged', FILTER_SANITIZE_NUMBER_INT );
-        $paged  = $paged ? $paged : 1;
-        $offset = ( $paged - 1 ) * $limit_no;
-        $limit  = " " . $offset . ',' . $limit_no;
-        $sql .= " LIMIT {$limit}";
-
-        return $sql;
-    }
+		return $this->translatable_post_types;
+	}
 }

@@ -33,7 +33,10 @@ function em_docs_init($force_init = false){
 					'tag' => array( 'desc'=> str_replace('%s', 'tags', 'Supply a single id, slug or comma-separated ids or slugs (e.g. "1,%s-slug,3") to limit the search to events in any of these %s. You can also use negative numbers and slugs to exclude specific %s (e.g. -1,-exclude-%s,-3). If you mix inclusions and exclusions, all events with included %s AND without excluded %s will be shown. You can also use &amp; to separate ids and slugs, in which case events must contain (or not contain) both %s to be shown.'), 'default'=>0),
 					'year' => array( 'desc'=> 'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'default'=>''),
 					'has_location' => array( 'desc'=> 'When set to true, only events WITH an assigned location will be shown, has priority over no_location.', 'default'=>''),
-					'no_location' => array( 'desc'=> 'When set to true, only events WITHOUT an assigned location will be shown.', 'default'=>'')
+					'no_location' => array( 'desc'=> 'When set to true, only events WITHOUT an assigned location will be shown.', 'default'=>''),
+					'groupby' => array( 'desc'=> 'Show one event for each unique value of the provide field name, along with events contaning no defined value for that field. See our <a href="http://wp-events-plugin.com/documentation/event-search-attributes/event-location-grouping-ordering/">grouping documentation</a> for more information.', 'default'=>0, 'args'=>'Database field name from the wp_em_events or wp_em_locations tables, e.g. <code>event_name</code> or <code>location_name</code>', 'since'=>'5.8'),
+					'groupby_orderby' => array( 'desc'=> 'When groupby is defined, the fields defined here will determine the sorting of events in each group. See our <a href="http://wp-events-plugin.com/documentation/event-search-attributes/event-location-grouping-ordering/">grouping documentation</a> for more information.', 'default'=>'event_start_date,event_start_time', 'args'=>'Database fields (comma-seperated) in the wp_em_events and wp_em_locations tables, e.g. <code>event_start_date,event_start_time</code> or <code>location_name</code>', 'since'=>'5.8'),
+					'groupby_order' => array( 'desc'=> 'Indicates the alphabeitcal/numerical/date order of the sorting in groupby_orderby. Choose between ASC (ascending) and DESC (descending), case insensitive.', 'default'=>'ASC', 'since'=>'5.8'),
 				),
 				'locations' => array(
 					'blog' => array( 'desc' => sprintf('Limit search to %s created in a specific blog id (MultiSite only)','locations')),				    
@@ -53,7 +56,10 @@ function em_docs_init($force_init = false){
 					'scope' => array( 'default' => 'all'),
 					'state' => array( 'desc'=> sprintf('Search for %s in this %s (no partial matches, case sensitive).','locations','State'), 'default' => 'none'),
 					'status' => array( 'desc' => sprintf('Limit search to %s with a spefic status (1 is active, 0 is pending approval)','locations'), 'default'=>1),
-					'town' => array( 'desc'=> sprintf('Search for %s in this %s (no partial matches, case sensitive).','locations','Town'), 'default' => 'none')
+					'town' => array( 'desc'=> sprintf('Search for %s in this %s (no partial matches, case sensitive).','locations','Town'), 'default' => 'none'),
+					'groupby' => array( 'desc'=> 'Show one location for each unique value of the provide field name, along with locations contaning no defined value for that field. See our <a href="http://wp-events-plugin.com/documentation/event-search-attributes/event-location-grouping-ordering/">grouping documentation</a> for more information.', 'default'=>0, 'args'=>'Database field name from the wp_em_events or wp_em_locations tables, e.g. <code>event_name</code> or <code>location_name</code>', 'since'=>'5.8'),
+					'groupby_orderby' => array( 'desc'=> 'When groupby is defined, the fields defined here will determine the sorting of events in each group. See our <a href="http://wp-events-plugin.com/documentation/event-search-attributes/event-location-grouping-ordering/">grouping documentation</a> for more information.', 'default'=>'event_start_date,event_start_time', 'args'=>'Database fields (comma-seperated) in the wp_em_events and wp_em_locations tables, e.g. <code>location_country,location_town</code> or <code>location_name</code>', 'since'=>'5.8'),
+					'groupby_order' => array( 'desc'=> 'Indicates the alphabeitcal/numerical/date order of the sorting in groupby_orderby. Choose between ASC (ascending) and DESC (descending), case insensitive.', 'default'=>'ASC', 'since'=>'5.8'),
 				),
 				'categories' => array(
 					'' => array( 'desc' => 'See the <a href="http://codex.wordpress.org/Function_Reference/get_terms">WordPress get_terms() Codex</a> for a list of possible search attributes/arguments.'),
@@ -149,8 +155,10 @@ function em_docs_init($force_init = false){
 							'#_BOOKINGSLINK' => array( 'desc' => 'Shows a link to the admin, front-end or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' ),
 							'#_EVENTPRICERANGE' => array( 'desc' => 'Shows a "maximum - minimum" price range for available tickets at the time of display, or a single price if there is no range. Once bookings are closed this will show a 0 value, if you have enabled \'Show unavailable tickets\' in your booking settings these will be included. Price is formatted according to currency formatting in your settings page.' ),
 							'#_EVENTPRICERANGEALL' => array( 'desc' => 'Like #_EVENTPRICERANGE but shows all tickets price range whether or not bookings or individual tickets are available.' ),
-							'#_EVENTPRICEMIN' => array( 'desc' => 'Shows the lowest ticket price for this event.' ),
-							'#_EVENTPRICEMAX' => array( 'desc' => 'Shows the highest ticket price for this event.' ),								
+							'#_EVENTPRICEMIN' => array( 'desc' => 'Shows the lowest available ticket price for this event. Will display a value of 0 if no ticket is available.' ),
+							'#_EVENTPRICEMAX' => array( 'desc' => 'Shows the highest available ticket price for this event. Will display a value of 0 if no ticket is avaialble.' ),
+							'#_EVENTPRICEMINALL' => array( 'desc' => 'Shows the lowest ticket price for this event, whether available or not.' ),
+							'#_EVENTPRICEMAXALL' => array( 'desc' => 'Shows the highest ticket price for this event, whether available or not.' ),
 						)
 					),
 					'Contact Details' => array(
@@ -172,6 +180,8 @@ function em_docs_init($force_init = false){
 						'placeholders' => array(
 							'#_EVENTICALURL' => array( 'desc' => 'Displays the URL of the event ical feed (ics file format).' ),
 							'#_EVENTICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format).' ),
+							'#_EVENTWEBCALURL' => array( 'desc' => 'Same as #_EVENTICALURL, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
+							'#_EVENTWEBCALLINK' => array( 'desc' => 'Same as #_EVENTICALLINK, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
 							'#_EVENTGCALURL' => array( 'desc' => 'Displays URL which would take the user to Google Calendar and pre-fill their add new event form.' ),
 							'#_EVENTGCALLINK' => array( 'desc' => 'Displays a button which would take the user to Google Calendar and pre-fill their add new event form.' )
 						)
@@ -184,7 +194,9 @@ function em_docs_init($force_init = false){
 							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name.' ),
 							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID.' ),
 							'#_CATEGORYSLUG' => array( 'desc' => 'Shows the category slug.' ),
-							'#_CATEGORYCOLOR' => array( 'desc' => 'Shows the category color (useful for inline styling), in hex format, if no color is defined #FFFFFF (white) will be used.' ),
+							'#_CATEGORYLINK' => array( 'desc' => 'Category name with a link to the category page.' ),
+							'#_CATEGORYURL' => array( 'desc' => 'URL of the category page.' ),
+							'#_CATEGORYCOLOR' => array( 'desc' => 'Shows the category color (useful for inline styling), in hex format, if no color is defined the default category color from your settings page will be used.' ),
 							'#_CATEGORYIMAGE' => array( 'desc' => 'Shows the category image, if available.' ),
 							'#_CATEGORYIMAGE{x,y}' => array( 'desc' => 'Shows the category image thumbnail if available, x and y are width and height respectively, both being numbers e.g. <code>#_CATEGORYIMAGE{100,100}</code>. If 0 is used for either width or height, the corresponding dimension will be proportionally sized.' ),
 							'#_CATEGORYIMAGEURL' => array( 'desc' => 'Shows the category image url, if available.' ),
@@ -202,8 +214,10 @@ function em_docs_init($force_init = false){
 					),
 					'iCal/RSS Feeds' => array(
 						'placeholders' => array(
-							'#_CATEGORYICALURL' => array( 'desc' => 'Displays the URL of the event ical feed (ics file format) which shows all events happening in this category.', 'since'=>'5.5.2' ),
-							'#_CATEGORYICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format) which shows all events happening in this category.', 'since'=>'5.5.2' ),
+							'#_CATEGORYICALURL' => array( 'desc' => 'Displays the URL of the event ical feed (ics file format) which shows all events with this category.', 'since'=>'5.5.2' ),
+							'#_CATEGORYICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format) which shows all events with this category.', 'since'=>'5.5.2' ),
+							'#_CATEGORYWEBCALURL' => array( 'desc' => 'Same as #_CATEGORYICALURL, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
+							'#_CATEGORYWEBCALLINK' => array( 'desc' => 'Same as #_CATEGORYICALLINK, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
 							'#_CATEGORYRSSURL' => array( 'desc' => 'Displays the URL of an RSS feed showing all upcoming events happening in this category.', 'since'=>'5.5.2' ),
 							'#_CATEGORYRSSLINK' => array( 'desc' => 'Displays an html link to an RSS feed showing all upcoming events happening in this category.', 'since'=>'5.5.2' )
 						)
@@ -216,7 +230,13 @@ function em_docs_init($force_init = false){
 							'#_TAGNAME' => array( 'desc' => 'Shows the tag name.' ),
 							'#_TAGID' => array( 'desc' => 'Shows the tag ID.' ),
 							'#_TAGSLUG' => array( 'desc' => 'Shows the tag slug.' ),
-							'#_TAGNOTES' => array( 'desc' => 'Shows the tag description.' )
+							'#_TAGLINK' => array( 'desc' => 'Tag name with a link to the tag page.' ),
+							'#_TAGURL' => array( 'desc' => 'URL of the tag page.' ),
+							'#_TAGNOTES' => array( 'desc' => 'Shows the tag description.' ),
+							'#_TAGCOLOR' => array( 'desc' => 'Shows the tag color (useful for inline styling), in hex format, if no color is defined the default tag color from your settings page will be used.' ),
+							'#_TAGIMAGE' => array( 'desc' => 'Shows the tag image, if available.' ),
+							'#_TAGIMAGE{x,y}' => array( 'desc' => 'Shows the tag image thumbnail if available, x and y are width and height respectively, both being numbers e.g. <code>#_TAGIMAGE{100,100}</code>. If 0 is used for either width or height, the corresponding dimension will be proportionally sized.' ),
+							'#_TAGIMAGEURL' => array( 'desc' => 'Shows the tag image url, if available.' ),
 						)
 					),			
 					'Related Events' => array(
@@ -230,8 +250,10 @@ function em_docs_init($force_init = false){
 					),
 					'iCal/RSS Feeds' => array(
 						'placeholders' => array(
-							'#_TAGICALURL' => array( 'desc' => 'Displays the URL of the event ical feed (ics file format) which shows all events happening in this tag.', 'since'=>'5.5.2' ),
-							'#_TAGICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format) which shows all events happening in this tag.' , 'since'=>'5.5.2'),
+							'#_TAGICALURL' => array( 'desc' => 'Displays the URL of the event ical feed (ics file format) which shows all events with this tag.', 'since'=>'5.5.2' ),
+							'#_TAGICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format) which shows all events with this tag.' , 'since'=>'5.5.2'),
+							'#_TAGWEBCALURL' => array( 'desc' => 'Same as #_TAGICALURL, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
+							'#_TAGWEBCALLINK' => array( 'desc' => 'Same as #_TAGICALLINK, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
 							'#_TAGRSSURL' => array( 'desc' => 'Displays the URL of an RSS feed showing all upcoming events happening in this tag.', 'since'=>'5.5.2' ),
 							'#_TAGRSSLINK' => array( 'desc' => 'Displays an html link to an RSS feed showing all upcoming events happening in this tag.', 'since'=>'5.5.2' )
 						)
@@ -256,6 +278,7 @@ function em_docs_init($force_init = false){
 							'#_LOCATIONNOTES' => array( 'desc' => 'Shows the location description.' ),
 							'#_LOCATIONEXCERPT' => array( 'desc' => 'If an excerpt has been added to the location, it will be used. If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show.' ),
 							'#_LOCATIONEXCERPT{words, ...}' => array( 'desc' => 'If an excerpt has not been added to the location, only a specific length is shown, e.g. <code>#_EVENTEXCERPT{10,...}</code> where 10 is the number of words to show and ... is what is used at the cut-off point.' ),
+							'#_LOCATIONEXCERPTCUT' => array( 'desc' => 'Same as <code>#_LOCATIONEXCERPT</code> (and also accepts the <code>{words,...}</code> arguments) but will also cut excerpts as well as post content. Default word limit is 55 and cut-off is <code>[...]</code>' ),
 							'#_LOCATIONIMAGE' => array( 'desc' => 'Shows the location image.' ),
 							'#_LOCATIONIMAGE{x,y}' => array( 'desc' => 'Shows the location image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_LOCATIONIMAGE{100,100}</code>. If 0 is used for either width or height, the corresponding dimension will be proportionally sized.' ),
 							'#_LOCATIONIMAGEURL' => array( 'desc' => 'Shows the location image url, if available.' ),
@@ -292,6 +315,8 @@ function em_docs_init($force_init = false){
 						'placeholders' => array(
 							'#_LOCATIONICALURL' => array( 'desc' => 'Displays the URL of the location ical feed (ics file format) which shows all events happening at that location.', 'since'=>'5.5.2' ),
 							'#_LOCATIONICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format) which shows all events happening at that location.', 'since'=>'5.5.2' ),
+							'#_LOCATIONWEBCALURL' => array( 'desc' => 'Same as #_LOCATIONICALURL, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
+							'#_LOCATIONWEBCALLINK' => array( 'desc' => 'Same as #_LOCATIONICALLINK, but using the <a href="https://en.wikipedia.org/wiki/Webcal">webcal:// protocol</a>, which will open up various calendar apps automatically including iCalendar, Outlook and Google Calendar.', 'since'=>'5.8' ),
 							'#_LOCATIONRSSURL' => array( 'desc' => 'Displays the URL of an RSS feed showing all upcoming events happening at this location.', 'since'=>'5.5.2' ),
 							'#_LOCATIONRSSLINK' => array( 'desc' => 'Displays an html link to an RSS feed showing all upcoming events happening at this location.', 'since'=>'5.5.2' )
 						)

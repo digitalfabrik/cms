@@ -62,26 +62,26 @@ class WPML_TP_Polling_Pickup {
 			}
 		}
 		if ( ! empty( $results['errors'] ) ) {
-			$status    = __( 'Error', 'sitepress' );
+			$status    = __( 'Error', 'wpml-translation-management' );
 			$errors    = join( "\n",
 				array_filter( (array) $results['errors'] ) );
 			$job_error = true;
 		} else {
-			$status    = __( 'OK', 'sitepress' );
+			$status    = __( 'OK', 'wpml-translation-management' );
 			$job_error = false;
 		}
 		if ( $counts->completed() === 1 ) {
 			$status_completed = __( '1 translation has been fetched from the translation service.',
-				'sitepress' );
+				'wpml-translation-management' );
 		} elseif ( $counts->completed() > 1 ) {
 			$status_completed = sprintf( __( '%d translations have been fetched from the translation service.',
-				'sitepress' ), $counts->completed() );
+				'wpml-translation-management' ), $counts->completed() );
 		} else {
 			$status_completed = '';
 		}
 		if ( $counts->cancelled() > 0 ) {
 			$status_cancelled = sprintf( __( '%d translations have been marked as cancelled.',
-				'sitepress' ), $counts->cancelled() );
+				'wpml-translation-management' ), $counts->cancelled() );
 		}
 
 		return array(

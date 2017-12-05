@@ -8,7 +8,7 @@ require_once __DIR__ . '/helper/WpmlHelper.php';
  */
 abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	const URL = 'modified_content';
-	const force_update_date = "2016-09-30T00:00:00+02:00";
+	const FORCE_UPDATE_DATE = "2016-09-30T00:00:00+02:00";
 	/**
 	 * Match empty p html tags spanning the whole string.
 	 *
@@ -86,14 +86,22 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		global $wpdb;
 		$querystr = $this->build_query_string();
 		$query_result = $wpdb->get_results($querystr, OBJECT);
+		
+		// fetch also the initial of several recurring events (the initial event has a different post_type)
+		if( $type == 'event' ) {
+			$this->current_request->post_type = 'event-recurring';
+			$querystr = $this->build_query_string();
+			$query_result = array_merge($query_result, $wpdb->get_results($querystr, OBJECT));
+		}
 
 		$result = [];
 		foreach ($query_result as $post) {
-			if( $_GET['no_trash'] == '1' && $post->post_status == "trash" ) {
+			if( isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash" ) {
 				continue;
 			}
 			$result[] = $this->prepare_item($post);
 		}
+		
 		return $result;
 	}
 
@@ -141,8 +149,9 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	protected function build_query_from() {
 		global $wpdb;
 		$current_language = ICL_LANGUAGE_CODE;
+		// LEFT JOIN translations to fetch also recurring events (where translations are disabled by default)
 		return "FROM $wpdb->posts posts
-				JOIN {$wpdb->prefix}icl_translations translations
+				LEFT JOIN {$wpdb->prefix}icl_translations translations
 						ON translations.element_type = 'post_{$this->current_request->post_type}'
 						AND translations.element_id = posts.ID
 						AND translations.language_code = '$current_language'
@@ -161,7 +170,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	 */
 	protected function build_query_where() {
 		$since = $this->current_request->rest_request->get_param('since');
-		if(strtotime($since) < strtotime($this->force_update_date)) {
+		if(strtotime($since) < strtotime(self::FORCE_UPDATE_DATE)) {
 			//if the last update is after the deadline, pull all content by setting the since date to the beginning of 2015
 			$since = "2015-01-01T00:00:00+02:00";
 		}
@@ -198,7 +207,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			'id' => $post->ID,
 			'permalink' => $this->prepare_url($post),
 			'title' => ( $post->post_status != "trash" ? $post->post_title : "" ),
-			'type' => $post->post_type,
+			'type' => ( $post->post_type == 'event-recurring' ? 'event' : $post->post_type ),
 			'status' => $post->post_status,
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => ( $post->post_status != "trash" ? ($content === self::EMPTY_CONTENT ? self::EMPTY_CONTENT : $this->prepare_excerpt($post)) : ""),

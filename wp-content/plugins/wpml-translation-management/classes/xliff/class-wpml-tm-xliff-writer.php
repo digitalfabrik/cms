@@ -147,9 +147,9 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 				}
 				// check for untranslated fields and copy the original if required.
 				if ( ! isset( $field_data_translated ) || $field_data_translated == '' ) {
-					$field_data_translated = $field_data;
+					$field_data_translated = $this->remove_etx_char( $field_data );
 				}
-				if ( $field_data != '' ) {
+				if ( $this->is_valid_unit_content( $field_data ) ) {
 					$translation_units .= $this->get_translation_unit( $element->field_type, $element->field_type, $field_data, $field_data_translated );
 				}
 			}
@@ -157,21 +157,32 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 
 		return $translation_units;
 	}
-
+	
 	private function get_translation_unit( $field_id, $field_name, $field_data, $field_data_translated ) {
 		global $sitepress;
+
+		$field_data = $this->remove_etx_char( $field_data );
 
 		$translation_unit = "";
 		if ( $sitepress->get_setting( 'xliff_newlines' ) == WPML_XLIFF_TM_NEWLINES_REPLACE ) {
 			$field_data            = str_replace( "\n", '<br class="xliff-newline" />', $field_data );
 			$field_data_translated = str_replace( "\n", '<br class="xliff-newline" />', $field_data_translated );
 		}
-		$translation_unit .= '         <trans-unit resname="' . $field_name . '" restype="string" datatype="html" id="' . $field_id . '">' . "\n";
+		$translation_unit .= '         <trans-unit resname="' . esc_attr( $field_name ) . '" restype="string" datatype="html" id="' . esc_attr( $field_id ) . '">' . "\n";
 		$translation_unit .= '            <source><![CDATA[' . $field_data . ']]></source>' . "\n";
 		$translation_unit .= '            <target><![CDATA[' . $field_data_translated . ']]></target>' . "\n";
 		$translation_unit .= '         </trans-unit>' . "\n";
 
 		return $translation_unit;
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	private function remove_etx_char( $string ) {
+		return preg_replace('/\x03/', '', $string);
 	}
 
 	/**

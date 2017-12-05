@@ -1,5 +1,5 @@
 <?php
-require_once ICL_PLUGIN_PATH . '/menu/wpml-language-filter-bar.class.php';
+require_once WPML_PLUGIN_PATH . '/menu/wpml-language-filter-bar.class.php';
 
 class WPML_Term_Language_Filter extends WPML_Language_Filter_Bar {
 
@@ -15,7 +15,7 @@ class WPML_Term_Language_Filter extends WPML_Language_Filter_Bar {
 		}
 		$all_languages_links = join( ' | ', $languages_links );
 
-		$html = '<span id="icl_subsubsub" style="display: none;">' . $all_languages_links . '</span>';
+		$html = '<span id="icl_subsubsub" class="icl_subsubsub" style="display: none;">' . $all_languages_links . '</span>';
 		if ( $echo !== false ) {
 			echo $html;
 		}

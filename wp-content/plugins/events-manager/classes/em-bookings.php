@@ -10,7 +10,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * Array of EM_Booking objects for a specific event
 	 * @var array
 	 */
-	var $bookings = array();
+	protected $bookings;
 	/**
 	 * @var EM_Tickets
 	 */
@@ -39,6 +39,10 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	public static $disable_restrictions = false;
 	
+	protected $booked_spaces;
+	protected $pending_spaces;
+	protected $available_spaces;
+	
 	/**
 	 * Creates an EM_Bookings instance, currently accepts an EM_Event object (gets all bookings for that event) or array of any EM_Booking objects, which can be manipulated in bulk with helper functions.
 	 * @param EM_Event $event
@@ -46,17 +50,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function __construct( $data = false ){
 		if( is_object($data) && get_class($data) == "EM_Event" ){ //Creates a blank bookings object if needed
-			global $wpdb;
 			$this->event_id = $data->event_id;
-			$bookings = array();
-			if( $this->event_id > 0 ){
-				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." WHERE event_id ='{$this->event_id}' ORDER BY booking_date";
-				$bookings = $wpdb->get_results($sql, ARRAY_A);
-			}
-			foreach ($bookings as $booking){
-				$this->bookings[] = em_get_booking($booking);
-			}
-			$this->spaces = $this->get_spaces();
 		}elseif( is_array($data) ){
 			foreach( $data as $EM_Booking ){
 				if( get_class($EM_Booking) == 'EM_Booking'){
@@ -64,6 +58,54 @@ class EM_Bookings extends EM_Object implements Iterator{
 				}
 			}
 		}
+	}
+	
+	public function __get( $var ){
+		if( $var == 'bookings' ){
+			return $this->load();
+		}
+	}
+	
+	public function __set( $var, $val ){
+		if( $var == 'bookings' ){
+			if( is_array($val) ){
+				$this->bookings = $val;
+			}else{
+				$this->bookings = null;
+			}
+		}
+	}
+	
+	/**
+	 * Counter-intuitive but __isset works against isset() but for our purpose it's mainly aimed at empty() calls, which also references this function.
+	 * We don't expect nor do we want people using isset on things like the bookings property.
+	 * Assume every property in EM_Bookings isset() == true and avoid it, only use empty() calls to check if there's anything in that property.
+	 * Therefore, we'd return !empty($this->bookings) because if there's bookings, isset() should return true 
+	 * @param string $var
+	 * @return boolean
+	 */
+	public function __isset( $var ){
+		//if isset is invoked on $EM_Bookings->bookings then we'll assume it's only set if the bookings property is empty, not if null.
+		$result = false;
+		if( $var == 'bookings' ){
+			$result = !empty($this->bookings);
+		}
+		return $result;
+	}
+	
+	public function load( $refresh = false ){
+		if( $refresh || $this->bookings === null ){
+			global $wpdb;
+			$bookings = $this->bookings = array();
+			if( $this->event_id > 0 ){
+				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." WHERE event_id ='{$this->event_id}' ORDER BY booking_date";
+				$bookings = $wpdb->get_results($sql, ARRAY_A);
+			}
+			foreach ($bookings as $booking){
+				$this->bookings[] = em_get_booking($booking);
+			}
+		}
+		return apply_filters('em_bookings_load', $this->bookings);
 	}
 	
 	/**
@@ -83,7 +125,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		if($result){
 			//Success
 		    do_action('em_bookings_added', $EM_Booking);
-			$this->bookings[] = $EM_Booking;
+			if( $this->bookings !== null ) $this->bookings[] = $EM_Booking;
 			$email = $EM_Booking->email();
 			if( get_option('dbem_bookings_approval') == 1 && $EM_Booking->booking_status == 0){
 				$this->feedback_message = get_option('dbem_booking_feedback_pending');
@@ -168,7 +210,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		    		$EM_Event->rsvp_end = $EM_Ticket->end_timestamp;
 		    		if( $EM_Event->is_recurring() && !empty($EM_Ticket->ticket_meta['recurrences']) ){
 		    			$EM_Event->recurrence_rsvp_days = $EM_Ticket->ticket_meta['recurrences']['end_days'];		    			
-		    		}	    		
+		    		}
 		    	}else{
 		    		//if no end date is set, use event end date (which will have defaulted to the event start date 
 		    		$EM_Ticket->ticket_end = $EM_Event->event_rsvp_date." ".$EM_Event->event_rsvp_time;
@@ -201,16 +243,16 @@ class EM_Bookings extends EM_Object implements Iterator{
 		return apply_filters('em_bookings_get_available_tickets', $EM_Tickets, $this);
 	}
 	
+	/**
+	 * Deprecated - was never used and therefore is deprecated, will always return an array() and will eventually be removed entirely.
+	 * @return array
+	 */
 	function get_user_list(){
-		$users = array();
-		foreach( $this->get_bookings()->bookings as $EM_Booking ){
-			$users[$EM_Booking->person->ID] = $EM_Booking->person;
-		}
-		return $users;
+		return array();
 	}
 	
 	/**
-	 * does this ticket exist?
+	 * Returns a boolean indicating whether this ticket exists in this bookings context.
 	 * @return bool 
 	 */
 	function ticket_exists($ticket_id){
@@ -251,16 +293,26 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function delete(){
 		global $wpdb;
 		$booking_ids = array();
-		//get the booking ids tied to this event
-		foreach( $this->bookings as $EM_Booking ){
-			$booking_ids[] = $EM_Booking->booking_id;
-		}
-		$result_tickets = true;
-		$result = true;
-		if( count($booking_ids) > 0 ){
-			//Delete bookings and ticket bookings
-			$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booking_id IN (".implode(',',$booking_ids).");");
-			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE booking_id IN (".implode(',',$booking_ids).")");
+		if( !empty($this->bookings) ){
+			//get the booking ids tied to this event or preloaded into this object
+			foreach( $this->bookings as $EM_Booking ){
+				$booking_ids[] = $EM_Booking->booking_id;
+			}
+			$result_tickets = true;
+			$result = true;
+			if( count($booking_ids) > 0 ){
+				//Delete bookings and ticket bookings
+				$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booking_id IN (".implode(',',$booking_ids).");");
+				$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE booking_id IN (".implode(',',$booking_ids).")");
+			}
+		}elseif( !empty($this->event_id) ){
+			//faster way of deleting bookings for an event circumventing the need to load all bookings if it hasn't been loaded already
+			$event_id = absint($this->event_id);
+			$booking_ids = $wpdb->get_col("SELECT booking_id FROM ".EM_BOOKINGS_TABLE." WHERE event_id = '$event_id'");
+			$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booking_id IN (SELECT booking_id FROM ".EM_BOOKINGS_TABLE." WHERE event_id = '$event_id')");
+			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id = '$event_id'");
+		}else{
+			$result = $result_tickets == true;
 		}
 		do_action('em_bookings_deleted', $result, $booking_ids);
 		return apply_filters('em_bookings_delete', $result !== false && $result_tickets !== false, $booking_ids, $this);
@@ -364,30 +416,31 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * @return int
 	 */
 	function get_booked_spaces($force_refresh = false){
-		$booked_spaces = 0;
-		foreach ( $this->bookings as $EM_Booking ){
-			if( $EM_Booking->booking_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->booking_status == 0 ) ){
-				$booked_spaces += $EM_Booking->get_spaces($force_refresh);
-			}
+		global $wpdb;
+		if( $this->booked_spaces === null || $force_refresh ){
+			$status_cond = !get_option('dbem_bookings_approval') ? 'booking_status IN (0,1)' : 'booking_status = 1';
+			$sql = 'SELECT SUM(booking_spaces) FROM '.EM_BOOKINGS_TABLE. " WHERE $status_cond AND event_id=".absint($this->event_id);
+			$booked_spaces = $wpdb->get_var($sql);
+			$this->booked_spaces = $booked_spaces > 0 ? $booked_spaces : 0;
 		}
-		return apply_filters('em_bookings_get_booked_spaces', $booked_spaces, $this);
+		return apply_filters('em_bookings_get_booked_spaces', $this->booked_spaces, $this, $force_refresh);
 	}
 	
 	/**
 	 * Gets number of pending spaces awaiting approval. Will return 0 if booking approval is not enabled.
 	 * @return int
 	 */
-	function get_pending_spaces(){
+	function get_pending_spaces( $force_refresh = false ){
 		if( get_option('dbem_bookings_approval') == 0 ){
 			return apply_filters('em_bookings_get_pending_spaces', 0, $this);
 		}
-		$pending = 0;
-		foreach ( $this->bookings as $booking ){
-			if($booking->booking_status == 0){
-				$pending += $booking->get_spaces();
-			}
+		global $wpdb;
+		if( $this->pending_spaces === null || $force_refresh ){
+			$sql = 'SELECT SUM(booking_spaces) FROM '.EM_BOOKINGS_TABLE. ' WHERE booking_status=0 AND event_id='.absint($this->event_id);
+			$pending_spaces = $wpdb->get_var($sql);
+			$this->pending_spaces = $pending_spaces > 0 ? $pending_spaces : 0;
 		}
-		return apply_filters('em_bookings_get_pending_spaces', $pending, $this);
+		return apply_filters('em_bookings_get_pending_spaces', $this->pending_spaces, $this, $force_refresh);
 	}
 	
 	/**
@@ -396,9 +449,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_bookings( $all_bookings = false ){
 		$confirmed = array();
-		foreach ( $this->bookings as $booking ){
-			if( $booking->booking_status == 1 || (get_option('dbem_bookings_approval') == 0 && $booking->booking_status == 0) || $all_bookings ){
-				$confirmed[] = $booking;
+		foreach ( $this->load() as $EM_Booking ){
+			if( $EM_Booking->booking_status == 1 || (get_option('dbem_bookings_approval') == 0 && $EM_Booking->booking_status == 0) || $all_bookings ){
+				$confirmed[] = $EM_Booking;
 			}
 		}
 		$EM_Bookings = new EM_Bookings($confirmed);
@@ -414,9 +467,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 			return new EM_Bookings();
 		}
 		$pending = array();
-		foreach ( $this->bookings as $booking ){
-			if($booking->booking_status == 0){
-				$pending[] = $booking;
+		foreach ( $this->load() as $EM_Booking ){
+			if($EM_Booking->booking_status == 0){
+				$pending[] = $EM_Booking;
 			}
 		}
 		$EM_Bookings = new EM_Bookings($pending);
@@ -429,9 +482,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_rejected_bookings(){
 		$rejected = array();
-		foreach ( $this->bookings as $booking ){
-			if($booking->booking_status == 2){
-				$rejected[] = $booking;
+		foreach ( $this->load() as $EM_Booking ){
+			if($EM_Booking->booking_status == 2){
+				$rejected[] = $EM_Booking;
 			}
 		}
 		$EM_Bookings = new EM_Bookings($rejected);
@@ -444,9 +497,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_cancelled_bookings(){
 		$cancelled = array();
-		foreach ( $this->bookings as $booking ){
-			if($booking->booking_status == 3){
-				$cancelled[] = $booking;
+		foreach ( $this->load() as $EM_Booking ){
+			if($EM_Booking->booking_status == 3){
+				$cancelled[] = $EM_Booking;
 			}
 		}
 		$EM_Bookings = new EM_Bookings($cancelled);
@@ -464,7 +517,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		//If person exists on record, see if they've booked this event before, if so return the booking.
 		if( is_numeric($EM_Booking->person->ID) && $EM_Booking->person->ID > 0 ){
 			$EM_Booking->person_id = $EM_Booking->person->ID;
-			foreach ($this->bookings as $booking){
+			foreach ($this->load() as $booking){
 				if( $booking->person_id == $EM_Booking->person->ID ){
 					return $booking;
 				}
@@ -482,7 +535,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 			$user_id = get_current_user_id();
 		}
 		if( is_numeric($user_id) && $user_id > 0 ){
-			foreach ($this->bookings as $EM_Booking){
+			foreach ($this->load() as $EM_Booking){
 				if( $EM_Booking->person->ID == $user_id && !in_array($EM_Booking->booking_status, array(2,3)) ){
 					return apply_filters('em_bookings_has_booking', $EM_Booking, $this);
 				}
@@ -534,9 +587,14 @@ class EM_Bookings extends EM_Object implements Iterator{
 		$orderby = self::build_sql_orderby($args, $accepted_fields);
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : 'ORDER BY booking_date';
-		//Selector
-		$selectors = ( $count ) ?  'COUNT(*)':'*';
-		
+		//Selectors
+		if( $count ){
+			$selectors = 'COUNT(*)';
+		}elseif( is_array($args['array']) ){
+			$selectors = implode(',', $args['array']);
+		}else{
+			$selectors = '*';
+		}
 		//Create the SQL statement and execute
 		$sql = apply_filters('em_bookings_get_sql',"
 			SELECT $selectors FROM $bookings_table 
@@ -681,13 +739,33 @@ class EM_Bookings extends EM_Object implements Iterator{
 			'status' => false,
 			'person' => true, //to add later, search by person's bookings...
 			'blog' => get_current_blog_id(),
-			'ticket_id' => false
+			'ticket_id' => false,
+			'array' => false //returns an array of results if true, if an array or text it's assumed an array or single row requested 
 		);
 		//sort out whether defaults were supplied or just the array of search values
 		if( empty($array) ){
 			$array = $array_or_defaults;
 		}else{
 			$defaults = array_merge($defaults, $array_or_defaults);
+		}
+		//clean up array value
+		if( !empty($args['array']) ){
+			$EM_Booking = new EM_Booking();
+			if( is_array($args['array']) ){
+				$clean_arg = array();
+				foreach( $args['array'] as $k => $field ){
+					if( array_key_exists($field, $EM_Booking->fields) ){
+						$clean_arg[] = $field;
+					}
+				}
+				$args['array'] = !empty($clean_arg) ? $clean_arg : true; //if invalid args given, just return all fields
+			}elseif( is_string($args['array']) && array_key_exists($args['array'], $EM_Booking->fields) ){
+				$args['array'] = array($args['array']);
+			}else{
+				$args['array'] = true;
+			}
+		}else{
+			$args['array'] = false;
 		}
 		//figure out default owning permissions
 		if( !current_user_can('edit_others_events') ){
@@ -703,23 +781,29 @@ class EM_Bookings extends EM_Object implements Iterator{
 		return apply_filters('em_bookings_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 
-	//Iterator Implementation
+	//Iterator Implementation - if we iterate this object, we automatically invoke the load() function first
+	//and load up all bookings to go through from the database.
     public function rewind(){
+    	$this->load();
         reset($this->bookings);
     }  
     public function current(){
+    	$this->load();
         $var = current($this->bookings);
         return $var;
     }  
     public function key(){
+    	$this->load();
         $var = key($this->bookings);
         return $var;
     }  
     public function next(){
+    	$this->load();
         $var = next($this->bookings);
         return $var;
     }  
     public function valid(){
+    	$this->load();
         $key = key($this->bookings);
         $var = ($key !== NULL && $key !== FALSE);
         return $var;
