@@ -151,7 +151,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		$current_language = ICL_LANGUAGE_CODE;
 		// LEFT JOIN translations to fetch also recurring events (where translations are disabled by default)
 		return "FROM $wpdb->posts posts
-				LEFT JOIN {$wpdb->prefix}icl_translations translations
+				JOIN {$wpdb->prefix}icl_translations translations
 						ON translations.element_type = 'post_{$this->current_request->post_type}'
 						AND translations.element_id = posts.ID
 						AND translations.language_code = '$current_language'
