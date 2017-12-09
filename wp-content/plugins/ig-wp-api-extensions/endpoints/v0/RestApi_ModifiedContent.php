@@ -87,11 +87,19 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		$querystr = $this->build_query_string();
 		$query_result = $wpdb->get_results($querystr, OBJECT);
 		
-		// fetch also the initial of several recurring events (the initial event has a different post_type)
 		if( $type == 'event' ) {
+			// fetch the initial of several recurring events (the initial events have a different post_type)
 			$this->current_request->post_type = 'event-recurring';
 			$querystr = $this->build_query_string();
-			$query_result = array_merge($query_result, $wpdb->get_results($querystr, OBJECT));
+			$initial_events = $wpdb->get_results($querystr, OBJECT);
+			// fetch the recurring events for every initial event
+			$recurring_events = [];
+			foreach( $initial_events as $initial_event ) {
+				$this->current_request->post_type = 'event';
+				$querystr = $this->build_query_string($initial_event);
+				$recurring_events = array_merge($recurring_events, $wpdb->get_results($querystr, OBJECT));
+			}
+			$query_result = array_merge($query_result, $initial_events, $recurring_events);
 		}
 
 		$result = [];
@@ -110,20 +118,24 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	 *
 	 * @return string
 	 */
-	protected function build_query_string() {
+	protected function build_query_string($initial_event = null) {
 		/**
 		 * The approach is currently not unified - the helper methods return strings and arrays.
 		 * We should implement at least a half-fledged query builder to cope with the different needs
 		 * (or use an adequate framework).
 		 */
 		$select = $this->build_query_select();
-		$from = $this->build_query_from();
+		$from = $this->build_query_from($initial_event);
 		$where = $this->build_query_where();
 		$groups = $this->build_query_groups();
 		$order_clauses = $this->build_query_order_clauses();
 
 		$where_first = array_shift($where);
 		$where_rest = $where;
+		// filter the recurring events when the JOIN translations does not
+		if( isset($initial_event) ) {
+			$where_rest[] = "em_events.recurrence_id = {$initial_event->event_id}";
+		}
 
 		return
 			"SELECT $select
@@ -146,15 +158,19 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	/**
 	 * @return string
 	 */
-	protected function build_query_from() {
+	protected function build_query_from($initial_event = null) {
 		global $wpdb;
 		$current_language = ICL_LANGUAGE_CODE;
-		// LEFT JOIN translations to fetch also recurring events (where translations are disabled by default)
-		return "FROM $wpdb->posts posts
+		// when the recurring events of an initial event are selected, join on the element_id of the initial event because recurring events don't have their own entries in the translations table
+		return "FROM $wpdb->posts posts" . ( isset($initial_event) ? "
+				JOIN {$wpdb->prefix}icl_translations translations
+						ON translations.element_type = 'post_event-recurring'
+						AND translations.element_id = '{$initial_event->ID}'
+						AND translations.language_code = '$current_language'" : "
 				JOIN {$wpdb->prefix}icl_translations translations
 						ON translations.element_type = 'post_{$this->current_request->post_type}'
 						AND translations.element_id = posts.ID
-						AND translations.language_code = '$current_language'
+						AND translations.language_code = '$current_language'" ) . "
 				JOIN $wpdb->users users
 						ON users.ID = posts.post_author
 				JOIN $wpdb->usermeta usermeta_firstname
@@ -182,7 +198,8 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		return [
 			"post_type = '{$this->current_request->post_type}'",
 			"post_modified_gmt >= '$last_modified_gmt'",
-			"post_status IN ('publish', 'trash')"];
+			"post_status IN ('publish', 'trash')"
+		];
 	}
 
 	/**
