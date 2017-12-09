@@ -31,9 +31,9 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			GROUP_CONCAT(CONCAT(terms.term_id, ':', terms.name)) AS terms";
 	}
 
-	protected function build_query_from($initial_event_id = null) {
+	protected function build_query_from($initial_event = null) {
 		global $wpdb;
-		return parent::build_query_from($initial_event_id) . "
+		return parent::build_query_from($initial_event) . "
 			JOIN {$wpdb->prefix}em_events em_events
 					ON em_events.post_id = posts.ID
 			LEFT JOIN {$wpdb->prefix}em_locations em_locations
