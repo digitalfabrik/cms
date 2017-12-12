@@ -99,7 +99,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 				$querystr = $this->build_query_string($initial_event);
 				$recurring_events = array_merge($recurring_events, $wpdb->get_results($querystr, OBJECT));
 			}
-			$query_result = array_merge($query_result, $initial_events, $recurring_events);
+			$query_result = array_merge($query_result, $recurring_events);
 		}
 
 		$result = [];

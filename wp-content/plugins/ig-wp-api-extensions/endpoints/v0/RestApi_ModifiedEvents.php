@@ -109,7 +109,7 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 	private function prepare_recurrence($post) {
 		return [
 			'id' => $post->recurrence_id,
-			'initial_event' => $post->recurrence,
+			'info' => $post->recurrence,
 			'interval' => $post->recurrence_interval,
 			'frequency' => $post->recurrence_freq,
 			'day' => $post->recurrence_byday,
