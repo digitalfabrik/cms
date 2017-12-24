@@ -3,21 +3,18 @@
 require_once __DIR__ . '/RestApi_ExtensionBase.php';
 require_once __DIR__ . '/helper/WpmlHelper.php';
 
-function map_post_to_foreign_language_id($post, $language_code) {
-    $id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
-    if ($id == null
-        || $id == $post->ID // happens for events
-    ) {
-        return null;
-    }
-
-    return $id;
-}
+	function map_post_to_foreign_language_id($post, $language_code) {
+	$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
+	if ( null == $id || $id == $post->ID ) {
+		return null;
+	}
+	return $id;
+	}
 
 function map_post_to_foreign_language_url($post, $language_code) {
-    $permalink = get_permalink($post, false);
-    $wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
-    return $wpml_permalink;
+	$permalink = get_page_link($post->ID);
+	$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+	return $wpml_permalink;
 }
 
 /**
@@ -234,21 +231,21 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	}
 
 	protected function map_post_to_foreign_language_id($post, $language_code) {
-        $id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
-        if ($id == null
-            || $id == $post->ID // happens for events
-        ) {
-            return null;
-        }
+		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
+		if ($id == null
+			|| $id == $post->ID // happens for events
+		) {
+			return null;
+		}
 
-        return $id;
-    }
+		return $id;
+	}
 
-    protected function map_post_to_foreign_language_url($post, $language_code) {
-        $permalink = get_permalink($post, false);
-        $wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
-        return $wpml_permalink;
-    }
+	protected function map_post_to_foreign_language_url($post, $language_code) {
+		$permalink = get_permalink($post, false);
+		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+		return $wpml_permalink;
+	}
 
 	protected function prepare_item($post) {
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
@@ -265,7 +262,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			'content' => ( $post->post_status != "trash" ? $content : "" ),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
-			'available_language_urls' => $this->wpml_helper->get_available_language_urls($post, map_post_to_foreign_language_url),
+			'available_language_urls' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_url),
 			'available_languages' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_id),
 			'thumbnail' => $this->prepare_thumbnail($post),
 		];
