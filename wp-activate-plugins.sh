@@ -8,7 +8,6 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 firebase-notifications \
-ig-click-guide \
 ig-cms-tree-page-view-extensions \
 ig-content-loader-base \
 ig-content-loader-instance \
@@ -28,6 +27,7 @@ ig-text-dir \
 ig-wp-api-extensions \
 ig-wpml-lock-media-checkboxes \
 ig-hide-preview-button \
+ig-dashboard-widget
 multisite-clone-duplicator \
 pdf-creator-lite \
 simple-page-ordering \
