@@ -27,7 +27,7 @@ ig-text-dir \
 ig-wp-api-extensions \
 ig-wpml-lock-media-checkboxes \
 ig-hide-preview-button \
-ig-dashboard-widget
+ig-dashboard-widget \
 multisite-clone-duplicator \
 pdf-creator-lite \
 simple-page-ordering \
