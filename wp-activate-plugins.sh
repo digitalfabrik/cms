@@ -14,7 +14,6 @@ ig-content-loader-base \
 ig-content-loader-instance \
 ig-customize-editor-integreat \
 ig-customize-login-integreat \
-ig-editor-next-button \
 ig-enhanced-help-menu \
 ig-extras \
 ig-login-redirect-pages \
@@ -40,5 +39,3 @@ wpml-media-translation \
 wpml-translation-management \
 wp-rtl \
 wp-sync-db-1.5
-
-
