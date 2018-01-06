@@ -8,13 +8,11 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 firebase-notifications \
-ig-click-guide \
 ig-cms-tree-page-view-extensions \
 ig-content-loader-base \
 ig-content-loader-instance \
 ig-customize-editor-integreat \
 ig-customize-login-integreat \
-ig-editor-next-button \
 ig-enhanced-help-menu \
 ig-extras \
 ig-login-redirect-pages \
@@ -29,6 +27,7 @@ ig-text-dir \
 ig-wp-api-extensions \
 ig-wpml-lock-media-checkboxes \
 ig-hide-preview-button \
+ig-dashboard-widget \
 multisite-clone-duplicator \
 pdf-creator-lite \
 simple-page-ordering \
@@ -40,5 +39,3 @@ wpml-media-translation \
 wpml-translation-management \
 wp-rtl \
 wp-sync-db-1.5
-
-

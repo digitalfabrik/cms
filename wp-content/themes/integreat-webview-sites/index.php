@@ -1,4 +1,8 @@
-<?php get_header(); ?>
+<?php
+$uri = str_replace("/wordpress","",$_SERVER['REQUEST_URI']);
+header('Location: https://web.integreat-app.de'.$uri);
+die();
+get_header(); ?>
 
 <main>
     <div class="container">
