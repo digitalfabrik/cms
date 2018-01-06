@@ -3,6 +3,20 @@
 require_once __DIR__ . '/RestApi_ExtensionBase.php';
 require_once __DIR__ . '/helper/WpmlHelper.php';
 
+	function map_post_to_foreign_language_id($post, $language_code) {
+	$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
+	if ( null == $id || $id == $post->ID ) {
+		return null;
+	}
+	return $id;
+	}
+
+function map_post_to_foreign_language_url($post, $language_code) {
+	$permalink = get_page_link($post->ID);
+	$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+	return $wpml_permalink;
+}
+
 /**
  * Retrieve only content that has been modified since a given datetime
  */
@@ -86,7 +100,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		global $wpdb;
 		$querystr = $this->build_query_string();
 		$query_result = $wpdb->get_results($querystr, OBJECT);
-		
+
 		if( $type == 'event' ) {
 			// fetch the initial of several recurring events (the initial events have a different post_type)
 			$this->current_request->post_type = 'event-recurring';
@@ -109,7 +123,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			}
 			$result[] = $this->prepare_item($post);
 		}
-		
+
 		return $result;
 	}
 
@@ -194,7 +208,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			->make_datetime($since)
 			->setTimezone($this->datetime_zone_gmt)
 			->format($this->datetime_query_format);
-		
+
 		return [
 			"post_type = '{$this->current_request->post_type}'",
 			"post_modified_gmt >= '$last_modified_gmt'",
@@ -216,6 +230,23 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		return ["menu_order ASC", "post_title ASC"];
 	}
 
+	protected function map_post_to_foreign_language_id($post, $language_code) {
+		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
+		if ($id == null
+			|| $id == $post->ID // happens for events
+		) {
+			return null;
+		}
+
+		return $id;
+	}
+
+	protected function map_post_to_foreign_language_url($post, $language_code) {
+		$permalink = get_permalink($post, false);
+		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+		return $wpml_permalink;
+	}
+
 	protected function prepare_item($post) {
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
@@ -231,7 +262,8 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 			'content' => ( $post->post_status != "trash" ? $content : "" ),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
-			'available_languages' => $this->wpml_helper->get_available_languages($post->ID, $post->post_type),
+			'available_language_urls' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_url),
+			'available_languages' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_id),
 			'thumbnail' => $this->prepare_thumbnail($post),
 		];
 		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
