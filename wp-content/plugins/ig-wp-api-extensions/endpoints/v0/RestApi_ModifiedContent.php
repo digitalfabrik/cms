@@ -3,18 +3,22 @@
 require_once __DIR__ . '/RestApi_ExtensionBase.php';
 require_once __DIR__ . '/helper/WpmlHelper.php';
 
-	function map_post_to_foreign_language_id($post, $language_code) {
+function map_post_to_foreign_language_id($post, $language_code) {
 	$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
 	if ( null == $id || $id == $post->ID ) {
 		return null;
 	}
 	return $id;
-	}
+}
 
 function map_post_to_foreign_language_url($post, $language_code) {
-	$permalink = get_page_link($post->ID);
-	$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
-	return $wpml_permalink;
+	if (map_post_to_foreign_language_id($post, $language_code) == null) {
+		return null;
+	} else {
+		$permalink = get_page_link($post->ID);
+		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+		return $wpml_permalink;
+	}
 }
 
 /**
@@ -230,6 +234,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		return ["menu_order ASC", "post_title ASC"];
 	}
 
+	/* Probably unused function. available_languages uses the function in line 6 */
 	protected function map_post_to_foreign_language_id($post, $language_code) {
 		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
 		if ($id == null
@@ -241,6 +246,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		return $id;
 	}
 
+	/* Probably unused function. available_language_urls uses the function in line 14 */
 	protected function map_post_to_foreign_language_url($post, $language_code) {
 		$permalink = get_permalink($post, false);
 		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
