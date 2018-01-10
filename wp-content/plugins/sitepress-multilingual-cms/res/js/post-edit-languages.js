@@ -36,10 +36,14 @@ function build_language_links(data, $, container) {
 				current = $('<strong></strong>');
 			} else if (language_count >= 0) {
 				current = $('<a></a>');
-				urlData = {
-					post_type: type,
-					lang:      language_code
+                urlData = {
+                    post_type: type,
+                    lang:      language_code
 				};
+                if (type === 'event' || type === 'event-recurring') {
+                    var urlParams = new URLSearchParams(window.location.search);
+                    urlData.scope = urlParams.get('scope');
+                }
 
 				if (statuses && statuses.length) {
 					urlData.post_status = statuses.join(',');
