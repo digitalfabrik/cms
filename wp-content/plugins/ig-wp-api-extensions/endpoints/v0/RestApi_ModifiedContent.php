@@ -234,25 +234,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 		return ["menu_order ASC", "post_title ASC"];
 	}
 
-	/* Probably unused function. available_languages uses the function in line 6 */
-	protected function map_post_to_foreign_language_id($post, $language_code) {
-		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
-		if ($id == null
-			|| $id == $post->ID // happens for events
-		) {
-			return null;
-		}
-
-		return $id;
-	}
-
-	/* Probably unused function. available_language_urls uses the function in line 14 */
-	protected function map_post_to_foreign_language_url($post, $language_code) {
-		$permalink = get_permalink($post, false);
-		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
-		return $wpml_permalink;
-	}
-
 	protected function prepare_item($post) {
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
