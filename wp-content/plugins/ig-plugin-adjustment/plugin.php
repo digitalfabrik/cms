@@ -13,6 +13,7 @@ add_action('upgrader_process_complete', function ($upgrader_object, $options) {
 	if (strcasecmp($options['type'], 'plugin') != 0) // only adjust plugins
 		return true;
 	$adjuster = new PluginAdjustment();
+	$adjuster->apply_wpml_adjustments();
 	return true;
 }, 10, 2);
 
@@ -37,4 +38,31 @@ class PluginAdjustment {
 			die("Could not find '$search' in file '$filepath'");
 		}
 	}
+
+	public function apply_wpml_adjustments() {
+		$tree_view_file = plugin_dir_path(__FILE__) . '../sitepress-multilingual-cms/res/js/post-edit-languages.js';
+		$search = 'urlData = {
+					post_type: type,
+					lang:      language_code
+				};
+
+				if (statuses && statuses.length) {
+					urlData.post_status = statuses.join(\',\');
+				}';
+		$replace = 'urlData = {
+					post_type: type,
+					lang:      language_code
+				};
+
+				if (type === \'event\' || type === \'event-recurring\') {
+					var urlParams = new URLSearchParams(window.location.search);
+					urlData.scope = urlParams.get(\'scope\');
+				}
+
+				if (statuses && statuses.length) {
+					urlData.post_status = statuses.join(\',\');
+				}';
+		$this->replace_line_in_file($tree_view_file, $search, $replace);
+	}
+
 }

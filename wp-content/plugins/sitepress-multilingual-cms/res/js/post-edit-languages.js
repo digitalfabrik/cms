@@ -40,6 +40,7 @@ function build_language_links(data, $, container) {
 					post_type: type,
 					lang:      language_code
 				};
+
 				if (type === 'event' || type === 'event-recurring') {
 					var urlParams = new URLSearchParams(window.location.search);
 					urlData.scope = urlParams.get('scope');
