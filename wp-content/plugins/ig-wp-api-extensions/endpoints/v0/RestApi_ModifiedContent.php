@@ -12,13 +12,13 @@ function map_post_to_foreign_language_id($post, $language_code) {
 }
 
 function map_post_to_foreign_language_url($post, $language_code) {
-	if (map_post_to_foreign_language_id($post, $language_code) == null) {
-		return null;
-	} else {
-		$permalink = get_page_link($post->ID);
-		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
-		return $wpml_permalink;
-	}
+	// CURRENTLY NOT WORKING: $wpml_permalink = apply_filters('wpml_permalink', get_page_link($post->ID), $language_code);
+	global $sitepress;
+	$current_language = $sitepress->get_current_language();
+	$sitepress->switch_lang($language_code, true);
+	$wpml_permalink = get_permalink(map_post_to_foreign_language_id($post, $language_code));
+	$sitepress->switch_lang($current_language, true);
+	return $wpml_permalink;
 }
 
 /**
