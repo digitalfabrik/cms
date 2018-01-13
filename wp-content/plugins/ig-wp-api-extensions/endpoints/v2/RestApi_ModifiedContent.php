@@ -8,6 +8,7 @@ require_once __DIR__ . '/../helper/WpmlHelper.php';
  */
 abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBaseV2 {
 	const URL = 'modified_content';
+	const FORCE_UPDATE_DATE = "2016-09-30T00:00:00+02:00";
 	/**
 	 * Match empty p html tags spanning the whole string.
 	 *
@@ -187,6 +188,10 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBaseV2 {
 	 */
 	protected function build_query_where() {
 		$since = $this->current_request->rest_request->get_param('since');
+		if(strtotime($since) < strtotime(self::FORCE_UPDATE_DATE)) {
+			//if the last update is after the deadline, pull all content by setting the since date to the beginning of 2015
+			$since = "2015-01-01T00:00:00+02:00";
+		}
 		$last_modified_gmt = $this
 			->make_datetime($since)
 			->setTimezone($this->datetime_zone_gmt)
