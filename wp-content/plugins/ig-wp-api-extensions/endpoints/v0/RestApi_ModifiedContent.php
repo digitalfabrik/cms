@@ -130,6 +130,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	/**
 	 * Builds the query string based on the result of the query helper methods.
 	 *
+	 * @param array $initial_event
 	 * @return string
 	 */
 	protected function build_query_string($initial_event = null) {
@@ -170,6 +171,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	}
 
 	/**
+	 * @param array $initial_event
 	 * @return string
 	 */
 	protected function build_query_from($initial_event = null) {
