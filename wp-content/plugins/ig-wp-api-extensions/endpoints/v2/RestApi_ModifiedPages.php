@@ -4,14 +4,14 @@ require_once __DIR__ . '/RestApi_ModifiedContent.php';
 require_once __DIR__ . '/../helper/WpmlHelper.php';
 
 /**
- * Retrieve only disclaimer posts that have been modified since a given datetime
+ * Retrieve only pages that have been modified since a given datetime
  */
-class RestApi_ModifiedDisclaimerV0 extends RestApi_ModifiedContentV0 {
+class RestApi_ModifiedPagesV2 extends RestApi_ModifiedContentV2 {
 	protected function get_subpath() {
-		return '/disclaimer/';
+		return '/pages/';
 	}
 
 	protected function get_posts_type() {
-		return 'disclaimer';
+		return 'page';
 	}
 }

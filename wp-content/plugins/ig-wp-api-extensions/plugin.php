@@ -15,8 +15,15 @@ require_once __DIR__ . '/endpoints/v0/RestApi_WpmlLanguages.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
-// v1
+// v1 (current version)
 require_once __DIR__ . '/endpoints/RestApi_Multisites.php';
+// v2
+require_once __DIR__ . '/endpoints/v2/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_WpmlLanguages.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedPages.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedEvents.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
 
 const API_NAMESPACE = 'extensions';
 const CURRENT_VERSION = 1;
@@ -42,6 +49,13 @@ add_action('rest_api_init', function () {
 		],
 		CURRENT_VERSION => [
 			ENDPOINT_MULTISITES => new RestApi_Multisites(),
+		],
+		2 => [
+			ENDPOINT_MULTISITES => new RestApi_MultisitesV2(),
+			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV2(),
+			ENDPOINT_PAGES => new RestApi_ModifiedPagesV2(),
+			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV2(),
+			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV2(),
 		]
 	];
 

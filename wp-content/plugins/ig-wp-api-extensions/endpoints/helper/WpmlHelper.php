@@ -1,6 +1,7 @@
 <?php
 
 class WpmlHelper {
+
 	public function get_languages() {
 		return apply_filters('wpml_active_languages', null, '');
 	}
@@ -22,7 +23,7 @@ class WpmlHelper {
 				continue;
 			}
 
-			$value = $postMapper($post, $language_code);
+			$value = $this->$postMapper($post, $language_code);
 
             if ($value != null) {
                 $other_pages_ids[$language_code] = $value;
@@ -30,4 +31,19 @@ class WpmlHelper {
 		}
 		return $other_pages_ids;
 	}
+
+	private function map_post_to_foreign_language_id($post, $language_code) {
+		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
+		if ( null == $id || $id == $post->ID ) {
+			return null;
+		}
+		return $id;
+	}
+
+	private function map_post_to_foreign_language_url($post, $language_code) {
+		$permalink = get_page_link($post->ID);
+		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+		return $wpml_permalink;
+	}
+
 }
