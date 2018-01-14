@@ -25,6 +25,7 @@ require_once __DIR__ . '/endpoints/v2/RestApi_WpmlLanguages.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedEvents.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_Extras.php';
 
 const API_NAMESPACE = 'extensions';
 const CURRENT_VERSION = 1;
@@ -59,6 +60,7 @@ add_action('rest_api_init', function () {
 			ENDPOINT_PAGES => new RestApi_ModifiedPagesV2(),
 			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV2(),
 			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV2(),
+			ENDPOINT_EXTRAS => new RestApi_ExtrasV2(),
 		]
 	];
 

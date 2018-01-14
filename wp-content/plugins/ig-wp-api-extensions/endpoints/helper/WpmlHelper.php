@@ -32,7 +32,7 @@ class WpmlHelper {
 		return $other_pages_ids;
 	}
 
-	function map_post_to_foreign_language_id($post, $language_code) {
+	private function map_post_to_foreign_language_id($post, $language_code) {
 		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
 		if ( null == $id || $id == $post->ID ) {
 			return null;
@@ -40,7 +40,7 @@ class WpmlHelper {
 		return $id;
 	}
 
-	function map_post_to_foreign_language_url($post, $language_code) {
+	private function map_post_to_foreign_language_url($post, $language_code) {
 		// CURRENTLY NOT WORKING: $wpml_permalink = apply_filters('wpml_permalink', get_page_link($post->ID), $language_code);
 		global $sitepress;
 		$current_language = $sitepress->get_current_language();
