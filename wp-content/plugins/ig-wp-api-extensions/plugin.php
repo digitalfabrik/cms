@@ -8,27 +8,28 @@
  * License: MIT
  */
 
+// wpml helper
+require_once __DIR__ . '/endpoints/helper/WpmlHelper.php';
+// base
+require_once __DIR__ . '/endpoints/RestApi_ExtensionBase.php';
 // v0
-require_once __DIR__ . '/endpoints/v0/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_Extras.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedContent.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_Multisites.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_WpmlLanguages.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_Extras.php';
-// v1 (current version)
-require_once __DIR__ . '/endpoints/RestApi_Multisites.php';
+// v1
+require_once __DIR__ . '/endpoints/v1/RestApi_Multisites.php';
 // v2
-require_once __DIR__ . '/endpoints/v2/RestApi_Multisites.php';
-require_once __DIR__ . '/endpoints/v2/RestApi_Multisites.php';
-require_once __DIR__ . '/endpoints/v2/RestApi_WpmlLanguages.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedContent.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedEvents.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
-require_once __DIR__ . '/endpoints/v2/RestApi_Extras.php';
 
 const API_NAMESPACE = 'extensions';
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 const ENDPOINT_MULTISITES = 'multisites';
 const ENDPOINT_LANGUAGES = 'languages';
@@ -51,17 +52,22 @@ add_action('rest_api_init', function () {
 			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(),
 			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(),
 		],
-		CURRENT_VERSION => [
-			ENDPOINT_MULTISITES => new RestApi_Multisites(),
+		1 => [
+			ENDPOINT_MULTISITES => new RestApi_MultisitesV1(),
+			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(), // legacy APIv0
+			ENDPOINT_PAGES => new RestApi_ModifiedPagesV0(), // legacy APIv0
+			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV0(), // legacy APIv0
+			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(), // legacy APIv0
+			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
 		],
 		2 => [
-			ENDPOINT_MULTISITES => new RestApi_MultisitesV2(),
-			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV2(),
+			ENDPOINT_MULTISITES => new RestApi_MultisitesV1(), // legacy APIv1
+			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(), // legacy APIv0
 			ENDPOINT_PAGES => new RestApi_ModifiedPagesV2(),
 			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV2(),
 			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV2(),
-			ENDPOINT_EXTRAS => new RestApi_ExtrasV2(),
-		]
+			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
+		],
 	];
 
 	// register versioned endpoints

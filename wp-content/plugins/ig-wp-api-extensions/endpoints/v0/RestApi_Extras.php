@@ -1,13 +1,8 @@
 <?php
 
-require_once __DIR__ . '/RestApi_ExtensionBase.php';
-
-class RestApi_ExtrasV0 extends RestApi_ExtensionBaseV0 {
+class RestApi_ExtrasV0 extends RestApi_ExtensionBase {
 
 	const URL = 'extras';
-
-	public function __construct() {
-	}
 
 	public function register_routes($namespace) {
 		parent::register_route($namespace, self::URL, '/', [

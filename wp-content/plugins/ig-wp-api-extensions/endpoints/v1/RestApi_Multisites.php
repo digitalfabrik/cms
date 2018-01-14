@@ -1,11 +1,9 @@
 <?php
 
-require_once __DIR__ . '/RestApi_ExtensionBase.php';
-
 /**
  * Retrieve the multisites defined in this network
  */
-class RestApi_Multisites extends RestApi_ExtensionBase {
+class RestApi_MultisitesV1 extends RestApi_ExtensionBase {
 	const URL = 'multisites';
 	const LIVEINSTANCES_FILENAME = 'liveinstances.txt';
 

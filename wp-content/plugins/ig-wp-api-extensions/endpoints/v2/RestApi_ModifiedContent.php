@@ -1,12 +1,9 @@
 <?php
 
-require_once __DIR__ . '/RestApi_ExtensionBase.php';
-require_once __DIR__ . '/../helper/WpmlHelper.php';
-
 /**
  * Retrieve only content that has been modified since a given datetime
  */
-abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBaseV2 {
+abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 	const URL = 'modified_content';
 	const FORCE_UPDATE_DATE = "2016-09-30T00:00:00+02:00";
 	/**
