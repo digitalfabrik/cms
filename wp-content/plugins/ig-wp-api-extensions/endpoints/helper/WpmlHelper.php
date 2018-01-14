@@ -45,7 +45,7 @@ class WpmlHelper {
 		global $sitepress;
 		$current_language = $sitepress->get_current_language();
 		$sitepress->switch_lang($language_code, true);
-		$wpml_permalink = get_permalink(map_post_to_foreign_language_id($post, $language_code));
+		$wpml_permalink = get_permalink($this->map_post_to_foreign_language_id($post, $language_code));
 		$sitepress->switch_lang($current_language, true);
 		return $wpml_permalink;
 	}
