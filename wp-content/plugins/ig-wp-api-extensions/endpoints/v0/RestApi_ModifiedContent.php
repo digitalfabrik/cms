@@ -3,17 +3,21 @@
 require_once __DIR__ . '/RestApi_ExtensionBase.php';
 require_once __DIR__ . '/helper/WpmlHelper.php';
 
-	function map_post_to_foreign_language_id($post, $language_code) {
+function map_post_to_foreign_language_id($post, $language_code) {
 	$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
 	if ( null == $id || $id == $post->ID ) {
 		return null;
 	}
 	return $id;
-	}
+}
 
 function map_post_to_foreign_language_url($post, $language_code) {
-	$permalink = get_page_link($post->ID);
-	$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
+	// CURRENTLY NOT WORKING: $wpml_permalink = apply_filters('wpml_permalink', get_page_link($post->ID), $language_code);
+	global $sitepress;
+	$current_language = $sitepress->get_current_language();
+	$sitepress->switch_lang($language_code, true);
+	$wpml_permalink = get_permalink(map_post_to_foreign_language_id($post, $language_code));
+	$sitepress->switch_lang($current_language, true);
 	return $wpml_permalink;
 }
 
@@ -228,23 +232,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBaseV0 {
 	 */
 	protected function build_query_order_clauses() {
 		return ["menu_order ASC", "post_title ASC"];
-	}
-
-	protected function map_post_to_foreign_language_id($post, $language_code) {
-		$id = apply_filters('wpml_object_id', $post->ID, $post->post_type, FALSE, $language_code);
-		if ($id == null
-			|| $id == $post->ID // happens for events
-		) {
-			return null;
-		}
-
-		return $id;
-	}
-
-	protected function map_post_to_foreign_language_url($post, $language_code) {
-		$permalink = get_permalink($post, false);
-		$wpml_permalink = apply_filters('wpml_permalink', $permalink, $language_code);
-		return $wpml_permalink;
 	}
 
 	protected function prepare_item($post) {
