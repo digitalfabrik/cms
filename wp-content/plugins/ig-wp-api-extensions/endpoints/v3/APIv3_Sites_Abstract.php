@@ -5,7 +5,7 @@
  */
 abstract class APIv3_Sites_Abstract extends APIv3_Base_Abstract {
 
-	protected const ROUTE = 'sites';
+	const ROUTE = 'sites';
 
 	public function register_routes(String $namespace) {
 		parent::register_route($namespace, static::ROUTE, 'get_sites');

@@ -5,7 +5,7 @@
  */
 abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 
-	protected const ROUTE = 'posts';
+	const ROUTE = 'posts';
 	protected $current_language;
 
 	public function __construct() {

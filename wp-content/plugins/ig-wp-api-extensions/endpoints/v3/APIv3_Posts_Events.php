@@ -2,8 +2,8 @@
 
 class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 
-	protected const ROUTE = parent::ROUTE.'/events';
-	protected const POST_TYPE = 'event';
+	const ROUTE = parent::ROUTE.'/events';
+	const POST_TYPE = 'event';
 
 	private $recurring_meta_event;
 

@@ -2,7 +2,7 @@
 
 class APIv3_Extras extends APIv3_Base_Abstract {
 
-	private const ROUTE = 'extras';
+	const ROUTE = 'extras';
 
 	public function register_routes(String $namespace) {
 		parent::register_route($namespace, self::ROUTE, 'get_extras');
