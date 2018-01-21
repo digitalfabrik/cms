@@ -27,11 +27,24 @@ require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedContent.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedEvents.php';
 require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
+// v3
+require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Hidden.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Live.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
 
 const API_NAMESPACE = 'extensions';
 const CURRENT_VERSION = 2;
 
 const ENDPOINT_MULTISITES = 'multisites';
+const ENDPOINT_MULTISITES_LIVE = 'live';
+const ENDPOINT_MULTISITES_HIDDEN = 'hidden';
 const ENDPOINT_LANGUAGES = 'languages';
 const ENDPOINT_PAGES = 'pages';
 const ENDPOINT_EVENTS = 'events';
@@ -67,6 +80,15 @@ add_action('rest_api_init', function () {
 			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV2(),
 			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV2(),
 			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
+		],
+		3 => [
+			ENDPOINT_MULTISITES_LIVE => new APIv3_Sites_Live(),
+			ENDPOINT_MULTISITES_HIDDEN => new APIv3_Sites_Hidden(),
+			ENDPOINT_LANGUAGES => new APIv3_Languages(),
+			ENDPOINT_PAGES => new APIv3_Posts_Pages(),
+			ENDPOINT_EVENTS => new APIv3_Posts_Events(),
+			ENDPOINT_DISCLAIMER => new APIv3_Posts_Disclaimer(),
+			ENDPOINT_EXTRAS => new APIv3_Extras(),
 		],
 	];
 
