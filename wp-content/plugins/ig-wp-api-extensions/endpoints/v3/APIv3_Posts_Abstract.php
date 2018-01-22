@@ -14,8 +14,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	}
 
 	public function register_routes(String $namespace) {
-		parent::register_route($namespace, static::ROUTE, 'get_posts');
-		parent::register_route($namespace, static::ROUTE, 'get_posts', 'POST');
+		parent::register_route($namespace, static::ROUTE, 'get_posts', 'GET,POST');
 	}
 
 	public function get_posts(WP_REST_Request $request) {

@@ -99,12 +99,8 @@ add_action('rest_api_init', function () {
 			$endpoint->register_routes($versioned_namespace);
 		}
 	}
-	// register most recent versions without version number
-	$most_recent_endpoints = [];
-	foreach ($versioned_endpoints as $key_endpoints) {
-		$most_recent_endpoints = array_merge($most_recent_endpoints, $key_endpoints);
-	}
-	foreach ($most_recent_endpoints as $endpoint) {
+	// register current version without version number
+	foreach ($versioned_endpoints[CURRENT_VERSION] as $endpoint) {
 		$endpoint->register_routes(API_NAMESPACE);
 	}
 });
