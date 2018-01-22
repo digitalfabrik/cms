@@ -2,7 +2,7 @@
 
 class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 
-	const ROUTE = parent::ROUTE.'/events';
+	const ROUTE = 'events';
 	const POST_TYPE = 'event';
 
 	private $recurring_meta_event;
@@ -135,7 +135,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 
 	private function prepare_event(WP_Post $event) {
 		return [
-			'id' => is_string($event->event_id) ? (int) $event->event_id : $event->event_id,
+			'id' => (int) $event->event_id,
 			'start_date' => $event->event_start_date,
 			'end_date' => $event->event_end_date,
 			'all_day' => (bool) $event->event_all_day,

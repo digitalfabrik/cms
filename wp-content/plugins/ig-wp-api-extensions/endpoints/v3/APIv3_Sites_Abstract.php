@@ -24,7 +24,7 @@ abstract class APIv3_Sites_Abstract extends APIv3_Base_Abstract {
 	private function prepare(WP_Site $site) {
 		switch_to_blog($site->blog_id);
 		$result = [
-			'id' => $site->blog_id,
+			'id' => (int) $site->blog_id,
 			'name' => get_blog_details($site->blog_id)->blogname,
 			'icon' => get_site_icon_url(),
 			'cover_image' => get_header_image(),

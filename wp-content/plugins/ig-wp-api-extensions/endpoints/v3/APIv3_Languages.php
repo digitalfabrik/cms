@@ -21,7 +21,7 @@ class APIv3_Languages extends APIv3_Base_Abstract {
 
 	private function prepare(Array $language) {
 		return [
-			'id' => $language['id'],
+			'id' => (int) $language['id'],
 			'code' => $language['code'],
 			'native_name' => $language['native_name'],
 			'country_flag_url' => $language['country_flag_url'],

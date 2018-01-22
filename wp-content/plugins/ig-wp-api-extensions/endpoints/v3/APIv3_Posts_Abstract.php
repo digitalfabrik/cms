@@ -5,11 +5,9 @@
  */
 abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 
-	const ROUTE = 'posts';
 	protected $current_language;
 
 	public function __construct() {
-		parent::__construct();
 		add_filter('excerpt_more', function($link) { return ''; });
 		global $sitepress;
 		$this->current_language = $sitepress->get_current_language();
@@ -55,7 +53,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		return $output_post;
 	}
 
-	protected function prepare_content(WP_Post $post) {
+	private function prepare_content(WP_Post $post) {
 		$children = get_pages( [ 'child_of' => $post->ID ] );
 		if ($post->post_content === '' && count( $children ) === 0) {
 			$post->post_content = 'empty';
@@ -63,13 +61,13 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		return wpautop($post->post_content);
 	}
 
-	protected function prepare_excerpt(WP_Post $post) {
+	private function prepare_excerpt(WP_Post $post) {
 		$excerpt = $post->post_excerpt ?: apply_filters('the_excerpt', apply_filters('get_the_excerpt', $post->post_excerpt));
 		$excerpt = trim(str_replace(['</p>', "\r\n", "\n", "\r", '<p>'], '', $excerpt));
 		return $excerpt;
 	}
 
-	public function get_available_languages(WP_Post $post) {
+	private function get_available_languages(WP_Post $post) {
 		global $sitepress;
 		$languages = apply_filters('wpml_active_languages', null, '');
 		$available_languages = [];
@@ -107,7 +105,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			 * If the check is not successful, try to bring the posts into this format and check again.
 			 * If the validation still fails, throw an error.
 			 */
-			if (!$this->validate_posts($local_posts) && !($local_posts = $this->sanitize_posts($local_posts)) && !$this->validate_posts($local_posts)) {
+			if (!$local_posts = $this->sanitize_posts($local_posts)) {
 				return new WP_Error('rest_bad_data', 'Die JSON-Daten entsprechen nicht dem erwarteten Format', ['status' => 400]);
 			}
 			/*
@@ -135,8 +133,8 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			 * Now we can return the deleted and changed posts:
 			 */
 			$all_posts = [
-				'deleted_posts' => $deleted_posts,
-				'changed_posts' => $changed_posts,
+				'deleted' => $deleted_posts,
+				'changed' => $changed_posts,
 			];
 		}
 		return $all_posts;
@@ -149,7 +147,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	 *         'hash' => String
 	 *     )
 	 */
-	protected function validate_posts(Array $posts) {
+	private function validate_posts(Array $posts) {
 		foreach ($posts as $post) {
 			if (!is_array($post) || array_keys($post) !== [ 'id', 'hash' ] || !is_int($post['id']) || !is_string($post['hash'])) {
 				return false;
@@ -161,21 +159,32 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Sort the keys of every $post contained in $posts in reverse order and filter it by the $keys.
 	 */
-	protected function sanitize_posts(Array $posts) {
-		foreach ($posts as $key => $post) {
-			if (!is_array($post)) {
+	private function sanitize_posts(Array $posts) {
+		if (!$this->validate_posts($posts)) {
+			$posts_sanitized = [];
+			foreach ($posts as $post) {
+				if (!is_array($post) || !array_key_exists('id', $post) || !array_key_exists('hash', $post)) {
+					return false;
+				} else {
+					$posts_sanitized[] = [
+						'id' => (int) $post['id'],
+						'hash' => (string) $post['hash']
+					];
+				}
+			}
+			if (!$this->validate_posts($posts_sanitized)) {
 				return false;
 			} else {
-				$posts[$key] = krsort($post);
+				$posts = $posts_sanitized;
 			}
 		}
-		return $this->filter_posts($posts, [ 'id', 'hash' ]);
+		return $posts;
 	}
 
 	/*
 	 * Convert every $post-array contained in $posts to a string
 	 */
-	protected function serialize_posts(Array $posts) {
+	private function serialize_posts(Array $posts) {
 		return array_map(function ($post) {
 			return json_encode($post);
 		}, $posts);
@@ -184,7 +193,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Convert every $post-string contained in $posts to an array
 	 */
-	protected function deserialize_posts(Array $posts) {
+	private function deserialize_posts(Array $posts) {
 		return array_map(function ($post) {
 			return json_decode($post);
 		}, $posts);
@@ -193,7 +202,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Filter all posts by removing all keys except $keys from every $post contained in $posts.
 	 */
-	protected function filter_posts(Array $posts, Array $keys) {
+	private function filter_posts(Array $posts, Array $keys) {
 		return array_map(function ($post) use ($keys) {
 			return array_filter($post, function($key) use ($keys) {
 				return in_array($key, $keys);
