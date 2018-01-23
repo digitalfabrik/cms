@@ -15,17 +15,17 @@ Timers:
  * Should have a module for all instead...
  */
 var cms_tree_page_view = (function ($) {
-	
+
 	var my = {},
 		privateVariable = 1;
-	 
+
 	function privateMethod() {
 		// ...
 	}
-	 
+
 	my.moduleProperty = 1;
 	my.elements = {};
-	
+
 	my.selectors = {
 		containers: "div.cms_tpv_container",
 		action_div: "div.cms_tpv_page_actions",
@@ -47,7 +47,7 @@ var cms_tree_page_view = (function ($) {
 	};
 
 	my.setup_listeners = function() {
-		
+
 		// When something has been written in one of the page titles: show another row
 		// Also: if more than one row are empty at the end, remove all but the last
 		$(document).on("keyup", "ul.cms_tpv_action_add_doit_pages li:last-child input", function(e) {
@@ -56,12 +56,12 @@ var cms_tree_page_view = (function ($) {
 			var $li = $t.closest("li");
 
 			if ($.trim($t.val()) !== "") {
-			
+
 				var $new_li = $li.clone().hide();
 				$new_li.find("input").val("");
 				$li.after( $new_li );
 				$new_li.slideDown();
-			
+
 			}
 
 		});
@@ -132,7 +132,7 @@ var cms_tree_page_view = (function ($) {
 				actions_div_doit.find("[name='cms_tpv_add_new_pages_names[]']").focus();
 			});
 
-			
+
 		}); // click add page
 
 		// submit form with new pages
@@ -155,7 +155,7 @@ var cms_tree_page_view = (function ($) {
 			// console.log(what);
 		}
 	};
-	 
+
 	return my;
 
 }(jQuery));
@@ -169,7 +169,7 @@ jQuery(function() {
 // @todo: add prefix to treeOptions, div_actions
 var cms_tpv_tree, treeOptions, div_actions, cms_tpv_current_li_id = null;
 jQuery(function($) {
-	
+
 	// Globals, don't "var" them! :)
 	cms_tpv_tree = $("div.cms_tpv_container");
 	div_actions = $("div.cms_tpv_page_actions");
@@ -206,7 +206,7 @@ jQuery(function($) {
 		},
 		"json_data": {
 			"ajax": {
-				"url": ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW,
+				"url": ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW + '&cms-tpv-nonce=' + window.CMS_TPV_NONCE,
 				// this function is executed in the instance's scope (this refers to the tree instance)
 				// the parameter is the node being loaded (may be -1, 0, or undefined when loading the root nodes)
 				"data" : function (n) {
@@ -219,7 +219,7 @@ jQuery(function($) {
 					}
 				},
 				"success": function(data, status) {
-					
+
 					// If data is null or empty = show message about no nodes
 					if (data === null || !data) {
 						cms_tpv_message.html( "<p>" + cmstpv_l10n["No posts found"] + "</p>" );
@@ -241,7 +241,7 @@ jQuery(function($) {
 		},
 		"search": {
 			"ajax" : {
-				"url": ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW
+				"url": ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW + '&cms-tpv-nonce=' + window.CMS_TPV_NONCE
 			},
 			"case_insensitive": true
 		},
@@ -261,10 +261,10 @@ jQuery(function($) {
 		var post_type = cms_tpv_get_post_type(elm);
 		treeOptionsTmp.json_data.ajax.url = treeOptionsTmp.json_data.ajax.url + "&post_type=" + post_type + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
 		treeOptionsTmp.json_data.data = cms_tpv_jsondata[post_type]; // get from js
-		
+
 		var isHierarchical = $(elm).closest(".cms_tpv_wrapper").find("[name=cms_tpv_meta_post_type_hierarchical]").val();
 		if (isHierarchical === "0") {
-			
+
 			// no move to children if not hierarchical
 			treeOptionsTmp.types = {
 				"types": {
@@ -275,9 +275,9 @@ jQuery(function($) {
 			};
 
 		}
-		
+
 		// set search url to include post type
-		treeOptionsTmp.search.ajax.url = ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW + "&post_type=" + cms_tpv_get_post_type(this);
+		treeOptionsTmp.search.ajax.url = ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW  + '&cms-tpv-nonce=' + window.CMS_TPV_NONCE + "&post_type=" + cms_tpv_get_post_type(this);
 
 		$elm.bind("search.jstree", function (event, data) {
 			if (data.rslt.nodes.length === 0) {
@@ -285,10 +285,10 @@ jQuery(function($) {
 				$(this).closest(".cms_tpv_wrapper").find(".cms_tree_view_search_form_no_hits").fadeIn("fast");
 			}
 		});
-		
+
 		// whole tre loaded
 		$elm.bind("loaded.jstree", cms_tpv_tree_loaded);
-		
+
 		$elm.jstree(treeOptionsTmp);
 
 	});
@@ -311,7 +311,7 @@ function cms_tpv_mouseover(e) {
  * Is only fired when tree was loaded and contained stuff
  */
 function cms_tpv_tree_loaded(event, data) {
-		
+
 	var $container = jQuery(event.target);
 	var actions_div_doit = cms_tpv_get_page_actions_div_doit(event.target);
 
@@ -365,7 +365,7 @@ function cms_tpv_tree_loaded(event, data) {
 	 * so hide the action div and cancel the timer
 	 */
 	jQuery($container).on("mousedown", "a", function(e) {
-		
+
 		cms_tree_page_view.log("mousedown a");
 
 		var $target = jQuery(e.target);
@@ -423,7 +423,7 @@ function cms_tpv_mouseover_li(e) {
 	var $cms_tpv_container = $li.closest("div.cms_tpv_container");
 
 	if (cms_tpv_is_dragging() === false) {
-		
+
 		var is_visible = div_actions_for_post_type.is(":visible");
 		is_visible = false;
 
@@ -442,7 +442,7 @@ function cms_tpv_mouseover_li(e) {
 			$li.addClass("has-visible-actions");
 			$cms_tpv_container.addClass("has-visible-actions");
 			$li.find("a:first").addClass("hover");
-			
+
 			// setup link for view page
 			$view = div_actions_for_post_type.find(".cms_tpv_action_view");
 			var permalink = $li.data("permalink");
@@ -465,13 +465,13 @@ function cms_tpv_mouseover_li(e) {
 
 			// add post id to data
 			div_actions_for_post_type.data("post_id", $li.data("post_id"));
-			
+
 
 			// check permissions, may the current user add page, after or inside
 			// If page has status draft then no one is allowed to add page inside
 			// div_actions_for_post_type.find(".cms_tpv_action_add_page_inside, .cms_tpv_action_add_page_inside").show();
 			div_actions_for_post_type.find(".cms_tpv_action_add_page_inside, .cms_tpv_action_add_page_inside").removeClass("hidden");
-			
+
 			var inside_allowed = true;
 			if ("draft" === $li.data("post_status")) {
 				inside_allowed = false;
@@ -487,7 +487,7 @@ function cms_tpv_mouseover_li(e) {
 			var width = $a.outerWidth(true);
 			var new_offset = div_actions_for_post_type.offset();
 			var new_offset_left = e.pageX + 35;
-		
+
 			new_offset_left = $a.offset().left + $a.width() + 20;
 			new_offset.left = new_offset_left;
 			new_offset.top = $a.offset().top - 30;
@@ -496,18 +496,18 @@ function cms_tpv_mouseover_li(e) {
 			// check if action div bottom is visible in browser window, if not move it up until it is
 			var pos_diff = (div_actions_for_post_type.offset().top + div_actions_for_post_type.height()) - (jQuery(window).height() + jQuery(window).scrollTop());
 			if (pos_diff > 0)  {
-				
+
 				// set action div to begin at bottom of link instead
 				new_offset.top = $a.offset().top - div_actions_for_post_type.height() + 15; // <- ska bli botten på vår div
 				div_actions_for_post_type.offset( new_offset );
 				div_actions_for_post_type.addClass("cms_tpv_page_actions_visible_from_bottom");
-				
+
 			} else {
 				div_actions_for_post_type.removeClass("cms_tpv_page_actions_visible_from_bottom");
 			}
-			
+
 			div_actions_for_post_type.addClass("cms_tpv_page_actions_visible");
-			
+
 			// check if user is allowed to edit page
 			var $cms_tpv_action_add_and_edit_page = div_actions_for_post_type.find(".cms_tpv_action_add_and_edit_page");
 			if ($li.data("user_can_edit_page") === "0") {
@@ -543,11 +543,11 @@ function cms_tpv_mouseover_li(e) {
 jQuery(document).on("mouseleave", "div.cms_tpv_container", function(e) {
 
 	cms_tree_page_view.log("mouseleave container");
-	
+
 	var $container = jQuery(e.target).closest("div.cms_tpv_container");
 	var $wrapper = $container.closest("div.cms_tpv_wrapper");
 	var t = this;
-	
+
 	// Reset global timer
 	var global_timer = $container.data("cmstpv_global_link_timer");
 	if (global_timer) {
@@ -562,7 +562,7 @@ jQuery(document).on("mouseleave", "div.cms_tpv_container", function(e) {
 
 	// Maybe hide popup after a short while
 	var hideTimer = setTimeout(function() {
-		
+
 		cms_tree_page_view.log("maybe hide popup because outside container");
 
 		// But don't hide if we are inside the popup
@@ -587,12 +587,12 @@ jQuery(document).on("mouseleave", "div.cms_tpv_container", function(e) {
 // When mouse enters actions div then cancel possibly global hide timer
 // If moved outside container and then back, cancel possibly global timer
 jQuery(document).on("mouseenter", "div.cms_tpv_page_actions", function(e) {
-	
+
 	var $this = jQuery(this);
 	var $wrapper = $this.closest("div.cms_tpv_wrapper");
 	var $container = $wrapper.find("div.cms_tpv_container");
 	var timer = $container.data("cmstpv_global_link_timer");
-	
+
 	clearTimeout(timer);
 
 });
@@ -611,7 +611,7 @@ jQuery(document).on("mouseenter", "div.cms_tpv_container", function(e) {
  * add childcount and other things to each li
  */
 function cms_tpv_bind_clean_node() {
-	
+
 	cms_tpv_tree.bind("move_node.jstree", function (event, data) {
 		var nodeBeingMoved = data.rslt.o; // noden vi flyttar
 		var nodeNewParent = data.rslt.np;
@@ -623,13 +623,13 @@ function cms_tpv_bind_clean_node() {
 
 		// om ovanför
 		o ovanför or
-		
+
 		// om efter
 		o efter r
-		
+
 		// om inside
 		o ovanför or
-		
+
 
 		drop_target		: ".jstree-drop",
 		drop_check		: function (data) { return true; },
@@ -637,12 +637,12 @@ function cms_tpv_bind_clean_node() {
 		drag_target		: ".jstree-draggable",
 		drag_finish		: $.noop,
 		drag_check		: function (data) { return { after : false, before : false, inside : true }; }
-		
+
 		Gets executed after a valid drop, you get one parameter, which is as follows:
 		data.o - the object being dragged
 		data.r - the drop target
 		*/
-		
+
 		var node_id,
 			ref_node_id;
 		if (nodePosition == "before") {
@@ -655,19 +655,20 @@ function cms_tpv_bind_clean_node() {
 			node_id = jQuery( nodeBeingMoved ).attr( "id" );
 			ref_node_id = jQuery( nodeR ).attr( "id" );
 		}
-		
+
 		// Update parent or menu order
 		jQuery.post(ajaxurl, {
 				action: "cms_tpv_move_page",
 				"node_id": node_id,
 				"ref_node_id": ref_node_id,
 				"type": nodePosition,
-				"icl_post_language": selected_lang
+				"icl_post_language": selected_lang,
+				"cms-tpv-nonce": window.CMS_TPV_NONCE
 			}, function(data, textStatus) {
 		});
 
 	});
-	
+
 	cms_tpv_tree.bind("clean_node.jstree", function(event, data) {
 		var obj = (data.rslt.obj);
 		if (obj && obj != -1) {
@@ -687,7 +688,7 @@ function cms_tpv_bind_clean_node() {
 				if (childCount > 0) {
 					aFirst.append("<span title='" + childCount + " " + cmstpv_l10n.child_pages + "' class='child_count'>("+childCount+")</span>");
 				}
-				
+
 				// add protection type
 				var rel = li.data("rel");
 				if(rel == "password") {
@@ -719,7 +720,7 @@ function cms_tpv_bind_clean_node() {
 
 // Perform search when submiting form
 jQuery(document).on("submit", "form.cms_tree_view_search_form", function(e) {
-	
+
 	var $wrapper = jQuery(this).closest(".cms_tpv_wrapper");
 	$wrapper.find(".cms_tpv_search_no_hits").hide();
 	var s = $wrapper.find(".cms_tree_view_search").attr("value");
@@ -737,7 +738,7 @@ jQuery(document).on("submit", "form.cms_tree_view_search_form", function(e) {
 		$wrapper.find(".cms_tree_view_search_form_reset").fadeOut("fast");
 	}
 	$wrapper.find(".cms_tree_view_search_form_working").fadeOut("fast");
-	
+
 	return false;
 
 });
@@ -784,7 +785,7 @@ jQuery(document).on("click", "a.cms_tvp_view_trash", function() {
 
 // click on link to change WPML-language
 jQuery(document).on("click", "a.cms_tvp_switch_lang", function(e) {
-	
+
 	$wrapper = cms_tpv_get_wrapper(this);
 
 	// Mark clicked link as selected
@@ -803,7 +804,7 @@ jQuery(document).on("click", "a.cms_tvp_switch_lang", function(e) {
 	// Post counts are stored on the links for all | public | trash
 	var $ul_select_view = $wrapper.find(".cms-tpv-subsubsub-select-view");
 	$ul_select_view.find("li.cms_tvp_view_is_status_view a").each(function(i, a_tag) {
-		
+
 		// check if this link has a data attr with count for the selected lang
 		var $a = jQuery(a_tag);
 		var link_count = $a.data("post-count-" + lang_code);
@@ -816,20 +817,20 @@ jQuery(document).on("click", "a.cms_tvp_switch_lang", function(e) {
 	// Set the view = reload the tree
 	var current_view = cms_tpv_get_current_view(this);
 	cms_tvp_set_view(current_view, this);
-	
+
 	return false;
 
 });
 
 function cms_tpv_hide_action_div() {
-	
+
 }
 
 
 function cms_tpv_get_current_view(elm) {
-	
+
 	$wrapper = cms_tpv_get_wrapper(elm);
-	
+
 	if ($wrapper.find(".cms_tvp_view_all").hasClass("current")) {
 		return "all";
 	} else if ($wrapper.find(".cms_tvp_view_public").hasClass("current")) {
@@ -867,12 +868,12 @@ function cms_tvp_set_view(view, elm) {
 	} else if (view == "trash") {
 		$wrapper.find(".cms_tvp_view_trash").addClass("current");
 	} else {
-		
+
 	}
-	
+
 	// Reload tree
 	var treeOptionsTmp = jQuery.extend(true, {}, treeOptions);
-	treeOptionsTmp.json_data.ajax.url = ajaxurl + CMS_TPV_AJAXURL + view + "&post_type=" + cms_tpv_get_post_type(elm) + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
+	treeOptionsTmp.json_data.ajax.url = ajaxurl + CMS_TPV_AJAXURL + view  + '&cms-tpv-nonce=' + window.CMS_TPV_NONCE + "&post_type=" + cms_tpv_get_post_type(elm) + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
 
 	$wrapper.find(".cms_tpv_container").bind("loaded.jstree open_node.jstree", cms_tpv_tree_loaded);
 	$wrapper.find(".cms_tpv_container").jstree(treeOptionsTmp);
@@ -895,7 +896,7 @@ jQuery(function($) {
 	// It must exist because that's where we have our switch to tree-icon
 	var view_switch = $("div.view-switch");
 	if (! view_switch.length) {
-		
+
 		view_switch = $("<div class='view-switch'></div>");
 		$("div.tablenav-pages:first").after(view_switch);
 
@@ -906,13 +907,13 @@ jQuery(function($) {
 		//view_switch.append(" ");
 
 	}
-	
+
 	// Add our link inside view switch
 
 	/*
 	view_switch.append(tree_view_switch_a);
 	view_switch.addClass("view-switch-cstpv-icon-added");
-	
+
 	// if in tree mode: add a class to wpbody so we can style things
 	if (cmstpv_postsoverview_wrap.length) {
 
