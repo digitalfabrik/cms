@@ -8,24 +8,48 @@
  * License: MIT
  */
 
+// wpml helper
+require_once __DIR__ . '/endpoints/helper/WpmlHelper.php';
+// base
+require_once __DIR__ . '/endpoints/RestApi_ExtensionBase.php';
 // v0
-require_once __DIR__ . '/endpoints/v0/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_Extras.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedContent.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_Multisites.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_WpmlLanguages.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
 // v1
-require_once __DIR__ . '/endpoints/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v1/RestApi_Multisites.php';
+// v2
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedContent.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedPages.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedEvents.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
+// v3
+require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Hidden.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Live.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
 
 const API_NAMESPACE = 'extensions';
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
 
 const ENDPOINT_MULTISITES = 'multisites';
+const ENDPOINT_MULTISITES_LIVE = 'live';
+const ENDPOINT_MULTISITES_HIDDEN = 'hidden';
 const ENDPOINT_LANGUAGES = 'languages';
 const ENDPOINT_PAGES = 'pages';
 const ENDPOINT_EVENTS = 'events';
 const ENDPOINT_DISCLAIMER = 'disclaimer';
+const ENDPOINT_EXTRAS = 'extras';
 
 add_action('rest_api_init', function () {
 	/**
@@ -39,10 +63,33 @@ add_action('rest_api_init', function () {
 			ENDPOINT_PAGES => new RestApi_ModifiedPagesV0(),
 			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV0(),
 			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(),
+			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(),
 		],
-		CURRENT_VERSION => [
-			ENDPOINT_MULTISITES => new RestApi_Multisites(),
-		]
+		1 => [
+			ENDPOINT_MULTISITES => new RestApi_MultisitesV1(),
+			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(), // legacy APIv0
+			ENDPOINT_PAGES => new RestApi_ModifiedPagesV0(), // legacy APIv0
+			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV0(), // legacy APIv0
+			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(), // legacy APIv0
+			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
+		],
+		2 => [
+			ENDPOINT_MULTISITES => new RestApi_MultisitesV1(), // legacy APIv1
+			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(), // legacy APIv0
+			ENDPOINT_PAGES => new RestApi_ModifiedPagesV2(),
+			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV2(),
+			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV2(),
+			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
+		],
+		3 => [
+			ENDPOINT_MULTISITES_LIVE => new APIv3_Sites_Live(),
+			ENDPOINT_MULTISITES_HIDDEN => new APIv3_Sites_Hidden(),
+			ENDPOINT_LANGUAGES => new APIv3_Languages(),
+			ENDPOINT_PAGES => new APIv3_Posts_Pages(),
+			ENDPOINT_EVENTS => new APIv3_Posts_Events(),
+			ENDPOINT_DISCLAIMER => new APIv3_Posts_Disclaimer(),
+			ENDPOINT_EXTRAS => new APIv3_Extras(),
+		],
 	];
 
 	// register versioned endpoints
@@ -52,12 +99,8 @@ add_action('rest_api_init', function () {
 			$endpoint->register_routes($versioned_namespace);
 		}
 	}
-	// register most recent versions without version number
-	$most_recent_endpoints = [];
-	foreach ($versioned_endpoints as $key_endpoints) {
-		$most_recent_endpoints = array_merge($most_recent_endpoints, $key_endpoints);
-	}
-	foreach ($most_recent_endpoints as $endpoint) {
+	// register current version without version number
+	foreach ($versioned_endpoints[CURRENT_VERSION] as $endpoint) {
 		$endpoint->register_routes(API_NAMESPACE);
 	}
 });

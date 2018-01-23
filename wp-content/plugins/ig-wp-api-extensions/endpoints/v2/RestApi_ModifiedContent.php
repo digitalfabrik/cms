@@ -3,7 +3,7 @@
 /**
  * Retrieve only content that has been modified since a given datetime
  */
-abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
+abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 	const URL = 'modified_content';
 	const FORCE_UPDATE_DATE = "2016-09-30T00:00:00+02:00";
 	/**

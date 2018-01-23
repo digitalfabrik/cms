@@ -3,7 +3,7 @@
 /**
  * Retrieve only pages that have been modified since a given datetime
  */
-class RestApi_ModifiedPagesV0 extends RestApi_ModifiedContentV0 {
+class RestApi_ModifiedPagesV2 extends RestApi_ModifiedContentV2 {
 	protected function get_subpath() {
 		return '/pages/';
 	}

@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Retrieve only events that has been modified since a given datetime
+ * Retrieve only content that has been modified since a given datetime
  */
-class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
+class RestApi_ModifiedEventsV2 extends RestApi_ModifiedContentV2 {
 	
 	protected function get_subpath() {
 		return '/events/';
