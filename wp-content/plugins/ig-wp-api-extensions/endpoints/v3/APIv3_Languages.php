@@ -7,7 +7,7 @@ class APIv3_Languages extends APIv3_Base_Abstract {
 
 	const ROUTE = 'languages';
 
-	public function register_routes(String $namespace) {
+	public function register_routes($namespace) {
 		parent::register_route($namespace, self::ROUTE, 'get_languages');
 	}
 

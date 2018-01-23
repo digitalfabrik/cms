@@ -4,7 +4,7 @@ class APIv3_Extras extends APIv3_Base_Abstract {
 
 	const ROUTE = 'extras';
 
-	public function register_routes(String $namespace) {
+	public function register_routes($namespace) {
 		parent::register_route($namespace, self::ROUTE, 'get_extras');
 	}
 
@@ -17,7 +17,7 @@ class APIv3_Extras extends APIv3_Base_Abstract {
 		return $extras;
 	}
 
-	private function prepare(StdClass $extra) {
+	private function prepare($extra) {
 		$extra_value = json_decode($extra->option_value, true);
 		if (!is_array($extra_value)) {
 			$extra_value = [

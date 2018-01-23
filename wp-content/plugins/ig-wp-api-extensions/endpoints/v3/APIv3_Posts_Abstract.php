@@ -13,7 +13,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		$this->current_language = $sitepress->get_current_language();
 	}
 
-	public function register_routes(String $namespace) {
+	public function register_routes($namespace) {
 		parent::register_route($namespace, static::ROUTE, 'get_posts', 'GET,POST');
 	}
 
@@ -147,7 +147,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	 *         'hash' => String
 	 *     )
 	 */
-	private function validate_posts(Array $posts) {
+	private function validate_posts($posts) {
 		foreach ($posts as $post) {
 			if (!is_array($post) || array_keys($post) !== [ 'id', 'hash' ] || !is_int($post['id']) || !is_string($post['hash'])) {
 				return false;
@@ -159,7 +159,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Sort the keys of every $post contained in $posts in reverse order and filter it by the $keys.
 	 */
-	private function sanitize_posts(Array $posts) {
+	private function sanitize_posts($posts) {
 		if (!$this->validate_posts($posts)) {
 			$posts_sanitized = [];
 			foreach ($posts as $post) {
@@ -184,7 +184,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Convert every $post-array contained in $posts to a string
 	 */
-	private function serialize_posts(Array $posts) {
+	private function serialize_posts($posts) {
 		return array_map(function ($post) {
 			return json_encode($post);
 		}, $posts);
@@ -193,7 +193,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Convert every $post-string contained in $posts to an array
 	 */
-	private function deserialize_posts(Array $posts) {
+	private function deserialize_posts($posts) {
 		return array_map(function ($post) {
 			return json_decode($post);
 		}, $posts);
@@ -202,7 +202,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Filter all posts by removing all keys except $keys from every $post contained in $posts.
 	 */
-	private function filter_posts(Array $posts, Array $keys) {
+	private function filter_posts($posts, $keys) {
 		return array_map(function ($post) use ($keys) {
 			return array_filter($post, function($key) use ($keys) {
 				return in_array($key, $keys);

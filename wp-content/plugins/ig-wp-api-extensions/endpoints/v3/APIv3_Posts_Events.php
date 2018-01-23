@@ -68,7 +68,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 	/*
 	 * Define all fields we want to select to ensure that the where-conditions and joins work properly.
 	 */
-	public function select_events(String $sql) {
+	public function select_events($sql) {
 		$post_fields = [
 			'ID',
 			'post_title',
@@ -107,7 +107,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		return implode(', ', array_merge($post_fields, $event_fields, $location_fields));
 	}
 
-	public function join_events(String $sql) {
+	public function join_events($sql) {
 		global $wpdb;
 		return $sql." JOIN {$wpdb->prefix}em_events AS em_events ON em_events.post_id = {$wpdb->prefix}posts.ID
 			LEFT JOIN {$wpdb->prefix}em_locations AS em_locations ON em_events.location_id = em_locations.location_id";
@@ -116,14 +116,14 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 	/*
 	 * The $sql code already contains a join with the translations table - we just have to modify it for recurrent events
 	 */
-	public function join_translations(String $sql) {
+	public function join_translations($sql) {
 		global $wpdb;
 		$sql = str_replace("{$wpdb->prefix}posts.ID = t.element_id", "t.element_id = '{$this->recurring_meta_event->ID}'", $sql);
 		$sql = str_replace("t.element_type = CONCAT('post_', {$wpdb->prefix}posts.post_type)", "t.element_type = 'post_event-recurring'", $sql);
 		return $sql;
 	}
 
-	public function where_recurrence(String $sql) {
+	public function where_recurrence($sql) {
 		return $sql." AND em_events.recurrence_id = '{$this->recurring_meta_event->event_id}'";
 	}
 
