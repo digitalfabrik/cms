@@ -5,7 +5,7 @@ Tags: page, pages, posts, custom posts, tree, cms, dashboard, overview, drag-and
 Text Domain: cms-tree-page-view
 Requires at least: 3.8
 Tested up to: 4.8
-Stable tag: 1.4
+Stable tag: 1.5
 
 Adds a tree view of all pages & custom posts. Get a great overview + options to drag & drop to reorder & option to add multiple pages.
 
@@ -116,6 +116,11 @@ Now the tree with the pages will be visible both on the dashboard and in the men
 
 
 == Changelog ==
+
+= 1.5 (January 2018) =
+
+- Remove unused function `cms_tpv_add_page()`.
+- Add nonce check when moving page.
 
 = 1.4 (October 2017) =
 
