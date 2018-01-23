@@ -21,6 +21,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 			'post_status' => 'publish',
 			'orderby' => 'id',
 			'order'   => 'ASC',
+			'posts_per_page' => -1,
 		]);
 		$events = [];
 		foreach ($events_query->posts as $event) {
@@ -34,6 +35,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 			'post_status' => 'publish',
 			'orderby' => 'id',
 			'order'   => 'ASC',
+			'posts_per_page' => -1,
 		]);
 		/*
 		 * Add filters to the SQL query to make it work with recurring events.
@@ -47,6 +49,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 				'post_status' => 'publish',
 				'orderby' => 'id',
 				'order'   => 'ASC',
+				'posts_per_page' => -1,
 			]);
 			foreach ($recurring_events_query->posts as $recurring_event) {
 				$recurring_events[] = $this->prepare($recurring_event);

@@ -23,6 +23,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'post_status' => 'publish',
 			'orderby' => 'menu_order post_title',
 			'order'   => 'ASC',
+			'posts_per_page' => -1,
 		]);
 		$posts = [];
 		foreach ($query->posts as $post) {
