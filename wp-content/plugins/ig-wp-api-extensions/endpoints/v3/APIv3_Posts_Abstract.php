@@ -33,6 +33,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	}
 
 	protected function prepare(WP_Post $post) {
+		$GLOBALS['post'] = $post; // define global $post to prevent wordpress notices caused by events-manager
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
 		$content = $this->prepare_content($post);
