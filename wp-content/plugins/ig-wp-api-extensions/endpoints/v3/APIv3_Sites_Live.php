@@ -5,7 +5,7 @@
  */
 class APIv3_Sites_Live extends APIv3_Sites_Abstract {
 
-	const ROUTE = parent::ROUTE.'/live';
+	const ROUTE = 'sites/live';
 	const LIVE = true;
 
 }
