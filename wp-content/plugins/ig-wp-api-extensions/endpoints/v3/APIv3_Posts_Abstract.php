@@ -205,9 +205,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	 */
 	private function filter_posts($posts, $keys) {
 		return array_map(function ($post) use ($keys) {
-			return array_filter($post, function($key) use ($keys) {
-				return in_array($key, $keys);
-			}, ARRAY_FILTER_USE_KEY);
+			return array_intersect_key($post, array_flip($keys));
 		}, $posts);
 	}
 
