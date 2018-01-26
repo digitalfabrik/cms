@@ -38,6 +38,7 @@ require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Post.php';
 
 const API_NAMESPACE = 'extensions';
 const CURRENT_VERSION = 2;
@@ -50,6 +51,7 @@ const ENDPOINT_PAGES = 'pages';
 const ENDPOINT_EVENTS = 'events';
 const ENDPOINT_DISCLAIMER = 'disclaimer';
 const ENDPOINT_EXTRAS = 'extras';
+const ENDPOINT_POST = 'post';
 
 add_action('rest_api_init', function () {
 	/**
@@ -89,6 +91,7 @@ add_action('rest_api_init', function () {
 			ENDPOINT_EVENTS => new APIv3_Posts_Events(),
 			ENDPOINT_DISCLAIMER => new APIv3_Posts_Disclaimer(),
 			ENDPOINT_EXTRAS => new APIv3_Extras(),
+			ENDPOINT_POST => new APIv3_Posts_Post(),
 		],
 	];
 

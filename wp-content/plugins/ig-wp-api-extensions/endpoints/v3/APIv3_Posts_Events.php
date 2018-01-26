@@ -74,6 +74,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 			'post_title',
 			'post_type',
 			'post_status',
+			'post_name',
 			'post_modified_gmt',
 			'post_excerpt',
 			'post_content',

@@ -39,7 +39,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		$content = $this->prepare_content($post);
 		$output_post = [
 			'id' => $post->ID,
-			'url' => get_permalink($post->ID),
+			'url' =>get_permalink($post),
 			'title' => $post->post_title,
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => $this->prepare_excerpt($post),
@@ -95,7 +95,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			 * Get the post data of the request and throw an error if the data is empty or contains no valid json.
 			 */
 			if (!$local_posts = $request->get_json_params()) {
-				return new WP_Error('rest_no_data', 'Keine JSON-Daten gefunden', ['status' => 400]);
+				return new WP_Error('rest_no_data', 'No JSON-data was found', ['status' => 400]);
 			}
 			/*
 			 * Validate the json by checking whether its elements meet the following format:
@@ -107,7 +107,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			 * If the validation still fails, throw an error.
 			 */
 			if (!$local_posts = $this->sanitize_posts($local_posts)) {
-				return new WP_Error('rest_bad_data', 'Die JSON-Daten entsprechen nicht dem erwarteten Format', ['status' => 400]);
+				return new WP_Error('rest_bad_data', 'The JSON-data does not match the expected format (see documentation for reference)', ['status' => 400]);
 			}
 			/*
 			 * Filter all posts by the keys 'id' and 'hash' and serialize them to enable string-comparison of its elements.
@@ -205,9 +205,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	 */
 	private function filter_posts($posts, $keys) {
 		return array_map(function ($post) use ($keys) {
-			return array_filter($post, function($key) use ($keys) {
-				return in_array($key, $keys);
-			}, ARRAY_FILTER_USE_KEY);
+			return array_intersect_key($post, array_flip($keys));
 		}, $posts);
 	}
 
