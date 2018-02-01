@@ -184,11 +184,8 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 	 * @return array
 	 */
 	protected function build_query_where() {
-		$since = $this->current_request->rest_request->get_param('since');
-		if(strtotime($since) < strtotime(self::FORCE_UPDATE_DATE)) {
-			//if the last update is after the deadline, pull all content by setting the since date to the beginning of 2015
-			$since = "2015-01-01T00:00:00+02:00";
-		}
+	    // some app versions do not use the since parameter correctly. we assume that most apps using API v0 are broken. therefore static value.
+		$since = "2015-01-01T00:00:00+02:00";
 		$last_modified_gmt = $this
 			->make_datetime($since)
 			->setTimezone($this->datetime_zone_gmt)
