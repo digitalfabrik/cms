@@ -225,10 +225,7 @@ class URE_Capabilities_Groups_Manager {
             $caps['manage_network_options'] = array('core', 'multisite', 'general');
             $caps['upgrade_network'] = array('core', 'multisite', 'general');
         }
-
-        $caps['create_posts'] = array('core', 'posts');
-        $caps['create_pages'] = array('core', 'pages');
-        
+                
         $caps = apply_filters('ure_built_in_wp_caps', $caps);
         
         $this->built_in_wp_caps = $caps;

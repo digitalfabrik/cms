@@ -1,6 +1,21 @@
 CHANGES LOG (full version).
 ===========================
 
+= [4.40] 31.01.2018 =
+* Update: use wp_roles() function from WordPress API instead of initializing $wp_roles global variable directly.
+* Fix: Bug was introduced by version 4.37 with users recalculation for "All" tab after excluding users with "administrator" role. Code worked incorrectly for Japanese locale.
+
+= [4.39] 19.12.2017 =
+* Update: Plugin settings management code moved to the separate URE_Settings class.
+* Update: 'create_posts', 'create_pages' user capabilities are not added by default to WordPress built-in capabilities groups as they are supported by the Pro version only.
+* Update: Type checking enhanced for values received from a user input and for variable arguments inside database queries.
+* Update: Own code to build usermeta db table name was excluded. A value from $wpdb->usermeta is used instead.
+
+= [4.38] 27.11.2017 =
+* Security: XSS vulnerability was fixed at URE's options page. Bug was discovered and fixed at tab index value numeric type checking. Tab index value is additionally escaped before output also.
+* Security: Deprecated code for debug output to the .log file in case of database query error was removed.
+* Security: Multiple select jQuery plugin (https://github.com/wenzhixin/multiple-select/) was updated to the latest available version 1.2.1, which fixed XSS vulnerability, existed in earlier versions.
+
 = [4.37] 01.11.2017 =
 * New: New option was added. It's possible to select permanent quant of capabilities columns at the "Settings->User Role Editor->General" tab.
 * Update: User capabilities are shown for custom post types which use the WordPress built-in 'post' or 'page' capability type. (0/0) was shown earlier instead of the quantity of user capabilities really used.
