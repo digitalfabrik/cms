@@ -9,7 +9,7 @@
 
 
 /**
- * Process AJAX requrest from User Role Editor
+ * Process AJAX request from User Role Editor
  *
  * @author vladimir
  */
