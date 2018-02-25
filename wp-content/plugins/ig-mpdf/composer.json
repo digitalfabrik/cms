@@ -1,5 +1,0 @@
-{
-  "require": {
-    "mpdf/mpdf": "7.0.0-beta2"
-  }
-}

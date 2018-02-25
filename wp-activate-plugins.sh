@@ -17,7 +17,7 @@ ig-enhanced-help-menu \
 ig-extras \
 ig-login-redirect-pages \
 ig-menu-help \
-ig-pdf-creator-lite-font-extension \
+ig-mpdf \
 ig-plugin-adjustment \
 ig-project-user-roles \
 ig-remove-403-forbidden \
