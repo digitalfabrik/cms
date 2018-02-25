@@ -44,6 +44,10 @@ class IntegreatMpdf {
             'file_path' => $this->file_path,
         );
 
+        if (!file_exists(getcwd()."/".$this->config['file_path'])) {
+               var_dump(mkdir(getcwd()."/".$this->config['file_path']));
+        }
+
         // init mpdf
         require_once __DIR__ . '/vendor/autoload.php';
         $this->mpdf = new mPDF($this->config['init_options']);
