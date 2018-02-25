@@ -41,12 +41,12 @@ class IntegreatMpdf {
                     ],
                 ],
             ),
-            'file_path' => dirname(__FILE__, 4) . '/' . $this->file_path,
+            //'file_path' => dirname(__FILE__, 4) . '/' . $this->file_path,
         );
 
         // init mpdf
         require_once __DIR__ . '/vendor/autoload.php';
-        $this->mpdf = new \Mpdf\Mpdf($this->config['init_options']);
+        $this->mpdf = new Mpdf($this->config['init_options']);
     }
     /**
      * Decides whether to create a new pdf file or use a cached one
