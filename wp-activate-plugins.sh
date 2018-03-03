@@ -37,5 +37,6 @@ use-google-libraries \
 user-role-editor \
 wpml-media-translation \
 wpml-translation-management \
+wp-mail-smtp \
 wp-rtl \
 wp-sync-db-1.5
