@@ -172,6 +172,12 @@ class IntegreatSetting {
 		}
 	}
 
+	public static function delete_table() {
+		global $wpdb;
+		$table_name = self::get_table_name();
+		$wpdb->query( "DROP TABLE IF EXISTS $table_name;" );
+	}
+
 	public static function form($form) {
 		if ($form === 'select') {
 			return self::get_select_form();
@@ -262,6 +268,7 @@ class IntegreatSetting {
 			return false;
 		}
 		$setting = new IntegreatSetting(stripslashes_deep($_POST['setting']));
+		$_SESSION['ig-current-setting'] = $setting;
 		if ($_POST['submit'] == ' Delete ') {
 			$deleted = $setting->delete();
 			if ($deleted !== 1) {
@@ -269,7 +276,6 @@ class IntegreatSetting {
 					'type' => 'error',
 					'message' => 'Setting could not be deleted'
 				];
-				$_SESSION['ig-current-setting'] = $setting;
 				return false;
 			}
 			$_SESSION['ig-admin-notices'][] = [
@@ -280,7 +286,6 @@ class IntegreatSetting {
 			return true;
 		}
 		if (!$setting->validate()) {
-			$_SESSION['ig-current-setting'] = $setting;
 			return false;
 		}
 		$saved = $setting->save();
@@ -289,7 +294,6 @@ class IntegreatSetting {
 				'type' => 'error',
 				'message' => 'Setting could not be saved'
 			];
-			$_SESSION['ig-current-setting'] = $setting;
 			return false;
 		}
 		if ($saved === 0) {
@@ -297,7 +301,6 @@ class IntegreatSetting {
 				'type' => 'info',
 				'message' => 'Setting has not been changed'
 			];
-			$_SESSION['ig-current-setting'] = $setting;
 			return false;
 		}
 		$_SESSION['ig-admin-notices'][] = [

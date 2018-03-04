@@ -20,7 +20,7 @@ class IntegreatSettingConfig {
 		$setting_config = (object) $setting_config;
 		$this->id = isset($setting_config->id) ? (int) $setting_config->id : null;
 		$this->setting_id = isset($setting_config->setting_id) ? (int) $setting_config->setting_id : null;
-		$this->value = isset($setting_config->value) && $setting_config->value !== '' ? htmlspecialchars($setting_config->value) : null;
+		$this->value = isset($setting_config->value) ? htmlspecialchars($setting_config->value) : null;
 	}
 
 	public function validate() {
@@ -50,6 +50,14 @@ class IntegreatSettingConfig {
 				'message' => 'There is no setting with the id "' . $this->setting_id . '"'
 			];
 			$_SESSION['ig-current-error'][] = 'setting_id';
+			return false;
+		}
+		if ($this->value === null) {
+			$_SESSION['ig-admin-notices'][] = [
+				'type' => 'error',
+				'message' => 'The value of a setting can not be "null"'
+			];
+			$_SESSION['ig-current-error'][] = 'value';
 			return false;
 		}
 		if ($setting->alias === 'plz' && $this->value !== '' && !(ctype_digit($this->value) && strlen($this->value) === 5)) {
@@ -112,17 +120,19 @@ class IntegreatSettingConfig {
 
 	public static function get_default_setting_configs() {
 		global $wpdb;
-		$name = get_blog_details(get_current_blog_id())->blogname;
+		$site = get_blog_details(get_current_blog_id());
 		$location_prefix = '';
-		$location_name = $name;
+		$location_name = $site->blogname;
 		foreach (self::PREFIXES as $prefix) {
-			$strpos = strpos($name, $prefix);
-			if ($strpos === 0) {
+			if (strpos($site->blogname, $prefix) === 0) {
 				$location_prefix = $prefix;
-				$location_name = substr($name, strlen($prefix) + 1);
+				$location_name = substr($site->blogname, strlen($prefix) + 1);
 				break;
 			}
 		}
+		$plz = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-zip'");
+		$events = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-evts'");
+		$push_notifications = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-pn'");
 		return [
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('prefix')->id,
@@ -134,15 +144,19 @@ class IntegreatSettingConfig {
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('plz')->id,
-				'value' => $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-zip'", OBJECT)->option_value
+				'value' => (isset($plz->option_value) ? $plz->option_value : null)
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('events')->id,
-				'value' => $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-evts'", OBJECT)->option_value
+				'value' => (isset($events->option_value) ? $events->option_value : null)
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('push_notifications')->id,
-				'value' => $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-pn'", OBJECT)->option_value
+				'value' => (isset($push_notifications->option_value) ? $push_notifications->option_value : null)
+			]),
+			new IntegreatSettingConfig([
+				'setting_id' => IntegreatSetting::get_setting_by_alias('disabled')->id,
+				'value' => (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature)
 			]),
 		];
 	}
@@ -170,6 +184,12 @@ class IntegreatSettingConfig {
 				}
 			}
 		}
+	}
+
+	public static function delete_table() {
+		global $wpdb;
+		$table_name = self::get_table_name();
+		$wpdb->query( "DROP TABLE IF EXISTS $table_name;" );
 	}
 
 	public static function form() {

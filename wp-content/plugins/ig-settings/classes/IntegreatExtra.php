@@ -205,6 +205,12 @@ class IntegreatExtra {
 		}
 	}
 
+	public static function delete_table() {
+		global $wpdb;
+		$table_name = self::get_table_name();
+		$wpdb->query( "DROP TABLE IF EXISTS $table_name;" );
+	}
+
 	public static function form($form) {
 		if ($form === 'select') {
 			return self::get_select_form();
@@ -303,6 +309,7 @@ class IntegreatExtra {
 			return false;
 		}
 		$extra = new IntegreatExtra(stripslashes_deep($_POST['extra']));
+		$_SESSION['ig-current-extra'] = $extra;
 		if ($_POST['submit'] == ' Delete ') {
 			$deleted = $extra->delete();
 			if ($deleted !== 1) {
@@ -310,7 +317,6 @@ class IntegreatExtra {
 					'type' => 'error',
 					'message' => 'Extra could not be deleted'
 				];
-				$_SESSION['ig-current-extra'] = $extra;
 				return false;
 			}
 			$_SESSION['ig-admin-notices'][] = [
@@ -321,7 +327,6 @@ class IntegreatExtra {
 			return true;
 		}
 		if (!$extra->validate()) {
-			$_SESSION['ig-current-extra'] = $extra;
 			return false;
 		}
 		$saved = $extra->save();
@@ -330,7 +335,6 @@ class IntegreatExtra {
 				'type' => 'error',
 				'message' => 'Extra could not be saved'
 			];
-			$_SESSION['ig-current-extra'] = $extra;
 			return false;
 		}
 		if ($saved === 0) {
@@ -338,7 +342,6 @@ class IntegreatExtra {
 				'type' => 'info',
 				'message' => 'Extra has not been changed'
 			];
-			$_SESSION['ig-current-extra'] = $extra;
 			return false;
 		}
 		$_SESSION['ig-admin-notices'][] = [

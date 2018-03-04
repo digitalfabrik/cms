@@ -11,10 +11,6 @@ class IntegreatExtraConfig {
 	public $extra_id;
 	public $enabled;
 
-	private static function get_table_name() {
-		return $GLOBALS['wpdb']->prefix . 'ig_extras_config';
-	}
-
 	public function __construct($extra_config = []) {
 		$extra_config = (object) $extra_config;
 		$this->id = isset($extra_config->id) ? (int) $extra_config->id : null;
@@ -41,12 +37,22 @@ class IntegreatExtraConfig {
 			];
 			$_SESSION['ig-current-error'][] = 'extra_id';
 			return false;
-		} elseif ($wpdb->query($wpdb->prepare('SELECT id from ' . IntegreatExtra::get_table_name()." WHERE id = %d", $this->extra_id)) !== 1) {
+		}
+		$extra = IntegreatExtra::get_extra_by_id($this->extra_id);
+		if ($extra === false) {
 			$_SESSION['ig-admin-notices'][] = [
 				'type' => 'error',
 				'message' => 'There is no extra with the id "' . $this->extra_id . '"'
 			];
 			$_SESSION['ig-current-error'][] = 'extra_id';
+			return false;
+		}
+		if ($this->enabled && (strpos($extra->url, '{plz}') !== false || strpos($extra->post, '{plz}') !== false) && !$wpdb->get_row("SELECT {$wpdb->prefix}ig_settings_config.value FROM {$wpdb->base_prefix}ig_settings JOIN {$wpdb->prefix}ig_settings_config ON {$wpdb->base_prefix}ig_settings.id = {$wpdb->prefix}ig_settings_config.setting_id WHERE {$wpdb->base_prefix}ig_settings.alias = 'plz'")){
+			$_SESSION['ig-admin-notices'][] = [
+				'type' => 'error',
+				'message' => 'The extra "' . $extra->name . '" can not be enabled because it depends on the setting "plz" for this location'
+			];
+			$_SESSION['ig-current-error'][] = 'enabled';
 			return false;
 		}
 		return true;
@@ -66,6 +72,10 @@ class IntegreatExtraConfig {
 	public function delete() {
 		global $wpdb;
 		return $wpdb->delete(self::get_table_name(), ['id' => $this->id]);
+	}
+
+	private static function get_table_name() {
+		return $GLOBALS['wpdb']->prefix . 'ig_extras_config';
 	}
 
 	public static function get_extra_config_by_id($id) {
@@ -89,26 +99,32 @@ class IntegreatExtraConfig {
 
 	public static function get_default_extra_configs() {
 		global $wpdb;
+		// because the ige-* options might not be set, we have to do many checks to prevent PHP errors
+		$serlo = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-srl'");
+		$sprungbrett = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-sbt'");
+		$lehrstellenradar = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-lr'");
+		$ihk_lehrstellenboerse = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-ilb'");
+		$ihk_praktikumsboerse = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-ipb'");
 		return [
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('serlo')->id,
-				'enabled' => $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-srl'", OBJECT)->option_value
+				'enabled' => (isset($serlo->option_value) ? $serlo->option_value : false)
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('sprungbrett')->id,
-				'enabled' => json_decode($wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-sbt'", OBJECT)->option_value)->enabled
+				'enabled' => (isset($sprungbrett->option_value) && isset(json_decode($sprungbrett->option_value)->enabled) ? json_decode($sprungbrett->option_value)->enabled : false)
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('lehrstellenradar')->id,
-				'enabled' => json_decode($wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-lr'", OBJECT)->option_value)->enabled
+				'enabled' => (isset($lehrstellenradar->option_value) && isset(json_decode($lehrstellenradar->option_value)->enabled) ? json_decode($lehrstellenradar->option_value)->enabled : false)
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('ihk_lehrstellenboerse')->id,
-				'enabled' => json_decode($wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-ilb'", OBJECT)->option_value)->enabled
+				'enabled' => (isset($ihk_lehrstellenboerse->option_value) && isset(json_decode($ihk_lehrstellenboerse->option_value)->enabled) ? json_decode($ihk_lehrstellenboerse->option_value)->enabled : false)
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('ihk_praktikumsboerse')->id,
-				'enabled' => $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-ipb'", OBJECT)->option_value
+				'enabled' => (isset($ihk_praktikumsboerse->option_value) ? $ihk_praktikumsboerse->option_value : false)
 			]),
 		];
 	}
@@ -136,6 +152,12 @@ class IntegreatExtraConfig {
 				}
 			}
 		}
+	}
+
+	public static function delete_table() {
+		global $wpdb;
+		$table_name = self::get_table_name();
+		$wpdb->query( "DROP TABLE IF EXISTS $table_name;" );
 	}
 
 	public static function form() {
@@ -179,6 +201,10 @@ class IntegreatExtraConfig {
 					$extra_config->enabled = true;
 				} else {
 					$extra_config->enabled = false;
+				}
+				if (!$extra_config->validate()) {
+					$error_occurred = true;
+					continue;
 				}
 				$saved = $extra_config->save();
 				if ($saved === false) {
