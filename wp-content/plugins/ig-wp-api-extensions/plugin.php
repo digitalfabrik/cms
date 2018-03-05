@@ -54,10 +54,21 @@ const ENDPOINT_EXTRAS = 'extras';
 const ENDPOINT_POST = 'post';
 
 add_action('rest_api_init', function () {
-	/**
-	 * @var int -> [[string, RestApi_ExtensionBaseV0]] $versioned_endpoints
-	 * API version -> [key -> endpoint]
+	/*
+	 * Register no routes if current location is disabled
 	 */
+	global $wpdb;
+	$disabled = $wpdb->get_row(
+		"SELECT value
+			FROM {$wpdb->base_prefix}ig_settings
+				AS settings
+			LEFT JOIN {$wpdb->prefix}ig_settings_config
+				AS config
+				ON settings.id = config.setting_id
+			WHERE settings.alias = 'disabled'");
+	if (isset($disabled->value) && $disabled->value) {
+		return;
+	}
 	$versioned_endpoints = [
 		0 => [
 			ENDPOINT_MULTISITES => new RestApi_MultisitesV0(),
