@@ -28,15 +28,6 @@ register_activation_hook(
 	]
 );
 
-// execute $IntegreatSettingsPlugin->deactivate() on deactivating the plugin
-register_deactivation_hook(
-	__FILE__,
-	[
-		$IntegreatSettingsPlugin,
-		'deactivate'
-	]
-);
-
 // add the plugin to the admin menu and execute $IntegreatSettingsPlugin->run() on opening the integreat settings page
 add_action(
 	'admin_menu',

@@ -29,7 +29,7 @@ class IntegreatExtra {
 	public function validate() {
 		global $wpdb;
 		if ($this->id) {
-			if ($wpdb->query($wpdb->prepare('SELECT id from ' . self::get_table_name()." WHERE id = %d", $this->id)) !== 1) {
+			if ($wpdb->query($wpdb->prepare('SELECT id FROM ' . self::get_table_name()." WHERE id = %d", $this->id)) !== 1) {
 				$_SESSION['ig-admin-notices'][] = [
 					'type' => 'error',
 					'message' => 'There is no extra with the id "' . $this->id . '"'
@@ -114,7 +114,7 @@ class IntegreatExtra {
 
 	public static function get_extra_by_id($id) {
 		global $wpdb;
-		$extra = $wpdb->get_row($wpdb->prepare('SELECT * from ' . self::get_table_name() . ' WHERE id = %d', $id));
+		$extra = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::get_table_name() . ' WHERE id = %d', $id));
 		if ($extra) {
 			return new IntegreatExtra($extra);
 		} else {
@@ -124,7 +124,7 @@ class IntegreatExtra {
 
 	public static function get_extra_by_alias($alias) {
 		global $wpdb;
-		$extra = $wpdb->get_row($wpdb->prepare('SELECT * from ' . self::get_table_name() . ' WHERE alias = %s', $alias));
+		$extra = $wpdb->get_row($wpdb->prepare('SELECT * FROM ' . self::get_table_name() . ' WHERE alias = %s', $alias));
 		if ($extra) {
 			return new IntegreatExtra($extra);
 		} else {
@@ -137,17 +137,17 @@ class IntegreatExtra {
 		return array_map(function ($extra) {
 			return new IntegreatExtra($extra);
 		},
-			$wpdb->get_results('SELECT * from ' . self::get_table_name())
+			$wpdb->get_results('SELECT * FROM ' . self::get_table_name())
 		);
 	}
 
 	public static function get_default_extras() {
 		return [
 			new IntegreatExtra([
-				'name' => 'Serlo',
-				'alias' => 'serlo',
+				'name' => 'Serlo ABC',
+				'alias' => 'serlo-abc',
 				'url' => 'https://abc-app.serlo.org/',
-				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/serlo.jpg'
+				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/serlo-abc.jpg'
 			]),
 			new IntegreatExtra([
 				'name' => 'Sprungbrett',
@@ -157,26 +157,26 @@ class IntegreatExtra {
 			]),
 			new IntegreatExtra([
 				'name' => 'Lehrstellenradar',
-				'alias' => 'lehrstellenradar',
+				'alias' => 'lehrstellen-radar',
 				'url' => 'https://www.lehrstellen-radar.de/5100,0,lsrsearch.html',
 				'post' => json_encode([
 					'partner' => '0006',
 					'radius' => '50',
 					'plz' => '{plz}',
 				]),
-				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/lehrstellenradar.jpg'
+				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/lehrstellen-radar.jpg'
 			]),
 			new IntegreatExtra([
 				'name' => 'IHK Lehrstellenbörse',
-				'alias' => 'ihk_lehrstellenboerse',
+				'alias' => 'ihk-lehrstellenboerse',
 				'url' => 'https://www.ihk-lehrstellenboerse.de/joboffers/search.html?location={plz}&distance=1',
-				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk_lehrstellenboerse.jpg'
+				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk-lehrstellenboerse.jpg'
 			]),
 			new IntegreatExtra([
 				'name' => 'IHK Praktikumsbörse',
-				'alias' => 'ihk_praktikumsboerse',
+				'alias' => 'ihk-praktikumsboerse',
 				'url' => 'https://www.ihk-lehrstellenboerse.de/joboffers/searchTrainee.html?location={plz}&distance=1',
-				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk_praktikumsboerse.jpg'
+				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk-praktikumsboerse.jpg'
 			])
 		];
 	}

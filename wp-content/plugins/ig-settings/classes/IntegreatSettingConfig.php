@@ -8,6 +8,7 @@
 class IntegreatSettingConfig {
 
 	const PREFIXES = [
+		'EAE',
 		'Landkreis',
 		'Kreis',
 		'Stadt'
@@ -20,7 +21,7 @@ class IntegreatSettingConfig {
 		$setting_config = (object) $setting_config;
 		$this->id = isset($setting_config->id) ? (int) $setting_config->id : null;
 		$this->setting_id = isset($setting_config->setting_id) ? (int) $setting_config->setting_id : null;
-		$this->value = isset($setting_config->value) ? htmlspecialchars($setting_config->value) : null;
+		$this->value = isset($setting_config->value) && $setting_config->value !== '' ? htmlspecialchars($setting_config->value) : null;
 	}
 
 	public function validate() {
@@ -52,22 +53,6 @@ class IntegreatSettingConfig {
 			$_SESSION['ig-current-error'][] = 'setting_id';
 			return false;
 		}
-		if ($this->value === null) {
-			$_SESSION['ig-admin-notices'][] = [
-				'type' => 'error',
-				'message' => 'The value of a setting can not be "null"'
-			];
-			$_SESSION['ig-current-error'][] = 'value';
-			return false;
-		}
-		if ($setting->alias === 'plz' && $this->value !== '' && !(ctype_digit($this->value) && strlen($this->value) === 5)) {
-			$_SESSION['ig-admin-notices'][] = [
-				'type' => 'error',
-				'message' => 'The PLZ "' . $this->value . '" is not valid'
-			];
-			$_SESSION['ig-current-error'][] = $setting->alias;
-			return false;
-		}
 		if ($setting->type === 'bool' && !in_array($this->value, ['0', '1'])) {
 			$_SESSION['ig-admin-notices'][] = [
 				'type' => 'error',
@@ -75,6 +60,52 @@ class IntegreatSettingConfig {
 			];
 			$_SESSION['ig-current-error'][] = $setting->alias;
 			return false;
+		}
+		if ($setting->alias === 'plz') {
+			if ($this->value === '') {
+				/*
+				 * If the plz is empty we have to check whether it was set before
+				 * and if so we have to disable all extras which depend on the plz
+				*/
+				$old_setting_config = self::get_setting_config_by_id($setting->id);
+				if ($old_setting_config && $old_setting_config->value) {
+					foreach (IntegreatExtra::get_extras() as $extra) {
+						if (strpos($extra->url, '{plz}') !== false || strpos($extra->post, '{plz}') !== false) {
+							$extra_config = IntegreatExtraConfig::get_extra_config_by_id($extra->id);
+							if ($extra_config && $extra_config->enabled) {
+								$extra_config->enabled = false;
+								if ($extra_config->validate() && $extra_config->save()) {
+									$_SESSION['ig-admin-notices'][] = [
+										'type' => 'info',
+										'message' => 'The extra "' . $extra->name . '" was disabled because it depends on the setting "plz" for this location'
+									];
+								}
+							}
+						}
+					}
+				}
+			} elseif (!ctype_digit($this->value) || strlen($this->value) !== 5) {
+				$_SESSION['ig-admin-notices'][] = [
+					'type' => 'error',
+					'message' => 'The PLZ "' . $this->value . '" is not valid'
+				];
+				$_SESSION['ig-current-error'][] = $setting->alias;
+				return false;
+			}
+		}
+		/*
+		 * for the 'disabled'-setting, we actually don't use the value from the ig_setting_config-table,
+		 * but the value in the global options table instead
+		 */
+		if ($setting->alias === 'hidden') {
+			global $current_blog;
+			if ($this->value === '1') {
+				update_blog_public(0, 0);
+				$current_blog->public = 0;
+			} else {
+				update_blog_public(0, 1);
+				$current_blog->public = 1;
+			}
 		}
 		return true;
 	}
@@ -121,7 +152,7 @@ class IntegreatSettingConfig {
 	public static function get_default_setting_configs() {
 		global $wpdb;
 		$site = get_blog_details(get_current_blog_id());
-		$location_prefix = '';
+		$location_prefix = null;
 		$location_name = $site->blogname;
 		foreach (self::PREFIXES as $prefix) {
 			if (strpos($site->blogname, $prefix) === 0) {
@@ -130,9 +161,9 @@ class IntegreatSettingConfig {
 				break;
 			}
 		}
-		$plz = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-zip'");
-		$events = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-evts'");
-		$push_notifications = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name LIKE 'ige-pn'");
+		$plz = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-zip'");
+		$events = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-evts'");
+		$push_notifications = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-pn'");
 		return [
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('prefix')->id,
@@ -151,11 +182,11 @@ class IntegreatSettingConfig {
 				'value' => (isset($events->option_value) ? $events->option_value : null)
 			]),
 			new IntegreatSettingConfig([
-				'setting_id' => IntegreatSetting::get_setting_by_alias('push_notifications')->id,
+				'setting_id' => IntegreatSetting::get_setting_by_alias('push-notifications')->id,
 				'value' => (isset($push_notifications->option_value) ? $push_notifications->option_value : null)
 			]),
 			new IntegreatSettingConfig([
-				'setting_id' => IntegreatSetting::get_setting_by_alias('disabled')->id,
+				'setting_id' => IntegreatSetting::get_setting_by_alias('hidden')->id,
 				'value' => (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature)
 			]),
 		];
@@ -169,7 +200,7 @@ class IntegreatSettingConfig {
 		$sql = "CREATE TABLE $table_name (
 					id mediumint(9) NOT NULL AUTO_INCREMENT,
 					setting_id mediumint(9) NOT NULL,
-					value text DEFAULT '' NOT NULL,
+					value text DEFAULT NULL,
 					PRIMARY KEY  (id),
 					FOREIGN KEY (setting_id)
 						REFERENCES $foreign_table_name(id)
@@ -216,11 +247,13 @@ class IntegreatSettingConfig {
 					<br>
 				';
 			} elseif ($setting->type === 'bool') {
+				global $current_blog;
+				$hidden = (!$current_blog->public OR $current_blog->spam OR $current_blog->deleted OR $current_blog->archived OR $current_blog->mature);
 				$form .= '
 					<div>
 						<label for="' . $setting->id . '">' . $setting->name . '</label>
 						<label class="switch">
-							<input type="checkbox" name="' . $setting->id . '"' . ( $setting_config->value === '1' ? ' checked' : '') . '>
+							<input type="checkbox" name="' . $setting->id . '"' . (($setting->alias === 'hidden' && $hidden) || ($setting->alias !== 'hidden' && $setting_config->value === '1') ? ' checked' : '') . '>
 							<span class="slider round"></span>
 						</label>
 					</div>

@@ -128,13 +128,13 @@ class IntegreatSetting {
 				'type' => 'string'
 			]),
 			new IntegreatSetting([
-				'name' => 'Disable Location',
-				'alias' => 'disabled',
+				'name' => 'Hide Location in App',
+				'alias' => 'hidden',
 				'type' => 'bool'
 			]),
 			new IntegreatSetting([
-				'name' => 'Hide Location',
-				'alias' => 'hidden',
+				'name' => 'Completely disable Location in API',
+				'alias' => 'disabled',
 				'type' => 'bool'
 			]),
 			new IntegreatSetting([
@@ -144,7 +144,7 @@ class IntegreatSetting {
 			]),
 			new IntegreatSetting([
 				'name' => 'Pushnachrichten',
-				'alias' => 'push_notifications',
+				'alias' => 'push-notifications',
 				'type' => 'bool'
 			]),
 		];
