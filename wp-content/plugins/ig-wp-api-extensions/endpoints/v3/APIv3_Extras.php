@@ -18,51 +18,47 @@ class APIv3_Extras extends APIv3_Base_Abstract {
 						AS extras
 					JOIN {$wpdb->prefix}ig_extras_config
 						AS config
-						ON extras.id = config.extra_id";
+						ON extras.id = config.extra_id
+					WHERE config.enabled = true";
 			foreach ($wpdb->get_results($query) as $extra) {
 				$extras[] = $this->prepare($extra);
 			}
 		} else {
-			// fallback if IntegreatSettingsPlugin is not activated
-			foreach ($wpdb->get_results("SELECT * FROM $wpdb->options WHERE option_name LIKE 'ige-%'") as $extra) {
-				$extras[] = $this->prepare($extra);
-			}
+			// throw error if IntegreatSettingsPlugin is not activated
+			return new WP_Error('settings_plugin_not_activated', 'The Plugin "Integreat Settings" is not activated for this location', ['status' => 501]);
 		}
 		return $extras;
 	}
 
 	private function prepare($extra) {
-		if (class_exists('IntegreatSettingsPlugin')) {
 			global $wpdb;
-			$location = strtolower($wpdb->get_row(
+			$location = $wpdb->get_var(
+				"SELECT value
+					FROM {$wpdb->base_prefix}ig_settings
+						AS settings
+					LEFT JOIN {$wpdb->prefix}ig_settings_config
+						AS config
+						ON settings.id = config.setting_id
+					WHERE settings.alias = 'name_without_prefix'");
+			$plz = $wpdb->get_var(
 				"SELECT value
 					FROM {$wpdb->base_prefix}ig_settings
 						AS settings
 					JOIN {$wpdb->prefix}ig_settings_config
 						AS config
 						ON settings.id = config.setting_id
-					WHERE settings.alias = 'name_without_prefix'")->value);
-			$plz = $wpdb->get_row(
-				"SELECT value
-					FROM {$wpdb->base_prefix}ig_settings
-						AS settings
-					JOIN {$wpdb->prefix}ig_settings_config
-						AS config
-						ON settings.id = config.setting_id
-					WHERE settings.alias = 'plz'")->value;
+					WHERE settings.alias = 'plz'");
 			return [
 				'name' => $extra->name,
 				'alias' => $extra->alias,
 				'url' => str_replace(['{location}', '{plz}'], [$location, $plz], $extra->url),
 				'post' => json_decode(str_replace(['{location}', '{plz}'], [$location, $plz], $extra->post)),
-				'thumbnail' => $extra->thumbnail,
-				'enabled' => (bool) $extra->enabled
+				'thumbnail' => $extra->thumbnail
 			];
-		} else {
 			// fallback if IntegreatSettingsPlugin is not activated
 			$extra_value = json_decode($extra->option_value, true);
 			if (!is_array($extra_value)) {
-				if ($extra_value === '1') {
+				if ($extra->option_value === '1') {
 					$extra_value = [
 						'enabled' => true
 					];
@@ -81,7 +77,6 @@ class APIv3_Extras extends APIv3_Base_Abstract {
 			return array_merge([
 				'alias' => $extra->option_name
 			], $extra_value);
-		}
 	}
 
 }

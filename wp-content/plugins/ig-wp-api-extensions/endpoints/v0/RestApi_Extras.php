@@ -31,8 +31,17 @@ class RestApi_ExtrasV0 extends RestApi_ExtensionBase {
 		$extra_value = json_decode($extra->option_value, true);
 		if (is_array($extra_value)) {
 			$extra_prepared = array_merge($extra_prepared, $extra_value);
+			if (isset($extra_prepared['enabled'])) {
+				$extra_prepared['enabled'] = (bool) $extra_prepared['enabled'];
+			} else {
+				$extra_prepared['enabled'] = false;
+			}
 		} else {
-			$extra_prepared['enabled'] = 0;
+			if ($extra->option_value === '1') {
+				$extra_prepared['enabled'] = true;
+			} else {
+				$extra_prepared['enabled'] = false;
+			}
 		}
 		return $extra_prepared;
 	}

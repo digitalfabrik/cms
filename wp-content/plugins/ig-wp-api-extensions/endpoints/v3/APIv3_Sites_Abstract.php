@@ -14,7 +14,7 @@ abstract class APIv3_Sites_Abstract extends APIv3_Base_Abstract {
 		$sites = [];
 		foreach (get_sites() as $site) {
 			switch_to_blog($site->blog_id);
-			$disabled = $wpdb->get_row(
+			$disabled = $wpdb->get_var(
 				"SELECT value
 					FROM {$wpdb->base_prefix}ig_settings
 						AS settings
@@ -22,7 +22,7 @@ abstract class APIv3_Sites_Abstract extends APIv3_Base_Abstract {
 						AS config
 						ON settings.id = config.setting_id
 					WHERE settings.alias = 'disabled'");
-			if (!(isset($disabled->value) && $disabled->value) && (static::LIVE XOR (!$site->public OR $site->spam OR $site->deleted OR $site->archived OR $site->mature))) {
+			if (!$disabled && (static::LIVE XOR (!$site->public OR $site->spam OR $site->deleted OR $site->archived OR $site->mature))) {
 				$sites[] = $this->prepare($site);
 			}
 			restore_current_blog();
