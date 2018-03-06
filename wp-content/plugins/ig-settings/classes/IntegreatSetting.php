@@ -174,8 +174,7 @@ class IntegreatSetting {
 
 	public static function delete_table() {
 		global $wpdb;
-		$table_name = self::get_table_name();
-		$wpdb->query( "DROP TABLE IF EXISTS $table_name;" );
+		$wpdb->query('DROP TABLE IF EXISTS $table_name' . self::get_table_name());
 	}
 
 	public static function form($form) {

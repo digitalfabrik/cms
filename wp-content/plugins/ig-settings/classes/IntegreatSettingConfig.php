@@ -161,9 +161,6 @@ class IntegreatSettingConfig {
 				break;
 			}
 		}
-		$plz = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-zip'");
-		$events = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-evts'");
-		$push_notifications = $wpdb->get_row("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-pn'");
 		return [
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('prefix')->id,
@@ -175,15 +172,15 @@ class IntegreatSettingConfig {
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('plz')->id,
-				'value' => (isset($plz->option_value) ? $plz->option_value : null)
+				'value' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-zip'")
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('events')->id,
-				'value' => (isset($events->option_value) ? $events->option_value : null)
+				'value' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-evts'")
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('push-notifications')->id,
-				'value' => (isset($push_notifications->option_value) ? $push_notifications->option_value : null)
+				'value' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-pn'")
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('hidden')->id,
@@ -219,8 +216,7 @@ class IntegreatSettingConfig {
 
 	public static function delete_table() {
 		global $wpdb;
-		$table_name = self::get_table_name();
-		$wpdb->query( "DROP TABLE IF EXISTS $table_name;" );
+		$wpdb->query('DROP TABLE IF EXISTS $table_name' . self::get_table_name());
 	}
 
 	public static function form() {
