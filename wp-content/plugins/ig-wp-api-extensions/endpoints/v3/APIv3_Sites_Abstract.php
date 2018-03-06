@@ -14,15 +14,20 @@ abstract class APIv3_Sites_Abstract extends APIv3_Base_Abstract {
 		$sites = [];
 		foreach (get_sites() as $site) {
 			switch_to_blog($site->blog_id);
-			$disabled = $wpdb->get_var(
-				"SELECT value
-					FROM {$wpdb->base_prefix}ig_settings
-						AS settings
-					LEFT JOIN {$wpdb->prefix}ig_settings_config
-						AS config
-						ON settings.id = config.setting_id
-					WHERE settings.alias = 'disabled'");
-			if (!$disabled && (static::LIVE XOR (!$site->public OR $site->spam OR $site->deleted OR $site->archived OR $site->mature))) {
+			if (class_exists('IntegreatSettingsPlugin')) {
+				$disabled = $wpdb->get_var(
+					"SELECT value
+						FROM {$wpdb->base_prefix}ig_settings
+							AS settings
+						JOIN {$wpdb->prefix}ig_settings_config
+							AS config
+							ON settings.id = config.setting_id
+						WHERE settings.alias = 'disabled'");
+				if ($disabled) {
+					continue;
+				}
+			}
+			if (static::LIVE XOR (!$site->public OR $site->spam OR $site->deleted OR $site->archived OR $site->mature)) {
 				$sites[] = $this->prepare($site);
 			}
 			restore_current_blog();
@@ -41,16 +46,18 @@ abstract class APIv3_Sites_Abstract extends APIv3_Base_Abstract {
 			'path' => $site->path,
 			'description' => get_bloginfo('description'),
 		];
-		$query =
-			"SELECT *
-				FROM {$wpdb->base_prefix}ig_settings
-					AS settings
-				LEFT JOIN {$wpdb->prefix}ig_settings_config
-					AS config
-					ON settings.id = config.setting_id";
-		foreach ($wpdb->get_results($query) as $setting) {
-			if (!in_array($setting->alias, ['disabled', 'hidden'])) {
-				$result[$setting->alias] = ($setting->type === 'bool' ? (bool) $setting->value : (ctype_digit($setting->value) ? (int) $setting->value : $setting->value));
+		if (class_exists('IntegreatSettingsPlugin')) {
+			$query =
+				"SELECT *
+					FROM {$wpdb->base_prefix}ig_settings
+						AS settings
+					LEFT JOIN {$wpdb->prefix}ig_settings_config
+						AS config
+						ON settings.id = config.setting_id";
+			foreach ($wpdb->get_results($query) as $setting) {
+				if (!in_array($setting->alias, ['disabled', 'hidden'])) {
+					$result[$setting->alias] = ($setting->type === 'bool' ? (bool) $setting->value : (ctype_digit($setting->value) ? (int) $setting->value : $setting->value));
+				}
 			}
 		}
 		return $result;

@@ -31,52 +31,30 @@ class APIv3_Extras extends APIv3_Base_Abstract {
 	}
 
 	private function prepare($extra) {
-			global $wpdb;
-			$location = $wpdb->get_var(
-				"SELECT value
-					FROM {$wpdb->base_prefix}ig_settings
-						AS settings
-					LEFT JOIN {$wpdb->prefix}ig_settings_config
-						AS config
-						ON settings.id = config.setting_id
-					WHERE settings.alias = 'name_without_prefix'");
-			$plz = $wpdb->get_var(
-				"SELECT value
-					FROM {$wpdb->base_prefix}ig_settings
-						AS settings
-					JOIN {$wpdb->prefix}ig_settings_config
-						AS config
-						ON settings.id = config.setting_id
-					WHERE settings.alias = 'plz'");
-			return [
-				'name' => $extra->name,
-				'alias' => $extra->alias,
-				'url' => str_replace(['{location}', '{plz}'], [$location, $plz], $extra->url),
-				'post' => json_decode(str_replace(['{location}', '{plz}'], [$location, $plz], $extra->post)),
-				'thumbnail' => $extra->thumbnail
-			];
-			// fallback if IntegreatSettingsPlugin is not activated
-			$extra_value = json_decode($extra->option_value, true);
-			if (!is_array($extra_value)) {
-				if ($extra->option_value === '1') {
-					$extra_value = [
-						'enabled' => true
-					];
-				} else {
-					$extra_value = [
-						'enabled' => false
-					];
-				}
-			} else {
-				if (isset($extra_value['enabled'])) {
-					$extra_value['enabled'] = (bool) $extra_value['enabled'];
-				} else {
-					$extra_value['enabled'] = false;
-				}
-			}
-			return array_merge([
-				'alias' => $extra->option_name
-			], $extra_value);
+		global $wpdb;
+		$location = $wpdb->get_var(
+			"SELECT value
+				FROM {$wpdb->base_prefix}ig_settings
+					AS settings
+				JOIN {$wpdb->prefix}ig_settings_config
+					AS config
+					ON settings.id = config.setting_id
+				WHERE settings.alias = 'name_without_prefix'");
+		$plz = $wpdb->get_var(
+			"SELECT value
+				FROM {$wpdb->base_prefix}ig_settings
+					AS settings
+				JOIN {$wpdb->prefix}ig_settings_config
+					AS config
+					ON settings.id = config.setting_id
+				WHERE settings.alias = 'plz'");
+		return [
+			'name' => $extra->name,
+			'alias' => $extra->alias,
+			'url' => str_replace(['{location}', '{plz}'], [$location, $plz], $extra->url),
+			'post' => json_decode(str_replace(['{location}', '{plz}'], [$location, $plz], $extra->post)),
+			'thumbnail' => $extra->thumbnail
+		];
 	}
 
 }
