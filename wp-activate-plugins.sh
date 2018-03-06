@@ -22,6 +22,7 @@ ig-plugin-adjustment \
 ig-project-user-roles \
 ig-remove-403-forbidden \
 ig-separate-disclaimer \
+ig-settings \
 ig-simplify-ui \
 ig-text-dir \
 ig-wp-api-extensions \

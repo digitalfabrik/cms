@@ -401,33 +401,31 @@ class User_Role_Editor {
    * @param int $user_id
    *
    */
-  public function duplicate_roles_for_new_blog($blog_id) 
-  {
-  
-    global $wpdb, $wp_roles;
-    
-    // get Id of 1st (main) blog
-    $main_blog_id = $this->lib->get_main_blog_id();
-    if ( empty($main_blog_id) ) {
-      return;
-    }
-    $current_blog = $wpdb->blogid;
-    switch_to_blog( $main_blog_id );
-    $main_roles = new WP_Roles();  // get roles from primary blog
-    $default_role = get_option('default_role');  // get default role from primary blog
-    switch_to_blog($blog_id);  // switch to the new created blog
-    $main_roles->use_db = false;  // do not touch DB
-    $main_roles->add_cap('administrator', 'dummy_123456');   // just to save current roles into new blog
-    $main_roles->role_key = $wp_roles->role_key;
-    $main_roles->use_db = true;  // save roles into new blog DB
-    $main_roles->remove_cap('administrator', 'dummy_123456');  // remove unneeded dummy capability
-    update_option('default_role', $default_role); // set default role for new blog as it set for primary one
-    switch_to_blog($current_blog);  // return to blog where we were at the begin
-  }
-  // end of duplicate_roles_for_new_blog()
+    public function duplicate_roles_for_new_blog($blog_id) {
+        global $wpdb, $wp_roles;
 
-  
-  /** 
+        // get Id of 1st (main) blog
+        $main_blog_id = $this->lib->get_main_blog_id();
+        if (empty($main_blog_id)) {
+            return;
+        }
+        $current_blog = $wpdb->blogid;
+        switch_to_blog($main_blog_id);
+        $main_roles = new WP_Roles();  // get roles from primary blog
+        $default_role = get_option('default_role');  // get default role from primary blog
+        switch_to_blog($blog_id);  // switch to the new created blog
+        $main_roles->use_db = false;  // do not touch DB
+        $main_roles->add_cap('administrator', 'dummy_123456');   // just to save current roles into new blog
+        $main_roles->role_key = $wp_roles->role_key;
+        $main_roles->use_db = true;  // save roles into new blog DB
+        $main_roles->remove_cap('administrator', 'dummy_123456');  // remove unneeded dummy capability
+        update_option('default_role', $default_role); // set default role for new blog as it set for primary one
+        switch_to_blog($current_blog);  // return to blog where we were at the begin
+    }
+    // end of duplicate_roles_for_new_blog()
+    
+
+    /** 
    * Filter out URE plugin from not admin users to prevent its not authorized deactivation
    * @param type array $plugins plugins list
    * @return type array $plugins updated plugins list
@@ -598,202 +596,16 @@ class User_Role_Editor {
     }
 
     // end of network_plugin_menu()
-
-    
-    protected function get_settings_action() {
-
-        $action = 'show';
-        $update_buttons = array(
-            'ure_settings_update', 
-            'ure_addons_settings_update', 
-            'ure_settings_ms_update', 
-            'ure_default_roles_update',
-            'ure_reset_roles_exec');
-        foreach($update_buttons as $update_button) {
-            if (!isset($_POST[$update_button])) {
-                continue;
-            }
-            if (!wp_verify_nonce($_POST['_wpnonce'], 'user-role-editor')) {
-                wp_die('Security check failed');
-            }
-            $action = $update_button;
-            break;            
-        }
-
-        return $action;
-
-    }
-    // end of get_settings_action()
-
-    /**
-     * Update General Options tab
-     */
-    protected function update_general_options() {
-        if (defined('URE_SHOW_ADMIN_ROLE') && (URE_SHOW_ADMIN_ROLE == 1)) {
-            $show_admin_role = 1;
-        } else {
-            $show_admin_role = $this->lib->get_request_var('show_admin_role', 'checkbox');
-        }
-        $this->lib->put_option('show_admin_role', $show_admin_role);
-
-        $caps_readable = $this->lib->get_request_var('caps_readable', 'checkbox');
-        $this->lib->put_option('ure_caps_readable', $caps_readable);
-
-        $show_deprecated_caps = $this->lib->get_request_var('show_deprecated_caps', 'checkbox');
-        $this->lib->put_option('ure_show_deprecated_caps', $show_deprecated_caps);       
         
-        $confirm_role_update = $this->lib->get_request_var('confirm_role_update', 'checkbox');
-        $this->lib->put_option('ure_confirm_role_update', $confirm_role_update);
-        
-        $edit_user_caps = $this->lib->get_request_var('edit_user_caps', 'checkbox');
-        $this->lib->put_option('edit_user_caps', $edit_user_caps);
-        
-        $caps_columns_quant = $this->lib->get_request_var('caps_columns_quant', 'checkbox');
-        $this->lib->put_option('caps_columns_quant', $caps_columns_quant);       
-        
-        do_action('ure_settings_update1');
-
-        $this->lib->flush_options();
-        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'user-role-editor'));
-        
-    }
-    // end of update_general_options()
-
-    
-    /**
-     * Update Additional Modules Options tab
-     */
-    protected function update_addons_options() {
-        $multisite = $this->lib->get('multisite');
-        if (!$multisite) {
-            $count_users_without_role = $this->lib->get_request_var('count_users_without_role', 'checkbox');
-            $this->lib->put_option('count_users_without_role', $count_users_without_role);
-        }
-        do_action('ure_settings_update2');
-        
-        $this->lib->flush_options();
-        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'user-role-editor'));
-    }
-    // end of update_addons_options()
-    
-    
-    protected function update_default_roles() {
-        global $wp_roles;    
-        
-        // Primary default role
-        $primary_default_role = $this->lib->get_request_var('default_user_role', 'post');
-        if (!empty($primary_default_role) && isset($wp_roles->role_objects[$primary_default_role]) && $primary_default_role !== 'administrator') {
-            update_option('default_role', $primary_default_role);
-        }
-                
-        // Other default roles
-        $other_default_roles = array();
-        foreach($_POST as $key=>$value) {
-            $prefix = substr($key, 0, 8);
-            if ($prefix!=='wp_role_') {
-                continue;
-            }
-            $role_id = substr($key, 8);
-            if ($role_id!=='administrator' && isset($wp_roles->role_objects[$role_id])) {
-                $other_default_roles[] = $role_id;
-            }            
-        }  // foreach()
-        $this->lib->put_option('other_default_roles', $other_default_roles, true);
-        
-        $this->lib->show_message(esc_html__('Default Roles are updated', 'user-role-editor'));
-    }
-    // end of update_default_roles()
-    
-    
-    protected function update_multisite_options() {
-        $multisite = $this->lib->get('multisite');
-        if (!$multisite) {
-            return;
-        }
-
-        $allow_edit_users_to_not_super_admin = $this->lib->get_request_var('allow_edit_users_to_not_super_admin', 'checkbox');
-        $this->lib->put_option('allow_edit_users_to_not_super_admin', $allow_edit_users_to_not_super_admin);        
-        
-        do_action('ure_settings_ms_update');
-
-        $this->lib->flush_options();
-        $this->lib->show_message(esc_html__('User Role Editor options are updated', 'user-role-editor'));
-        
-    }
-    // end of update_multisite_options()
-
-
-    protected function reset_roles() {
-        $this->lib->reset_user_roles();
-        $this->lib->put_option('other_default_roles', array(), true);
-        $this->lib->show_message(esc_html__('Tools: Reset: User Roles were initialized', 'user-role-editor'));
-    }
-    // end of reset_roles()
-    
 
     public function settings() {
         $settings_capability = URE_Own_Capabilities::get_settings_capability();
         if (!current_user_can($settings_capability)) {
             wp_die(esc_html__( 'You do not have sufficient permissions to manage options for User Role Editor.', 'user-role-editor' ));
         }
-        $action = $this->get_settings_action();
-        switch ($action) {
-            case 'ure_settings_update':
-                $this->update_general_options();
-                break;
-            case 'ure_addons_settings_update':
-                $this->update_addons_options();
-                break;
-            case 'ure_settings_ms_update':
-                $this->update_multisite_options();
-                break;
-            case 'ure_default_roles_update':
-                $this->update_default_roles();
-                break;
-            case 'ure_reset_roles_exec':
-                $this->reset_roles();
-                break;
-            case 'show':
-            default:                
-            ;
-        } // switch()
-                        
-        if (defined('URE_SHOW_ADMIN_ROLE') && (URE_SHOW_ADMIN_ROLE == 1)) {
-            $show_admin_role = 1;
-        } else {
-            $show_admin_role = $this->lib->get_option('show_admin_role', 0);
-        }
-        $caps_readable = $this->lib->get_option('ure_caps_readable', 0);
-        $show_deprecated_caps = $this->lib->get_option('ure_show_deprecated_caps', 0);
-        $confirm_role_update = $this->lib->get_option('ure_confirm_role_update', 1);
-        $edit_user_caps = $this->lib->get_option('edit_user_caps', 1);
-        $caps_columns_quant = $this->lib->get_option('caps_columns_quant', 1);
-        $multisite = $this->lib->get('multisite');
-        if ($multisite) {
-            $allow_edit_users_to_not_super_admin = $this->lib->get_option('allow_edit_users_to_not_super_admin', 0);
-        } else {
-            $count_users_without_role = $this->lib->get_option('count_users_without_role', 0);
-        }
         
-        $this->lib->get_default_role();
-        $view = new URE_Role_View();
-        $view->role_default_prepare_html(0);
-        
-        $ure_tab_idx = $this->lib->get_request_var('ure_tab_idx', 'int');
+        URE_Settings::show();
                 
-        do_action('ure_settings_load');        
-
-        if ($multisite && is_network_admin()) {
-            $link = 'settings.php';
-        } else {
-            $link = 'options-general.php';
-        }
-        
-        $active_for_network = $this->lib->get('active_for_network');
-        $license_key_only = $multisite && is_network_admin() && !$active_for_network;
-
-        
-        require_once(URE_PLUGIN_DIR . 'includes/settings-template.php');
     }
     // end of settings()
 
@@ -835,7 +647,7 @@ class User_Role_Editor {
      */
     function setup() {
 
-        $this->lib->make_roles_backup();
+        $this->lib->backup_wp_roles();
         URE_Own_Capabilities::init_caps();
         
         $task_queue = URE_Task_Queue::get_instance();

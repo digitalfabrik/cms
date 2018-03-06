@@ -201,7 +201,7 @@ class URE_Grant_Roles {
         }
         
         $lib = URE_Lib::get_instance();
-        $user_id = $lib->get_request_var('user_id', 'post', 'int');
+        $user_id = (int) $lib->get_request_var('user_id', 'post', 'int');
         if (empty($user_id)) {
             $answer = array('result'=>'error', 'message'=>esc_html__('Wrong request, valid user ID was missed', 'user-role-editor'));
             return $answer;
