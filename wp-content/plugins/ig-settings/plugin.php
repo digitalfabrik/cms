@@ -28,19 +28,38 @@ register_activation_hook(
 	]
 );
 
-// add the plugin to the admin menu and execute $IntegreatSettingsPlugin->run() on opening the integreat settings page
+// add the plugin to the admin menu and execute $IntegreatSettingsPlugin->admin_menu() on opening the integreat settings page
 add_action(
 	'admin_menu',
 	function () use ($IntegreatSettingsPlugin) {
-		add_options_page(
+		add_menu_page(
 			'Integreat Settings',
 			'Integreat Settings',
 			'manage_network', // only run plugin if current user is super admin
 			$IntegreatSettingsPlugin::MENU_SLUG,
 			[
 				$IntegreatSettingsPlugin,
-				'run'
-			]
+				'admin_menu'
+			],
+			plugins_url('ig-settings/icon.png')
+		);
+	}
+);
+
+// add the plugin to the network admin menu and execute $IntegreatSettingsPlugin->network_admin_menu() on opening the integreat settings page
+add_action(
+	'network_admin_menu',
+	function () use ($IntegreatSettingsPlugin) {
+		add_menu_page(
+			'Integreat Settings',
+			'Integreat Settings',
+			'manage_network', // only run plugin if current user is super admin
+			$IntegreatSettingsPlugin::MENU_SLUG,
+			[
+				$IntegreatSettingsPlugin,
+				'network_admin_menu'
+			],
+			plugins_url('ig-settings/icon.png')
 		);
 	}
 );

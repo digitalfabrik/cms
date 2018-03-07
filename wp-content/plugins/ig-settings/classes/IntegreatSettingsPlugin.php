@@ -20,16 +20,9 @@ if (!defined('WPINC')) {
 
 class IntegreatSettingsPlugin {
 
-	private $db_version = '1.0';
-	private $actions = [
-		'settings' => 'Settings',
-		'create_setting' => 'Create Setting',
-		'edit_setting' => 'Edit Setting',
-		'toggle_extras' => 'Toggle Extras',
-		'create_extra' => 'Create Extra',
-		'edit_extra' => 'Edit Extra'
-	];
 	const MENU_SLUG = 'integreat-settings';
+	private $db_version = '1.0';
+	public static $admin_notices = [];
 
 	public function activate($network_wide) {
 		global $wpdb;
@@ -56,8 +49,8 @@ class IntegreatSettingsPlugin {
 		 * Log admin notices if there are any messages in the session variable.
 		 * Only uncomment for debugging purposes.
 
-		if (isset($_SESSION['ig-admin-notices'])) {
-			foreach ($_SESSION['ig-admin-notices'] as $admin_notice) {
+		if (isset(IntegreatSettingsPlugin::$admin_notices[])) {
+			foreach (IntegreatSettingsPlugin::$admin_notices[] as $admin_notice) {
 				trigger_error($admin_notice['message']);
 			}
 		}
@@ -65,14 +58,42 @@ class IntegreatSettingsPlugin {
 		*/
 	}
 
-	public function run() {
+	public function admin_menu() {
+		$this->run(false);
+	}
+
+	public function network_admin_menu() {
+		$this->run(true);
+	}
+
+	public function run($network_wide) {
 		if (is_file(__DIR__ . '/../css/styles.css')) {
 			echo '<style>' . file_get_contents(__DIR__ . '/../css/styles.css') . '</style>';
 		}
-		if (isset($_GET['action']) && array_key_exists($_GET['action'], $this->actions)) {
+		if ($network_wide) {
+			$allowed_actions =  [
+				'create_setting' => 'Create Setting',
+				'edit_setting' => 'Edit Setting',
+				'create_extra' => 'Create Extra',
+				'edit_extra' => 'Edit Extra',
+			];
+			$default_action = 'create_setting';
+		} else {
+			$allowed_actions =  [
+				'settings' => 'Settings',
+				'toggle_extras' => 'Extras',
+			];
+			$default_action = 'settings';
+		}
+		if (isset($_GET['action']) && array_key_exists($_GET['action'], $allowed_actions)) {
 			$action = $_GET['action'];
 		} else {
-			$action = 'settings';
+			$action = $default_action;
+		}
+		if (isset($_GET['current_blog_id']) && get_blog_details((int) $_GET['current_blog_id']) !== false) {
+			$current_blog_id = (int) $_GET['current_blog_id'];
+		} else {
+			$current_blog_id = get_current_blog_id();
 		}
 		switch ($action) {
 			case 'settings':
@@ -91,15 +112,17 @@ class IntegreatSettingsPlugin {
 				break;
 		}
 		// show admin notices if there are any messages in the session variable
-		if (isset($_SESSION['ig-admin-notices'])) {
-			foreach ($_SESSION['ig-admin-notices'] as $admin_notice) {
-				echo '<div class="notice notice-' . $admin_notice['type'] . ' is-dismissible"><p><strong>' . $admin_notice['message'] . '</strong></p></div>';
-			}
+		foreach (self::$admin_notices as $admin_notice) {
+			echo '<div class="notice notice-' . $admin_notice['type'] . ' is-dismissible"><p><strong>' . $admin_notice['message'] . '</strong></p></div>';
 		}
 		echo '<h1>Integreat Settings</h1>
-		<h2 class="nav-tab-wrapper">';
-		foreach ($this->actions as $alias => $name) {
-			echo '<a href="' . parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH) . '?page=' . self::MENU_SLUG . '&action=' . $alias . '" class="nav-tab' . ($action === $alias ? ' nav-tab-active' : '') . '">' . $name . '</a>';
+			<h2 class="nav-tab-wrapper">
+				<a href="' . get_admin_url($current_blog_id, 'admin.php?page=' . self::MENU_SLUG) . '" class="nav-tab' . (!$network_wide ? ' nav-tab-active' : '') . '">Settings for ' . get_blog_details($current_blog_id)->blogname . '</a>
+				<a href="' . network_admin_url('admin.php?page=' . self::MENU_SLUG) . '&current_blog_id='. $current_blog_id . '" class="nav-tab' . ($network_wide ? ' nav-tab-active' : '') . '">Settings for all Locations</a>
+			</h2><br>
+			<h2 class="nav-tab-wrapper">';
+		foreach ($allowed_actions as $alias => $name) {
+			echo '<a href="' . parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH) . '?page=' . self::MENU_SLUG . '&action=' . $alias . '&current_blog_id='. $current_blog_id . '" class="nav-tab' . ($action === $alias ? ' nav-tab-active' : '') . '">' . $name . '</a>';
 		}
 		echo '</h2><br><br>';
 
@@ -112,7 +135,7 @@ class IntegreatSettingsPlugin {
 				break;
 			case 'edit_setting':
 				echo IntegreatSetting::form('select');
-				if (isset($_SESSION['ig-current-setting'])) {
+				if (IntegreatSetting::$current_setting) {
 					echo IntegreatSetting::form('setting');
 				}
 				break;
@@ -124,7 +147,7 @@ class IntegreatSettingsPlugin {
 				break;
 			case 'edit_extra':
 				echo IntegreatExtra::form('select');
-				if (isset($_SESSION['ig-current-extra'])) {
+				if (IntegreatExtra::$current_extra) {
 					echo IntegreatExtra::form('extra');
 				}
 				break;

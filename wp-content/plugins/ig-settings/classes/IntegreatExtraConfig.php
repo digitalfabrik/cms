@@ -10,6 +10,7 @@ class IntegreatExtraConfig {
 	public $id;
 	public $extra_id;
 	public $enabled;
+	public static $current_error = [];
 
 	public function __construct($extra_config = []) {
 		$extra_config = (object) $extra_config;
@@ -22,29 +23,29 @@ class IntegreatExtraConfig {
 		global $wpdb;
 		if ($this->id) {
 			if ($wpdb->query($wpdb->prepare('SELECT id from ' . self::get_table_name()." WHERE id = %d", $this->id)) !== 1) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'There is no extra config with the id "' . $this->id . '"'
 				];
-				$_SESSION['ig-current-error'][] = 'id';
+				self::$current_error[] = 'id';
 				return false;
 			}
 		}
 		if (!$this->extra_id) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify an extra id for this extra config'
 			];
-			$_SESSION['ig-current-error'][] = 'extra_id';
+			self::$current_error[] = 'extra_id';
 			return false;
 		}
 		$extra = IntegreatExtra::get_extra_by_id($this->extra_id);
 		if ($extra === false) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'There is no extra with the id "' . $this->extra_id . '"'
 			];
-			$_SESSION['ig-current-error'][] = 'extra_id';
+			self::$current_error[] = 'extra_id';
 			return false;
 		}
 		$plz = $wpdb->get_var("SELECT value
@@ -55,11 +56,11 @@ class IntegreatExtraConfig {
 				ON settings.id = config.setting_id
 			WHERE settings.alias = 'plz'");
 		if ($this->enabled && (strpos($extra->url, '{plz}') !== false || strpos($extra->post, '{plz}') !== false) && !$plz){
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The extra "' . $extra->name . '" can not be enabled because it depends on the setting "plz" for this location'
 			];
-			$_SESSION['ig-current-error'][] = 'enabled';
+			self::$current_error[] = 'enabled';
 			return false;
 		}
 		return true;
@@ -212,7 +213,7 @@ class IntegreatExtraConfig {
 				}
 				$saved = $extra_config->save();
 				if ($saved === false) {
-					$_SESSION['ig-admin-notices'][] = [
+					IntegreatSettingsPlugin::$admin_notices[] = [
 						'type' => 'error',
 						'message' => 'Extra "' . IntegreatExtra::get_extra_by_id($extra_config->extra_id)->name . '" could not be ' . ($extra_config->enabled ? 'enabled' : 'disabled')
 					];
@@ -228,13 +229,13 @@ class IntegreatExtraConfig {
 				return false;
 			}
 			if (!$changes_made) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'info',
 					'message' => 'Extra configuration has not been changed'
 				];
 				return false;
 			}
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'success',
 				'message' => 'Extra configuration saved successfully'
 			];

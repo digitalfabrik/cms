@@ -16,49 +16,50 @@ class IntegreatSettingConfig {
 	public $id;
 	public $setting_id;
 	public $value;
+	public static $current_error = [];
 
 	public function __construct($setting_config = []) {
 		$setting_config = (object) $setting_config;
 		$this->id = isset($setting_config->id) ? (int) $setting_config->id : null;
 		$this->setting_id = isset($setting_config->setting_id) ? (int) $setting_config->setting_id : null;
-		$this->value = isset($setting_config->value) && $setting_config->value !== '' ? htmlspecialchars($setting_config->value) : null;
+		$this->value = (isset($setting_config->value) && $setting_config->value !== '' ? htmlspecialchars($setting_config->value) : null);
 	}
 
 	public function validate() {
 		global $wpdb;
 		if ($this->id) {
 			if ($wpdb->query($wpdb->prepare('SELECT id from ' . self::get_table_name() . ' WHERE id = %d', $this->id)) !== 1) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'There is no setting config with the id "' . $this->id . '"'
 				];
-				$_SESSION['ig-current-error'][] = 'id';
+				self::$current_error[] = 'id';
 				return false;
 			}
 		}
 		if (!$this->setting_id) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify a setting id for this setting config'
 			];
-			$_SESSION['ig-current-error'][] = 'setting_id';
+			self::$current_error[] = 'setting_id';
 			return false;
 		}
 		$setting = IntegreatSetting::get_setting_by_id($this->setting_id);
 		if ($setting === false) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'There is no setting with the id "' . $this->setting_id . '"'
 			];
-			$_SESSION['ig-current-error'][] = 'setting_id';
+			self::$current_error[] = 'setting_id';
 			return false;
 		}
 		if ($setting->type === 'bool' && !in_array($this->value, ['0', '1'])) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The value "' . $this->value . '" is not boolean'
 			];
-			$_SESSION['ig-current-error'][] = $setting->alias;
+			self::$current_error[] = $setting->alias;
 			return false;
 		}
 		if ($setting->alias === 'plz') {
@@ -75,7 +76,7 @@ class IntegreatSettingConfig {
 							if ($extra_config && $extra_config->enabled) {
 								$extra_config->enabled = false;
 								if ($extra_config->validate() && $extra_config->save()) {
-									$_SESSION['ig-admin-notices'][] = [
+									IntegreatSettingsPlugin::$admin_notices[] = [
 										'type' => 'info',
 										'message' => 'The extra "' . $extra->name . '" was disabled because it depends on the setting "plz" for this location'
 									];
@@ -85,16 +86,16 @@ class IntegreatSettingConfig {
 					}
 				}
 			} elseif (!ctype_digit($this->value) || strlen($this->value) !== 5) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'The PLZ "' . $this->value . '" is not valid'
 				];
-				$_SESSION['ig-current-error'][] = $setting->alias;
+				self::$current_error[] = $setting->alias;
 				return false;
 			}
 		}
 		/*
-		 * for the 'disabled'-setting, we actually don't use the value from the ig_setting_config-table,
+		 * for the 'hidden'-setting, we actually don't use the value from the ig_setting_config-table,
 		 * but the value in the global options table instead
 		 */
 		if ($setting->alias === 'hidden') {
@@ -220,7 +221,6 @@ class IntegreatSettingConfig {
 	}
 
 	public static function form() {
-		$error = isset($_SESSION['ig-current-error']) ? $_SESSION['ig-current-error'] : [];
 		$form = '
 			<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 		';
@@ -238,7 +238,7 @@ class IntegreatSettingConfig {
 				$form .= '
 					<div>
 						<label for="' . $setting->id . '">' . $setting->name . '</label>
-						<input type="text" class="' . ( $error ? ( in_array($setting->alias, $error) ? 'ig-error' : 'ig-success') : '') . '" name="' . $setting->id . '" value="' . (in_array($setting->alias, $error) ? htmlspecialchars($_POST[$setting->id]) : $setting_config->value) . '">
+						<input type="text" class="' . ( !empty(self::$current_error) ? ( in_array($setting->alias, self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="' . $setting->id . '" value="' . (in_array($setting->alias, self::$current_error) ? htmlspecialchars($_POST[$setting->id]) : $setting_config->value) . '">
 					</div>
 					<br>
 				';
@@ -284,7 +284,7 @@ class IntegreatSettingConfig {
 					if (isset($_POST[$setting_config->setting_id])) {
 						$setting_config->value = $_POST[$setting_config->setting_id];
 					} else {
-						$_SESSION['ig-admin-notices'][] = [
+						IntegreatSettingsPlugin::$admin_notices[] = [
 							'type' => 'error',
 							'message' => 'Form was not submitted properly (the POST-parameter "' . $setting_config->setting_id . '" is missing)'
 						];
@@ -298,7 +298,7 @@ class IntegreatSettingConfig {
 				}
 				$saved = $setting_config->save();
 				if ($saved === false) {
-					$_SESSION['ig-admin-notices'][] = [
+					IntegreatSettingsPlugin::$admin_notices[] = [
 						'type' => 'error',
 						'message' => 'Setting "' . $setting->name . '" could not be saved'
 					];
@@ -314,13 +314,13 @@ class IntegreatSettingConfig {
 				return false;
 			}
 			if (!$changes_made) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'info',
 					'message' => 'Settings have not been changed'
 				];
 				return false;
 			}
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'success',
 				'message' => 'Settings saved successfully'
 			];

@@ -15,6 +15,8 @@ class IntegreatExtra {
 	public $url;
 	public $post;
 	public $thumbnail;
+	public static $current_extra = false;
+	public static $current_error = [];
 
 	public function __construct($extra = []) {
 		$extra = (object) $extra;
@@ -29,66 +31,66 @@ class IntegreatExtra {
 	public function validate() {
 		global $wpdb;
 		if ($this->id) {
-			if ($wpdb->query($wpdb->prepare('SELECT id FROM ' . self::get_table_name()." WHERE id = %d", $this->id)) !== 1) {
-				$_SESSION['ig-admin-notices'][] = [
+			if ($wpdb->query($wpdb->prepare('SELECT id FROM ' . self::get_table_name().' WHERE id = %d', $this->id)) !== 1) {
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'There is no extra with the id "' . $this->id . '"'
 				];
-				$_SESSION['ig-current-error'][] = 'id';
+				self::$current_error[] = 'id';
 				return false;
 			}
 		}
 		if (!$this->name) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify a name for this extra'
 			];
-			$_SESSION['ig-current-error'][] = 'name';
+			self::$current_error[] = 'name';
 		}
 		if (!$this->alias) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify an alias for this extra'
 			];
-			$_SESSION['ig-current-error'][] = 'alias';
+			self::$current_error[] = 'alias';
 		}
 		if (!$this->url) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify a URL for this extra'
 			];
-			$_SESSION['ig-current-error'][] = 'url';
+			self::$current_error[] = 'url';
 		} elseif (filter_var($this->url, FILTER_VALIDATE_URL) === false) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The given URL "' . $this->url . '" is not valid'
 			];
-			$_SESSION['ig-current-error'][] = 'url';
+			self::$current_error[] = 'url';
 		}
 		if ($this->post && !json_decode($this->post)) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The post-values "' . $this->post . '" are no valid json'
 			];
-			$_SESSION['ig-current-error'][] = 'post';
+			self::$current_error[] = 'post';
 		}
 		if (!$this->thumbnail) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify a thumbnail-URL for this extra'
 			];
-			$_SESSION['ig-current-error'][] = 'thumbnail';
+			self::$current_error[] = 'thumbnail';
 		} elseif (filter_var($this->thumbnail, FILTER_VALIDATE_URL) === false) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The given thumbnail-URL "' . $this->thumbnail . '" is not valid'
 			];
-			$_SESSION['ig-current-error'][] = 'thumbnail';
+			self::$current_error[] = 'thumbnail';
 		}
-		if (isset($_SESSION['ig-current-error'])) {
-			return false;
-		} else {
+		if (empty(self::$current_error)) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -152,7 +154,7 @@ class IntegreatExtra {
 			new IntegreatExtra([
 				'name' => 'Sprungbrett',
 				'alias' => 'sprungbrett',
-				'url' => 'https://www.sprungbrett-intowork.de/ajax/app-search-internships?location={location}',
+				'url' => 'https://web.integreat-app.de/proxy/sprungbrett/app-search-internships?location={location}',
 				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/sprungbrett.jpg'
 			]),
 			new IntegreatExtra([
@@ -170,13 +172,13 @@ class IntegreatExtra {
 				'name' => 'IHK Lehrstellenbörse',
 				'alias' => 'ihk-lehrstellenboerse',
 				'url' => 'https://www.ihk-lehrstellenboerse.de/joboffers/search.html?location={plz}&distance=1',
-				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk-lehrstellenboerse.jpg'
+				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk-lehrstellenboerse.png'
 			]),
 			new IntegreatExtra([
 				'name' => 'IHK Praktikumsbörse',
 				'alias' => 'ihk-praktikumsboerse',
 				'url' => 'https://www.ihk-lehrstellenboerse.de/joboffers/searchTrainee.html?location={plz}&distance=1',
-				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk-praktikumsboerse.jpg'
+				'thumbnail' => 'https://cms.integreat-app.de/wp-content/uploads/extra-thumbnails/ihk-praktikumsboerse.png'
 			])
 		];
 	}
@@ -229,51 +231,50 @@ class IntegreatExtra {
 		foreach(self::get_extras() as $extra) {
 			$select_form .= '<option value="' . $extra->id . '" ' . (isset($_GET['id']) && $_GET['id'] === $extra->id ? 'selected' : '') . '>' . $extra->name . '</option>';
 		}
-		$select_form .= '</select><input class="button" type="submit" name="submit" value=" Edit "></form>';
+		$select_form .= '</select><input class="button" type="submit" name="submit" value=" Edit "></form><br>';
 		return $select_form;
 	}
 
 	private static function get_extra_form() {
-		$extra = isset($_SESSION['ig-current-extra']) ? $_SESSION['ig-current-extra'] : false;
-		$error = isset($_SESSION['ig-current-error']) ? $_SESSION['ig-current-error'] : [];
+		$extra = self::$current_extra;
 		$extra_form = '
 			<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 				<input type="hidden" name="extra[id]" value="' . ($extra ? $extra->id : '') . '">
 				<div>
 					<label for="extra[name]">Name <b>*</b></label>
-					<input type="text" class="' . ($error ? (in_array('name', $error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[name]" value="' . ($extra ? (in_array('name', $error) ? htmlspecialchars($_POST['extra']['name']) : $extra->name) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('name', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[name]" value="' . ($extra ? (in_array('name', self::$current_error) ? htmlspecialchars($_POST['extra']['name']) : $extra->name) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[alias]">Alias <b>*</b></label>
-					<input type="text" class="' . ($error ? (in_array('alias', $error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[alias]" value="' . ($extra ? (in_array('alias', $error) ? htmlspecialchars($_POST['extra']['alias']) : $extra->alias) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('alias', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[alias]" value="' . ($extra ? (in_array('alias', self::$current_error) ? htmlspecialchars($_POST['extra']['alias']) : $extra->alias) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[url]">URL <b>*</b></label>
-					<input type="text" class="' . ($error ? (in_array('url', $error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[url]" value="' . ($extra ? (in_array('url', $error) ? htmlspecialchars($_POST['extra']['url']) : $extra->url) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('url', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[url]" value="' . ($extra ? (in_array('url', self::$current_error) ? htmlspecialchars($_POST['extra']['url']) : $extra->url) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[post]">Post-Values for URL</label>
-					<input type="text" class="' . ($error ? (in_array('post', $error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[post]" value="' . ($extra ? str_replace('"', '&quot;', (in_array('post', $error) ? stripcslashes($_POST['extra']['post']) : $extra->post)) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('post', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[post]" value="' . ($extra ? str_replace('"', '&quot;', (in_array('post', self::$current_error) ? stripcslashes($_POST['extra']['post']) : $extra->post)) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[thumbnail]">Thumbnail-URL <b>*</b></label>
-					<input type="text" class="' . ($error ? (in_array('thumbnail', $error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[thumbnail]" value="' . ($extra ? (in_array('thumbnail', $error) ? htmlspecialchars($_POST['extra']['thumbnail']) : $extra->thumbnail) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('thumbnail', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[thumbnail]" value="' . ($extra ? (in_array('thumbnail', self::$current_error) ? htmlspecialchars($_POST['extra']['thumbnail']) : $extra->thumbnail) : '') . '">
 				</div>
 				<br>
 				<input class="button button-primary" type="submit" name="submit" value=" Save ">
 		';
-		if ((!isset($_GET['action']) || $_GET['action'] !== 'create') && $extra) {
+		if ((!isset($_GET['action']) || $_GET['action'] !== 'create_extra') && $extra) {
 			$extra_form .= '
 				<input class="button button-delete" type="submit" name="submit" value=" Delete " onclick="return confirm(\'Are you really sure you want to delete the extra &quot;' . htmlspecialchars($extra->name) . '&quot;? \')">
 			';
 		}
 		$extra_form .= '
-			</form>
-			<p>Hint: You can use the placeholders {location} and {plz} for location-dependent links.</p>
+			</form><br>
+			<p><b>Hint:</b> You can use the placeholders {location} and {plz} for location-dependent links.</p>
 		';
 		return $extra_form;
 	}
@@ -289,40 +290,40 @@ class IntegreatExtra {
 
 	private static function handle_get_request() {
 		if (!isset($_GET['id'])) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'Form was not submitted properly (GET-parameter "id" is missing)'
 			];
 			return false;
 		}
-		$_SESSION['ig-current-extra'] = self::get_extra_by_id($_GET['id']);
+		self::$current_extra = self::get_extra_by_id($_GET['id']);
 		return true;
 	}
 
 	private static function handle_post_request() {
 		if (!isset($_POST['extra'])) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'Form was not submitted properly (POST-parameter "extra" is missing)'
 			];
 			return false;
 		}
 		$extra = new IntegreatExtra(stripslashes_deep($_POST['extra']));
-		$_SESSION['ig-current-extra'] = $extra;
+		self::$current_extra = $extra;
 		if ($_POST['submit'] == ' Delete ') {
 			$deleted = $extra->delete();
 			if ($deleted !== 1) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'Extra could not be deleted'
 				];
 				return false;
 			}
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'success',
 				'message' => 'Extra successfully deleted'
 			];
-			unset($_SESSION['ig-current-extra']);
+			self::$current_extra = false;
 			return true;
 		}
 		if (!$extra->validate()) {
@@ -330,23 +331,24 @@ class IntegreatExtra {
 		}
 		$saved = $extra->save();
 		if ($saved === false) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'Extra could not be saved'
 			];
 			return false;
 		}
 		if ($saved === 0) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'info',
 				'message' => 'Extra has not been changed'
 			];
 			return false;
 		}
-		$_SESSION['ig-admin-notices'][] = [
+		IntegreatSettingsPlugin::$admin_notices[] = [
 			'type' => 'success',
 			'message' => 'Extra saved successfully'
 		];
+		self::$current_extra = false;
 		return true;
 	}
 
