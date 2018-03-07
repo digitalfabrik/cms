@@ -7,7 +7,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 
 	private $recurring_meta_event;
 
-	public function get_posts(WP_REST_Request $request) {
+	public function get_events(WP_REST_Request $request) {
 		/*
 		 * Add filters to the SQL query to make it work with events.
 		 */

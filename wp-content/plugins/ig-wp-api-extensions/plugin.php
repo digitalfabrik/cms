@@ -31,27 +31,20 @@ require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
-require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Hidden.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Live.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Relatives_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Children.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Parents.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Post.php';
 
 const API_NAMESPACE = 'extensions';
 const CURRENT_VERSION = 2;
-
-const ENDPOINT_MULTISITES = 'multisites';
-const ENDPOINT_MULTISITES_LIVE = 'live';
-const ENDPOINT_MULTISITES_HIDDEN = 'hidden';
-const ENDPOINT_LANGUAGES = 'languages';
-const ENDPOINT_PAGES = 'pages';
-const ENDPOINT_EVENTS = 'events';
-const ENDPOINT_DISCLAIMER = 'disclaimer';
-const ENDPOINT_EXTRAS = 'extras';
-const ENDPOINT_POST = 'post';
 
 add_action('rest_api_init', function () {
 	/*
@@ -71,38 +64,41 @@ add_action('rest_api_init', function () {
 	}
 	$versioned_endpoints = [
 		0 => [
-			ENDPOINT_MULTISITES => new RestApi_MultisitesV0(),
-			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(),
-			ENDPOINT_PAGES => new RestApi_ModifiedPagesV0(),
-			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV0(),
-			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(),
-			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(),
+			new RestApi_ExtrasV0(),
+			new RestApi_ModifiedPagesV0(),
+			new RestApi_ModifiedEventsV0(),
+			new RestApi_ModifiedDisclaimerV0(),
+			new RestApi_MultisitesV0(),
+			new RestApi_WpmlLanguagesV0(),
 		],
 		1 => [
-			ENDPOINT_MULTISITES => new RestApi_MultisitesV1(),
-			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(), // legacy APIv0
-			ENDPOINT_PAGES => new RestApi_ModifiedPagesV0(), // legacy APIv0
-			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV0(), // legacy APIv0
-			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(), // legacy APIv0
-			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
+			new RestApi_ExtrasV0(), // legacy APIv0
+			new RestApi_ModifiedDisclaimerV0(), // legacy APIv0
+			new RestApi_ModifiedEventsV0(), // legacy APIv0
+			new RestApi_ModifiedPagesV0(), // legacy APIv0
+			new RestApi_MultisitesV1(),
+			new RestApi_WpmlLanguagesV0(), // legacy APIv0
 		],
 		2 => [
-			ENDPOINT_MULTISITES => new RestApi_MultisitesV1(), // legacy APIv1
-			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(), // legacy APIv0
-			ENDPOINT_PAGES => new RestApi_ModifiedPagesV2(),
-			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV2(),
-			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV2(),
-			ENDPOINT_EXTRAS => new RestApi_ExtrasV0(), // legacy APIv0
+			new RestApi_ExtrasV0(), // legacy APIv0
+			new RestApi_ModifiedDisclaimerV2(),
+			new RestApi_ModifiedEventsV2(),
+			new RestApi_ModifiedPagesV2(),
+			new RestApi_MultisitesV1(), // legacy APIv1
+			new RestApi_WpmlLanguagesV0(), // legacy APIv0
 		],
 		3 => [
-			ENDPOINT_MULTISITES_LIVE => new APIv3_Sites_Live(),
-			ENDPOINT_MULTISITES_HIDDEN => new APIv3_Sites_Hidden(),
-			ENDPOINT_LANGUAGES => new APIv3_Languages(),
-			ENDPOINT_PAGES => new APIv3_Posts_Pages(),
-			ENDPOINT_EVENTS => new APIv3_Posts_Events(),
-			ENDPOINT_DISCLAIMER => new APIv3_Posts_Disclaimer(),
-			ENDPOINT_EXTRAS => new APIv3_Extras(),
-			ENDPOINT_POST => new APIv3_Posts_Post(),
+			new APIv3_Extras(),
+			new APIv3_Languages(),
+			new APIv3_Posts_Children(),
+			new APIv3_Posts_Disclaimer(),
+			new APIv3_Posts_Events(),
+			new APIv3_Posts_Pages(),
+			new APIv3_Posts_Parents(),
+			new APIv3_Posts_Post(),
+			new APIv3_Sites(),
+			new APIv3_Sites_Hidden(),
+			new APIv3_Sites_Live(),
 		],
 	];
 

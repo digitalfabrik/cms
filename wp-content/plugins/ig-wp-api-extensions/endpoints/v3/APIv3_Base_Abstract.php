@@ -2,14 +2,24 @@
 
 abstract class APIv3_Base_Abstract {
 
-	public function register_route($namespace, $route, $callback, $method = WP_REST_Server::READABLE, $args = []) {
-		register_rest_route($namespace, $route, [
-			'methods' => $method,
+	protected $method;
+	protected $callback;
+	protected $args;
+
+	public function __construct() {
+		$this->method = WP_REST_Server::READABLE;
+		$this->callback = 'get_'.static::ROUTE;
+		$this->args = [];
+	}
+
+	public function register_routes($namespace) {
+		register_rest_route($namespace, static::ROUTE, [
+			'methods' => $this->method,
 			'callback' => [
 				$this,
-				$callback
+				$this->callback
 			],
-            'args' => $args
+            'args' => $this->args
 		]);
 	}
 }
