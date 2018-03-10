@@ -14,7 +14,6 @@ ig-content-loader-instance \
 ig-customize-editor-integreat \
 ig-customize-login-integreat \
 ig-enhanced-help-menu \
-ig-extras \
 ig-login-redirect-pages \
 ig-menu-help \
 ig-pdf-creator-lite-font-extension \
