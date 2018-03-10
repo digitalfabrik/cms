@@ -13,7 +13,6 @@ require_once __DIR__ . '/endpoints/helper/WpmlHelper.php';
 // base
 require_once __DIR__ . '/endpoints/RestApi_ExtensionBase.php';
 // v0
-require_once __DIR__ . '/endpoints/v0/RestApi_Extras.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedContent.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
@@ -64,7 +63,6 @@ add_action('rest_api_init', function () {
 	}
 	$versioned_endpoints = [
 		0 => [
-			new RestApi_ExtrasV0(),
 			new RestApi_ModifiedPagesV0(),
 			new RestApi_ModifiedEventsV0(),
 			new RestApi_ModifiedDisclaimerV0(),
@@ -72,7 +70,6 @@ add_action('rest_api_init', function () {
 			new RestApi_WpmlLanguagesV0(),
 		],
 		1 => [
-			new RestApi_ExtrasV0(), // legacy APIv0
 			new RestApi_ModifiedDisclaimerV0(), // legacy APIv0
 			new RestApi_ModifiedEventsV0(), // legacy APIv0
 			new RestApi_ModifiedPagesV0(), // legacy APIv0
@@ -80,7 +77,6 @@ add_action('rest_api_init', function () {
 			new RestApi_WpmlLanguagesV0(), // legacy APIv0
 		],
 		2 => [
-			new RestApi_ExtrasV0(), // legacy APIv0
 			new RestApi_ModifiedDisclaimerV2(),
 			new RestApi_ModifiedEventsV2(),
 			new RestApi_ModifiedPagesV2(),
