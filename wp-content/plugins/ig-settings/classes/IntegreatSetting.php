@@ -125,6 +125,11 @@ class IntegreatSetting {
 				'type' => 'string'
 			]),
 			new IntegreatSetting([
+				'name' => 'Location Name in Extra URLs',
+				'alias' => 'location_override',
+				'type' => 'string'
+			]),
+			new IntegreatSetting([
 				'name' => 'PLZ',
 				'alias' => 'plz',
 				'type' => 'string'

@@ -167,8 +167,18 @@ class IntegreatSettingsPlugin {
 			// fetch settings to enable the replacement of location-dependent content
 			$settings = apply_filters('ig-settings', null);
 			// replace umlaute to prevent wrong urls
-			$location = str_replace([' ', 'ä', 'ö', 'ü'], ['-', 'ae', 'oe', 'ue'], strtolower(apply_filters('ig-settings-legacy', $settings, 'name_without_prefix')));
-			$plz = strtolower(apply_filters('ig-settings-legacy', $settings, 'plz'));
+			$location = $wpdb->get_var(
+				"SELECT value
+					FROM {$wpdb->base_prefix}ig_settings
+						AS settings
+					LEFT JOIN {$wpdb->prefix}ig_settings_config
+						AS config
+						ON settings.id = setting_id
+					WHERE alias = 'location_override'");
+			if (!$location) {
+				$location = str_replace([' ', 'ä', 'ö', 'ü'], ['-', 'ae', 'oe', 'ue'], strtolower(apply_filters('ig-settings-legacy', $settings, 'name_without_prefix')));
+			}
+			$plz = apply_filters('ig-settings-legacy', $settings, 'plz');
 			// get all extras (or only the enabled ones if $only_enabled is true)
 			$extras = $wpdb->get_results(
 				"SELECT alias, name, url, post, thumbnail" . ($only_enabled ? "" : ", enabled") . "
@@ -201,7 +211,7 @@ class IntegreatSettingsPlugin {
 					LEFT JOIN {$wpdb->prefix}ig_settings_config
 						AS config
 						ON settings.id = setting_id
-					WHERE alias != 'disabled' AND alias != 'hidden'
+					WHERE alias != 'disabled' AND alias != 'hidden' AND alias != 'location_override'
 				UNION SELECT 'extras', 'bool', (SELECT enabled FROM {$wpdb->prefix}ig_extras_config WHERE enabled LIMIT 1)", OBJECT_K));
 		}, 10, 0);
 		/*
