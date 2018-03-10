@@ -14,7 +14,7 @@ class APIv3_Sites_Hidden extends APIv3_Sites {
 
 	public function get_hidden_sites() {
 		return array_map([$this, 'prepare'], array_filter(get_sites(), function ($site) {
-			return !$this->is_disabled($site) && (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature);
+			return !$this->is_disabled($site) && $this->is_hidden($site);
 		}));
 	}
 
