@@ -24,6 +24,10 @@ class IntegreatSettingsPlugin {
 	private $db_version = '1.0';
 	public static $admin_notices = [];
 
+	public function __construct() {
+		$this->add_filters();
+	}
+
 	public function activate($network_wide) {
 		global $wpdb;
 		// global tables for extras and settings
@@ -152,6 +156,97 @@ class IntegreatSettingsPlugin {
 				}
 				break;
 		}
+	}
+
+	private function add_filters() {
+		global $wpdb;
+		/*
+		 * Return all extras joined with the extra configurations
+		 */
+		add_filter('ig-extras', function ($only_enabled = false) use ($wpdb) {
+			// fetch settings to enable the replacement of location-dependent content
+			$settings = apply_filters('ig-settings', null);
+			// replace umlaute to prevent wrong urls
+			$location = str_replace([' ', 'ä', 'ö', 'ü'], ['-', 'ae', 'oe', 'ue'], strtolower(apply_filters('ig-settings-legacy', $settings, 'name_without_prefix')));
+			$plz = strtolower(apply_filters('ig-settings-legacy', $settings, 'plz'));
+			// get all extras (or only the enabled ones if $only_enabled is true)
+			$extras = $wpdb->get_results(
+				"SELECT alias, name, url, post, thumbnail" . ($only_enabled ? "" : ", enabled") . "
+					FROM {$wpdb->base_prefix}ig_extras
+						AS extras
+					LEFT JOIN {$wpdb->prefix}ig_extras_config
+						AS config
+						ON extras.id = extra_id"
+				. ($only_enabled ? " WHERE enabled" : ""), OBJECT_K);
+			// filter all location-dependent content by replacing the placeholders
+			return array_map(function ($extra) use ($location, $plz) {
+					$extra->url = str_replace(['{location}', '{plz}'], [$location, $plz], $extra->url);
+					$extra->post = json_decode(str_replace(['{location}', '{plz}'], [$location, $plz], $extra->post));
+					return $extra;
+				}, $extras
+			);
+		}, 10, 1);
+		/*
+		 * Return all settings joined with the setting configurations
+		 */
+		add_filter('ig-settings', function () use ($wpdb) {
+			// get all settings and union it with an additional extra setting which is true if at least one extra is enabled
+			return array_map(function ($setting) {
+					// cast setting value by its desired type
+					return ($setting->type === 'bool' ? (bool) $setting->value : ($setting->value === '' ? null : $setting->value));
+				}, $wpdb->get_results(
+					"SELECT alias, type, value
+					FROM {$wpdb->base_prefix}ig_settings
+						AS settings
+					LEFT JOIN {$wpdb->prefix}ig_settings_config
+						AS config
+						ON settings.id = setting_id
+					WHERE alias != 'disabled' AND alias != 'hidden'
+				UNION SELECT 'extras', 'bool', (SELECT enabled FROM {$wpdb->prefix}ig_extras_config WHERE enabled LIMIT 1)", OBJECT_K));
+		}, 10, 0);
+		/*
+		 * Take an array of settings and a setting alias and return the settings value as string
+		 */
+		add_filter('ig-settings-legacy', function ($settings, $setting) {
+			if (isset($settings[$setting]) && $settings[$setting]) {
+				return (string) $settings[$setting];
+			} else {
+				return '0';
+			}
+		}, 10, 2);
+		/*
+		 * Take an array of extras and an extra alias and return the json-object if $url == true and otherwise the extra state
+		 */
+		add_filter('ig-extras-legacy', function ($extras, $extra, $url = false) {
+			if (isset($extras[$extra]) && $extras[$extra]->enabled) {
+				if ($url && isset($extras[$extra]->url)) {
+					return json_encode([
+						'enabled' => '1',
+						'url' => $extras[$extra]->url
+					], JSON_UNESCAPED_SLASHES);
+				} else {
+					return '1';
+				}
+			} else {
+				return '0';
+			}
+		}, 10, 3);
+		/*
+		 * Return whether a site is completely disabled in API
+		 */
+		add_filter('ig-site-disabled', function ($site) use ($wpdb) {
+			switch_to_blog($site->blog_id);
+			$disabled = $wpdb->get_var(
+				"SELECT value
+						FROM {$wpdb->base_prefix}ig_settings
+							AS settings
+						JOIN {$wpdb->prefix}ig_settings_config
+							AS config
+							ON settings.id = config.setting_id
+						WHERE settings.alias = 'disabled'");
+			restore_current_blog();
+			return (bool) $disabled;
+		}, 10, 1);
 	}
 
 }
