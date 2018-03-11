@@ -1,5 +1,5 @@
 <?php
-ob_start();
+//ob_start();
 ?>
 	<h1><?php echo get_admin_page_title(); ?></h1>
 	<form method='post'>
@@ -40,5 +40,5 @@ ob_start();
 		<button><?php echo __('Save'); ?></button>
 	</form>
 <?php
-$html = ob_get_clean();
+//$html = ob_get_clean();
 ?>

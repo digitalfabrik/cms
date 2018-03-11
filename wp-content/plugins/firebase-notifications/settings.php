@@ -8,9 +8,9 @@ function firebase_notification_settings () {
 		update_blog_option( $blog_id, 'fbn_use_network_settings', $_POST['fbn_use_network_settings'] );
 		update_blog_option( $blog_id, 'fbn_groups', $_POST['fbn_groups'] );
 		update_blog_option( $blog_id, 'fbn_title_prefix', $_POST['fbn_title_prefix'] );
-		echo "<div class='notice notice-success'><p>".__('Settings saved.', 'firebase-notifications')."</p></div>";
+		echo "<div class='notice notice-success'><p>".__('Settings saved.', 'firebase-notifications')." </p></div>";
 	}
-	echo firebase_notification_settings_form();
+	firebase_notification_settings_form();
 }
 
 function firebase_notification_settings_form() {
@@ -20,6 +20,7 @@ function firebase_notification_settings_form() {
 	$settings['use_network_settings'] = get_blog_option( $blog_id, 'fbn_use_network_settings' );
 	$settings['force_network_settings'] = get_site_option( 'fbn_force_network_settings' );
 	$settings['groups'] = get_blog_option( $blog_id, 'fbn_groups' );
+	$settings['fbn_title_prefix'] = get_blog_option( $blog_id, 'fbn_title_prefix' );
 	if ( $settings['force_network_settings'] == '0' )
 		$network_settings = __('This blog must manage it\'s own Firebase Cloud Messaging settings.', 'firebase-notifications');
 	elseif ( $settings['force_network_settings'] == '1' )
@@ -27,7 +28,6 @@ function firebase_notification_settings_form() {
 	elseif ( $settings['force_network_settings'] == '2' )
 		$network_settings = __('This blog must use the network wide Firebase Cloud Messaging settings.', 'firebase-notifications');
 	require_once('templates/settings.php');
-	return $html;
 }
 
 function firebase_notification_network_settings () {
@@ -38,7 +38,7 @@ function firebase_notification_network_settings () {
 		update_site_option( 'fbn_per_blog_topic', $_POST['fbn_per_blog_topic'] );
 		update_site_option( 'fbn_groups', $_POST['fbn_groups'] );
 	}
-	echo firebase_notification_network_settings_form();
+	firebase_notification_network_settings_form();
 }
 
 function firebase_notification_network_settings_form() {
@@ -48,7 +48,6 @@ function firebase_notification_network_settings_form() {
 	$settings['per_blog_topic'] = get_site_option( 'fbn_per_blog_topic' );
 	$settings['groups'] = get_site_option( 'fbn_groups' );
 	require_once('templates/network_settings.php');
-	return $html;
 }
 
 ?>
