@@ -21,14 +21,16 @@ if (!defined('WPINC')) {
 class IntegreatSettingsPlugin {
 
 	const MENU_SLUG = 'integreat-settings';
-	private $db_version = '1.0';
+	const DB_VERSION = '1';
+	const DELETE_DB_ON_DEACTIVATION = false;
 	public static $admin_notices = [];
 
-	public function __construct() {
-		$this->add_filters();
-	}
-
-	public function activate($network_wide) {
+	public static function activate($network_wide) {
+		$current_db_version = get_network_option(null, 'ig-settings-db-version');
+		if (!$current_db_version) {
+			add_network_option(null, 'ig-settings-db-version', self::DB_VERSION);
+			$current_db_version = self::DB_VERSION;
+		}
 		global $wpdb;
 		// global tables for extras and settings
 		IntegreatSetting::create_table();
@@ -48,7 +50,10 @@ class IntegreatSettingsPlugin {
 			IntegreatSettingConfig::create_table();
 			IntegreatExtraConfig::create_table();
 		}
-		add_option('ig_extras_db_version', $this->db_version);
+		if ($current_db_version < self::DB_VERSION) {
+			// update database here if there are any changes in the future
+			update_network_option(null, 'ig-settings-db-version', self::DB_VERSION);
+		}
 		/*
 		 * Log admin notices if there are any messages in the session variable.
 		 * Only uncomment for debugging purposes.
@@ -62,15 +67,15 @@ class IntegreatSettingsPlugin {
 		*/
 	}
 
-	public function admin_menu() {
-		$this->run(false);
+	public static function admin_menu() {
+		self::run(false);
 	}
 
-	public function network_admin_menu() {
-		$this->run(true);
+	public static function network_admin_menu() {
+		self::run(true);
 	}
 
-	public function run($network_wide) {
+	public static function run($network_wide) {
 		if (is_file(__DIR__ . '/../css/styles.css')) {
 			echo '<style>' . file_get_contents(__DIR__ . '/../css/styles.css') . '</style>';
 		}
@@ -158,7 +163,24 @@ class IntegreatSettingsPlugin {
 		}
 	}
 
-	private function add_filters() {
+	public static function deactivate() {
+		if (self::DELETE_DB_ON_DEACTIVATION) {
+			global $wpdb;
+			$blog_ids = $wpdb->get_col("SELECT blog_id FROM $wpdb->blogs");
+			foreach ($blog_ids as $blog_id) {
+				switch_to_blog($blog_id);
+				// local tables for configuration of extras and settings
+				IntegreatSettingConfig::delete_table();
+				IntegreatExtraConfig::delete_table();
+				restore_current_blog();
+			}
+			// global tables for extras and settings
+			IntegreatSetting::delete_table();
+			IntegreatExtra::delete_table();
+		}
+	}
+
+	public static function add_filters() {
 		global $wpdb;
 		/*
 		 * Return all extras joined with the extra configurations

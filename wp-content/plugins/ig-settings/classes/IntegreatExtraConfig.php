@@ -110,6 +110,7 @@ class IntegreatExtraConfig {
 		// because the ige-* options might not be set or might be in the wrong format, we have to do many checks to prevent PHP errors
 		$sprungbrett = json_decode($wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-sbt'"));
 		$ihk_lehrstellenboerse = json_decode($wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-ilb'"));
+		$ihk_praktikumsboerse = json_decode($wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-ipb'"));
 		return [
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('serlo-abc')->id,
@@ -129,7 +130,7 @@ class IntegreatExtraConfig {
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('ihk-praktikumsboerse')->id,
-				'enabled' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-ipb'")
+				'enabled' => (isset($ihk_praktikumsboerse->enabled) ? $ihk_praktikumsboerse->enabled : false)
 			]),
 		];
 	}
@@ -161,7 +162,7 @@ class IntegreatExtraConfig {
 
 	public static function delete_table() {
 		global $wpdb;
-		$wpdb->query('DROP TABLE IF EXISTS $table_name' . self::get_table_name());
+		$wpdb->query('DROP TABLE IF EXISTS ' . self::get_table_name());
 	}
 
 	public static function form() {
