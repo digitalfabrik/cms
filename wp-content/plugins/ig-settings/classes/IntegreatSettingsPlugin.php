@@ -170,13 +170,13 @@ class IntegreatSettingsPlugin {
 			foreach ($blog_ids as $blog_id) {
 				switch_to_blog($blog_id);
 				// local tables for configuration of extras and settings
-				IntegreatSettingConfig::delete_table();
-				IntegreatExtraConfig::delete_table();
+				$wpdb->query('DROP TABLE IF EXISTS ' . IntegreatSettingConfig::get_table_name());
+				$wpdb->query('DROP TABLE IF EXISTS ' . IntegreatExtraConfig::get_table_name());
 				restore_current_blog();
 			}
 			// global tables for extras and settings
-			IntegreatSetting::delete_table();
-			IntegreatExtra::delete_table();
+			$wpdb->query('DROP TABLE IF EXISTS ' . IntegreatSetting::get_table_name());
+			$wpdb->query('DROP TABLE IF EXISTS ' . IntegreatExtra::get_table_name());
 		}
 	}
 

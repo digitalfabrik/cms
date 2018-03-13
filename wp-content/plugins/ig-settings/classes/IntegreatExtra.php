@@ -207,11 +207,6 @@ class IntegreatExtra {
 		}
 	}
 
-	public static function delete_table() {
-		global $wpdb;
-		$wpdb->query('DROP TABLE IF EXISTS ' . self::get_table_name());
-	}
-
 	public static function form($form) {
 		if ($form === 'select') {
 			return self::get_select_form();

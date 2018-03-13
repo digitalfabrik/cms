@@ -127,7 +127,7 @@ class IntegreatSettingConfig {
 		return $wpdb->delete(self::get_table_name(), ['id' => $this->id]);
 	}
 
-	private static function get_table_name() {
+	public static function get_table_name() {
 		return $GLOBALS['wpdb']->prefix . 'ig_settings_config';
 	}
 
@@ -254,11 +254,6 @@ class IntegreatSettingConfig {
 				}
 			}
 		}
-	}
-
-	public static function delete_table() {
-		global $wpdb;
-		$wpdb->query('DROP TABLE IF EXISTS ' . self::get_table_name());
 	}
 
 	public static function form() {
