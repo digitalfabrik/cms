@@ -109,7 +109,6 @@ class IntegreatExtraConfig {
 		global $wpdb;
 		// because the ige-* options might not be set or might be in the wrong format, we have to do many checks to prevent PHP errors
 		$sprungbrett = json_decode($wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-sbt'"));
-		$lehrstellenradar = json_decode($wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-lr'"));
 		$ihk_lehrstellenboerse = json_decode($wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-ilb'"));
 		return [
 			new IntegreatExtraConfig([
@@ -122,7 +121,7 @@ class IntegreatExtraConfig {
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('lehrstellen-radar')->id,
-				'enabled' => (isset($lehrstellenradar->enabled) ? $lehrstellenradar->enabled : false)
+				'enabled' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-lr'")
 			]),
 			new IntegreatExtraConfig([
 				'extra_id' => IntegreatExtra::get_extra_by_alias('ihk-lehrstellenboerse')->id,
