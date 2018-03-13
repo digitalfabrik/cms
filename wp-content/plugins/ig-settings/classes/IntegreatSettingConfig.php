@@ -162,6 +162,43 @@ class IntegreatSettingConfig {
 				break;
 			}
 		}
+		switch ($site->blogname) {
+			case 'Main-Taunus-Kreis':
+				$location_override = 'hofheim';
+				break;
+			case 'Landkreis Oberallgäu':
+				$location_override = 'sonthofen';
+				break;
+			case 'Brandenburg EAE':
+				$location_override = 'brandenburg';
+				break;
+			case 'Landkreis Alzey-Worms':
+				$location_override = 'alzey';
+				break;
+			case 'Landkreis Donau-Ries':
+				$location_override = 'donauwörth';
+				break;
+			case 'Landkreis Rottal-Inn':
+				$location_override = 'pfarrkirchen';
+				break;
+			case 'Landkreis Dingolfing-Landau':
+				$location_override = 'dingolfing';
+				break;
+			case 'Landkreis Nürnberger Land':
+				$location_override = 'nuernberg';
+				break;
+			case 'Landkreis Wunsiedel im Fichtelgebirge':
+				$location_override = 'wunsiedel';
+				break;
+			case 'Landkreis Erlangen-Höchstadt':
+				$location_override = 'erlangen';
+				break;
+			case 'Stadt Ansbach':
+				$location_override = 'nuernberg';
+				break;
+			default:
+				$location_override = '';
+		}
 		return [
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('prefix')->id,
@@ -170,6 +207,10 @@ class IntegreatSettingConfig {
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('name_without_prefix')->id,
 				'value' => $location_name
+			]),
+			new IntegreatSettingConfig([
+				'setting_id' => IntegreatSetting::get_setting_by_alias('location_override')->id,
+				'value' => $location_override
 			]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('plz')->id,
