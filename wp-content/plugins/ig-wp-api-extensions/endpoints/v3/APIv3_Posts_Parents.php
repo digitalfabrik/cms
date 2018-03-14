@@ -1,0 +1,20 @@
+<?php
+
+class APIv3_Posts_Parents extends APIv3_Posts_Relatives_Abstract {
+
+	const ROUTE = 'parents';
+
+	public function get_parents(WP_REST_Request $request) {
+		$post = $this->get_post($request);
+		if (is_wp_error($post)) {
+			return $post;
+		}
+		$parents = [];
+		while($post->post_parent !== 0) {
+			$post = get_post($post->post_parent);
+			$parents[] = $post;
+		}
+		return array_map([$this, 'prepare'], $parents);
+	}
+
+}

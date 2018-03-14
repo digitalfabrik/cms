@@ -7,16 +7,8 @@ class APIv3_Languages extends APIv3_Base_Abstract {
 
 	const ROUTE = 'languages';
 
-	public function register_routes($namespace) {
-		parent::register_route($namespace, self::ROUTE, 'get_languages');
-	}
-
 	public function get_languages() {
-		$languages = [];
-		foreach (apply_filters('wpml_active_languages', null, '') as $language) {
-			$languages[] = $this->prepare($language);
-		}
-		return $languages;
+		return array_map([$this, 'prepare'], (apply_filters('wpml_active_languages', null, '')));
 	}
 
 	private function prepare(Array $language) {

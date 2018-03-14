@@ -33,7 +33,6 @@ class FirebaseNotificationsService {
 	private function send_notification( $title, $body, $language, $group ) {
 		$header = $this->build_header( $this->settings['auth_key'] );
 		$fields = $this->build_json( $title, $body, $language, $this->settings['blog_id'], $group );
-		$settings = $this->read_settings();
 		return $this->execute_curl( $this->settings['api_url'], $header, $fields );
 	}
 
@@ -53,6 +52,7 @@ class FirebaseNotificationsService {
 			if( get_blog_option( $blog_id, 'fbn_use_network_settings' ) == '1' ) {
 				$this->settings['api_url'] = get_site_option('fbn_api_url');
 				$this->settings['auth_key'] = get_site_option('fbn_auth_key');
+				$this->settings['fbn_title_prefix'] = get_site_option('fbn_title_prefix');
 			} else {
 				$this->settings['auth_key'] = get_blog_option( $blog_id, 'fbn_auth_key' );
 				$this->settings['api_url'] = get_blog_option( $blog_id, 'fbn_api_url' );
@@ -62,6 +62,7 @@ class FirebaseNotificationsService {
 		elseif ( $this->settings['force_network_settings'] == '0' ) {
 			$this->settings['auth_key'] = get_blog_option( $blog_id, 'fbn_auth_key' );
 			$this->settings['api_url'] = get_blog_option( $blog_id, 'fbn_api_url' );
+			$this->settings['fbn_title_prefix'] = get_site_option('fbn_title_prefix');
 		}
 	}
 
@@ -80,6 +81,8 @@ class FirebaseNotificationsService {
 
 
 	private function build_json( $title, $body, $language, $blog_id, $group ) {
+		if( "" != $this->settings['fbn_title_prefix'] )
+			$title = $this->settings['fbn_title_prefix'].' '.$title;
 		$fields = array (
 			'to' => '/topics/' . ($this->settings['per_blog_topic'] == '1' ? (string)$blog_id . "-" . $language . "-" : "") . $group,
 			'notification' => array (

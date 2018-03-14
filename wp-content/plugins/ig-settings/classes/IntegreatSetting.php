@@ -13,6 +13,8 @@ class IntegreatSetting {
 	public $name;
 	public $alias;
 	public $type;
+	public static $current_setting = false;
+	public static $current_error = [];
 
 	public function __construct($setting = []) {
 		$setting = (object) $setting;
@@ -25,39 +27,39 @@ class IntegreatSetting {
 	private function validate() {
 		if ($this->id) {
 			if (self::get_setting_by_id($this->id) === false) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'There is no setting with the id "' . $this->id . '"'
 				];
-				$_SESSION['ig-current-error'][] = 'id';
+				self::$current_error[] = 'id';
 				return false;
 			}
 		}
 		if (!$this->name) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify a name for this setting'
 			];
-			$_SESSION['ig-current-error'][] = 'name';
+			self::$current_error[] = 'name';
 		}
 		if (!$this->alias) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'You have to specify an alias for this setting'
 			];
-			$_SESSION['ig-current-error'][] = 'alias';
+			self::$current_error[] = 'alias';
 		}
 		if (!in_array($this->type, ['string', 'bool'])) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The given type "' . $this->type . '" is not valid (must be "string" or "bool")'
 			];
-			$_SESSION['ig-current-error'][] = 'type';
+			self::$current_error[] = 'type';
 		}
-		if (isset($_SESSION['ig-current-error'])) {
-			return false;
-		} else {
+		if (empty(self::$current_error)) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -123,6 +125,11 @@ class IntegreatSetting {
 				'type' => 'string'
 			]),
 			new IntegreatSetting([
+				'name' => 'Location Name in Extra URLs',
+				'alias' => 'location_override',
+				'type' => 'string'
+			]),
+			new IntegreatSetting([
 				'name' => 'PLZ',
 				'alias' => 'plz',
 				'type' => 'string'
@@ -172,11 +179,6 @@ class IntegreatSetting {
 		}
 	}
 
-	public static function delete_table() {
-		global $wpdb;
-		$wpdb->query('DROP TABLE IF EXISTS $table_name' . self::get_table_name());
-	}
-
 	public static function form($form) {
 		if ($form === 'select') {
 			return self::get_select_form();
@@ -196,24 +198,23 @@ class IntegreatSetting {
 		foreach(self::get_settings() as $setting) {
 			$select_form .= '<option value="' . htmlspecialchars($setting->id) . '" ' . (isset($_GET['id']) && $_GET['id'] === $setting->id ? 'selected' : '') . '>' . htmlspecialchars($setting->name) . '</option>';
 		}
-		$select_form .= '</select><input class="button" type="submit" name="submit" value=" Edit "></form>';
+		$select_form .= '</select><input class="button" type="submit" name="submit" value=" Edit "></form><br>';
 		return $select_form;
 	}
 
 	private static function get_setting_form() {
-		$setting = isset($_SESSION['ig-current-setting']) ? $_SESSION['ig-current-setting'] : false;
-		$error = isset($_SESSION['ig-current-error']) ? $_SESSION['ig-current-error'] : [];
+		$setting = self::$current_setting;
 		$setting_form = '
 			<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 				<input type="hidden" name="setting[id]" value="' . ($setting ? $setting->id : '') . '">
 				<div>
 					<label for="setting[name]">Name <strong>*</strong></label>
-					<input type="text" class="' . ( $error ? ( in_array('name', $error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[name]" value="' . ($setting ? (in_array('name', $error) ? htmlspecialchars($_POST['setting']['name']) : $setting->name) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? ( in_array('name', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[name]" value="' . ($setting ? (in_array('name', self::$current_error) ? htmlspecialchars($_POST['setting']['name']) : $setting->name) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="setting[alias]">Alias <strong>*</strong></label>
-					<input type="text" class="' . ( $error ? ( in_array('alias', $error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[alias]" value="' . ($setting ? (in_array('alias', $error) ? htmlspecialchars($_POST['setting']['alias']) : $setting->alias) : '') . '">
+					<input type="text" class="' . ( !empty(self::$current_error) ? ( in_array('alias', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[alias]" value="' . ($setting ? (in_array('alias', self::$current_error) ? htmlspecialchars($_POST['setting']['alias']) : $setting->alias) : '') . '">
 				</div>
 				<br>
 				<div>
@@ -226,7 +227,7 @@ class IntegreatSetting {
 				<br>
 				<input class="button button-primary" type="submit" name="submit" value=" Save ">
 		';
-		if ((!isset($_GET['action']) || $_GET['action'] !== 'create') && $setting) {
+		if ((!isset($_GET['action']) || $_GET['action'] !== 'create_setting') && $setting) {
 			$setting_form .= '
 				<input class="button button-delete" type="submit" name="submit" value=" Delete " onclick="return confirm(\'Are you really sure you want to delete the setting &quot;' . $setting->name . '&quot;?\nThis will also delete the configurations of all locations.\')">
 			';
@@ -248,40 +249,40 @@ class IntegreatSetting {
 
 	private static function handle_get_request() {
 		if (!isset($_GET['id'])) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'Form was not submitted properly (GET-parameter "id" is missing)'
 			];
 			return false;
 		}
-		$_SESSION['ig-current-setting'] = self::get_setting_by_id($_GET['id']);
+		self::$current_setting = self::get_setting_by_id($_GET['id']);
 		return true;
 	}
 
 	private static function handle_post_request() {
 		if (!isset($_POST['setting'])) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'Form was not submitted properly (POST-parameter "setting" is missing)'
 			];
 			return false;
 		}
 		$setting = new IntegreatSetting(stripslashes_deep($_POST['setting']));
-		$_SESSION['ig-current-setting'] = $setting;
+		self::$current_setting = $setting;
 		if ($_POST['submit'] == ' Delete ') {
 			$deleted = $setting->delete();
 			if ($deleted !== 1) {
-				$_SESSION['ig-admin-notices'][] = [
+				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
 					'message' => 'Setting could not be deleted'
 				];
 				return false;
 			}
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'success',
 				'message' => 'Setting successfully deleted'
 			];
-			unset($_SESSION['ig-current-setting']);
+			self::$current_setting = false;
 			return true;
 		}
 		if (!$setting->validate()) {
@@ -289,23 +290,24 @@ class IntegreatSetting {
 		}
 		$saved = $setting->save();
 		if ($saved === false) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'Setting could not be saved'
 			];
 			return false;
 		}
 		if ($saved === 0) {
-			$_SESSION['ig-admin-notices'][] = [
+			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'info',
 				'message' => 'Setting has not been changed'
 			];
 			return false;
 		}
-		$_SESSION['ig-admin-notices'][] = [
+		IntegreatSettingsPlugin::$admin_notices[] = [
 			'type' => 'success',
 			'message' => 'Setting saved successfully'
 		];
+		self::$current_setting = false;
 		return true;
 	}
 

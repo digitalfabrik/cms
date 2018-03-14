@@ -1,5 +1,6 @@
 config.ini
 wp-content/uploads/
+wp-content/debug.log
 
 ### Composer template
 composer.phar

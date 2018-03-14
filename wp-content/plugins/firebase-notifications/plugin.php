@@ -34,6 +34,7 @@ function firebase_notifications_settings() {
 	$settings['fbn_api_url'] = 'https://fcm.googleapis.com/fcm/send';
 	$settings['fbn_use_network_settings'] = '1'; //0 use blog settings; 1 use network settings
 	$settings['fbn_groups'] = 'news';
+	$settings['fbn_title_prefix'] = '';
 	return $settings;
 }
 
