@@ -253,7 +253,7 @@ class IntegreatSettingsPlugin {
 			if (isset($extras[$extra]) && $extras[$extra]->enabled) {
 				if ($url && isset($extras[$extra]->url)) {
 					return json_encode([
-						'enabled' => '1',
+						'enabled' => 1,
 						'url' => $extras[$extra]->url
 					], JSON_UNESCAPED_SLASHES);
 				} else {
