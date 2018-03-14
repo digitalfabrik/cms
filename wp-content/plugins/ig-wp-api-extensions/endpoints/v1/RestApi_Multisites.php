@@ -4,10 +4,8 @@
  * Retrieve the multisites defined in this network
  */
 class RestApi_MultisitesV1 extends RestApi_ExtensionBase {
-	const URL = 'multisites';
-	const LIVEINSTANCES_FILENAME = 'liveinstances.txt';
 
-	private $included_site_ids = false;
+	const URL = 'multisites';
 
 	public function register_routes($namespace) {
 		parent::register_route($namespace,
@@ -17,33 +15,40 @@ class RestApi_MultisitesV1 extends RestApi_ExtensionBase {
 	}
 
 	public function get_multisites() {
-		$multisites = wp_get_sites();
-
-		$result = [];
-		foreach ($multisites as $blog) {
-			$result[] = $this->prepare_item($blog);
-		}
-		return $result;
+		return array_map([$this, 'prepare_item'], get_sites());
 	}
 
 	private function prepare_item($blog) {
-		$details = get_blog_details($blog);
-		$id = $blog['blog_id'];
-		switch_to_blog($id);
+		switch_to_blog($blog->blog_id);
 		$result = [
-			'id' => $id,
-			'name' => $details->blogname,
+			'id' => $blog->blog_id,
+			'name' => get_blog_details()->blogname,
 			'icon' => get_site_icon_url(),
 			'cover_image' => get_header_image(),
 			'color' => '#FFA000',
-			'path' => $blog['path'],
-			'description' => get_bloginfo($blog['path']),
-			'live' => $blog['public'] and !$blog['spam'] and !$blog['deleted'] and !$blog['archived'] and !$blog['mature']
+			'path' => $blog->path,
+			'description' => get_bloginfo('description'),
+			'live' => $blog->public and !$blog->spam and !$blog->deleted and !$blog->archived and !$blog->mature,
 		];
-		$result = apply_filters( 'ig_wp_api_extension_settings', $result, $id );
+		if (class_exists('IntegreatSettingsPlugin')) {
+			$settings = apply_filters('ig-settings', null);
+			$extras = apply_filters('ig-extras', false);
+			$result = array_merge($result, [
+				'ige-zip' => apply_filters('ig-settings-legacy', $settings, 'plz'),
+				'ige-evts' => apply_filters('ig-settings-legacy', $settings, 'events'),
+				'ige-pn' => apply_filters('ig-settings-legacy', $settings, 'push-notifications'),
+				'ige-srl' => apply_filters('ig-extras-legacy', $extras, 'serlo-abc'),
+				'ige-sbt' => apply_filters('ig-extras-legacy', $extras, 'sprungbrett', true),
+				'ige-lr' => apply_filters('ig-extras-legacy', $extras, 'lehrstellen-radar'),
+				'ige-ilb' => apply_filters('ig-extras-legacy', $extras, 'ihk-lehrstellenboerse', true),
+				'ige-ipb' => apply_filters('ig-extras-legacy', $extras, 'ihk-praktikumsboerse', true),
+				'ige-c4r' => '0',	// Career for Refugees
+			]);
+		}
 		restore_current_blog();
 		return $result;
 	}
+
 }
 
 /* change header image size */

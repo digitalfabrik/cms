@@ -8,13 +8,11 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	protected $current_language;
 
 	public function __construct() {
+		parent::__construct();
+		$this->method = 'GET, POST';
 		add_filter('excerpt_more', function($link) { return ''; });
 		global $sitepress;
-		$this->current_language = $sitepress->get_current_language();
-	}
-
-	public function register_routes($namespace) {
-		parent::register_route($namespace, static::ROUTE, 'get_posts', 'GET,POST');
+		$this->current_language = $GLOBALS['sitepress']->get_current_language();
 	}
 
 	public function get_posts(WP_REST_Request $request) {
@@ -25,11 +23,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'order'   => 'ASC',
 			'posts_per_page' => -1,
 		]);
-		$posts = [];
-		foreach ($query->posts as $post) {
-			$posts[] = $this->prepare($post);
-		}
-		return $this->get_changed_posts($request, $posts);
+		return $this->get_changed_posts($request, array_map([$this, 'prepare'], $query->posts));
 	}
 
 	protected function prepare(WP_Post $post) {
@@ -44,7 +38,10 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => $this->prepare_excerpt($post),
 			'content' => $content,
-			'parent' => $post->post_parent,
+			'parent' => [
+				'id' => $post->post_parent,
+				'url' => ($post->post_parent !== 0 ? get_permalink($post->post_parent) : null)
+			],
 			'order' => $post->menu_order,
 			'available_languages' => $this->get_available_languages($post),
 			'thumbnail' => has_post_thumbnail($post->ID) ? wp_get_attachment_image_src(get_post_thumbnail_id($post->ID))[0] : null,
@@ -203,7 +200,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	/*
 	 * Filter all posts by removing all keys except $keys from every $post contained in $posts.
 	 */
-	private function filter_posts($posts, $keys) {
+	protected function filter_posts($posts, $keys) {
 		return array_map(function ($post) use ($keys) {
 			return array_intersect_key($post, array_flip($keys));
 		}, $posts);

@@ -5,8 +5,10 @@ class APIv3_Posts_Post extends APIv3_Posts_Abstract {
 	const ROUTE = 'post';
 	const POST_TYPE = 'any';
 
-	public function register_routes($namespace) {
-		parent::register_route($namespace, static::ROUTE, 'get_post', 'GET', [
+	public function __construct() {
+		parent::__construct();
+		$this->method = WP_REST_Server::READABLE;
+		$this->args = [
 			'id' => [
 				'required' => false,
 				'validate_callback' => function($id) {
@@ -19,7 +21,7 @@ class APIv3_Posts_Post extends APIv3_Posts_Abstract {
 					return filter_var($url, FILTER_VALIDATE_URL);
 				}
 			]
-		]);
+		];
 	}
 
 	public function get_post(WP_REST_Request $request) {

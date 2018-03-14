@@ -14,7 +14,6 @@ ig-content-loader-instance \
 ig-customize-editor-integreat \
 ig-customize-login-integreat \
 ig-enhanced-help-menu \
-ig-extras \
 ig-login-redirect-pages \
 ig-menu-help \
 ig-mpdf \
@@ -22,6 +21,7 @@ ig-plugin-adjustment \
 ig-project-user-roles \
 ig-remove-403-forbidden \
 ig-separate-disclaimer \
+ig-settings \
 ig-simplify-ui \
 ig-text-dir \
 ig-wp-api-extensions \
@@ -35,7 +35,9 @@ sitepress-multilingual-cms \
 tinymce-advanced \
 use-google-libraries \
 user-role-editor \
+welcome-email-editor \
 wpml-media-translation \
 wpml-translation-management \
+wp-better-emails \
 wp-rtl \
 wp-sync-db-1.5
