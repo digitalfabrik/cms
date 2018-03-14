@@ -9,11 +9,10 @@ class APIv3_Posts_Children extends APIv3_Posts_Relatives_Abstract {
 		if (is_wp_error($post)) {
 			return $post;
 		}
-		return 'id: '.$post->id;
 		$query = new WP_Query([
 			'post_type' => static::POST_TYPE,
 			'post_status' => 'publish',
-			'post_parent' => $post->id,
+			'post_parent' => $post->ID,
 			'orderby' => 'menu_order post_title',
 			'order'   => 'ASC',
 			'posts_per_page' => -1,
