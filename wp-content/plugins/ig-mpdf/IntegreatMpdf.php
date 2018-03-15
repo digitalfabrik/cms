@@ -1,5 +1,9 @@
 <?php
 
+use Mpdf\Mpdf;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+
 class IntegreatMpdf {
     private $mpdf;
     private $config;
@@ -10,23 +14,26 @@ class IntegreatMpdf {
     private $language;
 
     function __construct($pages, $instance, $language = 'de') {
+		// init mpdf
+		require_once __DIR__ . '/vendor/autoload.php';
         $this->set_pages($pages);
         $this->instance = $instance;
         $this->original_instance = get_current_blog_id();
         $this->file_path = 'wp-content/uploads/ig-mpdf-cache/';
         $this->language = $language;
-
-        // config
         $this->config = array(
             'init_options' => array(
                 'margin_top' => 20,
                 'margin_left' => 20,
                 'margin_right' => 20,
                 'margin_bottom' => 26,
-                'fontDir' => __DIR__ . '/fonts',
+                'fontDir' => [
+					(new ConfigVariables())->getDefaults()['fontDir'],
+                	__DIR__ . '/fonts',
+				],
                 'tempDir' => dirname(__FILE__, 3) . '/uploads/ig-mpdf-cache/tmp',
                 'fontTempDir' => dirname(__FILE__, 3) . '/uploads/ig-mpdf-cache/tmp/ttfontdata',
-                'fontdata' => [
+                'fontdata' => (new FontVariables())->getDefaults()['fontdata'] + [
                     "noto_sans" => [
                         'R' => "NotoSans-Regular.ttf",
                         'B' => "NotoSans-Bold.ttf",
@@ -44,9 +51,7 @@ class IntegreatMpdf {
             'file_path' => dirname(__FILE__, 4) . '/' . $this->file_path,
         );
 
-        // init mpdf
-        require_once __DIR__ . '/vendor/autoload.php';
-        $this->mpdf = new \Mpdf\Mpdf($this->config['init_options']);
+        $this->mpdf = new Mpdf($this->config['init_options']);
     }
     /**
      * Decides whether to create a new pdf file or use a cached one
@@ -98,7 +103,7 @@ class IntegreatMpdf {
 
         // define font family for specified language
         if(in_array($this->language, array('ar', 'fa'))) {
-            $font = 'noto_sans_arabic';
+            $font = 'xbriyaz';
             $this->mpdf->SetDirectionality('rtl');
         } elseif(in_array($this->language, array('am', 'ti'))) {
             $font = 'noto_sans_ethiopic';
@@ -180,14 +185,16 @@ class IntegreatMpdf {
      * Get cached pdf link
      *
      * @param string: filename
-     * @return string: link to file
+     * @return mixed: pdf
      */
     private function get_cached_pdf($filename = null) {
         if(empty($filename)) {
-            $filename = $this->create_file_name();
-        }
-
-        return network_site_url() . $this->file_path . $filename . '.pdf';
+			return $this->mpdf->Output();
+        } else {
+			header('Content-Type: application/pdf');
+			echo file_get_contents(network_site_url() . $this->file_path . $filename . '.pdf');
+			exit();
+		}
     }
 
     /**
