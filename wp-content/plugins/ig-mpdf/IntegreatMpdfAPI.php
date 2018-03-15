@@ -38,6 +38,7 @@ class IntegreatMpdfAPI {
 			'post_status' => 'publish',
 			'post_parent' => $page->ID,
 			'orderby' => 'menu_order post_title',
+			'order'   => 'ASC',
 			'posts_per_page' => -1,
 			'fields' => 'ids',
 			'suppress_filters' => true
