@@ -66,7 +66,7 @@ class IntegreatMpdf {
             } else {
                 $path = $this->config['file_path'] . $selected[0]->pdf_name . '.pdf';
                 if(file_exists($path)) {
-                    return $this->get_cached_pdf($selected[0]->pdf_name);
+                    return $this->get_cached_pdf($path);
                 } else {
                     return $this->create_pdf();
                 }
@@ -192,7 +192,7 @@ class IntegreatMpdf {
 			return $this->mpdf->Output();
         } else {
 			header('Content-Type: application/pdf');
-			echo file_get_contents(network_site_url() . $this->file_path . $filename . '.pdf');
+			echo file_get_contents($filename);
 			exit();
 		}
     }
