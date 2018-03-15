@@ -139,7 +139,7 @@ class IntegreatMpdf {
                         <td width="10%" valign="top" class="footer_text">{PAGENO}</td>
                         <td width="40%" valign="top" align="center">'.get_bloginfo_rss("name").'</td>
                         <td width="40%" valign="top" align="right" class="footer_text"><img 
-                        src="'.IG_MPDF_PATH.'logo.png" width="auto" height="25px" /></td>
+                        src="'. __DIR__ .'logo.png" width="auto" height="25px" /></td>
                         </tr></table>';
         $this->mpdf->setHTMLFooter($out_footer);
 
