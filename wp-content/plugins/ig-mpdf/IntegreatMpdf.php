@@ -3,24 +3,19 @@
 use Mpdf\Mpdf;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
+use Mpdf\MpdfException;
 
 class IntegreatMpdf {
     private $mpdf;
     private $config;
     private $pages;
-    private $instance;
-    private $original_instance;
     private $file_path;
-    private $language;
 
-    function __construct($pages, $instance, $language = 'de') {
+    function __construct($pages) {
 		// init mpdf
 		require_once __DIR__ . '/vendor/autoload.php';
         $this->set_pages($pages);
-        $this->instance = $instance;
-        $this->original_instance = get_current_blog_id();
         $this->file_path = 'wp-content/uploads/ig-mpdf-cache/';
-        $this->language = $language;
         $this->config = array(
             'init_options' => array(
                 'margin_top' => 20,
@@ -53,37 +48,39 @@ class IntegreatMpdf {
 
         $this->mpdf = new Mpdf($this->config['init_options']);
     }
-    /**
-     * Decides whether to create a new pdf file or use a cached one
-     *
-     * @return mixed: link or false
-     */
-    public function get_pdf() {
-        if(!empty($this->pages) and !empty($this->instance)) {
-            $selected = $this->check_for_existing_entry();
-            if(empty($selected) or $this->modified($selected[0]->creation_date)) {
-                return $this->create_pdf();
-            } else {
-                $path = $this->config['file_path'] . $selected[0]->pdf_name . '.pdf';
-                if(file_exists($path)) {
-                    return $this->get_cached_pdf($path);
-                } else {
-                    return $this->create_pdf();
-                }
-            }
-        }
-        return false;
-    }
 
-    /**
-     * Creates a new pdf file for pages
-     *
-     * @return string: link to file
-     */
+	/**
+	 * Decides whether to create a new pdf file or use a cached one
+	 *
+	 * @return mixed: link or false
+	 * @throws MpdfException
+	 */
+    public function get_pdf() {
+		if(!empty($this->pages)) {
+			$selected = $this->check_for_existing_entry();
+			if(empty($selected) or $this->modified($selected[0]->creation_date)) {
+				return $this->create_pdf();
+			} else {
+				$path = $this->config['file_path'] . $selected[0]->pdf_name . '.pdf';
+				if(file_exists($path)) {
+					return $this->get_cached_pdf($path);
+				} else {
+					return $this->create_pdf();
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Creates a new pdf file for pages
+	 *
+	 * @return string: link to file
+	 * @throws MpdfException
+	 */
     private function create_pdf() {
         // prepare content
         $pages = '';
-        switch_to_blog($this->instance);
         $ite = 0;
         $count = count($this->pages);
         foreach($this->pages as &$page) {
@@ -99,13 +96,13 @@ class IntegreatMpdf {
             $pages .= '</div>';
             $ite++;
         }
-        switch_to_blog($this->original_instance);
 
         // define font family for specified language
-        if(in_array($this->language, array('ar', 'fa'))) {
+		$language = apply_filters('wpml_current_language', null);
+        if(in_array($language, array('ar', 'fa'))) {
             $font = 'xbriyaz';
             $this->mpdf->SetDirectionality('rtl');
-        } elseif(in_array($this->language, array('am', 'ti'))) {
+        } elseif(in_array($language, array('am', 'ti'))) {
             $font = 'noto_sans_ethiopic';
         } else {
             $font = 'noto_sans';
@@ -169,7 +166,7 @@ class IntegreatMpdf {
             $data['pdf_name'] = $pdf_name;
             $data['pages'] = $this->comma_separated_list();
             $data['multiple'] = count($this->pages) > 1 ? 1 : 0;
-            $data['instance'] = $this->instance;
+            $data['instance'] = get_bloginfo();
 
             $wpdb->insert('wp_ig_mpdf', $data);
         } else {
@@ -181,12 +178,13 @@ class IntegreatMpdf {
         $this->mpdf->Output($path, 'F');
     }
 
-    /**
-     * Get cached pdf link
-     *
-     * @param string: filename
-     * @return mixed: pdf
-     */
+	/**
+	 * Get cached pdf link
+	 *
+	 * @param string: filename
+	 * @return mixed: pdf
+	 * @throws MpdfException
+	 */
     private function get_cached_pdf($filename = null) {
         if(empty($filename)) {
 			return $this->mpdf->Output();
@@ -203,7 +201,7 @@ class IntegreatMpdf {
      * @return string mixed
      */
     private function create_hash() {
-        $str = 'instance: ' . $this->instance;
+        $str = 'instance: ' . get_bloginfo();
         $str .= ' pages: ';
         foreach($this->pages as &$page) {
             $str .= $page . ',';
@@ -248,7 +246,7 @@ class IntegreatMpdf {
      */
     private function check_for_existing_entry() {
         global $wpdb;
-        return $wpdb->get_results("SELECT * FROM wp_ig_mpdf WHERE instance='".$this->instance."' AND pages='"
+        return $wpdb->get_results("SELECT * FROM wp_ig_mpdf WHERE instance='" . get_bloginfo() . "' AND pages='"
             .$this->comma_separated_list()."'");
     }
 
@@ -260,23 +258,19 @@ class IntegreatMpdf {
      */
     private function modified($timestamp) {
         $date = new DateTime($timestamp);
-
-        switch_to_blog($this->instance);
         foreach($this->pages as &$page) {
             $date_page = new DateTime(get_post_modified_time('Y-m-d H:i:s', false, $page));
             if($date_page > $date) {
-                switch_to_blog($this->original_instance);
                 return true;
             }
         }
-
         return false;
     }
 
     /**
      * Set articles for export
      *
-     * @param pages
+     * @param array pages
      */
     public function set_pages($pages) {
         foreach($pages as &$page) {
