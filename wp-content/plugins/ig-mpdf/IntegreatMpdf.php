@@ -22,26 +22,10 @@ class IntegreatMpdf {
                 'margin_left' => 20,
                 'margin_right' => 20,
                 'margin_bottom' => 26,
-                'fontDir' => [
-					(new ConfigVariables())->getDefaults()['fontDir'],
-                	__DIR__ . '/fonts',
-				],
                 'tempDir' => dirname(__FILE__, 3) . '/uploads/ig-mpdf-cache/tmp',
                 'fontTempDir' => dirname(__FILE__, 3) . '/uploads/ig-mpdf-cache/tmp/ttfontdata',
-                'fontdata' => (new FontVariables())->getDefaults()['fontdata'] + [
-                    "noto_sans" => [
-                        'R' => "NotoSans-Regular.ttf",
-                        'B' => "NotoSans-Bold.ttf",
-                    ],
-                    "noto_sans_arabic" => [
-                        'R' => "NotoKufiArabic-Regular.ttf",
-                        'B' => "NotoKufiArabic-Bold.ttf",
-                    ],
-                    "noto_sans_ethiopic" => [
-                        'R' => "NotoKufiEthiopic-Regular.ttf",
-                        'B' => "NotoKufiEthiopic-Bold.ttf",
-                    ],
-                ],
+				'autoScriptToLang' => true,
+				'autoLangToFont' => true
             ),
             'file_path' => dirname(__FILE__, 4) . '/' . $this->file_path,
         );
@@ -97,21 +81,15 @@ class IntegreatMpdf {
             $ite++;
         }
 
-        // define font family for specified language
-		$language = apply_filters('wpml_current_language', null);
-        if(in_array($language, array('ar', 'fa'))) {
-            $font = 'xbriyaz';
+        // set rtl direction on arabic or farsi
+        if(in_array(apply_filters('wpml_current_language', null), array('ar', 'fa'))) {
             $this->mpdf->SetDirectionality('rtl');
-        } elseif(in_array($language, array('am', 'ti'))) {
-            $font = 'noto_sans_ethiopic';
-        } else {
-            $font = 'noto_sans';
         }
 
         // content
         $out = '<html><head><style>
                     body { 
-                        font-family: "'.$font.'";
+                        font-family: "sans-serif";
                         font-size: 14px;
                         color: #000000;
                         line-height: 1.4;
@@ -152,6 +130,8 @@ class IntegreatMpdf {
 
     /**
      * Cache a recently generated pdf
+	 *
+	 * @throws MpdfException
      */
     private function cache_pdf() {
         global $wpdb;
