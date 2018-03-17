@@ -18,15 +18,13 @@ class IntegreatMpdfAPI {
 					'id' => [
 						'required' => false,
 						'validate_callback' => function($id) {
-							$page = get_post($id);
-							return $page !== null && $page->post_type === 'page';
+							return $this->is_valid($id);
 						}
 					],
 					'url' => [
 						'required' => false,
 						'validate_callback' => function($url) {
-							$page = get_post(url_to_postid($url));
-							return $page !== null && $page->post_type === 'page';
+							return $this->is_valid(url_to_postid($url));
 						}
 					],
 				]
@@ -38,7 +36,7 @@ class IntegreatMpdfAPI {
 	 * Get pdf or return error if the request is not valid
 	 *
 	 * @param $request WP_REST_Request
-	 * @return mixed pdf
+	 * @return mixed
 	 * @throws \Mpdf\MpdfException
 	 */
 	public function get_pdf(WP_REST_Request $request) {
@@ -60,7 +58,7 @@ class IntegreatMpdfAPI {
 	 * Get all page ids of the given page and all its children in the correct order
 	 *
 	 * @param $id int|string
-	 * @return array of page id and all its children's ids
+	 * @return array
 	 */
 	private function get_children($id) {
 		$direct_children = (new WP_Query([
@@ -79,6 +77,17 @@ class IntegreatMpdfAPI {
 				return array_merge($all_children, $grand_children);
 			}, [$id]);
 		}
+	}
+
+	/**
+	 * Check whether a given $id is a valid page id for pdf generation
+	 *
+	 * @param $id int|string
+	 * @return bool
+	 */
+	private function is_valid($id) {
+		$page = get_post($id);
+		return $page !== null && $page->post_type === 'page' && $page->post_status === 'publish';
 	}
 
 }
