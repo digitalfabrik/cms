@@ -5,19 +5,15 @@ class APIv3_Posts_Children extends APIv3_Posts_Relatives_Abstract {
 	const ROUTE = 'children';
 
 	public function get_children(WP_REST_Request $request) {
-		$post = $this->get_post($request);
-		if (is_wp_error($post)) {
-			return $post;
-		}
-		$query = new WP_Query([
+		$children = (new WP_Query([
 			'post_type' => static::POST_TYPE,
 			'post_status' => 'publish',
-			'post_parent' => $post->ID,
+			'post_parent' => $this->get_post($request)->ID,
 			'orderby' => 'menu_order post_title',
 			'order'   => 'ASC',
 			'posts_per_page' => -1,
-		]);
-		return array_map([$this, 'prepare'], $query->posts);
+		]))->posts;
+		return array_map([$this, 'prepare'], $children);
 	}
 
 }
