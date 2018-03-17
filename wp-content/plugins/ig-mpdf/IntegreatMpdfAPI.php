@@ -48,28 +48,37 @@ class IntegreatMpdfAPI {
 			if ($id === null) {
 				$id = url_to_postid($url);
 			}
-			$children_ids = new WP_Query([
-				'post_type' => 'page',
-				'post_status' => 'publish',
-				'post_parent' => $id,
-				'orderby' => 'menu_order post_title',
-				'order' => 'ASC',
-				'posts_per_page' => -1,
-				'fields' => 'ids',
-			]);
-			$page_ids = array_merge([$id], $children_ids->posts);
+			$page_ids = $this->get_children($id);
 		} else {
-			$page_ids = (new WP_Query([
-				'post_type' => 'page',
-				'post_status' => 'publish',
-				'orderby' => 'menu_order post_title',
-				'order'   => 'ASC',
-				'posts_per_page' => -1,
-				'fields' => 'ids',
-			]))->posts;
+			$page_ids = array_slice($this->get_children(0), 0);
 		}
 		$pdf = new IntegreatMpdf($page_ids);
 		return $pdf->get_pdf();
+	}
+
+	/**
+	 * Get all page ids of the given page and all its children in the correct order
+	 *
+	 * @param $id int|string
+	 * @return array of page id and all its children's ids
+	 */
+	private function get_children($id) {
+		$direct_children = (new WP_Query([
+			'post_type' => 'page',
+			'post_status' => 'publish',
+			'post_parent' => $id,
+			'orderby' => 'menu_order post_title',
+			'order' => 'ASC',
+			'posts_per_page' => -1,
+			'fields' => 'ids',
+		]))->posts;
+		if (empty($direct_children)) {
+			return [$id];
+		} else {
+			return array_reduce(array_map([$this, 'get_children'], $direct_children), function ($all_children, $grand_children) {
+				return array_merge($all_children, $grand_children);
+			}, [$id]);
+		}
 	}
 
 }
