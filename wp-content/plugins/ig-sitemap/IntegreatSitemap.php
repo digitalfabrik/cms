@@ -43,15 +43,17 @@ class IntegreatSitemap {
 
 	public function get_sitemap_index() {
 		header('Content-Type: application/xml');
-		global $sitepress;
+		global $wpdb;
 		echo '<?xml version="1.0" encoding="utf-8"?>'.PHP_EOL.'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		foreach (get_sites() as $site) {
 		    if (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature) {
 		        continue;
             }
 			switch_to_blog($site->blog_id);
-		    foreach (apply_filters('wpml_active_languages', null, '') as $language) {
-			    $sitepress->switch_lang($language['code'], true);
+			$current_language = apply_filters('wpml_current_language', null);
+		    $languages = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1");
+		    foreach ($languages as $language) {
+			    do_action('wpml_switch_language', $language);
 			    $last_modified = (new WP_Query([
 				    'post_type' => ['page', 'event', 'disclaimer'],
 				    'post_status' => 'publish',
@@ -60,11 +62,12 @@ class IntegreatSitemap {
 			    ]))->posts[0]->post_modified_gmt;
 ?>
   <sitemap>
-    <loc><?= self::HOST.$site->path.$language['code'].'/sitemap.xml' ?></loc>
+    <loc><?= self::HOST.$site->path.$language.'/sitemap.xml' ?></loc>
     <lastmod><?= $last_modified ?></lastmod>
   </sitemap>
 <?php
 		    }
+			do_action('wpml_switch_language', $current_language);
 			restore_current_blog();
 		}
 		echo '</sitemapindex>';
