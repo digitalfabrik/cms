@@ -1,6 +1,6 @@
 <?php
 
-class APIv3_Posts_Relatives_Abstract extends APIv3_Posts_Abstract {
+abstract class APIv3_Posts_Relatives_Abstract extends APIv3_Posts_Abstract {
 
 	const POST_TYPE = 'any';
 
@@ -11,13 +11,13 @@ class APIv3_Posts_Relatives_Abstract extends APIv3_Posts_Abstract {
 			'id' => [
 				'required' => false,
 				'validate_callback' => function($id) {
-					return is_numeric($id);
+					return $this->is_valid($id);
 				}
 			],
 			'url' => [
 				'required' => false,
 				'validate_callback' => function($url) {
-					return filter_var($url, FILTER_VALIDATE_URL);
+					return $this->is_valid(url_to_postid($url));
 				}
 			]
 		];
@@ -26,31 +26,24 @@ class APIv3_Posts_Relatives_Abstract extends APIv3_Posts_Abstract {
 	public function get_post(WP_REST_Request $request) {
 		$id = $request->get_param('id');
 		$url = $request->get_param('url');
-		if ($id !== null) {
-			if ($id === '0') {
-				$post = (object) [
-					'id' => 0,
-					'post_status' => 'publish'
-				];
-			} else {
-				$post = get_post($id);
-				if ($post === null) {
-					return new WP_Error('post_not_found', 'No post was found for this ID', ['status' => 404]);
-				}
+		if ($id !== null || $url !== null) {
+			if ($id === null) {
+				$id = url_to_postid($url);
 			}
-		} elseif ($url !== null) {
-			$id = url_to_postid($url);
 			$post = get_post($id);
-			if ($post === null) {
-				return new WP_Error('post_not_found', 'No post was found for this URL', ['status' => 404]);
-			}
 		} else {
-			return new WP_Error('rest_missing_param', 'Either the ID or the URL parameter is required', ['status' => 400]);
-		}
-		if ($post->post_status !== 'publish') {
-			return new WP_Error('post_not_published', 'This post has not been published', ['status' => 403]);
+			$post = (object) [
+				'ID' => 0,
+				'post_status' => 'publish',
+				'post_parent' => 0
+			];
 		}
 		return $post;
+	}
+
+	private function is_valid($id) {
+		$post = get_post($id);
+		return $post !== null && $post->post_status == 'publish';
 	}
 
 }
