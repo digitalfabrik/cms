@@ -61,7 +61,7 @@ class IntegreatSitemap {
 ?>
   <sitemap>
     <loc><?= self::HOST.$site->path.$language['code'].'/sitemap.xml' ?></loc>
-    <lastmod><? print_r($last_modified) ?></lastmod>
+    <lastmod><?= $last_modified ?></lastmod>
   </sitemap>
 <?php
 		    }
