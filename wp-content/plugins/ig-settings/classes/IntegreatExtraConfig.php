@@ -58,7 +58,7 @@ class IntegreatExtraConfig {
 		if ($this->enabled && (strpos($extra->url, '{plz}') !== false || strpos($extra->post, '{plz}') !== false) && !$plz){
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The extra "' . $extra->name . '" can not be enabled because it depends on the setting "plz" for this location'
+				'message' => 'The extra "' . htmlspecialchars($extra->name) . '" can not be enabled because it depends on the setting "plz" for this location'
 			];
 			self::$current_error[] = 'enabled';
 			return false;
@@ -172,7 +172,7 @@ class IntegreatExtraConfig {
 			}
 			$form .= '
 				<div>
-					<label for="' . $extra->id . '">' . $extra->name . '</label>
+					<label for="' . $extra->id . '">' . htmlspecialchars($extra->name) . '</label>
 					<label class="switch">
 						<input type="checkbox" name="' . $extra->id . '"' . ($extra_config->enabled ? ' checked' : '') . '>
 						<span class="slider round"></span>
@@ -210,7 +210,7 @@ class IntegreatExtraConfig {
 				if ($saved === false) {
 					IntegreatSettingsPlugin::$admin_notices[] = [
 						'type' => 'error',
-						'message' => 'Extra "' . IntegreatExtra::get_extra_by_id($extra_config->extra_id)->name . '" could not be ' . ($extra_config->enabled ? 'enabled' : 'disabled')
+						'message' => 'Extra "' . htmlspecialchars(IntegreatExtra::get_extra_by_id($extra_config->extra_id)->name) . '" could not be ' . ($extra_config->enabled ? 'enabled' : 'disabled')
 					];
 					$error_occurred = true;
 					continue;
