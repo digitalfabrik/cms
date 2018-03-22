@@ -2,7 +2,7 @@
 
 class IntegreatSitemap {
 
-    const HOST = 'https://web.integreat-app.de';
+	const HOST = 'https://web.integreat-app.de';
 
 	public function __construct() {
 		add_action('rest_api_init', function () {
@@ -46,27 +46,27 @@ class IntegreatSitemap {
 		global $wpdb;
 		echo '<?xml version="1.0" encoding="utf-8"?>'.PHP_EOL.'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		foreach (get_sites() as $site) {
-		    if (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature) {
-		        continue;
-            }
+			if (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature) {
+				continue;
+			}
 			switch_to_blog($site->blog_id);
 			$current_language = apply_filters('wpml_current_language', null);
-		    $languages = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1");
-		    foreach ($languages as $language) {
-			    do_action('wpml_switch_language', $language);
-			    $last_modified = (new WP_Query([
-				    'post_type' => ['page', 'event', 'disclaimer'],
-				    'post_status' => 'publish',
-				    'orderby' => 'modified_gmt',
-				    'posts_per_page' => 1,
-			    ]))->posts[0]->post_modified_gmt;
+			$languages = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1");
+			foreach ($languages as $language) {
+				do_action('wpml_switch_language', $language);
+				$last_modified = (new WP_Query([
+					'post_type' => ['page', 'event', 'disclaimer'],
+					'post_status' => 'publish',
+					'orderby' => 'modified_gmt',
+					'posts_per_page' => 1,
+				]))->posts[0]->post_modified_gmt;
 ?>
   <sitemap>
     <loc><?= self::HOST.$site->path.$language.'/sitemap.xml' ?></loc>
     <lastmod><?= $last_modified ?></lastmod>
   </sitemap>
 <?php
-		    }
+			}
 			do_action('wpml_switch_language', $current_language);
 			restore_current_blog();
 		}
@@ -75,20 +75,20 @@ class IntegreatSitemap {
 	}
 
 	private function changefreq($page) {
-	    if ($page->post_type == 'event') {
-	        return 'daily';
-        }
-        return 'weekly';
-    }
+		if ($page->post_type == 'event') {
+			return 'daily';
+		}
+		return 'weekly';
+	}
 
 	private function get_priority($page) {
 		if ($page->post_type == 'event') {
-		    return '0.8';
-        }
-        if ($page->post_content == '') {
-		    return '0.5';
-        }
-        return '1.0';
+			return '0.8';
+		}
+		if ($page->post_content == '') {
+			return '0.5';
+		}
+		return '1.0';
 	}
 
 }
