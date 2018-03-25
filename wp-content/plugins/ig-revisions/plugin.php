@@ -31,42 +31,58 @@ function ig_revisions_metabox( $post ) {
 	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">None</option>";
 	
 	foreach($children as $child) {
-		$options .= "<option value='" . $child['ID'] . "'" . ($child['ID']==$revision_ids ? " selected" : "" ) . ">" . $child['post_date'] . "</option>";
+		if ( 'attachment' == $child->post_type ) {
+			$options .= "<option value='" . $child->ID . "'" . ($child->ID==$revision_ids ? " selected" : "" ) . ">" . $child->post_date . "</option>";
+		}
 	}
-	
-	$cl_metabox_extra = apply_filters( 'cl_metabox_extra', $cl_metabox_extra, $option_value, $post->ID );
-	cl_meta_box_html( $options, $radio_value, $cl_metabox_extra );
+	add_meta_box(
+		'ig_revisions',
+		__('Set Revision', 'ig_revisions'),
+		'ig_revisions_metabox_html',
+		null,
+		'advanced',
+		'default',
+		$options
+	);
 }
 add_action('add_meta_boxes', 'ig_revisions_metabox');
 
 
-function ig_revisions_metabox_html ( $options, $radio_value, $cl_metabox_extra = '' ) {
-	global $post;
+function wporg_add_custom_box()
+{
+    $screens = ['page', 'wporg_cpt'];
+    foreach ($screens as $screen) {
+        add_meta_box(
+            'wporg_box_id',           // Unique ID
+            'Custom Meta Box Title',  // Box title
+            'wporg_custom_box_html',  // Content callback, must be of type callable
+            $screen                   // Post type
+        );
+    }
+}
+add_action('add_meta_boxes', 'wporg_add_custom_box');
+
+function wporg_custom_box_html($post)
+{
+    ?>
+    <label for="wporg_field">Description for this field</label>
+    <select name="wporg_field" id="wporg_field" class="postbox">
+        <option value="">Select something...</option>
+        <option value="something">Something</option>
+        <option value="else">Else</option>
+    </select>
+    <?php
+}
+
+function ig_revisions_metabox_html ( $post, $options ) {
+	var_dump($options);
+	die();
 ?>
-	<!-- Dropdown-select for foreign contents -->
-		<label>	<?php __( 'Set Revision', 'ig-content-loader-base' )?>	</label>
-		<select name="cl_content_select" id="cl_content_select" style="width:100%; margin-top:10px; margin-bottom:10px">
-			<!-- build select items from filtered plugin list and preselect saved item, if there was any -->
+		<label><?php __( 'Set Revision', 'ig_revisions' ) ?></label>
+		<select name="ig_set_revision" id="ig_set_revision" style="width:100%; margin-top:10px; margin-bottom:10px">
 			<?php echo $options; ?>
 		</select>
 	</p>
-
-	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
-	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-content-loader-base' )?></span>
-		<div class="cl-row-content">
-			<label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-				<input type="radio" name="meta-radio" id="insert-pre-radio" value="anfang" <?php checked( $radio_value, 'anfang' ); ?>>
-				<?php echo __( 'At beginning', 'ig-content-loader-base' )?>
-			</label>
-			<label for="meta-radio-two">
-				<input type="radio" name="meta-radio" id="insert-suf-radio" value="ende" <?php checked( $radio_value, 'ende' ); ?>>
-				<?php echo __( 'At end', 'ig-content-loader-base' )?>
-			</label>
-		</div>
-	</p>
-
-	<div id="cl_metabox_extra"><?php echo $cl_metabox_extra; ?></div>
 	<?php  
 }
 
