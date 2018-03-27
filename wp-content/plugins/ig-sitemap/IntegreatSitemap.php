@@ -3,7 +3,7 @@
 class IntegreatSitemap {
 
 	const HOST = 'https://web.integreat-app.de'; // desired host for permalinks
-	const XHTML_ENABLED = false; // XHTML alternative languages for Google
+	const XHTML_ENABLED = true; // XHTML alternative languages for Google
 
 	public function __construct() {
 		add_action('rest_api_init', function () {
