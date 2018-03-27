@@ -2,8 +2,8 @@
 
 class IntegreatSitemap {
 
-	const HOST = 'https://web.integreat-app.de';
-	const XHTML_ENABLED = false;
+	const HOST = 'https://web.integreat-app.de'; // desired host for permalinks
+	const XHTML_ENABLED = false; // XHTML alternative languages for Google
 
 	public function __construct() {
 		add_action('rest_api_init', function () {
@@ -36,17 +36,17 @@ class IntegreatSitemap {
 		foreach ($pages as $page) {
 ?>
   <url>
-    <loc><?= get_permalink($page) ?></loc>
+    <loc><?= str_replace('https://cms.integreat-app.de', self::HOST, get_permalink($page)) ?></loc>
 <?php
 			if (self::XHTML_ENABLED) {
 				$current_language = apply_filters('wpml_current_language', null);
 				$languages = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1");
 				foreach ($languages as $language) {
 					$id = apply_filters('wpml_object_id', $page->ID, $page->post_type, false, $language);
-					if (false && $id != null) {
+					if ($id != null) {
 						do_action('wpml_switch_language', $language);
 ?>
-    <xhtml:link rel="alternate" hreflang="<?= $language ?>" href="<?= get_permalink($id) ?>"/>
+    <xhtml:link rel="alternate" hreflang="<?= $language ?>" href="<?= str_replace('https://cms.integreat-app.de', self::HOST, get_permalink($id)) ?>"/>
 <?php
 					}
 				}
@@ -108,7 +108,7 @@ class IntegreatSitemap {
 			return '0.8';
 		}
 		if ($page->post_content == '') {
-			return '0.5';
+			return '0.3';
 		}
 		return '1.0';
 	}
