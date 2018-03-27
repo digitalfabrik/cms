@@ -281,4 +281,30 @@ class IntegreatSettingsPlugin {
 		}, 10, 1);
 	}
 
+	public static function encode_quotes_deep($object) {
+		return self::code_quotes_deep($object, true);
+	}
+
+	public static function decode_quotes_deep($object) {
+		return self::code_quotes_deep($object, false);
+	}
+
+	private static function code_quotes_deep($object, $encode) {
+		if ($object === []) {
+			return [];
+		} else {
+			return (object) array_map(function ($attribute) use ($encode) {
+				if (is_string($attribute)) {
+					if ($encode) {
+						return str_replace('"', '&quot;', $attribute);
+					} else {
+						return str_replace('&quot;', '"', $attribute);
+					}
+				} else {
+					return $attribute;
+				}
+			}, (array)$object);
+		}
+	}
+
 }

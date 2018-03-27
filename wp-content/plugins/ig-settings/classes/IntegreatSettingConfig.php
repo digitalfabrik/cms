@@ -22,7 +22,7 @@ class IntegreatSettingConfig {
 		$setting_config = (object) $setting_config;
 		$this->id = isset($setting_config->id) ? (int) $setting_config->id : null;
 		$this->setting_id = isset($setting_config->setting_id) ? (int) $setting_config->setting_id : null;
-		$this->value = (isset($setting_config->value) && $setting_config->value !== '' ? htmlspecialchars($setting_config->value) : null);
+		$this->value = (isset($setting_config->value) && $setting_config->value !== '' ? $setting_config->value : null);
 	}
 
 	public function validate() {
@@ -57,7 +57,7 @@ class IntegreatSettingConfig {
 		if ($setting->type === 'bool' && !in_array($this->value, ['0', '1'])) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The value "' . $this->value . '" is not boolean'
+				'message' => 'The value "' . htmlspecialchars($this->value) . '" is not boolean'
 			];
 			self::$current_error[] = $setting->alias;
 			return false;
@@ -78,7 +78,7 @@ class IntegreatSettingConfig {
 								if ($extra_config->validate() && $extra_config->save()) {
 									IntegreatSettingsPlugin::$admin_notices[] = [
 										'type' => 'info',
-										'message' => 'The extra "' . $extra->name . '" was disabled because it depends on the setting "plz" for this location'
+										'message' => 'The extra "' . htmlspecialchars($extra->name) . '" was disabled because it depends on the setting "plz" for this location'
 									];
 								}
 							}
@@ -88,7 +88,7 @@ class IntegreatSettingConfig {
 			} elseif (!ctype_digit($this->value) || strlen($this->value) !== 5) {
 				IntegreatSettingsPlugin::$admin_notices[] = [
 					'type' => 'error',
-					'message' => 'The PLZ "' . $this->value . '" is not valid'
+					'message' => 'The PLZ "' . htmlspecialchars($this->value) . '" is not valid'
 				];
 				self::$current_error[] = $setting->alias;
 				return false;
@@ -273,8 +273,8 @@ class IntegreatSettingConfig {
 			if ($setting->type === 'string') {
 				$form .= '
 					<div>
-						<label for="' . $setting->id . '">' . $setting->name . '</label>
-						<input type="text" class="' . ( !empty(self::$current_error) ? ( in_array($setting->alias, self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="' . $setting->id . '" value="' . (in_array($setting->alias, self::$current_error) ? htmlspecialchars($_POST[$setting->id]) : $setting_config->value) . '">
+						<label for="' . $setting->id . '">' . htmlspecialchars($setting->name) . '</label>
+						<input type="text" class="' . (!empty(self::$current_error) ? (in_array($setting->alias, self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="' . $setting->id . '" value="' . str_replace('"', '&quot;', (in_array($setting->alias, self::$current_error) ? stripslashes($_POST[$setting->id]) : $setting_config->value)) . '">
 					</div>
 					<br>
 				';
@@ -283,7 +283,7 @@ class IntegreatSettingConfig {
 				$hidden = (!$current_blog->public OR $current_blog->spam OR $current_blog->deleted OR $current_blog->archived OR $current_blog->mature);
 				$form .= '
 					<div>
-						<label for="' . $setting->id . '">' . $setting->name . '</label>
+						<label for="' . $setting->id . '">' . htmlspecialchars($setting->name) . '</label>
 						<label class="switch">
 							<input type="checkbox" name="' . $setting->id . '"' . (($setting->alias === 'hidden' && $hidden) || ($setting->alias !== 'hidden' && $setting_config->value === '1') ? ' checked' : '') . '>
 							<span class="slider round"></span>
@@ -318,7 +318,7 @@ class IntegreatSettingConfig {
 					}
 				} elseif ($setting->type === 'string') {
 					if (isset($_POST[$setting_config->setting_id])) {
-						$setting_config->value = $_POST[$setting_config->setting_id];
+						$setting_config->value = str_replace('&quot;', '"', stripslashes($_POST[$setting_config->setting_id]));
 					} else {
 						IntegreatSettingsPlugin::$admin_notices[] = [
 							'type' => 'error',
@@ -336,7 +336,7 @@ class IntegreatSettingConfig {
 				if ($saved === false) {
 					IntegreatSettingsPlugin::$admin_notices[] = [
 						'type' => 'error',
-						'message' => 'Setting "' . $setting->name . '" could not be saved'
+						'message' => 'Setting "' . htmlspecialchars($setting->name) . '" could not be saved'
 					];
 					$error_occurred = true;
 					continue;

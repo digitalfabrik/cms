@@ -15,17 +15,17 @@ class IntegreatExtra {
 	public $url;
 	public $post;
 	public $thumbnail;
-	public static $current_extra = false;
+	public static $current_extra = [];
 	public static $current_error = [];
 
 	public function __construct($extra = []) {
 		$extra = (object) $extra;
 		$this->id = isset($extra->id) ? (int) $extra->id : null;
-		$this->name = isset($extra->name) && $extra->name !== ''  ? htmlspecialchars($extra->name) : null;
-		$this->alias = isset($extra->alias) && $extra->alias !== ''  ? htmlspecialchars($extra->alias) : null;
-		$this->url = isset($extra->url) && $extra->url !== ''  ? htmlspecialchars($extra->url) : null;
-		$this->post = isset($extra->post) && $extra->post !== '' ? str_replace('&qout;', '"', $extra->post) : null;
-		$this->thumbnail = isset($extra->thumbnail) && $extra->thumbnail !== '' ? htmlspecialchars($extra->thumbnail) : null;
+		$this->name = isset($extra->name) && $extra->name !== ''  ? $extra->name : null;
+		$this->alias = isset($extra->alias) && $extra->alias !== ''  ? $extra->alias : null;
+		$this->url = isset($extra->url) && $extra->url !== ''  ? $extra->url : null;
+		$this->post = isset($extra->post) && $extra->post !== '' ? $extra->post : null;
+		$this->thumbnail = isset($extra->thumbnail) && $extra->thumbnail !== '' ? $extra->thumbnail : null;
 	}
 
 	public function validate() {
@@ -63,14 +63,14 @@ class IntegreatExtra {
 		} elseif (filter_var($this->url, FILTER_VALIDATE_URL) === false) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The given URL "' . $this->url . '" is not valid'
+				'message' => 'The given URL "' . htmlspecialchars($this->url) . '" is not valid'
 			];
 			self::$current_error[] = 'url';
 		}
 		if ($this->post && !json_decode($this->post)) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The post-values "' . $this->post . '" are no valid json'
+				'message' => 'The post-values "' . htmlspecialchars($this->post) . '" are no valid json'
 			];
 			self::$current_error[] = 'post';
 		}
@@ -83,7 +83,7 @@ class IntegreatExtra {
 		} elseif (filter_var($this->thumbnail, FILTER_VALIDATE_URL) === false) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The given thumbnail-URL "' . $this->thumbnail . '" is not valid'
+				'message' => 'The given thumbnail-URL "' . htmlspecialchars($this->thumbnail) . '" is not valid'
 			];
 			self::$current_error[] = 'thumbnail';
 		}
@@ -224,40 +224,41 @@ class IntegreatExtra {
 		}
 		$select_form .= '<select name="id">';
 		foreach(self::get_extras() as $extra) {
-			$select_form .= '<option value="' . $extra->id . '" ' . (isset($_GET['id']) && $_GET['id'] === $extra->id ? 'selected' : '') . '>' . $extra->name . '</option>';
+			$select_form .= '<option value="' . $extra->id . '" ' . (isset($_GET['id']) && $_GET['id'] === $extra->id ? 'selected' : '') . '>' . htmlspecialchars($extra->name) . '</option>';
 		}
 		$select_form .= '</select><input class="button" type="submit" name="submit" value=" Edit "></form><br>';
 		return $select_form;
 	}
 
 	private static function get_extra_form() {
-		$extra = self::$current_extra;
+		$extra = IntegreatSettingsPlugin::encode_quotes_deep(self::$current_extra);
+		$extra_post = IntegreatSettingsPlugin::encode_quotes_deep(stripslashes_deep($_POST['extra']));
 		$extra_form = '
 			<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 				<input type="hidden" name="extra[id]" value="' . ($extra ? $extra->id : '') . '">
 				<div>
 					<label for="extra[name]">Name <b>*</b></label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('name', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[name]" value="' . ($extra ? (in_array('name', self::$current_error) ? htmlspecialchars($_POST['extra']['name']) : $extra->name) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('name', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[name]" value="' . ($extra ? (in_array('name', self::$current_error) ? $extra_post->name : $extra->name) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[alias]">Alias <b>*</b></label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('alias', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[alias]" value="' . ($extra ? (in_array('alias', self::$current_error) ? htmlspecialchars($_POST['extra']['alias']) : $extra->alias) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('alias', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[alias]" value="' . ($extra ? (in_array('alias', self::$current_error) ? $extra_post->alias : $extra->alias) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[url]">URL <b>*</b></label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('url', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[url]" value="' . ($extra ? (in_array('url', self::$current_error) ? htmlspecialchars($_POST['extra']['url']) : $extra->url) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('url', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[url]" value="' . ($extra ? (in_array('url', self::$current_error) ? $extra_post->url : $extra->url) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[post]">Post-Values for URL</label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('post', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[post]" value="' . ($extra ? str_replace('"', '&quot;', (in_array('post', self::$current_error) ? stripcslashes($_POST['extra']['post']) : $extra->post)) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('post', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[post]" value="' . ($extra ? (in_array('post', self::$current_error) ? $extra_post->post : $extra->post) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="extra[thumbnail]">Thumbnail-URL <b>*</b></label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? (in_array('thumbnail', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[thumbnail]" value="' . ($extra ? (in_array('thumbnail', self::$current_error) ? htmlspecialchars($_POST['extra']['thumbnail']) : $extra->thumbnail) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('thumbnail', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="extra[thumbnail]" value="' . ($extra ? (in_array('thumbnail', self::$current_error) ? $extra_post->thumbnail : $extra->thumbnail) : '') . '">
 				</div>
 				<br>
 				<input class="button button-primary" type="submit" name="submit" value=" Save ">
@@ -303,7 +304,7 @@ class IntegreatExtra {
 			];
 			return false;
 		}
-		$extra = new IntegreatExtra(stripslashes_deep($_POST['extra']));
+		$extra = new IntegreatExtra(IntegreatSettingsPlugin::decode_quotes_deep(stripslashes_deep($_POST['extra'])));
 		self::$current_extra = $extra;
 		if ($_POST['submit'] == ' Delete ') {
 			$deleted = $extra->delete();
@@ -318,7 +319,7 @@ class IntegreatExtra {
 				'type' => 'success',
 				'message' => 'Extra successfully deleted'
 			];
-			self::$current_extra = false;
+			self::$current_extra = [];
 			return true;
 		}
 		if (!$extra->validate()) {
@@ -343,7 +344,7 @@ class IntegreatExtra {
 			'type' => 'success',
 			'message' => 'Extra saved successfully'
 		];
-		self::$current_extra = false;
+		self::$current_extra = [];
 		return true;
 	}
 

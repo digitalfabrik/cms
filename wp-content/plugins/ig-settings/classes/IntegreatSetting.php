@@ -13,14 +13,14 @@ class IntegreatSetting {
 	public $name;
 	public $alias;
 	public $type;
-	public static $current_setting = false;
+	public static $current_setting = [];
 	public static $current_error = [];
 
 	public function __construct($setting = []) {
 		$setting = (object) $setting;
 		$this->id = isset($setting->id) ? (int) $setting->id : null;
-		$this->name = isset($setting->name) && $setting->name !== '' ? htmlspecialchars($setting->name) : null;
-		$this->alias = isset($setting->alias) && $setting->alias !== '' ? htmlspecialchars($setting->alias) : null;
+		$this->name = isset($setting->name) && $setting->name !== '' ? $setting->name : null;
+		$this->alias = isset($setting->alias) && $setting->alias !== '' ? $setting->alias : null;
 		$this->type = isset($setting->type) && in_array($setting->type, ['string', 'bool']) ? $setting->type : null;
 	}
 
@@ -52,7 +52,7 @@ class IntegreatSetting {
 		if (!in_array($this->type, ['string', 'bool'])) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The given type "' . $this->type . '" is not valid (must be "string" or "bool")'
+				'message' => 'The given type "' . htmlspecialchars($this->type) . '" is not valid (must be "string" or "bool")'
 			];
 			self::$current_error[] = 'type';
 		}
@@ -196,25 +196,26 @@ class IntegreatSetting {
 		}
 		$select_form .= '<select name="id">';
 		foreach(self::get_settings() as $setting) {
-			$select_form .= '<option value="' . htmlspecialchars($setting->id) . '" ' . (isset($_GET['id']) && $_GET['id'] === $setting->id ? 'selected' : '') . '>' . htmlspecialchars($setting->name) . '</option>';
+			$select_form .= '<option value="' . $setting->id . '" ' . (isset($_GET['id']) && $_GET['id'] === $setting->id ? 'selected' : '') . '>' . htmlspecialchars($setting->name) . '</option>';
 		}
 		$select_form .= '</select><input class="button" type="submit" name="submit" value=" Edit "></form><br>';
 		return $select_form;
 	}
 
 	private static function get_setting_form() {
-		$setting = self::$current_setting;
+		$setting = IntegreatSettingsPlugin::encode_quotes_deep(self::$current_setting);
+		$setting_post = IntegreatSettingsPlugin::encode_quotes_deep(stripslashes_deep($_POST['setting']));
 		$setting_form = '
 			<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 				<input type="hidden" name="setting[id]" value="' . ($setting ? $setting->id : '') . '">
 				<div>
 					<label for="setting[name]">Name <strong>*</strong></label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? ( in_array('name', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[name]" value="' . ($setting ? (in_array('name', self::$current_error) ? htmlspecialchars($_POST['setting']['name']) : $setting->name) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('name', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[name]" value="' . ($setting ? (in_array('name', self::$current_error) ? $setting_post->name : $setting->name) : '') . '">
 				</div>
 				<br>
 				<div>
 					<label for="setting[alias]">Alias <strong>*</strong></label>
-					<input type="text" class="' . ( !empty(self::$current_error) ? ( in_array('alias', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[alias]" value="' . ($setting ? (in_array('alias', self::$current_error) ? htmlspecialchars($_POST['setting']['alias']) : $setting->alias) : '') . '">
+					<input type="text" class="' . (!empty(self::$current_error) ? (in_array('alias', self::$current_error) ? 'ig-error' : 'ig-success') : '') . '" name="setting[alias]" value="' . ($setting ? (in_array('alias', self::$current_error) ? $setting_post->alias : $setting->alias) : '') . '">
 				</div>
 				<br>
 				<div>
@@ -229,7 +230,7 @@ class IntegreatSetting {
 		';
 		if ((!isset($_GET['action']) || $_GET['action'] !== 'create_setting') && $setting) {
 			$setting_form .= '
-				<input class="button button-delete" type="submit" name="submit" value=" Delete " onclick="return confirm(\'Are you really sure you want to delete the setting &quot;' . $setting->name . '&quot;?\nThis will also delete the configurations of all locations.\')">
+				<input class="button button-delete" type="submit" name="submit" value=" Delete " onclick="return confirm(\'Are you really sure you want to delete the setting &quot;' . htmlspecialchars($setting->name) . '&quot;?\nThis will also delete the configurations of all locations.\')">
 			';
 		}
 		$setting_form .= '
@@ -267,7 +268,7 @@ class IntegreatSetting {
 			];
 			return false;
 		}
-		$setting = new IntegreatSetting(stripslashes_deep($_POST['setting']));
+		$setting = new IntegreatSetting(IntegreatSettingsPlugin::decode_quotes_deep(stripslashes_deep($_POST['setting'])));
 		self::$current_setting = $setting;
 		if ($_POST['submit'] == ' Delete ') {
 			$deleted = $setting->delete();
@@ -282,7 +283,7 @@ class IntegreatSetting {
 				'type' => 'success',
 				'message' => 'Setting successfully deleted'
 			];
-			self::$current_setting = false;
+			self::$current_setting = [];
 			return true;
 		}
 		if (!$setting->validate()) {
@@ -307,7 +308,7 @@ class IntegreatSetting {
 			'type' => 'success',
 			'message' => 'Setting saved successfully'
 		];
-		self::$current_setting = false;
+		self::$current_setting = [];
 		return true;
 	}
 
