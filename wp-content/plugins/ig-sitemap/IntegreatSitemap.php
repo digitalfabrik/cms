@@ -73,9 +73,13 @@ class IntegreatSitemap {
 			}
 			switch_to_blog($site->blog_id);
 			$current_language = apply_filters('wpml_current_language', null);
-			$languages = $wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1");
+			$languages = array_merge([$current_language], array_filter($wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1"), function ($language) use ($current_language) {
+			    return $language !== $current_language;
+            }));
 			foreach ($languages as $language) {
-				do_action('wpml_switch_language', $language);
+			    if ($current_language !== $language) {
+				    do_action('wpml_switch_language', $language);
+                }
 				$last_modified = (new WP_Query([
 					'post_type' => ['page', 'event', 'disclaimer'],
 					'post_status' => 'publish',
@@ -89,7 +93,6 @@ class IntegreatSitemap {
   </sitemap>
 <?php
 			}
-			do_action('wpml_switch_language', $current_language);
 			restore_current_blog();
 		}
 		echo '</sitemapindex>';
