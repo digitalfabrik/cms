@@ -10,22 +10,8 @@
  */
 
 function ig_revisions_metabox( $post ) {
-
-	//wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
-
-	$args = array(
-		'post_parent' => $post->ID,
-		'post_type'   => 'revision', 
-		'numberposts' => -1,
-		'post_status' => 'any'
-	);
-	$children = wp_get_post_revisions( $post_id, $args );
-	
+	$children = wp_get_post_revisions( $post_id );
 	$revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
-	var_dump($post);
-	var_dump($revision_id);
-	die();
-
 	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">None</option>";
 	
 	foreach($children as $child) {
@@ -41,7 +27,7 @@ function ig_revisions_metabox( $post ) {
 		$options
 	);
 }
-add_action('add_meta_boxes', 'ig_revisions_metabox');
+add_action( 'add_meta_boxes_post', 'ig_revisions_metabox' );
 
 function ig_revisions_metabox_html ( $post, $callback_args ) {
 ?>
@@ -50,18 +36,13 @@ function ig_revisions_metabox_html ( $post, $callback_args ) {
 			<?php echo $callback_args['args']; ?>
 		</select>
 	</p>
-	<?php  
+<?php  
 }
 
 function ig_revisions_metabox_save ( $post_id ) {
 	$meta_key = 'ig_revision_id';
 	$meta_value = ( isset( $_POST['ig_revision_id'] ) ? $_POST['ig_revision_id'] : '' );
 	update_post_meta( $post_id, $meta_key, $meta_value );
-	var_dump($post_id);
-	var_dump($meta_key);
-	var_dump($meta_value);
-	var_dump("bla");
-	die();
 }
 add_action('save_post', 'ig_revisions_metabox_save');
 add_action('edit_post', 'ig_revisions_metabox_save');
