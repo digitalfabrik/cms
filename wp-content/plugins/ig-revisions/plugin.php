@@ -10,12 +10,12 @@
  */
 
 function ig_revisions_metabox( $post ) {
-	$children = wp_get_post_revisions( $post_id );
+	$children = wp_get_post_revisions( $post->ID );
 	$revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
 	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">None</option>";
 	
 	foreach($children as $child) {
-		$options .= "<option value='" . $child->ID . "'" . ($child->ID==$revision_ids ? " selected" : "" ) . ">" . $child->post_date . "</option>";
+		$options .= "<option value='" . $child->ID . "'" . ($child->ID==$revision_id ? " selected" : "" ) . ">" . $child->post_date . "</option>";
 	}
 	add_meta_box(
 		'ig_revisions',
@@ -27,7 +27,7 @@ function ig_revisions_metabox( $post ) {
 		$options
 	);
 }
-add_action( 'add_meta_boxes_post', 'ig_revisions_metabox' );
+add_action( 'add_meta_boxes', 'ig_revisions_metabox' );
 
 function ig_revisions_metabox_html ( $post, $callback_args ) {
 ?>
