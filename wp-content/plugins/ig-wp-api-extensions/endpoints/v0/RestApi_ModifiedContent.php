@@ -213,8 +213,8 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 	}
 
 	protected function prepare_item($post) {
-        $revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
-        if($revision_id >= 0) $post = wp_get_post_revision( $post );
+		$revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
+		if($revision_id >= 0) $post = wp_get_post_revision( $post );
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
 		$content = $this->prepare_content($post);

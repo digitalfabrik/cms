@@ -27,8 +27,8 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	}
 
 	protected function prepare(WP_Post $post) {
-        $revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
-        if($revision_id >= 0) $post = wp_get_post_revision( $post );
+		$revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
+		if($revision_id >= 0) $post = wp_get_post_revision( $post );
 		$GLOBALS['post'] = $post; // define global $post to prevent wordpress notices caused by events-manager
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
