@@ -12,7 +12,7 @@
 function ig_revisions_metabox( $post ) {
 	$children = wp_get_post_revisions( $_GET['post'] );
 	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
-	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">None</option>";
+	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">Current</option>";
 	
 	foreach($children as $child) {
 		$options .= "<option value='" . $child->ID . "'" . ($child->ID==$revision_id ? " selected" : "" ) . ">" . $child->post_date . "</option>";
