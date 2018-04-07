@@ -3,7 +3,7 @@
  * Plugin Name: Integreat Page Revisions
  * Description: Set a specific page revision for delivery via API
  * Version: 1.0
- * Author: Sven Seeberg
+ * Author: Integreat Team / Sven Seeberg
  * Author URI: https://github.com/Integreat
  * License: MIT
  * Text Domain: ig-revisions
