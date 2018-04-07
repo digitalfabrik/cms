@@ -10,8 +10,8 @@
  */
 
 function ig_revisions_metabox( $post ) {
-	$children = wp_get_post_revisions( $post->ID );
-	$revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
+	$children = wp_get_post_revisions( $_GET['post'] );
+	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
 	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">None</option>";
 	
 	foreach($children as $child) {
