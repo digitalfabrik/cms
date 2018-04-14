@@ -33,14 +33,16 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		$content = $this->prepare_content($post);
 		$output_post = [
 			'id' => $post->ID,
-			'url' =>get_permalink($post),
+			'url' => get_permalink($post),
+			'path' => wp_make_link_relative(get_permalink($post)),
 			'title' => $post->post_title,
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => $this->prepare_excerpt($post),
 			'content' => $content,
 			'parent' => [
 				'id' => $post->post_parent,
-				'url' => ($post->post_parent !== 0 ? get_permalink($post->post_parent) : null)
+				'url' => ($post->post_parent !== 0 ? get_permalink($post->post_parent) : null),
+				'path' => ($post->post_parent !== 0 ? wp_make_link_relative(get_permalink($post->post_parent)) : null)
 			],
 			'order' => $post->menu_order,
 			'available_languages' => $this->get_available_languages($post),
@@ -79,6 +81,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 				$available_languages[$language['code']] = [
 					'id' => $id,
 					'url' => get_permalink($id),
+					'path' => wp_make_link_relative(get_permalink($id)),
 				];
 			}
 		}
