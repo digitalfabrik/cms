@@ -243,7 +243,6 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 		if( "" == $post->post_content && count( $children ) == 0 ) {
 			$post->post_content = "empty";
 		}
-		$post = update_post_with_revision ( $post );
 		return wpautop( $post->post_content );
 	}
 

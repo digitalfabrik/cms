@@ -63,3 +63,4 @@ function update_post_with_revision( $post ) {
 	}
 	return $output_post;
 }
+add_filter( 'wp_api_extensions_output_post', 'update_post_with_revision', 10, 1 );

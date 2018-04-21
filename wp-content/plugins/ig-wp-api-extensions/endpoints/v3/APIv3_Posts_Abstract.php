@@ -56,7 +56,6 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		if ($post->post_content === '' && count( $children ) === 0) {
 			$post->post_content = 'empty';
 		}
-		$post = update_post_with_revision ( $post );
 		return wpautop($post->post_content);
 	}
 
