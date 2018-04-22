@@ -54,10 +54,10 @@ function update_post_with_revision( $post ) {
 	if(is_numeric($revision_id) && $revision_id >= 0) {
 		$revision_post = wp_get_post_revision( $revision_id );
 		$output_post = [
-			'title' => $revision_post->title,
-			'modified_gmt' => $revision_post->modified_gmt,
-			'excerpt' => $revision_post->excerpt,
-			'content' => $revision_post->content,
+			'title' => $revision_post->post_title,
+			'modified_gmt' => $revision_post->post_modified_gmt,
+			'excerpt' => $revision_post->post_excerpt,
+			'content' => $revision_post->post_content,
 		];
 	} else {
 		$output_post = [];
