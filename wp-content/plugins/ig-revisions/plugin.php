@@ -50,8 +50,7 @@ add_action('publish_post', 'ig_revisions_metabox_save');
 add_action('edit_page_form', 'ig_revisions_metabox_save');
 
 function update_post_with_revision( $post ) {
-	$output_post = $post;
-	$revision_id = get_post_meta( $post->ID, 'ig_revision_id', true );
+	$revision_id = get_post_meta( $post['id'], 'ig_revision_id', true );
 	if(is_numeric($revision_id) && $revision_id >= 0) {
 		$revision_post = wp_get_post_revision( $revision_id );
 		$output_post = [
@@ -60,7 +59,9 @@ function update_post_with_revision( $post ) {
 			'excerpt' => $revision_post->excerpt,
 			'content' => $revision_post->content,
 		];
+	} else {
+		$output_post = [];
 	}
-	return $output_post;
+	return array_merge( $post, $output_post );
 }
 add_filter( 'wp_api_extensions_output_post', 'update_post_with_revision', 10, 1 );
