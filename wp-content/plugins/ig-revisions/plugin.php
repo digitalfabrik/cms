@@ -58,6 +58,7 @@ function update_post_with_revision( $post ) {
 	if(is_numeric($revision_id) && $revision_id >= 0) {
 		$revision_post = wp_get_post_revision( $revision_id );
 		$output_post = [
+			'title' => $revision_post->post_title,
 			'excerpt' => $revision_post->post_excerpt ?: wp_trim_words($revision_post->post_content),
 			'content' => wpautop($revision_post->post_content),
 		];
