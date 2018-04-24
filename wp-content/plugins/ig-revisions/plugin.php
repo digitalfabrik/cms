@@ -7,19 +7,20 @@
  * Author URI: https://github.com/Integreat
  * License: MIT
  * Text Domain: ig-revisions
+ * Domain Path: /
  */
 
 function ig_revisions_metabox( $post ) {
 	$children = wp_get_post_revisions( $_GET['post'] );
 	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
-	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">Current</option>";
+	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">". __('Always publish most recent revision', 'ig-revisions') ."</option>";
 	
 	foreach($children as $child) {
 		$options .= "<option value='" . $child->ID . "'" . ($child->ID==$revision_id ? " selected" : "" ) . ">" . $child->post_date . "</option>";
 	}
 	add_meta_box(
 		'ig_revisions',
-		__('Set Revision', 'ig_revisions'),
+		__('Published revision', 'ig-revisions'),
 		'ig_revisions_metabox_html',
 		null,
 		'advanced',
@@ -28,10 +29,13 @@ function ig_revisions_metabox( $post ) {
 	);
 }
 add_action( 'add_meta_boxes', 'ig_revisions_metabox' );
+add_action( 'plugins_loaded', function() {
+	load_plugin_textdomain('ig-revisions', false, basename(dirname(__FILE__)) . '/lang/');
+});
 
 function ig_revisions_metabox_html ( $post, $callback_args ) {
 ?>
-		<label><?php __( 'Set Revision', 'ig_revisions' ) ?></label>
+		<label><?php __( 'Published revision', 'ig-revisions' ) ?></label>
 		<select name="ig_revision_id" id="ig_revision_id" style="width:100%; margin-top:10px; margin-bottom:10px">
 			<?php echo $callback_args['args']; ?>
 		</select>
@@ -54,10 +58,8 @@ function update_post_with_revision( $post ) {
 	if(is_numeric($revision_id) && $revision_id >= 0) {
 		$revision_post = wp_get_post_revision( $revision_id );
 		$output_post = [
-			'title' => $revision_post->post_title,
-			'modified_gmt' => $revision_post->post_modified_gmt,
-			'excerpt' => $revision_post->post_excerpt,
-			'content' => $revision_post->post_content,
+			'excerpt' => $revision_post->post_excerpt ?: wp_trim_words($revision_post->post_content),
+			'content' => wpautop($revision_post->post_content),
 		];
 	} else {
 		$output_post = [];
