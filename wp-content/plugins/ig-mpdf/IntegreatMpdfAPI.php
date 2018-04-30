@@ -2,14 +2,14 @@
 
 class IntegreatMpdfAPI {
 
-    public function __construct() {
-        $this->custom_endpoint();
-    }
+	public function __construct() {
+		$this->custom_endpoint();
+	}
 
-    /**
-     * Add custom endpoint
-     */
-    private function custom_endpoint() {
+	/**
+	 * Add custom endpoint
+	 */
+	private function custom_endpoint() {
 		add_action('rest_api_init', function () {
 			register_rest_route( 'ig-mpdf/v1', 'pdf', [
 				'methods' => WP_REST_Server::READABLE,
@@ -30,14 +30,13 @@ class IntegreatMpdfAPI {
 				]
 			]);
 		});
-    }
+	}
 
 	/**
 	 * Get pdf or return error if the request is not valid
 	 *
 	 * @param $request WP_REST_Request
 	 * @return mixed
-	 * @throws \Mpdf\MpdfException
 	 */
 	public function get_pdf(WP_REST_Request $request) {
 		$id = $request->get_param('id');
@@ -50,8 +49,12 @@ class IntegreatMpdfAPI {
 		} else {
 			$page_ids = array_slice($this->get_children(0), 0);
 		}
-		$pdf = new IntegreatMpdf($page_ids);
-		return $pdf->get_pdf();
+		$mpdf = new IntegreatMpdf($page_ids, apply_filters('wpml_current_language', null));
+		try {
+			$mpdf->get_pdf();
+		} catch (\Mpdf\MpdfException $e) {
+			return new WP_Error('mpdf-error', $e->getMessage(), ['status' => 500]);
+		}
 	}
 
 	/**
