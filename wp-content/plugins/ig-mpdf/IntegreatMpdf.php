@@ -110,11 +110,38 @@ class IntegreatMpdf {
 				case 'fr':
 					$toc_title = 'Contenu';
 					break;
+				case 'es':
+					$toc_title = 'Contenido';
+					break;
+				case 'ku':
+					$toc_title = 'Naveroka';
+					break;
+				case 'tr':
+					$toc_title = 'Içindekiler';
+					break;
+				case 'po':
+					$toc_title = 'Treść';
+					break;
+				case 'ro':
+					$toc_title = 'Conținut';
+					break;
+				case 'ru':
+					$toc_title = 'Cодержание';
+					break;
+				case 'sr':
+					$toc_title = 'Cадржај';
+					break;
 				case 'ar':
 					$toc_title = 'محتويات';
 					break;
 				case 'fa':
 					$toc_title = 'محتویات';
+					break;
+				case 'am':
+					$toc_title = 'ይዘቶች';
+					break;
+				case 'ti':
+					$toc_title = 'ካርታ';
 					break;
 				default:
 					$toc_title = 'Table of Contents';
