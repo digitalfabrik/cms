@@ -103,6 +103,7 @@ class IntegreatMpdf {
 
 		// TOC
 		if ($this->toc) {
+			// TOC title
 			switch ($this->language) {
 				case 'de':
 					$toc_title = 'Inhaltsverzeichnis';
@@ -146,20 +147,44 @@ class IntegreatMpdf {
 				default:
 					$toc_title = 'Table of Contents';
 			}
-			$this->mpdf->TOCpagebreakByArray(['toc-preHTML' => '<h2>' . $toc_title . '</h2>', 'toc-odd-footer-value' => -1]);
+			// TOC footer
+			$toc_footer = [
+				'L' => [
+					'content' => $toc_title,
+					'font-size' => 10,
+					'font-style' => 'B',
+				],
+				'C' => [
+					'content' => get_bloginfo('name'),
+					'font-size' => 14,
+					'color'=>'#666666'
+				],
+				'R' => [
+					'content' => '<img src="' . __DIR__ . '/logo.png" width="auto" height="25px" />',
+				],
+				'line' => 1
+			];
+			$this->mpdf->DefFooterByName('toc_footer', $toc_footer);
+			$this->mpdf->TOCpagebreakByArray(['toc-preHTML' => '<h2>' . $toc_title . '</h2>', 'toc-odd-footer-name' => 'toc_footer', 'toc-odd-footer-value' => 1, 'links' => true]);
 		}
 
 		// footer
-		$footer = '	<table width="100%" style="margin-top: 20px;" class="header_footer">
-						<tr>
-							<td width="10%" valign="top" class="footer_text">{PAGENO}</td>
-							<td width="40%" valign="top" align="center">'.get_bloginfo_rss("name").'</td>
-							<td width="40%" valign="top" align="right" class="footer_text">
-								<img src="' . __DIR__ . '/logo.png" width="auto" height="25px" />
-							</td>
-						</tr>
-					</table>';
-		$this->mpdf->setHTMLFooter($footer);
+		$this->mpdf->SetFooter([
+			'odd' => [
+				'L' => [
+					'content' => '{PAGENO}',
+				],
+				'C' => [
+					'content' => get_bloginfo('name'),
+					'font-size' => 14,
+					'color'=>'#666666'
+				],
+				'R' => [
+					'content' => '<img src="' . __DIR__ . '/logo.png" width="auto" height="25px" />',
+				],
+				'line' => 1
+			]
+		]);
 
 		// content
 		$pages_iterator = new CachingIterator(new ArrayIterator($this->page_ids));
@@ -170,11 +195,10 @@ class IntegreatMpdf {
 			} else {
 				$this->mpdf->WriteHTML('<div class="page">');
 			}
-			$this->mpdf->WriteHTML('<h2>' . $page->post_title . '</h2>');
 			if ($this->toc) {
 				$this->mpdf->TOC_Entry(htmlspecialchars($page->post_title, ENT_QUOTES), count(get_post_ancestors($page)));
 			}
-			$this->mpdf->WriteHTML(wpautop($page->post_content) . '</div>');
+			$this->mpdf->WriteHTML('<h2>' . $page->post_title . '</h2>' . wpautop($page->post_content) . '</div>');
 		}
 		$this->mpdf->WriteHTML('</body></html>');
 
