@@ -16,7 +16,7 @@ include __DIR__ . '/IntegreatMpdfSettings.php';
 
 // constant for plugin path
 if(!defined('IG_MPDF_PATH')) {
-	define('IG_MPDF_PATH', get_option('siteurl') . '/wp-content/plugins/ig-mpdf/');
+	define('IG_MPDF_PATH', get_site_url(null, '/wp-content/plugins/ig-mpdf/', 'https'));
 }
 
 add_action('init', function() {
