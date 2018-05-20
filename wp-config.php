@@ -102,6 +102,10 @@ $translation_config = $configuration['translation-microsoft'];
 define('TRANSLATION_MICROSOFT_CLIENT_ID', $translation_config['client-id']);
 define('TRANSLATION_MICROSOFT_CLIENT_SECRET', $translation_config['client-secret']);
 
+/* Piwik */
+$piwik_config = $configuration['piwik'];
+define('PIWIK_AUTH_TOKEN', $piwik_config['auth_token']);
+
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
