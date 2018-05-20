@@ -215,7 +215,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 	protected function prepare_item($post) {
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
-		ig_api_page_tracking();
+		ig_api_page_tracking( 'Integreat API '.ICL_LANGUAGE_CODE );
 		$content = $this->prepare_content($post);
 		$output_post = [
 			'id' => $post->ID,

@@ -1,6 +1,6 @@
 <?php
 
-function ig_api_page_tracking () {
+function ig_api_page_tracking ( $call_name ) {
     /*
      * Contact Tracking server and save API hit
      */
@@ -22,6 +22,6 @@ function ig_api_page_tracking () {
     $piwikTracker->setUrl("https://".$_SERVER[HTTP_HOST].$_SERVER[REQUEST_URI]);
     $piwikTracker->setIp('1.1.1.1');
 
-    $piwikTracker->doTrackPageView( 'Integreat API '. ICL_LANGUAGE_CODE );
+    $piwikTracker->doTrackPageView( $call_name );
 }
 ?>
