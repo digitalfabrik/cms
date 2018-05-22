@@ -3,7 +3,7 @@
 Plugin Name: User Role Editor
 Plugin URI: https://www.role-editor.com
 Description: Change/add/delete WordPress user roles and capabilities.
-Version: 4.40
+Version: 4.42
 Author: Vladimir Garagulya
 Author URI: https://www.role-editor.com
 Text Domain: user-role-editor
@@ -11,7 +11,7 @@ Domain Path: /lang/
 */
 
 /*
-Copyright 2010-2017  Vladimir Garagulya  (email: support@role-editor.com)
+Copyright 2010-2018  Vladimir Garagulya  (email: support@role-editor.com)
 */
 
 if (!function_exists('get_option')) {
@@ -23,7 +23,7 @@ if (defined('URE_PLUGIN_URL')) {
    wp_die('It seems that other version of User Role Editor is active. Please deactivate it before use this version');
 }
 
-define('URE_VERSION', '4.40');
+define('URE_VERSION', '4.42');
 define('URE_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('URE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('URE_PLUGIN_BASE_NAME', plugin_basename(__FILE__));
@@ -40,7 +40,7 @@ $exit_msg = sprintf( 'User Role Editor requires PHP %s or newer.', $ure_required
 URE_Lib::check_version( PHP_VERSION, $ure_required_php_version, $exit_msg, __FILE__ );
 
 // check WP version
-$ure_required_wp_version = '4.3';
+$ure_required_wp_version = '4.0';
 $exit_msg = sprintf( 'User Role Editor requires WordPress %s or newer.', $ure_required_wp_version ) . 
                         '<a href="http://codex.wordpress.org/Upgrading_WordPress"> ' . 'Please update!' . '</a>';
 URE_Lib::check_version(get_bloginfo('version'), $ure_required_wp_version, $exit_msg, __FILE__ );

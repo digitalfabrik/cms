@@ -10,38 +10,39 @@
  **/
 
 class URE_bbPress {
-
-    public static $instance = null;
-    
+   
     protected $lib = null;
+    protected $bbpress_detected = false;
     
     
-    protected function __construct(URE_Lib $lib) {
+    public function __construct(URE_Lib $lib) {
         
         $this->lib = $lib;
         
+        add_action('plugins_loaded', array($this, 'detect_bbpress'), 8);
     }
     // end of __construct()
+           
     
-    
-    static public function get_instance(URE_Lib $lib) {
-        if (!function_exists('bbp_filter_blog_editable_roles')) {  // bbPress plugin is not active
-            return null;            
+    public function detect_bbpress() {
+
+        if (!function_exists('is_plugin_active')) {
+            require_once(ABSPATH .'/wp-admin/includes/plugin.php');
+        }
+        $this->bbpress_detected = false;
+        if (function_exists('bbp_filter_blog_editable_roles')) {
+            $this->bbpress_detected = true;  // bbPress plugin is installed and active
         }
         
-        if (self::$instance!==null) {
-            return self::$instance;
-        }
-        
-        if ($lib->is_pro()) {
-            self::$instance = new URE_bbPress_Pro($lib);
-        } else {
-            self::$instance = new URE_bbPress($lib);
-        }
-        
-        return self::$instance;
     }
-    // end of get_instance()
+    // end of detect_bbpress()
+    
+    
+    public function is_active() {
+        
+        return $this->bbpress_detected;
+    }
+    // end of is_active()
     
 
     /**
@@ -52,9 +53,12 @@ class URE_bbPress {
      */
     public function get_roles() {
         
-        global $wp_roles;
-                        
-        $roles = bbp_filter_blog_editable_roles($wp_roles->roles);  // exclude bbPress roles	         
+        $wp_roles = wp_roles();                        
+        if ($this->bbpress_detected) {
+            $roles = bbp_filter_blog_editable_roles($wp_roles->roles);  // exclude bbPress roles
+        } else {
+            $roles = $wp_roles->roles;
+        }
         
         return $roles;
     }
@@ -67,7 +71,12 @@ class URE_bbPress {
      * @return array
      */   
     public function get_caps() {
-        $caps = array_keys(bbp_get_caps_for_role(bbp_get_keymaster_role()));
+        
+        if ($this->bbpress_detected) {
+            $caps = array_keys(bbp_get_caps_for_role(bbp_get_keymaster_role()));
+        } else {
+            $caps = array();
+        }
         
         return $caps;
     }
@@ -94,19 +103,20 @@ class URE_bbPress {
      * @return array
      */
     public function extract_bbp_roles($roles) {
-                
-        $all_bbp_roles = array_keys(bbp_get_dynamic_roles());
+
         $user_bbp_roles = array();
-        foreach($roles as $role) {
-            if (in_array($role, $all_bbp_roles)) {
-                $user_bbp_roles[] = $role;                    
-            }            
-        }
+        if ($this->bbpress_detected) {
+            $all_bbp_roles = array_keys(bbp_get_dynamic_roles());
+            foreach($roles as $role) {
+                if (in_array($role, $all_bbp_roles)) {
+                    $user_bbp_roles[] = $role;                    
+                }            
+            }
+        }    
         
-        return $user_bbp_roles;        
+        return $user_bbp_roles;
     }
     // end of extract_bbp_roles()
-
 
 }
 // end of URE_bbPress class
