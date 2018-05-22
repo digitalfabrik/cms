@@ -13,140 +13,366 @@ msgstr ""
 "Language:en\n"
 "MIME-Version: 1.0\n"
 
-msgid "WPML Update is Incomplete"
+# } else {
+# throw new WPML_Media_Exception( sprintf( __( 'Image size not found: %s', 'wpml-media' ), $size ), 404 );
+# }
+
+msgid "Image size not found: %s"
 msgstr ""
 
-msgid "You are running updated %s, but the following component is not updated:"
+# } else {
+# throw new WPML_Media_Exception( sprintf( __( 'Attachment is not translated in: %s', 'wpml-media' ), $language ), 404 );
+# }
+
+msgid "Attachment is not translated in: %s"
 msgstr ""
 
-msgid "You are running updated %s and %s, but the following components are not updated:"
-msgstr ""
-
-msgid "The following components are not updated:"
-msgstr ""
-
-msgid "WPML.org account"
-msgstr ""
-
-msgid "Your site will not work as it should in this configuration"
-msgstr ""
-
-msgid "Please update all components which you are using."
-msgstr ""
-
-msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
-msgstr ""
-
-msgid "WPML Media is enabled but not effective. It requires <a href=\"%s\">WPML</a> in order to work."
-msgstr ""
+# {
+# $response = array( 'message' => __( 'Started...', 'wpml-media' ) );
+# echo wp_json_encode( $response );
 
 msgid "Started..."
 msgstr ""
 
-msgid "Default settings stored."
+# 'result'  => true,
+# 'message' => __( 'Settings saved', 'wpml-media' )
+# );
+
+msgid "Settings saved"
 msgstr ""
+
+# if ( $response[ 'left' ] ) {
+# $response[ 'message' ] = sprintf( __( 'Setting language to media. %d left', 'wpml-media' ), $response[ 'left' ] );
+# } else {
 
 msgid "Setting language to media. %d left"
 msgstr ""
 
+# } else {
+# $response[ 'message' ] = sprintf( __( 'Setting language to media: done!', 'wpml-media' ), $response[ 'left' ] );
+# }
+
 msgid "Setting language to media: done!"
 msgstr ""
 
-msgid "Translating media. %d left"
-msgstr ""
-
-msgid "Translating media: done!"
-msgstr ""
+# if ( $response[ 'left' ] ) {
+# $response[ 'message' ] = sprintf( __( 'Duplicating media. %d left', 'wpml-media' ), $response[ 'left' ] );
+# } else {
 
 msgid "Duplicating media. %d left"
 msgstr ""
 
+# } else {
+# $response[ 'message' ] = sprintf( __( 'Duplicating media: done!', 'wpml-media' ), $response[ 'left' ] );
+# }
+
 msgid "Duplicating media: done!"
 msgstr ""
+
+# if ( $response[ 'left' ] ) {
+# $response[ 'message' ] = sprintf( __( 'Duplicating featured images. %d left', 'wpml-media' ), $response[ 'left' ] );
+# } else {
 
 msgid "Duplicating featured images. %d left"
 msgstr ""
 
+# } else {
+# $response[ 'message' ] = sprintf( __( 'Duplicating featured images: done!', 'wpml-media' ), $response[ 'left' ] );
+# }
+
 msgid "Duplicating featured images: done!"
 msgstr ""
+
+#
+# $response[ 'message' ] = __( 'Done!', 'wpml-media' );
+#
 
 msgid "Done!"
 msgstr ""
 
+#
+# echo '<br /><br /><strong>' . __( 'Media attachments', 'wpml-media' ) . '</strong>';
+#
+
 msgid "Media attachments"
 msgstr ""
+
+# }
+# echo '<br /><label><input name="icl_duplicate_attachments" type="checkbox" value="1" ' . $checked . '/>&nbsp;' . __( 'Duplicate uploaded media from original', 'wpml-media' ) . '</label>';
+#
 
 msgid "Duplicate uploaded media from original"
 msgstr ""
 
+# }
+# echo '<br /><label><input name="icl_duplicate_featured_image" type="checkbox" value="1" ' . $checked . '/>&nbsp;' . __( 'Duplicate featured image from original', 'wpml-media' ) . '</label>';
+# } else {
+
 msgid "Duplicate featured image from original"
 msgstr ""
+
+# }
+# echo '<br /><label><input name="icl_duplicate_attachments" type="checkbox" value="1" ' . $checked . '/>&nbsp;' . __( 'Duplicate uploaded media to translations', 'wpml-media' ) . '</label>';
+#
 
 msgid "Duplicate uploaded media to translations"
 msgstr ""
 
+# }
+# echo '<br /><label><input name="icl_duplicate_featured_image" type="checkbox" value="1" ' . $checked . '/>&nbsp;' . __( 'Duplicate featured image to translations', 'wpml-media' ) . '</label>';
+# }
+
 msgid "Duplicate featured image to translations"
 msgstr ""
+
+# if ( isset( $_REQUEST[ 'lang' ] ) && $_REQUEST[ 'lang' ] == 'all' )
+# $posts_columns[ 'language' ] = __( 'Language', 'wpml-media' );
+#
 
 msgid "Language"
 msgstr ""
 
+# } else {
+# echo __( 'None', 'wpml-media' );
+# }
+
 msgid "None"
 msgstr ""
+
+# add_submenu_page( $top_page,
+# __( 'Media translation', 'wpml-media' ),
+# __( 'Media translation', 'wpml-media' ), 'wpml_manage_media_translation',
 
 msgid "Media translation"
 msgstr ""
 
+#
+# $active_languages[ ] = array( 'code' => 'all', 'display_name' => __( 'All languages', 'wpml-media' ) );
+# $language_items      = array();
+
 msgid "All languages"
 msgstr ""
+
+# if ( $response[ 'left' ] ) {
+# $response[ 'message' ] = sprintf( esc_html__( 'Translating media. %d left', 'wpml-media' ), $response[ 'left' ] );
+# } else {
+
+msgid "Translating media. %d left"
+msgstr ""
+
+# } else {
+# $response[ 'message' ] = sprintf( esc_html__( 'Translating media: done!', 'wpml-media' ), $response[ 'left' ] );
+# }
+
+msgid "Translating media: done!"
+msgstr ""
+
+# <p>
+# <?php _e( 'WPML Media Translation needs to set languages to existing media in your site.', 'wpml-media' ) ?>
+# <a href="<?php echo admin_url( 'admin.php?page=wpml-media' ) ?>" class="button-secondary"><?php _e( 'Set media languages', 'wpml-media' ) ?></a>
 
 msgid "WPML Media Translation needs to set languages to existing media in your site."
 msgstr ""
 
+# <?php _e( 'WPML Media Translation needs to set languages to existing media in your site.', 'wpml-media' ) ?>
+# <a href="<?php echo admin_url( 'admin.php?page=wpml-media' ) ?>" class="button-secondary"><?php _e( 'Set media languages', 'wpml-media' ) ?></a>
+#
+
 msgid "Set media languages"
 msgstr ""
+
+# <span id="wpml_media_dismiss_1" class="notice-dismiss"
+# onclick="jQuery.ajax({url:ajaxurl,method:'POST',data:{action:'wpml_media_dismiss_starting_help'},success:function(){jQuery('#wpml_media_dismiss_1').closest('.message').fadeOut()}}); return false;"><span class="screen-reader-text"><?php _e( "Dismiss", 'wpml-media' ) ?></span></span>
+# </p>
 
 msgid "Dismiss"
 msgstr ""
 
+# $this->admin_notice = '<div class="error wpml-admin-notice">';
+# $this->admin_notice .= '<h3>' . __( 'WPML Update is Incomplete', 'sitepress' ) . '</h3>';
+# $this->admin_notice .= '<p>' . implode( '</p><p>', $notice_paragraphs ) . '</p>';
+
+msgid "WPML Update is Incomplete"
+msgstr ""
+
+# if ( count( $this->valid_plugins ) === 1 ) {
+# $paragraph = __( 'You are running updated %s, but the following component is not updated:', 'sitepress' );
+# $paragraph = sprintf( $paragraph, '<strong>' . $this->valid_plugins[0] . '</strong>' );
+
+msgid "You are running updated %s, but the following component is not updated:"
+msgstr ""
+
+# } else {
+# $paragraph           = __( 'You are running updated %s and %s, but the following components are not updated:', 'sitepress' );
+# $first_valid_plugins = implode( ', ', array_slice( $this->valid_plugins, 0, - 1 ) );
+
+msgid "You are running updated %s and %s, but the following components are not updated:"
+msgstr ""
+
+# } else {
+# $paragraph = __( 'The following components are not updated:', 'sitepress' );
+# }
+
+msgid "The following components are not updated:"
+msgstr ""
+
+# private function get_invalid_plugins_report_footer() {
+# $wpml_org_url = '<a href="https://wpml.org/account/" title="WPML.org account">' . __( 'WPML.org account', 'sitepress' ) . '</a>';
+#
+
+msgid "WPML.org account"
+msgstr ""
+
+#
+# $notice_paragraph = __( 'Your site will not work as it should in this configuration', 'sitepress' );
+# $notice_paragraph .= ' ';
+
+msgid "Your site will not work as it should in this configuration"
+msgstr ""
+
+# $notice_paragraph .= ' ';
+# $notice_paragraph .= __( 'Please update all components which you are using.', 'sitepress' );
+# $notice_paragraph .= ' ';
+
+msgid "Please update all components which you are using."
+msgstr ""
+
+# $notice_paragraph .= ' ';
+# $notice_paragraph .= sprintf( __( 'For WPML components you can receive updates from your %s or automatically, after you register WPML.', 'sitepress' ), $wpml_org_url );
+#
+
+msgid "For WPML components you can receive updates from your %s or automatically, after you register WPML."
+msgstr ""
+
+#
+# <p><?php _e("The Media Translation plugin needs to add languages to your site's media. Without this language information, existing media files will not be displayed in the WordPress admin.", 'wpml-media') ?></p>
+#
+
 msgid "The Media Translation plugin needs to add languages to your site's media. Without this language information, existing media files will not be displayed in the WordPress admin."
 msgstr ""
+
+#
+# <p><?php _e('You can check if some attachments can be duplicated to translated content:', 'wpml-media') ?></p>
+#
 
 msgid "You can check if some attachments can be duplicated to translated content:"
 msgstr ""
 
+# <li><label><input type="checkbox" id="set_language_info" name="set_language_info" value="1" <?php if (!empty($orphan_attachments)): ?>checked="checked"<?php endif; ?>
+# <?php if (empty($orphan_attachments)): ?>disabled="disabled"<?php endif ?> />&nbsp;<?php _e('Set language information for existing media', 'wpml-media') ?></label></li>
+# <li><label><input type="checkbox" id="translate_media" name="translate_media" value="1" checked="checked"/>&nbsp;<?php _e('Translate existing media in all languages', 'wpml-media') ?></label></li>
+
 msgid "Set language information for existing media"
 msgstr ""
+
+# <?php if (empty($orphan_attachments)): ?>disabled="disabled"<?php endif ?> />&nbsp;<?php _e('Set language information for existing media', 'wpml-media') ?></label></li>
+# <li><label><input type="checkbox" id="translate_media" name="translate_media" value="1" checked="checked"/>&nbsp;<?php _e('Translate existing media in all languages', 'wpml-media') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_media" name="duplicate_media" value="1" checked="checked"/>&nbsp;<?php _e('Duplicate existing media for translated content', 'wpml-media') ?></label></li>
 
 msgid "Translate existing media in all languages"
 msgstr ""
 
+# <li><label><input type="checkbox" id="translate_media" name="translate_media" value="1" checked="checked"/>&nbsp;<?php _e('Translate existing media in all languages', 'wpml-media') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_media" name="duplicate_media" value="1" checked="checked"/>&nbsp;<?php _e('Duplicate existing media for translated content', 'wpml-media') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_featured" name="duplicate_featured" value="1" checked="checked"/>&nbsp;<?php _e('Duplicate the featured images for translated content', 'wpml-media') ?></label></li>
+
 msgid "Duplicate existing media for translated content"
 msgstr ""
+
+# <li><label><input type="checkbox" id="duplicate_media" name="duplicate_media" value="1" checked="checked"/>&nbsp;<?php _e('Duplicate existing media for translated content', 'wpml-media') ?></label></li>
+# <li><label><input type="checkbox" id="duplicate_featured" name="duplicate_featured" value="1" checked="checked"/>&nbsp;<?php _e('Duplicate the featured images for translated content', 'wpml-media') ?></label></li>
+# </ul>
 
 msgid "Duplicate the featured images for translated content"
 msgstr ""
 
+# <tr>
+# <td><a href="https://wpml.org/documentation/getting-started-guide/media-translation/" target="_blank"><?php _e('Media Translation Documentation', 'wpml-media') ?></a></td>
+# <td align="right">
+
 msgid "Media Translation Documentation"
 msgstr ""
+
+# <td colspan="2">
+# <h3><?php _e('How to handle media for new content:', 'wpml-media'); ?></h3>
+# </td>
 
 msgid "How to handle media for new content:"
 msgstr ""
 
+# <label><input type="checkbox" name="content_default_always_translate_media"
+# value="1" <?php echo $always_translate_media_html_checked; ?> />&nbsp;<?php _e('When uploading media to the Media library, make it available in all languages', 'wpml-media') ?></label>
+# </li>
+
 msgid "When uploading media to the Media library, make it available in all languages"
 msgstr ""
+
+# <label><input type="checkbox" name="content_default_duplicate_media"
+# value="1" <?php echo $duplicate_media_html_checked; ?> />&nbsp;<?php _e('Duplicate media attachments for translations', 'wpml-media') ?></label>
+# </li>
 
 msgid "Duplicate media attachments for translations"
 msgstr ""
 
+# <label><input type="checkbox" name="content_default_duplicate_featured"
+# value="1"  <?php echo $duplicate_featured_html_checked; ?> />&nbsp;<?php _e('Duplicate featured images for translations', 'wpml-media') ?></label>
+# </li>
+
 msgid "Duplicate featured images for translations"
 msgstr ""
+
+# <td colspan="2">
+# <h3><?php _e('Media files localization', 'wpml-media'); ?></h3>
+# </td>
+
+msgid "Media files localization"
+msgstr ""
+
+# <div id="wpml_media_all_done" class="hidden updated">
+# <p><?php _e("You're all done. Now that the Media Translation plugin is running, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen.", 'wpml-media') ?></p>
+# </div>
 
 msgid "You're all done. Now that the Media Translation plugin is running, all new media files that you upload to content will receive a language. You can automatically duplicate them to translations from the post-edit screen."
 msgstr ""
 
+# <td align="right">
+# <input class="button-primary" name="start" type="submit" value="<?php esc_attr_e('Start', 'wpml-media'); ?> &raquo;"/>
+# </td>
+
 msgid "Start"
 msgstr ""
 
+# <td colspan="2" align="right">
+# <input class="button-secondary" name="set_defaults" type="submit" value="<?php esc_attr_e('Apply', 'wpml-media'); ?>"/>
+# </td>
+
 msgid "Apply"
+msgstr ""
+
+# checked( true, $media_localization['posts'] ) ?> />
+# <?php esc_html_e( 'In new post translations', 'wpml-media' ) ?>
+# </label>
+
+msgid "In new post translations"
+msgstr ""
+
+# checked( true, $media_localization['custom_fields'] ) ?> />
+# <?php esc_html_e( 'In new custom fields translations', 'wpml-media' ) ?>
+# </label>
+
+msgid "In new custom fields translations"
+msgstr ""
+
+# checked( true, $media_localization['strings'] ) ?> />
+# <?php esc_html_e( 'In new string translations', 'wpml-media' ) ?>
+# </label>
+
+msgid "In new string translations"
+msgstr ""
+
+# ?>
+# <div class="message error wpml-media-inactive"><p><?php printf( __( 'WPML Media is enabled but not effective. It requires <a href="%s">WPML</a> in order to work.', 'wpml-media' ),
+# 'https://wpml.org/' ); ?></p></div>
+
+msgid "WPML Media is enabled but not effective. It requires <a href=\"%s\">WPML</a> in order to work."
 msgstr ""

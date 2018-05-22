@@ -7,8 +7,9 @@
 	</th>
 	<td class="job_id column-job_id"><%= TJ.id %></td>
 	<td class="title column-title"><%= TJ.name %>: <strong><%= TJ.value %></strong></td>
-	<td class="language column-language"><%= TJ.lang_text %></td>
+	<td class="language column-language"><%- TJ.lang_text %></td>
 	<td class="status column-status"><%= TJ.status %></td>
+	<td class="deadline column-deadline"><%= TJ.deadline_date %></td>
 	<td class="translator column-translator"><%= TJ.translator_html %></td>
 
 </script>

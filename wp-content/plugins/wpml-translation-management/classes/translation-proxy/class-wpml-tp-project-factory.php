@@ -10,6 +10,6 @@ class WPML_TP_Project_Factory {
 	 */
 	public function project( $service, $delivery = 'xmlrpc' ) {
 
-		return new TranslationProxy_Project( $service, $delivery );
+		return new TranslationProxy_Project( $service, $delivery, TranslationProxy::get_tp_client() );
 	}
 }

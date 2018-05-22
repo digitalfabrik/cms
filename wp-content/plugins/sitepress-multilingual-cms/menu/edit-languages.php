@@ -32,13 +32,18 @@ class SitePress_EditLanguages {
 	 */
 	private $wpml_flag_files;
 
+	/** @var bool $update_language_packs_if_needed */
+	private $update_language_packs_if_needed;
+
 	/**
 	 * @param WPML_Flags $wpml_flags
+	 * @param bool $update_language_packs_if_needed
 	 */
-	public function __construct( WPML_Flags $wpml_flags ) {
+	public function __construct( WPML_Flags $wpml_flags, $update_language_packs_if_needed = true ) {
 	    $this->wpml_flags = $wpml_flags;
 
-		$this->wpml_flag_files = $this->wpml_flags->get_wpml_flags( array_keys( $this->allowed_flag_mime_types ) );
+		$this->wpml_flag_files                 = $this->wpml_flags->get_wpml_flags( array_keys( $this->allowed_flag_mime_types ) );
+		$this->update_language_packs_if_needed = $update_language_packs_if_needed;
 
 		wp_enqueue_script(
             'edit-languages',
@@ -101,8 +106,8 @@ class SitePress_EditLanguages {
 	    <li><strong><?php echo esc_html_x( 'Translations:', 'Edit languages page: subtitle #2', 'sitepress' ) ?></strong> <?php echo esc_html_x( 'the way the language name will be displayed in different languages.', 'Edit languages page: subtitle #2, description', 'sitepress' ); ?></li>
 	    <li><strong><?php echo esc_html_x( 'Flag:', 'Edit languages page: subtitle #3', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the flag to display next to the language (optional). You can either upload your own flag or use one of WPML\'s built in flag images.', 'Edit languages page: subtitle #3, description', 'sitepress' ); ?></li>
 	    <li><strong><?php echo esc_html_x( 'Default locale:', 'Edit languages page: subtitle #4', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'This determines the locale value for this language. You should check the name of WordPress localization file to set this correctly.', 'Edit languages page: subtitle #4, description', 'sitepress' ); ?></li>
-		<li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure)..', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
-		<li><strong><?php echo esc_html_x( 'Language tag:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The language tag should contain the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding language tag would be fr-ca. Instead of an underscore, use a dash and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?></li>
+		<li><strong><?php echo esc_html_x( 'Encode URLs:', 'Edit languages page: subtitle #5', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'yes/no, determines if URLs in this language are encoded or use ASCII characters (leave ‘no’ if you are not sure).', 'Edit languages page: subtitle #5, description', 'sitepress' ); ?></li>
+		<li><strong><?php echo esc_html_x( 'hreflang:', 'Edit languages page: subtitle #6', 'sitepress' ); ?></strong> <?php echo esc_html_x( 'the code Google expects for this language. The hreflang should contain at least the language code (usually, made of two letters), or, if you want to specify the country/region, it sould be the same information as the locale name, but in a slightly different format. If the locale for Canadian French is fr_CA, the corresponding hreflang would be fr-ca. Instead of an underscore, use a dash (-) and all letters should be lowercase.', 'Edit languages page: subtitle #6, description', 'sitepress' ); ?></li>
     </ul>
 	</div>
 <?php
@@ -141,7 +146,7 @@ class SitePress_EditLanguages {
 					<th><?php esc_html_e('Flag', 'sitepress'); ?></th>
 					<th><?php esc_html_e('Default locale', 'sitepress'); ?></th>
                     <th><?php esc_html_e('Encode URLs', 'sitepress'); ?></th>
-                    <th><?php esc_html_e('Language tag', 'sitepress'); ?></th>
+                    <th><?php esc_html_e('hreflang', 'sitepress'); ?></th>
                     <th>&nbsp;</th>
                 </tr>
             </thead>
@@ -158,7 +163,7 @@ class SitePress_EditLanguages {
 					<th><?php esc_html_e('Flag', 'sitepress'); ?></th>
                     <th><?php esc_html_e('Default locale', 'sitepress'); ?></th>
 					<th><?php esc_html_e('Encode URLs', 'sitepress'); ?></th>
-                    <th><?php esc_html_e('Language tag', 'sitepress'); ?></th>
+                    <th><?php esc_html_e('hreflang', 'sitepress'); ?></th>
                     <th>&nbsp;</th>
                 </tr>
             </tfoot>        
@@ -661,7 +666,7 @@ class SitePress_EditLanguages {
 			'code'           => esc_html__( 'The Language code already exists.', 'sitepress' ),
 			'english_name'   => esc_html__( 'The Language name already exists.', 'sitepress' ),
 			'default_locale' => esc_html__( 'The default locale already exists.', 'sitepress' ),
-			'tag'            => esc_html__( 'The tag already exists.', 'sitepress' ),
+			'tag'            => esc_html__( 'The hreflang already exists.', 'sitepress' ),
 		);
 
 		foreach ( $unique_columns as $column => $message ) {
@@ -968,10 +973,12 @@ class SitePress_EditLanguages {
 	 * @param $sitepress
 	 */
 	private function update_language_packs( SitePress $sitepress ) {
-		$wpml_localization = new WPML_Download_Localization( $sitepress->get_active_languages(), $sitepress->get_default_language() );
-		$wpml_localization->download_language_packs();
-		$wpml_languages_notices = new WPML_Languages_Notices( wpml_get_admin_notices() );
-		$wpml_languages_notices->missing_languages( $wpml_localization->get_not_founds() );
+		if ( $this->update_language_packs_if_needed ) {
+			$wpml_localization = new WPML_Download_Localization( $sitepress->get_active_languages(), $sitepress->get_default_language() );
+			$wpml_localization->download_language_packs();
+			$wpml_languages_notices = new WPML_Languages_Notices( wpml_get_admin_notices() );
+			$wpml_languages_notices->missing_languages( $wpml_localization->get_not_founds() );
+		}
 	}
 
 	/**

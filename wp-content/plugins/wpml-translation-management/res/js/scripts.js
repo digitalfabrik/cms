@@ -438,3 +438,17 @@ if (typeof String.prototype.endsWith !== 'function') {
   };
 }
 }());
+
+(function($) {
+	$(document).ready(function(){
+		$('#translation-notifications').on('change', 'input', function(e) {
+			var input = $(e.target);
+			var child = $('[name="' + input.data('child') + '"]');
+
+			if ( child.length ) {
+				child.prop('disabled', !input.is(":checked"));
+			}
+
+		});
+	});
+})(jQuery);

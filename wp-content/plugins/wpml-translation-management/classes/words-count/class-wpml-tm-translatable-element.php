@@ -1,11 +1,34 @@
 <?php
 abstract class WPML_TM_Translatable_Element {
 
+	/** @var wpdb $wpdb */
+	protected $wpdb;
+
+	/** @var SitePress $sitepress*/
+	protected $sitepress;
+
+	/** @var string $element_type */
+	protected $element_type;
+
 	protected $id;
 
-	public function __construct( $id ) {
-		$this->id = $id;
+	public function __construct( $id, SitePress $sitepress, wpdb $wpdb ) {
+		$this->wpdb      = $wpdb;
+		$this->sitepress = $sitepress;
+
+		$this->set_id( $id );
 	}
+
+	public function set_id( $id ) {
+		if ( ! $id ) {
+			return;
+		}
+
+		$this->id = $id;
+		$this->init( $id );
+	}
+
+	protected abstract function init( $id );
 
 	public abstract function get_words_count();
 

@@ -1,29 +1,13 @@
 <?php
 
 class WPML_TM_String extends WPML_TM_Translatable_Element {
-	private $element_type;
 
-	/**
-	 * @var WPDB
-	 */
-	private $wpdb;
-	/**
-	 * @var SitePress
-	 */
-	private $sitepress;
-
-	/**
-	 * @var array|null|WP_Post
-	 */
+	/** @var stdClass|null $string */
 	private $string;
 
-	public function __construct( $id, &$sitepress, &$wpdb ) {
-		parent::__construct( $id );
-
-		$this->wpdb          = &$wpdb;
-		$this->sitepress     = &$sitepress;
-		$this->string        = $this->get_string( $id );
+	protected function init( $id ) {
 		$this->element_type  = 'string';
+		$this->string        = $this->get_string( $id );
 		$this->language_code = $this->get_language_for_element( $id );
 	}
 

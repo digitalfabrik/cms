@@ -1,5 +1,5 @@
 /*jshint browser:true, devel:true */
-/*globals jQuery, ajaxurl, tm_ts_data*/
+/*globals jQuery, ajaxurl*/
 var WPMLTranslationServicesDialog = function () {
 	"use strict";
 
@@ -15,10 +15,9 @@ var WPMLTranslationServicesDialog = function () {
 
 	self.enterKey = 13;
 	self.ajaxSpinner = jQuery('<span class="spinner"></span>');
+	self.activeService = jQuery( '.js-ts-active-service' );
 
 	self.init = function () {
-		/** @namespace tm_ts_data.nonce.translation_service_authentication */
-		/** @namespace tm_ts_data.nonce.translation_service_toggle */
 
 		var invalidateServiceLink;
 		var authenticateServiceLink;
@@ -26,12 +25,14 @@ var WPMLTranslationServicesDialog = function () {
 		var activateServiceLink;
 		var activateServiceImage;
 		var flushWebsiteDetailsCacheLink;
+		var header;
+		var tip;
 
-		var header = tm_ts_data.strings.header;
-		var tip = tm_ts_data.strings.tip;
-		self.serviceDialog = jQuery('<div id="service_dialog"><h4>' + header + '</h4><div class="custom_fields_wrapper"></div><i>' + tip + '</i></div>');
+		header = self.activeService.find( '.active-service-header' ).val();
+		tip = self.activeService.find( '.active-service-tip' ).val();
+
+		self.serviceDialog = jQuery('<div id="service_dialog"><h4>' + header + '</h4><div class="custom_fields_wrapper"></div><i>' + tip + '</i><br /><br /><div class="tp_response_message icl_ajx_response"></div>');
 		self.customFieldsSerialized = jQuery('#custom_fields_serialized');
-
 		self.ajaxSpinner.addClass('is-active');
 
 		activateServiceImage = jQuery('.js-activate-service');
@@ -111,8 +112,8 @@ var WPMLTranslationServicesDialog = function () {
 
 	self.toggleService = function (serviceId, button, enableService) {
 		var ajaxData;
-		var id;
 		var enable = enableService;
+		var nonce = jQuery( '.translation_service_toggle' ).val();
 		if ('undefined' === typeof enableService) {
 			enable = 0;
 		}
@@ -120,11 +121,9 @@ var WPMLTranslationServicesDialog = function () {
 		button.attr('disabled', 'disabled');
 		button.after(self.ajaxSpinner);
 
-		id = button.data('id');
-
 		ajaxData = {
 			'action':     'translation_service_toggle',
-			'nonce':      tm_ts_data.nonce.translation_service_toggle,
+			'nonce':      nonce,
 			'service_id': serviceId,
 			'enable':     enable
 		};
@@ -134,11 +133,10 @@ var WPMLTranslationServicesDialog = function () {
 			url:      ajaxurl,
 			data:     ajaxData,
 			dataType: 'json',
-			success:  function (msg) {
-				if ('undefined' !== msg.message && '' !== msg.message.trim()) {
-					alert(msg.message);
-				}
-				if (msg.reload) {
+			success:  function (response) {
+				var data = response.data;
+
+				if (data.reload) {
 					location.reload(true);
 				} else {
 					if (button) {
@@ -158,7 +156,7 @@ var WPMLTranslationServicesDialog = function () {
 		self.serviceDialog.dialog({
 			dialogClass: 'wpml-dialog otgs-ui-dialog',
 			width:       'auto',
-			title:       "Translation Services",
+			title:       self.activeService.find( '.active-service-title' ).val(),
 			modal:       true,
 			open:        function () {
 
@@ -175,10 +173,10 @@ var WPMLTranslationServicesDialog = function () {
 				customFieldsList = jQuery('<ul></ul>');
 				customFieldsList.appendTo(customFieldsForm);
 
-				jQuery.each(customFields.custom_fields, function (i, item) {
+				jQuery.each(customFields, function (i, item) {
 					var itemLabel, itemInput;
 					var itemId;
-					var customFieldsListItem = jQuery('<li></li>');
+					var customFieldsListItem = jQuery('<li class="wpml-form-row"></li>');
 					customFieldsListItem.appendTo(customFieldsList);
 
 					itemId = 'custom_field_' + item.name;
@@ -206,13 +204,19 @@ var WPMLTranslationServicesDialog = function () {
 
 				jQuery(':input', this).keyup(function (event) {
 					if (self.enterKey === event.keyCode) {
-						jQuery(this).closest('.ui-dialog').find('.ui-dialog-buttonpane').find('button:first').click();
+						jQuery(this).closest('.ui-dialog').find('.ui-dialog-buttonpane').find('button.js-submit:first').click();
 					}
 				});
 
 			},
 			buttons:     [
 				{
+					text:    "Cancel",
+					click:   function () {
+						jQuery(this).dialog("close");
+					},
+					'class': 'button-secondary alignleft'
+				}, {
 					text:    "Submit",
 					click:   function () {
 						var customFieldsDataStringify;
@@ -229,13 +233,7 @@ var WPMLTranslationServicesDialog = function () {
 						self.customFieldsSerialized.val(customFieldsDataStringify);
 						self.translationServiceAuthentication(serviceId, false, 0, null, self.showButtons);
 					},
-					'class': 'button-primary'
-				}, {
-					text:    "Cancel",
-					click:   function () {
-						jQuery(this).dialog("close");
-					},
-					'class': 'button-secondary'
+					'class': 'button-primary js-submit'
 				}
 			]
 		});
@@ -252,8 +250,9 @@ var WPMLTranslationServicesDialog = function () {
 	};
 
 	self.translationServiceAuthentication = function (serviceId, button, invalidateService) {
-		var ajaxData;
 		var invalidate;
+		var nonce = jQuery( '.translation_service_authentication' ).val();
+
 		invalidate = invalidateService;
 		if ('undefined' === typeof invalidateService) {
 			invalidate = 0;
@@ -274,20 +273,18 @@ var WPMLTranslationServicesDialog = function () {
 			type:     "POST",
 			url:      ajaxurl,
 			data:     {
-				'action':        'translation_service_authentication',
-				'nonce':         tm_ts_data.nonce.translation_service_authentication,
+				'action':        invalidate ? 'translation_service_invalidation' : 'translation_service_authentication',
+				'nonce':         nonce,
 				'service_id':    serviceId,
 				'invalidate':    invalidate,
 				'custom_fields': self.customFieldsSerialized.val()
 			},
 			dataType: 'json',
-			success: function (msg) {
-				if (msg.success) {
-					msg = msg.data;
-					if ('undefined' !== msg.message && '' !== msg.message.trim()) {
-						alert(msg.message);
-					}
-					if (msg.reload) {
+			success: function (response) {
+				var response_message = jQuery( '.tp_response_message' );
+				response = response.data;
+				if ( 0 === response.errors ) {
+					if (response.reload) {
 						location.reload(true);
 					} else {
 						if (button) {
@@ -296,8 +293,15 @@ var WPMLTranslationServicesDialog = function () {
 						}
 					}
 				}
+
+				response_message.html( response.message );
+				response_message.show();
+
+				setInterval(function () {
+					response_message.fadeOut();
+				}, 5000);
 			},
-			error:    function (jqXHR, status, error) {
+			error: function (jqXHR, status, error) {
 				var parsedResponse = jqXHR.statusText || status || error;
 				alert(parsedResponse);
 			},
@@ -311,7 +315,7 @@ var WPMLTranslationServicesDialog = function () {
 		var nonce = anchor.data('nonce');
 
 		self.ajaxSpinner.appendTo(anchor);
-		self.ajaxSpinner.addClass('is-activve');
+		self.ajaxSpinner.addClass('is-active');
 
 		if (nonce) {
 			jQuery.ajax({
@@ -323,7 +327,7 @@ var WPMLTranslationServicesDialog = function () {
 										},
 										dataType: 'json',
 										success:  function (response) {
-											self.ajaxSpinner.removeClass('is-activve');
+											self.ajaxSpinner.removeClass('is-active');
 											if (response.success) {
 												/** @namespace response.redirectTo */
 												location.reload(response.data.redirectTo);
@@ -338,7 +342,43 @@ jQuery(document).ready(function () {
 	"use strict";
 
 	var wpmlTranslationServicesDialog = new WPMLTranslationServicesDialog();
+	var current_url = location.href;
+	var search_section = jQuery( '.ts-admin-section-search' );
+
 	wpmlTranslationServicesDialog.init();
 
+	search_section.find('.search' ).click(function(){
+		var param = {
+			s: search_section.find('.search-string' ).val()
+		};
+
+		window.location.href = current_url + '&' + jQuery.param( param );
+	});
+
+	jQuery( '.tablenav .items_per_page select' ).change(function(){
+		var param = {
+			items_per_page: jQuery( this ).val()
+		};
+		var items_per_page_url = current_url.replace( /&paged=[^&]*/, '' );
+
+		window.location.href = items_per_page_url + '&' + jQuery.param( param );
+	});
+
+	search_section.find( '.search-string' ).keypress(function (e) {
+		if ( e.which === 13 ) {
+			search_section.find( '.search' ).click();
+			return false;
+		}
+	});
+
+	jQuery( '.ts-admin-section-inactive-services #current-page-selector-top' ).keypress(function (e) {
+		if ( e.which === 13 ) {
+			var param = {
+				paged: jQuery( this ).val()
+			};
+
+			window.location.href = current_url + '&' + jQuery.param( param );
+		}
+	});
 });
 

@@ -39,7 +39,10 @@ class TranslationProxy_Translator {
 		}
 
 		$translator_status = array();
-		$website_details   = self::get_website_details( new TranslationProxy_Project( TranslationProxy::get_current_service() ), $force );
+		$website_details   = self::get_website_details(
+			new TranslationProxy_Project( TranslationProxy::get_current_service(), 'xmlrpc', TranslationProxy::get_tp_client() ),
+			$force
+		);
 
 		if ( false === (bool) $website_details ) {
 			return array();
@@ -331,7 +334,7 @@ class TranslationProxy_Translator {
 		if ( $nonce_is_valid ) {
 			self::flush_website_details_cache();
 			$query_args = array(
-				'page' => urlencode( 'wpml-translation-management/menu/main.php' ),
+				'page' => urlencode( WPML_TM_FOLDER . '/menu/main.php' ),
 				'sm'   => urlencode( 'translators' ),
 			);
 			$link_url   = add_query_arg( $query_args, get_admin_url( null, 'admin.php' ) );

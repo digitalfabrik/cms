@@ -132,26 +132,12 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 	}
 
 	public function get_translation_jobs( array $args = array(), $only_ids = false, $as_job_instances = false ) {
-		global $wpdb;
+		$include_unassigned = isset( $args['include_unassigned'] ) ? $args['include_unassigned'] : false;
 
-		/** @var $order_by array */
-		/** @var $include_unassigned bool */
-		$include_unassigned = false;
-		$order_by           = array();
-
-		extract( $args, EXTR_OVERWRITE );
-
-		$order_by = is_scalar( $order_by ) ? array( $order_by ) : $order_by;
-		if ( $include_unassigned ) {
-			$order_by[] = 'j.translator_id DESC';
-		}
-		$order_by[] = ' j.job_id DESC ';
-		$order_by   = implode( ', ', $order_by );
-
-		$where = $this->build_where_clause( $args );
-
+		$order_by = $this->build_order_by_clause( $args, $include_unassigned );
+		$where    = $this->build_where_clause( $args );
 		$jobs_sql = $this->get_job_sql( $where, $order_by, $only_ids );
-		$jobs     = $wpdb->get_results( $jobs_sql );
+		$jobs     = $this->wpdb->get_results( $jobs_sql );
 		if ( $only_ids === false ) {
 			$jobs = $this->add_data_to_post_jobs( $jobs );
 		}
@@ -160,6 +146,43 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 		}
 
 		return $jobs;
+	}
+
+	/**
+	 * @param array $args
+	 * @param bool  $include_unassigned
+	 *
+	 * @return string
+	 */
+	private function build_order_by_clause( array $args, $include_unassigned ) {
+		$order_by = isset( $args['order_by'] ) ? $args['order_by'] : array();
+		$order    = isset( $args['order'] ) ? $args['order'] : false;
+
+		if ( $order_by && $order ) {
+
+			$order = 'desc' === $order ? 'DESC' : 'ASC';
+
+			switch ( $order_by ) {
+				case 'deadline':
+					$clause_items[] = "j.deadline_date $order";
+					break;
+
+				case 'job_id':
+					$clause_items[] = "j.job_id $order";
+					break;
+			}
+
+		} else {
+			$clause_items = is_scalar( $order_by ) ? array( $order_by ) : $order_by;
+		}
+
+		if ( $include_unassigned ) {
+			$clause_items[] = 'j.translator_id DESC';
+		}
+
+		$clause_items[] = 'j.job_id DESC';
+
+		return implode( ', ', $clause_items );
 	}
 
 	private function add_data_to_post_jobs( array $jobs ) {
@@ -179,11 +202,11 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				$edit_url                 = get_edit_post_link( $doc->ID );
 
 				if ( $iclTranslationManagement->is_external_type( $job->element_type_prefix ) ) {
-					$post_title = $this->get_external_job_post_title( $job->job_id, $post_id );
+					$post_title = $job->title ? $job->title : $this->get_external_job_post_title( $job->job_id, $post_id );
 					$edit_url   = apply_filters( 'wpml_external_item_url', '', $post_id );
 					$edit_url   = apply_filters( 'wpml_document_edit_item_url', $edit_url, $doc->kind_slug, $doc->ID );
 				} else {
-					$post_title = $doc->post_title;
+					$post_title = $job->title ? $job->title : $doc->post_title;
 					$edit_url   = apply_filters( 'wpml_document_edit_item_url',
 						$edit_url,
 						$job->original_post_type,
@@ -329,7 +352,10 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				{$icl_translations_translated_alias}.source_language_code,
 				{$icl_translate_alias}.field_data AS original_doc_id,
 				{$icl_translate_alias}.job_id,
-				{$icl_translations_original_alias}.element_type AS original_post_type";
+				{$icl_translations_original_alias}.element_type AS original_post_type,
+				{$icl_translate_job_alias}.title,
+				{$icl_translate_job_alias}.deadline_date,
+				{$icl_translate_job_alias}.completed_date";
 	}
 
 	private function add_job_elements( $job, $include_non_translatable_elements ) {

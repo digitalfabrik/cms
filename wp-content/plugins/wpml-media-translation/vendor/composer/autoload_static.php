@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit041cd9ca35894c268a45f640e8693d51
+class ComposerStaticInit9d9f5d08d0639261464422a6d035f303
 {
     public static $prefixesPsr0 = array (
         'x' => 
@@ -20,12 +20,21 @@ class ComposerStaticInit041cd9ca35894c268a45f640e8693d51
         'WPML_Cache_Directory' => __DIR__ . '/..' . '/wpml-shared/wpml-lib-cache/src/cache/class-wpml-cache-directory.php',
         'WPML_Dependencies' => __DIR__ . '/..' . '/wpml-shared/wpml-lib-dependencies/src/dependencies/class-wpml-dependencies.php',
         'WPML_Media' => __DIR__ . '/../..' . '/classes/class-wpml-media.php',
+        'WPML_Media_Attachment_Image_Update' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-attachment-image-update.php',
         'WPML_Media_Attachments_Duplication' => __DIR__ . '/../..' . '/classes/class-wpml-media-attachments-duplication.php',
         'WPML_Media_Attachments_Query' => __DIR__ . '/../..' . '/classes/class-wpml-media-attachments-query.php',
+        'WPML_Media_Caption_Tags_Parse' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-caption-tags-parse.php',
+        'WPML_Media_Custom_Field_Images_Translation' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-custom-field-images-translation.php',
         'WPML_Media_Dependencies' => __DIR__ . '/../..' . '/inc/wpml-media-dependencies.class.php',
         'WPML_Media_Edit_Hooks' => __DIR__ . '/../..' . '/classes/hooks/wpml-media-edit-hooks.php',
         'WPML_Media_Edit_Hooks_Factory' => __DIR__ . '/../..' . '/classes/factory/wpml-media-edit-hooks-factory.php',
         'WPML_Media_Exception' => __DIR__ . '/../..' . '/classes/class-wpml-media-exception.php',
+        'WPML_Media_Image_Translate' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-image-translate.php',
+        'WPML_Media_Img_Parse' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-img-parse.php',
+        'WPML_Media_Post_Images_Translation' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-post-images-translation.php',
+        'WPML_Media_String_Images_Translation' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-string-images-translation.php',
+        'WPML_Media_Texts_Sync' => __DIR__ . '/../..' . '/classes/class-wpml-media-texts-sync.php',
+        'WPML_Media_Translated_Images_Update' => __DIR__ . '/../..' . '/classes/images-translation/class-wpml-media-translated-images-update.php',
         'WPML_Media_Upgrade' => __DIR__ . '/../..' . '/inc/wpml-media-upgrade.class.php',
         'WPML_Model_Attachments' => __DIR__ . '/../..' . '/classes/model/class-wpml-model-attachments.php',
         'xrstf\\Composer52\\AutoloadGenerator' => __DIR__ . '/..' . '/xrstf/composer-php52/lib/xrstf/Composer52/AutoloadGenerator.php',
@@ -35,8 +44,8 @@ class ComposerStaticInit041cd9ca35894c268a45f640e8693d51
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixesPsr0 = ComposerStaticInit041cd9ca35894c268a45f640e8693d51::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInit041cd9ca35894c268a45f640e8693d51::$classMap;
+            $loader->prefixesPsr0 = ComposerStaticInit9d9f5d08d0639261464422a6d035f303::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit9d9f5d08d0639261464422a6d035f303::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -7,9 +7,9 @@ class WPML_Remote_String_Translation {
 	 * @param $item_type
 	 * @param $strings_basket_items
 	 * @param $translators
-	 * @param $basket_name
+	 * @param array $batch_options
 	 */
-	public static function send_strings_jobs( $item_type_name, $item_type, $strings_basket_items, $translators, $basket_name ) {
+	public static function send_strings_jobs( $item_type_name, $item_type, $strings_basket_items, $translators, $batch_options ) {
 		/** @var $iclTranslationManagement TranslationManagement */
 		global $iclTranslationManagement, $wpdb, $wpml_translation_job_factory;
 		$strings_local = array();
@@ -61,8 +61,10 @@ class WPML_Remote_String_Translation {
 				}
 			}
 
+			$batch_name = isset( $batch_options['basket_name'] ) ? $batch_options['basket_name'] : null;
+
 			foreach ( $strings_local as $target => $string_ids ) {
-				self::translation_send_strings_local( $string_ids, $target, $translators[ $target ], $basket_name );
+				self::translation_send_strings_local( $string_ids, $target, $translators[ $target ], $batch_name );
 			}
 		}
 	}

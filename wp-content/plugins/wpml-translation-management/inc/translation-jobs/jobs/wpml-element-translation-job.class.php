@@ -55,13 +55,10 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 
 	function get_original_element_id() {
 		if ( ! $this->original_doc_id ) {
-			$original_element_id   = $this->get_iclt_field( 'element_id', false );
-			$this->original_doc_id = $original_element_id;
-		} else {
-			$original_element_id = $this->original_doc_id;
+			$this->original_doc_id = $this->get_iclt_field( 'element_id', false );
 		}
 
-		return $original_element_id;
+		return $this->original_doc_id;
 	}
 
 	function get_translation_id() {
@@ -173,12 +170,11 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 		$url             = $this->get_url( true );
 		$word_count      = $this->estimate_word_count();
 		$note            = isset( $note ) ? $note : '';
-		$is_update       = intval( $this->get_resultant_element_id() );
 		$source_language = $this->get_source_language_code();
 		$target_language = $this->get_language_code();
 
 		try {
-			$res = $project->send_to_translation_batch_mode( $file, $title, $cms_id, $url, $source_language, $target_language, $word_count, $translator_id, $note, $is_update );
+			$res = $project->send_to_translation_batch_mode( $file, $title, $cms_id, $url, $source_language, $target_language, $word_count, $translator_id, $note );
 		} catch ( Exception $err ) {
 			// The translation entry will be removed
 			$project->errors[] = $err;
@@ -311,10 +307,59 @@ abstract class WPML_Element_Translation_Job extends WPML_Translation_Job {
 							LIMIT 1";
 		$args           = array( $this->get_id() );
 		$prepared_query = $wpdb->prepare( $query, $args );
-		$value          = $wpdb->get_var( $prepared_query );
-
-		return $value;
+		return $wpdb->get_var( $prepared_query );
 	}
-	
 
+	/**
+	 * If the job does not have deadline date,
+	 * we consider that the job was completed on time.
+	 *
+	 * @return bool
+	 */
+	public function is_completed_on_time() {
+		return $this->get_number_of_days_overdue() <= 0;
+	}
+
+	/**
+	 * @return false|int Negative integer if the job was completed before the deadline, or positive either.
+	 *                   False is the job has no deadline date
+	 */
+	public function get_number_of_days_overdue() {
+		$deadline  = $this->get_deadline_date();
+		$completed = $this->get_completed_date();
+
+		if ( ! $deadline ) {
+			return false;
+		}
+
+		if ( ! $completed ) {
+			$completed = strtotime( 'now' );
+		} else {
+			$completed = strtotime( $completed );
+		}
+
+		$deadline  = strtotime( $deadline );
+
+		return (int) floor( ( $completed - $deadline ) / DAY_IN_SECONDS );
+	}
+
+	/** @return string|null */
+	public function get_deadline_date() {
+		return $this->get_basic_data_property( 'deadline_date' );
+	}
+
+	/** @return string|null */
+	public function get_completed_date() {
+		return $this->get_basic_data_property( 'completed_date' );
+	}
+
+	/** @return string|null */
+	public function get_manager_id() {
+		return $this->get_basic_data_property( 'manager_id' );
+	}
+
+	/** @return string|null */
+	protected function get_title_from_db() {
+		return $this->get_basic_data_property( 'title' );
+	}
 }

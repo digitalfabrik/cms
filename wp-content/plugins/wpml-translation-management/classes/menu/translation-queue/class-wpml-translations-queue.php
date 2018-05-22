@@ -5,6 +5,9 @@ class WPML_Translations_Queue extends WPML_SP_User {
 	/* @var WPML_UI_Screen_Options_Pagination */
 	private $screen_options;
 
+	/** @var WPML_Admin_Table_Sort $table_sort */
+	private $table_sort;
+
 	/**
 	 * WPML_Translations_Queue constructor.
 	 *
@@ -15,6 +18,7 @@ class WPML_Translations_Queue extends WPML_SP_User {
 		parent::__construct( $sitepress );
 		$this->screen_options = $screen_options_factory->create_pagination( 'tm_translations_queue_per_page',
 			ICL_TM_DOCS_PER_PAGE );
+		$this->table_sort     = $screen_options_factory->create_admin_table_sort();
 	}
 
 	/**
@@ -109,6 +113,15 @@ class WPML_Translations_Queue extends WPML_SP_User {
 						'translator_id'      => $current_translator->ID,
 						'include_unassigned' => true
 					) );
+
+				if ( isset( $_GET['orderby'] ) ) {
+					$icl_translation_filter['order_by'] = filter_var( $_GET['orderby'], FILTER_SANITIZE_STRING );
+				}
+
+				if ( isset( $_GET['order'] ) ) {
+					$icl_translation_filter['order'] = filter_var( $_GET['order'], FILTER_SANITIZE_STRING );
+				}
+
 				$translation_jobs = $wpml_translation_job_factory->get_translation_jobs( (array) $icl_translation_filter );
 			}
 		}
@@ -279,21 +292,32 @@ class WPML_Translations_Queue extends WPML_SP_User {
 
 	public function show_table( $translation_jobs, $has_actions ) {
 		?>
-			<table class="widefat fixed" id="icl-translation-jobs" cellspacing="0">
+			<table class="widefat striped fixed icl-translation-jobs" id="icl-translation-jobs" cellspacing="0">
 				<?php foreach( array( 'thead', 'tfoot' ) as $element_type ) { ?>
 					<<?php echo $element_type; ?>>
 						<tr>
 							<?php if ( $has_actions ) { ?>
 								<td class="manage-column column-cb check-column js-check-all" scope="col">
-									<input title="<?php echo $translation_jobs[ 'strings' ][ 'check_all' ]; ?>" type="checkbox" />
+									<input title="<?php echo esc_attr( $translation_jobs[ 'strings' ][ 'check_all' ] ); ?>" type="checkbox" />
 								</td>
 							<?php } ?>
 
-							<th scope="col" width="60"><?php echo $translation_jobs[ 'strings' ][ 'job_id' ]; ?></th>
-							<th scope="col"><?php echo $translation_jobs[ 'strings' ][ 'title' ]; ?></th>
-							<th scope="col"><?php echo $translation_jobs[ 'strings' ][ 'type' ]; ?></th>
-							<th scope="col" class="column-language"><?php echo $translation_jobs[ 'strings' ][ 'language' ]; ?></th>
-							<th scope="col" class="column-status"><?php echo $translation_jobs[ 'strings' ][ 'status' ]; ?></th>
+							<th scope="col" class="cloumn-job_id <?php echo $this->table_sort->get_column_classes( 'job_id' ); ?>">
+								<a href="<?php echo $this->table_sort->get_column_url( 'job_id' ); ?>">
+									<span><?php echo esc_html( $translation_jobs[ 'strings' ][ 'job_id' ] ); ?></span>
+									<span class="sorting-indicator"></span>
+								</a>
+							</th>
+							<th scope="col"><?php echo esc_html( $translation_jobs[ 'strings' ][ 'title' ] ); ?></th>
+							<th scope="col"><?php echo esc_html( $translation_jobs[ 'strings' ][ 'type' ] ); ?></th>
+							<th scope="col" class="column-language"><?php echo esc_html( $translation_jobs[ 'strings' ][ 'language' ] ); ?></th>
+							<th scope="col" class="column-status"><?php echo esc_html( $translation_jobs[ 'strings' ][ 'status' ] ); ?></th>
+							<th scope="col" class="column-deadline <?php echo $this->table_sort->get_column_classes( 'deadline' ); ?>">
+								<a href="<?php echo $this->table_sort->get_column_url( 'deadline' ); ?>">
+									<span><?php echo esc_html( $translation_jobs[ 'strings' ][ 'deadline' ] ); ?></span>
+									<span class="sorting-indicator"></span>
+								</a>
+							</th>
 							<th scope="col" class="manage-column">&nbsp;</th>
 							<th scope="col" class="manage-column column-date column-resign">&nbsp;</th>
 						</tr>
@@ -303,10 +327,10 @@ class WPML_Translations_Queue extends WPML_SP_User {
 				<tbody>
 				<?php if ( empty( $translation_jobs[ 'jobs' ] ) ) { ?>
 					<tr>
-						<td colspan="7" align="center"><?php _e( 'No translation jobs found', 'wpml-translation-management' ) ?></td>
+						<td colspan="8" align="center"><?php _e( 'No translation jobs found', 'wpml-translation-management' ) ?></td>
 					</tr>
 				<?php } else { foreach ( $translation_jobs[ 'jobs' ] as $index => $job ) { ?>
-					<tr <?php if( $index % 2) { echo 'class="alternate"'; } ?>>
+					<tr<?php echo $this->get_row_css_class_attribute( $job ); ?>>
 						<?php if ( $has_actions ) { ?>
 							<td>
 								<label><input type="checkbox" name="job[<?php echo $job->job_id ?>]" value="1" />&nbsp;</label>
@@ -321,7 +345,12 @@ class WPML_Translations_Queue extends WPML_SP_User {
 						</td>
 						<td><?php echo esc_html( $job->post_type ); ?></td>
 						<td><?php echo $job->lang_text_with_flags ?></td>
-						<td><i class="<?php echo $job->icon; ?>"></i> <?php echo $job->status_text; ?></td>
+						<td><i class="<?php echo esc_attr( $job->icon ); ?>"></i><?php echo esc_html( $job->status_text ); ?></td>
+						<td><?php if ( $job->deadline_date ) {
+								echo date( 'Y-m-d', strtotime( $job->deadline_date ) );
+
+							} ?>
+						</td>
 						<td>
 							<?php if ( $job->original_doc_id ) { ?>
 								<a class="button-secondary translation-queue-edit" href="<?php echo esc_attr( $job->edit_url ); ?>">
@@ -353,10 +382,9 @@ class WPML_Translations_Queue extends WPML_SP_User {
 
 
 		$job_id               = filter_var( isset( $_GET[ 'job_id' ] ) ? $_GET[ 'job_id' ] : '', FILTER_SANITIZE_NUMBER_INT );
-		$trid                 = filter_var( isset( $_GET[ 'trid' ] ) ? $_GET[ 'trid' ] : '', FILTER_SANITIZE_NUMBER_INT );
-		$language_code        = filter_var( isset( $_GET[ 'language_code' ] ) ? $_GET[ 'language_code' ] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+		list( $trid, $update_needed, $language_code ) = $this->get_job_data_for_restore( $job_id );
 		$source_language_code = filter_var( isset( $_GET[ 'source_language_code' ] ) ? $_GET[ 'source_language_code' ] : '', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-		$update_needed        = filter_var( isset( $_GET[ 'update_needed' ] ) ? $_GET[ 'update_needed' ] : '', FILTER_SANITIZE_NUMBER_INT );
 
 		if ( $trid && $language_code ) {
 			if ( ! $job_id ) {
@@ -393,5 +421,71 @@ class WPML_Translations_Queue extends WPML_SP_User {
 		return $job_id;
 	}
 
-	
+	/**
+	 * @param $job_id
+	 *
+	 * @return array ( trid, updated_needed, language_code )
+	 */
+	private function get_job_data_for_restore ( $job_id ) {
+		$fields = array( 'trid', 'update_needed', 'language_code' );
+		$result = array_fill_keys( $fields, false );
+
+		if ( isset( $_GET['trid'] ) ) {
+            $result['trid'] = filter_var( $_GET['trid'], FILTER_SANITIZE_NUMBER_INT );
+        }
+		if ( isset( $_GET['update_needed'] ) ) {
+			$result['update_needed'] = filter_var( $_GET['update_needed'], FILTER_SANITIZE_NUMBER_INT );
+		}
+		if ( isset( $_GET['language_code'] ) ) {
+			$result['language_code'] = filter_var( $_GET['language_code'], FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		}
+
+		if ( ! $job_id || isset( $_GET['trid'], $_GET['update_needed'], $_GET['language_code'] ) ) {
+			return array( $result['trid'], $result['update_needed'], $result['language_code'] );
+		}
+
+		$wpdb = $this->sitepress->get_wpdb();
+
+	    $sql = "
+	        SELECT t.trid, ts.needs_update as update_needed, t.language_code
+            FROM {$wpdb->prefix}icl_translations t
+            INNER JOIN {$wpdb->prefix}icl_translation_status ts on ts.translation_id = t.translation_id
+            INNER JOIN {$wpdb->prefix}icl_translate_job j ON j.rid = ts.rid
+            WHERE j.job_id = %d;
+	    ";
+
+		$db_result =  $wpdb->get_row( $wpdb->prepare( $sql, $job_id ), ARRAY_A );
+
+		foreach ($fields as $field) {
+			if ( ! isset( $_GET[ $field ] ) ) {
+				$result[ $field ] = $db_result[ $field ];
+		    }
+		}
+
+		return array( $result['trid'], $result['update_needed'], $result['language_code'] );
+    }
+
+	/**
+	 * @param stdClass $job
+	 *
+	 * @return string
+	 */
+	private function get_row_css_class_attribute( $job ) {
+		$classes = array();
+
+		if ( isset( $job->deadline_date ) && ICL_TM_COMPLETE !== (int) $job->status ) {
+			$deadline_day = date( 'Y-m-d', strtotime( $job->deadline_date ) );
+			$today        = date( 'Y-m-d' );
+
+			if ( $deadline_day < $today ) {
+				$classes[] = 'overdue';
+			}
+		}
+
+		if ( $classes ) {
+			return ' class="' . esc_attr( implode( ' ', $classes ) ) . '"';
+		}
+
+		return '';
+	}
 }

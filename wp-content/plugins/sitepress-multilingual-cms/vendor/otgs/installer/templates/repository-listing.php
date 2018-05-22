@@ -10,37 +10,75 @@
 
     <tr>
         <td>&nbsp;</td>
-        <td class="otgsi_register_product_wrap" align="center" valign="top">
+        <td class="otgsi_register_product_wrap">
             <?php // IF NO SUBSCRIPTION ?>
             <?php if(!$this->repository_has_subscription($repository_id)): ?>
 
-            <div style="text-align: right;">
-                <span><?php _e('Already bought?', 'installer'); ?>&nbsp;</span>
-                <a class="enter_site_key_js button-primary<?php if( WP_Installer::get_repository_hardcoded_site_key( $repository_id ) ): ?> disabled<?php endif ?>" href="#"
-                    <?php if( WP_Installer::get_repository_hardcoded_site_key( $repository_id ) ): ?>
-                        style="cursor: help"
-                        disabled="disabled"
-                        title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
-                    <?php endif; ?>
-                >
-                    <?php printf(__('Register %s', 'installer'), $generic_product_name); ?>
-                </a>&nbsp;&nbsp;
+
+
+								<p class="alignright enter_site_key_wrap_js">
+	                <span><?php _e('Already bought?', 'installer'); ?></span>
+	                <a class="enter_site_key_js button-primary"
+	                    <?php if( WP_Installer::get_repository_hardcoded_site_key( $repository_id ) ): ?>
+	                        disabled
+	                        title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to register.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
+	                    <?php endif; ?>
+	                >
+	                    <?php printf(__('Register %s', 'installer'), $generic_product_name); ?>
+	                </a>
+								</p>
+
                 <form class="otgsi_site_key_form" method="post">
                 <input type="hidden" name="action" value="save_site_key" />
                 <input type="hidden" name="nonce" value="<?php echo wp_create_nonce('save_site_key_' . $repository_id) ?>" />
                 <input type="hidden" name="repository_id" value="<?php echo $repository_id ?>">
-                <?php _e('2. Enter your site key', 'installer'); ?>
-                <input type="text" size="10" name="site_key_<?php echo $repository_id ?>" placeholder="<?php echo esc_attr('site key') ?>" />
-                <input class="button-primary" type="submit" value="<?php esc_attr_e('OK', 'installer') ?>" />
-                <input class="button-secondary cancel_site_key_js" type="button" value="<?php esc_attr_e('Cancel', 'installer') ?>" />
 
-                <div class="alignleft" style="margin-top:6px;"><?php printf(__('1. Go to your %s%s account%s and add this site URL: %s', 'installer'),
-                    '<a href="' . $this->settings['repositories'][$repository_id]['data']['site_keys_management_url'] . '?add='.urlencode($this->get_installer_site_url( $repository_id )).'">',
-                      $generic_product_name, '</a>', $this->get_installer_site_url( $repository_id )); ?></div>
+                <p >
+	                <?php
+	                $repo_site = str_replace( array(
+		                'https://',
+		                'http://'
+	                ), '', $this->settings['repositories'][ $repository_id ]['data']['url'] );
+
+	                printf(
+		                __( '1. Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise', 'installer' ),
+		                str_replace( array(
+			                'https://',
+			                'http://'
+		                ), '', $this->get_installer_site_url( $repository_id ) ),
+		                '<a target="_blank" href="'. $this->settings['repositories'][ $repository_id ]['data']['site_keys_management_url'] . '?add=' . urlencode( $this->get_installer_site_url( $repository_id ) ) . '">' . __( 'your account', 'installer' ) . '</a>'
+	                );
+	                ?>
+	                <a target="_blank"
+	                   href="<?php echo $this->settings['repositories'][ $repository_id ]['data']['url'] ?>"> <?php printf( esc_attr( 'register on %s.', 'installer' ), $repo_site ) ?> </a>
+                </p>
+
+                <p>
+	                <?php
+	                printf(
+		                __( '2. Insert your key and activate automatic updates:', 'installer' ),
+		                '<a href="' . $this->settings['repositories'][ $repository_id ]['data']['site_keys_management_url'] . '?add=' . urlencode( $this->get_installer_site_url( $repository_id ) ) . '">',
+		                $generic_product_name, '</a>', $this->get_installer_site_url( $repository_id )
+	                );
+	                ?>
+									<span class="otgs-installer-register-inputs">
+										<input type="text" size="20" name="site_key_<?php echo $repository_id ?>" placeholder="<?php echo esc_attr('site key') ?>" />
+										<input class="button-primary" type="submit" value="<?php esc_attr_e('OK', 'installer') ?>" />
+										<input class="button-secondary cancel_site_key_js" type="button" value="<?php esc_attr_e('Cancel registration', 'installer') ?>" />
+									</span>
+                </p>
+
+	            <?php
+	            $template_service            = new OTGS_Installer_Twig_Template_Service_Loader(
+		            array( WP_Installer()->plugin_path() . '/templates/components-setting/' )
+	            );
+	            $components_setting_template = new OTGS_Installer_WP_Components_Setting_Templates( $template_service->get_service() );
+	            $components_setting_template->render_commercial( $repo_site, $generic_product_name, $repository_id );
+	            ?>
                 </form>
 
 
-            </div>
+
 
             <?php
                 $site_key = false;
@@ -72,35 +110,41 @@
                 <?php $this->show_subscription_renew_warning($repository_id, $subscription_type); ?>
             <?php endif; ?>
 
-            <div class="alignright">
-                <a class="remove_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?>
+
+	            <?php if(empty($expired)): ?>
+
+		            <div class="otgs-installer-registered clearfix">
+									<span>
+				            <?php if($expires = $this->settings['repositories'][$repository_id]['subscription']['data']->expires): ?>
+					            <?php printf(__('%s is registered on this site. You will receive automatic updates until %s', 'installer'), $generic_product_name, date_i18n('F j, Y', strtotime($expires))); ?>
+				            <?php else: ?>
+					            <?php printf(__('%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer'), $generic_product_name); ?>
+				            <?php endif; ?>
+									</span>
+            <?php endif; //if(empty($expired)) ?>
+
+		            <span class="otgs-installer-registered-buttons">
+
+                <a class="remove_site_key_js button-secondary" data-repository=<?php echo $repository_id ?>
                     data-confirmation="<?php esc_attr_e('Are you sure you want to unregister?', 'installer') ?>"
                     data-nonce="<?php echo wp_create_nonce('remove_site_key_' . $repository_id) ?>"
                     <?php if( WP_Installer::get_repository_hardcoded_site_key( $repository_id ) ): ?>
-                     style="cursor: help"
-                     disabled="disabled"
+                     disabled
                      title="<?php printf( esc_attr__("Site-key was set by %s, most likely in wp-config.php. Please remove the constant before attempting to unregister.", 'installer'), 'OTGS_INSTALLER_SITE_KEY_' . strtoupper($repository_id) ) ?>"
                     <?php endif; ?>
                     >
                     <?php printf(__("Unregister %s from this site", 'installer'), $generic_product_name) ?></a>&nbsp;
-                <a class="update_site_key_js button-secondary" href="#" data-repository=<?php echo $repository_id ?>
+
+                <a class="update_site_key_js button-secondary" data-repository=<?php echo $repository_id ?>
                     data-nonce="<?php echo wp_create_nonce('update_site_key_' . $repository_id) ?>">
                     <?php _e('Check for updates', 'installer'); ?>
                 </a>
-            </div>
+			            </span>
+	            </div>
 
-            <?php if(empty($expired)): ?>
-            <div class="alignleft">
-                <?php if($expires = $this->settings['repositories'][$repository_id]['subscription']['data']->expires): ?>
-                    <?php printf(__('%s is registered on this site. You will receive automatic updates until %s', 'installer'), $generic_product_name, date_i18n('F j, Y', strtotime($expires))); ?>
-                <?php else: ?>
-                    <?php printf(__('%s is registered on this site. Your Lifetime account gives you updates for life.', 'installer'), $generic_product_name); ?>
-                <?php endif; ?>
-            </div>
-            <?php endif; //if(empty($expired)) ?>
 
             <?php endif; // if(!repository_has_subscription) ?>
-            <br clear="all" />
+
             <div class="installer-error-box hidden"></div>
 
         </td>

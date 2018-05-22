@@ -5,10 +5,8 @@
  */
 class WPML_Media_Attachments_Query {
 
-	/**
-	 * WPML_Media_Attachments_Query constructor.
-	 */
-	public function __construct() {
+
+	public function add_hooks(){
 		add_action( 'pre_get_posts', array( $this, 'adjust_attachment_query' ), 10 );
 	}
 
