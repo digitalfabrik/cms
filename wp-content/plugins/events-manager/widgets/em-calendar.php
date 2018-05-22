@@ -7,6 +7,10 @@ class EM_Widget_Calendar extends WP_Widget {
 	
 	var $defaults = array();
 	
+	public static function init(){
+		return register_widget("EM_Widget_Calendar");
+	}
+	
     /** constructor */
     function __construct() {
     	$this->defaults = array(
@@ -35,6 +39,7 @@ class EM_Widget_Calendar extends WP_Widget {
 			$instance['year'] = $date[0];
 		}else{
 			$instance['month'] = date("m");
+			$instance['year'] = date('Y');
 		}
 	    
 	    //Our Widget Content  
@@ -73,4 +78,4 @@ class EM_Widget_Calendar extends WP_Widget {
     }
 
 }
-add_action('widgets_init', create_function('', 'return register_widget("EM_Widget_Calendar");'));
+add_action('widgets_init', 'EM_Widget_Calendar::init');

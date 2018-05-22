@@ -12,20 +12,28 @@ $admin_recurring = is_admin() && $EM_Event->is_recurring();
 		<span class="em-recurring-text"><?php _e ( 'Recurrences span from ', 'events-manager'); ?></span>
 		<span class="em-event-text"><?php _e ( 'From ', 'events-manager'); ?></span>				
 		<input class="em-date-start em-date-input-loc" type="text" />
-		<input class="em-date-input" type="hidden" name="event_start_date" value="<?php echo $EM_Event->event_start_date ?>" />
+		<input class="em-date-input" type="hidden" name="event_start_date" value="<?php echo $EM_Event->start()->getDate(); ?>" />
 		<span class="em-recurring-text"><?php _e('to','events-manager'); ?></span>
 		<span class="em-event-text"><?php _e('to','events-manager'); ?></span>
 		<input class="em-date-end em-date-input-loc" type="text" />
-		<input class="em-date-input" type="hidden" name="event_end_date" value="<?php echo $EM_Event->event_end_date ?>" />
+		<input class="em-date-input" type="hidden" name="event_end_date" value="<?php echo $EM_Event->end()->getDate(); ?>" />
 	</p>
 	<p>
 		<span class="em-recurring-text"><?php _e('Events start from','events-manager'); ?></span>
 		<span class="em-event-text"><?php _e('Event starts at','events-manager'); ?></span>
-		<input id="start-time" class="em-time-input em-time-start" type="text" size="8" maxlength="8" name="event_start_time" value="<?php echo date( $hours_format, $EM_Event->start ); ?>" />
+		<input id="start-time" class="em-time-input em-time-start" type="text" size="8" maxlength="8" name="event_start_time" value="<?php echo $EM_Event->start()->i18n($hours_format); ?>" />
 		<?php _e('to','events-manager'); ?>
-		<input id="end-time" class="em-time-input em-time-end" type="text" size="8" maxlength="8" name="event_end_time" value="<?php echo date( $hours_format, $EM_Event->end ); ?>" />
+		<input id="end-time" class="em-time-input em-time-end" type="text" size="8" maxlength="8" name="event_end_time" value="<?php echo $EM_Event->end()->i18n($hours_format); ?>" />
 		<?php _e('All day','events-manager'); ?> <input type="checkbox" class="em-time-allday" name="event_all_day" id="em-time-all-day" value="1" <?php if(!empty($EM_Event->event_all_day)) echo 'checked="checked"'; ?> />
 	</p>
+	<?php if( get_option('dbem_timezone_enabled') ): ?>
+	<p class="em-timezone">
+		<label for="event-timezone"><?php esc_html_e('Timezone', 'events-manager'); ?></label>
+		<select id="event-timezone" name="event_timezone" aria-describedby="timezone-description">
+			<?php echo wp_timezone_choice( $EM_Event->get_timezone()->getName(), get_user_locale() ); ?>
+		</select>
+	</p>
+	<?php endif; ?>
 	<div class="em-recurring-text">
 		<p>
 			<?php _e ( 'This event repeats', 'events-manager'); ?> 

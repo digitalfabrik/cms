@@ -7,6 +7,10 @@ class EM_Locations_Widget extends WP_Widget {
 	
 	var $defaults = array();
 	
+	public static function init(){
+		return register_widget("EM_Locations_Widget");
+	}
+	
     /** constructor */
     function __construct() {
     	$this->defaults = array(
@@ -128,5 +132,5 @@ class EM_Locations_Widget extends WP_Widget {
         <?php 
     }
 }
-add_action('widgets_init', create_function('', 'return register_widget("EM_Locations_Widget");'));
+add_action('widgets_init', 'EM_Locations_Widget::init');
 ?>

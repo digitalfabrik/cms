@@ -56,7 +56,7 @@
 								?>
 								<tr>
 									<td><?php echo $EM_Event->output("#_EVENTLINK"); ?></td>
-									<td><?php echo date_i18n( get_option('dbem_date_format'), $EM_Event->start ); ?></td>
+									<td><?php echo $EM_Event->start()->i18n( get_option('dbem_date_format') ); ?></td>
 									<td><?php echo $EM_Booking->get_spaces() ?></td>
 									<td>
 										<?php echo $EM_Booking->get_status(); ?>

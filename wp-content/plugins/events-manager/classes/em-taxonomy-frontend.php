@@ -124,17 +124,20 @@ class EM_Taxonomy_Frontend {
 	    if( !$wp_query->is_main_query() ) return;
 		if( $wp_query->is_tax(self::$taxonomy_name) ){
 			//Scope is future
-			$today = strtotime(date('Y-m-d', current_time('timestamp')));
+			$today = current_time('mysql');
 			if( get_option('dbem_events_current_are_past') ){
-				$wp_query->query_vars['meta_query'][] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '>=' );
+				$wp_query->query_vars['meta_query'][] = array( 'key' => '_event_start', 'value' => $today, 'compare' => '>=', 'type' => 'DATETIME' );
 			}else{
-				$wp_query->query_vars['meta_query'][] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
+				$wp_query->query_vars['meta_query'][] = array( 'key' => '_event_end', 'value' => $today, 'compare' => '>=', 'type' => 'DATETIME' );
 			}
 		  	if( get_option('dbem_'. self::$option_name_plural .'_default_archive_orderby') == 'title'){
 		  		$wp_query->query_vars['orderby'] = 'title';
 		  	}else{
-			  	$wp_query->query_vars['orderby'] = 'meta_value_num';
-			  	$wp_query->query_vars['meta_key'] = get_option('dbem_'. self::$option_name_plural .'_default_archive_orderby','_start_ts');
+			  	$wp_query->query_vars['orderby'] = 'meta_value';
+			  	$wp_query->query_vars['meta_key'] = get_option('dbem_'. self::$option_name_plural .'_default_archive_orderby');
+			  	if( in_array($wp_query->query_vars['meta_key'], array('_event_start', '_event_end', '_event_start_local', '_event_end_local')) ){
+			  		$wp_query->query_vars['meta_type'] = 'DATETIME';
+			  	}
 		  	}
 			$wp_query->query_vars['order'] = get_option('dbem_'. self::$option_name_plural .'_default_archive_order','ASC');
 			$post_types = $wp_query->get( 'post_type');

@@ -43,8 +43,8 @@ add_action('init','wp_events_plugin_init',1);
 function wp_events_plugin_init(){
 	define('EM_ADMIN_URL',admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT); //we assume the admin url is absolute with at least one querystring
 	if( get_option('dbem_tags_enabled', true) ){
-		register_taxonomy(EM_TAXONOMY_TAG,array(EM_POST_TYPE_EVENT,'event-recurring'),array( 
-			'hierarchical' => false, 
+		register_taxonomy(EM_TAXONOMY_TAG,array(EM_POST_TYPE_EVENT,'event-recurring'), apply_filters('em_ct_tags', array(
+			'hierarchical' => false,
 			'public' => true,
 			'show_ui' => true,
 			'query_var' => true,
@@ -76,12 +76,12 @@ function wp_events_plugin_init(){
 				'delete_terms' => 'delete_event_categories',
 				'assign_terms' => 'edit_events',
 			)
-		));
+		)));
 	}
 	if( get_option('dbem_categories_enabled', true) ){
 		$supported_array = (EM_MS_GLOBAL && !is_main_site()) ? array():array(EM_POST_TYPE_EVENT,'event-recurring');
-		register_taxonomy(EM_TAXONOMY_CATEGORY,$supported_array,array( 
-			'hierarchical' => true, 
+		register_taxonomy(EM_TAXONOMY_CATEGORY,$supported_array, apply_filters('em_ct_categories', array(
+			'hierarchical' => true,
 			'public' => true,
 			'show_ui' => true,
 			'query_var' => true,
@@ -113,10 +113,10 @@ function wp_events_plugin_init(){
 				'delete_terms' => 'delete_event_categories',
 				'assign_terms' => 'edit_events',
 			)
-		));
+		)));
 	}
 	$event_post_type_supports = apply_filters('em_cp_event_supports', array('custom-fields','title','editor','excerpt','comments','thumbnail','author'));
-	$event_post_type = array(	
+	$event_post_type = apply_filters('em_cpt_event', array(	
 		'public' => true,
 		'hierarchical' => false,
 		'show_ui' => true,
@@ -160,9 +160,9 @@ function wp_events_plugin_init(){
 		),
 		'menu_icon' => 'dashicons-calendar',
 		'yarpp_support'=>true
-	);
+	));
 	if ( get_option('dbem_recurrence_enabled') ){
-		$event_recurring_post_type = array(	
+		$event_recurring_post_type = apply_filters('em_cpt_event_recurring', array(	
 			'public' => apply_filters('em_cp_event_recurring_public', false),
 			'show_ui' => true,
 			'show_in_admin_bar' => true,
@@ -205,10 +205,10 @@ function wp_events_plugin_init(){
 				'not_found_in_trash' => __('No Recurring Events Found in Trash','events-manager'),
 				'parent' => __('Parent Recurring Event','events-manager'),
 			)
-		);
+		));
 	}
 	if( get_option('dbem_locations_enabled', true) ){
-		$location_post_type = array(	
+		$location_post_type = apply_filters('em_cpt_location', array(	
 			'public' => true,
 			'hierarchical' => false,
 			'show_in_admin_bar' => true,
@@ -254,8 +254,22 @@ function wp_events_plugin_init(){
 				'parent' => __('Parent Location','events-manager'),
 			),
 			'yarpp_support'=>true
-		);
+		));
 	}
+	//gutenberg support - define EM_GUTENBERG in your wp-config.php page to enable
+	if( defined('EM_GUTENBERG') && EM_GUTENBERG ){
+		$event_post_type['show_in_rest'] = true;
+		if ( get_option('dbem_recurrence_enabled') ) $event_recurring_post_type['show_in_rest'] = true;
+		if( get_option('dbem_locations_enabled', true) ) $location_post_type['show_in_rest'] = true;
+		function em_gutenberg_support( $can_edit, $post_type ){
+			$recurrences = $post_type == 'event-recurring' && get_option('dbem_recurrence_enabled');
+			$locations = $post_type == EM_POST_TYPE_LOCATION && get_option('dbem_locations_enabled', true);
+			if( $post_type == EM_POST_TYPE_EVENT || $recurrences || $locations ) $can_edit = true;
+			return $can_edit;
+		}
+		add_filter('gutenberg_can_edit_post_type', 'em_gutenberg_support', 10, 2 ); //Gutenberg
+	}
+	
 	if( strstr(EM_POST_TYPE_EVENT_SLUG, EM_POST_TYPE_LOCATION_SLUG) !== FALSE ){
 		//Now register posts, but check slugs in case of conflicts and reorder registrations
 		register_post_type(EM_POST_TYPE_EVENT, $event_post_type);

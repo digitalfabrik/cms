@@ -9,14 +9,14 @@ class EM_Mailer {
 	 * if any errors crop up, here they are
 	 * @var array
 	 */
-	var $errors = array();
+	public $errors = array();
 	
 	/**
 	 * @param $subject
 	 * @param $body
 	 * @param $receiver
 	 */
-	function send($subject="no title",$body="No message specified", $receiver='', $attachments = array() ) {
+	public function send($subject="no title",$body="No message specified", $receiver='', $attachments = array() ) {
 		//TODO add an EM_Error global object, for this sort of error reporting. (@marcus like StatusNotice)
 		global $smtpsettings, $phpmailer, $cformsSettings;
 		$subject = html_entity_decode(wp_kses_data($subject)); //decode entities, but run kses first just in case users use placeholders containing html
@@ -36,7 +36,7 @@ class EM_Mailer {
 			$from = get_option('dbem_mail_sender_address');
 			$headers = get_option('dbem_mail_sender_name') ? 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>':'From: '.$from;
 			if( get_option('dbem_smtp_html') ){ //create filter to change content type to html in wp_mail
-				add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
+				add_filter('wp_mail_content_type','EM_Mailer::return_texthtml');
 			}
 			$send = wp_mail($receiver, $subject, $body, $headers);
 			if(!$send){
@@ -112,9 +112,13 @@ class EM_Mailer {
 	/**
 	 * load phpmailer classes
 	 */
-	function load_phpmailer(){
+	public function load_phpmailer(){
 		require_once ABSPATH . WPINC . '/class-phpmailer.php';
 		require_once ABSPATH . WPINC . '/class-smtp.php';
+	}
+	
+	public static function return_texthtml(){
+		return "text/html";
 	}
 }
 ?>

@@ -6,6 +6,11 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
 	protected $taxonomy = 'event-taxonomy';
 	protected $terms_name = 'taxonomies';
 	protected $term_class = 'EM_Taxonomy';
+	/**
+	 * String representing the search action used in AJAX searches which will be available in child function when PHP 5.3 brings us LSB
+	 * @var string
+	 */
+	protected $ajax_search_action = 'search_taxonomy';
 	
 	/**
 	 * Blank instance of this class used in the static functions until PHP 5.3 brings us LSB
@@ -17,17 +22,17 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
 	 * Array of EM_Taxonomy_Term child objects for a specific event
 	 * @var array
 	 */
-	var $terms = array();
+	public $terms = array();
 	/**
 	 * Event ID of this set of taxonomy terms
 	 * @var int
 	 */
-	var $event_id;
+	public $event_id;
 	/**
 	 * Post ID of this set of taxonomy terms
 	 * @var int
 	 */
-	var $post_id;
+	public $post_id;
 	
 	/**
 	 * Creates an EM_Taxonomy_Terms instance, currently accepts an EM_Event object (gets all Taxonomy Terms for that event) or array of any EM_Taxonomy_Term objects, which can be manipulated in bulk with helper functions.
@@ -256,8 +261,9 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
 		return apply_filters('em_'. self::$instance->terms_name .'_output', $output, $terms, $args);		
 	}
 	
-	public static function get_pagination_links($args, $count, $search_action = 'search_cats', $default_args = array()){
+	public static function get_pagination_links($args, $count, $search_action = false, $default_args = array()){
 		//get default args if we're in a search, supply to parent since we can't depend on late static binding until WP requires PHP 5.3 or later
+		if( $search_action === false ) $search_action = self::$instance->ajax_search_action;
 		if( empty($default_args) && (!empty($args['ajax']) || !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action) ){
 			$default_args = self::get_default_search();
 			$default_args['limit'] = get_option('dbem_'. self::$instance->terms_name .'_default_limit');
