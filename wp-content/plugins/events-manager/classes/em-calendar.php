@@ -19,11 +19,12 @@ class EM_Calendar extends EM_Object {
 		//figure out what month to look for, if we need to
 		if( empty($args['month']) && is_array($args['scope']) ){
 			//if a scope is supplied, figure out the month/year we're after, which will be between these two dates.
-			$scope_start = strtotime($args['scope'][0]);
-			$scope_end = strtotime($args['scope'][1]);
-			$scope_middle = $scope_start + ($scope_end - $scope_start)/2;
-			$month = $args['month'] = date('n', $scope_middle);
-			$year = $args['year'] = date('Y', $scope_middle);
+			$EM_DateTime = new EM_DateTime($args['scope'][0]);
+			$scope_start = $EM_DateTime->getTimestamp();
+			$scope_end = $EM_DateTime->modify($args['scope'][1])->getTimestamp();
+			$EM_DateTime->setTimestamp( $scope_start + ($scope_end - $scope_start)/2 );
+			$month = $args['month'] = $EM_DateTime->format('n');
+			$year = $args['year'] = $EM_DateTime->format('Y');
 		}else{
 			//if month/year supplied, we use those or later on default to current month/year
 			$month = $args['month']; 
@@ -200,10 +201,10 @@ class EM_Calendar extends EM_Object {
 		}
 		
 		//query the database for events in this time span with $offset days before and $outset days after this month to account for these cells in the calendar
-		$scope_datetime_start = new DateTime("{$year}-{$month}-1");
-		$scope_datetime_end = new DateTime($scope_datetime_start->format('Y-m-t'));
-		$scope_datetime_start->modify("-$offset days");
-		$scope_datetime_end->modify("+$outset days");
+		$scope_datetime_start = new EM_DateTime("{$year}-{$month}-1");
+		$scope_datetime_end = new EM_DateTime($scope_datetime_start->format('Y-m-t'));
+		$scope_datetime_start->sub('P'.$offset.'D');
+		$scope_datetime_end->add('P'.$outset.'D');
 		//we have two methods here, one for high-volume event sites i.e. many thousands of events per month, and another for thousands or less per month.
 		$args['array'] = true; //we're getting an array first to avoid extra queries during object creation
 		unset($args['month']);
@@ -244,18 +245,18 @@ class EM_Calendar extends EM_Object {
 				$event = apply_filters('em_calendar_output_loop_start', $event);
 				if( $long_events ){
 					//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
-					$event_start_ts = strtotime($event['event_start_date']);
-					$event_end_ts = strtotime($event['event_end_date']);
-					$event_end_ts = $event_end_ts > $scope_datetime_end->format('U') ? $scope_datetime_end->format('U') : $event_end_ts;
-					while( $event_start_ts <= $event_end_ts ){ //we loop until the last day of our time-range, not the end date of the event, which could be in a year
+					$event_start = new EM_DateTime($event['event_start_date'], $event['event_timezone']);
+					$event_end = new EM_DateTime($event['event_end_date'], $event['event_timezone']);
+					if( $event_end->getTimestamp() > $scope_datetime_end->getTimestamp() ) $event_end = $scope_datetime_end;
+					while( $event_start->getTimestamp() <= $event_end->getTimestamp() ){ //we loop until the last day of our time-range, not the end date of the event, which could be in a year
 						//Ensure date is within event dates and also within the limits of events to show per day, if so add to eventful days array
-						$event_eventful_date = date('Y-m-d', $event_start_ts);
+						$event_eventful_date = $event_start->getDate();
 						if( empty($eventful_days_count[$event_eventful_date]) || !$limit || $eventful_days_count[$event_eventful_date] < $limit ){
 							//now we know this is an event that'll be used, convert it to an object
 							$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : $EM_Event = em_get_event($event['post_id'], 'post_id');
 							if( empty($eventful_days[$event_eventful_date]) || !is_array($eventful_days[$event_eventful_date]) ) $eventful_days[$event_eventful_date] = array();
 							//add event to array with a corresponding timestamp for sorting of times including long and all-day events
-							$event_ts_marker = ($EM_Event->event_all_day) ? 0 : (int) strtotime($event_eventful_date.' '.$EM_Event->event_start_time);
+							$event_ts_marker = ($EM_Event->event_all_day) ? 0 : (int) $event_start->getTimestamp();
 							while( !empty($eventful_days[$event_eventful_date][$event_ts_marker]) ){
 								$event_ts_marker++; //add a second
 							}
@@ -263,7 +264,7 @@ class EM_Calendar extends EM_Object {
 						}
 						//count events for that day
 						$eventful_days_count[$event_eventful_date] = empty($eventful_days_count[$event_eventful_date]) ? 1 : $eventful_days_count[$event_eventful_date]+1;
-						$event_start_ts += (86400); //add a day
+						$event_start->add('P1D');
 					}
 				}else{
 					//Only show events on the day that they start
@@ -272,7 +273,7 @@ class EM_Calendar extends EM_Object {
 						$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : em_get_event($event['post_id'], 'post_id');
 						if( empty($eventful_days[$event_eventful_date]) || !is_array($eventful_days[$event_eventful_date]) ) $eventful_days[$event_eventful_date] = array();
 						//add event to array with a corresponding timestamp for sorting of times including long and all-day events
-						$event_ts_marker = ($EM_Event->event_all_day) ? 0 : (int) $EM_Event->start;
+						$event_ts_marker = ($EM_Event->event_all_day) ? 0 : (int) $EM_Event->start()->getTimestamp();
 						while( !empty($eventful_days[$event_eventful_date][$event_ts_marker]) ){
 							$event_ts_marker++; //add a second
 						}

@@ -70,7 +70,7 @@
 			em_options_input_text ( __( 'Maximum spaces per booking', 'events-manager'), 'dbem_booking_feedback_spaces_limit', __( 'If the user tries to make a booking with spaces that exceeds the maximum number of spaces per booking.', 'events-manager').' '. __('%d will be replaced by a number.','events-manager') );
 			?>
 			<tr class="em-header"><td colspan='2'><h4><?php _e('Booking button feedback messages','events-manager') ?></h4></td></tr>
-			<tr><td colspan='2'><?php echo sprintf(__('When the %s placeholder, the below texts will be used.','events-manager'),'<code>#_BOOKINGBUTTON</code>'); ?></td></tr>
+			<tr><td colspan='2'><?php echo sprintf(__('With the %s placeholder, the below texts will be used.','events-manager'),'<code>#_BOOKINGBUTTON</code>'); ?></td></tr>
 			<?php			
 			em_options_input_text ( __( 'User can book', 'events-manager'), 'dbem_booking_button_msg_book', '');
 			em_options_input_text ( __( 'Booking in progress', 'events-manager'), 'dbem_booking_button_msg_booking', '');

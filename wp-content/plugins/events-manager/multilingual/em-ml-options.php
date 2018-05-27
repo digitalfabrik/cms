@@ -179,11 +179,9 @@ class EM_ML_Options {
 		//When in the EM settings page translatable values should be shown in the currently active language
 		if( is_admin() && !empty($_REQUEST['page']) && $_REQUEST['page'] == 'events-manager-options' ) return;
 		//add a hook for all trnalsateable values
-		if( EM_ML::$current_language != EM_ML::$wplang ){
-		 	foreach( self::$translatable_options as $option ){
-		 	    add_filter('pre_option_'.$option, array(&$this, 'pre_option_'.$option), 1,1);
-	 		}
-		}
+	 	foreach( self::$translatable_options as $option ){
+	 	    add_filter('pre_option_'.$option, array(&$this, 'pre_option_'.$option), 1,1);
+ 		}
 		//Switch EM page IDs to translated versions if they exist, so e.g. the events page in another language grabs the right translated page format if available
         add_filter('option_dbem_events_page','EM_ML_Options::get_translated_page');
         add_filter('option_dbem_locations_page','EM_ML_Options::get_translated_page');
@@ -203,8 +201,8 @@ class EM_ML_Options {
 	 * @param mixed $value Supplied filter value.
 	 * @return mixed Returns either translated data or the supplied value.
 	 */
-	public function __call($filter_name, $value){
-		if( strstr($filter_name, 'pre_option_') !== false ){
+    public function __call($filter_name, $value){
+    	if( EM_ML::$current_language != EM_ML::$wplang && strstr($filter_name, 'pre_option_') !== false ){
 		    //we're calling an option to be overridden by the default language
 		    $option_name = str_replace('pre_option_','',$filter_name);
 		    //don't use EM_ML::get_option as it creates an endless loop for options without a translation

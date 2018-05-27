@@ -8,6 +8,9 @@
 
 <div class="wrap">
 
+
+
+
 	<h2><?php echo __('Media translation', 'wpml-media') ?></h2>
 
 	<?php if ($orphan_attachments): ?>
@@ -96,7 +99,6 @@
 					&nbsp;<span class="content_default_status"></span>
 				</td>
 			</tr>
-
 		</table>
 
 		<div id="wpml_media_all_done" class="hidden updated">

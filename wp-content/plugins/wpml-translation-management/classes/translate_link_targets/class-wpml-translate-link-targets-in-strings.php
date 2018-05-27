@@ -37,7 +37,7 @@ class WPML_Translate_Link_Targets_In_Strings extends WPML_Translate_Link_Targets
 		$this->content_to_fix = array();
 
 		if ( sizeof( $strings_to_fix_part ) ) {
-			$strings_to_fix_part  = implode( ',', $strings_to_fix_part );
+			$strings_to_fix_part  = wpml_prepare_in( $strings_to_fix_part, '%d' );
 			$this->content_to_fix = $this->wpdb->get_results(
 				"SELECT id as element_id, language as language_code 
 					FROM {$this->wpdb->prefix}icl_string_translations

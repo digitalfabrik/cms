@@ -42,7 +42,10 @@ class WPML_Translation_Management {
 
 		$this->tm_loader     = $tm_loader;
 		$this->tm_instance   = $tm_instance;
-		$this->wpml_tm_menus = new WPML_TM_Menus();
+
+		$template_service_loader = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/tm-menus/' ) );
+		$this->wpml_tm_menus = new WPML_TM_Menus( $template_service_loader->get_template() );
+
 		$this->wpml_tp_translator = $wpml_tp_translator;
 		if ( null === $this->wpml_tp_translator ) {
 			$this->wpml_tp_translator = new WPML_TP_Translator();
@@ -99,7 +102,6 @@ class WPML_Translation_Management {
 			            array( 'WPML_Remote_String_Translation', 'string_status_text_filter' ),
 			            10,
 			            3 );
-			add_action( 'wp_ajax_translation_service_toggle', array( $this, 'translation_service_toggle_ajax' ) );
 			add_action( 'trashed_post', array( $this, 'trashed_post_actions' ), 10, 2 );
 			add_action( 'wp_ajax_icl_get_jobs_table', 'icl_get_jobs_table' );
 			add_action( 'wp_ajax_icl_cancel_translation_jobs', 'icl_cancel_translation_jobs' );
@@ -138,23 +140,11 @@ class WPML_Translation_Management {
 			}
 
 			// Add a nice warning message if the user tries to edit a post manually and it's actually in the process of being translated
-			$request_get_trid = filter_input( INPUT_GET, 'trid', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
-			$request_get_post = filter_input(
-				INPUT_GET,
-				'post',
-				FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				FILTER_NULL_ON_FAILURE
-			);
-			$request_get_lang = filter_input(
-				INPUT_GET,
-				'lang',
-				FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-				FILTER_NULL_ON_FAILURE
-			);
-			if ( ( $pagenow == 'post-new.php' || $pagenow == 'post.php' ) && ( $request_get_trid || $request_get_post ) && $request_get_lang ) {
+			if ( in_array( $pagenow, array( 'post-new.php', 'post.php', 'admin-ajax.php' ), true ) ) {
 				$post_edit_notices_factory = new WPML_TM_Post_Edit_Notices_Factory();
 				$post_edit_notices_factory->create()->add_hooks();
 			}
+
 			add_action( 'wp_ajax_dismiss_icl_side_by_site', array( $this, 'dismiss_icl_side_by_site' ) );
 			add_action( 'wp_ajax_icl_tm_parent_filter', array( $this, '_icl_tm_parent_filter' ) );
 			add_action( 'wp_ajax_icl_tm_toggle_promo', array( $this, '_icl_tm_toggle_promo' ) );
@@ -216,11 +206,12 @@ class WPML_Translation_Management {
 			wp_register_script( 'wpml-tm-progressbar', WPML_TM_URL . '/res/js/wpml-progressbar.js', array(
 					'jquery',
 					'jquery-ui-progressbar',
-					'backbone'
+					'backbone',
 			), WPML_TM_VERSION );
 			wp_register_script( 'wpml-tm-scripts', WPML_TM_URL . '/res/js/scripts.js', array(
 					'jquery',
-					'wpml-tm-progressbar'
+					'wpml-tm-progressbar',
+					'sitepress-scripts',
 			), WPML_TM_VERSION );
 			wp_enqueue_script( 'wpml-tm-scripts' );
 
@@ -348,52 +339,6 @@ class WPML_Translation_Management {
 		ICL_AdminNotifier::display_instant_message($auth_content_full);
 	}
 
-	function translation_service_toggle_ajax( ) {
-		$translation_service_toggle = false;
-		if ( isset( $_POST[ 'nonce' ] ) ) {
-			$translation_service_toggle = wp_verify_nonce( $_POST[ 'nonce' ], 'translation_service_toggle' );
-		}
-		$errors  = 0;
-		$message = '';
-
-		if ( $translation_service_toggle ) {
-			$service_id = false;
-			if ( isset( $_POST[ 'service_id' ] ) ) {
-				$service_id = $_POST[ 'service_id' ];
-			}
-			$enable = false;
-			if ( isset( $_POST[ 'enable' ] ) ) {
-				$enable = $_POST[ 'enable' ];
-			}
-
-			if ( ! $service_id ) {
-				return;
-			}
-
-			if ( $enable && TranslationProxy::get_current_service_id() != $service_id ) {
-				$result = TranslationProxy::select_service( $service_id );
-				if ( is_wp_error( $result ) ) {
-					$message = $result->get_error_message();
-				}
-			}
-			if ( ! $enable && TranslationProxy::get_current_service_id() == $service_id ) {
-				TranslationProxy::deselect_active_service();
-			}
-		} else {
-			$message = __( 'You are not allowed to perform this action.', 'wpml-translation-management' );
-			$errors ++;
-		}
-
-		$response = array(
-			'errors'  => $errors,
-			'message' => $message,
-			'reload'  => ( ! $errors ? 1 : 0 )
-		);
-		echo wp_json_encode( $response );
-		die();
-
-	}
-
 	function check_batch_status_ajax() {
 		$batch_id    = filter_input( INPUT_POST, 'batch_id', FILTER_SANITIZE_NUMBER_INT );
 		$valid_nonce = wp_verify_nonce( $_POST[ 'nonce' ], $_POST[ 'action' ] );
@@ -484,7 +429,7 @@ class WPML_Translation_Management {
 	 * @used-by \WPML_Translation_Management::menu
 	 */
 	function translation_queue_page() {
-		if ( $this->is_the_main_request() ) {
+		if ( true !== apply_filters( 'wpml_tm_lock_ui', false ) && $this->is_the_main_request() ) {
 			$this->tm_queue->display();
 		}
 	}
@@ -636,7 +581,7 @@ class WPML_Translation_Management {
 		return is_admin() &&
 					 isset($_GET['page']) &&
 					 $_GET['page'] == WPML_TM_FOLDER . '/menu/main.php' &&
-					 ( !isset($_GET['sm']) || $_GET['sm'] == 'translators' || $_GET['sm'] == 'dashboard' );
+					 ( !isset($_GET['sm']) || $_GET['sm'] == 'translation-services' || $_GET['sm'] == 'dashboard' );
 	}
 
 	public function add_com_log_link( ) {
@@ -706,53 +651,62 @@ class WPML_Translation_Management {
 					$notification_message .= '<a href="' . $button_url . '" target="_blank">' . $button_text . '</a>';
 				}
 			} else {
-				$service_tab_name = __( 'Translators', 'wpml-translation-management' );
+				$service_tab_name    = esc_html__( 'Translation Services Tab', 'wpml-translation-management' );
+				$translator_tab_name = esc_html__( 'Translators Tab', 'wpml-translation-management' );
 
-				$services_url                = "admin.php?page=" . WPML_TM_FOLDER . "/menu/main.php&sm=translators";
-				$href_open                   = '<strong><a href="' . $services_url . '">';
-				$href_close                  = '</a></strong>';
-				$services_link               = $href_open . $service_tab_name . ' Tab' . $href_close;
-				$service_authentication_link = '<strong>' . __( 'Authenticate', 'wpml-translation-management' ) . '</strong> button';
-				$service_deactivation_link   = '<strong>' . __( 'Deactivate', 'wpml-translation-management' ) . '</strong> button';
+				$link_pattern    = '<strong><a href="%1$s">%2$s</a></strong>';
+				$service_pattern = '<strong>%1$s</strong>';
+
+				$services_base_url           = admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php' );
+				$translation_services_url    = add_query_arg( array( 'sm' => 'translation-services' ), $services_base_url );
+				$translators_url             = add_query_arg( array( 'sm' => 'translators' ), $services_base_url );
+				$translation_services_link   = sprintf( $link_pattern, $translation_services_url, $service_tab_name );
+				$translators_link            = sprintf( $link_pattern, $translators_url, $translator_tab_name );
+				$service_authentication_link = sprintf( $service_pattern,
+					esc_html__( 'Authenticate', 'wpml-translation-management' ) );
+				$service_deactivation_link   = sprintf( $service_pattern,
+					esc_html__( 'Deactivate', 'wpml-translation-management' ) );
+
 
 				if ( TranslationProxy::get_tp_default_suid() ) {
-					$notification_message = __( "You are using a translation service which requires authentication.", 'wpml-translation-management' );
+					$notification_message = __( 'You are using a translation service which requires authentication.', 'wpml-translation-management' );
 					$notification_message .= '<ul>';
 					$notification_message .= '<li>';
-					$notification_message .= sprintf( __( 'Please go to %1$s and use the link %2$s.', 'wpml-translation-management' ), $services_link, $service_authentication_link );
+					$notification_message .= sprintf( __( 'Please go to %1$s and use the %2$s button.', 'wpml-translation-management' ), $translation_services_link, $service_authentication_link );
 					$notification_message .= '</li>';
+					$notification_message .= '</ul>';
 				} else {
 
 					$problem_detected = false;
 					if ( $this->service_requires_authentication() ) {
-						$notification_message = __( "You have selected a translation service which requires authentication.", 'wpml-translation-management' );
+						$notification_message = __( 'You have selected a translation service which requires authentication.', 'wpml-translation-management' );
 					} elseif ( $this->service_requires_translators() ) {
-						$notification_message      = __( "You have selected a translation service which requires translators.", 'wpml-translation-management' );
+						$notification_message      = __( 'You have selected a translation service which requires translators.', 'wpml-translation-management' );
 						$service_authentication_link = '<strong>' . __( 'Add Translator', 'wpml-translation-management' ) . ' &raquo;</strong>';
 					} else {
 						$problem_detected       = true;
-						$notification_message = __( "There is a problem with your translation service.", 'wpml-translation-management' );
+						$notification_message = __( 'There is a problem with your translation service.', 'wpml-translation-management' );
 					}
 
 					$notification_message .= '<ul>';
 					$notification_message .= '<li>';
 
 					if ( $this->service_requires_authentication() ) {
-						$notification_message .= sprintf( __( "If you wish to use %s, please go to %s and use the link %s.", 'wpml-translation-management' ), '<strong>'
+						$notification_message .= sprintf( __( 'If you wish to use %1$s, please go to %2$s and use the %3$s button.', 'wpml-translation-management' ), '<strong>'
 																																																																										. $current_service_name
-																																																																										. '</strong>', $services_link, $service_authentication_link );
+																																																																										. '</strong>', $translation_services_link, $service_authentication_link );
 					} elseif ( $this->service_requires_translators() ) {
-						$notification_message .= sprintf( __( "If you wish to use %s, please go to %s and use the link %s.", 'wpml-translation-management' ), '<strong>'
+						$notification_message .= sprintf( __( 'If you wish to use %1$s, please go to %2$s and use the %3$s button.', 'wpml-translation-management' ), '<strong>'
 																																																																										. $current_service_name
-																																																																										. '</strong>', $services_link, $service_authentication_link );
+																																																																										. '</strong>', $translators_link, $service_authentication_link );
 					} elseif ( $problem_detected ) {
-						$notification_message .= sprintf( __( "Please contact your administrator.", 'wpml-translation-management' ), $services_link, $service_authentication_link );
+						$notification_message .= sprintf( __( 'Please contact your administrator.', 'wpml-translation-management' ), $translation_services_link, $service_authentication_link );
 					}
 
 					$notification_message .= '</li>';
 
 					$notification_message .= '<li>';
-					$notification_message .= sprintf( __( "If you wish to use only local translators, please go to %s and use the link %s.", 'wpml-translation-management' ), $services_link, $service_deactivation_link );
+					$notification_message .= sprintf( __( 'If you wish to use only local translators, please go to %1$s and use the %2$s button.', 'wpml-translation-management' ), $translation_services_link, $service_deactivation_link );
 					$notification_message .= '</li>';
 					$notification_message .= '</ul>';
 				}

@@ -28,15 +28,13 @@ function wpml_tm_save_data( array $data ) {
 
 add_action( 'wpml_save_translation_data', 'wpml_tm_save_data', 10, 1 );
 
-function wpml_tm_add_translation_job( $rid, $translator_id, $translation_package ) {
+function wpml_tm_add_translation_job( $rid, $translator_id, $translation_package, $batch_options ) {
 
 	$helper = new WPML_TM_Action_Helper();
-	$helper->add_translation_job( $rid,
-	                              $translator_id,
-	                              $translation_package );
+	$helper->add_translation_job( $rid, $translator_id, $translation_package, $batch_options );
 }
 
-add_action( 'wpml_add_translation_job', 'wpml_tm_add_translation_job', 10, 3 );
+add_action( 'wpml_add_translation_job', 'wpml_tm_add_translation_job', 10, 4 );
 
 require_once dirname( __FILE__ ) . '/wpml-private-filters.php';
 

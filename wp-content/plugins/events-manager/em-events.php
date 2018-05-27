@@ -130,6 +130,7 @@ function em_content($page_content) {
 function em_add_content_filter_after_head(){
 	add_filter('the_content', 'em_content');
 }
+//remember that this gets removed by taxonomy pages showing a single taxonomy page, so careful if changing the priority
 add_action('wp_head', 'em_add_content_filter_after_head', 1000);
 
 /**
@@ -202,8 +203,8 @@ function em_content_page_title($original_content, $id = null) {
 					$content = $EM_Event->name .' - '. $original_content;
 				}
 			}
-			return apply_filters('em_content_page_title', $content);
 		}
+		return apply_filters('em_content_page_title', $content);
 	}
 	return $original_content;
 }

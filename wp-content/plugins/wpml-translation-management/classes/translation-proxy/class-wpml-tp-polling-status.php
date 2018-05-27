@@ -3,12 +3,9 @@
 /**
  * Class WPML_TP_Polling_Status
  */
-class WPML_TP_Polling_Status extends WPML_TP_Project_User {
-
-	/** @var  SitePress $sitepress */
+class WPML_TP_Polling_Status {
+	protected $project;
 	private $sitepress;
-
-	/** @var WPML_TM_CMS_ID $cms_id_helper */
 	private $cms_id_helper;
 
 	/**
@@ -18,10 +15,14 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 	 * @param SitePress                $sitepress
 	 * @param WPML_TM_CMS_ID           $cms_id_helper
 	 */
-	public function __construct( &$project, &$sitepress, &$cms_id_helper ) {
-		parent::__construct( $project );
-		$this->sitepress     = &$sitepress;
-		$this->cms_id_helper = &$cms_id_helper;
+	public function __construct(
+		TranslationProxy_Project $project,
+		SitePress $sitepress,
+		WPML_TM_CMS_ID $cms_id_helper
+	) {
+		$this->project       = $project;
+		$this->sitepress     = $sitepress;
+		$this->cms_id_helper = $cms_id_helper;
 	}
 
 	/**
@@ -33,8 +34,8 @@ class WPML_TP_Polling_Status extends WPML_TP_Project_User {
 		try {
 			$data = $this->filter_obsolete( $this->project->jobs() );
 		} catch ( Exception $e ) {
-			throw new Exception( 'Got the following error when trying to load status data from Translation Proxy via polling: ' . $e->getMessage(),
-				0, $e );
+			throw new WPMLTranslationProxyApiException( 'Got the following error when trying to load status data from Translation Proxy via polling: '
+			                                            . $e->getMessage(), 0, $e );
 		}
 		$button_text = esc_html__( 'Check status and get translations', 'wpml-translation-management' );
 		if ( ( $job_in_progress = $this->in_progress_count( $data ) ) == 1 ) {

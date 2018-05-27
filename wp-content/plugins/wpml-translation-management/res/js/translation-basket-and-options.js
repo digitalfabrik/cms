@@ -58,6 +58,7 @@
 				var batch_basket_items = [];
 				var batch_number = 0;
 				var initial_basket_size = 0;
+				var batch_deadline = form.find( '#basket-deadline' );
 
 				var init = function () {
 					form.bind('submit', submit_form); 
@@ -80,6 +81,49 @@
 					additional_data = jQuery('<div class="additional_data"></div>');
 					progress_bar.insertBefore(message_box);
 					progress_bar.hide();
+
+					initDatePicker();
+					$('#icl-translation-translators').on('change', '.js-wpml-translator-dropdown', refresh_deadline_date);
+				};
+
+				var initDatePicker = function() {
+					batch_deadline.datepicker({
+						minDate: new Date( Date.now() ),
+						dateFormat: "yy-mm-dd",
+						dayNames: wpml_tm_translation_basket_and_options.day_names,
+						dayNamesMin: wpml_tm_translation_basket_and_options.day_initials,
+						monthNames: wpml_tm_translation_basket_and_options.month_names
+					});
+
+					jQuery( 'body' ).addClass( 'wpml' );
+				};
+
+				var refresh_deadline_date = function(e) {
+					var translatorsTable = $(e.delegateTarget);
+					var selectors = translatorsTable.find('.js-wpml-translator-dropdown');
+					var spinner = batch_deadline.siblings('.spinner');
+					var translators = {};
+
+					$.each(selectors, function(i, selector) {
+						selector = $(selector);
+						var lang_to = selector.data('lang-to');
+						translators[ lang_to ] = selector.find(':selected').val();
+					});
+
+					spinner.addClass('is-active');
+
+					$.post({
+						url: ajaxurl,
+						data: {
+							action: 'wpml-tm-jobs-deadline-estimate-ajax-action',
+							nonce: form.find('#_icl_nonce_refresh_deadline').val(),
+							translators: translators
+						},
+						success: function(response) {
+							form.find('#basket-deadline').val(response.data.deadline);
+							spinner.removeClass('is-active');
+						}
+					});
 				};
 
 				var basket_name_blur = function (e) {
@@ -362,7 +406,8 @@
                                 basket_name: basket_name,
                                 batch: batch_data,
                                 translators: translators,
-                                extra_fields: extra_fields
+                                extra_fields: extra_fields,
+                                deadline_date: batch_deadline.val()
                             },
                             success: function (result) {
                                 var success = result.success;
@@ -485,6 +530,8 @@
 					form_delete_button.attr('disabled', 'disabled');
 					basket_name_element.attr('disabled', 'disabled');
 					basket_name_element.attr('readonly', 'readonly');
+					batch_deadline.attr('disabled', 'disabled');
+					batch_deadline.attr('readonly', 'readonly');
 					form.attr('disabled', 'disabled');
 					form.attr('readonly', 'readonly');
 					

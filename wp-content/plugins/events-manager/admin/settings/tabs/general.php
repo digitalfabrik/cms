@@ -12,6 +12,20 @@
 				</td>
 			</tr>
 			<?php
+			em_options_radio_binary ( __( 'Enable Timezone Support?', 'events-manager'), 'dbem_timezone_enabled', sprintf(__( 'Each event can have its own timezone if enabled. If set to no, then all newly created events will have the blog timezone, which currently is set to %s','events-manager'), '<code>'.EM_DateTimeZone::create()->getName().'</code>'), '', '.event-timezone-option' );
+			?>
+			<tr class="event-timezone-option">
+				<th>
+					<label for="event-timezone"><?php esc_html_e('Default Timezone', 'events-manager'); ?></label>
+				</th>
+				<td>
+					<select id="event-timezone" name="dbem_timezone_default">
+						<?php echo wp_timezone_choice( get_option('dbem_timezone_default') ); ?>
+					</select><br />
+					<i><?php esc_html_e('When creating a new event, this timezone will be applied by default.','events-manager'); ?></i>
+				</td>
+			</tr>
+			<?php
 			em_options_radio_binary ( __( 'Enable recurrence?', 'events-manager'), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','events-manager') ); 
 			em_options_radio_binary ( __( 'Enable bookings?', 'events-manager'), 'dbem_rsvp_enabled', __( 'Select yes to allow bookings and tickets for events.','events-manager') );     
 			em_options_radio_binary ( __( 'Enable tags?', 'events-manager'), 'dbem_tags_enabled', __( 'Select yes to enable the tag features','events-manager') );

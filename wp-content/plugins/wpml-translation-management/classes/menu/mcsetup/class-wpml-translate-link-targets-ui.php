@@ -38,14 +38,14 @@ class WPML_Translate_Link_Targets_UI extends WPML_TM_MCS_Section_UI {
 		<p><?php echo $main_message ?></p>
 		<button id="wpml-scan-link-targets"
 		        class="button-secondary"
-		        data-post-message="<?php _e( 'Processing posts... %1$s of %2$s done.', 'wpml-translation-management' ); ?>"
+		        data-post-message="<?php echo esc_attr__( 'Processing posts... %1$s of %2$s done.', 'wpml-translation-management' ); ?>"
 		        data-post-count="<?php echo $post_count; ?>"
-		        data-string-message="<?php _e( 'Processing strings... %1$s of %2$s done.', 'wpml-translation-management' ); ?>"
+		        data-string-message="<?php echo esc_attr__( 'Processing strings... %1$s of %2$s done.', 'wpml-translation-management' ); ?>"
 		        data-string-count="<?php echo $string_count; ?>"
-		        data-complete-message="<?php echo $complete_message; ?>"
-		><?php _e( 'Scan now and adjust links', 'wpml-translation-management' ); ?></button>
-		<span class="spinner"></span>
-		<p class="results"></p>
+		        data-complete-message="<?php echo esc_attr( $complete_message ); ?>"
+		><?php echo esc_html__( 'Scan now and adjust links', 'wpml-translation-management' ); ?></button>
+		<span class="spinner"> </span>
+		<p class="results"> </p>
 
 		<?php
 

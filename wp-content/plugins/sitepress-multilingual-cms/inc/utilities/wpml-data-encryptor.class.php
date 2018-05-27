@@ -2,6 +2,9 @@
 
 class WPML_Data_Encryptor {
 
+	const SALT_CHARS  = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_ []{}<>~`+=,.;:/?|';
+	const SALT_LENGTH = 64;
+
 	/**
 	 * @var string $method
 	 */
@@ -109,14 +112,22 @@ class WPML_Data_Encryptor {
 	 * @return string
 	 */
 	private function get_key_salt() {
-		require_once ABSPATH . '/wp-includes/pluggable.php';
-
 		if ( defined( 'NONCE_SALT' ) ){
-			$key_salt = NONCE_SALT;
-		} else {
-			$key_salt = wp_generate_password( 64, true, true );
+			return NONCE_SALT;
 		}
 
-		return $key_salt;
+		return $this->generate_salt_key();
+	}
+
+	/**
+	 * @return string
+	 */
+	private function generate_salt_key() {
+		$salt_key = '';
+		for ( $i = 0; $i < self::SALT_LENGTH; $i++ ) {
+			$salt_key .= substr( self::SALT_CHARS, mt_rand( 0, strlen( self::SALT_CHARS ) - 1 ), 1 );
+		}
+
+		return $salt_key;
 	}
 }

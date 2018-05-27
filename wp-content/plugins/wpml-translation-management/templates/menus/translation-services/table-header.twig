@@ -1,0 +1,9 @@
+<tr>
+    <th scope="col" class="manage-column ts-admin-section-logo-head {{ table_sort.name.classes }}"><a href="{{ table_sort.name.url }}">{{ strings.columns.name }}<span class="sorting-indicator"></span></a></th>
+    <th scope="col" class="manage-column ts-admin-section-description-head">{{ strings.columns.description }}</th>
+    {% if 'ts' == translation_service_type_requested %}
+        <th scope="col" class="{{ table_sort.popularity.classes }} ts-admin-section-rating"><a href="{{ table_sort.popularity.url }}">{{ strings.columns.popularity }}<span class="sorting-indicator"></span></a></th>
+        <th scope="col" class="{{ table_sort.speed.classes }} ts-admin-section-rating"><a href="{{ table_sort.speed.url }}">{{ strings.columns.speed }}<span class="sorting-indicator"></span></a></th>
+    {% endif %}
+    <th scope="col" class="manage-column"></th>
+</tr>

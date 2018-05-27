@@ -26,6 +26,7 @@ class EM_Object {
 		$super_defaults = array(
 			'limit' => false,
 			'scope' => 'future',
+			'timezone' => false, //default blog timezone
 			'order' => 'ASC', //hard-coded at end of this function
 			'orderby' => false,
 			'groupby' => false,
@@ -113,6 +114,13 @@ class EM_Object {
 			foreach( array_keys($array) as $key){
 				if( !array_key_exists($key, $defaults) && !array_key_exists($key, $taxonomies) ) unset($array[$key]);		
 			}
+			//Timezone
+			if( !empty($array['timezone']) ){
+				if( !is_array($array['timezone']) ) {
+					$array['timezone'] = str_replace(' ', '', $array['timezone']);
+					$array['timezone'] = explode(',', $array['timezone']);
+				}
+			}
 			//return clean array
 			$defaults = array_merge ( $defaults, $array ); //No point using WP's cleaning function, we're doing it already.
 		}
@@ -132,16 +140,16 @@ class EM_Object {
 			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
 		}
 		//Deal with scope and date searches
-		if ( !is_array($defaults['scope']) && preg_match ( "/^([0-9]{4}-[0-9]{2}-[0-9]{2})?,([0-9]{4}-[0-9]{2}-[0-9]{2})?$/", $defaults['scope'] ) ) {
+		if ( !is_array($defaults['scope']) && preg_match ( "/^([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?,([0-9]{4}-[0-9]{1,2}-[0-9]{1,2})?$/", $defaults['scope'] ) ) {
 			//This is to become an array, so let's split it up
 			$defaults['scope'] = explode(',', $defaults['scope']);
 		}
 		if( is_array($defaults['scope']) ){
 			//looking for a date range here, so we'll verify the dates validate, if not get the default.
-			if ( !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'][0]) ){
+			if ( !preg_match("/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/", $defaults['scope'][0]) ){
 				$defaults['scope'][0] = '';
 			}
-			if( !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'][1]) ) {
+			if( !preg_match("/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/", $defaults['scope'][1]) ) {
 				$defaults['scope'][1] = '';
 			}
 			if( empty($defaults['scope'][0]) && empty($defaults['scope'][1]) ){
@@ -212,7 +220,6 @@ class EM_Object {
 		$event = $args['event'];
 		$month = $args['month'];
 		$year = $args['year'];
-		$today = date('Y-m-d', current_time('timestamp'));
 		//Create the WHERE statement
 		$conditions = array();
 		
@@ -270,6 +277,16 @@ class EM_Object {
 		    	$conditions['recurring'] = "(`recurrence`!=1 OR `recurrence` IS NULL)";
 		    }
 		}
+		
+		//Timezone - search for events in a specific timezone
+		if( !empty($args['timezone']) ){
+			if( !is_array($args['timezone']) ){
+				$args['timezone'] = explode(',', $args['timezone']);
+			}
+			foreach( $args['timezone'] as $tz ) $timezones[] = $wpdb->prepare('%s', $tz);
+			$conditions['timezone'] = '`event_timezone` IN ('.implode(',', $timezones).')';
+		}
+		
 		//Dates - first check 'month', and 'year', and adjust scope if needed
 		if( !($month=='' && $year=='') ){
 			//Sort out month range, if supplied an array of array(month,month), it'll check between these two months
@@ -295,7 +312,7 @@ class EM_Object {
 			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
 			$scope = array($date_start,$date_end); //just modify the scope here
 		}
-		//No date requested, so let's look at scope
+		//Build scope query
 		if ( is_array($scope) ) {
 			//This is an array, let's split it up
 			$date_start = $scope[0];
@@ -319,7 +336,7 @@ class EM_Object {
 				}
 				//$conditions['scope'] = " ( ( event_start_date <= CAST('$date_end' AS DATE) AND event_end_date >= CAST('$date_start' AS DATE) ) OR (event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) )";
 			}
-		} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+		} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{1,2}$/", $scope ) ) {
 			//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
 			if( get_option('dbem_events_current_are_past') ){
 				$conditions['scope'] = "event_start_date = CAST('$scope' AS DATE)";
@@ -327,50 +344,44 @@ class EM_Object {
 				$conditions['scope'] = " ( event_start_date = CAST('$scope' AS DATE) OR ( event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE) ) )";
 			}
 		} else {
+			$EM_DateTime = new EM_DateTime(); //the time, now, in blog/site timezone
 			if ($scope == "past"){
 				if( get_option('dbem_events_current_are_past') ){
-					$conditions['scope'] = " event_start_date < '$today'";
+					$conditions['scope'] = " event_start < '".$EM_DateTime->getDateTime(true)."'";
 				}else{
-					$conditions['scope'] = " event_end_date < '$today'";
+					$conditions['scope'] = " event_end < '".$EM_DateTime->getDateTime(true)."'";
 				}  
 			}elseif ($scope == "today"){
-				$conditions['scope'] = " (event_start_date = CAST('$today' AS DATE))";
+				$conditions['scope'] = " (event_start_date = CAST('".$EM_DateTime->getDate()."' AS DATE))";
 				if( !get_option('dbem_events_current_are_past') ){
-					$conditions['scope'] .= " OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE))";
+					$conditions['scope'] .= " OR (event_start_date <= CAST('".$EM_DateTime->getDate()."' AS DATE) AND event_end_date >= CAST('$EM_DateTime' AS DATE))";
 				}
 			}elseif ($scope == "tomorrow"){
-				$tomorrow = date('Y-m-d',current_time('timestamp')+60*60*24);
-				$conditions['scope'] = "(event_start_date = CAST('$tomorrow' AS DATE))";
+				$EM_DateTime->modify('+1 day');
+				$conditions['scope'] = "(event_start_date = CAST('".$EM_DateTime->getDate()."' AS DATE))";
 				if( !get_option('dbem_events_current_are_past') ){
-					$conditions['scope'] .= " OR (event_start_date <= CAST('$tomorrow' AS DATE) AND event_end_date >= CAST('$tomorrow' AS DATE))";
+					$conditions['scope'] .= " OR (event_start_date <= CAST('".$EM_DateTime->getDate()."' AS DATE) AND event_end_date >= CAST('".$EM_DateTime->getDate()."' AS DATE))";
 				}
-			}elseif ($scope == "month"){
-				$start_month = date('Y-m-d',current_time('timestamp'));
-				$end_month = date('Y-m-t',current_time('timestamp'));
-				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
-				if( !get_option('dbem_events_current_are_past') ){
-					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
-				}
-			}elseif ($scope == "next-month"){
-				$start_month_timestamp = strtotime('+1 month', current_time('timestamp')); //get the end of this month + 1 day
-				$start_month = date('Y-m-1',$start_month_timestamp);
-				$end_month = date('Y-m-t',$start_month_timestamp);
+			}elseif ($scope == "month" || $scope == "next-month"){
+				if( $scope == 'next-month' ) $EM_DateTime->add('P1M');
+				$start_month = $EM_DateTime->modify('first day of this month')->getDate();
+				$end_month = $EM_DateTime->modify('last day of this month')->getDate();
 				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
 				if( !get_option('dbem_events_current_are_past') ){
 					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
 				}
 			}elseif( preg_match('/([0-9]+)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x months until the end of that month.
 				$months_to_add = $matches[1];
-				$start_month = date('Y-m-d',current_time('timestamp'));
-				$end_month = date('Y-m-t',strtotime("+$months_to_add month", current_time('timestamp')));
+				$start_month = $EM_DateTime->getDate();
+				$end_month = $EM_DateTime->add('P'.$months_to_add.'M')->format('Y-m-t');
 				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
 				if( !get_option('dbem_events_current_are_past') ){
 					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
 				}
 			}elseif ($scope == "future"){
-				$conditions['scope'] = " event_start_date >= CAST('$today' AS DATE)";
+				$conditions['scope'] = " event_start >= '".$EM_DateTime->getDateTime(true)."'";
 				if( !get_option('dbem_events_current_are_past') ){
-					$conditions['scope'] .= " OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL)";
+					$conditions['scope'] .= " OR (event_end >= '".$EM_DateTime->getDateTime(true)."')";
 				}
 			}
 			if( !empty($conditions['scope']) ){
@@ -451,6 +462,10 @@ class EM_Object {
 			if( !empty($args['region']) ){
 				$conditions['region'] = $wpdb->prepare('location_region=%s', $args['region']);
 			}
+			//postcode lookup
+			if( !empty($args['postcode']) ){
+				$conditions['postcode'] = $wpdb->prepare('location_postcode=%s', $args['postcode']);
+			}
 		}
 		
 		//START TAXONOMY FILTERS - can be id, slug, name or comma separated ids/slugs/names, if negative or prepended with a - then considered a negative filter
@@ -506,7 +521,6 @@ class EM_Object {
 						    $ignore_cancel_cond = true;
 						}
 					}
-				    if( !empty($tax_data['ms']) ) self::ms_global_switch_back(); //switch back if ms global mode
 					//create sql conditions
 					if( count($term_tax_ids) > 0 || count($term_tax_not_ids) > 0 ){
 					    //figure out context - what table/field to search
@@ -613,7 +627,7 @@ class EM_Object {
 	}
 	
 	/**
-	 * WORK IN PROGRESS
+	 * WORK IN PROGRESS - not recommended for production use due to lack of syncing with regular condition builder and timezones feature
 	 * Builds an array of SQL query conditions based on regularly used arguments
 	 * @param array $args
 	 * @return array
@@ -636,7 +650,6 @@ class EM_Object {
 		$event = $args['event'];
 		$month = $args['month'];
 		$year = $args['year'];
-		$today = date('Y-m-d', current_time('timestamp'));
 		//Create the WHERE statement
 		
 		//Recurrences
@@ -670,88 +683,57 @@ class EM_Object {
 			$scope = array($date_start,$date_end); //just modify the scope here
 		}
 		//No date requested, so let's look at scope
-		$time = current_time('timestamp');
-		if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
-			$today = strtotime($scope);
-			$tomorrow = $today + 60*60*24-1;
-			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				$query[] = array( 'key' => '_start_ts', 'value' => array($today,$tomorrow), 'compare' => 'BETWEEN' );
-			}else{
-				$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<=' );
-				$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
-			}				
-		}elseif ( is_array($scope) || preg_match( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+		if ( is_array($scope) || preg_match( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 			if( !is_array($scope) ) $scope = explode(',',$scope);
 			if( !empty($scope[0]) ){
-				$start = strtotime(date('Y-m-d',$scope[0]));
-				$end = !empty($scope[1]) ? strtotime(date('Y-m-t',$scope[1])):$start;
+				$EM_DateTime = new EM_DateTime($scope[0]); //create default time in blog timezone
+				$start_date = $EM_DateTime->getDate();
+				$end_date = $EM_DateTime->modify($scope[1])->getDate();
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-					$query[] = array( 'key' => '_start_ts', 'value' => array($start,$end), 'type' => 'numeric', 'compare' => 'BETWEEN');
+					$query[] = array( 'key' => '_event_start_date', 'value' => array($start_date,$end_date), 'type' => 'DATE', 'compare' => 'BETWEEN');
 				}else{
-					$query[] = array( 'key' => '_start_ts', 'value' => $end, 'compare' => '<=' );
-					$query[] = array( 'key' => '_end_ts', 'value' => $start, 'compare' => '>=' );
+					$query[] = array( 'key' => '_event_start_date', 'value' => $end_date, 'compare' => '<=', 'type' => 'DATE' );
+					$query[] = array( 'key' => '_event_end_date', 'value' => $start_date, 'compare' => '>=', 'type' => 'DATE' );
 				}
 			}
-		}elseif ($scope == "future"){
-			$today = strtotime(date('Y-m-d', $time));
+		}elseif ( $scope == 'today' || $scope == 'tomorrow' || preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+			$EM_DateTime = new EM_DateTime($scope); //create default time in blog timezone
 			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '>=' );
+				$query[] = array( 'key' => '_event_start_date', 'value' => $EM_DateTime->getDate() );
 			}else{
-				$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
+				$query[] = array( 'key' => '_event_start_date', 'value' => $EM_DateTime->getDate(), 'compare' => '<=', 'type' => 'DATE' );
+				$query[] = array( 'key' => '_event_end_date', 'value' => $EM_DateTime->getDate(), 'compare' => '>=', 'type' => 'DATE' );
+			}				
+		}elseif ($scope == "future" || $scope == 'past' ){
+			$EM_DateTime = new EM_DateTime(); //create default time in blog timezone
+			$EM_DateTime->setTimezone('UTC');
+			$compare = $scope == 'future' ? '>=' : '<';
+			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
+				$query[] = array( 'key' => '_event_start', 'value' => $EM_DateTime->getDateTime(), 'compare' => $compare, 'type' => 'DATETIME' );
+			}else{
+				$query[] = array( 'key' => '_event_end', 'value' => $EM_DateTime->getDateTime(), 'compare' => $compare, 'type' => 'DATETIME' );
 			}
-		}elseif ($scope == "past"){
-			$today = strtotime(date('Y-m-d', $time));
+		}elseif ($scope == "month" || $scope == "next-month" ){
+			$EM_DateTime = new EM_DateTime(); //create default time in blog timezone
+			if( $scope == 'next-month' ) $EM_DateTime->add('P1M');
+			$start_month = $EM_DateTime->modify('first day of this month')->getDate();
+			$end_month = $EM_DateTime->modify('last day of this month')->getDate();
 			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '<' );
+				$query[] = array( 'key' => '_event_start_date', 'value' => array($start_month,$end_month), 'type' => 'DATE', 'compare' => 'BETWEEN');
 			}else{
-				$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '<' );
-			}
-		}elseif ($scope == "today"){
-			$today = strtotime(date('Y-m-d', $time));
-			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				//date must be only today
-				$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '=');
-			}else{
-				$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '<=' );
-				$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
-			}
-		}elseif ($scope == "tomorrow"){
-			$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
-			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				//date must be only tomorrow
-				$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '=');
-			}else{
-				$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<=' );
-				$query[] = array( 'key' => '_end_ts', 'value' => $tomorrow, 'compare' => '>=' );
-			}
-		}elseif ($scope == "month"){
-			$start_month = strtotime(date('Y-m-d',$time));
-			$end_month = strtotime(date('Y-m-t',$time));
-			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				$query[] = array( 'key' => '_start_ts', 'value' => array($start_month,$end_month), 'type' => 'numeric', 'compare' => 'BETWEEN');
-			}else{
-				$query[] = array( 'key' => '_start_ts', 'value' => $end_month, 'compare' => '<=' );
-				$query[] = array( 'key' => '_end_ts', 'value' => $start_month, 'compare' => '>=' );
-			}
-		}elseif ($scope == "next-month"){
-			$start_month_timestamp = strtotime('+1 month', $time); //get the end of this month + 1 day
-			$start_month = strtotime(date('Y-m-1',$start_month_timestamp));
-			$end_month = strtotime(date('Y-m-t',$start_month_timestamp));
-			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				$query[] = array( 'key' => '_start_ts', 'value' => array($start_month,$end_month), 'type' => 'numeric', 'compare' => 'BETWEEN');
-			}else{
-				$query[] = array( 'key' => '_start_ts', 'value' => $end_month, 'compare' => '<=' );
-				$query[] = array( 'key' => '_end_ts', 'value' => $start_month, 'compare' => '>=' );
+				$query[] = array( 'key' => '_event_start_date', 'value' => $end_month, 'compare' => '<=', 'type' => 'DATE' );
+				$query[] = array( 'key' => '_event_end_date', 'value' => $start_month, 'compare' => '>=', 'type' => 'DATE' );
 			}
 		}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x months until the end of that month.
+			$EM_DateTime = new EM_DateTime(); //create default time in blog timezone
 			$months_to_add = $matches[1];
-			$start_month = strtotime(date('Y-m-d',$time));
-			$end_month = strtotime(date('Y-m-t',strtotime("+$months_to_add month", $time)));
+			$start_month = $EM_DateTime->getDate();
+			$end_month = $EM_DateTime->add('P'.$months_to_add.'M')->format('Y-m-t');
 			if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
-				$query[] = array( 'key' => '_start_ts', 'value' => array($start_month,$end_month), 'type' => 'numeric', 'compare' => 'BETWEEN');
+				$query[] = array( 'key' => '_event_start_date', 'value' => array($start_month,$end_month), 'type' => 'DATE', 'compare' => 'BETWEEN');
 			}else{
-				$query[] = array( 'key' => '_start_ts', 'value' => $end_month, 'compare' => '<=' );
-				$query[] = array( 'key' => '_end_ts', 'value' => $start_month, 'compare' => '>=' );
+				$query[] = array( 'key' => '_event_start_date', 'value' => $end_month, 'compare' => '<=', 'type' => 'DATE' );
+				$query[] = array( 'key' => '_event_end_date', 'value' => $start_month, 'compare' => '>=', 'type' => 'DATE' );
 			}
 		}
 		
@@ -1061,7 +1043,7 @@ class EM_Object {
 	 * @return string
 	 * @uses em_paginate()
 	 */
-	public static function get_pagination_links($args, $count, $search_action, $default_args = array()){
+	public static function get_pagination_links($args, $count, $search_action = 'search_events', $default_args = array()){
 		$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 		$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 		$pno = !empty($args['page_queryvar']) ? $args['page_queryvar'] : 'pno';
@@ -1233,8 +1215,10 @@ class EM_Object {
 	 */
 	function compat_keys(){
 		foreach($this->fields as $key => $fieldinfo){
-		    $field_name = $fieldinfo['name'];
-			if(!empty($this->$key)) $this->$field_name = $this->$key;
+			if( !empty($fieldinfo['name']) ){
+			    $field_name = $fieldinfo['name'];
+				if(!empty($this->$key)) $this->$field_name = $this->$key;
+			}
 		}
 	}
 

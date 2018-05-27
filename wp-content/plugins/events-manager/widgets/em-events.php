@@ -7,6 +7,10 @@ class EM_Widget extends WP_Widget {
 	
 	var $defaults;
 	
+	public static function init(){
+		return register_widget("EM_Widget");
+	}
+	
     /** constructor */
     function __construct() {
     	$this->defaults = array(
@@ -205,5 +209,5 @@ class EM_Widget extends WP_Widget {
     	return $instance;
     }
 }
-add_action('widgets_init', create_function('', 'return register_widget("EM_Widget");'));
+add_action('widgets_init', 'EM_Widget::init');
 ?>

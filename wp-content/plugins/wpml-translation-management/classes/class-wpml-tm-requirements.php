@@ -1,6 +1,9 @@
 <?php
 
 class WPML_TM_Requirements {
+
+    const INVALID_PHP_EXTENSIONS_OPTION = 'wpml-invalid-php-extensions';
+
 	private $missing;
 	private $missing_one;
 
@@ -34,61 +37,75 @@ class WPML_TM_Requirements {
 	}
 
 	public function missing_php_extensions() {
-		$extensions = array();
-		if ( ini_get( 'allow_url_fopen' ) !== '1' ) {
-			$extensions['allow_url_fopen'] = array(
-					'type'             => 'setting',
-					'type_description' => __( 'PHP Setting', 'wpml-translation-management' ),
-					'value'            => '1',
-			);
-		}
-		if ( ! extension_loaded( 'openssl' ) ) {
-			$extensions['openssl'] = array(
-					'type'             => 'extension',
-					'type_description' => __( 'PHP Extension', 'wpml-translation-management' ),
-			);
-		}
+		$extensions = $this->get_current_php_extensions();
 
 		if ( ! defined( 'ICL_HIDE_TRANSLATION_SERVICES' ) || ! ICL_HIDE_TRANSLATION_SERVICES ) {
 			
 			$wpml_wp_api_check = new WPML_WP_API();
 			
 			if ( count($extensions) > 0 && $wpml_wp_api_check->is_tm_page() ) {
-				$message = '';
-				$message .= '<p>';
-				$message .= __('WPML Translation Management requires the following PHP extensions and settings:', 'wpml-translation-management');
-				$message .= '</p>';
-				$message .= '<ul>';
+				$already_saved_invalid_extensions = get_option( self::INVALID_PHP_EXTENSIONS_OPTION );
+				if ( ! $already_saved_invalid_extensions || $already_saved_invalid_extensions !== $extensions ) {
+					ICL_AdminNotifier::add_message( $this->build_invalid_php_extensions_message_args( $extensions ) );
 
-				foreach ($extensions as $id => $data) {
-					$message .= '<li>';
-					if ('setting' === $data['type']) {
-						$message .= $data['type_description'] . ': <code>' . $id . '=' . $data['value'] . '</code>';
-					}
-					if ('extension' === $data['type']) {
-						$message .= $data['type_description'] . ': <strong>' . $id . '</strong>';
-					}
-					$message .= '</li>';
+					update_option( self::INVALID_PHP_EXTENSIONS_OPTION, $extensions );
 				}
-				$message .= '</ul>';
-
-				$args = array(
-						'id' => 'wpml-tm-missing-extensions',
-						'group' => 'wpml-tm-requirements',
-						'msg' => $message,
-						'type' => 'error',
-						'admin_notice' => true,
-						'hide' => true,
-
-				);
-
-				ICL_AdminNotifier::add_message($args);
-
 			} else {
 				ICL_AdminNotifier::remove_message_group('wpml-tm-requirements');
 			}
 		}
 	}
+
+	private function build_invalid_php_extensions_message_args( array $extensions ) {
+		$message = '';
+		$message .= '<p>';
+		$message .= __( 'WPML Translation Management requires the following PHP extensions and settings:', 'wpml-translation-management' );
+		$message .= '</p>';
+		$message .= '<ul>';
+
+		foreach ( $extensions as $id => $data ) {
+			$message .= '<li>';
+			if ( 'setting' === $data['type'] ) {
+				$message .= $data['type_description'] . ': <code>' . $id . '=' . $data['value'] . '</code>';
+			}
+			if ( 'extension' === $data['type'] ) {
+				$message .= $data['type_description'] . ': <strong>' . $id . '</strong>';
+			}
+			$message .= '</li>';
+		}
+		$message .= '</ul>';
+
+		return array(
+			'id'           => 'wpml-tm-missing-extensions',
+			'group'        => 'wpml-tm-requirements',
+			'msg'          => $message,
+			'type'         => 'error',
+			'admin_notice' => true,
+			'hide'         => true,
+
+		);
+    }
+
+	private function get_current_php_extensions() {
+		$extensions = array();
+
+		if ( ini_get( 'allow_url_fopen' ) !== '1' ) {
+			$extensions['allow_url_fopen'] = array(
+				'type'             => 'setting',
+				'type_description' => __( 'PHP Setting', 'wpml-translation-management' ),
+				'value'            => '1',
+			);
+		}
+		if ( ! extension_loaded( 'openssl' ) ) {
+			$extensions['openssl'] = array(
+				'type'             => 'extension',
+				'type_description' => __( 'PHP Extension', 'wpml-translation-management' ),
+			);
+		}
+
+		return $extensions;
+    }
+
 
 	/**
 	 * Missing plugins warning.

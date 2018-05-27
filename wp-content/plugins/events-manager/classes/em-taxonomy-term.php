@@ -65,7 +65,7 @@ class EM_Taxonomy_Term extends EM_Object {
 	 * @param string $taxonomy_class The name of the EM class used for this taxonomy.
 	 * @return EM_Taxonomy
 	 */
-	public static function get( $id, $taxonomy_class ){
+	public static function get( $id, $taxonomy_class = 'EM_Taxonomy_Term' ){
 		//check if it's not already global so we don't instantiate again
 		$EM_Taxonomy = !empty( $GLOBALS[$taxonomy_class] ) ? $GLOBALS[$taxonomy_class] : '';
 		if( is_object($EM_Taxonomy) && get_class($EM_Taxonomy) == $taxonomy_class ){
@@ -75,7 +75,7 @@ class EM_Taxonomy_Term extends EM_Object {
 				return $EM_Taxonomy;
 			}
 		}
-		if( is_object($id) && get_class($id) == '$taxonomy_class' ){
+		if( is_object($id) && get_class($id) == $taxonomy_class ){
 			return $id;
 		}else{
 			return new $taxonomy_class($id);

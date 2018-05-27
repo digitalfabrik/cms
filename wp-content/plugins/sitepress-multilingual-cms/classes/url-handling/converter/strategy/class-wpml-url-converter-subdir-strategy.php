@@ -110,16 +110,21 @@ class WPML_URL_Converter_Subdir_Strategy extends WPML_URL_Converter_Abstract_Str
 
 	/**
 	 * @param string $url
-	 * @param string $langauge
+	 * @param string $language
 	 *
 	 * @return string
 	 */
 	public function get_home_url_relative( $url, $language ) {
+
 		$language = ! $this->dir_default && $language === $this->default_language ? '' : $language;
 		$language = isset( $this->language_codes_map[ $language ] ) ? $this->language_codes_map[ $language ] : $language;
 
 		if ( $language ) {
-			return '/' . $language . $url;
+			$parts = parse_url( get_option( 'home' ) );
+			$path  = isset( $parts['path'] ) ? $parts['path'] : '';
+			$url   = preg_replace( '@^' . $path . '@', '', $url );
+
+			return rtrim( $path, '/' ) . '/' . $language . $url;
 		} else {
 			return $url;
 		}

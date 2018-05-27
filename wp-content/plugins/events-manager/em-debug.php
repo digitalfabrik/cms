@@ -33,10 +33,18 @@ $dbem_debug_options = array(
 		'dbem_bookings_email_cancelled_body' => $dbem_email_template
 );
 
-if( get_option('dbem_debug') && !empty($_REQUEST['page']) && $_REQUEST['page'] != 'events-manager-options' ){
+class EM_DEBUG {
+	public function __call( $name, $arguments ){
+		global $dbem_debug_options;
+		return $dbem_debug_options[$name];
+	}
+}
+
+if( get_option('dbem_debug') && (empty($_REQUEST['page']) || $_REQUEST['page'] != 'events-manager-options') ){
+	$EM_DEBUG = new EM_DEBUG();
 	foreach($dbem_debug_options as $debug_option => $value){
 		if( !empty($dbem_debug_options[$debug_option]) ){
-			add_filter('pre_option_'.$debug_option, create_function('','return "'.$dbem_debug_options[$debug_option].'";'));
+			add_filter('pre_option_'.$debug_option, array($EM_DEBUG,$debug_option));
 		}
 	}
 }

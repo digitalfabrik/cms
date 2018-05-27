@@ -8,6 +8,14 @@ class EM_ML_Admin{
 		if( !defined('EM_SETTINGS_TABS') && count(EM_ML::$langs) > 3 ) define('EM_SETTINGS_TABS',true);
 	}
 	
+	/**
+	 * Returns array of settings page names used in $_REQUEST['page'] that must always be served in the original language of the blog 
+	 * @return array
+	 */
+	public static function settings_pages(){
+		return apply_filters('em_ml_admin_settings_pages', array('events-manager-options'));
+	}
+	
 	public static function meta_boxes(){
 	    global $EM_Event, $EM_Location;
 	    //decide if it's a master event, if not then hide the meta boxes

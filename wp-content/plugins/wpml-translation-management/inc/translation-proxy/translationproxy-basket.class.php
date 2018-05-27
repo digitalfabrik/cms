@@ -57,8 +57,15 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 				self::$basket = false;
 			}
 			self::sync_target_languages();
-			update_option( self::ICL_TRANSLATION_JOBS_BASKET, self::$basket );
+			self::update_basket_option( self::$basket );
 			self::update_basket_notifications();
+		}
+
+		/**
+		 * @param array $basket
+		 */
+		private static function update_basket_option( $basket ) {
+			update_option( self::ICL_TRANSLATION_JOBS_BASKET, $basket, false );
 		}
 
 		private static function merge_baskets($from, $to) {
@@ -353,7 +360,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 							if ( $job_id ) {
 								/** @var stdClass $job_details */
 								$job_details = $wpml_translation_job_factory->get_translation_job( $job_id );
-								if ( $job_details->status == ICL_TM_IN_PROGRESS ) {
+								if ( ICL_TM_IN_PROGRESS === $job_details->status && ! $job_details->needs_update ) {
 									self::$messages[ ] = array(
 										'type' => 'update',
 										'text' => sprintf( __( 'Post "%s" will be ignored for %s, because translation is already in progress.',
@@ -558,7 +565,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 		}
 
 		/**
-		 * @param $batch TranslationProxy_Batch
+		 * @param WPML_TP_Batch|null $batch
 		 */
 		public static function set_batch_data( $batch ) {
 			self::get_basket();
@@ -567,7 +574,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 		}
 
 		/**
-		 * @return bool|TranslationProxy_Batch
+		 * @return false|null|WPML_TP_Batch
 		 */
 		public static function get_batch_data() {
 			self::get_basket();
@@ -584,6 +591,15 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			self::get_basket();
 
 			return isset( self::$basket[ 'name' ] ) ? self::$basket[ 'name' ] : false;
+		}
+
+		public static function set_options( array $options ) {
+			self::$basket['options'] = $options;
+		}
+
+		/** @return array */
+		public static function get_options() {
+			return isset( self::$basket['options'] ) ? self::$basket['options'] : array();
 		}
 		
 		public static function get_basket_extra_fields() {
@@ -801,6 +817,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 				$networking   = wpml_tm_load_tp_networking();
 				$project      = TranslationProxy::get_current_project();
 				$extra_fields = $networking->get_extra_fields_remote( $project );
+				TranslationProxy::save_extra_fields( $extra_fields );
 			} else {
 				$extra_fields = TranslationProxy::get_extra_fields_local();
 			}

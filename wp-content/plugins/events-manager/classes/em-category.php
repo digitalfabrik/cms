@@ -12,7 +12,7 @@ class EM_Category extends EM_Taxonomy_Term {
 	 * @param string $class_name
 	 * @return EM_Taxonomy
 	 */
-	public static function get( $id = false, $class_name = 'EM_Category' ){
+	public static function get( $id, $class_name = 'EM_Category' ){
 		return parent::get($id, $class_name);
 	}
 	
@@ -27,6 +27,6 @@ class EM_Category extends EM_Taxonomy_Term {
  * @return EM_Category
  * @uses EM_Category::get()
  */
-function em_get_category( $id = false ) {
+function em_get_category( $id ) {
 	return EM_Category::get($id);
 }

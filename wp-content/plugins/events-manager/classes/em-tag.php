@@ -14,7 +14,7 @@ class EM_Tag extends EM_Taxonomy_Term {
 	 * @param string $class_name
 	 * @return EM_Taxonomy
 	 */
-	public static function get( $id = false, $class_name = 'EM_Tag' ){
+	public static function get( $id, $class_name = 'EM_Tag' ){
 		return parent::get($id, $class_name);
 	}
 	
@@ -27,8 +27,8 @@ class EM_Tag extends EM_Taxonomy_Term {
  * Get an category in a db friendly way, by checking globals and passed variables to avoid extra class instantiations
  * @param mixed $id
  * @return EM_Category
- * @uses EM_Category::get()
+ * @uses EM_Tag::get()
  */
-function em_get_tag( $id = false ) {
+function em_get_tag( $id ) {
 	return EM_Tag::get($id);
 }

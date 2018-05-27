@@ -105,7 +105,7 @@ class User_Role_Editor {
         if ($multisite) {
             // new blog may be registered not at admin back-end only but automatically after new user registration, e.g. 
             // Gravity Forms User Registration Addon does
-            add_action( 'wpmu_new_blog', array($this, 'duplicate_roles_for_new_blog'), 10, 2);                        
+            add_action( 'wpmu_new_blog', array($this, 'duplicate_roles_for_new_blog'), 10, 2);
         }
                 
         // setup additional options hooks for the roles
@@ -394,7 +394,7 @@ class User_Role_Editor {
 
   
   /**
-   * every time when new blog created - duplicate to it roles from the main blog (1)  
+   * Every time when new blog is created - duplicate for it the roles from the main blog  
    * @global wpdb $wpdb
    * @global WP_Roles $wp_roles
    * @param int $blog_id
@@ -413,6 +413,8 @@ class User_Role_Editor {
         switch_to_blog($main_blog_id);
         $main_roles = new WP_Roles();  // get roles from primary blog
         $default_role = get_option('default_role');  // get default role from primary blog
+        $addons_data = apply_filters('ure_get_addons_data_for_new_blog', array());   // load addons data - for internal use in a Pro version
+        
         switch_to_blog($blog_id);  // switch to the new created blog
         $main_roles->use_db = false;  // do not touch DB
         $main_roles->add_cap('administrator', 'dummy_123456');   // just to save current roles into new blog
@@ -420,6 +422,8 @@ class User_Role_Editor {
         $main_roles->use_db = true;  // save roles into new blog DB
         $main_roles->remove_cap('administrator', 'dummy_123456');  // remove unneeded dummy capability
         update_option('default_role', $default_role); // set default role for new blog as it set for primary one
+        do_action('ure_set_addons_data_for_new_blog', $blog_id, $addons_data);  // save addons data for new blog - for internal use in a Pro version
+        
         switch_to_blog($current_blog);  // return to blog where we were at the begin
     }
     // end of duplicate_roles_for_new_blog()

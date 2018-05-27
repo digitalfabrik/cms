@@ -119,7 +119,8 @@ class WPML_TM_Translators_Dropdown {
 			}
 			$translators = apply_filters( 'wpml_tm_translators_list', $translators );
 
-			$dropdown .= '<select id="' . esc_attr( $id ) . '" name="' . esc_attr( $name ) . '" ' . ( $disabled ? 'disabled="disabled"' : '' ) . '>';
+			$dropdown .= '<select id="' . esc_attr( $id ) . '" class="js-wpml-translator-dropdown" data-lang-to="' . esc_attr( $to ) . '"
+								  name="' . esc_attr( $name ) . '" ' . ( $disabled ? 'disabled="disabled"' : '' ) . '>';
 
 			if ( $default_name ) {
 				$dropdown_selected = selected( $selected, false, false );
@@ -139,20 +140,20 @@ class WPML_TM_Translators_Dropdown {
 				$dropdown .= esc_html( $t->display_name );
 				if ( $show_service ) {
 					$dropdown .= ' (';
-					$dropdown .= isset( $t->service ) ? $t->service : __( 'Local', 'wpml-translation-management' );
+					$dropdown .= isset( $t->service ) ? $t->service : esc_html__( 'Local', 'wpml-translation-management' );
 					$dropdown .= ')';
 				}
 				$dropdown .= '</option>';
 			}
 			$dropdown .= '</select>';
-		} catch ( TranslationProxy_Api_Error $ex ) {
-			$dropdown .= __( 'Translation Proxy error', 'wpml-translation-management' ) . ': ' . $ex->getMessage();
+		} catch ( WPMLTranslationProxyApiException $ex ) {
+			$dropdown .= esc_html__( 'Translation Proxy error', 'wpml-translation-management' ) . ': ' . $ex->getMessage();
 		} catch ( Exception $ex ) {
-			$dropdown .= __( 'Error', 'wpml-translation-management' ) . ': ' . $ex->getMessage();
+			$dropdown .= esc_html__( 'Error', 'wpml-translation-management' ) . ': ' . $ex->getMessage();
 		}
 
 		if ( $add_label ) {
-			$dropdown = '<label for="' . esc_attr( $id ) . '">' . __( 'Translation jobs for:', 'wpml-translation-management' ) . '</label>&nbsp;' . $dropdown;
+			$dropdown = '<label for="' . esc_attr( $id ) . '">' . esc_html__( 'Translation jobs for:', 'wpml-translation-management' ) . '</label>&nbsp;' . $dropdown;
 		}
 
 		if ( $echo ) {

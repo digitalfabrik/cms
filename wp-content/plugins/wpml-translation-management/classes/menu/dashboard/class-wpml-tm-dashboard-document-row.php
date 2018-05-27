@@ -195,8 +195,8 @@ class WPML_TM_Dashboard_Document_Row {
 					?>
 
                     <span data-document_status="<?php echo $status; ?>">
-                        <i class="<?php echo $status_icon_class; ?>"
-                           title="<?php echo $lang[ 'display_name' ]; ?>: <?php echo $translation_status_text ?>"></i>
+                        <i class="<?php echo esc_attr( $status_icon_class ); ?>"
+                           title="<?php echo esc_attr( $lang[ 'display_name' ] ); ?>: <?php echo $translation_status_text ?>"></i>
                 	</span>
 					<?php
 				}

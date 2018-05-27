@@ -52,6 +52,10 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 	}
 
 	public function get_original_element_id() {
+		if ( ! $this->basic_data ) {
+			$this->maybe_load_basic_data();
+		}
+
 		return $this->basic_data->string_id;
 	}
 

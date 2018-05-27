@@ -208,7 +208,7 @@ if( !class_exists('EM_Permalinks') ){
 			$taxonomies = EM_Object::get_taxonomies();
 			foreach($taxonomies as $tax_arg => $taxonomy_info){
 				//set the dynamic rule for this taxonomy
-				$em_rules[$taxonomy_info['slug']."/([^/]+)/ical/?$"] = 'index.php?'.$taxonomy_info['query_var'].'=$matches[1]&ical=1';
+				$em_rules[$taxonomy_info['slug']."/(.+)/ical/?$"] = 'index.php?'.$taxonomy_info['query_var'].'=$matches[1]&ical=1';
 			}
 			//add RSS location CPT endpoint
 			if( get_option('dbem_locations_enabled') ){

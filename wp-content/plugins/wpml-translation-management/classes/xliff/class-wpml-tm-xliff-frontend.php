@@ -123,13 +123,6 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 					add_action( 'admin_notices', array( $this, '_error' ) );
 				}
 			}
-			if ( isset( $_POST['icl_tm_action'] ) && $_POST['icl_tm_action'] === 'save_notification_settings' ) {
-				$this->sitepress->save_settings(
-					array(
-						'include_xliff_in_notification' => isset( $_POST['include_xliff'] )
-						                                   && $_POST['include_xliff']
-					) );
-			}
 		}
 
 		return true;
@@ -156,7 +149,9 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 	 * @return array
 	 */
 	function new_job_notification( $mail, $job_id ) {
-		if ( $this->sitepress->get_setting( 'include_xliff_in_notification' ) ) {
+		$tm_settings = $this->sitepress->get_setting( 'translation-management', array() );
+
+		if ( isset( $tm_settings['notification']['include_xliff'] ) && $tm_settings['notification']['include_xliff'] ) {
 			$xliff_version = $this->get_user_xliff_version();
 			$xliff_file    = $this->get_xliff_file( $job_id, $xliff_version );
 			$temp_dir      = get_temp_dir();
@@ -412,7 +407,9 @@ class WPML_TM_Xliff_Frontend extends WPML_TM_Xliff_Shared {
 					if ( null !== $this->error ) {
 						return $job_data;
 					}
+					kses_remove_filters();
 					wpml_tm_save_data( $job_data );
+					kses_init();
 					$this->success[] = sprintf( __( 'Translation of job %s has been uploaded and completed.', 'wpml-translation-management' ), $job->job_id );
 				}
 			}

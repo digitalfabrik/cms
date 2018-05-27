@@ -54,28 +54,6 @@ if ( ! function_exists( 'wpml_is_ajax' ) ) {
 	}
 }
 
-if ( ! function_exists( 'is_ajax' ) ) {
-	/**
-	 * is_ajax - Returns true when the page is loaded via ajax.
-	 *
-	 * @deprecated Deprecated since 3.1.5
-	 *
-	 * @return bool
-	 */
-	function is_ajax() {
-
-		// Deprecation notice will be added in a next release
-//		_deprecated_function( "WPML " . __FUNCTION__, "3.1.5", "wpml_is_ajax" );
-
-		if ( defined( 'DOING_AJAX' ) ) {
-			return true;
-		}
-
-		return ( isset( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) && wpml_mb_strtolower( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) == 'xmlhttprequest' ) ? true : false;
-	}
-}
-
-
 /**
  * This file is part of the array_column library
  *

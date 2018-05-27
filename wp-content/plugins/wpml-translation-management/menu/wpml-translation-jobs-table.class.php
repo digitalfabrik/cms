@@ -63,7 +63,8 @@ class WPML_Translation_Jobs_Table {
 		/** @var WPML_Translation_Batch $batch */
 		foreach ( $paginated_results[ 'batches' ] as $batch_id => $batch ) {
 			/** @var WPML_Translation_Batch $batch */
-			$paginated_results[ 'batches' ][ $batch_id ] = $batch->get_jobs_as_array();
+			$batch_array = $batch->get_jobs_as_array();
+			$paginated_results[ 'batches' ][ $batch_id ] = $this->format_deadline_date( $batch_array );
 		}
 
 		$data = array(
@@ -75,5 +76,20 @@ class WPML_Translation_Jobs_Table {
 		);
 
 		return $data;
+	}
+
+	/**
+	 * @param array $batch_jobs
+	 *
+	 * @return array
+	 */
+	private function format_deadline_date( array $batch_jobs ) {
+		foreach ( $batch_jobs as &$job ) {
+			if ( isset( $job['deadline_date'] ) ) {
+				$job['deadline_date'] = date( 'Y-m-d',strtotime( $job['deadline_date'] ) );
+			}
+		}
+
+		return $batch_jobs;
 	}
 }

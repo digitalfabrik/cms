@@ -20,6 +20,11 @@ class EM_ML{
 	 */
 	static public $current_language;
 	/**
+	 * If switching languages temporarly, original current language stored here, null if we haven't switched.
+	 * @var string
+	 */
+	static public $current_language_restore;
+	/**
 	 * @var boolean Flag for whether EM is multilingual ready, false by default, set after init() has been executed first time.
 	 */
 	static public $is_ml = false;
@@ -76,6 +81,29 @@ class EM_ML{
 	 */
 	public static function get_langs(){
 		return self::$langs;
+	}
+	
+	/**
+	 * Switch to a language during runtime, useful if looping languages and doing things like getting options which are switched according to current language.
+	 * @param string $lang
+	 */
+	public static function switch_to_lang($lang){
+		if( empty(self::$current_language_restore) ) self::$current_language_restore = self::$current_language;
+		self::$current_language = $lang;
+	}
+	
+	/**
+	 * Restore the original current language we are loading this specific page in. Returns true if switched correctly, false if not.
+	 * @param string $lang
+	 * @return boolean
+	 */
+	public static function restore_current_lang(){
+		if( !empty(self::$current_language_restore) ){
+			self::$current_language = self::$current_language_restore;
+			self::$current_language_restore = null;
+			return true;
+		}
+		return false;
 	}
 
     /**

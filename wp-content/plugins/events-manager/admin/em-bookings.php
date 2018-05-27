@@ -79,8 +79,6 @@ function em_bookings_event(){
 		<?php
 		return false;
 	}
-	$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
-	$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 	$header_button_classes = is_admin() ? 'page-title-action':'button add-new-h2';
 	?>
 	<div class='wrap'>
@@ -106,9 +104,7 @@ function em_bookings_event(){
 			</p>
 			<p>
 				<strong><?php esc_html_e('Date','events-manager'); ?></strong> : 
-				<?php echo $localised_start_date; ?>
-				<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-				<?php echo substr ( $EM_Event->event_start_time, 0, 5 ) . " - " . substr ( $EM_Event->event_end_time, 0, 5 ); ?>							
+				<?php echo $EM_Event->output_dates(false, " - "). ' @ ' . $EM_Event->output_times(false, ' - '); ?>						
 			</p>
 			<p>
 				<strong><?php esc_html_e('Location','events-manager'); ?></strong> :
@@ -158,8 +154,8 @@ function em_bookings_ticket(){
 				<tr><td><?php echo __('Spaces','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_spaces) ? $EM_Ticket->ticket_spaces : '-'; ?></td></tr>
 				<tr><td><?php echo __('Min','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_min) ? $EM_Ticket->ticket_min : '-'; ?></td></tr>
 				<tr><td><?php echo __('Max','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_max) ? $EM_Ticket->ticket_max : '-'; ?></td></tr>
-				<tr><td><?php echo __('Start','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_start) ? $EM_Ticket->ticket_start : '-'; ?></td></tr>
-				<tr><td><?php echo __('End','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_end) ? $EM_Ticket->ticket_end : '-'; ?></td></tr>
+				<tr><td><?php echo __('Start','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_start) ? $EM_Ticket->start()->formatDefault() : '-'; ?></td></tr>
+				<tr><td><?php echo __('End','events-manager'); ?></td><td></td><td><?php echo ($EM_Ticket->ticket_end) ? $EM_Ticket->end()->formatDefault() : '-'; ?></td></tr>
 				<?php do_action('em_booking_admin_ticket_row', $EM_Ticket); ?>
 			</table>
 		</div>
@@ -202,17 +198,13 @@ function em_bookings_single(){
 						<div class="inside">
 							<?php
 							$EM_Event = $EM_Booking->get_event();
-							$localised_start_date = date_i18n(get_option('dbem_date_format'), $EM_Event->start);
-							$localised_end_date = date_i18n(get_option('dbem_date_format'), $EM_Event->end);
 							?>
 							<table>
 								<tr><td><strong><?php esc_html_e('Name','events-manager'); ?></strong></td><td><a class="row-title" href="<?php echo $EM_Event->get_bookings_url(); ?>"><?php echo ($EM_Event->event_name); ?></a></td></tr>
 								<tr>
 									<td><strong><?php esc_html_e('Date/Time','events-manager'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td>
 									<td>
-										<?php echo $localised_start_date; ?>
-										<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-										<?php echo substr ( $EM_Event->event_start_time, 0, 5 ) . " - " . substr ( $EM_Event->event_end_time, 0, 5 ); ?>
+										<?php echo $EM_Event->output('#_EVENTDATES @ #_EVENTTIMES'); ?>	
 									</td>
 								</tr>
 							</table>
@@ -265,8 +257,6 @@ function em_bookings_single(){
 						<div class="inside">
 							<?php
 							$EM_Event = $EM_Booking->get_event();
-							$localised_start_date = date_i18n(get_option('date_format'), $EM_Event->start);
-							$localised_end_date = date_i18n(get_option('date_format'), $EM_Event->end);
 							$shown_tickets = array();
 							?>
 							<div>
@@ -395,12 +385,12 @@ function em_bookings_single(){
 											</tr>
 											<?php endforeach; ?>
 										<?php endif; ?>
-										<tr>
+										<tr class="em-hr">
 											<th><?php esc_html_e('Total Price','events-manager'); ?></th>
 											<th>&nbsp;</th>
 											<th><?php echo $price_summary['total']; ?></th>
 										</tr>
-										<?php do_action('em_bookings_admin_ticket_totals_footer'); ?>
+										<?php do_action('em_bookings_admin_ticket_totals_footer', $EM_Booking); ?>
 									</tfoot>
 								</table>
 								<table class="em-form-fields" cellspacing="0" cellpadding="0">
