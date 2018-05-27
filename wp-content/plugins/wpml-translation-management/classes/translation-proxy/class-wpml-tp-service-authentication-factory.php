@@ -1,6 +1,6 @@
 <?php
 
-class WPML_TP_Service_Authentication_Factory extends WPML_SP_User {
+class WPML_TP_Service_Authentication_Factory {
 
 	/**
 	 * @var WPML_Translation_Proxy_Networking $tp_networking
@@ -20,13 +20,13 @@ class WPML_TP_Service_Authentication_Factory extends WPML_SP_User {
 	 * @param WPML_TP_Project_Factory           $project_factory
 	 */
 	public function __construct(
-		&$sitepress,
-		&$tp_networking,
-		&$project_factory
+		SitePress $sitepress,
+		WPML_Translation_Proxy_Networking $tp_networking,
+		WPML_TP_Project_Factory $project_factory
 	) {
-		parent::__construct( $sitepress );
-		$this->project_factory = &$project_factory;
-		$this->tp_networking   = &$tp_networking;
+		$this->sitepress       = $sitepress;
+		$this->project_factory = $project_factory;
+		$this->tp_networking   = $tp_networking;
 	}
 
 	/**

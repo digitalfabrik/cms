@@ -4,12 +4,32 @@ require_once WPML_TM_PATH . '/menu/sitepress-table.class.php';
 class SitePress_Table_Basket extends SitePress_Table {
 
     public static function enqueue_js() {
+    	/** @var WP_Locale $wp_locale */
+    	global $wp_locale;
+
         wp_enqueue_script(
             'wpml-tm-translation-basket-and-options',
             WPML_TM_URL . '/res/js/translation-basket-and-options.js',
-            array( 'wpml-tm-scripts', 'jquery-ui-progressbar' ),
+            array( 'wpml-tm-scripts', 'jquery-ui-progressbar', 'jquery-ui-datepicker', 'wpml-tooltip' ),
             WPML_TM_VERSION
         );
+
+        wp_localize_script(
+	        'wpml-tm-translation-basket-and-options',
+			'wpml_tm_translation_basket_and_options',
+			array(
+				'day_names'    => array_values( $wp_locale->weekday ),
+				'day_initials' => array_values( $wp_locale->weekday_initial ),
+				'month_names'  => array_values( $wp_locale->month ),
+			)
+		);
+
+	    wp_enqueue_style(
+	    	'wpml-tm-jquery-ui-datepicker',
+			WPML_TM_URL . '/res/css/jquery-ui/datepicker.css',
+			array( 'wpml-tooltip' ),
+			WPML_TM_VERSION
+		);
 
 	    $message = esc_html_x( 'You are about to translate duplicated posts.', '1/2 Confirm to disconnect duplicates', 'wpml-translation-management' ) . "\n";
 	    $message .= esc_html_x( 'These items will be automatically disconnected from originals, so translation is not lost when you update the originals.', '2/2 Confirm to disconnect duplicates', 'wpml-translation-management' );
@@ -51,6 +71,7 @@ class SitePress_Table_Basket extends SitePress_Table {
 		$this->action_callback();
 
 		$this->get_data();
+
 		$columns               = $this->get_columns();
 		$hidden                = array();
 		$sortable              = $this->get_sortable_columns();

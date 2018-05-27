@@ -28,6 +28,7 @@ class TranslationProxy_Service {
 	public $select_translator_iframe_url;
 	public $translator_contact_iframe_url;
 	public $quote_iframe_url;
+	public $batch_name_max_length;
 
 	public static function is_authenticated( $service ) {
 
@@ -40,9 +41,7 @@ class TranslationProxy_Service {
 	}
 
 	public static function list_services() {
-		$services = TranslationProxy_Api::proxy_request( '/services.json' );
-
-		return $services;
+		return TranslationProxy_Api::proxy_request( '/services.json' );
 	}
 
 	public static function get_service( $service_id ) {

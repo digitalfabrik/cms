@@ -22,8 +22,8 @@ class WPML_Translation_Proxy_Basket_Networking {
 
 	/**
 	 * @param array  $batch contains element types and ids of the items that are to be committed
-	 * @param string $basket_name name of the current translation basket
 	 * @param array  $translators translators to be used for this chunk of elements
+	 * @param array  $batch_options
 	 *
 	 * @uses \WPML_Translation_Basket::get_basket Gets the array representation of the translation basket
 	 * @uses \WPML_Translation_Proxy_Basket_Networking::generate_batch generates the batch in case no chunk was given for the commit from the basket
@@ -33,7 +33,7 @@ class WPML_Translation_Proxy_Basket_Networking {
 	 *
 	 * @return array
 	 */
-	function commit_basket_chunk( array $batch, $basket_name, array $translators ) {
+	function commit_basket_chunk( array $batch, array $translators, array $batch_options ) {
 		$basket_data = $this->basket->get_basket();
 		$batch  = (bool) $batch === true ? $batch : $this->generate_batch( $basket_data );
 		if ( (bool) $batch === false ) {
@@ -41,7 +41,7 @@ class WPML_Translation_Proxy_Basket_Networking {
 		}
 
 		foreach ( $batch as $batch_item ) {
-			if ( (bool) $basket_name === true ) {
+			if ( ! empty( $batch_options['basket_name'] ) ) {
 				break;
 			}
 			$element_type = $batch_item['type'];
@@ -49,13 +49,13 @@ class WPML_Translation_Proxy_Basket_Networking {
 			if ( ! isset( $basket_data[ $element_type ][ $post_id ] ) ) {
 				continue;
 			}
-			$basket_name = $this->get_batch_name( $post_id );
+			$batch_options['basket_name'] = $this->get_batch_name( $post_id );
 		}
 
-		$result         = $this->send_all_jobs( $batch, $translators, $basket_name );
+		$result         = $this->send_all_jobs( $batch, $translators, $batch_options );
 		$error_messages = $this->tm_instance->messages_by_type( 'error' );
 		if ( ( $has_error = (bool) $error_messages ) === true ) {
-			$this->rollback_basket_commit( $basket_name );
+			$this->rollback_basket_commit( $batch_options['basket_name'] );
 			$result['message']             = "";
 			$result['additional_messages'] = $error_messages;
 		}
@@ -94,17 +94,20 @@ class WPML_Translation_Proxy_Basket_Networking {
 	/**
 	 * Sends all jobs from basket in batch mode to translation proxy
 	 *
-	 * @param string $basket_name
 	 * @param array  $batch
 	 * @param array  $translators
+	 * @param array  $batch_options
 	 *
 	 * @return bool false in case of errors (read from TranslationManagement::get_messages('error') to get errors details)
 	 */
-	private function send_all_jobs( array $batch, array $translators, $basket_name ) {
+	private function send_all_jobs( array $batch, array $translators, array $batch_options ) {
 		$basket_name_saved = $this->basket->get_name();
-		$basket_name       = $basket_name_saved ? $basket_name_saved : $basket_name;
-		if ( $basket_name ) {
-			$this->basket->set_name( $basket_name );
+		$batch_options['basket_name'] = isset( $batch_options['basket_name'] ) ? $batch_options['basket_name'] : '';
+		$batch_options['basket_name'] = $basket_name_saved ? $basket_name_saved : $batch_options['basket_name'];
+		$this->basket->set_options( $batch_options );
+
+		if ( $batch_options['basket_name'] ) {
+			$this->basket->set_name( $batch_options['basket_name'] );
 		}
 
 		$valid_jobs = $this->get_valid_jobs_from_basket( $batch );
@@ -117,7 +120,8 @@ class WPML_Translation_Proxy_Basket_Networking {
 			           $item_type,
 			           $type_basket_items,
 			           $translators,
-			           $basket_name );
+			           $batch_options
+			);
 		}
 
 		// check if there were no errors

@@ -71,7 +71,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 			}
 
 			foreach ( $job->elements as $element ) {
-				if ( strpos($type, $element->field_type ) === 0 || strpos($element->field_type, $type ) === 0) {
+				if ( strpos( $type, $element->field_type ) === 0 || strpos( $element->field_type, $type ) === 0 ) {
 					$target              = str_replace( '<br class="xliff-newline" />', "\n", $target );
 					$field               = array();
 					$field['data']       = $target;
@@ -80,7 +80,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 					$field['field_type'] = $element->field_type;
 					$field['format']     = $element->field_format;
 
-					$data['fields'][] = $field;
+					$data['fields'][ $element->field_type ] = $field;
 					break;
 				}
 			}

@@ -16,6 +16,9 @@ class WPML_TP_Client {
 	/** @var WPML_TP_API_Services $services */
 	private $services;
 
+	/** @var WPML_TP_API_Batches $batches */
+	private $batches;
+
 	/** @var WPML_TP_API_TF_Ratings $ratings */
 	private $ratings;
 
@@ -36,6 +39,14 @@ class WPML_TP_Client {
 		}
 
 		return $this->services;
+	}
+
+	public function batches() {
+		if ( ! $this->batches ) {
+			$this->batches = new WPML_TP_API_Batches( $this );
+		}
+
+		return $this->batches;
 	}
 
 	/** @return WPML_TP_API_TF_Ratings */

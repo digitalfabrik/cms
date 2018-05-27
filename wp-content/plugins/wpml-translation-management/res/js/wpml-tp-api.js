@@ -1,4 +1,4 @@
-/*global jQuery, ajaxurl, wp */
+/*global jQuery, ajaxurl, wp, icl_ajx_response */
 var WPML_TP_API = WPML_TP_API || {};
 
 (function () {
@@ -10,22 +10,30 @@ var WPML_TP_API = WPML_TP_API || {};
 			event.preventDefault();
 
 			var self = this;
-
-			var spinner = jQuery('<span class="spinner is-active" style="float:none;"></span>');
-			jQuery(self).after(spinner);
+			var spinner = jQuery( '.refresh-language-pairs-section .spinner' );
+			
+			spinner.addClass( 'is-active' );
+			
 			wp.ajax.send({
-										 data:     {
-											 action: 'wpml-tp-refresh-language-pairs',
-											 nonce:  jQuery(self).data('nonce')
-										 },
-										 success:  function (msg) {
-											 // jQuery(self).attr('disabled', 'disabled');
-											 jQuery(self).after('<p>' + msg + '</p>');
-										 },
-										 complete: function () {
-											 spinner.remove();
-										 }
-									 });
+				data:     {
+					action: 'wpml-tp-refresh-language-pairs',
+					nonce:  jQuery(self).data('nonce')
+				},
+				success:  function (response) {
+					var response_text = jQuery( '.refresh-language-pairs-section .wpml_ajax_response' );
+
+					response_text.html( response.msg );
+					response_text.css( 'display', 'inline-block' );
+					spinner.removeClass( 'is-active' );
+
+					setTimeout(function() {
+						response_text.fadeOut( 'slow' );
+					}, 3000);
+				},
+				complete: function () {
+					spinner.remove();
+				}
+			});
 		};
 
 		jQuery('.js-refresh-language-pairs').on('click', refreshLanguagePairs);
@@ -35,5 +43,4 @@ var WPML_TP_API = WPML_TP_API || {};
 	jQuery(document).ready(function () {
 		WPML_TP_API.refreshLanguagePairs();
 	});
-
 }());

@@ -130,6 +130,32 @@ class URE_Ajax_Processor {
     // end of get_user_roles()
     
     
+    protected function get_role_caps() {
+        $role = filter_input(INPUT_POST, 'role', FILTER_SANITIZE_STRING);
+        if (empty($role)) {
+            $answer = array('result'=>'error', 'message'=>'Provide new role');
+            return $answer;
+        }
+        
+        $wp_roles = wp_roles();
+        if (!isset($wp_roles->roles[$role])) {
+            $answer = array('result'=>'error', 'message'=>'Requested role does not exist');
+            return $answer;
+        }
+        
+        $answer = array(
+            'result'=>'success', 
+            'message'=>'Role capabilities retrieved successfully', 
+            'role_id'=>$role,
+            'role_name'=>$wp_roles->roles[$role]['name'],
+            'caps'=>$wp_roles->roles[$role]['capabilities']
+                );
+        
+        return $answer;
+    }
+    // end of get_role_caps()
+    
+    
     protected function _dispatch() {
         switch ($this->action) {
             case 'get_caps_to_remove':
@@ -144,7 +170,9 @@ class URE_Ajax_Processor {
             case 'get_user_roles':
                 $answer = $this->get_user_roles();
                 break;
-
+            case 'get_role_caps': 
+                $answer = $this->get_role_caps();
+                break;
             default:
                 $answer = array('result' => 'error', 'message' => 'unknown action "' . $this->action . '"');
         }

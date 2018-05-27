@@ -518,9 +518,43 @@ function ure_turn_deprecated_caps(user_id) {
 // ure_turn_deprecated_caps()
 
 
+function ure_refresh_role_view(response) {
+    jQuery('#ure_task_status').hide();
+    if (response!==null && response.result=='error') {
+        alert(response.message);
+        return;
+    }
+    
+    ure_current_role = response.role_id;
+    ure_current_role_name = response.role_name;        
+    // Select capabilities included to a newly selected role and exclude others
+    jQuery('.ure-cap-cb').each(function () { // go through all checkboxes
+        jQuery(this).prop('checked', response.caps.hasOwnProperty(this.id));
+    }); 
+    
+    // Recalculate granted capabilities for capabilities groups
+    ure_count_caps_in_groups();
+    ure_select_selectable_element(jQuery('#ure_caps_groups_list'), jQuery('#ure_caps_group_all'));
+    var granted_only = jQuery('#granted_only').prop('checked');
+    if (granted_only) {
+        jQuery('#granted_only').prop('checked', false);
+        ure_show_granted_caps_only();
+    }
+    
+}
+// end of refresh_role_view()
+
+
 function ure_role_change(role_name) {
 
-    jQuery.ure_postGo(ure_data.page_url, {action: 'role-change', object: 'role', user_role: role_name, ure_nonce: ure_data.wp_nonce});
+    //jQuery.ure_postGo(ure_data.page_url, {action: 'role-change', object: 'role', user_role: role_name, ure_nonce: ure_data.wp_nonce});
+    jQuery('#ure_task_status').show();
+    var data = {
+        'action': 'ure_ajax',
+        'sub_action':'get_role_caps', 
+        'role': role_name, 
+        'wp_nonce': ure_data.wp_nonce};
+    jQuery.post(ajaxurl, data, ure_refresh_role_view, 'json');
 
 }
 // end of ure_role_change()
@@ -667,7 +701,12 @@ function ure_count_caps_in_groups() {
     
     for (i=0; i<ure_main.caps_counter.length; i++) {
         var el = jQuery('#ure_caps_group_'+ ure_main.caps_counter[i].id);
-        var value = el.text() +' ('+ ure_main.caps_counter[i].total +'/'+ ure_main.caps_counter[i].granted +')';
+        var old_text = el.text();
+        var key_pos = old_text.indexOf('(');    // exclude (0/0) text if it is in string already
+        if (key_pos>0) {
+            old_text = old_text.substr(0, key_pos - 1);
+        }
+        var value = old_text +' ('+ ure_main.caps_counter[i].total +'/'+ ure_main.caps_counter[i].granted +')';
         
         el.text(value);
     }

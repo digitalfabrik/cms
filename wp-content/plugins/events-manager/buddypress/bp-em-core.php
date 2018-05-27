@@ -317,8 +317,8 @@ if( !is_admin() || ( defined('DOING_AJAX') && !empty($_REQUEST['is_public'])) ){
 //CSS and JS Loading
 function bp_em_enqueue_scripts( ){
 	if( bp_is_current_component('events') || (bp_is_current_component('groups') && bp_is_current_action('group-events')) ){
-	    add_filter('option_dbem_js_limit', create_function('$args','return false;'));
-	    add_filter('option_dbem_css_limit', create_function('$args','return false;'));
+	    add_filter('option_dbem_js_limit', '__return_false');
+	    add_filter('option_dbem_css_limit', '__return_false');
 	}
 	
 }

@@ -38,7 +38,7 @@ class WPML_TM_Unsent_Jobs_Notice_Template {
 	 * @return array
 	 */
 	private function get_notice_model( $jobs ) {
-		$translators_tab = 'admin.php?page=wpml-translation-management/menu/main.php&sm=translators';
+		$translators_tab = 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=translators';
 		$jobs_formatted = $this->get_formatted_jobs( $jobs );
 
 		$model = array(

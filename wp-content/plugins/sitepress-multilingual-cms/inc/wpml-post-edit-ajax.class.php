@@ -4,6 +4,13 @@ class WPML_Post_Edit_Ajax {
 	const AJAX_ACTION_SWITCH_POST_LANGUAGE = 'wpml_switch_post_language';
 
 	/**
+	 * For test purposes
+	 *
+	 * @var WPML_Custom_Field_Setting_Factory
+	 */
+	public static $post_custom_field_settings;
+
+	/**
 	 * Ajax handler for adding a term via Ajax.
 	 */
 	public static function wpml_save_term_action() {
@@ -124,8 +131,10 @@ class WPML_Post_Edit_Ajax {
 					$fields_contents[ $editor_key ] = strip_tags( $post->$editor_field );
 				}
 			}
-			$fields_contents[ 'customfields' ] = apply_filters( 'wpml_copy_from_original_custom_fields',
+			$fields_contents[ 'builtin_custom_fields' ] = apply_filters( 'wpml_copy_from_original_custom_fields',
 			                                                    self::copy_from_original_custom_fields( $post ) );
+
+			$fields_contents['external_custom_fields'] = self::copy_meta_values_from_original( $post );
 		} else {
 			$fields_contents[ 'error' ] = __( 'Post not found', 'sitepress' );
 		}
@@ -152,6 +161,30 @@ class WPML_Post_Edit_Ajax {
 		);
 
 		return $elements;
+	}
+
+	/**
+	 * @param WP_Post $post
+	 * @return array
+	 */
+	private static function copy_meta_values_from_original ($post) {
+		global $wpdb;
+
+		if ( ! self::$post_custom_field_settings instanceof WPML_Custom_Field_Setting_Factory ) {
+			$translation_management = wpml_load_core_tm();
+			self::$post_custom_field_settings = new WPML_Custom_Field_Setting_Factory( $translation_management );
+		}
+
+		$post_custom_fields = self::$post_custom_field_settings->get_post_meta_keys();
+
+		if ( ! is_array( $post_custom_fields ) || empty( $post_custom_fields ) ) {
+			return array();
+		}
+
+		$sql = "SELECT meta_key as name, meta_value as value FROM {$wpdb->postmeta} WHERE post_id=%d AND meta_key IN ("
+		       . wpml_prepare_in( $post_custom_fields ) . ')';
+
+		return $wpdb->get_results( $wpdb->prepare( $sql, $post->ID ), ARRAY_A );
 	}
 
 	/**
@@ -217,6 +250,8 @@ class WPML_Post_Edit_Ajax {
 	}
 
 	private static function add_term_metadata( $term, $meta_data ) {
+		global $sitepress;
+
 		foreach ( $meta_data as $meta_key => $meta_value ) {
 			delete_term_meta( $term['term_id'], $meta_key );
 			$data = maybe_unserialize( stripslashes( $meta_value ) );
@@ -224,6 +259,9 @@ class WPML_Post_Edit_Ajax {
 				throw new RuntimeException( sprintf( 'Unable to add term meta form term: %d', $term['term_id'] ) );
 			}
 		}
+
+		$sync_meta_action = new WPML_Sync_Term_Meta_Action( $sitepress, $term[ 'term_taxonomy_id' ] );
+		$sync_meta_action->run();
 
 		return true;
 	}

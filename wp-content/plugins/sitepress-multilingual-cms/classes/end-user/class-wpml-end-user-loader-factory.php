@@ -20,7 +20,7 @@ class WPML_End_User_Loader_Factory implements IWPML_Deferred_Action_Loader, IWPM
 			return new WPML_End_User_Loader( array( $disabling_loader ) );
 		}
 
-		global $wp_api, $pagenow;
+		global $pagenow;
 
 		$container = new WPML_End_User_Dependency_Container();
 		$info_loader = new WPML_End_User_Info_Loader( $container );
@@ -35,7 +35,7 @@ class WPML_End_User_Loader_Factory implements IWPML_Deferred_Action_Loader, IWPM
 
 		$js_loader = new WPML_End_User_JS_Loader(
 			$notice_validator,
-			new WPML_End_User_Page_Identify( $wp_api, $pagenow )
+			new WPML_End_User_Page_Identify( new WPML_WP_API(), $pagenow )
 		);
 
 		return new WPML_End_User_Loader( array( $info_loader, $notice_loader, $js_loader, $disabling_loader ) );

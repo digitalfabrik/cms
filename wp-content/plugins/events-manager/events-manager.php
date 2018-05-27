@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.8.1.1
+Version: 5.9.2
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -10,7 +10,7 @@ Text Domain: events-manager
 */
 
 /*
-Copyright (c) 2017, Marcus Sykes
+Copyright (c) 2018, Marcus Sykes
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.8); //self expanatory
+define('EM_VERSION', 5.92); //self expanatory
 define('EM_PRO_MIN_VERSION', 2.392); //self expanatory
 define('EM_PRO_MIN_VERSION_CRITICAL', 2.377); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
@@ -66,7 +66,9 @@ function dbem_debug_mode(){
 
 // INCLUDES
 //Base classes
+include('classes/em-options.php');
 include('classes/em-object.php');
+include('classes/em-datetime.php');
 include('classes/em-taxonomy-term.php');
 include('classes/em-taxonomy-terms.php');
 include('classes/em-taxonomy-frontend.php');
@@ -115,6 +117,8 @@ include('classes/em-tickets-bookings.php');
 include('classes/em-tickets.php');
 //Admin Files
 if( is_admin() ){
+	include('classes/em-admin-notice.php');
+	include('classes/em-admin-notices.php');
 	include('admin/em-admin.php');
 	include('admin/em-bookings.php');
 	include('admin/em-docs.php');
@@ -710,7 +714,7 @@ add_action ( 'template_redirect', 'em_rss' );
  */
 function em_modified_monitor($result){
 	if($result){
-	    update_option('em_last_modified', current_time('timestamp', true));
+	    update_option('em_last_modified', time());
 	}
 	return $result;
 }

@@ -21,7 +21,7 @@ function em_get_location($id = false, $search_by = 'location_id') {
 	}
 	if( is_object($id) && get_class($id) == 'EM_Location' ){
 		return apply_filters('em_get_location', $id);
-	}else{
+	}elseif( !defined('EM_CACHE') || EM_CACHE ){
 		//check the cache first
 		$location_id = false;
 		if( is_numeric($id) ){
@@ -39,8 +39,8 @@ function em_get_location($id = false, $search_by = 'location_id') {
 				return apply_filters('em_get_location', $location);
 			}
 		}
-		return apply_filters('em_get_location', new EM_Location($id,$search_by));
 	}
+	return apply_filters('em_get_location', new EM_Location($id,$search_by));
 }
 /**
  * Object that holds location info and related functions
@@ -241,7 +241,7 @@ class EM_Location extends EM_Object {
 	function get_post($validate = true){
 	    global $allowedtags;
 		do_action('em_location_get_post_pre', $this);
-		$this->location_name = ( !empty($_POST['location_name']) ) ? htmlspecialchars_decode(wp_kses_data(htmlspecialchars_decode(wp_unslash($_POST['location_name'])))):'';
+		$this->location_name = ( !empty($_POST['location_name']) ) ? sanitize_post_field('post_title', $_POST['location_name'], $this->post_id, 'db'):'';
 		$this->post_content = ( !empty($_POST['content']) ) ? wp_kses( wp_unslash($_POST['content']), $allowedtags):'';
 		$this->get_post_meta(false);
 		$result = $validate ? $this->validate():true; //validate both post and meta, otherwise return true
@@ -388,6 +388,14 @@ class EM_Location extends EM_Object {
 		if( get_site_option('dbem_ms_mainblog_locations') ){ self::ms_global_switch_back(); }
 		$return = apply_filters('em_location_save', $post_save && $meta_save, $this );
 		$EM_SAVING_LOCATION = false;
+		//reload post data and add this location to the cache, after any other hooks have done their thing
+		//cache refresh when saving via admin area is handled in EM_Event_Post_Admin::save_post/refresh_cache
+		if( $post_save && $meta_save && $this->is_published() ){
+			//we won't depend on hooks, if we saved the event and it's still published in its saved state, refresh the cache regardless
+			$this->load_postdata($post_data);
+			wp_cache_set($this->location_id, $this, 'em_locations');
+			wp_cache_set($this->post_id, $this->location_id, 'em_locations_ids');
+		}
 		return $return;
 	}
 	
@@ -468,11 +476,6 @@ class EM_Location extends EM_Object {
 		}
 		$this->compat_keys();
 		$result = count($this->errors) == 0;
-		//add this location to the cache
-		if( $result ){
-			wp_cache_set($this->location_id, $this, 'em_locations');
-			wp_cache_set($this->post_id, $this->location_id, 'em_locations_ids');
-		}
 		return apply_filters('em_location_save_meta', count($this->errors) == 0, $this);
 	}
 	
@@ -547,7 +550,8 @@ class EM_Location extends EM_Object {
 			$post_status = $set_status ? 'publish':'pending';
 			if( empty($this->post_name) ){
 				//published or pending posts should have a valid post slug
-				$this->post_name = sanitize_title($this->post_title);
+				$slug = sanitize_title($this->post_title);
+				$this->post_name = wp_unique_post_slug( $slug, $this->post_id, $post_status, EM_POST_TYPE_LOCATION, 0);
 				$set_post_name = true;
 			}
 			if($set_post_status){

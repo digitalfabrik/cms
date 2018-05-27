@@ -272,7 +272,10 @@
 							action:                 'wpml_media_set_content_defaults',
 							always_translate_media: jQuery('input[name=content_default_always_translate_media]', form).is(':checked'),
 							duplicate_media:        jQuery('input[name=content_default_duplicate_media]', form).is(':checked'),
-							duplicate_featured:     jQuery('input[name=content_default_duplicate_featured]', form).is(':checked')
+							duplicate_featured:     jQuery('input[name=content_default_duplicate_featured]', form).is(':checked'),
+                            media_localization_posts:     jQuery('input[name=media_localization_posts]', form).is(':checked'),
+                            media_localization_custom_fields:     jQuery('input[name=media_localization_custom_fields]', form).is(':checked'),
+                            media_localization_strings:     jQuery('input[name=media_localization_strings]', form).is(':checked'),
 						},
 						dataType: 'json',
 						success:  function (ret) {

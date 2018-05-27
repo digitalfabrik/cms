@@ -28,7 +28,7 @@ global $EM_Event;
 			<th scope='col'><?php _e('Comment', 'events-manager')?></th>
 		</tr> 
 		<?php foreach($EM_Event->get_bookings()->bookings as $EM_Booking) {       
-			if( $EM_Booking->status == 1){
+			if( $EM_Booking->booking_status == 1){
 		    ?>
 		<tr>
 			

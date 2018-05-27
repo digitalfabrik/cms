@@ -269,6 +269,7 @@ class WPML_Translation_Editor_UI {
 				$field                = (array) $custom_field_data[2];
 				$field['title']       = $custom_field_data[0];
 				$field['field_style'] = $this->get_adjusted_field_style( $field, $custom_field_data );
+				$field['field_style'] = (string) apply_filters( 'wpml_tm_editor_string_style', $field['field_style'], $field['field_type'], $this->original_post );
 			} else if ( $this->is_a_term( $field ) ) {
 				$field['title'] = '';
 			} else {

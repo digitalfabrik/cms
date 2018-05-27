@@ -444,6 +444,7 @@ $limit $offset
 			'state' => false,
 			'country' => false,
 			'region' => false,
+			'postcode' => false,
 			'status' => 1, //approved locations only
 			'scope' => 'all', //we probably want to search all locations by default, not like events
 			'blog' => get_current_blog_id(),

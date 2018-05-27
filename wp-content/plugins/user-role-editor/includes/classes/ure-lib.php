@@ -54,7 +54,11 @@ class URE_Lib extends URE_Base_Lib {
         parent::__construct($options_id); 
         $this->debug = defined('URE_DEBUG') && (URE_DEBUG==1 || URE_DEBUG==true);
  
-        $this->bbpress = URE_bbPress::get_instance($this);
+        if ($this->is_pro()) {
+            $this->bbpress = new URE_bbPress_Pro($this);
+        } else {
+            $this->bbpress = new URE_bbPress($this);
+        }
         
         $this->upgrade();
     }
@@ -302,6 +306,23 @@ class URE_Lib extends URE_Base_Lib {
         
     }
     // end of init_current_role_name()
+    
+    
+    // Add existing WPBakery Visial Composer () plugin capabilities from this role to the list of capabiliteis for save with this role update -
+    // Visual Composer capabilities are excluded from a role update as they may store not boolean values.
+    protected function restore_visual_composer_caps() {
+        if (!isset($this->roles[$this->current_role]) || !is_array($this->roles[$this->current_role]['capabilities'])) {
+            return;
+        }
+        
+        foreach($this->roles[$this->current_role]['capabilities'] as $cap=>$value) {
+            if (strpos($cap, 'vc_access_rules_')!==false) {
+                $this->capabilities_to_save[$cap] = $value;
+            }
+        }
+        
+    }
+    // end of restore_visual_composer_caps()
         
                 
     /**
@@ -315,6 +336,8 @@ class URE_Lib extends URE_Base_Lib {
                 $this->capabilities_to_save[$available_capability['inner']] = true;
             }
         }
+        
+        $this->restore_visual_composer_caps();
     }
     // end of prepare_capabilities_to_save()
     
@@ -561,7 +584,7 @@ class URE_Lib extends URE_Base_Lib {
      */
     public function get_user_roles() {
 
-        if (!empty($this->bbpress)) {  // bbPress plugin is active
+        if ($this->bbpress->is_active()) {  // bbPress plugin is active
             $this->roles = $this->bbpress->get_roles();
         } else {
             $wp_roles = wp_roles();
@@ -586,22 +609,20 @@ class URE_Lib extends URE_Base_Lib {
         if (empty($this->roles)) {
             $this->get_user_roles();
         }
-        if ($this->bbpress!==null) {
+        if ($this->bbpress->is_active()) {
             remove_filter('editable_roles', 'bbp_filter_blog_editable_roles');
         }
         $roles = apply_filters('editable_roles', $this->roles);
-        if ($this->bbpress!==null) {
+        if ($this->bbpress->is_active()) {
             add_filter('editable_roles', 'bbp_filter_blog_editable_roles');
         }
         
         return $roles;
-
     }
     // end of get_editable_user_roles()
     
      
-    protected function convert_caps_to_readable($caps_name) 
-    {
+    protected function convert_caps_to_readable($caps_name) {
 
         $caps_name = str_replace('_', ' ', $caps_name);
         $caps_name = ucfirst($caps_name);
@@ -706,15 +727,27 @@ class URE_Lib extends URE_Base_Lib {
 
     
     /**
-     * return the array of unused user capabilities
-     * 
-     * @global WP_Roles $wp_roles
-     * @return array 
+     * Returns array of WPBakery Visual Composer plugin capabilities 
+     * extracted by 'vc_access_rules_' prefix
      */
-    public function get_caps_to_remove() {
-        global $wp_roles;
-
-        // build full capabilities list from all roles except Administrator 
+    public function get_visual_composer_caps($full_caps_list) {
+        $caps = array();
+        foreach(array_keys($full_caps_list) as $cap) {
+            if (strpos($cap, 'vc_access_rules_')!==false) {
+                $caps[$cap] = 1;
+            }
+        }
+        
+        return $caps;
+    }
+    // end of get_visual_composer_caps()
+    
+    /**
+     *  Build full capabilities list from all roles
+     */
+    private function get_full_caps_list_from_roles() {
+        $wp_roles = wp_roles();
+        // build full capabilities list from all roles
         $full_caps_list = array();
         foreach ($wp_roles->roles as $role) {
             // validate if capabilities is an array
@@ -726,29 +759,46 @@ class URE_Lib extends URE_Base_Lib {
                 }
             }
         }
-
+        
+        return $full_caps_list;
+    }
+    // end of get_full_caps_list_from_roles()
+    
+    
+    /**
+     * return the array of unused user capabilities
+     * 
+     * @global WP_Roles $wp_roles
+     * @return array 
+     */
+    public function get_caps_to_remove() {
+        $wp_roles = wp_roles();       
+        $full_caps_list = $this->get_full_caps_list_from_roles();
         $caps_to_exclude = $this->get_built_in_wp_caps();
         $ure_caps = URE_Own_Capabilities::get_caps();
-        $caps_to_exclude = array_merge($caps_to_exclude, $ure_caps);
+        $visual_composer_caps = $this->get_visual_composer_caps($full_caps_list);
+        $caps_to_exclude = array_merge($caps_to_exclude, $ure_caps, $visual_composer_caps);
 
         $caps_to_remove = array();
         foreach ($full_caps_list as $capability => $value) {
-            if (!isset($caps_to_exclude[$capability])) {    // do not touch built-in WP caps
-                // check roles
-                $cap_in_use = false;
-                foreach ($wp_roles->role_objects as $wp_role) {
-                    if ($wp_role->name != 'administrator') {
-                        if ($wp_role->has_cap($capability)) {
-                            $cap_in_use = true;
-                            break;
-                        }
+            if (isset($caps_to_exclude[$capability])) {    // do not touch built-in WP caps, URE own caps and Visual Composer caps
+                continue;
+            }
+            
+            // check roles
+            $cap_in_use = false;
+            foreach ($wp_roles->role_objects as $wp_role) {
+                if ($wp_role->name != 'administrator') {
+                    if ($wp_role->has_cap($capability)) {
+                        $cap_in_use = true;
+                        break;
                     }
                 }
-                if (!$cap_in_use) {
-                    $caps_to_remove[$capability] = 1;
-                }
             }
-        }
+            if (!$cap_in_use) {
+                $caps_to_remove[$capability] = 1;
+            }            
+        }   // foreach(...)
 
         return $caps_to_remove;
     }
@@ -892,7 +942,7 @@ class URE_Lib extends URE_Base_Lib {
      */
     protected function add_bbpress_caps() {
     
-        if (empty($this->bbpress)) {
+        if (!$this->bbpress->is_active()) {
             return;
         }
         
@@ -1176,7 +1226,7 @@ class URE_Lib extends URE_Base_Lib {
             return false;
         }
         
-        $this->capabilities_to_save = $this->remove_caps_not_allowed_for_single_admin($this->capabilities_to_save);
+        $this->capabilities_to_save = $this->remove_caps_not_allowed_for_single_admin($this->capabilities_to_save);        
         $this->roles[$this->current_role]['name'] = $this->current_role_name;
         $this->roles[$this->current_role]['capabilities'] = $this->capabilities_to_save;
         $option_name = $wpdb->prefix . 'user_roles';

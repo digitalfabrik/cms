@@ -23,16 +23,16 @@
 		<option value="<?php echo ICL_TM_COMPLETE ?>"><?php echo TranslationManagement::status2text( ICL_TM_COMPLETE ); ?></option>
 		<option value="<?php echo ICL_TM_DUPLICATE ?>"><?php _e( 'Content duplication', 'wpml-translation-management' ) ?></option>
 	</select>	&nbsp;	<label for="filter-job-lang-from">
-		<?php _e( 'From', 'wpml-translation-management' ); ?></label>		<select id="filter-job-lang-from" name="filter[from]">
-		<option value=""><?php _e( 'Any language', 'wpml-translation-management' ) ?></option>
+		<?php esc_html_e( 'From', 'wpml-translation-management' ); ?></label>		<select id="filter-job-lang-from" name="filter[from]">
+		<option value=""><?php esc_html_e( 'Any language', 'wpml-translation-management' ) ?></option>
 		<?php foreach ( $sitepress->get_active_languages() as $lang ): ?>
-			<option value="<?php echo $lang[ 'code' ] ?>"><?php echo $lang[ 'display_name' ] ?></option>
+			<option value="<?php echo esc_attr( $lang[ 'code' ] ); ?>"><?php echo esc_html( $lang[ 'display_name' ] ); ?></option>
 		<?php endforeach; ?>
 	</select>	&nbsp;	<label for="filter-job-lang-to">
-		<?php _e( 'To', 'wpml-translation-management' ); ?></label>		<select id="filter-job-lang-to" name="filter[to]">
-		<option value=""><?php _e( 'Any language', 'wpml-translation-management' ) ?></option>
+		<?php esc_html_e( 'To', 'wpml-translation-management' ); ?></label>		<select id="filter-job-lang-to" name="filter[to]">
+		<option value=""><?php esc_html_e( 'Any language', 'wpml-translation-management' ) ?></option>
 		<?php foreach ( $sitepress->get_active_languages() as $lang ): ?>
-			<option value="<?php echo $lang[ 'code' ] ?>"><?php echo $lang[ 'display_name' ] ?></option>
+			<option value="<?php echo esc_attr( $lang[ 'code' ] ); ?>"><?php echo esc_html( $lang[ 'display_name' ] ); ?></option>
 		<?php endforeach; ?>
 	</select>
 </script>

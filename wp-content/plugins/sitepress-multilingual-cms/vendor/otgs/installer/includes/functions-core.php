@@ -1,5 +1,4 @@
 <?php
-
 function WP_Installer(){
 	return WP_Installer::instance();
 }

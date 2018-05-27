@@ -38,7 +38,15 @@ class WPML_TM_Job_Update extends WPML_TP_Project_User {
 			                                            'signature' => 'UNDISCLOSED'
 		                                            ) );
 
-		$args[3] = $bypass_auth ? true : $args[3];
+		if ( isset( $args[3] ) ) {
+			$args[3] = $bypass_auth ? true : $args[3];
+
+			if ( is_numeric( $args[3] ) && $args[3] === 1 ) {
+				$bypass_auth = true;
+			}
+		} else {
+			$args[3] = $bypass_auth;
+		}
 
 		$ret = 'Project does not exist';
 		if ( $this->project ) {

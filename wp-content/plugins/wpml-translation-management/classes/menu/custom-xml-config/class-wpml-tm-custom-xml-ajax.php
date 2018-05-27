@@ -3,8 +3,12 @@
 /**
  * @author OnTheGo Systems
  */
-class WPML_TM_Custom_XML_AJAX {
+class WPML_TM_Custom_XML_AJAX extends WPML_TM_AJAX {
 	const AJAX_ACTION_BASE = 'wpml-tm-custom-xml';
+
+	private $custom_xml;
+	private $reload_config_callback;
+	private $validate;
 
 	function __construct( WPML_Custom_XML $custom_xml, WPML_XML_Config_Validate $validate, $reload_config_callback = null ) {
 		$this->custom_xml             = $custom_xml;
@@ -55,14 +59,5 @@ class WPML_TM_Custom_XML_AJAX {
 		}
 
 		return $content;
-	}
-
-	private function is_valid_request() {
-		if ( ! wp_verify_nonce( $_POST['nonce'], $_POST['action'] ) ) {
-			wp_send_json_error( __( 'You have attempted to submit data in a not legit way.', 'wpml-translation-management' ) );
-			return false;
-		}
-
-		return true;
 	}
 }

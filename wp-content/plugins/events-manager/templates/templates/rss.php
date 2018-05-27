@@ -14,7 +14,7 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
 		<link><?php	echo EM_URI; ?></link>
 		<description><?php echo esc_html(get_option('dbem_rss_main_description')); ?></description>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
-		<pubDate><?php echo date('D, d M Y H:i:s +0000', get_option('em_last_modified', current_time('timestamp',true))); ?></pubDate>
+		<pubDate><?php echo date('D, d M Y H:i:s +0000', get_option('em_last_modified')); ?></pubDate>
 		<atom:link href="<?php echo esc_attr(EM_RSS_URI); ?>" rel="self" type="application/rss+xml" />
 		<?php
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
@@ -36,7 +36,7 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
 					<title><?php echo $EM_Event->output( get_option('dbem_rss_title_format'), "rss" ); ?></title>
 					<link><?php echo $event_url; ?></link>
 					<guid><?php echo $event_url; ?></guid>
-					<pubDate><?php echo get_gmt_from_date(date('Y-m-d H:i:s', $EM_Event->start), 'D, d M Y H:i:s +0000'); ?></pubDate>
+					<pubDate><?php echo $EM_Event->start(true)->format('D, d M Y H:i:s +0000'); ?></pubDate>
 					<description><![CDATA[<?php echo $description; ?>]]></description>
 				</item>
 				<?php

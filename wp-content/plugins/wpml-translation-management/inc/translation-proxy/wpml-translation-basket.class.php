@@ -80,6 +80,15 @@ class WPML_Translation_Basket {
 		TranslationProxy_Basket::set_basket_name( $basket_name );
 	}
 
+	function set_options( array $batch_options ) {
+		TranslationProxy_Basket::set_options( $batch_options );
+	}
+
+	/** @return array */
+	function get_options() {
+		return TranslationProxy_Basket::get_options();
+	}
+
 	/**
 	 * @param string $basket_name
 	 * @param int    $basket_name_max_length
@@ -168,6 +177,13 @@ class WPML_Translation_Basket {
 	 */
 	public function add_strings_to_basket( $string_ids, $source_language, $target_languages ) {
 		TranslationProxy_Basket::add_strings_to_basket( $string_ids, $source_language, $target_languages );
+	}
+
+	/**
+	 * @param int $package_id
+	 */
+	public function remove_package( $package_id ) {
+		TranslationProxy_Basket::delete_item_from_basket( $package_id, 'package' );
 	}
 
 	private function sanitize_basket_name( $basket_name, $max_length ) {

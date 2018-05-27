@@ -77,28 +77,13 @@ class IntegreatMpdf {
 			$this->mpdf->SetDirectionality('rtl');
 		}
 		// head
-		$head = '	<html>
-						<head>
-							<style>
-								body {
-									font-family: "sans-serif";
-									font-size:   14px;
-									color:	   #000000;
-									line-height: 1.4;
-								}
-								.page {
-									margin-bottom:  35px;
-									padding-bottom: 35px;
-								}
-								.page-border {
-									border-bottom: 3px solid #BBBBBB;
-								}
-								.header_footer {
-									color: #666666;
-								}
-							</style>
-						</head>
-					<body>';
+		$head = '<html><head>';
+		// include custom css file
+		$css_file = __DIR__ . '/css/pdf.css';
+		if (is_file($css_file)) {
+			$head .= '<style>' . file_get_contents($css_file) . '</style>';
+		}
+		$head .= '</head><body>';
 		$this->mpdf->WriteHTML($head);
 
 		// TOC

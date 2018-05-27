@@ -38,9 +38,9 @@ class WPML_TM_Dashboard_Display_Filter {
                     $selected = 'selected="selected"';
                 }
                 ?>
-                <option value="<?php echo $lang[ 'code' ] ?>" <?php echo $selected; ?>>
+                <option value="<?php echo esc_attr( $lang[ 'code' ] ); ?>" <?php echo $selected; ?>>
                     <?php
-                    echo $lang[ 'display_name' ]; ?>
+                    echo esc_html( $lang[ 'display_name' ] ); ?>
                 </option>
             <?php
             }
@@ -60,8 +60,8 @@ class WPML_TM_Dashboard_Display_Filter {
             foreach ( $this->active_languages as $lang ) {
                 $selected = selected( $this->translation_filter[ 'to_lang' ], $lang[ 'code' ], false );
                 ?>
-                <option value="<?php echo $lang[ 'code' ] ?>" <?php echo $selected; ?>>
-                    <?php echo $lang[ 'display_name' ] ?>
+                <option value="<?php echo esc_attr( $lang[ 'code' ] ); ?>" <?php echo $selected; ?>>
+                    <?php echo esc_html( $lang[ 'display_name' ] ); ?>
                 </option>
             <?php
             }
@@ -153,14 +153,15 @@ class WPML_TM_Dashboard_Display_Filter {
     <?php
     }
 
-    private function filter_title_textbox() {
-	    ?>
-        <input type="text" id="filter_title" name="filter[title]"
-               value="<?php echo isset( $this->translation_filter['title'] ) ? $this->translation_filter['title'] : '' ?>"
-               placeholder="<?php esc_attr_e( 'Title', 'wpml-translation-management' ); ?>"
-        />
-	    <?php
-    }
+	private function filter_title_textbox() {
+		$title = isset( $this->translation_filter['title'] ) ? $this->translation_filter['title'] : '';
+		?>
+		<input type="text" id="filter_title" name="filter[title]"
+		       value="<?php echo esc_attr( $title ); ?>"
+		       placeholder="<?php esc_attr_e( 'Title', 'wpml-translation-management' ); ?>"
+		/>
+		<?php
+	}
 
     private function display_post_statuses_select() {
         $filter_post_status = isset( $this->translation_filter[ 'status' ] ) ? $this->translation_filter[ 'status' ]

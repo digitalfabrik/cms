@@ -78,11 +78,9 @@ class EM_ML_IO {
 		$EM_Event->event_all_day  = $event->event_all_day ;
 		$EM_Event->event_start_time  = $event->event_start_time ;
 		$EM_Event->event_end_time  = $event->event_end_time ;
-		$EM_Event->start  = $event->start ;
-		$EM_Event->end  = $event->end ;
-		$EM_Event->event_rsvp_date  = $event->event_rsvp_date ;
 			
 		$EM_Event->event_rsvp  = $event->event_rsvp ;
+		$EM_Event->event_rsvp_date  = $event->event_rsvp_date ;
 		$EM_Event->event_rsvp_time  = $event->event_rsvp_time ;
 						
 		$EM_Event->blog_id  = $event->blog_id ;

@@ -79,7 +79,12 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 			delete_post_meta( $element_id, '_icl_lang_duplicate_of' );
 
 			if ( ! empty( $data['complete'] ) && ! $is_incomplete ) {
-				$icl_translate_job->update( array( 'translated' => 1 ) );
+				$icl_translate_job->update(
+					array(
+						'translated' => 1,
+						'completed_date' => date( 'Y-m-d H:i:s' ),
+					)
+				);
 				$job = $this->get_translation_job( $data['job_id'], true );
 
 				if ( $is_external ) {

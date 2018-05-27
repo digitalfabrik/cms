@@ -260,7 +260,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		if ( ! $cache_found ) {
 			try {
 				$service = TranslationProxy_Service::get_service( $translation_service_id );
-			} catch ( TranslationProxy_Api_Error $ex ) {
+			} catch ( WPMLTranslationProxyApiException $ex ) {
 				$service = false;
 			}
 			if ( ! $service ) {
@@ -392,5 +392,21 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		$lang_details = $sitepress->get_language_details( $code );
 
 		return isset( $lang_details['display_name'] ) ? $lang_details['display_name'] : $code;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return mixed
+	 */
+	protected function get_basic_data_property( $name ) {
+		$value = null;
+		$this->maybe_load_basic_data();
+
+		if ( isset( $this->basic_data->{$name} ) ) {
+			$value = $this->basic_data->{$name};
+		}
+
+		return $value;
 	}
 }

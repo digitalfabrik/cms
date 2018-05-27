@@ -12,7 +12,7 @@ abstract class WPML_TM_MCS_Section_UI {
 
 	public function render_top_link() {
 		?>
-		<a href="#<?php echo $this->id; ?>"><?php echo $this->title ?></a>
+		<a href="#<?php echo esc_attr( $this->id ); ?>"><?php echo esc_html( $this->title ); ?></a>
 		<?php
 	}
 
@@ -20,10 +20,10 @@ abstract class WPML_TM_MCS_Section_UI {
 
 		?>
 
-		<div class="wpml-section" id="<?php echo $this->id; ?>">
+		<div class="wpml-section" id="<?php echo esc_attr( $this->id ); ?>">
 
 		    <div class="wpml-section-header">
-		        <h3><?php echo $this->title ?></h3>
+		        <h3><?php echo esc_html( $this->title ); ?></h3>
 			</div>
 
 			<div class="wpml-section-content">

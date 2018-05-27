@@ -255,7 +255,7 @@ if ($multisite && !is_network_admin()) {
 </div>     
 
 <?php        
-        
+        URE_View::output_task_status_div();
     }
     // end of output_role_edit_dialogs()
 

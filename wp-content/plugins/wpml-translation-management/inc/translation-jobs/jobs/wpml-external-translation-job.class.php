@@ -31,6 +31,12 @@ class WPML_External_Translation_Job extends WPML_Element_Translation_Job {
 	 * @return string
 	 */
 	public function get_title() {
+		$title = $this->get_title_from_db();
+
+		if ( $title ) {
+			return $title;
+		}
+
 		$original_element = $this->get_original_document();
 
 		return $original_element

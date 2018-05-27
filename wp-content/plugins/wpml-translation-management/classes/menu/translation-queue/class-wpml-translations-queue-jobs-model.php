@@ -39,8 +39,9 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 									 'type'      => __( 'Type', 'wpml-translation-management' ),
 									 'language'  => __( 'Language', 'wpml-translation-management' ),
 									 'status'    => __( 'Translation status', 'wpml-translation-management' ),
+									 'deadline'  => __( 'Deadline', 'wpml-translation-management' ),
 									 'check_all' => __( 'Check all', 'wpml-translation-management' ),
-									 'confirm'   => __('Are you sure you want to resign from this job?', 'wpml-translation-management')
+									 'confirm'   => __( 'Are you sure you want to resign from this job?', 'wpml-translation-management' ),
 								   );
 
 		$model[ 'jobs' ] = array();

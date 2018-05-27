@@ -22,10 +22,11 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 	 * @param mixed $rid
 	 * @param mixed $translator_id
 	 * @param       $translation_package
+	 * @param array $batch_options
 	 *
 	 * @return bool|int
 	 */
-	function add_translation_job( $rid, $translator_id, array $translation_package ) {
+	function add_translation_job( $rid, $translator_id, array $translation_package, array $batch_options ) {
 		global $wpdb, $current_user;
 
 		$translation_status = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}icl_translation_status WHERE rid=%d", $rid ) );
@@ -43,6 +44,15 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 			'translated' => 0,
 			'manager_id' => (int)$manager_id
 		);
+
+		if ( isset( $batch_options['deadline_date'] ) ) {
+			$translate_job_insert_data['deadline_date'] = $this->validate_deadline( $batch_options['deadline_date'] );
+		}
+
+		if ( isset( $translation_package['title'] ) ) {
+			$translate_job_insert_data['title'] = mb_substr( $translation_package['title'], 0, 160 );
+		}
+
 		$wpdb->insert( $wpdb->prefix . 'icl_translate_job', $translate_job_insert_data );
 		$job_id = $wpdb->insert_id;
 
@@ -50,6 +60,27 @@ abstract class WPML_TM_Update_Translation_Data_Action extends WPML_Translation_J
 		$this->fire_notification_actions( $job_id, $translation_status, $translator_id );
 
 		return $job_id;
+	}
+
+	/**
+	 * The expected format is "2017-09-28"
+	 *
+	 * @param string $date
+	 *
+	 * @return null|string
+	 */
+	private function validate_deadline( $date ) {
+		$date_parts = explode( '-', $date );
+
+		if ( ! is_array( $date_parts ) || count( $date_parts ) !== 3 ) {
+			return null;
+		}
+
+		if ( ! checkdate( $date_parts[1], $date_parts[2], $date_parts[0] )) {
+			return null;
+		}
+
+		return $date;
 	}
 
 	/**

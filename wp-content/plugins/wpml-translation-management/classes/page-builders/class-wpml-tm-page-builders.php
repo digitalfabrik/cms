@@ -77,45 +77,6 @@ class WPML_TM_Page_Builders {
 	}
 
 	/**
-	 * Pre-fill string translation if it already exists
-	 *
-	 * @param array  $previous_translation
-	 * @param array  $translation_package
-	 * @param string $language
-	 *
-	 * @return array
-	 */
-	public function populate_prev_translation( $previous_translation, $translation_package, $language ) {
-		if ( isset( $translation_package['contents'] ) ) {
-			foreach ( $translation_package['contents'] as $field_slug => $data ) {
-				$field = $this->create_field_wrapper( $field_slug );
-				if ( $field->is_valid() ) {
-					$string_package = $field->get_package();
-
-					if ( $string_package ) {
-						$original_strings = $string_package->get_package_strings();
-						$id_name_map      = wp_list_pluck( $original_strings, 'name', 'id' );
-						$string_name      = $id_name_map[ $field->get_string_id() ];
-
-						$translated_strings = $string_package->get_translated_strings( array() );
-						$string_translation = isset( $translated_strings[ $string_name ][ $language ]['value'] )
-							? $translated_strings[ $string_name ][ $language ]['value'] : '';
-
-						if ( $string_translation ) {
-							$previous_translation[ $field->get_field_slug() ] = new WPML_TM_Translated_Field( $field->get_field_slug(),
-								$data['data'],
-								base64_encode( $string_translation ),
-								ICL_TM_COMPLETE == $translated_strings[ $string_name ][ $language ]['status'] ? 1 : 0 );
-						}
-					}
-				}
-			}
-		}
-
-		return $previous_translation;
-	}
-
-	/**
 	 * @param int      $new_post_id
 	 * @param array    $fields
 	 * @param stdClass $job

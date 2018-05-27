@@ -7,6 +7,7 @@ class EM_Categories extends EM_Taxonomy_Terms {
 	protected $meta_key = 'event-category';
 	protected $terms_name = 'categories';
 	protected $term_class = 'EM_Category';
+	protected $ajax_search_action = 'search_cats';
 	
 	/**
 	 * Creates an EM_Categories instance, currently accepts an EM_Event object (gets all Categories for that event) or array of any EM_Category objects, which can be manipulated in bulk with helper functions.

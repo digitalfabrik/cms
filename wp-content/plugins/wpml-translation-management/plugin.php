@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Translation Management
 Plugin URI: https://wpml.org/
-Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-4-3/">WPML Translation Management 2.4.3 release notes</a>
+Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-5-2/">WPML Translation Management 2.5.2 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.4.3
+Version: 2.5.2
 Plugin Slug: wpml-translation-management
 */
 
@@ -26,7 +26,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
 	}
 }
 
-define( 'WPML_TM_VERSION', '2.4.3' );
+define( 'WPML_TM_VERSION', '2.5.2' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -53,14 +53,21 @@ require_once WPML_TM_PATH . '/inc/js-scripts.php';
 
 new WPML_TM_Requirements();
 
-function wpml_tm_load_ui() {
+function wpml_tm_load_ui( $sitepress = null ) {
+	if ( ! $sitepress ) {
+		global $sitepress;
+	}
+	if ( ! $sitepress || ! $sitepress instanceof SitePress || ! $sitepress->is_setup_complete() ) {
+		return;
+	}
+
 	require_once WPML_TM_PATH . '/menu/basket-tab/sitepress-table-basket.class.php';
 	require_once WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard.class.php';
 	require_once WPML_TM_PATH . '/menu/wpml-tm-menus.class.php';
 	require_once WPML_TM_PATH . '/menu/wpml-translator-settings.class.php';
 
 	if ( version_compare( ICL_SITEPRESS_VERSION, '3.3.1', '>=' ) ) {
-		global $sitepress, $wpdb, $WPML_Translation_Management, $ICL_Pro_Translation;
+		global $wpdb, $WPML_Translation_Management, $ICL_Pro_Translation;
 
 		$core_translation_management = wpml_load_core_tm();
 		$tm_loader                   = new WPML_TM_Loader();
@@ -98,10 +105,30 @@ function wpml_tm_load_ui() {
 			$translation_feedback_module = new WPML_TM_TF_Module( $action_filter_loader, $tf_settings );
 			$translation_feedback_module->run();
 		}
+
+		$action_filter_loader->load( array(
+			                             'WPML_TM_Jobs_Deadline_Estimate_AJAX_Action_Factory',
+			                             'WPML_TM_Jobs_Deadline_Cron_Hooks_Factory',
+			                             'WPML_TM_Emails_Settings_Factory',
+			                             'WPML_TM_Jobs_Summary_Report_Hooks_Factory',
+		));
 	}
+
+	$actions = array(
+		'WPML_TM_Translation_Services_Admin_Section_Resources_Factory',
+		'WPML_TM_Translation_Services_Admin_Section_Ajax_Factory',
+		'WPML_TM_Translation_Service_Authentication_Ajax_Factory',
+		'WPML_TM_Translation_Services_Refresh_Services_Factory',
+		'WPML_TM_Default_Settings_Factory',
+		'WPML_TP_Lock_Notice_Factory',
+		'WPML_TM_API_Hooks_Factory',
+	);
+
+	$action_filter_loader = new WPML_Action_Filter_Loader();
+	$action_filter_loader->load( $actions );
 }
 
-add_action( 'wpml_loaded', 'wpml_tm_load_ui' );
+add_action( 'wpml_loaded', 'wpml_tm_load_ui', 10, 1 );
 
 function wpml_tm_word_count_init() {
 	global $sitepress, $wpdb;
@@ -140,3 +167,22 @@ function wpml_tm_support_info( array $blocks ) {
 
 /** This filter is documented WPML Core in classes/support/class-wpml-support-info-ui.php */
 add_filter( 'wpml_support_info_blocks', 'wpml_tm_support_info' );
+
+function wpml_tm_icl20_migration() {
+	//@todo Remove `|| ( defined( 'WPML_TP_ICL_20_MIGRATION_OFF' ) && WPML_TP_ICL_20_MIGRATION_OFF )` after testing?
+	if ( defined( 'WPML_TP_ICL_20_MIGRATION_OFF' )
+	     && WPML_TP_ICL_20_MIGRATION_OFF ) {
+		return;
+	}
+
+	global $sitepress;
+	$loader = new WPML_TM_ICL20_Migration_Loader($sitepress->get_wp_api(), new WPML_TM_ICL20_Migration_Factory());
+	$loader->run();
+}
+
+if ( ! empty( $GLOBALS['sitepress'] ) && is_admin() ) {
+	add_action( 'wpml_tm_loaded', 'wpml_tm_icl20_migration' );
+}
+
+
+
