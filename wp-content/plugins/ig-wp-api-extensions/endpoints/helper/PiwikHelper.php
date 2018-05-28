@@ -18,7 +18,7 @@ function ig_api_page_tracking ( $call_name ) {
     $piwikTracker->setBrowserLanguage('en');
     $piwikTracker->setUserAgent('');
     $piwikTracker->setResolution(1, 1);
-    $piwikTracker->setIp(mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255));
+    $piwikTracker->setIp(mt_rand(0,255).".".mt_rand(0,255).".0.0");
 
     $piwikTracker->doTrackPageView( $call_name );
 }
