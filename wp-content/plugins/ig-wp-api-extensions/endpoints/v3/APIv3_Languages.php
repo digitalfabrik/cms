@@ -8,7 +8,7 @@ class APIv3_Languages extends APIv3_Base_Abstract {
 	const ROUTE = 'languages';
 
 	public function get_languages() {
-		return array_map([$this, 'prepare'], (apply_filters('wpml_active_languages', null, '')));
+		return array_map([$this, 'prepare'], array_values(apply_filters('wpml_active_languages', null, '')));
 	}
 
 	private function prepare(Array $language) {

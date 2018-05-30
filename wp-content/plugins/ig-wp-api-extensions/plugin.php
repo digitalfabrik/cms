@@ -3,13 +3,16 @@
  * Plugin Name: WP API Extensions
  * Description: Collection of extensions to the Wordpress REST API
  * Version: 0.1
- * Author: Martin Schrimpf
- * Author URI: https://github.com/Meash
+ * Author: Martin Schrimpf, Timo Ludwig, Sven Seeberg
+ * Author URI: https://github.com/Integreat
  * License: MIT
  */
 
 // wpml helper
 require_once __DIR__ . '/endpoints/helper/WpmlHelper.php';
+// Piwik / Matomo helper
+require_once __DIR__ . '/endpoints/helper/PiwikTracker.php';
+require_once __DIR__ . '/endpoints/helper/PiwikHelper.php';
 // base
 require_once __DIR__ . '/endpoints/RestApi_ExtensionBase.php';
 // v0
