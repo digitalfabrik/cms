@@ -744,6 +744,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 	 * @param WP_Comment $comment The comment object.
 	 */
 	public function column_response( $comment ) {
+		apply_filters('ig_feedback_response', $comment);
 		$post = get_post();
 
 		if ( ! $post ) {

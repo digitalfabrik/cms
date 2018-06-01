@@ -32,6 +32,10 @@ require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
 // v3
 require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Extra.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Post.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Search.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Hidden.php';
@@ -88,6 +92,9 @@ add_action('rest_api_init', function () {
 		],
 		3 => [
 			new APIv3_Extras(),
+			new APIv3_Feedback_Post(),
+			new APIv3_Feedback_Extra(),
+			new APIv3_Feedback_Search(),
 			new APIv3_Languages(),
 			new APIv3_Posts_Children(),
 			new APIv3_Posts_Disclaimer(),

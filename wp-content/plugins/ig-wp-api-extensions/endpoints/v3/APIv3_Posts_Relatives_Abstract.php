@@ -41,9 +41,4 @@ abstract class APIv3_Posts_Relatives_Abstract extends APIv3_Posts_Abstract {
 		return $post;
 	}
 
-	private function is_valid($id) {
-		$post = get_post($id);
-		return $post !== null && $post->post_status == 'publish';
-	}
-
 }

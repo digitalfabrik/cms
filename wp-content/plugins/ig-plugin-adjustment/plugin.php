@@ -10,37 +10,29 @@
  */
 
 add_action('upgrader_process_complete', function ($upgrader_object, $options) {
-	if (strcasecmp($options['type'], 'plugin') != 0) // only adjust plugins
-		return true;
-	$adjuster = new PluginAdjustment();
-	$adjuster->apply_wpml_adjustments();
-	return true;
+	if ($options['type'] === 'plugin') {
+		if (in_array('sitepress-multilingual-cms', $options['plugins'])) {
+			PluginAdjustment::apply_wpml_adjustment();
+		}
+	} elseif ($options['type'] === 'core') {
+		PluginAdjustment::apply_wp_comments_adjustment();
+	}
 }, 10, 2);
 
-class PluginAdjustment {
+abstract class PluginAdjustment {
 
-	private function replace_line_in_file($filepath, $search, $replace) {
-		$line_found = false;
-		$content = file($filepath); // reads an array of lines
-		$content = array_map(function ($line) use ($search, $replace, $filepath, &$line_found) {
-			if (stristr($line, $search)) {
-				if ($line_found) {
-					trigger_error("Search '$search' found in more than one line in file '$filepath'", E_USER_WARNING);
-				}
-				$line_found = true;
-				return str_replace($search, $replace, $line);
-			} else {
-				return $line;
-			}
-		}, $content);
-		file_put_contents($filepath, implode('', $content));
-		if (!$line_found) {
-			die("Could not find '$search' in file '$filepath'");
+	static function replace_in_file($file_path, $search, $replace) {
+		if (file_exists($file_path) && is_writeable($file_path)) {
+			$file_content = file_get_contents($file_path);
+			$file_content = str_replace($search, $replace, $file_content);
+			file_put_contents($file_path, $file_content);
+		} else {
+			echo '<div class="notice notice-error"><p><strong>The file "' . $file_path . '" is not writable, please implement all modifications described in ig-plugin-adjustment manually.</strong></p></div>';
 		}
 	}
 
-	public function apply_wpml_adjustments() {
-		$tree_view_file = plugin_dir_path(__FILE__) . '../sitepress-multilingual-cms/res/js/post-edit-languages.js';
+	static function apply_wpml_adjustment() {
+		$file_path = get_home_path() . 'wp-content/plugins/sitepress-multilingual-cms/res/js/post-edit-languages.js';
 		$search = 'urlData = {
 					post_type: type,
 					lang:      language_code
@@ -62,7 +54,17 @@ class PluginAdjustment {
 				if (statuses && statuses.length) {
 					urlData.post_status = statuses.join(\',\');
 				}';
-		$this->replace_line_in_file($tree_view_file, $search, $replace);
+		self::replace_in_file($file_path, $search, $replace);
+	}
+
+	static function apply_wp_comments_adjustment() {
+		$file_path = get_home_path() . 'wp-admin/includes/class-wp-comments-list-table.php';
+		$search = 'public function column_response( $comment ) {
+		$post = get_post();';
+		$replace = 'public function column_response( $comment ) {
+		apply_filters(\'ig_feedback_response\', $comment);
+		$post = get_post();';
+		self::replace_in_file($file_path, $search, $replace);
 	}
 
 }
