@@ -14,8 +14,6 @@ add_action('upgrader_process_complete', function ($upgrader_object, $options) {
 		if (in_array('sitepress-multilingual-cms', $options['plugins'])) {
 			PluginAdjustment::apply_wpml_adjustment();
 		}
-	} elseif ($options['type'] === 'core') {
-		PluginAdjustment::apply_wp_comments_adjustment();
 	}
 }, 10, 2);
 
@@ -54,16 +52,6 @@ abstract class PluginAdjustment {
 				if (statuses && statuses.length) {
 					urlData.post_status = statuses.join(\',\');
 				}';
-		self::replace_in_file($file_path, $search, $replace);
-	}
-
-	static function apply_wp_comments_adjustment() {
-		$file_path = get_home_path() . 'wp-admin/includes/class-wp-comments-list-table.php';
-		$search = 'public function column_response( $comment ) {
-		$post = get_post();';
-		$replace = 'public function column_response( $comment ) {
-		apply_filters(\'ig_feedback_response\', $comment);
-		$post = get_post();';
 		self::replace_in_file($file_path, $search, $replace);
 	}
 

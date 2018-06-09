@@ -33,7 +33,11 @@ require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Categories.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Cities.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Events.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Extra.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Extras.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Post.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Search.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
@@ -93,7 +97,11 @@ add_action('rest_api_init', function () {
 		3 => [
 			new APIv3_Extras(),
 			new APIv3_Feedback_Post(),
+			new APIv3_Feedback_Categories(),
+			new APIv3_Feedback_Cities(),
+			new APIv3_Feedback_Events(),
 			new APIv3_Feedback_Extra(),
+			new APIv3_Feedback_Extras(),
 			new APIv3_Feedback_Search(),
 			new APIv3_Languages(),
 			new APIv3_Posts_Children(),
