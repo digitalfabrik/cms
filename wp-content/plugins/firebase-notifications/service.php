@@ -88,6 +88,15 @@ class FirebaseNotificationsService {
 			'notification' => array (
 				'title' => $title,
 				'body' => $body
+			),
+			'android' => array (
+				'ttl' => '604800s'
+			),
+			'apns' => array (
+				'headers' => array(
+					'apns-priority' => '5',
+					'apns-expiration' => '604800'
+				)
 			)
 		 );
 		return json_encode ( $fields );
