@@ -88,7 +88,27 @@ class FirebaseNotificationsService {
 			'notification' => array (
 				'title' => $title,
 				'body' => $body
-			)
+			),
+			'data' => array (
+				'title' => $title,
+				'body' => $body,
+				'city' => (string)get_current_blog_id(),
+				'lanCode' => $language
+			),
+			'apns' => array(
+				'headers' => array(
+					'apns-priority' => '5'
+				),
+				'payload' => array(
+					'aps' => array(
+						'category' => 'NEW_MESSAGE_CATEGORY'
+					)
+				)
+			),
+			'android' => array(
+				'ttl' => '86400s'
+			),
+			'to' => '/topics/' . ($this->settings['per_blog_topic'] == '1' ? (string)$blog_id . "-" . $language . "-" : "") . $group
 		 );
 		return json_encode ( $fields );
 	}
