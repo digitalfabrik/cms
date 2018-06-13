@@ -110,7 +110,6 @@ class FirebaseNotificationsService {
 			),
 			'to' => '/topics/' . ($this->settings['per_blog_topic'] == '1' ? (string)$blog_id . "-" . $language . "-" : "") . $group
 		 );
-		 error_log(json_encode( $fields));
 		return json_encode ( $fields );
 	}
 
