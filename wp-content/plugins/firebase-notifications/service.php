@@ -92,7 +92,7 @@ class FirebaseNotificationsService {
 			'data' => array (
 				'title' => $title,
 				'body' => $body,
-				'city' => (string)$blog_id,
+				'city' => $blog_id,
 				'lanCode' => $language
 			),
 			'apns' => array(
