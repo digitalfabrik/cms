@@ -22,4 +22,13 @@ abstract class APIv3_Base_Abstract {
             'args' => $this->args
 		]);
 	}
+
+	/*
+	 * Test whether a given id has a corresponding published post.
+	 */
+	protected function is_valid($id) {
+		$post = get_post($id);
+		return $post !== null && $post->post_status == 'publish';
+	}
+
 }
