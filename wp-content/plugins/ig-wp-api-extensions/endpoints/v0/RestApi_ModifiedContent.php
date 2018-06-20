@@ -228,8 +228,8 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 			'content' => ( $post->post_status != "trash" ? $content : "" ),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
-			'available_language_urls' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_url),
-			'available_languages' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_id),
+			'available_language_urls' => $this->wpml_helper->get_available_languages($post, 'map_post_to_foreign_language_url'),
+			'available_languages' => $this->wpml_helper->get_available_languages($post, 'map_post_to_foreign_language_id'),
 			'thumbnail' => $this->prepare_thumbnail($post),
 		];
 		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
