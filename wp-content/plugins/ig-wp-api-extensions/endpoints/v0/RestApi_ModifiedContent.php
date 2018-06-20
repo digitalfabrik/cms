@@ -32,7 +32,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 	private $datetime_input_format = DateTime::ATOM;
 	private $datetime_query_format = DateTime::ATOM;
 	private $datetime_zone_gmt;
-	private $current_request;
 
 	public function __construct() {
 		parent::__construct();
@@ -99,9 +98,11 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 			$query_result = array_merge($query_result, $recurring_events);
 		}
 
+		$post_ids = $this->get_post_ids_recursive(0);
+
 		$result = [];
 		foreach ($query_result as $post) {
-			if( isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash" ) {
+			if((isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash") || !in_array($post->ID, $post_ids)) {
 				continue;
 			}
 			$result[] = $this->prepare_item($post);
