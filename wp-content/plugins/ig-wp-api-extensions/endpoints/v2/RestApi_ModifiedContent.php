@@ -32,7 +32,6 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 	private $datetime_input_format = DateTime::ATOM;
 	private $datetime_query_format = DateTime::ATOM;
 	private $datetime_zone_gmt;
-	private $current_request;
 
 	public function __construct() {
 		parent::__construct();
@@ -99,9 +98,11 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 			$query_result = array_merge($query_result, $recurring_events);
 		}
 
+		$post_ids = $this->get_post_ids_recursive(0);
+
 		$result = [];
 		foreach ($query_result as $post) {
-			if( isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash" ) {
+			if((isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash") || !in_array($post->ID, $post_ids)) {
 				continue;
 			}
 			$result[] = $this->prepare_item($post);
@@ -230,8 +231,8 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 			'content' => ( $post->post_status != "trash" ? $content : "" ),
 			'parent' => $post->post_parent,
 			'order' => $post->menu_order,
-			'available_language_urls' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_url),
-			'available_languages' => $this->wpml_helper->get_available_languages($post, map_post_to_foreign_language_id),
+			'available_language_urls' => $this->wpml_helper->get_available_languages($post, 'map_post_to_foreign_language_url'),
+			'available_languages' => $this->wpml_helper->get_available_languages($post, 'map_post_to_foreign_language_id'),
 			'thumbnail' => $this->prepare_thumbnail($post),
 		];
 		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
