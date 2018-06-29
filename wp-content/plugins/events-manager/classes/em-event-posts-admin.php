@@ -68,7 +68,7 @@ class EM_Event_Posts_Admin{
         if( !empty($_REQUEST['recurrence_id']) && is_numeric($_REQUEST['recurrence_id']) ){
             $EM_Event = em_get_event($_REQUEST['recurrence_id']);
             ?>
-            <div class="updated">
+            <div class="notice notice-info">
                 <p><?php echo sprintf(esc_html__('You are viewing individual recurrences of recurring event %s.', 'events-manager'), '<a href="'.$EM_Event->get_edit_url().'">'.$EM_Event->event_name.'</a>'); ?></p>
                 <p><?php esc_html_e('You can edit individual recurrences and disassociate them with this recurring event.', 'events-manager'); ?></p>
             </div>
@@ -224,16 +224,17 @@ class EM_Event_Posts_Admin{
 				break;
 			case 'date-time':
 				//get meta value to see if post has location, otherwise
-				$localised_start_date = date_i18n(get_option('date_format'), $EM_Event->start);
-				$localised_end_date = date_i18n(get_option('date_format'), $EM_Event->end);
+				$localised_start_date = $EM_Event->start()->i18n(get_option('date_format'));
+				$localised_end_date = $EM_Event->end()->i18n(get_option('date_format'));
 				echo $localised_start_date;
 				echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'';
 				echo "<br />";
 				if(!$EM_Event->event_all_day){
-					echo date_i18n(get_option('time_format'), $EM_Event->start) . " - " . date_i18n(get_option('time_format'), $EM_Event->end);
+					echo $EM_Event->start()->i18n(get_option('time_format')) . " - " . $EM_Event->end()->i18n(get_option('time_format'));
 				}else{
 					echo get_option('dbem_event_all_day_message');
 				}
+				if( $EM_Event->get_timezone()->getName() != EM_DateTimeZone::create()->getName() ) echo '<span class="dashicons dashicons-info" style="font-size:16px; color:#ccc; padding-top:2px;" title="'.esc_attr(str_replace('_', ' ', $EM_Event->event_timezone)).'"></span>';
 				break;
 			case 'extra':
 				if( get_option('dbem_rsvp_enabled') == 1 && !empty($EM_Event->event_rsvp) && $EM_Event->can_manage('manage_bookings','manage_others_bookings')){
@@ -308,7 +309,7 @@ class EM_Event_Recurring_Posts_Admin{
 	
 	public static function admin_notices(){
 		?>
-		<div class="updated">
+		<div class="notice notice-info">
 			<p><?php esc_html_e( 'Modifications to recurring events will be applied to all recurrences and will overwrite any changes made to those individual event recurrences.', 'events-manager'); ?></p>
 			<p><?php esc_html_e( 'Bookings to individual event recurrences will be preserved if event times and ticket settings are not modified.', 'events-manager'); ?></p>
 			<p>

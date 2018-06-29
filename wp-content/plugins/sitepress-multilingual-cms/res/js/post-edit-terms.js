@@ -51,27 +51,39 @@
 
 		// make sure the title is html entities encoded.
 		var post_name = WPML_core.htmlentities(jQuery('#title').val());
+		if (post_name.length == 0) {
+			post_name = icl_post_edit_messages.empty_post_title;
+		}
 
 		lang_switch_confirm_html = lang_switch_confirm_html.replace('{switch_language_title}', icl_post_edit_messages.switch_language_title);
 		lang_switch_confirm_html = lang_switch_confirm_html.replace('{switch_language_message}', icl_post_edit_messages.switch_language_message);
 		lang_switch_confirm_html = lang_switch_confirm_html.replace('{switch_language_confirm}', icl_post_edit_messages.switch_language_confirm);
 		lang_switch_confirm_html = lang_switch_confirm_html.replace('{post_name}', '<i>' + post_name + '</i>');
 
-		jQuery(lang_switch_confirm_html).dialog({
-																							modal:   true,
-																							width:   'auto',
-																							buttons: {
-																								Ok:     function () {
-																									defer.resolve();
-																									jQuery(this).dialog("close");
+        jQuery(lang_switch_confirm_html).dialog({
+            modal: true,
+            width: 'auto',
+            buttons: [
+				{
+					text : icl_post_edit_messages.ok_button_label,
+					id : "ok",
+					click: function () {
+                        defer.resolve();
+                        jQuery(this).dialog("close");
 
-																								},
-																								Cancel: function () {
-																									defer.reject();
-																									jQuery(this).dialog("close");
-																								}
-																							}
-																						});
+                    }
+				},
+                {
+                    text : icl_post_edit_messages.cancel_button_label,
+                    id : "cancel",
+                    click: function () {
+                        defer.reject();
+                        jQuery(this).dialog("close");
+
+                    }
+                }
+			]
+        });
 		return defer.promise();
 	}
 

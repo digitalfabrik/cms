@@ -5,22 +5,36 @@ $description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_
 $location_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_location_format' ) ) );
 $parsed_url = parse_url(get_bloginfo('url'));
 $site_domain = preg_replace('/^www./', '', $parsed_url['host']);
+$timezone_support = defined('EM_ICAL_TIMEZONE_SUPPORT') ? EM_ICAL_TIMEZONE_SUPPORT : true;
 
 //figure out limits
 $ical_limit = get_option('dbem_ical_limit');
 $page_limit = $ical_limit > 50 || !$ical_limit ? 50:$ical_limit; //set a limit of 50 to output at a time, unless overall limit is lower
 //get passed on $args and merge with defaults
 $args = !empty($args) ? $args:array(); /* @var $args array */
-$args = array_merge(array('limit'=>$page_limit, 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date', 'scope' => get_option('dbem_ical_scope') ), $args);
+$args = array_merge(array('limit'=>$page_limit, 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date,event_start_time', 'scope' => get_option('dbem_ical_scope') ), $args);
 $args = apply_filters('em_calendar_template_args',$args);
 //get first round of events to show, we'll start adding more via the while loop
 $EM_Events = EM_Events::get( $args );
+$timezones = array();
 
 //calendar header
-$output = "BEGIN:VCALENDAR
+$output_header = "BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN";
-echo preg_replace("/([^\r])\n/", "$1\r\n", $output);
+
+//if timezone is supported, we output the blog timezone here
+if( $timezone_support ){
+	//get default blog timezone and output only if we're not in UTC or with manual offsets
+	$blog_timezone = EM_DateTimeZone::create()->getName();
+	if( !preg_match('/^UTC/', $blog_timezone) ){
+		$output_header .= "
+TZID:{$blog_timezone}
+X-WR-TIMEZONE:{$blog_timezone}";
+	}
+}
+
+echo preg_replace("/([^\r])\n/", "$1\r\n", $output_header);
 
 //loop through events
 $count = 0;
@@ -28,13 +42,37 @@ while ( count($EM_Events) > 0 ){
 	foreach ( $EM_Events as $EM_Event ) {
 		/* @var $EM_Event EM_Event */
 	    if( $ical_limit != 0 && $count > $ical_limit ) break; //we've reached our maximum
+	    //figure out the timezone of this event, or if it's an offset and add to list of timezones and date ranges to define in VTIMEZONE
+	    $show_timezone = $timezone_support && !preg_match('/^UTC/', $EM_Event->get_timezone()->getName());
+	    if( $show_timezone ){
+	    	$timezone = $EM_Event->start()->getTimezone()->getName();
+	    	if( empty($timezones[$timezone]) ){
+	    		$timezones[$timezone] = array( $EM_Event->start()->getTimestamp(), $EM_Event->end()->getTimestamp() );
+	    	}else{
+	    		if( $timezones[$timezone][0] > $EM_Event->start()->getTimestamp() ) $timezones[$timezone][0] = $EM_Event->start()->getTimestamp();
+	    		if( $timezones[$timezone][1] < $EM_Event->end()->getTimestamp() ) $timezones[$timezone][1] = $EM_Event->end()->getTimestamp();
+	    	}
+	    }
 	    //calculate the times along with timezone offsets
 		if($EM_Event->event_all_day){
-			$dateStart	= ';VALUE=DATE:'.date('Ymd',$EM_Event->start); //all day
-			$dateEnd	= ';VALUE=DATE:'.date('Ymd',$EM_Event->end + 86400); //add one day
+			//we get local time since we're representing a date not a time
+			$dateStart	= ';VALUE=DATE:'.$EM_Event->start()->format('Ymd'); //all day
+			$dateEnd	= ';VALUE=DATE:'.$EM_Event->end()->copy()->add('P1D')->format('Ymd'); //add one day
 		}else{
-			$dateStart	= ':'.get_gmt_from_date(date('Y-m-d H:i:s', $EM_Event->start), 'Ymd\THis\Z');
-			$dateEnd = ':'.get_gmt_from_date(date('Y-m-d H:i:s', $EM_Event->end), 'Ymd\THis\Z');
+			//get date output with timezone and local time if timezone output is enabled, or UTC time if not and/or if offset is manual
+			if( $show_timezone ){
+				//show local time and define a timezone
+				$dateStart	= ':'.$EM_Event->start()->format('Ymd\THis');
+				$dateEnd = ':'.$EM_Event->end()->format('Ymd\THis');
+			}else{
+				//create a UTC equivalent time for all events irrespective of timezone
+				$dateStart	= ':'.$EM_Event->start(true)->format('Ymd\THis\Z');
+				$dateEnd = ':'.$EM_Event->end(true)->format('Ymd\THis\Z');
+			}
+		}
+		if( $show_timezone ){
+			$dateStart = ';TZID='.$timezone . $dateStart;
+			$dateEnd = ';TZID='.$timezone . $dateEnd;
 		}
 		if( !empty($EM_Event->event_date_modified) && $EM_Event->event_date_modified != '0000-00-00 00:00:00' ){
 			$dateModified =  get_gmt_from_date($EM_Event->event_date_modified, 'Ymd\THis\Z');
@@ -88,28 +126,23 @@ if( $description ){
 //add featured image if exists
 if( $image ){
 	$image = wordwrap("ATTACH;FMTTYPE=image/jpeg:".esc_url_raw($image), 74, "\n ", true);
-    $output .= "
-{$image}";
+	$output .= "\r\n" . $image;
 }
 //add categories if there are any
 if( !empty($categories) ){
 	$categories = wordwrap("CATEGORIES:".implode(',', $categories), 74, "\n ", true);
-    $output .= "
-{$categories}";
+	$output .= "\r\n" . $categories;
 }
 //Location if there is one
 if( $location ){
-	$output .= "
-{$location}";
+	$output .= "\r\n" . $location;
 	//geo coordinates if they exist
 	if( $geo ){
-	$output .= "
-{$geo}";
+		$output .= "\r\n" . $geo;
 	}
 	//create apple-compatible feature for locations
 	if( !empty($apple_structured_location) ){
-	$output .= "
-{$apple_structured_location}";
+		$output .= "\r\n" . $apple_structured_location;
 	}
 }
 //end the event
@@ -130,6 +163,62 @@ END:VEVENT";
 	}
 }
 
+//Now we sort out timezones and add it to the top of the output
+if( $timezone_support && !empty($timezones) ){
+	$vtimezones = array();
+	foreach( $timezones as $timezone => $timezone_range ){
+		$vtimezones[$timezone] = array();
+		$previous_offset = false;
+		//get the range of transitions, with a year's cushion so we can calculate the TZOFFSETFROM value
+		$EM_DateTimeZone = EM_DateTimeZone::create($timezone);
+		$timezone_transitions = $EM_DateTimeZone->getTransitions($timezone_range[0] - YEAR_IN_SECONDS, $timezone_range[1] + YEAR_IN_SECONDS);
+		do{
+			$current_transition = current($timezone_transitions);
+			$transition_key = key($timezone_transitions);
+			$next_transition = next($timezone_transitions);
+			//format the offset to a UTC-OFFSET
+			$current_offset_sign = $current_transition['offset'] < 0 ? '-' : '+';
+			$current_offset_hours = absint(floor($current_transition['offset'] / HOUR_IN_SECONDS));
+			$current_offset_minute_seconds = absint($current_transition['offset']) - $current_offset_hours*HOUR_IN_SECONDS;
+			$current_offset_minutes = $current_offset_minute_seconds == 0 ? 0 : absint($current_offset_minute_seconds / MINUTE_IN_SECONDS);
+			$current_transition['offset'] = $current_offset_sign . str_pad($current_offset_hours, 2, "0", STR_PAD_LEFT) . str_pad($current_offset_minutes, 2, "0", STR_PAD_LEFT);
+			//skip transitions before and after the event date range, assuming we have some in between
+			if( !empty($next_transition) && $next_transition['ts'] < $timezone_range[0] ){
+				//remember previous offset
+				$previous_offset = $current_transition['offset'];
+				continue;
+			}
+			if( $current_transition['ts'] > $timezone_range[1] ) break;
+			//modify the transition array directly and add it to vtimezones array
+			unset( $current_transition['time'] );
+			$current_transition['isdst'] = $current_transition['isdst'] ? 'DAYLIGHT':'STANDARD';
+			$EM_DateTime = new EM_DateTime($current_transition['ts'], $EM_DateTimeZone);
+			$current_transition['ts'] = $EM_DateTime->format('Ymd\THis');
+			$current_transition['offsetfrom'] = $previous_offset === false ? $current_transition['offset'] : $previous_offset;
+			$vtimezones[$timezone][] = $current_transition;
+			//remember previous offset
+			$previous_offset = $current_transition['offset'];
+		} while( $next_transition !== false );
+	}
+	foreach( $vtimezones as $timezone => $timezone_transitions ){
+		$output = "
+BEGIN:VTIMEZONE
+TZID:{$timezone}
+X-LIC-LOCATION:{$timezone}";
+		foreach( $timezone_transitions as $transition ){
+			$output .= "
+BEGIN:{$transition['isdst']}
+DTSTART:{$transition['ts']}
+TZOFFSETFROM:{$transition['offsetfrom']}
+TZOFFSETTO:{$transition['offset']}
+TZNAME:{$transition['abbr']}
+END:{$transition['isdst']}";
+		}
+		$output .= "
+END:VTIMEZONE";
+		echo preg_replace("/([^\r])\n/", "$1\r\n", $output);
+	}
+}
+
 //calendar footer
-$output = "\r\n"."END:VCALENDAR";
-echo preg_replace("/([^\r])\n/", "$1\r\n", $output);
+echo "\r\n"."END:VCALENDAR";

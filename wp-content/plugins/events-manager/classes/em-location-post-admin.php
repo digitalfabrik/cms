@@ -97,6 +97,9 @@ class EM_Location_Post_Admin{
 					apply_filters('em_location_save', false , $EM_Location);
 				}else{
 					apply_filters('em_location_save', true , $EM_Location);
+					//flag a cache refresh if we get here
+					$EM_Location->refresh_cache = true;
+					add_filter('save_post', 'EM_Location_Post_Admin::refresh_cache', 100000000);
 				}
 			}else{
 				//do a quick and dirty update
@@ -112,7 +115,25 @@ class EM_Location_Post_Admin{
 				$sql = $wpdb->prepare("UPDATE ".EM_LOCATIONS_TABLE." SET location_name=%s, location_owner=%s, location_slug=%s, location_private=%d, location_status={$location_status} WHERE location_id=%d", $where_array);
 				$wpdb->query($sql);
 				apply_filters('em_location_save', true , $EM_Location);
+				//flag a cache refresh if we get here
+				$EM_Location->refresh_cache = true;
+				add_filter('save_post', 'EM_Location_Post_Admin::refresh_cache', 100000000);
 			}
+		}
+	}
+	
+	/**
+	 * Refreshes the cache of the current global $EM_Location, provided the refresh_cache flag is set to true within the object and the object has a published state
+	 */
+	public static function refresh_cache(){
+		global $EM_Location;
+		//if this is a published event, and the refresh_cache flag was added to this event during save_post, refresh the meta and update the cache
+		if( !empty($EM_Location->refresh_cache) && !empty($EM_Location->post_id) && $EM_Location->is_published() ){
+			$post = get_post($EM_Location->post_id);
+			$EM_Location->load_postdata($post);
+			unset($EM_Location->refresh_cache);
+			wp_cache_set($EM_Location->location_id, $EM_Location, 'em_locations');
+			wp_cache_set($EM_Location->post_id, $EM_Location->location_id, 'em_locations_ids');
 		}
 	}
 

@@ -50,10 +50,15 @@ class WPML_Basket_Tab_Ajax {
 		 * @var array $translators
 		 */
 		$translators = isset( $_POST['translators'] ) ? $_POST['translators'] : array();
-		/** @var string $basket_name */
-		$basket_name = isset( $_POST['basket_name'] ) ? $_POST['basket_name'] : '';
 
-		list( $has_error, $data, $error ) = $this->networking->commit_basket_chunk( $batch, $basket_name, $translators );
+		$batch_options = array(
+			'basket_name'   => isset( $_POST['basket_name'] )
+				? filter_var( $_POST['basket_name'], FILTER_SANITIZE_STRING ) : '',
+			'deadline_date' => isset( $_POST['deadline_date'] )
+				? filter_var( $_POST['deadline_date'], FILTER_SANITIZE_STRING ) : null,
+		);
+
+		list( $has_error, $data, $error ) = $this->networking->commit_basket_chunk( $batch, $translators, $batch_options );
 
 		if ( $has_error === true ) {
 			wp_send_json_error( $data );

@@ -7,7 +7,6 @@
 function em_bookings_events_table() {
 	//TODO Simplify panel for events, use form flags to detect certain actions (e.g. submitted, etc)
 	global $wpdb;
-	global $EM_Event;
 
 	$scope_names = array (
 		'past' => __ ( 'Past events', 'events-manager'),
@@ -36,7 +35,7 @@ function em_bookings_events_table() {
 			$scope = "future";
 	}
 	$owner = !current_user_can('manage_others_bookings') ? get_current_user_id() : false;
-	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>$limit, 'offset' => $offset, 'order'=>$order, 'bookings'=>true, 'owner' => $owner, 'pagination' => 1 ) );
+	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>$limit, 'offset' => $offset, 'order'=>$order, 'orderby'=>'event_start', 'bookings'=>true, 'owner' => $owner, 'pagination' => 1 ) );
 	$events_count = EM_Events::$num_rows_found;
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );
@@ -98,40 +97,30 @@ function em_bookings_events_table() {
 				<tbody>
 					<?php 
 					$rowno = 0;
-					foreach ( $events as $event ) {
+					foreach ( $events as $EM_Event ) {
 						/* @var $event EM_Event */
 						$rowno++;
 						$class = ($rowno % 2) ? ' class="alternate"' : '';
-						// FIXME set to american
-						$localised_start_date = date_i18n(get_option('date_format'), $event->start);
-						$localised_end_date = date_i18n(get_option('date_format'), $event->end);
 						$style = "";
-						$today = date ( "Y-m-d" );
 						
-						if ($event->start_date < $today && $event->end_date < $today){
+						if ($EM_Event->start()->getTimestamp() < time() && $EM_Event->end()->getTimestamp() < time()){
 							$style = "style ='background-color: #FADDB7;'";
 						}							
 						?>
 						<tr <?php echo "$class $style"; ?>>
 							<td>
 								<strong>
-									<?php echo $event->output('#_BOOKINGSLINK'); ?>
+									<?php echo $EM_Event->output('#_BOOKINGSLINK'); ?>
 								</strong>
 								&ndash; 
-								<?php esc_html_e("Booked Spaces",'events-manager') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>
+								<?php esc_html_e("Booked Spaces",'events-manager') ?>: <?php echo $EM_Event->get_bookings()->get_booked_spaces()."/".$EM_Event->get_spaces() ?>
 								<?php if( get_option('dbem_bookings_approval') == 1 ) : ?>
-									| <?php esc_html_e("Pending",'events-manager') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
+									| <?php esc_html_e("Pending",'events-manager') ?>: <?php echo $EM_Event->get_bookings()->get_pending_spaces(); ?>
 								<?php endif; ?>
 							</td>
 					
 							<td>
-								<?php echo $localised_start_date; ?>
-								<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-								&ndash;
-								<?php
-									//TODO Should 00:00 - 00:00 be treated as an all day event? 
-									echo substr ( $event->start_time, 0, 5 ) . " - " . substr ( $event->end_time, 0, 5 ); 
-								?>
+								<?php echo $EM_Event->output_dates(false, " - "). ' @ ' . $EM_Event->output_times('H:i', ' - '); ?>
 							</td>
 						</tr>
 						<?php

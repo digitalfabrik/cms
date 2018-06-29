@@ -70,26 +70,33 @@ class WPML_Abstract_Job_Collection {
 		return $jobs;
 	}
 
-	protected function build_where_clause( $args ) {
-		// defaults
-		/** @var string $translator_id */
-		/** @var int|bool $status */
-		/** @var int|bool $status__not */
-		/** @var bool $include_unassigned */
-		/** @var int $limit_no */
-		/** @var array $language_pairs */
-		/** @var string|bool $service */
-		$args_default = array(
-			'translator_id'      => 0,
-			'status'             => false,
-			'status__not'        => false,
-			'include_unassigned' => false,
-			'language_pairs'     => array(),
-			'service'            => false
-		);
-
-		extract( $args_default );
-		extract( $args, EXTR_OVERWRITE );
+	/**
+	 * @param array $args
+	 *          translator_id
+	 *          status
+	 *          status__not
+	 *          include_unassigned
+	 *          limit_no
+	 *          language_pairs
+	 *          service
+	 *          from
+	 *          to
+	 *          type
+	 *          overdue
+	 *
+	 * @return string
+	 */
+	protected function build_where_clause( array $args ) {
+		$translator_id      = isset( $args['translator_id'] ) ? $args['translator_id'] : 0;
+		$status             = isset( $args['status'] ) ? $args['status'] : false;
+		$status__not        = isset( $args['status__not'] ) ? $args['status__not'] : false;
+		$include_unassigned = isset( $args['include_unassigned'] ) ? $args['include_unassigned'] : false;
+		$language_pairs     = isset( $args['language_pairs'] ) ? $args['language_pairs'] : array();
+		$service            = isset( $args['service'] ) ? $args['service'] : 0;
+		$from               = isset( $args['from'] ) ? $args['from'] : null;
+		$to                 = isset( $args['to'] ) ? $args['to'] : null;
+		$type               = isset( $args['type'] ) ? $args['type'] : null;
+		$overdue            = isset( $args['overdue'] ) ? $args['overdue'] : false;
 
 		$where = " s.status > " . ICL_TM_NOT_TRANSLATED;
 		$where .= $status != '' ? " AND s.status=" . intval( $status ) : '';
@@ -101,11 +108,12 @@ class WPML_Abstract_Job_Collection {
 		if ( $translator_id !== "" ) {
 			if ( ! is_numeric( $translator_id ) ) {
 				$_exp          = explode( '-', $translator_id );
-				$service       = isset( $_exp[ 1 ] ) ? implode( '-', array_slice( $_exp, 1 ) ) : 'local';
-				$translator_id = isset( $_exp[ 2 ] ) ? $_exp[ 2 ] : false;
-			} else {
+				$service       = isset( $_exp[1] ) ? implode( '-', array_slice( $_exp, 1 ) ) : 'local';
+				$translator_id = isset( $_exp[2] ) ? $_exp[2] : false;
+			} elseif ( ! $service && ( ! isset( $args['any_translation_service'] ) || ! $args['any_translation_service'] )  ) {
 				$service = 'local';
 			}
+
 			$language_pairs = empty( $to ) || empty( $from ) ?
 					get_user_meta( $translator_id, $this->wpdb->prefix . 'language_pairs', true )
 					: $language_pairs;
@@ -168,6 +176,14 @@ class WPML_Abstract_Job_Collection {
 		}
 
 		$where .= ! empty( $type ) ? $this->wpdb->prepare( " AND ito.element_type=%s ", $type ) : '';
+
+		if ( $overdue ) {
+			$today_date = date( 'Y-m-d' );
+			$where .= $this->wpdb->prepare(
+				" AND j.deadline_date IS NOT NULL AND j.completed_date IS NULL AND j.deadline_date < %s",
+				$today_date
+			);
+		}
 
 		return $where;
 	}

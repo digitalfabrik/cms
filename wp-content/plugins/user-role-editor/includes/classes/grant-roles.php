@@ -201,7 +201,7 @@ class URE_Grant_Roles {
         }
         
         $lib = URE_Lib::get_instance();
-        $user_id = $lib->get_request_var('user_id', 'post', 'int');
+        $user_id = (int) $lib->get_request_var('user_id', 'post', 'int');
         if (empty($user_id)) {
             $answer = array('result'=>'error', 'message'=>esc_html__('Wrong request, valid user ID was missed', 'user-role-editor'));
             return $answer;
@@ -295,10 +295,8 @@ class URE_Grant_Roles {
 ?>                
                 </div>
             </div>
-            <div id="ure_task_status" style="display:none;position:absolute;top:10px;right:10px;padding:10px;background-color:#000000;color:#ffffff;">
-                <img src="<?php echo URE_PLUGIN_URL .'/images/ajax-loader.gif';?>" width="16" height="16"/> <?php esc_html_e('Working...','user-role-editor');?>
-            </div>
 <?php
+        URE_View::output_task_status_div();
         self::$counter++;
     }
         

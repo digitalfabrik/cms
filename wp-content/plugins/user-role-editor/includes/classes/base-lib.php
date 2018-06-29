@@ -91,7 +91,10 @@ class URE_Base_Lib {
         global $wpdb;
 
         $network = get_current_site();        
-        $query = "SELECT blog_id FROM {$wpdb->blogs} WHERE site_id={$network->id} ORDER BY blog_id ASC";
+        $query = $wpdb->prepare(
+                    "SELECT blog_id FROM {$wpdb->blogs}
+                        WHERE site_id=%d ORDER BY blog_id ASC",
+                        array($network->id));
         $blog_ids = $wpdb->get_col($query);
 
         return $blog_ids;
@@ -138,21 +141,32 @@ class URE_Base_Lib {
     public function get_request_var($var_name, $request_type = 'request', $var_type = 'string') {
 
         $result = 0;
-        if ($request_type == 'get') {
-            if (isset($_GET[$var_name])) {
-                $result = filter_var($_GET[$var_name], FILTER_SANITIZE_STRING);
+        $request_type = strtolower($request_type);
+        switch ($request_type) {
+            case 'get': {
+                if (isset($_GET[$var_name])) {
+                    $result = filter_var($_GET[$var_name], FILTER_SANITIZE_STRING);
+                }                
+                break;
             }
-        } else if ($request_type == 'post') {
-            if (isset($_POST[$var_name])) {
-                if ($var_type != 'checkbox') {
-                    $result = filter_var($_POST[$var_name], FILTER_SANITIZE_STRING);;
-                } else {
-                    $result = 1;
+            case 'post': {
+                if (isset($_POST[$var_name])) {
+                    if ($var_type!='checkbox') {
+                        $result = filter_var($_POST[$var_name], FILTER_SANITIZE_STRING);
+                    } else {
+                        $result = 1;
+                    }
                 }
+                break;
             }
-        } else {
-            if (isset($_REQUEST[$var_name])) {
-                $result = filter_var($_REQUEST[$var_name], FILTER_SANITIZE_STRING);
+            case 'request': {
+                if (isset($_REQUEST[$var_name])) {
+                    $result = filter_var($_REQUEST[$var_name], FILTER_SANITIZE_STRING);
+                }
+                break;
+            }
+            default: {
+                $result = -1;   //  Wrong request type value, possible mistake in a function call
             }
         }
 
@@ -279,6 +293,36 @@ class URE_Base_Lib {
         return $str;
     }    
     //  end of get_short_list_str()
+    
+    
+    /**
+     * Prepare the list of integer or string values for usage in SQL query IN (val1, val2, ... , valN) claster
+     * @global wpdb $wpdb
+     * @param string $list_type: allowed values 'int', 'string'
+     * @param array $list_values: array of integers or strings
+     * @return string - comma separated values (CSV)
+     */
+    public static function esc_sql_in_list($list_type, $list_values) {
+        global $wpdb;
+        
+        if (empty($list_values) || !is_array($list_values) || count($list_values)==0) {
+            return '';
+        }
+        
+        if ($list_type=='int') {
+            $placeholder = '%d';   //  Integer
+        } else {
+            $placeholder = '%s';   // String
+        }
+        
+        $placeholders = array_fill(0, count($list_values), $placeholder);
+        $format_str = implode(',', $placeholders);
+        
+        $result = $wpdb->prepare($format_str, $list_values);
+        
+        return $result;        
+    }
+    // end of esc_sql_in_list()
     
     
     /**

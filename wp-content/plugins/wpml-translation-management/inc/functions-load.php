@@ -57,7 +57,8 @@ function wpml_tm_load_tp_networking() {
 	global $wpml_tm_tp_networking;
 
 	if ( ! isset( $wpml_tm_tp_networking ) ) {
-		$wpml_tm_tp_networking = new WPML_Translation_Proxy_Networking( new WP_Http() );
+		$tp_lock_factory       = new WPML_TP_Lock_Factory();
+		$wpml_tm_tp_networking = new WPML_Translation_Proxy_Networking( new WP_Http(), $tp_lock_factory->create() );
 	}
 
 	return $wpml_tm_tp_networking;
@@ -86,9 +87,9 @@ function wpml_tm_init_mail_notifications() {
 
 	if ( is_admin() ) {
 		$blog_translators            = wpml_tm_load_blog_translators();
-		$twig_loader                 = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/batch-report/' ) );
+		$email_twig_factory          = new WPML_TM_Email_Twig_Template_Factory();
 		$batch_report                = new WPML_TM_Batch_Report( $blog_translators );
-		$batch_report_email_template = new WPML_TM_Batch_Report_Email_Template( $twig_loader->get_template(), $blog_translators, $sitepress );
+		$batch_report_email_template = new WPML_TM_Email_Jobs_Summary_View( $email_twig_factory->create(), $blog_translators, $sitepress );
 		$batch_report_email_builder  = new WPML_TM_Batch_Report_Email_Builder( $batch_report, $batch_report_email_template );
 		$batch_report_email_process  = new WPML_TM_Batch_Report_Email_Process( $batch_report, $batch_report_email_builder );
 		$batch_report_hooks          = new WPML_TM_Batch_Report_Hooks( $batch_report, $batch_report_email_process );
@@ -104,8 +105,8 @@ function wpml_tm_init_mail_notifications() {
 		$user_jobs_notification_settings = new WPML_User_Jobs_Notification_Settings();
 		$user_jobs_notification_settings->add_hooks();
 
-		$twig_loader = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/user-profile/' ) );
-		$notification_template = new  WPML_User_Jobs_Notification_Settings_Template( $twig_loader->get_template() );
+		$email_twig_factory = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/user-profile/' ) );
+		$notification_template = new  WPML_User_Jobs_Notification_Settings_Template( $email_twig_factory->get_template() );
 
 		$user_jobs_notification_settings_render = new WPML_User_Jobs_Notification_Settings_Render( $notification_template );
 		$user_jobs_notification_settings_render->add_hooks();
@@ -113,19 +114,27 @@ function wpml_tm_init_mail_notifications() {
 
 
 	if ( ! isset( $wpml_tm_mailer ) ) {
-		require_once WPML_TM_PATH . '/inc/local-translation/wpml-tm-mail-notification.class.php';
-		$blog_translators         = wpml_tm_load_blog_translators();
 		$iclTranslationManagement = $iclTranslationManagement ? $iclTranslationManagement : wpml_load_core_tm();
 		if ( empty( $iclTranslationManagement->settings ) ) {
 			$iclTranslationManagement->init();
 		}
 		$settings                 = isset( $iclTranslationManagement->settings['notification'] )
 			? $iclTranslationManagement->settings['notification'] : array();
-		$wpml_tm_mailer           = new WPML_TM_Mail_Notification( $sitepress,
-		                                                           $wpdb,
-		                                                           $wpml_translation_job_factory,
-		                                                           $blog_translators,
-		                                                           $settings );
+
+		$email_twig_factory = new WPML_TM_Email_Twig_Template_Factory();
+		$email_notification_view = new WPML_TM_Email_Notification_View( $email_twig_factory->create() );
+
+		$has_active_remote_service = TranslationProxy::is_current_service_active_and_authenticated();
+
+		$wpml_tm_mailer = new WPML_TM_Mail_Notification(
+			$sitepress,
+			$wpdb,
+			$wpml_translation_job_factory,
+			$email_notification_view,
+			$settings,
+			$has_active_remote_service
+
+	);
 	}
 	$wpml_tm_mailer->init();
 
@@ -136,7 +145,7 @@ function wpml_tm_init_mail_notifications() {
  * @return WPML_Dashboard_Ajax
  */
 function wpml_tm_load_tm_dashboard_ajax(){
-	global $wpml_tm_dashboard_ajax;
+	global $wpml_tm_dashboard_ajax, $sitepress;
 
 	if ( ! isset( $wpml_tm_dashboard_ajax ) ) {
 		require_once WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard-ajax.class.php';
@@ -145,12 +154,33 @@ function wpml_tm_load_tm_dashboard_ajax(){
 		if ( defined( 'OTG_TRANSLATION_PROXY_URL' ) && defined( 'ICL_SITEPRESS_VERSION' ) ) {
 			$wpml_tp_communication = new WPML_TP_Communication( OTG_TRANSLATION_PROXY_URL, new WP_Http() );
 			$wpml_tp_api           = new WPML_TP_API( $wpml_tp_communication, '1.1', new WPML_TM_Log() );
-			new WPML_TP_API_AJAX( $wpml_tp_api );
+
+			$translation_service  = $sitepress->get_setting( 'translation_service' );
+			$translation_projects = $sitepress->get_setting( 'icl_translation_projects' );
+			$tp_project           = new WPML_TP_Project( $translation_service, $translation_projects );
+			$wpml_tp_api_ajax     = new WPML_TP_Refresh_Language_Pairs( $wpml_tp_api, $tp_project );
+			$wpml_tp_api_ajax->add_hooks();
 		}
 	}
 
 	return $wpml_tm_dashboard_ajax;
 }
+
+function wpml_tm_load_and_intialize_dashboard_ajax() {
+	if ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+		if ( defined( 'DOING_AJAX' ) ) {
+			$wpml_tm_dashboard_ajax = wpml_tm_load_tm_dashboard_ajax();
+			add_action( 'init', array( $wpml_tm_dashboard_ajax, 'init_ajax_actions' ) );
+		} elseif ( is_admin() && isset( $_GET['page'] ) && $_GET['page'] == WPML_TM_FOLDER . '/menu/main.php'
+		           && ( ! isset( $_GET['sm'] ) || $_GET['sm'] === 'dashboard' )
+		) {
+			$wpml_tm_dashboard_ajax = wpml_tm_load_tm_dashboard_ajax();
+			add_action( 'wpml_tm_scripts_enqueued', array( $wpml_tm_dashboard_ajax, 'enqueue_js' ) );
+		}
+	}
+}
+
+add_action( 'plugins_loaded', 'wpml_tm_load_and_intialize_dashboard_ajax' );
 
 /**
  * @return WPML_Translation_Job_Factory
@@ -165,16 +195,6 @@ function wpml_tm_load_job_factory() {
 	}
 
 	return $wpml_translation_job_factory;
-}
-
-if ( defined( 'DOING_AJAX' ) ) {
-	$wpml_tm_dashboard_ajax = wpml_tm_load_tm_dashboard_ajax();
-	add_action( 'init', array( $wpml_tm_dashboard_ajax, 'init_ajax_actions' ) );
-} elseif ( is_admin() && isset( $_GET['page'] ) && $_GET['page'] == WPML_TM_FOLDER . '/menu/main.php'
-           && ( ! isset( $_GET['sm'] ) || $_GET['sm'] === 'dashboard' )
-) {
-	$wpml_tm_dashboard_ajax = wpml_tm_load_tm_dashboard_ajax();
-	add_action( 'wpml_tm_scripts_enqueued', array( $wpml_tm_dashboard_ajax, 'enqueue_js' ) );
 }
 
 function tm_after_load() {

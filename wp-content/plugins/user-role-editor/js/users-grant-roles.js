@@ -30,7 +30,6 @@ function ure_get_selected_checkboxes(item_name) {
 function ure_show_grant_roles_dialog_pre_selected(response) {
     jQuery('#ure_task_status').hide();
     if (response!==null && response.result=='error') {
-        jQuery('#ure_task_status').hide();
         alert(response.message);
         return;
     }

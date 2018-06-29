@@ -1,0 +1,14 @@
+<div class="tablenav {{ nav_location }}">
+
+    {% include 'pagination.twig' with { 'pagination_model': pagination_model, 'nav_location': nav_location } only %}
+
+    <div class="items_per_page">
+
+        {{ strings.services_per_page }}
+
+        <select>
+            <option {{ 10 == items_per_page ? 'selected' }}>10</option>
+            <option {{ 100 == items_per_page ? 'selected' }}>100</option>
+        </select>
+     </div>
+</div>

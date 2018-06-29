@@ -34,17 +34,21 @@ function WpmlTpPollingPickupPopulateAction(jQuery, TranslationProxyPolling) {
                         /** @namespace response.data.polling_data */
                         /** @namespace response.data.jobs_in_progress_text */
                         /** @namespace response.data.last_pickup_text */
-                        if (!response.data.wait_text) {
-                            icl_tm_pickup_wrap_button.removeAttr('disabled');
-                            icl_tm_pickup_wrap_button.val(response.data.button_text);
-                            pickup_nof_jobs.html(response.data.jobs_in_progress_text);
-                            pickup_last_pickup.text(response.data.last_pickup_text);
-                            jQuery('#tp_polling_job').text(JSON.stringify(response.data.polling_data));
-                            TranslationProxyPolling.init(icl_tm_pickup_wrap_button, icl_ajxloaderimg);
-                        } else {
-                            pickup_nof_jobs.html(response.data.wait_text);
-                            icl_tm_pickup_wrap_button.hide();
-                        }
+											if (response.success) {
+												if (!response.data.wait_text) {
+													icl_tm_pickup_wrap_button.removeAttr('disabled');
+													icl_tm_pickup_wrap_button.val(response.data.button_text);
+													pickup_nof_jobs.html(response.data.jobs_in_progress_text);
+													pickup_last_pickup.text(response.data.last_pickup_text);
+													jQuery('#tp_polling_job').text(JSON.stringify(response.data.polling_data));
+													TranslationProxyPolling.init(icl_tm_pickup_wrap_button, icl_ajxloaderimg);
+												} else {
+													pickup_nof_jobs.html(response.data.wait_text);
+													icl_tm_pickup_wrap_button.hide();
+												}
+											} else {
+												icl_tm_pickup_wrap_button.val(response.data.button_text);
+											}
                     },
                     error: function (response) {
                         if (response.data && response.data.error) {

@@ -17,6 +17,9 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 	/** @var array $filter */
 	private $filter;
 
+	/** @var string $jobs_union_table_sql */
+	private $jobs_union_table_sql;
+
 	/**
 	 * @param wpdb  $wpdb
 	 * @param array $icl_translation_filter
@@ -106,43 +109,66 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 	 * @return array
 	 */
 	private function get_jobs_table( array $args = array(), array $pagination_args = array( 'page' => 1, 'per_page' => 10 ) ) {
-		$where_jobs        = $this->build_where_clause( $args );
-		$jobs_table_union  = $this->get_jobs_union_table_sql( $where_jobs, $args );
+		list( $data, $found_rows ) = $this->get_jobs_in_db( $args, $pagination_args );
 
-		$only_ids_query = 'SELECT SQL_CALC_FOUND_ROWS ';
-		$only_ids_query .= 'jobs.job_id, jobs.translator_id, jobs.job_id, jobs.batch_id, jobs.element_type_prefix ';
-		$only_ids_query .= 'FROM ' . $jobs_table_union . ' ';
-		$only_ids_query .= 'LIMIT %d, %d';
-
-		$page           = max( ( $pagination_args['page'] - 1 ), 0 ) * $pagination_args['per_page'];
-
-		$only_ids_query = $this->wpdb->prepare( $only_ids_query, array( $page, $pagination_args['per_page'] ) );
-		$data           = $this->wpdb->get_results( $only_ids_query );
-		$count          = $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
-
-		$result = array( array(), $count, 0, 0, 0, 0 );
-
-		if ( true === (bool) $data ) {
-			$result = $this->calculate_batch_counts( $data, $count, $pagination_args, $jobs_table_union );
+		if ( $data ) {
+			$result = $this->calculate_batch_counts( $data, $found_rows, $pagination_args );
+		} else {
+			$result = $this->get_default_batch_counts( $found_rows );
 		}
 
 		return $result;
 	}
 
 	/**
-	 * @param array  $data
-	 * @param int    $count
-	 * @param array  $pagination_args
-	 * @param string $jobs_table_union
+	 * @param int $found_rows
 	 *
 	 * @return array
 	 */
-	private function calculate_batch_counts( $data, $count, $pagination_args, $jobs_table_union ) {
+	private function get_default_batch_counts( $found_rows ) {
+		return array( array(), $found_rows, 0, 0, 0, 0 );
+	}
+
+	private function get_jobs_in_db( array $args = array(), array $pagination_args = null ) {
+		$where_jobs       = $this->build_where_clause( $args );
+		$jobs_table_union = $this->get_jobs_union_table_sql( $where_jobs, $args );
+
+		$only_ids_query = 'SELECT SQL_CALC_FOUND_ROWS ';
+		$only_ids_query .= 'jobs.job_id, jobs.translator_id, jobs.job_id, jobs.batch_id, jobs.element_type_prefix ';
+		$only_ids_query .= 'FROM ' . $jobs_table_union . ' ';
+
+		if ( $pagination_args ) {
+			$only_ids_query .= 'LIMIT %d, %d';
+			$prepare_args[]  = max( ( $pagination_args['page'] - 1 ), 0 ) * $pagination_args['per_page'];
+			$prepare_args[]  = $pagination_args['per_page'];
+			$only_ids_query  = $this->wpdb->prepare( $only_ids_query, $prepare_args );
+		}
+
+		$data       = $this->wpdb->get_results( $only_ids_query );
+		$found_rows = (int) $this->wpdb->get_var( 'SELECT FOUND_ROWS()' );
+
+		return array( $data, $found_rows );
+	}
+
+	public function get_jobs( array $args = array() ) {
+		list( $jobs_in_db, $found_rows ) = $this->get_jobs_in_db( $args );
+		$this->count = $found_rows;
+		return $this->plain_objects_to_job_instances( $jobs_in_db );
+	}
+
+	/**
+	 * @param array $data
+	 * @param int   $count
+	 * @param array $pagination_args
+	 *
+	 * @return array
+	 */
+	private function calculate_batch_counts( $data, $count, $pagination_args ) {
 		$first_job                 = reset( $data );
 		$last_job                  = end( $data );
 		$first_batch               = $first_job->batch_id;
 		$last_batch                = $last_job->batch_id;
-		$count_select_from_snippet = 'SELECT COUNT(jdata.job_id) FROM (SELECT job_id, batch_id FROM ' . $jobs_table_union;
+		$count_select_from_snippet = 'SELECT COUNT(jdata.job_id) FROM (SELECT job_id, batch_id FROM ' . $this->jobs_union_table_sql;
 		$count_where_snippet       = ' ) AS jdata WHERE jdata.batch_id = %d';
 		$before_count_query        = $count_select_from_snippet . ' LIMIT %d' . $count_where_snippet;
 		$page                      = $pagination_args['page'];
@@ -166,12 +192,12 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 		                                                             array( 0, PHP_INT_MAX, $last_batch ) ) );
 
 		return array(
-				$this->plain_objects_to_job_instances( $data ),
-				$count,
-				$count_before,
-				$count_after,
-				$count_first,
-				$count_last,
+			$this->plain_objects_to_job_instances( $data ),
+			$count,
+			$count_before,
+			$count_after,
+			$count_first,
+			$count_last,
 		);
 	}
 
@@ -211,6 +237,8 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
                     ON b.id = jobs.batch_id
                 ORDER BY jobs.batch_id DESC, jobs.element_type_prefix, jobs.job_id DESC";
 		}
+
+		$this->jobs_union_table_sql = $union_sql;
 
 		return $union_sql;
 	}

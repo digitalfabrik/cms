@@ -570,8 +570,6 @@ function activate_installer( $sitepress = null ) {
 	include_once WPML_PLUGIN_PATH . '/vendor/otgs/installer/loader.php'; //produces global variable $wp_installer_instance
 	$args = array(
 		'plugins_install_tab' => 1,
-		'high_priority'       => 1,
-
 	);
 
 	if ( $sitepress ) {

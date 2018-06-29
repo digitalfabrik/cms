@@ -24,7 +24,7 @@ class WPML_TM_Custom_XML_UI_Resources {
 			$this->add_code_mirror();
 
 			$wpml_tm_custom_xml_config_dependencies = array( 'jquery' );
-			if ( $this->is_code_mirror_installed() ) {
+			if ( $this->is_code_mirror_installed() && $this->is_syntax_highlighting_enabled() ) {
 				$wpml_tm_custom_xml_config_dependencies[] = 'wpml-tm-custom-xml-editor';
 			}
 
@@ -37,7 +37,7 @@ class WPML_TM_Custom_XML_UI_Resources {
 	}
 
 	private function add_code_mirror() {
-		if ( $this->is_code_mirror_installed() ) {
+		if ( $this->is_code_mirror_installed() && $this->is_syntax_highlighting_enabled() ) {
 			$this->add_code_mirror_scripts();
 			$this->add_code_mirror_styles();
 		}
@@ -93,7 +93,7 @@ class WPML_TM_Custom_XML_UI_Resources {
 	}
 
 	private function add_vk_beautify() {
-		if ( $this->is_vk_beautify_installed() ) {
+		if ( $this->is_vk_beautify_installed() && $this->is_syntax_highlighting_enabled() ) {
 			wp_enqueue_script( 'vkbeautify', $this->wpml_tm_url . '/libraries/vkBeautify/vkbeautify.js', array(), WPML_TM_VERSION );
 		}
 	}
@@ -158,5 +158,12 @@ class WPML_TM_Custom_XML_UI_Resources {
 		global $wp_version;
 
 		return $this->wpml_wp_api->version_compare_naked( $wp_version, '4.9', '>=' );
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function is_syntax_highlighting_enabled() {
+		return 'true' === get_user_meta( get_current_user_id(), 'syntax_highlighting', true );
 	}
 }

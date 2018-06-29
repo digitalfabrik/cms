@@ -1,0 +1,65 @@
+<h3>2. {{ strings.section_title }}</h3>
+
+<form method="post" id="translation-jobs-translators-form" name="translation-jobs-translators" action="">
+    <p>
+        <input type="hidden" name="icl_tm_action" value="send_all_jobs"/>
+        <label for="basket_name"><strong>{{ strings.batch_name_label }}</strong></label>
+        <input id="basket_name"
+                     name="basket_name"
+                     type="text"
+                     style="width: 40%;"
+                     value="{{ basket_name_placeholder }}"
+                     maxlength="{{ basket_name_max_length }}"
+                     placeholder="{{ basket_name_placeholder }}">
+        <br/><span class="description">{{ strings.batch_name_desc }}</span>
+    </p>
+
+    <table class="widefat fixed" id="icl-translation-translators" cellspacing="0">
+        <thead>
+        <tr>
+            <th scope="col" width="15%">{{ strings.column_language }}</th>
+            <th scope="col">{{ strings.column_translator }}</th>
+        </tr>
+        </thead>
+        <tfoot>
+        <tr>
+            <th scope="col">{{ strings.column_language }}</th>
+            <th scope="col">{{ strings.column_translator }}</th>
+        </tr>
+        </tfoot>
+        {% if target_languages %}
+        <tbody>
+            {% for key, lang in target_languages %}
+            <tr>
+                <td><strong>{{ lang.display_name }}</strong></td>
+                <td>
+                    <label for="translator[{{ lang.code }}]">
+                        {{ strings.translate_by_label }}
+                    </label>
+                    {{ dropdowns_translators[ lang.code ]|raw }}
+                    <a href="{{ strings.manage_translators_url }}">{{ strings.manage_translators_label }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% endif %}
+    </table>
+
+    <p>
+        <label for="basket-deadline">
+            <strong>{{ strings.batch_deadline_label }}</strong>
+        </label>
+        <input id="basket-deadline" name="basket-deadline" type="text" value="{{ deadline_estimation_date }}">
+        <a href="#" class="js-wpml-tooltip-open wpml-tooltip-open otgs-ico-help"
+           data-content="{{ strings.batch_deadline_tooltip|raw }}"></a>
+        <span class="spinner"></span>
+    </p>
+
+    {{ extra_basket_fields|raw }}
+
+    {% for name, nonce in nonces %}
+    <input type="hidden" id="{{ name }}" name="{{ name }}" value="{{ nonce }}" />
+    {% endfor %}
+
+    <input type="submit" class="button-primary" name="send-all-jobs-for-translation" value="{{ strings.button_send_all }}">
+</form>

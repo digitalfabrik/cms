@@ -368,7 +368,10 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 
 					return false;
 				}
+				kses_remove_filters();
 				wpml_tm_save_data( $job_xliff_translation );
+				kses_init();
+
 				$translations = $sitepress->get_element_translations( $translation_info->trid, $translation_info->element_type, false, true, true );
 				if ( isset( $translations[ $translation_info->language_code ] ) ) {
 					$translation = $translations[ $translation_info->language_code ];
@@ -416,7 +419,6 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 
 	public static function _content_make_links_sticky( $element_id, $element_type = 'post' ) {
 
-		require_once ICL_PLUGIN_PATH . '/inc/absolute-links/absolute-links.class.php';
 		$icl_abs_links = new AbsoluteLinks;
 
 		if ( strpos( $element_type, 'post' ) === 0 ) {
@@ -606,11 +608,14 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 						$fragment = '#' . $pass_on_fragments[ $link_idx ];
 					}
 					if ( ! empty( $pass_on_query_vars[ $link_idx ] ) ) {
+						$query_pairs = array();
 						foreach ( $pass_on_query_vars[ $link_idx ] as $query_fragment ) {
 							$query_pair = array();
 							wp_parse_str( $query_fragment, $query_pair );
-							$rep_to = add_query_arg( $query_pair, $rep_to );
+							$query_pairs[] = $query_pair;
 						}
+						$query_pairs = call_user_func_array( 'array_merge', $query_pairs );
+						$rep_to = add_query_arg( $query_pairs, $rep_to );
 					}
 				}
 

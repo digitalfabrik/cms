@@ -3,7 +3,7 @@
  * Load related files
  * Project: User Role Editor WordPress plugin
  * 
- * Author: Vladimir Garagulya
+ * Author: Vladimir Garagulia
  * email: support@role-editor.com
  *
 **/
@@ -28,5 +28,6 @@ require_once(URE_PLUGIN_DIR .'includes/classes/view.php');
 require_once(URE_PLUGIN_DIR .'includes/classes/role-view.php');
 require_once(URE_PLUGIN_DIR .'includes/classes/tools.php');
 require_once(URE_PLUGIN_DIR .'includes/classes/user-view.php');
+require_once(URE_PLUGIN_DIR .'includes/classes/settings.php');
 require_once(URE_PLUGIN_DIR .'includes/classes/user-role-editor.php');
 

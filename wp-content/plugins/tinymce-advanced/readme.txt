@@ -1,9 +1,9 @@
 === TinyMCE Advanced ===
 Contributors: azaozz
 Tags: wysiwyg, formatting, tinymce, write, editor
-Requires at least: 4.8
-Tested up to: 4.8
-Stable tag: 4.6.3
+Requires at least: 4.9.6
+Tested up to: 4.9
+Stable tag: 4.7.11
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,7 +13,7 @@ Extends and enhances TinyMCE, the WordPress Visual Editor.
 
 This plugin will let you add, remove and arrange the buttons that are shown on the Visual Editor toolbar. You can configure up to four rows of buttons including Font Sizes, Font Family, text and background colors, tables, etc. It will also let you enable the editor menu, see the [screenshots](screenshots).
 
-It includes 15 plugins for [TinyMCE](http://tinymce.com/) that are automatically enabled or disabled depending on the buttons you have chosen. In addition this plugin adds some commonly used options as keeping the paragraph tags in the Text editor and importing the CSS classes from the theme's editor-style.css.
+It includes 15 plugins for [TinyMCE](https://tinymce.com/) that are automatically enabled or disabled depending on the buttons you have chosen. In addition this plugin adds some commonly used options as keeping the paragraph tags in the Text editor and importing the CSS classes from the theme's editor-style.css.
 
 = Some of the features added by this plugin =
 
@@ -25,11 +25,25 @@ It includes 15 plugins for [TinyMCE](http://tinymce.com/) that are automatically
 
 With this plugin you can also enable the TinyMCE menu above the toolbars. This will make the editor even more powerful and convenient.
 
+= Privacy =
+
+TinyMCE Advanced does not collect or store any user related data. It does not set cookies, and it does not connect to any third-party websites. It only uses functionality that is available in [WordPress](https://wordpress.org/), and in the [TinyMCE editor](https://tinymce.com/).
+
+In that terms TinyMCE Advanced does not affect your website's user privacy in any way.
+
 == Installation ==
 
 Best is to install directly from WordPress. If manual installation is required, please make sure that the plugin files are in a folder named "tinymce-advanced" (not two nested folders) in the WordPress plugins folder, usually "wp-content/plugins".
 
 == Changelog ==
+
+= 4.7.11 =
+* Updated for WordPress 4.9.6 and TinyMCE 4.7.11.
+
+= 4.6.7 =
+* Fixed compatibility with Gutenberg freeform block.
+* Forced refresh of the TinyMCE plugins after activation.
+* Updated for WordPress 4.9 and TinyMCE 4.6.7.
 
 = 4.6.3 =
 * Updated for WordPress 4.8 and TinyMCE 4.6.3.

@@ -62,6 +62,7 @@ class EM_Ticket_Booking extends EM_Object{
 			//Now we save the ticket
 			$this->booking_id = $this->get_booking()->booking_id; //event wouldn't exist before save, so refresh id
 			$data = $this->to_array(true); //add the true to remove the nulls
+			$result = null;
 			if($this->ticket_booking_id != ''){
 				if($this->get_spaces() > 0){
 					$where = array( 'ticket_booking_id' => $this->ticket_booking_id );  

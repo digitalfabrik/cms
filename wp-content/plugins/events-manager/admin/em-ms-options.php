@@ -5,9 +5,11 @@ function em_ms_upgrade( $blog_id ){
 		<div id='icon-options-general' class='icon32'><br /></div>
 		<h2><?php esc_html_e('Update Network','events-manager'); ?></h2>
 		<?php
-		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'upgrade' && check_admin_referer('em_ms_ugrade_'.get_current_user_id()) ){
+		$site_updates = EM_Options::site_get('updates');
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'upgrade_network' && check_admin_referer('em_ms_upgrade') ){
 			global $current_site,$wpdb;
 			$blog_ids = $wpdb->get_col('SELECT blog_id FROM '.$wpdb->blogs.' WHERE site_id='.$current_site->id);
+			echo '<ul>';
 			foreach($blog_ids as $blog_id){
 			    $plugin_basename = plugin_basename(dirname(dirname(__FILE__)).'/events-manager.php');
 			    if( in_array( $plugin_basename, (array) get_blog_option($blog_id, 'active_plugins', array() ) ) || is_plugin_active_for_network($plugin_basename) ){
@@ -15,25 +17,32 @@ function em_ms_upgrade( $blog_id ){
 						switch_to_blog($blog_id);
 						require_once( dirname(__FILE__).'/../em-install.php');
 						em_install();
-						echo "<p>Upgraded - ".get_bloginfo('blogname')."</p>";
+						echo "<li>".sprintf(_x('Updated %s.', 'Multisite Blog Update','events-manager'), get_bloginfo('blogname'))."</li>";
 						restore_current_blog();
 					}else{
-						echo "<p>&quot;".get_blog_option($blog_id, 'blogname')."&quot; is up to date.</p>";
+						echo "<li>".sprintf(_x('%s is up to date.', 'Multisite Blog Update','events-manager'), get_blog_option($blog_id, 'blogname'))."</li>";
 					}
 			    }else{
-					echo "<p>&quot;".get_blog_option($blog_id, 'blogname')."&quot; does not have Events Manager activated.</p>";
+			    	echo "<li>".sprintf(_x('%s does not have Events Manager activated.', 'Multisite Blog Update','events-manager'), get_blog_option($blog_id, 'blogname'))."</li>";
 				}
 			}
-			echo "<p>Done Upgrading</p>";
+			echo '</ul>';
+			echo "<p>".esc_html__('Update process has finished.', 'events-manager')."</p>";
+		}elseif( !empty($_REQUEST['action']) && !empty($site_updates[$_REQUEST['action']]) ){
+			do_action('em_admin_update_ms_'.$_REQUEST['action']);
 		}else{
 			?>
 			<form action="" method="post">
 				<p><?php esc_html_e('To update your network blogs with the latest Events Manager automatically, click the update button below.','events-manager'); ?></p>
-				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('em_ms_ugrade_'.get_current_user_id()); ?>" />
-				<input type="hidden" name="action" value="upgrade" />
-				<input type="submit" value="<?php esc_attr_e('Update','events-manager'); ?>" />
+				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('em_ms_upgrade'); ?>" />
+				<input type="hidden" name="action" value="upgrade_network" />
+				<input type="submit" value="<?php esc_attr_e('Update Network','events-manager'); ?>" class="button-primary" />
 			</form>
 			<?php
+			//extra upgrade stuff
+			foreach( $site_updates as $update => $update_data ){
+				do_action('em_admin_update_ms_settings_'.$update, $update_data);
+			}
 		}
 		?>
 	</div>

@@ -1,10 +1,7 @@
 <?php
 
-require_once __DIR__ . '/RestApi_ModifiedContent.php';
-require_once __DIR__ . '/helper/WpmlHelper.php';
-
 /**
- * Retrieve only content that has been modified since a given datetime
+ * Retrieve only events that has been modified since a given datetime
  */
 class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 	
@@ -64,7 +61,7 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			'tags' => $this->prepare_tags($post),
 			'categories' => $this->prepare_categories($post),
 			'page' => $this->prepare_page($post),
-			'recurrence' => $this->prepare_recurrence($post)
+			'recurrence_id' => $post->recurrence_id // event_id of meta-event
 		];
 	}
 
@@ -103,20 +100,6 @@ class RestApi_ModifiedEventsV0 extends RestApi_ModifiedContentV0 {
 			$pair = explode(":", $idname);
 			return ["id" => $pair[0], "name" => $pair[1]];
 		}, $elements);
-	}
-
-	// just additional information about recurring events
-	private function prepare_recurrence($post) {
-		return [
-			'id' => $post->recurrence_id,
-			'info' => $post->recurrence,
-			'interval' => $post->recurrence_interval,
-			'frequency' => $post->recurrence_freq,
-			'day' => $post->recurrence_byday,
-			'week' => $post->recurrence_byweekno,
-			'duration_in_days' => $post->recurrence_days,
-			'rsvp_days' => $post->recurrence_rsvp_days
-		];
 	}
 
 	private function prepare_categories($post) {

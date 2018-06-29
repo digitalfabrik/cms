@@ -25,7 +25,7 @@ class WPML_TM_MCS_Post_Custom_Field_Settings_Menu extends WPML_TM_MCS_Custom_Fie
 	 */
 	protected function get_title() {
 
-		return __( 'Custom Field Translation', 'wpml-translation-management' );
+		return __( 'Custom Fields Translation', 'wpml-translation-management' );
 	}
 
 	/**

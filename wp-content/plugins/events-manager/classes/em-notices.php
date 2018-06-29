@@ -52,16 +52,16 @@
         function __toString(){
             $string = false;
             if(count($this->notices['errors']) > 0){
-                $string .= "<div class='em-warning em-warning-errors error'>{$this->get_errors()}</div>";
+                $string .= "<div class='em-warning em-warning-errors notice notice-error'>{$this->get_errors()}</div>";
             }
             if(count($this->notices['alerts']) > 0){
-                $string .= "<div class='em-warning em-warning-alerts updated'>{$this->get_alerts()}</div>";
+                $string .= "<div class='em-warning em-warning-alerts notice notice-warning'>{$this->get_alerts()}</div>";
             }
             if(count($this->notices['infos']) > 0){
-                $string .= "<div class='em-warning em-warning-infos updated'>{$this->get_infos()}</div>";
+                $string .= "<div class='em-warning em-warning-infos notice notice-info'>{$this->get_infos()}</div>";
             }
             if(count($this->notices['confirms']) > 0){
-                $string .= "<div class='em-warning em-warning-confirms updated'>{$this->get_confirms()}</div>";
+                $string .= "<div class='em-warning em-warning-confirms notice notice-success'>{$this->get_confirms()}</div>";
             }
             $this->displayed = true;
             return ($string !== false) ? "<div class='statusnotice'>".$string."</div>" : '';

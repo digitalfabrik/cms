@@ -88,9 +88,9 @@
 						<select name="dbem_events_default_archive_orderby" >
 							<?php 
 								$event_archive_orderby_options = apply_filters('em_settings_events_default_archive_orderby_ddm', array(
-									'_start_ts' => __('Order by start date, start time','events-manager'),
+									'_event_start' => __('Order by start date, start time','events-manager'),
 									'title' => __('Order by name','events-manager')
-								)); 
+								));
 							?>
 							<?php foreach($event_archive_orderby_options as $key => $value) : ?>   
 			 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_archive_orderby')) ? "selected='selected'" : ''; ?>>

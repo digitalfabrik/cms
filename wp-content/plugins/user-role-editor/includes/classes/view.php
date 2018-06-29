@@ -108,6 +108,21 @@ class URE_View {
     // end of blocked_for_single_admin_style()
     
     
+    // Get full capabilities list and exclude Visual Composer capabilities from it
+    // Do not take VC capabilities into account as VC stores not boolean values with them
+    protected function get_full_capabilities() {
+        $full_caps = $this->lib->get('full_capabilities');
+        foreach($full_caps as $key=>$capability) {
+            if (strpos($key, 'vc_access_rules_')!==false) {
+                unset($full_caps[$key]);
+            }
+        }
+        
+        return $full_caps;
+    }
+    // end of get_full_capabilities()
+    
+    
     /**
      * output HTML-code for capabilities list
      * @param boolean $for_role - if true, it is role capabilities list, else - user specific capabilities list
@@ -125,7 +140,7 @@ class URE_View {
         }
         $user_to_edit = $this->lib->get('user_to_edit');
         $roles = $this->lib->get('roles');
-        $full_capabilities = $this->lib->get('full_capabilities');
+        $full_capabilities = $this->get_full_capabilities();
         $built_in_wp_caps = $this->lib->get_built_in_wp_caps();        
         $caps_readable = $this->lib->get('caps_readable');
         $caps_groups_manager = URE_Capabilities_Groups_Manager::get_instance();
@@ -251,6 +266,16 @@ class URE_View {
     }
     // end of output_confirmation_dialog()
  
+    
+    public static function output_task_status_div() {
+?>        
+        <div id="ure_task_status" style="display:none;position:absolute;top:10px;right:10px;padding:10px;background-color:#000000;color:#ffffff;">
+            <img src="<?php echo URE_PLUGIN_URL .'/images/ajax-loader.gif';?>" width="16" height="16"/> <?php esc_html_e('Working...','user-role-editor');?>
+        </div>
+<?php
+    }
+    // end of output task_status_div()
+    
     
     private function show_select_all() {
         $multisite = $this->lib->get('multisite');

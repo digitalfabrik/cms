@@ -290,10 +290,11 @@ function cms_tpv_admin_head() {
 		var CMS_TPV_URL = "<?php echo CMS_TPV_URL ?>";
 		var CMS_TPV_AJAXURL = "action=cms_tpv_get_childs&view=";
 		CMS_TPV_AJAXURL = ((window.ajaxurl.indexOf("admin-ajax.php?") !== -1) ? "&" : "?") + CMS_TPV_AJAXURL;
-		var CMS_TPV_VIEW = "<?php echo $cms_tpv_view ?>";
+		var CMS_TPV_VIEW = <?php echo wp_json_encode($cms_tpv_view); ?>
 		//var CMS_TPV_CAN_DND = "<?php echo current_user_can( CMS_TPV_MOVE_PERMISSION ) ? "dnd" : "" ?>";
 		var CMS_TPV_CAN_DND = "dnd";
 		var cms_tpv_jsondata = {};
+		var CMS_TPV_NONCE = <?php echo wp_json_encode(wp_create_nonce('cms-tpv-ajax')) ?>
 		/* ]]> */
 	</script>
 
@@ -1548,6 +1549,8 @@ function cms_tpv_get_childs() {
 
 	header("Content-type: application/json");
 
+	check_ajax_referer('cms-tpv-ajax', 'cms-tpv-nonce');
+
 	$action = $_GET["action"];
 	$view = $_GET["view"]; // all | public | trash
 	$post_type = (isset($_GET["post_type"])) ? $_GET["post_type"] : null;
@@ -1644,87 +1647,6 @@ function cms_tpv_get_childs() {
 	exit;
 }
 
-/**
- * @TODO: check if this is used any longer? If not then delete it!
- */
-function cms_tpv_add_page() {
-	global $wpdb;
-
-	/*
-	(
-	[action] => cms_tpv_add_page
-	[pageID] => cms-tpv-1318
-	type
-	)
-	*/
-	$type = $_POST["type"];
-	$pageID = $_POST["pageID"];
-	$pageID = str_replace("cms-tpv-", "", $pageID);
-	$page_title = trim($_POST["page_title"]);
-	$post_type = $_POST["post_type"];
-	$wpml_lang = $_POST["wpml_lang"];
-	if (!$page_title) { $page_title = __("New page", 'cms-tree-page-view'); }
-
-	$ref_post = get_post($pageID);
-
-	if ("after" == $type) {
-
-		/*
-			add page under/below ref_post
-		*/
-
-		// update menu_order of all pages below our page
-		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET menu_order = menu_order+2 WHERE post_type = %s AND post_parent = %d AND menu_order >= %d AND id <> %d ", $ref_post->post_type, $ref_post->post_parent, $ref_post->menu_order, $ref_post->ID ) );
-
-		// create a new page and then goto it
-		$post_new = array();
-		$post_new["menu_order"] = $ref_post->menu_order+1;
-		$post_new["post_parent"] = $ref_post->post_parent;
-		$post_new["post_type"] = "page";
-		$post_new["post_status"] = "draft";
-		$post_new["post_title"] = $page_title;
-		$post_new["post_content"] = "";
-		$post_new["post_type"] = $post_type;
-		$newPostID = wp_insert_post($post_new);
-
-	} else if ( "inside" == $type ) {
-
-		/*
-			add page inside ref_post
-		*/
-
-		// update menu_order, so our new post is the only one with order 0
-		$wpdb->query( $wpdb->prepare( "UPDATE $wpdb->posts SET menu_order = menu_order+1 WHERE post_type = %s AND post_parent = %d", $ref_post->post_type, $ref_post->ID) );
-
-		$post_new = array();
-		$post_new["menu_order"] = 0;
-		$post_new["post_parent"] = $ref_post->ID;
-		$post_new["post_type"] = "page";
-		$post_new["post_status"] = "draft";
-		$post_new["post_title"] = $page_title;
-		$post_new["post_content"] = "";
-		$post_new["post_type"] = $post_type;
-		$newPostID = wp_insert_post($post_new);
-
-	}
-
-	if ($newPostID) {
-		// return editlink for the newly created page
-		$editLink = get_edit_post_link($newPostID, '');
-		if ($wpml_lang) {
-			$editLink = esc_url( add_query_arg("lang", $wpml_lang, $editLink) );
-		}
-		echo $editLink;
-	} else {
-		// fail, tell js
-		echo "0";
-	}
-
-
-	exit;
-}
-
-
 // AJAX: perform move of article
 function cms_tpv_move_page() {
 	/*
@@ -1733,6 +1655,8 @@ function cms_tpv_move_page() {
 	 the new position relative to the reference node (one of "before", "after" or "inside"),
 		inside = man placerar den under en sida som inte har några barn?
 	*/
+
+	check_ajax_referer('cms-tpv-ajax', 'cms-tpv-nonce');
 
 	global $wpdb;
 

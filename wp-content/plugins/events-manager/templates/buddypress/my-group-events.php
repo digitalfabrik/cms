@@ -54,14 +54,9 @@
 				if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 					$rowno++;
 					$class = ($rowno % 2) ? 'alternate' : '';
-					// FIXME set to american
-					$localised_start_date = date_i18n(get_option('dbem_date_format'), $event->start);
-					$localised_end_date = date_i18n(get_option('dbem_date_format'), $event->end);
-					$style = "";
-					$today = current_time('timestamp');
 					$location_summary = "<b>" . $event->get_location()->name . "</b><br/>" . $event->get_location()->address . " - " . $event->get_location()->town;
 					
-					if ($event->start < $today && $event->end < $today){
+					if( $EM_Event->start()->getTimestamp() < time() && $EM_Event->end()->getTimestamp() < time() ){
 						$class .= " past";
 					}
 					//Check pending approval events
@@ -69,7 +64,7 @@
 						$class .= " pending";
 					}					
 					?>
-					<tr class="event <?php echo trim($class); ?>" <?php echo $style; ?> id="event_<?php echo $event->event_id ?>">
+					<tr class="event <?php echo trim($class); ?>" id="event_<?php echo $event->event_id ?>">
 						<?php /*
 						<td>
 							<input type='checkbox' class='row-selector' value='<?php echo $event->event_id; ?>' name='events[]' />
@@ -109,16 +104,9 @@
 						</td>
 				
 						<td>
-							<?php echo $localised_start_date; ?>
-							<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
+							<?php echo $EM_Event->output_dates(); ?>
 							<br />
-							<?php
-								if(!$event->event_all_day){
-									echo date_i18n(get_option('time_format'), $event->start) . " - " . date_i18n(get_option('time_format'), $event->end);
-								}else{
-									echo get_option('dbem_event_all_day_message');
-								}
-							?>
+							<?php echo $EM_Event->output_times(); ?>
 						</td>
 						<td>
 							<?php 

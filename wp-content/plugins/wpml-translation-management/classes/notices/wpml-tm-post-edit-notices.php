@@ -5,6 +5,7 @@ class WPML_TM_Post_Edit_Notices {
 	const TEMPLATE_TRANSLATION_IN_PROGRESS     = 'translation-in-progress.twig';
 	const TEMPLATE_USE_PREFERABLY_TM_DASHBOARD = 'use-preferably-tm-dashboard.twig';
 	const TEMPLATE_USE_PREFERABLY_TE           = 'use-preferably-translation-editor.twig';
+	const DO_NOT_SHOW_AGAIN_ACTION             = 'wpml_dismiss_post_edit_te_notice';
 
 	/** @var WPML_Post_Status $post_status */
 	private $post_status;
@@ -49,8 +50,24 @@ class WPML_TM_Post_Edit_Notices {
 	}
 
 	public function add_hooks() {
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'admin_notices', array( $this, 'display_notices' ) );
+		$request_get_trid = isset( $_GET['trid'] ) ?
+			filter_var( $_GET['trid'], FILTER_SANITIZE_NUMBER_INT ) :
+			'';
+
+		$request_get_post = isset( $_GET['post'] ) ?
+			filter_var( $_GET['post'], FILTER_SANITIZE_NUMBER_INT ) :
+			'';
+
+		$request_get_lang = isset( $_GET['lang'] ) ?
+			filter_var( $_GET['lang'], FILTER_SANITIZE_FULL_SPECIAL_CHARS ) :
+			'';
+
+		if ( ( $request_get_trid || $request_get_post ) && $request_get_lang ) {
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+			add_action( 'admin_notices', array( $this, 'display_notices' ) );
+		}
+
+		add_action( 'wp_ajax_' . self::DO_NOT_SHOW_AGAIN_ACTION, array( $this, 'do_not_display_it_again' ) );
 	}
 
 	public function enqueue_assets() {
@@ -96,7 +113,12 @@ class WPML_TM_Post_Edit_Notices {
 
 				echo $this->template_render->show( $model, self::TEMPLATE_TRANSLATION_IN_PROGRESS );
 
-			} elseif ( ! $is_original && $this->use_translation_editor ) {
+			} elseif (
+				! $is_original &&
+				$this->use_translation_editor &&
+				apply_filters( 'wpml_tm_show_page_builders_translation_editor_warning', true, $post_id ) &&
+			    $this->should_display_it()
+			) {
 
 				$model = array(
 					'warning' => sprintf(
@@ -108,6 +130,13 @@ class WPML_TM_Post_Edit_Notices {
 				    'edit_anyway_button'     => __( 'Edit anyway', 'wpml-translation-management' ),
 				    'open_in_te_button'      => __( 'Open in Translation Editor', 'wpml-translation-management' ),
 				    'translation_editor_url' => $this->get_translation_editor_link( $post_element ),
+					'do_not_show_again'      => __( "Don't show this warning again", 'wpml-translation-management' ),
+					'nonce'                  => wp_nonce_field(
+						self::DO_NOT_SHOW_AGAIN_ACTION,
+						self::DO_NOT_SHOW_AGAIN_ACTION,
+						true,
+						false
+					),
 				);
 
 				echo $this->template_render->show( $model, self::TEMPLATE_USE_PREFERABLY_TE );
@@ -128,6 +157,17 @@ class WPML_TM_Post_Edit_Notices {
 
 			echo $this->template_render->show( $model, self::TEMPLATE_USE_PREFERABLY_TM_DASHBOARD );
 		}
+	}
+
+	public function do_not_display_it_again() {
+		update_option( self::DO_NOT_SHOW_AGAIN_ACTION, 1, false );
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function should_display_it() {
+		return false === get_option( self::DO_NOT_SHOW_AGAIN_ACTION );
 	}
 
 	/**

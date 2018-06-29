@@ -78,6 +78,9 @@ function em_init_actions() {
 		if( $_REQUEST['action'] == 'event_save' && $EM_Event->can_manage('edit_events','edit_others_events') ){
 			//Check Nonces
 			if( !wp_verify_nonce($_REQUEST['_wpnonce'], 'wpnonce_event_save') ) exit('Trying to perform an illegal action.');
+			//Set server timezone to UTC in case other plugins are doing something naughty
+			$server_timezone = date_default_timezone_get();
+			date_default_timezone_set('UTC');
 			//Grab and validate submitted data
 			if ( $EM_Event->get_post() && $EM_Event->save() ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
 				$events_result = true;
@@ -99,6 +102,8 @@ function em_init_actions() {
 				$EM_Notices->add_error( $EM_Event->get_errors() );
 				$events_result = false;				
 			}
+			//Set server timezone back, even though it should be UTC anyway
+			date_default_timezone_set($server_timezone);
 		}
 		if ( $_REQUEST['action'] == 'event_duplicate' && wp_verify_nonce($_REQUEST['_wpnonce'],'event_duplicate_'.$EM_Event->event_id) ) {
 			$event = $EM_Event->duplicate();
@@ -313,15 +318,23 @@ function em_init_actions() {
 				$EM_Booking->tickets_bookings = new EM_Tickets_Bookings();
 				$EM_Booking->tickets_bookings->booking = $EM_Ticket_Booking->booking = $EM_Booking;
 				$EM_Booking->tickets_bookings->add( $EM_Ticket_Booking );
-				//Now save booking
-				if( $EM_Event->get_bookings()->add($EM_Booking) ){
-					$result = true;
-					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
-					$feedback = $EM_Event->get_bookings()->feedback_message;	
+				$post_validation = $EM_Booking->validate();
+				do_action('em_booking_add', $EM_Event, $EM_Booking, $post_validation);
+				if( $post_validation ){
+					//Now save booking
+					if( $EM_Event->get_bookings()->add($EM_Booking) ){
+						$result = true;
+						$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
+						$feedback = $EM_Event->get_bookings()->feedback_message;	
+					}else{
+						$result = false;
+						$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
+						$feedback = $EM_Event->get_bookings()->feedback_message;	
+					}
 				}else{
 					$result = false;
-					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
-					$feedback = $EM_Event->get_bookings()->feedback_message;	
+					$EM_Notices->add_error( $EM_Booking->get_errors() );
+					$feedback = $EM_Event->get_bookings()->feedback_message;
 				}
 			}else{
 				$result = false;

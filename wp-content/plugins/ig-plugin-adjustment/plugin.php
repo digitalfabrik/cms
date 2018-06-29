@@ -10,31 +10,49 @@
  */
 
 add_action('upgrader_process_complete', function ($upgrader_object, $options) {
-	if (strcasecmp($options['type'], 'plugin') != 0) // only adjust plugins
-		return true;
-	$adjuster = new PluginAdjustment();
-	return true;
-}, 10, 2);
-
-class PluginAdjustment {
-
-	private function replace_line_in_file($filepath, $search, $replace) {
-		$line_found = false;
-		$content = file($filepath); // reads an array of lines
-		$content = array_map(function ($line) use ($search, $replace, $filepath, &$line_found) {
-			if (stristr($line, $search)) {
-				if ($line_found) {
-					trigger_error("Search '$search' found in more than one line in file '$filepath'", E_USER_WARNING);
-				}
-				$line_found = true;
-				return str_replace($search, $replace, $line);
-			} else {
-				return $line;
-			}
-		}, $content);
-		file_put_contents($filepath, implode('', $content));
-		if (!$line_found) {
-			die("Could not find '$search' in file '$filepath'");
+	if ($options['type'] === 'plugin') {
+		if (in_array('sitepress-multilingual-cms', $options['plugins'])) {
+			PluginAdjustment::apply_wpml_adjustment();
 		}
 	}
+}, 10, 2);
+
+abstract class PluginAdjustment {
+
+	static function replace_in_file($file_path, $search, $replace) {
+		if (file_exists($file_path) && is_writeable($file_path)) {
+			$file_content = file_get_contents($file_path);
+			$file_content = str_replace($search, $replace, $file_content);
+			file_put_contents($file_path, $file_content);
+		} else {
+			echo '<div class="notice notice-error"><p><strong>The file "' . $file_path . '" is not writable, please implement all modifications described in ig-plugin-adjustment manually.</strong></p></div>';
+		}
+	}
+
+	static function apply_wpml_adjustment() {
+		$file_path = get_home_path() . 'wp-content/plugins/sitepress-multilingual-cms/res/js/post-edit-languages.js';
+		$search = 'urlData = {
+					post_type: type,
+					lang:      language_code
+				};
+
+				if (statuses && statuses.length) {
+					urlData.post_status = statuses.join(\',\');
+				}';
+		$replace = 'urlData = {
+					post_type: type,
+					lang:      language_code
+				};
+
+				if (type === \'event\' || type === \'event-recurring\') {
+					var urlParams = new URLSearchParams(window.location.search);
+					urlData.scope = urlParams.get(\'scope\');
+				}
+
+				if (statuses && statuses.length) {
+					urlData.post_status = statuses.join(\',\');
+				}';
+		self::replace_in_file($file_path, $search, $replace);
+	}
+
 }

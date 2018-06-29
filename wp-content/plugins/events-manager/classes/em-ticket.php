@@ -6,8 +6,8 @@ class EM_Ticket extends EM_Object{
 	var $ticket_name;
 	var $ticket_description;
 	var $ticket_price;
-	var $ticket_start;
-	var $ticket_end;
+	protected $ticket_start;
+	protected $ticket_end;
 	var $ticket_min;
 	var $ticket_max;
 	var $ticket_spaces = 10;
@@ -22,8 +22,8 @@ class EM_Ticket extends EM_Object{
 		'ticket_name' => array('name'=>'name','type'=>'%s'),
 		'ticket_description' => array('name'=>'description','type'=>'%s','null'=>1),
 		'ticket_price' => array('name'=>'price','type'=>'%f','null'=>1),
-		'ticket_start' => array('name'=>'start','type'=>'%s','null'=>1),
-		'ticket_end' => array('name'=>'end','type'=>'%s','null'=>1),
+		'ticket_start' => array('type'=>'%s','null'=>1),
+		'ticket_end' => array('type'=>'%s','null'=>1),
 		'ticket_min' => array('name'=>'min','type'=>'%s','null'=>1),
 		'ticket_max' => array('name'=>'max','type'=>'%s','null'=>1),
 		'ticket_spaces' => array('name'=>'spaces','type'=>'%s','null'=>1),
@@ -40,8 +40,8 @@ class EM_Ticket extends EM_Object{
 	 */
 	var $bookings = array();
 	var $required_fields = array('ticket_name');
-	var $start_timestamp;
-	var $end_timestamp;
+	protected $start;
+	protected $end;
 	/**
 	 * is this ticket limited by spaces allotted to this ticket? false if no limit (i.e. the events general limit of seats)
 	 * @var unknown_type
@@ -81,19 +81,71 @@ class EM_Ticket extends EM_Object{
 			$this->ticket_meta = (!empty($ticket['ticket_meta'])) ? maybe_unserialize($ticket['ticket_meta']):array();
 			$this->ticket_members_roles = maybe_unserialize($this->ticket_members_roles);
 			if( !is_array($this->ticket_members_roles) ) $this->ticket_members_roles = array();
-			//timestamps
-			$this->start_timestamp = (!empty($ticket['ticket_start'])) ? strtotime($ticket['ticket_start'], current_time('timestamp')):false;
-			$this->end_timestamp = (!empty($ticket['ticket_end'])) ? strtotime($ticket['ticket_end'], current_time('timestamp')):false;
 			//sort out recurrence meta to save extra empty() checks, the 'true' cut-off info is here for the ticket if part of a recurring event
 			if( !empty($this->ticket_meta['recurrences']) ){
 				if( !array_key_exists('start_days', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['start_days'] = false;
-				if( !array_key_exists('start_time', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['start_time'] = false;
 				if( !array_key_exists('end_days', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['end_days'] = false;
+				if( !array_key_exists('start_time', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['start_time'] = false;
 				if( !array_key_exists('end_time', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['end_time'] = false;
+				//if we have start and end times, we'll set the ticket start/end properties
+				if( !empty($this->ticket_meta['recurrences']['start_time']) ){
+					$this->ticket_start = date('Y-m-d ') . $this->ticket_meta['recurrences']['start_time'];
+				}
+				if( !empty($this->ticket_meta['recurrences']['end_time']) ){
+					$this->ticket_end = date('Y-m-d ') . $this->ticket_meta['recurrences']['end_time'];
+				}
 			}
 		}
 		$this->compat_keys();
 		do_action('em_ticket',$this, $ticket_data, $ticket);
+	}
+
+	
+	function __get( $var ){
+	    if( $var == 'ticket_start' || $var == 'ticket_end' ){
+	    	return $this->$var;
+	    }
+	   //these are deprecated properties, use the start() and end() functions directly instead
+	    elseif( $var == 'start_timestamp' || $var == 'start' ){
+	    	if( !$this->start()->valid ) return 0;
+	    	return $this->start()->getTimestampWithOffset();
+	    }elseif( $var == 'end_timestamp' || $var == 'end' ){
+	    	if( !$this->end()->valid ) return 0;
+	    	return $this->end()->getTimestampWithOffset();
+	    }
+	    return null;
+	}
+	
+	public function __set( $prop, $val ){
+		if( $prop == 'ticket_start' ){
+			$this->$prop = $val;
+			$this->start = false;
+		}elseif( $prop == 'ticket_end' ){
+			$this->$prop = $val;
+			$this->end = false;
+		}
+		//These are deprecated and should not be used. Either use the class start() or end() equivalent methods
+		elseif( $prop == 'start_timestamp' ){
+	    	if( $this->start() !== false ) $this->start()->setTimestamp($val);
+		}elseif( $prop == 'end_timestamp' ){
+	    	if( $this->end() !== false ) $this->end()->setTimestamp($val);
+		}elseif( $prop == 'start' || $prop == 'end' ){
+			//start and end properties are inefficient to set, and deprecated. Set ticket_start and ticket_end with a valid MySQL DATETIME value instead.
+			$EM_DateTime = new EM_DateTime( $val, $this->get_event()->get_timezone() );
+			if( !$EM_DateTime->valid ) return false;
+			$when_prop = 'ticket_'.$prop;
+			$this->$when_prop = $EM_DateTime->getDateTime();
+		}
+		$this->$prop = $val;
+	}
+	
+	public function __isset( $prop ){
+		//start_timestamp and end_timestamp are deprecated, don't use them anymore
+		if( $prop == 'ticket_start' || $prop == 'start_timestamp' ){
+			return !empty($this->ticket_start);
+		}elseif( $prop == 'ticket_end' || $prop == 'end_timestamp' ){
+			return !empty($this->ticket_end);
+		}
 	}
 	
 	function get_notes(){
@@ -123,6 +175,9 @@ class EM_Ticket extends EM_Object{
 			$data = $this->to_array(true); //add the true to remove the nulls
 			if( !empty($data['ticket_meta']) ) $data['ticket_meta'] = serialize($data['ticket_meta']);
 			if( !empty($data['ticket_members_roles']) ) $data['ticket_members_roles'] = serialize($data['ticket_members_roles']);
+			if( !empty($this->ticket_meta['recurrences']) ){
+				$data['ticket_start'] = $data['ticket_end'] = null;
+			}
 			if($this->ticket_id != ''){
 				//since currently wpdb calls don't accept null, let's build the sql ourselves.
 				$set_array = array();
@@ -179,10 +234,10 @@ class EM_Ticket extends EM_Object{
 		$this->ticket_price = ( !empty($post['ticket_price']) ) ? wp_kses_data($post['ticket_price']):'';
 		$this->ticket_start = ( !empty($post['ticket_start']) ) ? wp_kses_data($post['ticket_start']):'';
 		$this->ticket_end = ( !empty($post['ticket_end']) ) ? wp_kses_data($post['ticket_end']):'';
-		if( !empty($post['ticket_start_time']) && !empty($this->ticket_start) ) $this->ticket_start .= ' '. $this->sanitize_time($post['ticket_start_time']);
-		if( !empty($post['ticket_end_time']) && !empty($this->ticket_end) ) $this->ticket_end .= ' '. $this->sanitize_time($post['ticket_end_time']);
-		$this->start_timestamp = ( !empty($post['ticket_start']) ) ? strtotime($this->ticket_start):'';
-		$this->end_timestamp = ( !empty($post['ticket_end']) ) ? strtotime($this->ticket_end):'';
+		$start_time = !empty($post['ticket_start_time']) ? $post['ticket_start_time'] : $this->get_event()->start()->format('H:i');
+		if( !empty($this->ticket_start) ) $this->ticket_start .= ' '. $this->sanitize_time($start_time);
+		$end_time = !empty($post['ticket_end_time']) ? $post['ticket_end_time'] : $this->get_event()->start()->format('H:i');
+		if( !empty($this->ticket_end) ) $this->ticket_end .= ' '. $this->sanitize_time($end_time);
 		//sort out user availability restrictions
 		$this->ticket_members = ( !empty($post['ticket_type']) && $post['ticket_type'] == 'members' ) ? 1:0;
 		$this->ticket_guests = ( !empty($post['ticket_type']) && $post['ticket_type'] == 'guests' ) ? 1:0;
@@ -198,42 +253,34 @@ class EM_Ticket extends EM_Object{
 		$this->ticket_required = ( !empty($post['ticket_required']) ) ? 1:0;
 		//if event is recurring, store start/end restrictions of this ticket, which are determined by number of days before (negative number) or after (positive number) the event start date
 		if($this->get_event()->is_recurring()){
+			if( empty($this->ticket_meta['recurrences']) ){
+				$this->ticket_meta['recurrences'] = array('start_days'=>false, 'start_time'=>false, 'end_days'=>false, 'end_time'=>false);
+			}
 			//start of ticket cut-off
 			if( array_key_exists('ticket_start_recurring_days', $post) && is_numeric($post['ticket_start_recurring_days']) ){
 				if( !empty($post['ticket_start_recurring_when']) && $post['ticket_start_recurring_when'] == 'after' ){
 					$this->ticket_meta['recurrences']['start_days'] = absint($post['ticket_start_recurring_days']);
-					$this->ticket_start = date('Y-m-d', strtotime('+' . $this->ticket_meta['recurrences']['start_days'] . ' days', $this->get_event()->start));
 				}else{ //by default the start date is the point of reference
 					$this->ticket_meta['recurrences']['start_days'] = absint($post['ticket_start_recurring_days']) * -1;
-					$this->ticket_start = date('Y-m-d', strtotime($this->ticket_meta['recurrences']['start_days'] . ' days', $this->get_event()->start));
 				}
-				$this->ticket_meta['recurrences']['start_time'] = ( !empty($post['ticket_start_time']) ) ? $this->sanitize_time($post['ticket_start_time']) : '00:00:00'; 
-				$this->ticket_start .= ' '. $this->ticket_meta['recurrences']['start_time'];
-				//timestamp - calculated only for purposes of not screwing up interfaces that use timestamps for outputting cut-off times such as booking settings for event
-				$this->start_timestamp  = strtotime($this->ticket_start, current_time('timestamp'));
+				$this->ticket_meta['recurrences']['start_time'] = ( !empty($post['ticket_start_time']) ) ? $this->sanitize_time($post['ticket_start_time']) : $this->get_event()->start()->format('H:i');
 			}else{
 				unset($this->ticket_meta['recurrences']['start_days']);
 				unset($this->ticket_meta['recurrences']['start_time']);
-				$this->ticket_start = $this->start_timestamp = '';
 			}
 			//end of ticket cut-off
 			if( array_key_exists('ticket_end_recurring_days', $post) && is_numeric($post['ticket_end_recurring_days']) ){
 				if( !empty($post['ticket_end_recurring_when']) && $post['ticket_end_recurring_when'] == 'after' ){
 					$this->ticket_meta['recurrences']['end_days'] = absint($post['ticket_end_recurring_days']);
-					$this->ticket_end = date('Y-m-d', strtotime('+' . $this->ticket_meta['recurrences']['end_days'] . ' days', $this->get_event()->end));
 				}else{ //by default the end date is the point of reference
 					$this->ticket_meta['recurrences']['end_days'] = absint($post['ticket_end_recurring_days']) * -1;
-					$this->ticket_end = date('Y-m-d', strtotime($this->ticket_meta['recurrences']['end_days'] . ' days', $this->get_event()->end));
 				}
-				$this->ticket_meta['recurrences']['end_time'] = ( !empty($post['ticket_end_time']) ) ? $this->sanitize_time($post['ticket_end_time']) : '00:00:00'; 
-				$this->ticket_end .= ' '. $this->ticket_meta['recurrences']['end_time'];
-				//timestamp - calculated only for purposes of not screwing up interfaces that use timestamps for outputting cut-off times such as booking settings for event
-				$this->end_timestamp  = strtotime($this->ticket_end, current_time('timestamp')); //we save these timestamps for quicker loading on construct
+				$this->ticket_meta['recurrences']['end_time'] = ( !empty($post['ticket_end_time']) ) ? $this->sanitize_time($post['ticket_end_time']) : $this->get_event()->start()->format('H:i');
 			}else{
 				unset($this->ticket_meta['recurrences']['end_days']);
 				unset($this->ticket_meta['recurrences']['end_time']);
-				$this->ticket_end = $this->end_timestamp = '';
 			}
+			$this->ticket_start = $this->ticket_end = null;
 		}
 		$this->compat_keys();
 		do_action('em_ticket_get_post', $this, $post);
@@ -263,17 +310,16 @@ class EM_Ticket extends EM_Object{
 	}
 	
 	function is_available( $ignore_member_restrictions = false, $ignore_guest_restrictions = false ){
-		$timestamp = current_time('timestamp');
 		if( isset($this->is_available) && !$ignore_member_restrictions && !$ignore_guest_restrictions ) return apply_filters('em_ticket_is_available',  $this->is_available, $this); //save extra queries if doing a standard check
 		$is_available = false;
 		$EM_Event = $this->get_event();
 		$available_spaces = $this->get_available_spaces();
-		$condition_1 = (empty($this->ticket_start) || $this->start_timestamp <= $timestamp);
-		$condition_2 = $this->end_timestamp >= $timestamp || empty($this->ticket_end);
-		$condition_3 = (empty($EM_Event->event_rsvp_date) && $EM_Event->start > $timestamp) || $EM_Event->rsvp_end > $timestamp;
+		$condition_1 = empty($this->ticket_start) || $this->start()->getTimestamp() <= time();
+		$condition_2 = empty($this->ticket_end) || $this->end()->getTimestamp() >= time();
+		$condition_3 = $EM_Event->rsvp_end()->getTimestamp() > time(); //either defined ending rsvp time, or start datetime is used here
 		$condition_4 = !$this->ticket_members || ($this->ticket_members && is_user_logged_in()) || $ignore_member_restrictions;
 		$condition_5 = true;
-		if( !EM_Bookings::$disable_restrictions && $this->ticket_members && !empty($this->ticket_members_roles) ){
+		if( !$ignore_member_restrictions && !EM_Bookings::$disable_restrictions && $this->ticket_members && !empty($this->ticket_members_roles) ){
 			//check if user has the right role to use this ticket
 			$condition_5 = false;
 			if( is_user_logged_in() ){
@@ -550,6 +596,54 @@ class EM_Ticket extends EM_Object{
 	}
 	
 	/**
+	 * Returns an EM_DateTime object of the ticket start date/time in local timezone of event.
+	 * If no start date defined or if date is invalid, false is returned.
+	 * @param bool $utc_timezone Returns EM_DateTime with UTC timezone if set to true, returns local timezone by default.
+	 * @return EM_DateTime|false
+	 * @see EM_Event::get_datetime()
+	 */
+	public function start( $utc_timezone = false ){
+		return apply_filters('em_ticket_start', $this->get_datetime('start', $utc_timezone), $this);
+	}
+	
+	/**
+	 * Returns an EM_DateTime object of the ticket end date/time in local timezone of event.
+	 * If no start date defined or if date is invalid, false is returned.
+	 * @param bool $utc_timezone Returns EM_DateTime with UTC timezone if set to true, returns local timezone by default.
+	 * @return EM_DateTime|false
+	 * @see EM_Event::get_datetime()
+	 */
+	public function end( $utc_timezone = false ){
+		return apply_filters('em_ticket_end', $this->get_datetime('end', $utc_timezone), $this);
+	}
+	
+	/**
+	 * Generates an EM_DateTime for the the start/end date/times of the ticket in local timezone.
+	 * If ticket has no start/end date, or an invalid format, false is returned.
+	 * @param string $when 'start' or 'end' date/time
+	 * @param bool $utc_timezone Returns EM_DateTime with UTC timezone if set to true, returns local timezone by default. Do not use if EM_DateTime->valid is false. 
+	 * @return EM_DateTime|false
+	 */
+	public function get_datetime( $when = 'start', $utc_timezone = false ){
+		if( $when != 'start' && $when != 'end') return new EM_DateTime(); //currently only start/end dates are relevant
+		//Initialize EM_DateTime if not already initialized, or if previously initialized object is invalid (e.g. draft event with invalid dates being resubmitted)
+		$when_date = 'ticket_'.$when;
+		//we take a pass at creating a new datetime object if it's empty, invalid or a different time to the current start date
+		if( !empty($this->$when_date) ){
+			if( empty($this->$when) || !$this->$when->valid ){
+				$this->$when = new EM_DateTime( $this->$when_date, $this->get_event()->get_timezone() );
+			}
+		}else{
+			$this->$when = new EM_DateTime();
+			$this->$when->valid = false;
+		}
+		//Set to UTC timezone if requested, local by default
+		$tz = $utc_timezone ? 'UTC' : $this->get_event()->get_timezone();
+		$this->$when->setTimezone($tz);
+		return $this->$when;
+	}
+	
+	/**
 	 * Can the user manage this event? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
@@ -560,18 +654,17 @@ class EM_Ticket extends EM_Object{
 	}
 	
 	/**
-	 * Outputs properties with formatting
+	 * Deprecated since 5.8.2, just access properties directly or use relevant functions such as $this->start() for ticket_start time - Outputs properties with formatting
 	 * @param string $property
 	 * @return string
 	 */
 	function output_property($property){
 		switch($property){
 			case 'start':
-				$value = date_i18n( get_option('date_format'), $this->start_timestamp );
+				$value = ( $this->start()->valid ) ? $this->start()->i18n( em_get_date_format() ) : '';
 				break;
 			case 'end':
-				$value = date_i18n( get_option('date_format'), $this->end_timestamp );
-				break;
+				$value = ( $this->end()->valid ) ? $this->end()->i18n( em_get_date_format() ) : '';
 				break;
 			default:
 				$value = $this->$property;

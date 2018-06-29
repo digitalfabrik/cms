@@ -3,46 +3,117 @@
  * Plugin Name: WP API Extensions
  * Description: Collection of extensions to the Wordpress REST API
  * Version: 0.1
- * Author: Martin Schrimpf
- * Author URI: https://github.com/Meash
+ * Author: Martin Schrimpf, Timo Ludwig, Sven Seeberg
+ * Author URI: https://github.com/Integreat
  * License: MIT
  */
 
+// wpml helper
+require_once __DIR__ . '/endpoints/helper/WpmlHelper.php';
+// Piwik / Matomo helper
+require_once __DIR__ . '/endpoints/helper/PiwikTracker.php';
+require_once __DIR__ . '/endpoints/helper/PiwikHelper.php';
+// base
+require_once __DIR__ . '/endpoints/RestApi_ExtensionBase.php';
 // v0
-require_once __DIR__ . '/endpoints/v0/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedContent.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
+require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_Multisites.php';
 require_once __DIR__ . '/endpoints/v0/RestApi_WpmlLanguages.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedPages.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedEvents.php';
-require_once __DIR__ . '/endpoints/v0/RestApi_ModifiedDisclaimer.php';
 // v1
-require_once __DIR__ . '/endpoints/RestApi_Multisites.php';
+require_once __DIR__ . '/endpoints/v1/RestApi_Multisites.php';
+// v2
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedContent.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedPages.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedEvents.php';
+require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
+// v3
+require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Categories.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Cities.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Events.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Extra.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Extras.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Post.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Search.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Hidden.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Live.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Relatives_Abstract.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Children.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Parents.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Post.php';
 
 const API_NAMESPACE = 'extensions';
-const CURRENT_VERSION = 1;
-
-const ENDPOINT_MULTISITES = 'multisites';
-const ENDPOINT_LANGUAGES = 'languages';
-const ENDPOINT_PAGES = 'pages';
-const ENDPOINT_EVENTS = 'events';
-const ENDPOINT_DISCLAIMER = 'disclaimer';
+const CURRENT_VERSION = 2;
 
 add_action('rest_api_init', function () {
-	/**
-	 * @var int -> [[string, RestApi_ExtensionBaseV0]] $versioned_endpoints
-	 * API version -> [key -> endpoint]
+	/*
+	 * Register no routes if current location is disabled
 	 */
+	global $wpdb;
+	$disabled = $wpdb->get_row(
+		"SELECT value
+			FROM {$wpdb->base_prefix}ig_settings
+				AS settings
+			LEFT JOIN {$wpdb->prefix}ig_settings_config
+				AS config
+				ON settings.id = config.setting_id
+			WHERE settings.alias = 'disabled'");
+	if (isset($disabled->value) && $disabled->value) {
+		return;
+	}
 	$versioned_endpoints = [
 		0 => [
-			ENDPOINT_MULTISITES => new RestApi_MultisitesV0(),
-			ENDPOINT_LANGUAGES => new RestApi_WpmlLanguagesV0(),
-			ENDPOINT_PAGES => new RestApi_ModifiedPagesV0(),
-			ENDPOINT_EVENTS => new RestApi_ModifiedEventsV0(),
-			ENDPOINT_DISCLAIMER => new RestApi_ModifiedDisclaimerV0(),
+			new RestApi_ModifiedPagesV0(),
+			new RestApi_ModifiedEventsV0(),
+			new RestApi_ModifiedDisclaimerV0(),
+			new RestApi_MultisitesV0(),
+			new RestApi_WpmlLanguagesV0(),
 		],
-		CURRENT_VERSION => [
-			ENDPOINT_MULTISITES => new RestApi_Multisites(),
-		]
+		1 => [
+			new RestApi_ModifiedDisclaimerV0(), // legacy APIv0
+			new RestApi_ModifiedEventsV0(), // legacy APIv0
+			new RestApi_ModifiedPagesV0(), // legacy APIv0
+			new RestApi_MultisitesV1(),
+			new RestApi_WpmlLanguagesV0(), // legacy APIv0
+		],
+		2 => [
+			new RestApi_ModifiedDisclaimerV2(),
+			new RestApi_ModifiedEventsV2(),
+			new RestApi_ModifiedPagesV2(),
+			new RestApi_MultisitesV1(), // legacy APIv1
+			new RestApi_WpmlLanguagesV0(), // legacy APIv0
+		],
+		3 => [
+			new APIv3_Extras(),
+			new APIv3_Feedback_Post(),
+			new APIv3_Feedback_Categories(),
+			new APIv3_Feedback_Cities(),
+			new APIv3_Feedback_Events(),
+			new APIv3_Feedback_Extra(),
+			new APIv3_Feedback_Extras(),
+			new APIv3_Feedback_Search(),
+			new APIv3_Languages(),
+			new APIv3_Posts_Children(),
+			new APIv3_Posts_Disclaimer(),
+			new APIv3_Posts_Events(),
+			new APIv3_Posts_Pages(),
+			new APIv3_Posts_Parents(),
+			new APIv3_Posts_Post(),
+			new APIv3_Sites(),
+			new APIv3_Sites_Hidden(),
+			new APIv3_Sites_Live(),
+		],
 	];
 
 	// register versioned endpoints
@@ -52,12 +123,8 @@ add_action('rest_api_init', function () {
 			$endpoint->register_routes($versioned_namespace);
 		}
 	}
-	// register most recent versions without version number
-	$most_recent_endpoints = [];
-	foreach ($versioned_endpoints as $key_endpoints) {
-		$most_recent_endpoints = array_merge($most_recent_endpoints, $key_endpoints);
-	}
-	foreach ($most_recent_endpoints as $endpoint) {
+	// register current version without version number
+	foreach ($versioned_endpoints[CURRENT_VERSION] as $endpoint) {
 		$endpoint->register_routes(API_NAMESPACE);
 	}
 });

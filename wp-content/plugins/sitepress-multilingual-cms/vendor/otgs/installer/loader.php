@@ -5,12 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 //It should only be loaded on the admin side
-if( !is_admin() ){
-    if(!function_exists('WP_Installer_Setup')){ function WP_Installer_Setup(){} }
-    $wp_installer_instance = null;
-    return;
-}
+if ( ! ( defined( 'DOING_CRON' ) && DOING_CRON ) && ! is_admin() ) {
+	if ( ! function_exists( 'WP_Installer_Setup' ) ) {
+		function WP_Installer_Setup() {
+		}
+	}
+	$wp_installer_instance = null;
 
+	return;
+}
 
 $wp_installer_instance = dirname(__FILE__) . '/installer.php';
 
@@ -19,7 +22,7 @@ $wp_installer_instance = dirname(__FILE__) . '/installer.php';
 global $wp_installer_instances;
 $wp_installer_instances[$wp_installer_instance] = array(
     'bootfile'  => $wp_installer_instance,
-    'version'   => '1.8.2'
+    'version'   => '1.8.10'
 );
 
 
