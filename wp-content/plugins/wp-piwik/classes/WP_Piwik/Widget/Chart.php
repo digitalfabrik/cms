@@ -48,7 +48,7 @@
 					foreach ($response['VisitsSummary.getVisits'] as $date => $value) {
 						$count++;
 						$values .= $value.',';
-						$unique .= $response['VisitsSummary.getUniqueVisitors'][$date].',';
+						//$unique .= $response['VisitsSummary.getUniqueVisitors'][$date].',';
 						$bounced .= $response['VisitsSummary.getBounceCount'][$date].',';
 						if ($this->parameter['period'] == 'week') {
 							preg_match("/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/", $date, $dateList);

@@ -47,8 +47,8 @@
 					$data[] = array(
 						$textKey, 
 						$value, 
-						$response['VisitsSummary.getUniqueVisitors'][$key]?$response['VisitsSummary.getUniqueVisitors'][$key]:'-',
-						$response['VisitsSummary.getBounceCount'][$key]?$response['VisitsSummary.getBounceCount'][$key]:'-',
+						//$response['VisitsSummary.getUniqueVisitors'][$key]?$response['VisitsSummary.getUniqueVisitors'][$key]:'-',
+						//$response['VisitsSummary.getBounceCount'][$key]?$response['VisitsSummary.getBounceCount'][$key]:'-',
 						$response['VisitsSummary.getActions'][$key]?$response['VisitsSummary.getActions'][$key]:'-'
 					);
 					$javaScript[] = 'javascript:wp_piwik_datelink(\''.urlencode('wp-piwik_stats').'\',\''.str_replace('-', '', $jsKey).'\',\''.(isset($_GET['wpmu_show_stats'])?(int) $_GET['wpmu_show_stats']:'').'\');';

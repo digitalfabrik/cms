@@ -34,14 +34,14 @@
 				$avgTime = isset($response['avg_time_on_page'])?$this->timeFormat($response['avg_time_on_page']):'-';
 				$tableHead = null;
 				$tableBody = array(
-					array(__('Visitors', 'wp-piwik').':', $this->value($response, 'nb_visits')),
-					array(__('Unique visitors', 'wp-piwik').':', $this->value($response, 'sum_daily_nb_uniq_visitors')),
+					//array(__('Visitors', 'wp-piwik').':', $this->value($response, 'nb_visits')),
+					//array(__('Unique visitors', 'wp-piwik').':', $this->value($response, 'sum_daily_nb_uniq_visitors')),
 					array(__('Page views', 'wp-piwik').':', $this->value($response, 'nb_hits').' (&#216; '.$this->value($response, 'entry_nb_actions').')'),
-					array(__('Total time spent', 'wp-piwik').':', $time),
-					array(__('Time/visit', 'wp-piwik').':', $avgTime),
-					array(__('Bounce count', 'wp-piwik').':', $this->value($response, 'entry_bounce_count').' ('.$this->value($response, 'bounce_rate').')'),
-					array(__('Min. generation time', 'wp-piwik').':', $this->value($response, 'min_time_generation')),
-					array(__('Max. generation time', 'wp-piwik').':', $this->value($response, 'max_time_generation'))
+					//array(__('Total time spent', 'wp-piwik').':', $time),
+					//array(__('Time/visit', 'wp-piwik').':', $avgTime),
+					//array(__('Bounce count', 'wp-piwik').':', $this->value($response, 'entry_bounce_count').' ('.$this->value($response, 'bounce_rate').')'),
+					//array(__('Min. generation time', 'wp-piwik').':', $this->value($response, 'min_time_generation')),
+					//array(__('Max. generation time', 'wp-piwik').':', $this->value($response, 'max_time_generation'))
 				); 
 				$tableFoot = (self::$settings->getGlobalOption('piwik_shortcut')?array(__('Shortcut', 'wp-piwik').':', '<a href="'.self::$settings->getGlobalOption('piwik_url').'">Piwik</a>'.(isset($aryConf['inline']) && $aryConf['inline']?' - <a href="?page=wp-piwik_stats">WP-Piwik</a>':'')):null);
 				$this->table($tableHead, $tableBody, $tableFoot);
