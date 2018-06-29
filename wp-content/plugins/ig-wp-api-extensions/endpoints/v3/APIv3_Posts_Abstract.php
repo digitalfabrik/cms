@@ -17,7 +17,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 
 	public function get_posts(WP_REST_Request $request) {
 		if (is_post_type_hierarchical(static::POST_TYPE)) {
-			$posts = array_slice($this->get_children(0), 1);
+			$posts = $this->get_posts_recursive();
 		} else {
 			$posts  = (new WP_Query([
 				'post_type' => static::POST_TYPE,
@@ -30,7 +30,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		return $this->get_changed_posts($request, array_map([$this, 'prepare'], $posts));
 	}
 
-	private function get_children($id) {
+	private function get_posts_recursive($id = 0) {
 		$direct_children = (new WP_Query([
 			'post_type' => static::POST_TYPE,
 			'post_status' => 'publish',
@@ -39,12 +39,16 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'order' => 'ASC',
 			'posts_per_page' => -1,
 		]))->posts;
+		$post = ($id == 0 ? [] : [get_post($id)]);
 		if (empty($direct_children)) {
-			return [get_post($id)];
+			return $post;
 		} else {
 			return array_reduce(
 				array_map(
-					[$this, 'get_children'],
+					[
+						$this,
+						'get_posts_recursive'
+					],
 					array_map(
 						function ($child) {
 							return $child->ID;
@@ -55,7 +59,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 				function ($all_children, $grand_children) {
 					return array_merge($all_children, $grand_children);
 				},
-				[get_post($id)]
+				$post
 			);
 		}
 	}
