@@ -10,7 +10,23 @@
  * Domain Path: /
  */
 
+function ig_revisions_notice() {
+	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
+	if (is_numeric($revision_id) && $revision_id >= 0) {
+		$revision = get_post($revision_id);
+		if (current_user_can('edit_users')) {
+			echo '<div class="notice notice-warning is-dismissible"><p><strong>Information: Dieser Bearbeitungsstand wird momentan nicht veröffentlicht, sondern die Version vom ' . $revision->post_date. '.<br> Sie können den veröffentlichten Bearbeitungsstand im Einstellungsfeld "Veröffentlichte Revision" am Ende dieser Seite auswählen.</strong></p></div>';
+		} else {
+			echo '<div class="notice notice-warning is-dismissible"><p><strong>Information: Dieser Bearbeitungsstand wird momentan nicht veröffentlicht, sondern die Version vom ' . $revision->post_date. '.<br> Ein Verwalter kann den veröffentlichten Bearbeitungsstand im zugehörigen Einstellungsfeld auswählen.</strong></p></div>';
+		}
+	}
+}
+add_action( 'admin_notices', 'ig_revisions_notice' );
+
 function ig_revisions_metabox( $post ) {
+	if (!current_user_can('edit_users')) {
+		return false;
+	}
 	$children = wp_get_post_revisions( $_GET['post'] );
 	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
 	$options = "<option value='-1'" . (!$revision_id ? " selected" : "") . ">". __('Always publish most recent revision', 'ig-revisions') ."</option>";
@@ -22,7 +38,7 @@ function ig_revisions_metabox( $post ) {
 		'ig_revisions',
 		__('Published revision', 'ig-revisions'),
 		'ig_revisions_metabox_html',
-		null,
+		'page',
 		'advanced',
 		'default',
 		$options
@@ -44,6 +60,9 @@ function ig_revisions_metabox_html ( $post, $callback_args ) {
 }
 
 function ig_revisions_metabox_save ( $post_id ) {
+	if (!current_user_can('edit_users')) {
+		return false;
+	}
 	$meta_key = 'ig_revision_id';
 	$meta_value = ( isset( $_POST['ig_revision_id'] ) ? $_POST['ig_revision_id'] : '' );
 	update_post_meta( $post_id, $meta_key, $meta_value );
@@ -54,6 +73,9 @@ add_action('publish_post', 'ig_revisions_metabox_save');
 add_action('edit_page_form', 'ig_revisions_metabox_save');
 
 function update_post_with_revision( $post ) {
+	if (!current_user_can('edit_users')) {
+		return false;
+	}
 	$revision_id = get_post_meta( $post['id'], 'ig_revision_id', true );
 	if(is_numeric($revision_id) && $revision_id >= 0) {
 		$revision_post = wp_get_post_revision( $revision_id );

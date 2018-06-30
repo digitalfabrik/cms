@@ -16,14 +16,52 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 	}
 
 	public function get_posts(WP_REST_Request $request) {
-		$query = new WP_Query([
+		if (is_post_type_hierarchical(static::POST_TYPE)) {
+			$posts = $this->get_posts_recursive();
+		} else {
+			$posts  = (new WP_Query([
+				'post_type' => static::POST_TYPE,
+				'post_status' => 'publish',
+				'orderby' => 'menu_order post_title',
+				'order'   => 'ASC',
+				'posts_per_page' => -1,
+			]))->posts;
+		}
+		return $this->get_changed_posts($request, array_map([$this, 'prepare'], $posts));
+	}
+
+	private function get_posts_recursive($id = 0) {
+		$direct_children = (new WP_Query([
 			'post_type' => static::POST_TYPE,
 			'post_status' => 'publish',
+			'post_parent' => $id,
 			'orderby' => 'menu_order post_title',
-			'order'   => 'ASC',
+			'order' => 'ASC',
 			'posts_per_page' => -1,
-		]);
-		return $this->get_changed_posts($request, array_map([$this, 'prepare'], $query->posts));
+		]))->posts;
+		$post = ($id == 0 ? [] : [get_post($id)]);
+		if (empty($direct_children)) {
+			return $post;
+		} else {
+			return array_reduce(
+				array_map(
+					[
+						$this,
+						'get_posts_recursive'
+					],
+					array_map(
+						function ($child) {
+							return $child->ID;
+						},
+						$direct_children
+					)
+				),
+				function ($all_children, $grand_children) {
+					return array_merge($all_children, $grand_children);
+				},
+				$post
+			);
+		}
 	}
 
 	protected function prepare(WP_Post $post) {

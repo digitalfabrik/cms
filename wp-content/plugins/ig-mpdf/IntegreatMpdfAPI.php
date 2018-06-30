@@ -49,7 +49,7 @@ class IntegreatMpdfAPI {
 			$GLOBALS['sitepress']->switch_lang(apply_filters('wpml_element_language_code', null, ['element_id' => $id, 'element_type' => 'page']), true);
 			$page_ids = $this->get_children($id);
 		} else {
-			$page_ids = array_slice($this->get_children(0), 0);
+			$page_ids = array_slice($this->get_children(0), 1);
 		}
 		$mpdf = new IntegreatMpdf($page_ids);
 		try {
