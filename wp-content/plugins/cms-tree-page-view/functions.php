@@ -1504,7 +1504,7 @@ function cms_tpv_print_childs($pageID, $view = "all", $arrOpenChilds = null, $po
 					"id": "cms-tpv-<?php echo $onePage->ID ?>",
 					"post_id": "<?php echo $onePage->ID ?>",
 					"post_type": "<?php echo $onePage->post_type ?>",
-					"post_status": "<?php echo $onePage->post_status ?>",
+					"post_status": "<?php echo is_numeric(get_post_meta( $onePage->ID, 'ig_revision_id', true )) && get_post_meta( $onePage->ID, 'ig_revision_id', true ) >= 0 ? 'Revision' : $onePage->post_status ?>",
 					"post_status_translated": "<?php echo isset($post_statuses[$onePage->post_status]) ? $post_statuses[$onePage->post_status] : $onePage->post_status  ?>",
 					"rel": "<?php echo $rel ?>",
 					"childCount": <?php echo ( !empty( $arrChildPages ) ) ? sizeof( $arrChildPages ) : 0 ; ?>,
