@@ -22,7 +22,7 @@ function ig_revisions_metabox( $post ) {
 		'ig_revisions',
 		__('Published revision', 'ig-revisions'),
 		'ig_revisions_metabox_html',
-		null,
+		'page',
 		'advanced',
 		'default',
 		$options
