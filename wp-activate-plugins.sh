@@ -36,7 +36,7 @@ simple-page-ordering \
 sitepress-multilingual-cms \
 tinymce-advanced \
 use-google-libraries \
-user-role-editor \
+user-role-editor-pro \
 welcome-email-editor \
 wpml-media-translation \
 wpml-translation-management \
