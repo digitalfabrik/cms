@@ -13,7 +13,7 @@
 
 include 'pp-process.php';
 
-add_action('admin_menu', 'pp_author_chat_setup_menu');
+add_action('admin_menu', 'pp_author_chjquery-simply-countableat_setup_menu');
 add_action('wp_dashboard_setup', 'pp_wp_dashboard_author_chat');
 add_action('admin_enqueue_scripts', 'pp_scripts_admin_chat');
 register_activation_hook(__FILE__, 'pp_author_chat_activate');
