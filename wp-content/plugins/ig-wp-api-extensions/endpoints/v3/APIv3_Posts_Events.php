@@ -132,6 +132,8 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		$prepared_event = parent::prepare($event);
 		$prepared_event['event'] = $this->prepare_event($event);
 		$prepared_event['location'] = $this->prepare_location($event);
+		unset($prepared_event['parent']);
+		unset($prepared_event['order']);
 		unset($prepared_event['hash']);
 		$prepared_event['hash'] = md5(json_encode($prepared_event));
 		return $prepared_event;
