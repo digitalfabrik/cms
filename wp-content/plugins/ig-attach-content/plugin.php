@@ -209,39 +209,6 @@ function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 }
 add_action( 'wp_ajax_ig_ac_pages_dropdown', 'ig_ac_pages_dropdown' );
 
-function ig_ac_save_meta_box ( $post_id, $old_meta_value, $meta_value ) {
-
-	$added_blog_id = $_POST['ig_ac_select_blog_id'];
-	$added_post_id = $_POST['ig_ac_select_post_id'];
-
-	$key_blog_id = 'ig-content-loader-instance-blog-id';
-	$key_post_id = 'ig-content-loader-instance-post-id';
-
-	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
-	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
-
-	// if the content loader instance is removed, we want to remove all related meta data
-	if ( $old_meta_value == 'ig-content-loader-instance' && $meta_value != 'ig-content-loader-instance' ) {
-		delete_post_meta( $post_id, $key_blog_id, $meta_value );
-		delete_post_meta( $post_id, $key_post_id, $meta_value );
-	}	
-	// content loader instance is added, save meta data
-	elseif ( $meta_value == 'ig-content-loader-instance' ) {
-		if ( $added_blog_id && $added_post_id ) {			
-			if ( $old_blog_id )
-				update_post_meta( $post_id, $key_blog_id, $added_blog_id );
-			else
-				add_post_meta( $post_id, $key_blog_id, $added_blog_id );
-				
-			if ( $old_post_id )
-				update_post_meta( $post_id, $key_post_id, $added_post_id );
-			else
-				add_post_meta( $post_id, $key_post_id, $added_post_id );
-		}
-	}
-}
-add_action( 'cl_save_meta_box', 'ig_ac_save_meta_box' , 10, 3 );
-
 
 /**
  * Modify Post by getting foreign content form database and adding it to the page
