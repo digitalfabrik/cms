@@ -23,7 +23,7 @@ add_action( 'admin_menu', 'ig_ac_backend' );
  * for the page. It also contains 2 radio buttons: attach content to beginning or end of current page. 
  */
 function ig_ac_generate_selection_box() {
-	add_meta_box( 'meta-box-id', __( 'Load other page', 'ig-content-loader-base' ), 'ig_ac_create_metabox', 'page', 'side' );
+	add_meta_box( 'meta-box-id', __( 'Load other page', 'ig-attach-content' ), 'ig_ac_create_metabox', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
  
@@ -141,9 +141,6 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 
 
 function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
-	$key_blog_id = 'ig-content-loader-instance-blog-id';
-	$key_post_id = 'ig-content-loader-instance-post-id';
-
 	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
 	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
 	global $wpdb;
@@ -157,8 +154,8 @@ function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_ig_ac_metabox_instance">
 	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-content-loader-instance').'</p>
-	<select style="width: 100%;" id="ig_ac_select_blog_id" name="ig_ac_select_blog_id">
-		<option value="">'.__('Please select', 'ig-content-loader-instance').'</option>';
+	<select style="width: 100%;" id="ig-attach-content-blog" name="ig-attach-content-blog">
+		<option value="">'.__('Please select', 'ig-attach-content').'</option>';
 		foreach( $all_blogs as $blog ){
 			
 			$blog_name = get_blog_details( $blog->blog_id )->blogname;
@@ -187,16 +184,15 @@ function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 		$language_code = $_POST['ig_ac_post_language'];
 	}
 
-	$original_blog_id = get_current_blog_id(); 
 	switch_to_blog( $blog_id ); 
 	$pages = get_pages();
-	$output = '<select id="ig_ac_select_post_id" name="ig_ac_select_post_id">';
+	$output = '<select id="ig-attach-content-page" name="ig-attach-content-page">';
 	foreach ($pages as $page) {
 		$orig_title = get_the_title( icl_object_id($page->ID, 'post', true, wpml_get_default_language()));
 		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id,false ).">".$orig_title." — ".$page->post_title."</option>";
 	}
 	$output .= "</select>";
-	switch_to_blog( $original_blog_id ); 
+	restore_current_blog();
 	if ( $ajax == true ) {
 		echo $output;
 		exit;
