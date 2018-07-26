@@ -119,10 +119,12 @@ function ig_ac_save_meta_box($post_id) {
 add_action('save_post', 'ig_ac_save_meta_box');
 add_action('edit_post', 'ig_ac_save_meta_box');
 
-/*
-* update post modified date, usually for parent of attached post. Necessary to push updates to App
-* @param int $post_id, int $blog_id
-*/
+/**
+ * update post modified date, usually for parent of attached post. Necessary to push updates to App
+ * 
+ * @param int $post_id, 
+ * @param int $blog_id
+ */
 function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 	global $wpdb;
 	$datetime = date("Y-m-d H:i:s");
@@ -140,6 +142,16 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 }
 
 
+/**
+ * This function creates an HTML select with all available blogs.
+ * If this function is called in an AJAX call, then the HTML code
+ * is directly written to the output buffer.
+ * 
+ * @param int $blog_id preselect this blog for the user
+ * @param string $language_code
+ * @param int $post_id
+ * @return string
+ */
 function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
 	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
@@ -173,6 +185,17 @@ function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 }
 add_action( 'wp_ajax_ig_ac_blogs_dropdown', 'ig_ac_blogs_dropdown' );
 
+
+/**
+ * This function creates an HTML select with all available pages of a defined bloag
+ * and language. If this function is called in an AJAX call, then the HTML code
+ * is directly written to the output buffer.
+ * 
+ * @param int $blog_id
+ * @param string $language_code
+ * @param int $post_id
+ * @return string
+ */
 function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_id = false ) {
 	if ( $blog_id == false ) {
 		$blog_id = $_POST['ig_ac_blog_id'];
