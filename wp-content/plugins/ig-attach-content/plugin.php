@@ -65,11 +65,11 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 			}
 		});
 		jQuery(document).bind('DOMNodeInserted', function(e) {
-			jQuery("#ig_ac_select_blog_id").on('change', function() {
+			jQuery("#ig-attach-content-blog").on('change', function() {
 				var data = {
 					'action': 'ig_ac_pages_dropdown',
-					'ig_ac_post_language': '<?php echo ICL_LANGUAGE_CODE; ?>',
-					'ig_ac_blog_id': this.value
+					'ig-attach-content-language: '<?php echo ICL_LANGUAGE_CODE; ?>',
+					'ig-attach-content-blog': this.value
 				};
 				jQuery.post(ajaxurl, data, function(response) {
 					jQuery('#ig_ac_metabox_pages').html(response);
@@ -198,13 +198,13 @@ add_action( 'wp_ajax_ig_ac_blogs_dropdown', 'ig_ac_blogs_dropdown' );
  */
 function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_id = false ) {
 	if ( $blog_id == false ) {
-		$blog_id = $_POST['ig_ac_blog_id'];
+		$blog_id = $_POST['ig-attach-content-blog'];
 		$ajax = true;
 	} else {
 		$ajax = false;
 	}
 	if ( $language_code == false ) {
-		$language_code = $_POST['ig_ac_post_language'];
+		$language_code = $_POST['ig-attach-content-language'];
 	}
 
 	switch_to_blog( $blog_id ); 
