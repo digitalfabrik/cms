@@ -220,18 +220,42 @@ add_action( 'wp_ajax_ig_ac_pages_dropdown', 'ig_ac_pages_dropdown' );
 function ig_ac_modify_post($post) {
 	global $wpdb;
 	
-	global $cl_already_manipulated;
-	if ( !$cl_already_manipulated ) {
-		$cl_already_manipulated = array();
+	/**
+	 * In some cases it seems that the API is working through some posts more than
+	 * once. In such cases we don't want to attach the content multiple times.
+	 * Therefore we store if we already manipulated a page and return if that is
+	 * the case.
+	 */
+	global $ig_ac_already_manipulated;
+	if ( !$ig_ac_already_manipulated ) {
+		$ig_ac_already_manipulated = array();
 	}
-	if ( in_array( $post->ID, $cl_already_manipulated) ) {
+	if ( in_array( $post->ID, $ig_ac_already_manipulated) ) {
 		return $post;
 	}
-	$cl_already_manipulated[] = $post->ID;
+	$ig_ac_already_manipulated[] = $post->ID;
 	
+	/**
+	 * Get the post_meta information. get_post_meta returns an empty string if
+	 * the key does not exist. If the key is empty, no other page should be attached.
+	 * We then return the unmodified post. Otherwise we fetch the content from the
+	 * blog and add the content to the beginning or end.
+	 */
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
-	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
-	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+	if(count($ac_position) > 0 ) {
+		$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
+		$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+
+		switch_to_blog($ac_blog);
+		$attach_content = get_post($ac_page)->post_content;
+		restore_current_blog();
+		if ( 'end' == $ac_position ) {
+			$post->post_content = $post->post_content . $attach_content;
+		} elseif ( 'end' == $ac_position ) {
+			$post->post_content = $attach_content . $post->post_content;
+		}
+	}
+	return $post;
 }
-add_filter('wp_api_extensions_pre_post', 'cl_modify_post', 10, 2);
-add_action('the_post', 'cl_modify_post');
+add_filter('wp_api_extensions_pre_post', 'ig_ac_modify_post', 10, 2);
+add_action('the_post', 'ig_ac_modify_post');
