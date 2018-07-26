@@ -69,7 +69,7 @@ function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = 
 					'action': 'ig_ac_blogs_dropdown'
 				};
 				jQuery.post(ajaxurl, data, function(response) {
-					jQuery('#cl_metabox_extra').html(response);
+					jQuery('#ig_ac_metabox_extra').html(response);
 				});
 			} else {
 				jQuery("#div_ig_ac_metabox_instance").html('')
@@ -105,7 +105,7 @@ function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = 
 		</div>
 	</p>
 
-	<div id="cl_metabox_extra"><?php echo ig_ac_blogs_dropdown(); ?></div>
+	<div id="ig_ac_metabox_extra"><?php echo ig_ac_blogs_dropdown(); ?></div>
 	<?php  
 }
 
@@ -188,60 +188,12 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 }
 
 
-/**
- * Modify Post by getting foreign content form database and adding it to the page
- * Also check post_meta value for radio group to concatenate content before or after page-contents
- *
- * @param $post current post object
- */
-function ig_ac_modify_post($post) {
-	global $wpdb;
-	
-	global $cl_already_manipulated;
-	
-	if ( !$cl_already_manipulated ) {
-		$cl_already_manipulated = array();
-	}
-		
-	if ( in_array( $post->ID, $cl_already_manipulated) ) {
-		return $post;
-	}
-	$cl_already_manipulated[] = $post->ID;
-	
-	// get foreign cotennt from database
-	$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
-	
-	// execute sql statement in $query
-	$result = $wpdb->get_results($query);
-
-	/* get saved post meta for radio group from db */
-	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-	$select_value = get_post_meta( $post->ID, 'ig-content-loader-base', true);
-	
-	// if there is a selected value for the dropdown in the database
-	if(count($select_value) > 0 ) {
-		if($option_value == 'ende') {
-			// add foreign content from db to the end of the post
-			$post->post_content = $post->post_content.$result[0]->post_content;
-		} else {
-			// add foreign content from db to the front of the post
-			$post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
-		}
-	}
-
-	return $post;
-}
-add_filter('wp_api_extensions_pre_post', 'cl_modify_post', 10, 2);
-add_action('the_post', 'cl_modify_post');
-
-function ig_ac_metabox_item( $array ) {
-	$array[] = array('id'=>'ig-content-loader-instance', 'name'=>__('Page from other instance', 'ig-content-loader-instance'));
-	return $array;
-}
-add_filter( 'cl_metabox_item', 'ig_ac_metabox_item' );
-
-
 function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
+	$key_blog_id = 'ig-content-loader-instance-blog-id';
+	$key_post_id = 'ig-content-loader-instance-post-id';
+
+	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
+	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
 	global $wpdb;
 	if ( $blog_id ) {
 		$ajax = false;
@@ -335,16 +287,50 @@ function ig_ac_save_meta_box ( $post_id, $old_meta_value, $meta_value ) {
 }
 add_action( 'cl_save_meta_box', 'ig_ac_save_meta_box' , 10, 3 );
 
-function ig_ac_metabox_extra( $cl_metabox_extra, $module, $post_id ) {
-	if( $module == 'ig-content-loader-instance' ) {
-		$key_blog_id = 'ig-content-loader-instance-blog-id';
-		$key_post_id = 'ig-content-loader-instance-post-id';
 
-		$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
-		$old_post_id = get_post_meta( $post_id, $key_post_id, true );
-
-		$output = ig_ac_blogs_dropdown( $old_blog_id, ig_ac_pages_dropdown( $old_blog_id, ICL_LANGUAGE_CODE, $old_post_id ) );
-		return $output;
+/**
+ * Modify Post by getting foreign content form database and adding it to the page
+ * Also check post_meta value for radio group to concatenate content before or after page-contents.
+ * This function should be called when the content is displayed, for example by the REST API.
+ *
+ * @param $post current post object
+ */
+function ig_ac_modify_post($post) {
+	global $wpdb;
+	
+	global $cl_already_manipulated;
+	
+	if ( !$cl_already_manipulated ) {
+		$cl_already_manipulated = array();
 	}
+		
+	if ( in_array( $post->ID, $cl_already_manipulated) ) {
+		return $post;
+	}
+	$cl_already_manipulated[] = $post->ID;
+	
+	// get foreign cotennt from database
+	$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
+	
+	// execute sql statement in $query
+	$result = $wpdb->get_results($query);
+
+	/* get saved post meta for radio group from db */
+	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
+	$select_value = get_post_meta( $post->ID, 'ig-content-loader-base', true);
+	
+	// if there is a selected value for the dropdown in the database
+	if(count($select_value) > 0 ) {
+		if($option_value == 'ende') {
+			// add foreign content from db to the end of the post
+			$post->post_content = $post->post_content.$result[0]->post_content;
+		} else {
+			// add foreign content from db to the front of the post
+			$post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
+		}
+	}
+
+	return $post;
 }
-add_filter( 'cl_metabox_extra', 'ig_ac_metabox_extra', 10, 3);
+add_filter('wp_api_extensions_pre_post', 'cl_modify_post', 10, 2);
+add_action('the_post', 'cl_modify_post');
