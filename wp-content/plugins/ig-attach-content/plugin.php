@@ -33,7 +33,6 @@ add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
  * @param WP_Post $post Current post object.
  */
 function ig_ac_create_metabox( $post ) {
-
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
 	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
@@ -105,50 +104,19 @@ function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = 
 */
 function ig_ac_save_meta_box($post_id) {
 
-	$meta_key = 'ig-content-loader-base';
-	$meta_key_position = 'ig-content-loader-base-position';
-  
-	//get the selected value from the meta box dropdown-select and the radio group
-	$meta_value = ( isset( $_POST['cl_content_select'] ) ? $_POST['cl_content_select'] : '' );
-	$meta_value_position = ( isset( $_POST['meta-radio'] ) ? $_POST['meta-radio'] : '' );
-	
-	//read old post meta settings
-	$old_meta_value = get_post_meta( $post_id, $meta_key, true );
-	$old_meta_value_position = get_post_meta ($post_id, $meta_key_position, true);
-	
-	/* meta value for dropdown select */
-	if ($meta_value != '') {
-	  
-	//if there was no old post meta entry, add it
-	if ( '' == $old_meta_value )
-		add_post_meta( $post_id, $meta_key, $meta_value, true );
 
-	//if the old post meta value is different from the posted one, change it
-	elseif ( $old_meta_value != $meta_value )
-		update_post_meta( $post_id, $meta_key, $meta_value );
-	}
-  
-	//if there is no plugin selected but there is one in the db, remove meta value from wp_postmeta and deactive content-loader plugin
-	elseif ( '' == $meta_value && $old_meta_value ) {
-		delete_post_meta( $post_id, $meta_key, $meta_value );
-		global $wpdb;
-		$insert = "DELETE FROM ".$wpdb->base_prefix.get_current_blog_id()."_posts WHERE post_type = 'cl_html' AND post_parent = '$post_id'";
-		$wpdb->query($insert);
-		cl_update_parent_modified_date( $post_id, get_current_blog_id() );
-	}
-	
-	/* meta value for radio buttons */
-	if($meta_value_position != '') {
-		
-	if( '' == $old_meta_value_position) 
-		add_post_meta($post_id, $meta_key_position, $meta_value_position, true);
-		
-	elseif ( $old_meta_value_position != $meta_value_position )
-		update_post_meta( $post_id, $meta_key_position, $meta_value_position );
-	}
+	$key_position = 'ig-attach-content-position';
+	$key_blog = 'ig-attach-content-blog';
+	$key_page = 'ig-attach-content-page';
 
-	elseif ( '' == $meta_value_position && $old_meta_value_position ) {
-		delete_post_meta( $post_id, $meta_key_position, $meta_value_position );
+	if($_POST[$key_blog] == -1) {
+		delete_post_meta( $post_id, $key_position);
+		delete_post_meta( $post_id, $key_blog);
+		delete_post_meta( $post_id, $key_page);
+	} else {
+		update_post_meta( $post_id, $key_position, $_POST[$key_position] );
+		update_post_meta( $post_id, $key_blog, $_POST[$key_blog] );
+		update_post_meta( $post_id, $key_page, $_POST[$key_page] );
 	}
 }
 add_action('save_post', 'ig_ac_save_meta_box');
