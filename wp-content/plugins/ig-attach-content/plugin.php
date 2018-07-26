@@ -37,7 +37,7 @@ function ig_ac_create_metabox( $post ) {
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
 	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
 	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
-	ig_ac_meta_box_html( $options, $radio_value, $cl_metabox_extra );
+	ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page );
 }
 
 /**
@@ -46,7 +46,7 @@ function ig_ac_create_metabox( $post ) {
  * @param integer $selected_blog ID of preselected blog
  * @param integer $radio_value Selected radio button ID
  */
-function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = '' ) {
+function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 	global $post;
 ?>
 	<script type="text/javascript" >
@@ -80,15 +80,15 @@ function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = 
 	</script> 
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-content-loader-base' )?></span>
+		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-attach-content' )?></span>
 		<div class="cl-row-content">
-			<label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-				<input type="radio" name="meta-radio" id="insert-pre-radio" value="beginning" <?php checked( $radio_value, 'beginning' ); ?>>
-				<?php echo __( 'At beginning', 'ig-content-loader-base' )?>
+			<label for="ig-attach-content-position-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
+				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-one" value="beginning" <?php checked( $ac_position, 'beginning' ); ?>>
+				<?php echo __( 'At beginning', 'ig-attach-content' )?>
 			</label>
-			<label for="meta-radio-two">
-				<input type="radio" name="meta-radio" id="insert-suf-radio" value="end" <?php checked( $radio_value, 'end' ); ?>>
-				<?php echo __( 'At end', 'ig-content-loader-base' )?>
+			<label for="ig-attach-content-position-two">
+				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-two" value="end" <?php checked( $ac_position, 'end' ); ?>>
+				<?php echo __( 'At end', 'ig-attach-content' )?>
 			</label>
 		</div>
 	</p>
@@ -103,13 +103,10 @@ function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = 
 * @param int $post_id Post ID
 */
 function ig_ac_save_meta_box($post_id) {
-
-
 	$key_position = 'ig-attach-content-position';
 	$key_blog = 'ig-attach-content-blog';
 	$key_page = 'ig-attach-content-page';
-
-	if($_POST[$key_blog] == -1) {
+	if ( -1 == $_POST[$key_blog] ) {
 		delete_post_meta( $post_id, $key_position);
 		delete_post_meta( $post_id, $key_blog);
 		delete_post_meta( $post_id, $key_page);
@@ -215,7 +212,8 @@ add_action( 'wp_ajax_ig_ac_pages_dropdown', 'ig_ac_pages_dropdown' );
  * Also check post_meta value for radio group to concatenate content before or after page-contents.
  * This function should be called when the content is displayed, for example by the REST API.
  *
- * @param $post current post object
+ * @param WP_Post $post current post object
+ * @return WP_Post
  */
 function ig_ac_modify_post($post) {
 	global $wpdb;
@@ -257,5 +255,9 @@ function ig_ac_modify_post($post) {
 	}
 	return $post;
 }
+/**
+ * The page should be modified if it is loaded by normal themes with the the_post
+ * function or via the API.
+ */
 add_filter('wp_api_extensions_pre_post', 'ig_ac_modify_post', 10, 2);
 add_action('the_post', 'ig_ac_modify_post');
