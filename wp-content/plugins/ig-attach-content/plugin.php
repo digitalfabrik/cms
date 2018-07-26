@@ -35,20 +35,9 @@ add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
 function ig_ac_create_metabox( $post ) {
 
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
-	
-	$radio_value = get_post_meta( $post->ID, 'ig-attach-content-position', true );
-	$option_value = get_post_meta( $post->ID, 'ig-attach-content', true );[0];
-	
-	$dropdown_items = apply_filters('cl_metabox_item', array(array('id'=>'', 'name'=>__('Please select (insert nothing)', 'ig-content-loader-base'))));
-	$options = "";
-	
-	foreach($dropdown_items as $item) {
-		$options .= "<option value='".$item['id']."' ".selected($item['id'],$option_value,false).'>'.$item['name'].'</option>';
-	}
-	
-	$cl_metabox_extra = '';
-	//only the plugin responsinble is allowed to add something to the cl_metabox_extra variable
-	$cl_metabox_extra = apply_filters( 'cl_metabox_extra', $cl_metabox_extra, $option_value, $post->ID );
+	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
+	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
+	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
 	ig_ac_meta_box_html( $options, $radio_value, $cl_metabox_extra );
 }
 
@@ -164,8 +153,6 @@ function ig_ac_save_meta_box($post_id) {
 }
 add_action('save_post', 'ig_ac_save_meta_box');
 add_action('edit_post', 'ig_ac_save_meta_box');
-add_action('publish_post', 'ig_ac_save_meta_box');
-add_action('edit_page_form', 'ig_ac_save_meta_box');
 
 /*
 * update post modified date, usually for parent of attached post. Necessary to push updates to App
