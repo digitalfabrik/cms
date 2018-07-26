@@ -221,38 +221,17 @@ function ig_ac_modify_post($post) {
 	global $wpdb;
 	
 	global $cl_already_manipulated;
-	
 	if ( !$cl_already_manipulated ) {
 		$cl_already_manipulated = array();
 	}
-		
 	if ( in_array( $post->ID, $cl_already_manipulated) ) {
 		return $post;
 	}
 	$cl_already_manipulated[] = $post->ID;
 	
-	// get foreign cotennt from database
-	$query = "SELECT * FROM ".$wpdb->prefix."posts WHERE post_parent=".$post->ID." AND post_type = 'cl_html'";
-	
-	// execute sql statement in $query
-	$result = $wpdb->get_results($query);
-
-	/* get saved post meta for radio group from db */
-	$option_value = get_post_meta( $post->ID, 'ig-content-loader-base-position', true );
-	$select_value = get_post_meta( $post->ID, 'ig-content-loader-base', true);
-	
-	// if there is a selected value for the dropdown in the database
-	if(count($select_value) > 0 ) {
-		if($option_value == 'ende') {
-			// add foreign content from db to the end of the post
-			$post->post_content = $post->post_content.$result[0]->post_content;
-		} else {
-			// add foreign content from db to the front of the post
-			$post->post_content = $result[0]->post_content.$post->post_content.$meta_value;
-		}
-	}
-
-	return $post;
+	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
+	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
+	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
 }
 add_filter('wp_api_extensions_pre_post', 'cl_modify_post', 10, 2);
 add_action('the_post', 'cl_modify_post');
