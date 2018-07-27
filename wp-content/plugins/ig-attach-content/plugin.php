@@ -23,7 +23,7 @@ add_action( 'admin_menu', 'ig_ac_backend' );
  * for the page. It also contains 2 radio buttons: attach content to beginning or end of current page. 
  */
 function ig_ac_generate_selection_box() {
-	add_meta_box( 'meta-box-id', __( 'Load other page', 'ig-content-loader-base' ), 'ig_ac_create_metabox', 'page', 'side' );
+	add_meta_box( 'ig_ac_metabox', __( 'Attach Page', 'ig-attach-content' ), 'ig_ac_create_metabox', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
  
@@ -37,7 +37,7 @@ function ig_ac_create_metabox( $post ) {
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
 	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
 	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
-	ig_ac_meta_box_html( $options, $radio_value, $cl_metabox_extra );
+	ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page );
 }
 
 /**
@@ -46,49 +46,34 @@ function ig_ac_create_metabox( $post ) {
  * @param integer $selected_blog ID of preselected blog
  * @param integer $radio_value Selected radio button ID
  */
-function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = '' ) {
+function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 	global $post;
 ?>
 	<script type="text/javascript" >
-	jQuery(document).ready(function($) {
-		jQuery("#cl_content_select").on('change', function() {
-			if(this.value == 'ig-content-loader-instance') {
-				var data = {
-					'action': 'ig_ac_blogs_dropdown'
-				};
-				jQuery.post(ajaxurl, data, function(response) {
-					jQuery('#ig_ac_metabox_extra').html(response);
-				});
-			} else {
-				jQuery("#div_ig_ac_metabox_instance").html('')
-				jQuery("#div_ig_ac_metabox_instance").remove()
-			}
-		});
-		jQuery(document).bind('DOMNodeInserted', function(e) {
-			jQuery("#ig_ac_select_blog_id").on('change', function() {
+		jQuery(document).ready(function($) {
+			jQuery("#ig-attach-content-blog").on('change', function() {
 				var data = {
 					'action': 'ig_ac_pages_dropdown',
-					'ig_ac_post_language': '<?php echo ICL_LANGUAGE_CODE; ?>',
-					'ig_ac_blog_id': this.value
+					'ig-attach-content-language': '<?php echo ICL_LANGUAGE_CODE; ?>',
+					'ig-attach-content-blog': this.value
 				};
 				jQuery.post(ajaxurl, data, function(response) {
 					jQuery('#ig_ac_metabox_pages').html(response);
 				});
 			});
 		});
-	});
 	</script> 
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-content-loader-base' )?></span>
+		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-attach-content' )?></span>
 		<div class="cl-row-content">
-			<label for="meta-radio-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
-				<input type="radio" name="meta-radio" id="insert-pre-radio" value="beginning" <?php checked( $radio_value, 'beginning' ); ?>>
-				<?php echo __( 'At beginning', 'ig-content-loader-base' )?>
+			<label for="ig-attach-content-position-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
+				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-one" value="beginning" <?php checked( $ac_position, 'beginning' ); ?>>
+				<?php echo __( 'Beginning', 'ig-attach-content' )?>
 			</label>
-			<label for="meta-radio-two">
-				<input type="radio" name="meta-radio" id="insert-suf-radio" value="end" <?php checked( $radio_value, 'end' ); ?>>
-				<?php echo __( 'At end', 'ig-content-loader-base' )?>
+			<label for="ig-attach-content-position-two">
+				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-two" value="end" <?php checked( $ac_position, 'end' ); ?>>
+				<?php echo __( 'End', 'ig-attach-content' )?>
 			</label>
 		</div>
 	</p>
@@ -102,14 +87,11 @@ function ig_ac_meta_box_html( $selected_blog, $radio_value, $cl_metabox_extra = 
 *
 * @param int $post_id Post ID
 */
-function ig_ac_save_meta_box($post_id) {
-
-
+function ig_ac_save_meta_box( $post_id ) {
 	$key_position = 'ig-attach-content-position';
 	$key_blog = 'ig-attach-content-blog';
 	$key_page = 'ig-attach-content-page';
-
-	if($_POST[$key_blog] == -1) {
+	if ( -1 == $_POST[$key_blog] ) {
 		delete_post_meta( $post_id, $key_position);
 		delete_post_meta( $post_id, $key_blog);
 		delete_post_meta( $post_id, $key_page);
@@ -122,10 +104,12 @@ function ig_ac_save_meta_box($post_id) {
 add_action('save_post', 'ig_ac_save_meta_box');
 add_action('edit_post', 'ig_ac_save_meta_box');
 
-/*
-* update post modified date, usually for parent of attached post. Necessary to push updates to App
-* @param int $post_id, int $blog_id
-*/
+/**
+ * update post modified date, usually for parent of attached post. Necessary to push updates to App
+ * 
+ * @param int $post_id, 
+ * @param int $blog_id
+ */
 function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 	global $wpdb;
 	$datetime = date("Y-m-d H:i:s");
@@ -143,32 +127,29 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 }
 
 
-function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
-	$key_blog_id = 'ig-content-loader-instance-blog-id';
-	$key_post_id = 'ig-content-loader-instance-post-id';
-
-	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
-	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
+/**
+ * This function creates an HTML select with all available blogs.
+ * 
+ * @param boolean $ajax
+ * @return string
+ */
+function ig_ac_blogs_dropdown( $ajax = false ) {
+	$blog_id = get_post_meta( $_GET['post'], 'ig-attach-content-blog', true );
 	global $wpdb;
-	if ( $blog_id ) {
-		$ajax = false;
-	} else {
-		$ajax = true;
-	}
 	// get all blogs / instances (augsburg, regensburg, etc)
-	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
+	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_ig_ac_metabox_instance">
 	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-content-loader-instance').'</p>
-	<select style="width: 100%;" id="ig_ac_select_blog_id" name="ig_ac_select_blog_id">
-		<option value="">'.__('Please select', 'ig-content-loader-instance').'</option>';
+	<select style="width: 100%;" id="ig-attach-content-blog" name="ig-attach-content-blog">
+		<option value="-1">'.__('Please select', 'ig-attach-content').'</option>';
 		foreach( $all_blogs as $blog ){
 			
 			$blog_name = get_blog_details( $blog->blog_id )->blogname;
 			$output .= "<option value='".$blog->blog_id."' ".selected( $blog->blog_id, $blog_id, false ).">$blog_name</option>";
 		}
 	$output .= '</select>
-	<p id="ig_ac_metabox_pages">'.$pages_dropdown.'</p>
+	<p id="ig_ac_metabox_pages">'.( $blog_id > 0 ? ig_ac_pages_dropdown( $blog_id = $blog_id, $ajax = false ) : '').'</p>
 	</div>';
 	if ( $ajax == true ) {
 		echo $output;
@@ -177,29 +158,38 @@ function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 		return $output;
 	}
 }
-add_action( 'wp_ajax_ig_ac_blogs_dropdown', 'ig_ac_blogs_dropdown' );
 
-function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_id = false ) {
+/**
+ * This function creates an HTML select with all available pages of a defined bloag
+ * and language. If this function is called in an AJAX call, then the HTML code
+ * is directly written to the output buffer.
+ * 
+ * @param int $blog_id
+ * @param string $language_code
+ * @return string
+ */
+function ig_ac_pages_dropdown( $blog_id = false, $ajax = true ) {
 	if ( $blog_id == false ) {
-		$blog_id = $_POST['ig_ac_blog_id'];
-		$ajax = true;
-	} else {
-		$ajax = false;
+		$blog_id = $_POST['ig-attach-content-blog'];
 	}
-	if ( $language_code == false ) {
-		$language_code = $_POST['ig_ac_post_language'];
-	}
-
-	$original_blog_id = get_current_blog_id(); 
+	$post_id = get_post_meta( $_GET['post'], 'ig-attach-content-page', true );
+	
 	switch_to_blog( $blog_id ); 
-	$pages = get_pages();
-	$output = '<select id="ig_ac_select_post_id" name="ig_ac_select_post_id">';
+	$args = array(
+		'sort_order' => 'asc',
+		'sort_column' => 'post_title',
+		'post_type' => 'page',
+		'post_status' => 'publish',
+		'hierarchical' => 0,
+	); 
+	$pages = get_pages($args);
+	$output = '<select id="ig-attach-content-page" name="ig-attach-content-page">';
 	foreach ($pages as $page) {
 		$orig_title = get_the_title( icl_object_id($page->ID, 'post', true, wpml_get_default_language()));
-		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id,false ).">".$orig_title." — ".$page->post_title."</option>";
+		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id, false ).">".$orig_title." — ".$page->post_title."</option>";
 	}
 	$output .= "</select>";
-	switch_to_blog( $original_blog_id ); 
+	restore_current_blog();
 	if ( $ajax == true ) {
 		echo $output;
 		exit;
@@ -215,23 +205,52 @@ add_action( 'wp_ajax_ig_ac_pages_dropdown', 'ig_ac_pages_dropdown' );
  * Also check post_meta value for radio group to concatenate content before or after page-contents.
  * This function should be called when the content is displayed, for example by the REST API.
  *
- * @param $post current post object
+ * @param WP_Post $post current post object
+ * @return WP_Post
  */
 function ig_ac_modify_post($post) {
 	global $wpdb;
 	
-	global $cl_already_manipulated;
-	if ( !$cl_already_manipulated ) {
-		$cl_already_manipulated = array();
+	/**
+	 * In some cases it seems that the API is working through some posts more than
+	 * once. In such cases we don't want to attach the content multiple times.
+	 * Therefore we store if we already manipulated a page and return if that is
+	 * the case.
+	 */
+	global $ig_ac_already_manipulated;
+	if ( !$ig_ac_already_manipulated ) {
+		$ig_ac_already_manipulated = array();
 	}
-	if ( in_array( $post->ID, $cl_already_manipulated) ) {
+	if ( in_array( $post->ID, $ig_ac_already_manipulated) ) {
 		return $post;
 	}
-	$cl_already_manipulated[] = $post->ID;
+	$ig_ac_already_manipulated[] = $post->ID;
 	
+	/**
+	 * Get the post_meta information. get_post_meta returns an empty string if
+	 * the key does not exist. If the key is empty, no other page should be attached.
+	 * We then return the unmodified post. Otherwise we fetch the content from the
+	 * blog and add the content to the beginning or end.
+	 */
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
-	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
-	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+	if(count($ac_position) > 0 ) {
+		$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
+		$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+
+		switch_to_blog($ac_blog);
+		$attach_content = get_post($ac_page)->post_content;
+		restore_current_blog();
+		if ( 'end' == $ac_position ) {
+			$post->post_content = $post->post_content . $attach_content;
+		} elseif ( 'end' == $ac_position ) {
+			$post->post_content = $attach_content . $post->post_content;
+		}
+	}
+	return $post;
 }
-add_filter('wp_api_extensions_pre_post', 'cl_modify_post', 10, 2);
-add_action('the_post', 'cl_modify_post');
+/**
+ * The page should be modified if it is loaded by normal themes with the the_post
+ * function or via the API.
+ */
+add_filter('wp_api_extensions_pre_post', 'ig_ac_modify_post', 10, 2);
+add_action('the_post', 'ig_ac_modify_post');
