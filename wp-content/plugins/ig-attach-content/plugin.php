@@ -23,7 +23,7 @@ add_action( 'admin_menu', 'ig_ac_backend' );
  * for the page. It also contains 2 radio buttons: attach content to beginning or end of current page. 
  */
 function ig_ac_generate_selection_box() {
-	add_meta_box( 'meta-box-id', __( 'Load other page', 'ig-attach-content' ), 'ig_ac_create_metabox', 'page', 'side' );
+	add_meta_box( 'ig_ac_metabox', __( 'Attach Page', 'ig-attach-content' ), 'ig_ac_create_metabox', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
  
@@ -50,20 +50,6 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 	global $post;
 ?>
 	<script type="text/javascript" >
-	jQuery(document).ready(function($) {
-		jQuery("#cl_content_select").on('change', function() {
-			if(this.value == 'ig-content-loader-instance') {
-				var data = {
-					'action': 'ig_ac_blogs_dropdown'
-				};
-				jQuery.post(ajaxurl, data, function(response) {
-					jQuery('#ig_ac_metabox_extra').html(response);
-				});
-			} else {
-				jQuery("#div_ig_ac_metabox_instance").html('')
-				jQuery("#div_ig_ac_metabox_instance").remove()
-			}
-		});
 		jQuery(document).bind('DOMNodeInserted', function(e) {
 			jQuery("#ig-attach-content-blog").on('change', function() {
 				var data = {
