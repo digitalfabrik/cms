@@ -51,13 +51,18 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 ?>
 	<script type="text/javascript" >
 		jQuery(document).ready(function($) {
+			console.log("document ready called")
 			jQuery("#ig-attach-content-blog").on('change', function() {
+				console.log("change event triggered")
 				var data = {
 					'action': 'ig_ac_pages_dropdown',
 					'ig-attach-content-language: '<?php echo ICL_LANGUAGE_CODE; ?>',
 					'ig-attach-content-blog': this.value
 				};
+				console.log("data inserted")
+				console.log(data)
 				jQuery.post(ajaxurl, data, function(response) {
+					console.log("ajax call")
 					jQuery('#ig_ac_metabox_pages').html(response);
 				});
 			});
