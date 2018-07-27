@@ -50,7 +50,7 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 	global $post;
 ?>
 	<script type="text/javascript" >
-		jQuery(document).bind('DOMNodeInserted', function(e) {
+		jQuery(document).ready(function($) {
 			jQuery("#ig-attach-content-blog").on('change', function() {
 				var data = {
 					'action': 'ig_ac_pages_dropdown',
@@ -62,7 +62,6 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 				});
 			});
 		});
-	});
 	</script> 
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
