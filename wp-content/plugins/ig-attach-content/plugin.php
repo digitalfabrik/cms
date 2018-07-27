@@ -242,7 +242,7 @@ function ig_ac_modify_post($post) {
 		restore_current_blog();
 		if ( 'end' == $ac_position ) {
 			$post->post_content = $post->post_content . $attach_content;
-		} elseif ( 'end' == $ac_position ) {
+		} elseif ( 'beginning' == $ac_position ) {
 			$post->post_content = $attach_content . $post->post_content;
 		}
 	}
