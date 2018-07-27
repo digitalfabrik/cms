@@ -147,7 +147,7 @@ function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 		$ajax = true;
 	}
 	// get all blogs / instances (augsburg, regensburg, etc)
-	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
+	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_ig_ac_metabox_instance">
 	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-content-loader-instance').'</p>
@@ -193,7 +193,13 @@ function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 	}
 
 	switch_to_blog( $blog_id ); 
-	$pages = get_pages();
+	$args = array(
+		'sort_order' => 'asc',
+		'sort_column' => 'post_title',
+		'post_type' => 'page',
+		'post_status' => 'publish'
+	); 
+	$pages = get_pages($args);
 	$output = '<select id="ig-attach-content-page" name="ig-attach-content-page">';
 	foreach ($pages as $page) {
 		$orig_title = get_the_title( icl_object_id($page->ID, 'post', true, wpml_get_default_language()));
