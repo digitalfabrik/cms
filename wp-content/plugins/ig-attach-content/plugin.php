@@ -132,11 +132,10 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
  * 
  * @param int $blog_id preselect this blog for the user
  * @param string $language_code
- * @param int $post_id
  * @return string
  */
 function ig_ac_blogs_dropdown( $ajax = false ) {
-	$blog_id = get_post_meta( $post_id, 'ig-attach-content-blog', true );
+	$blog_id = get_post_meta( $_GET['post'], 'ig-attach-content-blog', true );
 	global $wpdb;
 	// get all blogs / instances (augsburg, regensburg, etc)
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
