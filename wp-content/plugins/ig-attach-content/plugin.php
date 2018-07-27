@@ -172,7 +172,7 @@ function ig_ac_pages_dropdown( $blog_id = false, $ajax = true ) {
 	if ( $blog_id == false ) {
 		$blog_id = $_POST['ig-attach-content-blog'];
 	}
-	$post_id = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+	$post_id = get_post_meta( $_GET['post'], 'ig-attach-content-page', true );
 	
 	switch_to_blog( $blog_id ); 
 	$args = array(
