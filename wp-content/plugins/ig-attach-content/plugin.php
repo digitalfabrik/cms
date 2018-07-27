@@ -54,7 +54,7 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 			jQuery("#ig-attach-content-blog").on('change', function() {
 				var data = {
 					'action': 'ig_ac_pages_dropdown',
-					'ig-attach-content-language': <?php echo ICL_LANGUAGE_CODE; ?>',
+					'ig-attach-content-language': '<?php echo ICL_LANGUAGE_CODE; ?>',
 					'ig-attach-content-blog': this.value
 				};
 				jQuery.post(ajaxurl, data, function(response) {
