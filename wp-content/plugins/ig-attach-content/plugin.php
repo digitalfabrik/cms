@@ -144,7 +144,7 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
 	$output = '<div id="div_ig_ac_metabox_instance">
 	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-content-loader-instance').'</p>
 	<select style="width: 100%;" id="ig-attach-content-blog" name="ig-attach-content-blog">
-		<option value="">'.__('Please select', 'ig-attach-content').'</option>';
+		<option value="-1">'.__('Please select', 'ig-attach-content').'</option>';
 		foreach( $all_blogs as $blog ){
 			
 			$blog_name = get_blog_details( $blog->blog_id )->blogname;
