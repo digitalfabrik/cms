@@ -226,3 +226,36 @@ function ig_ac_modify_post( $post ) {
  */
 add_filter('wp_api_extensions_pre_post', 'ig_ac_modify_post', 10, 2);
 add_action('the_post', 'ig_ac_modify_post');
+
+
+/**
+ * A migration function from ig-content-loader-instance to ig-attach-content
+ * On migration, all content-loader-instance settings are removed.
+ */
+function ig_ac_cl_migration () {
+	global $wpdb;
+	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1";
+	$all_blogs = $wpdb->get_results($query);
+	foreach( $all_blogs as $blog ){
+		$blog_id = $blog->blog_id;
+		$results = "select * from ".$wpdb->base_prefix.$blog_id."_postmeta where meta_key = 'ig-content-loader-base'";
+		$result = $wpdb->get_results($results);
+		foreach($result as $item) {
+			switch_to_blog($blog_id);
+			$old_position = get_post_meta( $item->post_id, 'ig-content-loader-base', true );
+			$old_blog_id = get_post_meta( $item->post_id, 'ig-content-loader-instance-blog-id', true );
+			$old_page_id = get_post_meta( $item->post_id, 'ig-content-loader-instance-post-id', true );
+			if ( count($old_position) == 0 || count($old_blog_id) == 0 || count($old_page_id) == 0 ) {
+				continue;
+			}
+			update_post_meta( $post_id, 'ig-attach-content-position', $old_position);
+			update_post_meta( $post_id, 'ig-attach-content-blog', $old_blog_id);
+			update_post_meta( $post_id, 'ig-attach-content-page', $old_page_id);
+			delete_post_meta( $post_id, 'ig-content-loader-base');
+			delete_post_meta( $post_id, 'ig-content-loader-instance-blog-id');
+			delete_post_meta( $post_id, 'ig-content-loader-instance-post-id');
+		}
+	}
+	restore_current_blog();
+}
+register_activation_hook( __FILE__, 'ig_ac_cl_migration' );
