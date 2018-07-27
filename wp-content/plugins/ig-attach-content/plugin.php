@@ -34,19 +34,13 @@ add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
  */
 function ig_ac_create_metabox( $post ) {
 	wp_nonce_field( basename( __FILE__ ), 'prfx_nonce' );
-	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
-	$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
-	$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
-	ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page );
+	ig_ac_meta_box_html();
 }
 
 /**
  * Writes meta box HTML directly to the output buffer.
- *
- * @param integer $selected_blog ID of preselected blog
- * @param integer $radio_value Selected radio button ID
  */
-function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
+function ig_ac_meta_box_html( ) {
 	global $post;
 ?>
 	<script type="text/javascript" >
@@ -104,33 +98,11 @@ function ig_ac_save_meta_box( $post_id ) {
 add_action('save_post', 'ig_ac_save_meta_box');
 add_action('edit_post', 'ig_ac_save_meta_box');
 
-/**
- * update post modified date, usually for parent of attached post. Necessary to push updates to App
- * 
- * @param int $post_id, 
- * @param int $blog_id
- */
-function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
-	global $wpdb;
-	$datetime = date("Y-m-d H:i:s");
-	$gmtdatetime = gmdate("Y-m-d H:i:s");
-	$select = $sql = "SELECT * FROM ".$wpdb->base_prefix.$blog_id."_posts WHERE post_parent =".$parent_id." AND post_type = 'revision' ORDER BY ID DESC LIMIT 1";
-	$sql_results = $wpdb->get_results($sql);
-	if(count($sql_results) > 0)
-		$update_query = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$sql_results[0]->ID."'";
-	else
-		$update_query = "UPDATE ".$wpdb->base_prefix.$blog_id."_posts SET `post_modified` = '".$datetime."', `post_modified_gmt` = '".$gmtdatetime."' WHERE `ID` = '".$parent_id."'";
-	if($wpdb->query( $update_query ))
-		return true;
-	else
-		return false;
-}
-
 
 /**
  * This function creates an HTML select with all available blogs.
  * 
- * @param boolean $ajax
+ * @param boolean $ajax Set to false if HTML should not be written to output buffer
  * @return string
  */
 function ig_ac_blogs_dropdown( $ajax = false ) {
@@ -165,7 +137,7 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
  * is directly written to the output buffer.
  * 
  * @param int $blog_id
- * @param string $language_code
+ * @param boolean $ajax Set to false if HTML should not be written to output buffer
  * @return string
  */
 function ig_ac_pages_dropdown( $blog_id = false, $ajax = true ) {
@@ -208,7 +180,7 @@ add_action( 'wp_ajax_ig_ac_pages_dropdown', 'ig_ac_pages_dropdown' );
  * @param WP_Post $post current post object
  * @return WP_Post
  */
-function ig_ac_modify_post($post) {
+function ig_ac_modify_post( $post ) {
 	global $wpdb;
 	
 	/**
