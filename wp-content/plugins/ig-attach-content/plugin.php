@@ -130,8 +130,7 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 /**
  * This function creates an HTML select with all available blogs.
  * 
- * @param int $blog_id preselect this blog for the user
- * @param string $language_code
+ * @param boolean $ajax
  * @return string
  */
 function ig_ac_blogs_dropdown( $ajax = false ) {
@@ -167,14 +166,14 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
  * 
  * @param int $blog_id
  * @param string $language_code
- * @param int $post_id
  * @return string
  */
 function ig_ac_pages_dropdown( $blog_id = false, $ajax = true ) {
 	if ( $blog_id == false ) {
 		$blog_id = $_POST['ig-attach-content-blog'];
 	}
-
+	$post_id = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+	
 	switch_to_blog( $blog_id ); 
 	$args = array(
 		'sort_order' => 'asc',
@@ -187,7 +186,7 @@ function ig_ac_pages_dropdown( $blog_id = false, $ajax = true ) {
 	$output = '<select id="ig-attach-content-page" name="ig-attach-content-page">';
 	foreach ($pages as $page) {
 		$orig_title = get_the_title( icl_object_id($page->ID, 'post', true, wpml_get_default_language()));
-		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id,false ).">".$orig_title." — ".$page->post_title."</option>";
+		$output .= "<option value=\"".$page->ID."\" ".selected( $page->ID, $post_id, false ).">".$orig_title." — ".$page->post_title."</option>";
 	}
 	$output .= "</select>";
 	restore_current_blog();
