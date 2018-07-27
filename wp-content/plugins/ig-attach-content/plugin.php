@@ -69,11 +69,11 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 		<div class="cl-row-content">
 			<label for="ig-attach-content-position-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
 				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-one" value="beginning" <?php checked( $ac_position, 'beginning' ); ?>>
-				<?php echo __( 'At beginning', 'ig-attach-content' )?>
+				<?php echo __( 'Beginning', 'ig-attach-content' )?>
 			</label>
 			<label for="ig-attach-content-position-two">
 				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-two" value="end" <?php checked( $ac_position, 'end' ); ?>>
-				<?php echo __( 'At end', 'ig-attach-content' )?>
+				<?php echo __( 'End', 'ig-attach-content' )?>
 			</label>
 		</div>
 	</p>
@@ -87,7 +87,7 @@ function ig_ac_meta_box_html( $ac_position, $ac_blog, $ac_page ) {
 *
 * @param int $post_id Post ID
 */
-function ig_ac_save_meta_box($post_id) {
+function ig_ac_save_meta_box( $post_id ) {
 	$key_position = 'ig-attach-content-position';
 	$key_blog = 'ig-attach-content-blog';
 	$key_page = 'ig-attach-content-page';
@@ -129,23 +129,15 @@ function ig_ac_update_parent_modified_date( $parent_id, $blog_id ) {
 
 /**
  * This function creates an HTML select with all available blogs.
- * If this function is called in an AJAX call, then the HTML code
- * is directly written to the output buffer.
  * 
  * @param int $blog_id preselect this blog for the user
  * @param string $language_code
  * @param int $post_id
  * @return string
  */
-function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
-	$old_blog_id = get_post_meta( $post_id, $key_blog_id, true );
-	$old_post_id = get_post_meta( $post_id, $key_post_id, true );
+function ig_ac_blogs_dropdown( $ajax = false ) {
+	$blog_id = get_post_meta( $post_id, 'ig-attach-content-blog', true );
 	global $wpdb;
-	if ( $blog_id ) {
-		$ajax = false;
-	} else {
-		$ajax = true;
-	}
 	// get all blogs / instances (augsburg, regensburg, etc)
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
 	$all_blogs = $wpdb->get_results($query);
@@ -159,7 +151,7 @@ function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 			$output .= "<option value='".$blog->blog_id."' ".selected( $blog->blog_id, $blog_id, false ).">$blog_name</option>";
 		}
 	$output .= '</select>
-	<p id="ig_ac_metabox_pages">'.$pages_dropdown.'</p>
+	<p id="ig_ac_metabox_pages">'.( $blog_id > 0 ? ig_ac_pages_dropdown( $blog_id = $blog_id, $ajax = false ) : '').'</p>
 	</div>';
 	if ( $ajax == true ) {
 		echo $output;
@@ -168,8 +160,6 @@ function ig_ac_blogs_dropdown( $blog_id = false, $pages_dropdown = '' ) {
 		return $output;
 	}
 }
-add_action( 'wp_ajax_ig_ac_blogs_dropdown', 'ig_ac_blogs_dropdown' );
-
 
 /**
  * This function creates an HTML select with all available pages of a defined bloag
@@ -181,15 +171,9 @@ add_action( 'wp_ajax_ig_ac_blogs_dropdown', 'ig_ac_blogs_dropdown' );
  * @param int $post_id
  * @return string
  */
-function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_id = false ) {
+function ig_ac_pages_dropdown( $blog_id = false, $ajax = true ) {
 	if ( $blog_id == false ) {
 		$blog_id = $_POST['ig-attach-content-blog'];
-		$ajax = true;
-	} else {
-		$ajax = false;
-	}
-	if ( $language_code == false ) {
-		$language_code = $_POST['ig-attach-content-language'];
 	}
 
 	switch_to_blog( $blog_id ); 
@@ -197,7 +181,8 @@ function ig_ac_pages_dropdown( $blog_id = false, $language_code = false, $post_i
 		'sort_order' => 'asc',
 		'sort_column' => 'post_title',
 		'post_type' => 'page',
-		'post_status' => 'publish'
+		'post_status' => 'publish',
+		'hierarchical' => 0,
 	); 
 	$pages = get_pages($args);
 	$output = '<select id="ig-attach-content-page" name="ig-attach-content-page">';
