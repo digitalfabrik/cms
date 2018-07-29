@@ -13,10 +13,9 @@
 /**
  * Load plugin text domain for translations in backend
  */
-function ig_ac_backend() {
-	load_plugin_textdomain( 'ig-attach-content', false, $plugin_dir );
-}
-add_action( 'admin_menu', 'ig_ac_backend' );
+add_action( 'plugins_loaded', function() {
+	load_plugin_textdomain('ig-attach-content', false, basename( dirname( __FILE__ )));
+});
 
 /**
  * Add meta box to pages. The meta box should have 2 drop down menus, one for the blog and a second
@@ -60,7 +59,7 @@ function ig_ac_meta_box_html( ) {
 	</script>
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-attach-content' )?></span>
+		<span style="font-weight:600" class="cl-row-title"><?php __( 'Attach Page', 'ig-attach-content' )?></span>
 		<div class="cl-row-content">
 			<label for="ig-attach-content-position-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
 				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-one" value="beginning" <?php checked( $ac_position, 'beginning' ); ?>>
@@ -113,7 +112,7 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_ig_ac_metabox_instance">
-	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-content-loader-instance').'</p>
+	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-attach-content').'</p>
 	<select style="width: 100%;" id="ig-attach-content-blog" name="ig-attach-content-blog">
 		<option value="-1">'.__('Please select', 'ig-attach-content').'</option>';
 		foreach( $all_blogs as $blog ){
@@ -267,3 +266,20 @@ function ig_ac_cl_migration () {
 	restore_current_blog();
 }
 register_activation_hook( __FILE__, 'ig_ac_cl_migration' );
+
+
+/**
+ * Append attachment status for tree view plugin. Hooks into
+ * custom Integreat hook.
+ *
+ * @param array $status array of status labels
+ * @param integer $post_id ID of the post item
+ * @return array
+ */
+function ig_attach_content_tree_view_status( $status, $post_id ) {
+	if( get_post_meta( $post_id, 'ig-attach-content-page', true ) != "" ) {
+		$status[] = __('Attachment', 'ig-attach-content');
+	}
+	return $status;
+}
+add_filter( 'ig-cms-tree-view-status',  'ig_attach_content_tree_view_status', 10, 2);

@@ -64,7 +64,7 @@ abstract class PluginAdjustment {
 	public function apply_revisionary_adjustments() {
 		$tree_view_file = plugin_dir_path(__FILE__) . '../cms-tree-page-view/functions.php';
 		$search = '"post_status": "<?php echo $onePage->post_status ?>",';
-		$replace = '"post_status": "<?php echo is_numeric(get_post_meta( $onePage->ID, \'ig_revision_id\', true )) && get_post_meta( $onePage->ID, \'ig_revision_id\', true ) >= 0 ? \'Revision\' : $onePage->post_status ?>",';
+		$replace = '"post_status": "<?php echo ig_tree_view_labels ($onePage->ID, $onePage->post_status ) ?>",';
 		self::replace_in_file($tree_view_file, $search, $replace);
 
 	}
