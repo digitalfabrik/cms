@@ -8,9 +8,8 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 firebase-notifications \
+ig-attach-content \
 ig-cms-tree-page-view-extensions \
-ig-content-loader-base \
-ig-content-loader-instance \
 ig-customize-editor-integreat \
 ig-customize-login-integreat \
 ig-enhanced-help-menu \

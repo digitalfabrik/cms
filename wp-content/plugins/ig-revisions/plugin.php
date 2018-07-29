@@ -89,8 +89,12 @@ function update_post_with_revision( $post ) {
 add_filter( 'wp_api_extensions_output_post', 'update_post_with_revision', 10, 1 );
 
 /**
- * Append status Revision for tree view plugin. Hooks into
+ * Append revision status for tree view plugin. Hooks into
  * custom Integreat hook.
+ *
+ * @param array $status array of status labels
+ * @param integer $post_id ID of the post item
+ * @return array
  */
 function ig_revisions_tree_view_status( $status, $post_id ) {
 	if( is_numeric(get_post_meta( $post_id, 'ig_revision_id', true )) && get_post_meta( $post_id, 'ig_revision_id', true ) >= 0 ) {

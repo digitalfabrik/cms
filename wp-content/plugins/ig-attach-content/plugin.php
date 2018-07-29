@@ -272,6 +272,10 @@ register_activation_hook( __FILE__, 'ig_ac_cl_migration' );
 /**
  * Append attachment status for tree view plugin. Hooks into
  * custom Integreat hook.
+ *
+ * @param array $status array of status labels
+ * @param integer $post_id ID of the post item
+ * @return array
  */
 function ig_attach_content_tree_view_status( $status, $post_id ) {
 	if( get_post_meta( $post_id, 'ig-attach-content-page', true ) != "" ) {
