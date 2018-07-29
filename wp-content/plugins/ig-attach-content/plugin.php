@@ -204,7 +204,7 @@ function ig_ac_modify_post( $post ) {
 	 * blog and add the content to the beginning or end.
 	 */
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
-	if(count($ac_position) > 0 ) {
+	if(strlen($ac_position) > 0 ) {
 		$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
 		$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
 
