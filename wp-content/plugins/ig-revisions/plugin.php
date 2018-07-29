@@ -12,12 +12,13 @@
 
 function ig_revisions_notice() {
 	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
+	load_plugin_textdomain('ig-revisions', false, basename( dirname( __FILE__ )));
 	if (is_numeric($revision_id) && $revision_id >= 0) {
 		$revision = get_post($revision_id);
 		if (current_user_can('edit_users')) {
 			echo '<div class="notice notice-warning is-dismissible"><p><strong>' . __('Note: The current version will not be shown, but the version from ', 'ig-revisions') . $revision->post_date. '.<br>' . __('You can change the published version in the selection box &quot;Published revision&quot; at the end of this page', 'ig-revisions') . '</strong></p></div>';
 		} else {
-			echo '<div class="notice notice-warning is-dismissible"><p><strong>' . __('Note: The current version will not be shownm but the version from ', 'ig-revisions') . $revision->post_date. '.<br>' . __('An admin can change the published version.', 'ig-revisions') . '</strong></p></div>';
+			echo '<div class="notice notice-warning is-dismissible"><p><strong>' . __('Note: The current version will not be shown, but the version from ', 'ig-revisions') . $revision->post_date. '.<br>' . __('An admin can change the published version.', 'ig-revisions') . '</strong></p></div>';
 		}
 	}
 }
