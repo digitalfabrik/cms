@@ -48,7 +48,7 @@ add_action( 'add_meta_boxes', 'ig_revisions_metabox' );
 
 
 add_action( 'plugins_loaded', function() {
-	load_plugin_textdomain('ig-revisions', false, basename(dirname(__FILE__)));
+	load_plugin_textdomain('ig-revisions', false, basename( dirname( __FILE__ )));
 });
 
 function ig_revisions_metabox_html ( $post, $callback_args ) {

@@ -13,10 +13,9 @@
 /**
  * Load plugin text domain for translations in backend
  */
-function ig_ac_backend() {
-	load_plugin_textdomain( 'ig-attach-content', false, $plugin_dir );
-}
-add_action( 'admin_menu', 'ig_ac_backend' );
+add_action( 'plugins_loaded', function() {
+	load_plugin_textdomain('ig-attach-content', false, basename( dirname( __FILE__ )));
+});
 
 /**
  * Add meta box to pages. The meta box should have 2 drop down menus, one for the blog and a second
