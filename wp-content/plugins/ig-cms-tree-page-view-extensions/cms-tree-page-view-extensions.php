@@ -16,3 +16,12 @@ function wpse_73006_submenu_order( $menu_ord )
     return $menu_ord;
 }
 
+function ig_tree_view_labels ( $post_id, $post_status ) {
+    $post_status = ( count(array($post_status)) > 0 && $post_status != 'publish' ? array($post_status) : array() );
+    $return = apply_filters( 'ig-cms-tree-view-status', $post_status, $post_id );
+    if( 0 == count($return) ) {
+        return "publish";
+    } else {
+        return join(' ', $return);
+    }
+}

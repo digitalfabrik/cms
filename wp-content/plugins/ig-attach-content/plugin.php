@@ -267,3 +267,16 @@ function ig_ac_cl_migration () {
 	restore_current_blog();
 }
 register_activation_hook( __FILE__, 'ig_ac_cl_migration' );
+
+
+/**
+ * Append attachment status for tree view plugin. Hooks into
+ * custom Integreat hook.
+ */
+function ig_attach_content_tree_view_status( $status, $post_id ) {
+	if( get_post_meta( $post_id, 'ig-attach-content-page', true ) != "" ) {
+		$status[] = __('Attachment', 'ig-attach-content');
+	}
+	return $status;
+}
+add_filter( 'ig-cms-tree-view-status',  'ig_attach_content_tree_view_status', 10, 2);
