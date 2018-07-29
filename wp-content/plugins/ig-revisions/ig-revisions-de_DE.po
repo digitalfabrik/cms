@@ -1,0 +1,11 @@
+msgid "Revision"
+msgstr "Revision"
+
+msgid "Revisions"
+msgstr "Revisionen"
+
+msgid "Always publish most recent revision"
+msgstr "Immer aktuellste Revision ver&ouml;ffentlichen"
+
+msgid "Published revision"
+msgstr "Veröffentlichte Revision"

@@ -60,7 +60,7 @@ function ig_ac_meta_box_html( ) {
 	</script>
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert content', 'ig-attach-content' )?></span>
+		<span style="font-weight:600" class="cl-row-title"><?php __( 'Attach Page', 'ig-attach-content' )?></span>
 		<div class="cl-row-content">
 			<label for="ig-attach-content-position-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
 				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-one" value="beginning" <?php checked( $ac_position, 'beginning' ); ?>>
@@ -113,7 +113,7 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
 	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_ig_ac_metabox_instance">
-	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-content-loader-instance').'</p>
+	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-attach-content').'</p>
 	<select style="width: 100%;" id="ig-attach-content-blog" name="ig-attach-content-blog">
 		<option value="-1">'.__('Please select', 'ig-attach-content').'</option>';
 		foreach( $all_blogs as $blog ){
