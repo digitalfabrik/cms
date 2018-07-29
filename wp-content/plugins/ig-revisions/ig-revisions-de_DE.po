@@ -9,3 +9,12 @@ msgstr "Immer aktuellste Revision ver&ouml;ffentlichen"
 
 msgid "Published revision"
 msgstr "Veröffentlichte Revision"
+
+msgid "The current version will not be shown but the version from "
+msgstr "Information: Dieser Bearbeitungsstand wird momentan nicht veröffentlicht, sondern die Version vom "
+
+msgid "You can change the published version in the selection box &quot;Published revision&quot; at the end of this page."
+msgstr "Sie k&ouml;nnen den ver&ouml;ffentlichten Bearbeitungsstand im Einstellungsfeld &quot;Ver&ouml;ffentlichte Revision&quot; am Ende dieser Seite ausw&auml;hlen."
+
+msgid "An admin can change the published version."
+msgstr "Ein Verwalter kann den ver&ouml;ffentlichten Bearbeitungsstand &auml;ndern."
