@@ -12,6 +12,8 @@
 function ig_fcm_messages ( $fields ) {
     $fields['data']['lanCode'] = $fields['data']['language'];
     $fields['data']['city'] = $fields['data']['blog_id'];
+    unset($fields['data']['language']);
+    unset($fields['data']['blog_id']);
     return $fields;
 }
 add_filter( 'fcm_fields', 'ig_fcm_messages', 10, 3 );
