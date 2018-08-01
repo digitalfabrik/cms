@@ -12,12 +12,13 @@
 
 function ig_revisions_notice() {
 	$revision_id = get_post_meta( $_GET['post'], 'ig_revision_id', true );
+	load_plugin_textdomain('ig-revisions', false, basename( dirname( __FILE__ )));
 	if (is_numeric($revision_id) && $revision_id >= 0) {
 		$revision = get_post($revision_id);
 		if (current_user_can('edit_users')) {
-			echo '<div class="notice notice-warning is-dismissible"><p><strong>Information: Dieser Bearbeitungsstand wird momentan nicht veröffentlicht, sondern die Version vom ' . $revision->post_date. '.<br> Sie können den veröffentlichten Bearbeitungsstand im Einstellungsfeld "Veröffentlichte Revision" am Ende dieser Seite auswählen.</strong></p></div>';
+			echo '<div class="notice notice-warning is-dismissible"><p><strong>' . __('Note: The current version will not be shown, but the version from ', 'ig-revisions') . $revision->post_date. '.<br>' . __('You can change the published version in the selection box &quot;Published revision&quot; at the end of this page.', 'ig-revisions') . '</strong></p></div>';
 		} else {
-			echo '<div class="notice notice-warning is-dismissible"><p><strong>Information: Dieser Bearbeitungsstand wird momentan nicht veröffentlicht, sondern die Version vom ' . $revision->post_date. '.<br> Ein Verwalter kann den veröffentlichten Bearbeitungsstand im zugehörigen Einstellungsfeld auswählen.</strong></p></div>';
+			echo '<div class="notice notice-warning is-dismissible"><p><strong>' . __('Note: The current version will not be shown, but the version from ', 'ig-revisions') . $revision->post_date. '.<br>' . __('An admin can change the published version.', 'ig-revisions') . '</strong></p></div>';
 		}
 	}
 }
@@ -45,8 +46,10 @@ function ig_revisions_metabox( $post ) {
 	);
 }
 add_action( 'add_meta_boxes', 'ig_revisions_metabox' );
+
+
 add_action( 'plugins_loaded', function() {
-	load_plugin_textdomain('ig-revisions', false, basename(dirname(__FILE__)) . '/lang/');
+	load_plugin_textdomain('ig-revisions', false, basename( dirname( __FILE__ )));
 });
 
 function ig_revisions_metabox_html ( $post, $callback_args ) {
@@ -87,3 +90,19 @@ function update_post_with_revision( $post ) {
 	return array_merge( $post, $output_post );
 }
 add_filter( 'wp_api_extensions_output_post', 'update_post_with_revision', 10, 1 );
+
+/**
+ * Append revision status for tree view plugin. Hooks into
+ * custom Integreat hook.
+ *
+ * @param array $status array of status labels
+ * @param integer $post_id ID of the post item
+ * @return array
+ */
+function ig_revisions_tree_view_status( $status, $post_id ) {
+	if( is_numeric(get_post_meta( $post_id, 'ig_revision_id', true )) && get_post_meta( $post_id, 'ig_revision_id', true ) >= 0 ) {
+		$status[] = __('Revision', 'ig-revisions');
+	}
+	return $status;
+}
+add_filter( 'ig-cms-tree-view-status',  'ig_revisions_tree_view_status', 10, 2);
