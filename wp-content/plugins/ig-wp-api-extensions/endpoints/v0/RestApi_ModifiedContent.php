@@ -85,7 +85,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 
 		if( $type == 'event' ) {
 			// fetch the initial of several recurring events (the initial events have a different post_type)
-			$this->current_request->post_type = 'event-recurring';
 			$querystr = $this->build_query_string();
 			$initial_events = $wpdb->get_results($querystr, OBJECT);
 			// fetch the recurring events for every initial event
