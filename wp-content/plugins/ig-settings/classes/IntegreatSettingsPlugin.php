@@ -211,6 +211,7 @@ class IntegreatSettingsPlugin {
 				$extra->name = str_replace('Wohnraumbörse', $wb_name, $extra->name);
 				$extra->url = str_replace(['{location}', '{plz}', '{wb_url}'], [$location, $plz, $wb_url], $extra->url);
 				$extra->post = json_decode(str_replace(['{location}', '{plz}', '{wb_api}'], [$location, $plz, $wb_api], $extra->post));
+				$extra->thumbnail = str_replace('{wb_api}', $wb_api, $extra->thumbnail);
 				return $extra;
 				}, $extras
 			);
