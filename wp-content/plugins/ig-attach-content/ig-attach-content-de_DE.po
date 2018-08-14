@@ -1,0 +1,17 @@
+msgid "Attachment"
+msgstr "Anhang"
+
+msgid "Attach Page"
+msgstr "Seite anhängen"
+
+msgid "Beginning"
+msgstr "Anfang"
+
+msgid "End"
+msgstr "Ende"
+
+msgid "Please select"
+msgstr "Bitte w&auml;hlen"
+
+msgid "Select city"
+msgstr "Stadt w&auml;hlen"
