@@ -60,7 +60,7 @@ class IntegreatExtra {
 				'message' => 'You have to specify a URL for this extra'
 			];
 			self::$current_error[] = 'url';
-		} elseif (filter_var($this->url, FILTER_VALIDATE_URL) === false) {
+		} elseif (filter_var($this->url, FILTER_VALIDATE_URL) === false && $this->url !== '{wb_url}') {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The given URL "' . htmlspecialchars($this->url) . '" is not valid'
