@@ -188,16 +188,8 @@ class IntegreatSettingsPlugin {
 		add_filter('ig-extras', function ($only_enabled = false) use ($wpdb) {
 			// fetch settings to enable the replacement of location-dependent content
 			$settings = apply_filters('ig-settings', null);
-			// replace umlaute to prevent wrong urls
-			$location = $wpdb->get_var(
-				"SELECT value
-					FROM {$wpdb->base_prefix}ig_settings
-						AS settings
-					LEFT JOIN {$wpdb->prefix}ig_settings_config
-						AS config
-						ON settings.id = setting_id
-					WHERE alias = 'location_override'");
-			if (!$location) {
+			if (!$location = $settings['location_override']) {
+				// replace umlaute to prevent wrong urls
 				$location = str_replace([' ', 'ä', 'ö', 'ü'], ['-', 'ae', 'oe', 'ue'], strtolower(apply_filters('ig-settings-legacy', $settings, 'name_without_prefix')));
 			}
 			$plz = apply_filters('ig-settings-legacy', $settings, 'plz');
@@ -210,11 +202,17 @@ class IntegreatSettingsPlugin {
 						AS config
 						ON extras.id = extra_id"
 				. ($only_enabled ? " WHERE enabled" : ""), OBJECT_K);
+			// fields for Wohnraumbörse
+			$wb_name = isset($settings['wb_name']) ? $settings['wb_name'] : 'Wohnraumbörse';
+			$wb_url = isset($settings['wb_url']) ? $settings['wb_url'] : '';
+			$wb_api = isset($settings['wb_api']) ? $settings['wb_api'] : '';
 			// filter all location-dependent content by replacing the placeholders
-			return array_map(function ($extra) use ($location, $plz) {
-					$extra->url = str_replace(['{location}', '{plz}'], [$location, $plz], $extra->url);
-					$extra->post = json_decode(str_replace(['{location}', '{plz}'], [$location, $plz], $extra->post));
-					return $extra;
+			return array_map(function ($extra) use ($location, $plz, $wb_name, $wb_url, $wb_api) {
+				$extra->name = str_replace('Wohnraumbörse', $wb_name, $extra->name);
+				$extra->url = str_replace(['{location}', '{plz}', '{wb_url}'], [$location, $plz, $wb_url], $extra->url);
+				$extra->post = json_decode(str_replace(['{location}', '{plz}', '{wb_api}'], [$location, $plz, $wb_api], $extra->post));
+				$extra->thumbnail = str_replace('{wb_api}', $wb_api, $extra->thumbnail);
+				return $extra;
 				}, $extras
 			);
 		}, 10, 1);
@@ -222,18 +220,39 @@ class IntegreatSettingsPlugin {
 		 * Return all settings joined with the setting configurations
 		 */
 		add_filter('ig-settings', function () use ($wpdb) {
+			// get all settings
+			return array_map(function ($setting) {
+				// cast setting value by its desired type
+				return ($setting->type === 'bool' ? (bool) $setting->value : ($setting->value === '' ? null : $setting->value));
+			}, $wpdb->get_results(
+				"SELECT alias, type, value
+					FROM {$wpdb->base_prefix}ig_settings
+						AS settings
+					LEFT JOIN {$wpdb->prefix}ig_settings_config
+						AS config
+						ON settings.id = setting_id", OBJECT_K));
+		}, 10, 0);
+		/*
+		 * Return all settings relevant for APIv3 (joined with the setting configurations)
+		 */
+		add_filter('ig-settings-api', function () use ($wpdb) {
 			// get all settings and union it with an additional extra setting which is true if at least one extra is enabled
 			return array_map(function ($setting) {
-					// cast setting value by its desired type
-					return ($setting->type === 'bool' ? (bool) $setting->value : ($setting->value === '' ? null : $setting->value));
-				}, $wpdb->get_results(
-					"SELECT alias, type, value
+				// cast setting value by its desired type
+				return ($setting->type === 'bool' ? (bool) $setting->value : ($setting->value === '' ? null : $setting->value));
+			}, $wpdb->get_results(
+				"SELECT alias, type, value
 					FROM {$wpdb->base_prefix}ig_settings
 						AS settings
 					LEFT JOIN {$wpdb->prefix}ig_settings_config
 						AS config
 						ON settings.id = setting_id
-					WHERE alias != 'disabled' AND alias != 'hidden' AND alias != 'location_override'
+					WHERE
+						alias = 'prefix' OR
+						alias = 'name_without_prefix' OR
+						alias = 'plz' OR
+						alias = 'events' OR
+						alias = 'push-notifications'
 				UNION SELECT 'extras', 'bool', (SELECT enabled FROM {$wpdb->prefix}ig_extras_config WHERE enabled LIMIT 1)", OBJECT_K));
 		}, 10, 0);
 		/*
