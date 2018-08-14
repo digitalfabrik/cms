@@ -80,7 +80,7 @@ class IntegreatExtra {
 				'message' => 'You have to specify a thumbnail-URL for this extra'
 			];
 			self::$current_error[] = 'thumbnail';
-		} elseif (filter_var($this->thumbnail, FILTER_VALIDATE_URL) === false) {
+		} elseif (filter_var($this->thumbnail, FILTER_VALIDATE_URL) === false && $this->thumbnail !== '{wb_thumb}') {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
 				'message' => 'The given thumbnail-URL "' . htmlspecialchars($this->thumbnail) . '" is not valid'

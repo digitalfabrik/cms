@@ -206,12 +206,13 @@ class IntegreatSettingsPlugin {
 			$wb_name = isset($settings['wb_name']) ? $settings['wb_name'] : 'Wohnraumbörse';
 			$wb_url = isset($settings['wb_url']) ? $settings['wb_url'] : '';
 			$wb_api = isset($settings['wb_api']) ? $settings['wb_api'] : '';
+			$wb_thumb = isset($settings['wb_thumb']) ? $settings['wb_thumb'] : '';
 			// filter all location-dependent content by replacing the placeholders
-			return array_map(function ($extra) use ($location, $plz, $wb_name, $wb_url, $wb_api) {
+			return array_map(function ($extra) use ($location, $plz, $wb_name, $wb_url, $wb_api, $wb_thumb) {
 				$extra->name = str_replace('Wohnraumbörse', $wb_name, $extra->name);
 				$extra->url = str_replace(['{location}', '{plz}', '{wb_url}'], [$location, $plz, $wb_url], $extra->url);
 				$extra->post = json_decode(str_replace(['{location}', '{plz}', '{wb_api}'], [$location, $plz, $wb_api], $extra->post));
-				$extra->thumbnail = str_replace('{wb_api}', $wb_api, $extra->thumbnail);
+				$extra->thumbnail = str_replace('{wb_thumb}', $wb_thumb, $extra->thumbnail);
 				return $extra;
 				}, $extras
 			);
