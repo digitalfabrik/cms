@@ -251,14 +251,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 		return $image_src[0];
 	}
 
-	protected function prepare_author($post) {
-		return [
-			'login' => $post->user_login,
-			'first_name' => $post->author_firstname,
-			'last_name' => $post->author_lastname
-		];
-	}
-
 	protected function prepare_url($post){
 		$page_id = $post->ID;
 		$date = $post->post_modified_gmt;
