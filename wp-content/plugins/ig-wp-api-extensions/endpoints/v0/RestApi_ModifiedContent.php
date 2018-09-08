@@ -149,8 +149,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 	 */
 	protected function build_query_select() {
 		return "posts.ID, posts.post_title, posts.post_type, posts.post_status, posts.post_modified_gmt,
-					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order, posts.guid,
-					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
+					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order, posts.guid";
 	}
 
 	/**
@@ -169,15 +168,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 				JOIN {$wpdb->prefix}icl_translations translations
 						ON translations.element_type = 'post_{$this->current_request->post_type}'
 						AND translations.element_id = posts.ID
-						AND translations.language_code = '$current_language'" ) . "
-				JOIN $wpdb->users users
-						ON users.ID = posts.post_author
-				JOIN $wpdb->usermeta usermeta_firstname
-						ON usermeta_firstname.user_id = users.ID
-						AND usermeta_firstname.meta_key = 'first_name'
-				JOIN $wpdb->usermeta usermeta_lastname
-						ON usermeta_lastname.user_id = users.ID
-						AND usermeta_lastname.meta_key = 'last_name'";
+						AND translations.language_code = '$current_language'" );
 	}
 
 	/**
@@ -258,14 +249,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 		}
 		$image_src = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID));
 		return $image_src[0];
-	}
-
-	protected function prepare_author($post) {
-		return [
-			'login' => $post->user_login,
-			'first_name' => $post->author_firstname,
-			'last_name' => $post->author_lastname
-		];
 	}
 
 	protected function prepare_url($post){
