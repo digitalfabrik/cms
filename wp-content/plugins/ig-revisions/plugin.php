@@ -80,7 +80,10 @@ function ig_revisions_page_update( $post_id, $new_post ) {
 			if( !is_numeric( $revision_id ) || $revision_id === '-1' ) {
 				$revisions = wp_get_post_revisions( $post_id );
 				// get first element of array (keys do not begin with 0)
-				$current_revision = reset( $revisions );
+				$current_revision = current( $revisions );
+				while ( wp_is_post_autosave( $current_revision ) ) {
+					$current_revision = next( $revisions );
+				}
 				update_post_meta( $post_id, 'ig_revision_id', $current_revision->ID );
 			}
 		}
