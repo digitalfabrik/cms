@@ -49,6 +49,7 @@ require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Relatives_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Children.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Locations.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Parents.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Post.php';
@@ -107,6 +108,7 @@ add_action('rest_api_init', function () {
 			new APIv3_Posts_Children(),
 			new APIv3_Posts_Disclaimer(),
 			new APIv3_Posts_Events(),
+			new APIv3_Posts_Locations(),
 			new APIv3_Posts_Pages(),
 			new APIv3_Posts_Parents(),
 			new APIv3_Posts_Post(),
