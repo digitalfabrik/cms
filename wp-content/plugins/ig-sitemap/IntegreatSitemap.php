@@ -36,7 +36,7 @@ class IntegreatSitemap {
 		foreach ($pages as $page) {
 ?>
   <url>
-    <loc><?= str_replace('https://cms.integreat-app.de', self::HOST, get_permalink($page)) ?></loc>
+    <loc><?= str_replace(['https://cms.integreat-app.de', '&'], [self::HOST, '&amp;'], get_permalink($page)) ?></loc>
 <?php
 			if (self::XHTML_ENABLED) {
 				$current_language = apply_filters('wpml_current_language', null);
@@ -46,7 +46,7 @@ class IntegreatSitemap {
 					if ($id != null) {
 						do_action('wpml_switch_language', $language);
 ?>
-    <xhtml:link rel="alternate" hreflang="<?= $language ?>" href="<?= str_replace('https://cms.integreat-app.de', self::HOST, get_permalink($id)) ?>"/>
+    <xhtml:link rel="alternate" hreflang="<?= $language ?>" href="<?= str_replace(['https://cms.integreat-app.de', '&'], [self::HOST, '&amp;'], get_permalink($id)) ?>"/>
 <?php
 					}
 				}
