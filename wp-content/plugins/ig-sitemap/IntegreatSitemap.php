@@ -36,7 +36,7 @@ class IntegreatSitemap {
 		foreach ($pages as $page) {
 ?>
   <url>
-    <loc><?= str_replace('https://cms.integreat-app.de', self::HOST, get_permalink($page)) ?></loc>
+    <loc><?= str_replace(['https://cms.integreat-app.de', '&'], [self::HOST, '&amp;'], get_permalink($page)) ?></loc>
 <?php
 			if (self::XHTML_ENABLED) {
 				$current_language = apply_filters('wpml_current_language', null);
@@ -46,7 +46,7 @@ class IntegreatSitemap {
 					if ($id != null) {
 						do_action('wpml_switch_language', $language);
 ?>
-    <xhtml:link rel="alternate" hreflang="<?= $language ?>" href="<?= str_replace('https://cms.integreat-app.de', self::HOST, get_permalink($id)) ?>"/>
+    <xhtml:link rel="alternate" hreflang="<?= $language ?>" href="<?= str_replace(['https://cms.integreat-app.de', '&'], [self::HOST, '&amp;'], get_permalink($id)) ?>"/>
 <?php
 					}
 				}
@@ -72,20 +72,20 @@ class IntegreatSitemap {
 				continue;
 			}
 			switch_to_blog($site->blog_id);
-			$current_language = apply_filters('wpml_current_language', null);
-			$languages = array_merge([$current_language], array_filter($wpdb->get_col("SELECT code FROM {$wpdb->prefix}icl_languages WHERE active = 1"), function ($language) use ($current_language) {
-			    return $language !== $current_language;
-            }));
+			$languages = array_keys( apply_filters( 'wpml_active_languages', null, '' ) );
 			foreach ($languages as $language) {
-			    if ($current_language !== $language) {
-				    do_action('wpml_switch_language', $language);
-                }
-				$last_modified = (new WP_Query([
+				do_action('wpml_switch_language', $language);
+				$query = new WP_Query([
 					'post_type' => ['page', 'event', 'disclaimer'],
 					'post_status' => 'publish',
 					'orderby' => 'modified',
 					'posts_per_page' => 1,
-				]))->posts[0]->post_modified_gmt;
+				]);
+				if ( $query->have_posts() ) {
+					$last_modified = $query->posts[0]->post_modified_gmt;
+				} else {
+					continue;
+				}
 ?>
   <sitemap>
     <loc><?= self::HOST.$site->path.$language.'/sitemap.xml' ?></loc>
