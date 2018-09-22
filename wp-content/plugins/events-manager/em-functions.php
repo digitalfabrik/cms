@@ -343,7 +343,7 @@ function em_get_attributes($lattributes = false){
 		    }
 		}
 	}
-	return apply_filters('em_get_attributes', $attributes, $matches);
+	return apply_filters('em_get_attributes', $attributes, $matches, $lattributes);
 }
 
 /**
