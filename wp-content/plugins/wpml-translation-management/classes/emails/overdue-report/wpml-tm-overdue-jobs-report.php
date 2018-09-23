@@ -2,6 +2,8 @@
 
 class WPML_TM_Overdue_Jobs_Report {
 
+	const OVERDUE_JOBS_REPORT_TEMPLATE = 'notification/overdue-jobs-report.twig';
+
 	/** @var  WPML_Translation_Jobs_Collection $jobs_collection */
 	private $jobs_collection;
 
@@ -14,32 +16,44 @@ class WPML_TM_Overdue_Jobs_Report {
 	/** @var array $notification_settings */
 	private $notification_settings;
 
+	private $sitepress;
+
+	private $tp_jobs;
+
 	/**
 	 * @param WPML_Translation_Jobs_Collection $jobs_collection
-	 * @param WPML_TM_Email_Notification_View  $email_view
-	 * @param bool                             $has_active_remote_service
-	 * @param array                            $notification_settings
+	 * @param WPML_TM_Email_Notification_View $email_view
+	 * @param bool $has_active_remote_service
+	 * @param array $notification_settings
+	 * @param SitePress $sitepress
+	 * @param WPML_TP_Jobs_Collection|null $tp_jobs
 	 */
 	public function __construct(
 		WPML_Translation_Jobs_Collection $jobs_collection,
 		WPML_TM_Email_Notification_View $email_view,
 		$has_active_remote_service,
-		array $notification_settings
+		array $notification_settings,
+		SitePress $sitepress,
+		WPML_TP_Jobs_Collection $tp_jobs = null
 	) {
 		$this->jobs_collection           = $jobs_collection;
 		$this->email_view                = $email_view;
 		$this->has_active_remote_service = $has_active_remote_service;
 		$this->notification_settings     = $notification_settings;
+		$this->sitepress                 = $sitepress;
+		$this->tp_jobs                   = $tp_jobs;
 	}
 
 	public function send() {
 		$jobs_by_manager_id = $this->get_overdue_jobs_by_manager_id();
 
 		if ( $jobs_by_manager_id ) {
-
+			$current_language = $this->sitepress->get_current_language();
+			$this->sitepress->switch_lang( $this->sitepress->get_default_language() );
 			foreach ( $jobs_by_manager_id as $manager_id => $jobs ) {
 				$this->send_email( $manager_id, $jobs );
 			}
+			$this->sitepress->switch_lang( $current_language );
 		}
 	}
 
@@ -54,6 +68,11 @@ class WPML_TM_Overdue_Jobs_Report {
 		$jobs_by_manager_id = array();
 
 		foreach ( $jobs as $key => $job ) {
+
+			if ( $this->tp_jobs && $this->tp_jobs->is_job_canceled( $job ) ) {
+				continue;
+			}
+
 			if ( ! $job instanceof WPML_Element_Translation_Job ) {
 				continue;
 			}
@@ -100,7 +119,7 @@ class WPML_TM_Overdue_Jobs_Report {
 
 		$to      = $manager->display_name . ' <' . $manager->user_email . '>';
 		$subject = esc_html__( 'Overdue translation jobs report', 'wpml-translation-management' );
-		$message = $this->email_view->render_overdue_jobs_report( $model );
+		$message = $this->email_view->render_model( $model, self::OVERDUE_JOBS_REPORT_TEMPLATE );
 
 		$headers = array(
 			'MIME-Version: 1.0',

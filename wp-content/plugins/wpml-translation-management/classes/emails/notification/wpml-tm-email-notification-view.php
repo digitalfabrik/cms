@@ -2,27 +2,7 @@
 
 class WPML_TM_Email_Notification_View extends WPML_TM_Email_View {
 
-	const JOB_COMPLETE_TEMPLATE        = 'notification/job-completed.twig';
-	const OVERDUE_JOBS_REPORT_TEMPLATE = 'notification/overdue-jobs-report.twig';
 	const PROMOTE_TRANSLATION_SERVICES_TEMPLATE = 'notification/promote-translation-services.twig';
-
-	/**
-	 * @param array $model
-	 *
-	 * @return string
-	 */
-	public function render_job_complete( array $model ) {
-		return $this->render_model( $model, self::JOB_COMPLETE_TEMPLATE );
-	}
-
-	/**
-	 * @param array $model
-	 *
-	 * @return string
-	 */
-	public function render_overdue_jobs_report( array $model ) {
-		return $this->render_model( $model, self::OVERDUE_JOBS_REPORT_TEMPLATE );
-	}
 
 	/**
 	 * @param array  $model
@@ -30,8 +10,12 @@ class WPML_TM_Email_Notification_View extends WPML_TM_Email_View {
 	 *
 	 * @return string
 	 */
-	private function render_model( array $model, $template ) {
-		$content = $this->render_header( $model['username'] );
+	public function render_model( array $model, $template ) {
+		if ( isset( $model['casual_name'] ) && $model['casual_name'] ) {
+			$content = $this->render_casual_header( $model['casual_name'] );
+		} else {
+			$content = $this->render_header( $model['username'] );
+		}
 		$content .= $this->template_service->show( $model, $template );
 		$content .= $this->render_promote_translation_services( $model );
 		$content .= $this->render_footer();
@@ -65,7 +49,7 @@ class WPML_TM_Email_Notification_View extends WPML_TM_Email_View {
 
 	/** @return string */
 	private function render_footer() {
-		$notifications_url  = esc_url( admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=notifications' ) );
+		$notifications_url  = esc_url( admin_url( 'admin.php?page=' . WPML_TM_FOLDER . WPML_Translation_Management::PAGE_SLUG_SETTINGS . '&sm=notifications' ) );
 		$notifications_text = esc_html__( 'WPML Notification Settings', 'wpml-translation-management' );
 		$notifications_link = '<a href="' . $notifications_url . '" style="color: #ffffff;">' . $notifications_text . '</a>';
 

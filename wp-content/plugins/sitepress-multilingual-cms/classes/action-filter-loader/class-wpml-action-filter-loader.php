@@ -18,6 +18,7 @@ class WPML_Action_Filter_Loader {
 			$backend  = in_array( 'IWPML_Backend_Action_Loader', $implementations, true );
 			$frontend = in_array( 'IWPML_Frontend_Action_Loader', $implementations, true );
 			$ajax     = in_array( 'IWPML_AJAX_Action_Loader', $implementations, true );
+			$rest     = in_array( 'IWPML_REST_Action_Loader', $implementations, true );
 
 			if ( $backend && $frontend ) {
 				$this->load_factory( $loader );
@@ -26,6 +27,9 @@ class WPML_Action_Filter_Loader {
 			} elseif ( $frontend && ! is_admin() ) {
 				$this->load_factory( $loader );
 			} elseif ( $ajax && wpml_is_ajax() ) {
+				$this->load_factory( $loader );
+			}
+			if ( $rest ) {
 				$this->load_factory( $loader );
 			}
 		}

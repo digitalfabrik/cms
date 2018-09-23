@@ -2,14 +2,30 @@
 
 class WPML_TM_Translation_Services_Admin_Section_Ajax {
 
-	const NONCE_ACTION = 'translation_service_toggle';
+	const NONCE_ACTION           = 'translation_service_toggle';
+	const REFRESH_TS_INFO_ACTION = 'refresh_ts_info';
+
+	/** @var WPML_TP_Client */
+	private $tp_client;
+
+	/** @var WPML_TM_Translation_Services_Admin_Active_Template_Factory */
+	private $active_service_template_factory;
+
+	public function __construct(
+		WPML_TP_Client $tp_client,
+		WPML_TM_Translation_Services_Admin_Active_Template_Factory $active_service_template_factory
+	) {
+		$this->tp_client                       = $tp_client;
+		$this->active_service_template_factory = $active_service_template_factory;
+	}
 
 	public function add_hooks() {
 		add_action( 'wp_ajax_translation_service_toggle', array( $this, 'translation_service_toggle' ) );
+		add_action( 'wp_ajax_refresh_ts_info', array( $this, 'refresh_ts_info' ) );
 	}
 
 	public function translation_service_toggle( ) {
-		if ( $this->is_valid_request() ) {
+		if ( $this->is_valid_request( self::NONCE_ACTION ) ) {
 
 			if ( ! isset( $_POST[ 'service_id' ] ) ) {
 				return;
@@ -23,8 +39,12 @@ class WPML_TM_Translation_Services_Admin_Section_Ajax {
 				$enable = filter_var( $_POST[ 'enable' ], FILTER_SANITIZE_NUMBER_INT );
 			}
 
-			if ( $enable && $service_id !== TranslationProxy::get_current_service_id() ) {
-				$response = $this->activate_service( $service_id );
+			if ( $enable ) {
+				if ( $service_id !== TranslationProxy::get_current_service_id() ) {
+					$response = $this->activate_service( $service_id );
+				} else {
+					$response = array( 'activated' => true );
+				}
 			}
 
 			if ( ! $enable && $service_id === TranslationProxy::get_current_service_id() ) {
@@ -32,14 +52,37 @@ class WPML_TM_Translation_Services_Admin_Section_Ajax {
 			}
 
 			wp_send_json_success( $response );
-		} else {
-			$response = array(
-				'message' => __( 'You are not allowed to perform this action.', 'wpml-translation-management' ),
-				'reload'  => 0,
-			);
-
-			wp_send_json_error( $response );
+			return;
 		}
+
+		$this->send_invalid_nonce_error();
+	}
+
+	public function refresh_ts_info() {
+		if ( $this->is_valid_request( self::REFRESH_TS_INFO_ACTION ) ) {
+			$active_service = $this->tp_client->services()->get_active( true );
+
+			if ( $active_service ) {
+				$active_service = (object) (array) $active_service;
+				TranslationProxy::build_and_store_active_translation_service( $active_service, $active_service->custom_fields_data );
+
+				$active_service_template = $this->active_service_template_factory->create();
+
+				$data = array(
+					'active_service_block' => $active_service_template->render(),
+				);
+
+				wp_send_json_success( $data );
+				return;
+			}
+
+			wp_send_json_error(
+				array( 'message' => __( 'It was not possible to refresh the active translation service information.', 'wpml-translation-management' ) )
+			);
+			return;
+		}
+
+		$this->send_invalid_nonce_error();
 	}
 
 	/**
@@ -73,13 +116,24 @@ class WPML_TM_Translation_Services_Admin_Section_Ajax {
 	}
 
 	/**
+	 * @param string $action
+	 *
 	 * @return bool
 	 */
-	private function is_valid_request() {
+	private function is_valid_request( $action ) {
 		if ( ! isset( $_POST[ 'nonce' ] ) ) {
 			return false;
 		}
 
-		return wp_verify_nonce( filter_var( $_POST[ 'nonce' ], FILTER_SANITIZE_FULL_SPECIAL_CHARS ), self::NONCE_ACTION );
+		return wp_verify_nonce( filter_var( $_POST[ 'nonce' ], FILTER_SANITIZE_FULL_SPECIAL_CHARS ), $action );
+	}
+
+	private function send_invalid_nonce_error() {
+		$response = array(
+			'message' => __( 'You are not allowed to perform this action.', 'wpml-translation-management' ),
+			'reload'  => 0,
+		);
+
+		wp_send_json_error( $response );
 	}
 }

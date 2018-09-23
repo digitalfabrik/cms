@@ -8,9 +8,9 @@ interface IWPML_TM_Admin_Section {
 	public function get_slug();
 
 	/**
-	 * @return string
+	 * @return string|array
 	 */
-	public function get_capability();
+	public function get_capabilities();
 
 	/**
 	 * @return string

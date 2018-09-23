@@ -2,6 +2,7 @@
 
 class WPML_TM_Dashboard_Document_Row {
 
+    /** @var stdClass $data */
     private $data;
     private $post_types;
     private $translation_filter;
@@ -10,29 +11,46 @@ class WPML_TM_Dashboard_Document_Row {
     private $note_text;
     private $note_icon_class;
     private $post_statuses;
+	/** @var SitePress $sitepress */
+    private $sitepress;
+    /** @var WPML_TM_Translatable_Element_Provider $translatable_element_provider */
+    private $translatable_element_provider;
 
-	public function __construct( $doc_data, $translation_filter, $post_types, $post_statuses, $active_languages, $selected, &$sitepress, &$wpdb ) {
-		$this->data               = $doc_data;
-		$this->post_statuses      = $post_statuses;
-		$this->selected           = $selected;
-		$this->post_types         = $post_types;
-		$this->active_languages   = $active_languages;
-		$this->translation_filter = $translation_filter;
-		$this->sitepress          = &$sitepress;
-		$this->wpdb               = &$wpdb;
+	public function __construct(
+		$doc_data,
+		$translation_filter,
+		$post_types,
+		$post_statuses,
+		$active_languages,
+		$selected,
+		SitePress $sitepress,
+		WPML_TM_Translatable_Element_Provider $translatable_element_provider
+	) {
+		$this->data                          = $doc_data;
+		$this->post_statuses                 = $post_statuses;
+		$this->selected                      = $selected;
+		$this->post_types                    = $post_types;
+		$this->active_languages              = $active_languages;
+		$this->translation_filter            = $translation_filter;
+		$this->sitepress                     = $sitepress;
+		$this->translatable_element_provider = $translatable_element_provider;
 	}
 
 	public function get_word_count() {
 		$current_document = $this->data;
+		$type             = 'post';
 
-		$count     = 0;
-		if ( ! $this->is_external_type() ) {
-			$wpml_post = new WPML_TM_Post( $current_document->ID, $this->sitepress, $this->wpdb );
-			$count += $wpml_post->get_words_count();
+		if ( $this->is_external_type() ) {
+			$type = 'package';
 		}
-		$count = apply_filters( 'wpml_tm_estimated_words_count', $count, $current_document );
 
-		return $count;
+		$translatable_element = $this->translatable_element_provider->get_from_type( $type, $current_document->ID );
+
+		return apply_filters(
+			'wpml_tm_estimated_words_count',
+			$translatable_element->get_words_count(),
+			$current_document
+		);
 	}
 
     public function get_title() {
@@ -97,8 +115,14 @@ class WPML_TM_Dashboard_Document_Row {
 		if ( $post_actions ) {
 			$post_actions_link .= '<div class="row-actions">' . implode( ' | ', $post_actions ) . '</div>';
 		}
+
+		$row_data = apply_filters( 'wpml_translation_dashboard_row_data', array( 'word_count' => $count ), $this->data );
+		$row_data_str = '';
+		foreach( $row_data as $key => $value ){
+			$row_data_str .= 'data-' . esc_attr( $key ) . '="' . esc_attr( $value ) . '" ';
+		}
 		?>
-		<tr id="row_<?php echo sanitize_html_class( $current_document->ID ); ?>" data-word_count="<?php echo $count; ?>">
+		<tr id="row_<?php echo sanitize_html_class( $current_document->ID ); ?>" <?php echo $row_data_str; ?>>
 			<td scope="row">
 				<?php
 				$checked = checked( true, isset( $_GET[ 'post_id' ] ) || $this->selected, false );

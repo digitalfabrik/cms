@@ -337,3 +337,10 @@
         margin-start: 25px;
     }
 }
+
+.otgs-installer-component-setting .spinner.otgs-components-report-setting-spinner {
+    float: right;
+}
+.otgs-installer-component-privacy-policy {
+    margin-top: 30px;
+}

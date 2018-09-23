@@ -3,7 +3,4 @@
 		<custom-field action="copy">_wpml_media_duplicate</custom-field>
 		<custom-field action="copy">_wpml_media_featured</custom-field>
 	</custom-fields>
-	<custom-types>
-		<custom-type translate="1">attachment</custom-type>
-	</custom-types>
 </wpml-config>
