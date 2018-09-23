@@ -37,12 +37,19 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 		$trid = $this->maybe_retrive_trid_again( $trid, $post );
 		$needs_second_update = array_key_exists( 'needs_second_update', $_POST ) ? (bool) $_POST['needs_second_update'] : false;
 
+
+
 		// is this the original document?
 		$is_original = empty( $trid )
 			? false
 			: ! (bool) $this->tm_records
 				->icl_translations_by_element_id_and_type_prefix( $post_id, 'post_' . $post->post_type )
 				->source_language_code();
+
+		if( $is_original ){
+			$this->save_translation_priority( $post_id );
+		}
+
 		if ( ! empty( $trid ) && ! $is_original ) {
 			$lang = $lang ? $lang : $this->get_save_post_lang( $lang, $post_id );
 			$res  = $wpdb->get_row( $wpdb->prepare( "
@@ -136,8 +143,13 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 			                                                        'admin_override' => false
 		                                                        ) )
 		) {
-			$this->action_helper->get_tm_instance()->add_translator( $user_id,
-			                                                         array( $source_lang => array( $target_lang => 1 ) ) );
+			global $wpdb;
+
+			$user = new WP_User( $user_id );
+			$user->add_cap( WPML_Translator_Role::CAPABILITY );
+
+			$language_pair_records = new WPML_Language_Pair_Records( $wpdb, new WPML_Language_Records( $wpdb ) );
+			$language_pair_records->store( $user_id, array( $source_lang => array( $target_lang ) ) );
 		}
 	}
 
@@ -161,5 +173,26 @@ class WPML_TM_Post_Actions extends WPML_Translation_Job_Helper {
 		}
 
 		return $trid;
+	}
+
+	/**
+	 * @param int $post_id
+	 *
+	 */
+	public function save_translation_priority( $post_id ) {
+
+		$translation_priority = filter_var(
+			( isset( $_POST['icl_translation_priority'] ) ? $_POST['icl_translation_priority'] : '' ),
+			FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+		if( !$translation_priority ){
+			$assigned_priority = wp_get_object_terms( $post_id, 'translation_priority' );
+
+			if( $assigned_priority ){
+				$translation_priority = $assigned_priority[0]->term_id;
+			}
+		}
+
+		wp_set_post_terms( $post_id, array( (int) $translation_priority ), 'translation_priority' );
 	}
 }

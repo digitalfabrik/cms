@@ -40,10 +40,10 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 
 		return $this->status;
 	}
-	
+
 	public function get_status_value() {
 		$this->maybe_load_basic_data();
-		
+
 		return $this->basic_data->status;
 	}
 
@@ -51,7 +51,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		return $this->job_id;
 	}
 
-	public function get_resultant_element_id( $force = false) {
+	public function get_resultant_element_id( $force = false ) {
 		if ( $this->element_id == - 1 || $force === true ) {
 			$this->element_id = $this->load_resultant_element_id();
 		}
@@ -68,15 +68,15 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	 */
 	public function user_can_translate( $user ) {
 		$translator_id          = $this->get_translator_id();
-		$user_can_take_this_job = 0 === $translator_id || $this->is_current_user_allowed_to_translate( $user, $translator_id );
+		$user_can_take_this_job = 0 === $translator_id
+		                          || $this->is_current_user_allowed_to_translate( $user,
+		                                                                          $translator_id );
 
-		$translator_has_job_language_pairs = $this->blog_translators->is_translator(
-			$user->ID,
-			array(
-				'lang_from' => $this->get_source_language_code(),
-				'lang_to'   => $this->get_language_code(),
-			)
-		);
+		$translator_has_job_language_pairs = $this->blog_translators->is_translator( $user->ID,
+		                                                                             array(
+			                                                                             'lang_from' => $this->get_source_language_code(),
+			                                                                             'lang_to'   => $this->get_language_code(),
+		                                                                             ) );
 
 		return ( $user_can_take_this_job && $translator_has_job_language_pairs )
 		       || ( method_exists( $user, 'has_cap' ) && $user->has_cap( 'manage_options' ) )
@@ -92,9 +92,9 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	private function is_current_user_allowed_to_translate( WP_User $user, $translator_id ) {
 		$allowed_translators   = apply_filters( 'wpml_tm_allowed_translators_for_job', array(), $this );
 		$allowed_translators[] = $translator_id;
+
 		return in_array( (int) $user->ID, $allowed_translators, true );
 	}
-
 
 	public function get_batch_id() {
 		if ( ! isset( $this->batch_id ) ) {
@@ -150,7 +150,8 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	public function get_translator_id() {
 		$this->maybe_load_basic_data();
 
-		$this->basic_data->translator_id = ! empty( $this->basic_data->translator_id ) ? $this->basic_data->translator_id : 0;
+		$this->basic_data->translator_id = ! empty( $this->basic_data->translator_id )
+			? $this->basic_data->translator_id : 0;
 
 		return (int) $this->basic_data->translator_id;
 	}
@@ -189,8 +190,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		if ( $this->get_tm_setting( array( 'notification', 'resigned' ) ) == ICL_TM_NOTIFICATION_IMMEDIATELY
 		     && ! empty( $prev_translator_id )
 		     && $prev_translator_id != $translator_id
-		     && $job_id
-		) {
+		     && $job_id ) {
 			do_action( 'wpml_tm_remove_job_notification', $prev_translator_id, $this );
 		}
 
@@ -201,6 +201,8 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 				do_action( 'wpml_tm_assign_job_notification', $this, $translator_id );
 			}
 		}
+
+		return true;
 	}
 
 	/**
@@ -229,14 +231,14 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 	protected function basic_data_to_array( $job_data ) {
 		$this->maybe_load_basic_data();
 		$data_array = (array) $job_data;
-		if ( isset( $data_array[ 'post_title' ] ) ) {
-			$data_array[ 'post_title' ] = esc_html( $data_array[ 'post_title' ] );
+		if ( isset( $data_array['post_title'] ) ) {
+			$data_array['post_title'] = esc_html( $data_array['post_title'] );
 		}
 		$data_array['translator_name']      = $this->get_translator_name();
 		$data_array['batch_id']             = $job_data->batch_id;
 		$data_array['source_language_code'] = $this->basic_data->source_language_code;
 		$data_array['language_code']        = $this->basic_data->language_code;
-		$data_array[ 'translator_html' ]      = $this->get_translator_html( $this->basic_data );
+		$data_array['translator_html']      = $this->get_translator_html( $this->basic_data );
 		$data_array['type']                 = $this->get_type();
 		$data_array['lang_text']            = $this->generate_lang_text();
 
@@ -275,7 +277,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 
 	protected function get_translator_html( $job ) {
 
-		$job = (object) $job;
+		$job                  = (object) $job;
 		$current_service_name = TranslationProxy::get_current_service_name();
 		$translation_services = array( 'local', TranslationProxy::get_current_service_id() );
 
@@ -289,18 +291,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 			try {
 				$project = TranslationProxy::get_current_project();
 				if ( $project ) {
-					if ( $project->service->has_translator_selection ) {
-						$translator_contact_iframe_url = $project->translator_contact_iframe_url( $job->translator_id );
-						$iframe_args                   = array(
-							'title'     => __( 'Contact the translator', 'wpml-translation-management' ),
-							'unload_cb' => 'icl_thickbox_refresh'
-						);
-						$translator .= TranslationProxy_Popup::get_link( $translator_contact_iframe_url, $iframe_args );
-						$translator .= esc_html( $job->translator_name );
-						$translator .= "</a> (" . $current_service_name . ")";
-					} else {
-						$translator .= $current_service_name;
-					}
+					$translator .= $current_service_name;
 				} else {
 					$translator .= esc_html( $job->translator_name );
 				}
@@ -312,23 +303,20 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 			$translator_name = $translator_data ? $translator_data->display_name : "";
 			$translator      = '<span class="icl-finished-local-name">' . $translator_name . '</span>';
 		} else {
-			$translator .= '<span class="icl_tj_select_translator">';
+			$translator          .= '<span class="icl_tj_select_translator">';
 			$selected_translator = isset( $job->translator_id ) ? $job->translator_id : false;
 			$disabled            = false;
-			if ( $job->translation_service && $job->translation_service !== 'local' && is_numeric(
-					$job->translation_service
-				)
-			) {
-				$selected_translator = TranslationProxy_Service::get_wpml_translator_id(
-					$job->translation_service,
-					$job->translator_id
-				);
+			if ( $job->translation_service
+			     && $job->translation_service !== 'local'
+			     && is_numeric( $job->translation_service ) ) {
+				$selected_translator = TranslationProxy_Service::get_wpml_translator_id( $job->translation_service,
+				                                                                         $job->translator_id );
 				$disabled            = true;
 			}
 
-			$job_id     = isset( $job->job_id ) ? $job->job_id : $job->id;
-			$local_only = isset( $job->local_only ) ? $job->local_only : true;
-			$args       = array(
+			$job_id               = isset( $job->job_id ) ? $job->job_id : $job->id;
+			$local_only           = isset( $job->local_only ) ? $job->local_only : true;
+			$args                 = array(
 				'id'         => 'icl_tj_translator_for_' . $job_id,
 				'name'       => 'icl_tj_translator_for_' . ( $job_id ),
 				'from'       => $job->source_language_code,
@@ -340,19 +328,29 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 				'local_only' => $local_only
 			);
 			$translators_dropdown = new WPML_TM_Translators_Dropdown( $this->blog_translators );
-			$translator .= $translators_dropdown->render( $args );
-			$translator .= '<input type="hidden" id="icl_tj_ov_' . $job_id . '" value="' . (int) $job->translator_id . '" />';
-			$translator .= '<input type="hidden" id="icl_tj_ty_' . $job_id . '" value="' . strtolower( $this->get_type() ) . '" />';
-			$translator .= '<span class="icl_tj_select_translator_controls" id="icl_tj_tc_' . ( $job_id ) . '">';
-			$translator .= '<input type="button" class="button-secondary icl_tj_ok" value="' . __(
-					'Send',
-					'wpml-translation-management'
-				) . '" />&nbsp;';
-			$translator .= '<input type="button" class="button-secondary icl_tj_cancel" value="' . __(
-					'Cancel',
-					'wpml-translation-management'
-				) . '" />';
-			$translator .= '</span>';
+			$translator           .= $translators_dropdown->render( $args );
+			$translator           .= '<input type="hidden" id="icl_tj_ov_'
+			                         . $job_id
+			                         . '" value="'
+			                         . (int) $job->translator_id
+			                         . '" />';
+			$translator           .= '<input type="hidden" id="icl_tj_ty_'
+			                         . $job_id
+			                         . '" value="'
+			                         . strtolower( $this->get_type() )
+			                         . '" />';
+			$translator           .= '<span class="icl_tj_select_translator_controls" id="icl_tj_tc_'
+			                         . ( $job_id )
+			                         . '">';
+			$translator           .= '<input type="button" class="button-secondary icl_tj_ok" value="'
+			                         . __( 'Send',
+			                               'wpml-translation-management' )
+			                         . '" />&nbsp;';
+			$translator           .= '<input type="button" class="button-secondary icl_tj_cancel" value="'
+			                         . __( 'Cancel',
+			                               'wpml-translation-management' )
+			                         . '" />';
+			$translator           .= '</span>';
 		}
 
 		return $translator;
@@ -366,7 +364,7 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 															FROM {$table}
 															WHERE {$col} = %d
 															LIMIT 1",
-														  $this->job_id ) );
+		                                                  $this->job_id ) );
 	}
 
 	protected abstract function get_batch_id_table_col();
@@ -378,7 +376,8 @@ abstract class WPML_Translation_Job extends WPML_Translation_Job_Helper {
 		$this->maybe_load_basic_data();
 
 		return $this->lang_code_to_name( $this->get_source_language_code() )
-		       . ' &raquo; ' . $this->lang_code_to_name( $this->get_language_code() );
+		       . html_entity_decode( ' &raquo; ' )
+		       . $this->lang_code_to_name( $this->get_language_code() );
 	}
 
 	/**

@@ -45,6 +45,8 @@ class WPML_Dashboard_Ajax {
 			'wpml_duplicate_dashboard_nonce' => wp_create_nonce( 'wpml_duplicate_dashboard_nonce' ),
 			'wpml_need_sync_message_nonce'   => wp_create_nonce( 'wpml_need_sync_message_nonce' ),
 			'duplicating'                    => __( 'Duplicating', 'wpml-translation-management' ),
+			'post_parent'                    => __( 'Post parent', 'wpml-translation-management' ),
+			'any'                            => __( 'Any', 'wpml-translation-management' ),
 		);
 
 		return $wpml_tm_strings;

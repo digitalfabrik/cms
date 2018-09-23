@@ -7,11 +7,6 @@ class OTGS_Installer_Icons {
 	 */
 	private $installer;
 
-	/**
-	 * @var array
-	 */
-	private $products_map;
-
 	public function __construct( WP_Installer $installer ) {
 		$this->installer = $installer;
 	}
@@ -22,21 +17,21 @@ class OTGS_Installer_Icons {
 
 	/**
 	 * @param stdClass $response
-	 * @param string $plugin_id
+	 * @param string $name
 	 *
 	 * @return stdClass
 	 */
-	public function add_icons_on_response( $response, $plugin_id, $repository ) {
-		$product = isset( $this->installer->settings['repositories'][ $repository ]['data']['products-map'][ $plugin_id ] )
-			? $this->installer->settings['repositories'][ $repository ]['data']['products-map'][ $plugin_id ]
+	public function add_icons_on_response( $response, $name, $repository ) {
+		$product = isset( $this->installer->settings['repositories'][ $repository ]['data']['products-map'][ $name ] )
+			? $this->installer->settings['repositories'][ $repository ]['data']['products-map'][ $name ]
 			: '';
 
 		if ( $product ) {
-			$base            = $this->installer->plugin_url() . '/vendor/otgs/icons/plugin-icons/' . $repository . '/' . $product . '/icon';
+			$base            = $this->installer->plugin_url() . '/../icons/plugin-icons/' . $repository . '/' . $product . '/icon';
 			$response->icons = array(
 				'svg' => $base . '.svg',
-				'1x'  => $base . '.png',
-				'2x'  => $base . '.png',
+				'1x'  => $base . '-128x128.png',
+				'2x'  => $base . '-256x256.png',
 			);
 		}
 

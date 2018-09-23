@@ -259,7 +259,7 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 		 * @var WPML_String_Translation $WPML_String_Translation
 		 * @var TranslationManagement $iclTranslationManagement
 		 */
-		global $sitepress, $wpdb, $WPML_String_Translation, $iclTranslationManagement;
+		global $WPML_String_Translation, $iclTranslationManagement;
 
 		$res = false;
 		if ( empty( $cms_id ) ) { // it's a string
@@ -267,47 +267,11 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 				$res = $WPML_String_Translation->cancel_remote_translation( $rid );
 			}
 		} else {
-			$cms_id_parts = $this->cms_id_helper->parse_cms_id( $cms_id );
-			$post_type    = $cms_id_parts[0];
-			$_element_id  = $cms_id_parts[1];
-			$_target_lang = $cms_id_parts[3];
-			$job_id       = isset( $cms_id_parts[4] ) ? $cms_id_parts[4] : false;
+			$translation_id = $this->cms_id_helper->get_translation_id( $cms_id );
 
-			$element_type_prefix = 'post';
-			if ( $job_id ) {
-				$element_type_prefix = $iclTranslationManagement->get_element_type_prefix_from_job_id( $job_id );
-			}
-
-			$element_type = $element_type_prefix . '_' . $post_type;
-			if ( $_element_id && $post_type && $_target_lang ) {
-				$trid = $sitepress->get_element_trid( $_element_id, $element_type );
-			} else {
-				$trid = null;
-			}
-
-			if ( $trid ) {
-				$translation_id_query   = "SELECT i.translation_id
-																FROM {$wpdb->prefix}icl_translations i
-																JOIN {$wpdb->prefix}icl_translation_status s
-																ON i.translation_id = s.translation_id
-																WHERE i.trid=%d
-																	AND i.language_code=%s
-																	AND s.status IN (%d, %d)
-																LIMIT 1";
-				$translation_id_args    = array(
-					$trid,
-					$_target_lang,
-					ICL_TM_IN_PROGRESS,
-					ICL_TM_WAITING_FOR_TRANSLATOR
-				);
-				$translation_id_prepare = $wpdb->prepare( $translation_id_query, $translation_id_args );
-				$translation_id         = $wpdb->get_var( $translation_id_prepare );
-
-				if ( $translation_id ) {
-					global $iclTranslationManagement;
-					$iclTranslationManagement->cancel_translation_request( $translation_id );
-					$res = true;
-				}
+			if ( $translation_id ) {
+				$iclTranslationManagement->cancel_translation_request( $translation_id );
+				$res = true;
 			}
 		}
 

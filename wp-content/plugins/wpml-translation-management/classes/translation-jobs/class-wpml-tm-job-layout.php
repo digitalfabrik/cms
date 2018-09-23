@@ -1,19 +1,24 @@
 <?php
 
-class WPML_TM_Job_Layout extends WPML_WPDB_User {
+class WPML_TM_Job_Layout {
 
 	private $layout = array();
 	private $custom_fields = array();
 	private $grouped_custom_fields = array();
 	private $terms = array();
 	private $wp_api;
+	public  $wpdb;
 
-	public function __construct( &$wpdb, $wp_api ) {
-		parent::__construct( $wpdb );
+	public function __construct( wpdb $wpdb, WPML_WP_API $wp_api ) {
+		$this->wpdb   = $wpdb;
 		$this->wp_api = $wp_api;
 	}
 
-	public function run( $fields, $tm_instance = null ) {
+	public function get_wpdb() {
+		return $this->wpdb;
+	}
+
+	public function run( array $fields, $tm_instance = null ) {
 
 		foreach ( $fields as $field ) {
 			$this->layout[] = $field['field_type'];
@@ -143,11 +148,11 @@ class WPML_TM_Job_Layout extends WPML_WPDB_User {
 	}
 
 	private function is_a_custom_field( $field ) {
-		return ( 0 === strpos( $field, 'field-' ) );
+		return 0 === strpos( $field, 'field-' );
 	}
 
 	private function is_a_term( $field ) {
-		return preg_match( '/^t_/', $field );
+		return 0 === strpos( $field, 't_' );
 	}
 
 }

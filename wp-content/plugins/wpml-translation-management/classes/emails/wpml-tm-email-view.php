@@ -26,6 +26,19 @@ abstract class WPML_TM_Email_View {
 	}
 
 	/**
+	 * @param string $username
+	 *
+	 * @return string
+	 */
+	public function render_casual_header( $first_name = '' ) {
+		$model = array(
+			'greetings' => sprintf( __( 'Hi %s,', 'wpml-translation-management' ), $first_name ),
+		);
+
+		return $this->template_service->show( $model, self::HEADER_TEMPLATE );
+	}
+
+	/**
 	 * @param string $bottom_text
 	 *
 	 * @return string

@@ -44,6 +44,7 @@ define('ICL_TM_NOTIFICATION_DAILY', 2);
 define('ICL_TM_TMETHOD_MANUAL', 0);
 define('ICL_TM_TMETHOD_EDITOR', 1);
 define('ICL_TM_TMETHOD_PRO', 2);
+define( 'ICL_TM_TMETHOD_ATE', 'ATE' );
 
 if ( ! defined( 'ICL_TM_DOCS_PER_PAGE' ) ) {
 	define( 'ICL_TM_DOCS_PER_PAGE', 20 );

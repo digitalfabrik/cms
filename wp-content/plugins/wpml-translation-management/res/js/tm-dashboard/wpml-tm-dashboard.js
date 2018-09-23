@@ -1,33 +1,36 @@
 /*global wpml_tm_strings, jQuery, Backbone, icl_ajxloaderimg, ajaxurl, ProgressBar */
 /*jslint laxbreak: true */
 
+var WPML_TM = WPML_TM || {};
+
 (function () {
 	'use strict';
 
-var WPMLTMDashboard = Backbone.View.extend({
-		events: {
-			'click td[scope="row"] :checkbox':   'update_td',
-			"click td.check-column :checkbox":   'icl_tm_select_all_documents',
-			"change #icl_tm_languages :radio":   'change_radio',
-			"change #icl_parent_filter_control": 'iclTmPopulateParentFilter',
-			"change #icl_language_selector":     'iclTmPopulateParentFilter',
-			"click #duplicate-all":              'icl_tm_bulk_batch_selection',
-			"click #translate-all":              'icl_tm_bulk_batch_selection',
-			"click #update-none":                'icl_tm_bulk_batch_selection',
-			"submit #icl_tm_dashboard_form":     'submit'
-		},
+WPML_TM.Dashboard = Backbone.View.extend({
+	events: {
+		'click td[scope="row"] :checkbox':   'update_td',
+		"click td.check-column :checkbox":   'icl_tm_select_all_documents',
+		"change #icl_tm_languages :radio":   'change_radio',
+		"change #parent-filter-control":     'populate_parent_list',
+		"change #icl_language_selector":     'populate_parent_list',
+		"click #duplicate-all":              'icl_tm_bulk_batch_selection',
+		"click #translate-all":              'icl_tm_bulk_batch_selection',
+		"click #update-none":                'icl_tm_bulk_batch_selection',
+		"submit #icl_tm_dashboard_form":     'submit',
+		"change #filter_type":               'show_hide_parent_controls'
+	},
     counts: {
         all: 0,
         duplicate: 0,
         translate: 0
     },
-    init: function () {
-        var self = this;
-        self.counts.all =
-            self.setElement('.icl_tm_wrap');
-        self.iclTmPopulateParentFilter();
-        self.change_radio();
-    },
+	init: function ( $ ) {
+		var self = this;
+		self.$ = $;
+		self.counts.all = self.setElement( '.icl_tm_wrap' );
+		self.change_radio();
+		self.show_hide_parent_controls();
+	},
     submit: function (e) {
 			var self = this;
 			self.recount();
@@ -122,40 +125,82 @@ var WPMLTMDashboard = Backbone.View.extend({
         icl_tm_estimated_words_count.html(current_overall_word_count);
         self.icl_tm_update_doc_count();
     },
-    setup_parent_filter_drop: function () {
-        var icl_parent_filter_drop = jQuery('#icl_parent_filter_drop');
-        if (icl_parent_filter_drop.length === 0) {
-            icl_parent_filter_drop = jQuery('<select name="filter[parent_id]" id="icl_parent_filter_drop"></select>');
-            icl_parent_filter_drop.appendTo(jQuery('#icl_parent_filter'));
-        }
-        icl_parent_filter_drop.html(icl_ajxloaderimg);
-        icl_parent_filter_drop.hide();
 
-        return icl_parent_filter_drop;
-    },
-    iclTmPopulateParentFilter: function () {
-        var self = this;
-        var icl_parent_filter_control = jQuery('#icl_parent_filter_control');
-        var icl_parent_filter_drop = self.setup_parent_filter_drop();
-        var icl_parent_filter_label = jQuery('#icl_parent_filter_label');
-        icl_parent_filter_label.hide();
-        var val = icl_parent_filter_control.val();
-        if (val) {
-            jQuery.ajax({
-                type: "POST",
-                url: ajaxurl,
-                dataType: 'json',
-                data: 'action=icl_tm_parent_filter&type=' + val + '&lang=' + jQuery('form[name="translation-dashboard-filter"]').find('select[name="filter[from_lang]"]').val() + '&parent_id=' + jQuery('#icl_tm_parent_id').val() + '&parent_all=' + jQuery('#icl_tm_parent_all').val(),
-                success: function (msg) {
-                    icl_parent_filter_label.html(icl_parent_filter_control.children(":selected").text());
-                    icl_parent_filter_drop.html(msg.html);
-                    icl_parent_filter_drop.val(jQuery('#icl_tm_parent_id').val());
-                    icl_parent_filter_drop.show();
-                    icl_parent_filter_label.show();
-                }
-            });
-        }
-    },
+	populate_parent_list: function () {
+		var self = this,
+			parent_select = self.$( '#parent-filter-control' ),
+			parent_taxonomy_item_container = self.$( '[name="parent-taxonomy-item-container"]' ),
+			val = parent_select.val();
+
+		if ( val ) {
+			parent_taxonomy_item_container.hide();
+			if ( val != 'any' ) {
+				var ajax_loader = self.$( '<span class="spinner"></span>' );
+				ajax_loader.insertBefore( parent_taxonomy_item_container ).css( {
+					visibility: "visible",
+					float: "none"
+				} );
+				self.$.ajax( {
+					type: "POST",
+					url: ajaxurl,
+					dataType: 'json',
+					data: {
+						action: 'icl_tm_parent_filter',
+						type: val,
+						lang: self.$( 'select[name="filter[from_lang]"]' ).val(),
+						parent_id: self.$( '[name="filter[parent_id]"]' ).val()
+					},
+					success: function ( response ) {
+						parent_taxonomy_item_container.html( response.data.html );
+						parent_taxonomy_item_container.show();
+						ajax_loader.remove();
+					}
+				} );
+			}
+		}
+	},
+
+	show_hide_parent_controls: function (e) {
+		var self = this,
+			selected_option = self.$( '#filter_type option:selected' ),
+			parent_data = selected_option.data( 'parent' ),
+			taxonomy_data = selected_option.data( 'taxonomy' );
+
+		if ( parent_data || taxonomy_data ) {
+			self.$( '#parent-taxonomy-container' ).show();
+			self.fill_parent_type_select( parent_data, taxonomy_data );
+			self.populate_parent_list();
+		} else {
+			self.$( '#parent-taxonomy-container' ).hide();
+		}
+	},
+
+	fill_parent_type_select: function ( parent_data, taxonomy_data ) {
+		var self = this,
+			parent_select = self.$( '#parent-filter-control' );
+
+		parent_select.find( 'option' ).remove();
+
+		parent_select.append( '<option value="any">' + wpml_tm_strings.any + '</option>' );
+
+		if ( parent_data ) {
+			parent_select.append( '<option value="page">' + wpml_tm_strings.post_parent + '</option>' );
+		}
+		if ( taxonomy_data ) {
+			taxonomy_data = taxonomy_data.split( ',' );
+			for ( var i = 0; i < taxonomy_data.length; i++ ) {
+				var parts = taxonomy_data[i].split( '=' );
+				parent_select.append( '<option value="' + parts[0] + '">' + parts[1] + '</option>' );
+			}
+		}
+		parent_select.val( parent_select.data( 'original' ) );
+		parent_select.data( 'original', '' );
+		if ( ! parent_select.val() ) {
+			parent_select.val( 'any' );
+		}
+
+	},
+
     icl_update_button_label: function (dupl_count, trans_count) {
         var button_label;
         if (dupl_count > 0 && trans_count === 0) {
@@ -168,14 +213,24 @@ var WPMLTMDashboard = Backbone.View.extend({
             button_label = wpml_tm_strings.BB_no_actions;
         }
 
-        jQuery('#icl_tm_jobs_submit').val(button_label);
+		jQuery('#icl_tm_jobs_submit').html(button_label);
     },
-    icl_tm_dup_warn: function () {
+	icl_update_button_class: function (dupl_count, trans_count) {
+		var button= jQuery('#icl_tm_jobs_submit');
+		var button_class= 'wpml-tm-button-basket';
+		if (dupl_count > 0 && trans_count === 0) {
+			button.removeClass(button_class);
+		} else {
+			button.addClass(button_class);
+		}
+	},
+	icl_tm_dup_warn: function () {
         var self = this;
         if (self.counts.duplicate > 0 !== self.$el.find('[id="icl_dup_ovr_warn"]:visible').length > 0) {
             self.$el.find('#icl_dup_ovr_warn').fadeToggle(400);
         }
         self.icl_update_button_label(self.counts.duplicate, self.counts.translate);
+        self.icl_update_button_class(self.counts.duplicate, self.counts.translate);
     },
     icl_tm_bulk_batch_selection: function (e) {
         var self = this;
@@ -289,9 +344,9 @@ var PostDuplication = Backbone.View.extend({
     }
 });
 
-jQuery(document).ready(function () {
-    var tmDashboard = new WPMLTMDashboard();
-    tmDashboard.init();
-});
+jQuery( document ).ready( function () {
+	var tmDashboard = new WPML_TM.Dashboard();
+	tmDashboard.init( jQuery );
+} );
 
 }());

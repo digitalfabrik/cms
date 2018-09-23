@@ -11,15 +11,22 @@ class WPML_End_User_JS_Loader implements IWPML_Action {
 	private $page_identify;
 
 	/**
+	 * @var OTGS_Installer_WP_Share_Local_Components_Setting
+	 */
+	private $send_local_data_setting;
+
+	/**
 	 * @param WPML_End_User_Notice_Validate $validator
 	 * @param WPML_End_User_Page_Identify $page_identify
 	 */
 	public function __construct(
 		WPML_End_User_Notice_Validate $validator,
-		WPML_End_User_Page_Identify $page_identify
+		WPML_End_User_Page_Identify $page_identify,
+		OTGS_Installer_WP_Share_Local_Components_Setting $send_local_data_setting
 	) {
-		$this->validator = $validator;
-		$this->page_identify = $page_identify;
+		$this->validator               = $validator;
+		$this->page_identify           = $page_identify;
+		$this->send_local_data_setting = $send_local_data_setting;
 	}
 
 
@@ -37,7 +44,7 @@ class WPML_End_User_JS_Loader implements IWPML_Action {
 
 	private function get_how_to_link() {
 		$button = '
-			<a id="icl_how_to_translate_link" 
+			<a href="https://wpml.org/faq/how-to-get-compatibility-and-translation-information-for-the-theme-and-plugins-that-power-a-site/?utm_source=wpmlplugin&utm_campaign=compatibility-reporting&utm_medium=how-to-translate-button&utm_term=get-compatibility-and-translation-information" id="icl_how_to_translate_link" 
 			    class="otgs-ico-wpml wpml-external-link js-wpml-end-user-send-request"
 			    target="_blank"
 			    title="%1$s">
@@ -51,6 +58,7 @@ class WPML_End_User_JS_Loader implements IWPML_Action {
 
 		return array(
 			'button' => $button,
+			'is_site_allowed_to_send_data' => (int) $this->send_local_data_setting->is_repo_allowed( 'wpml' ),
 			'endpoint' => WPML_COMPATIBILITY_ENDPOINT,
 			'confirm_button_label' => esc_attr__( 'Continue', 'sitepress' ),
 		);
