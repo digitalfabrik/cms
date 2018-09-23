@@ -21,7 +21,7 @@ if(!is_admin()) echo $EM_Notices;
 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('location_save'); ?>' />
 	<input type='hidden' name='location_id' value='<?php echo $EM_Location->location_id ?>'/>
  	
-	<?php do_action('em_front_location_form_header'); ?>
+	<?php do_action('em_front_location_form_header', $EM_Location); ?>
 	<h3 class="location-form-name"><?php esc_html_e( 'Location Name', 'events-manager'); ?></h3>
 	<div class="inside location-form-name">
 		<input name='location_name' id='location-name' type='text' value='<?php echo esc_attr($EM_Location->location_name, ENT_QUOTES); ?>' size='40'  />
@@ -55,7 +55,7 @@ if(!is_admin()) echo $EM_Notices;
 	</div>
 	<?php endif; ?>
 	
-	<?php do_action('em_front_location_form_footer'); ?>
+	<?php do_action('em_front_location_form_footer', $EM_Location); ?>
 	
 	<?php if( !empty($_REQUEST['redirect_to']) ): ?>
 	<input type="hidden" name="redirect_to" value="<?php echo esc_attr($_REQUEST['redirect_to']); ?>" />

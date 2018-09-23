@@ -553,14 +553,20 @@ class EM_Event extends EM_Object{
 		$this->post_type = ($this->is_recurring() || !empty($_POST['recurring'])) ? 'event-recurring':EM_POST_TYPE_EVENT;
 		//don't forget categories!
 		if( get_option('dbem_categories_enabled') ) $this->get_categories()->get_post();
+		//get the rest and validate (optional)
+		$this->get_post_meta(false);
 		//anonymous submissions and guest basic info
 		if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && empty($this->event_id) ){
 			$this->event_owner_anonymous = 1;
 			$this->event_owner_name = !empty($_POST['event_owner_name']) ? wp_kses_data(wp_unslash($_POST['event_owner_name'])):'';
 			$this->event_owner_email = !empty($_POST['event_owner_email']) ? wp_kses_data($_POST['event_owner_email']):'';
+			if( empty($this->location_id) && !($this->location_id === 0 && !get_option('dbem_require_location',true)) ){
+				$this->get_location()->owner_anonymous = 1;
+				$this->location->owner_email = $this->event_owner_email;
+				$this->location->owner_name = $this->event_owner_name;
+			}
 		}
-		//get the rest and validate (optional)
-		$this->get_post_meta(false);
+		//validate and return results
 		$result = $validate ? $this->validate():true; //validate both post and meta, otherwise return true
 		return apply_filters('em_event_get_post', $result, $this);
 	}
@@ -1120,13 +1126,21 @@ class EM_Event extends EM_Object{
 				}
 			}
 			$result = count($this->errors) == 0;
-			//If we're saving event categories in MS Global mode, we'll add them here, saving by term id (cat ids are gone now)
-			if( EM_MS_GLOBAL && get_option('dbem_categories_enabled') ){ //EM_MS_Globals should look up original blog 
-    			if( !is_main_site() ){
-    				$this->get_categories()->save(); //it'll know what to do
-    			}else{
-    				$this->get_categories()->save_index(); //just save to index, we assume cats are saved in $this->save();
-    			}
+			//deal with categories
+			if( get_option('dbem_categories_enabled') ){
+				if( EM_MS_GLOBAL ){ //EM_MS_Globals should look up original blog
+					//If we're saving event categories in MS Global mode, we'll add them here, saving by term id (cat ids are gone now)
+	                if( !is_main_site() ){
+	                    $this->get_categories()->save(); //it'll know what to do
+	                }else{
+	                    $this->get_categories()->save_index(); //just save to index, we assume cats are saved in $this->save();
+	                }
+				}elseif( get_option('dbem_default_category') > 0 ){
+					//double-check for default category in other instances
+					if( count($this->get_categories()) == 0 ){
+						$this->get_categories()->save(); //let the object deal with this...
+					}
+				}
 			}
 		    $this->compat_keys(); //compatability keys, loaded before saving recurrences
 			//build recurrences if needed
@@ -1748,7 +1762,8 @@ class EM_Event extends EM_Object{
 				$attString = $this->event_attributes[$attRef];
 			}elseif( !empty($results[3][$resultKey]) ){
 				//Check to see if we have a second set of braces;
-				$attString = $results[3][$resultKey];
+				$attStringArray = explode('|', $results[3][$resultKey]);
+				$attString = $attStringArray[0];
 			}elseif( !empty($attributes['values'][$attRef][0]) ){
 			    $attString = $attributes['values'][$attRef][0];
 			}
@@ -1794,6 +1809,9 @@ class EM_Event extends EM_Object{
 						$show_condition = $this->event_timezone == EM_DateTimeZone::create()->getName();
 					}elseif ($condition == 'all_day'){
 						//is it an all day event
+						$show_condition = !empty($this->event_all_day);
+					}elseif ($condition == 'not_all_day'){
+						//is not an all day event
 						$show_condition = !empty($this->event_all_day);
 					}elseif ($condition == 'logged_in'){
 						//user is logged in
@@ -2335,12 +2353,20 @@ class EM_Event extends EM_Object{
 		
 		if( get_option('dbem_categories_enabled') ){
     		//for backwards compat and easy use, take over the individual category placeholders with the frirst cat in th elist.
-    		$EM_Categories = $this->get_categories();
-    		if( count($EM_Categories->categories) > 0 ){
-    			$EM_Category = $EM_Categories->get_first();
+    		if( count($this->get_categories()) > 0 ){
+    			$EM_Category = $this->get_categories()->get_first();
     		}
     		if( empty($EM_Category) ) $EM_Category = new EM_Category();
     		$event_string = $EM_Category->output($event_string, $target);
+		}
+		
+		if( get_option('dbem_tags_enabled') ){
+			$EM_Tags = new EM_Tags($this);
+			if( count($EM_Tags) > 0 ){
+				$EM_Tag = $EM_Tags->get_first();
+			}
+			if( empty($EM_Tag) ) $EM_Tag = new EM_Tag();
+			$event_string = $EM_Tag->output($event_string, $target);
 		}
 		
 		//Finally, do the event notes, so that previous placeholders don't get replaced within the content, which may use shortcodes
@@ -2826,10 +2852,10 @@ class EM_Event extends EM_Object{
 		switch ( $this->recurrence_freq ){ /* @var EM_DateTime $current_date */
 			case 'daily':
 				//If daily, it's simple. Get start date, add interval timestamps to that and create matching day for each interval until end date.
-				$current_date = $start_date;
-				while( $current_date <= $end_date ){
-					$matching_days[] = $current_date;
-					$current_date = $current_date + (DAY_IN_SECONDS * $this->recurrence_interval);
+				$current_date = $this->start()->copy()->setTime(0,0,0);
+				while( $current_date->getTimestamp() <= $end_date ){
+					$matching_days[] = $current_date->getTimestamp();
+					$current_date->add('P'. $this->recurrence_interval .'D');
 				}
 				break;
 			case 'weekly':
@@ -2847,11 +2873,12 @@ class EM_Event extends EM_Object{
 				//for each day of eventful days in week 1, add 7 days * weekly intervals
 				foreach ($start_weekday_dates as $weekday_date){
 					//Loop weeks by interval until we reach or surpass end date
-					while($weekday_date <= $end_date){
-						if( $weekday_date >= $start_date && $weekday_date <= $end_date ){
-							$matching_days[] = $weekday_date;
+					$current_date->setTimestamp($weekday_date);
+					while($current_date->getTimestamp() <= $end_date){
+						if( $current_date->getTimestamp() >= $start_date && $current_date->getTimestamp() <= $end_date ){
+							$matching_days[] = $current_date->getTimestamp();
 						}
-						$weekday_date = $weekday_date + (WEEK_IN_SECONDS *  $this->recurrence_interval);
+						$current_date->add('P'. ($this->recurrence_interval * 7 ) .'D');
 					}
 				}//done!
 				break;  

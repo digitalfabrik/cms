@@ -316,12 +316,15 @@ function em_options_save(){
 	
 	//update scripts that may need to run
 	$blog_updates = is_multisite() ? array_merge(EM_Options::get('updates'), EM_Options::site_get('updates')) : EM_Options::get('updates');
-	foreach( $blog_updates as $update => $update_data ){
-		$filename = EM_DIR.'/admin/settings/updates/'.$update.'.php';
-		if( file_exists($filename) ) include_once($filename);
-		do_action('em_admin_update_'.$update, $update_data);
+	if( is_array($blog_updates) ) {
+		foreach ( $blog_updates as $update => $update_data ) {
+			$filename = EM_DIR . '/admin/settings/updates/' . $update . '.php';
+			if ( file_exists( $filename ) ) {
+				include_once( $filename );
+			}
+			do_action( 'em_admin_update_' . $update, $update_data );
+		}
 	}
-	
 }
 add_action('admin_init', 'em_options_save');
 
@@ -920,5 +923,76 @@ function em_admin_option_box_uninstall(){
 		</div>
 	</div>
 	<?php	
+}
+
+/**
+ * Meta options box for privacy and data protection rules for GDPR (and other dp laws) compliancy
+ */
+function em_admin_option_box_data_privacy(){
+	global $save_button;
+	$privacy_options = array(
+		0 => __('Do not include', 'events-manager'),
+		1 => __('Include all', 'events-manager'),
+		2 => __('Include only guest submissions', 'events-manager')
+	);
+	?>
+    <div  class="postbox " id="em-opt-data-privacy" >
+        <div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Privacy', 'events-manager'); ?> </span></h3>
+        <div class="inside">
+            <p class="em-boxheader"><?php echo sprintf(__('Depending on the nature of your site, you will be subject to one or more national and international privacy/data protection laws such as the %s. Below are some options that you can use to tailor how Events Manager interacts with WordPress privacy tools.','events-manager'), '<a href=http://ec.europa.eu/justice/smedataprotect/index_en.htm">GDPR</a>'); ?></p>
+            <p class="em-boxheader"><?php echo sprintf(__('For more information see our <a href="%s">data privacy documentation</a>.','events-manager'), 'http://wp-events-plugin.com/documentation/data-privacy-gdpr-compliance/'); ?></p>
+            <p class="em-boxheader"><?php echo __('All options below relate to data that may have been submitted by or collected from the user requesting their personal data, which would also include events and locations where they are the author.', 'events-manager'); ?></p>
+            <table class='form-table'>
+                <thead>
+                    <tr class="em-header">
+                        <th colspan="2"><h4><?php esc_html_e('Export Personal Data'); ?></h4></th>
+                    </tr>
+                </thead>
+				<?php
+				em_options_select ( __( 'Events', 'events-manager'), 'dbem_data_privacy_export_events', $privacy_options );
+				em_options_select ( __( 'Locations', 'events-manager'), 'dbem_data_privacy_export_locations', $privacy_options, __('Locations submitted by guest users are not included, unless they are linked to events also submitted by them.', 'events-manager') );
+				em_options_select ( __( 'Bookings', 'events-manager'), 'dbem_data_privacy_export_bookings', $privacy_options, __('This is specific to bookings made by the user, not bookings that may have been made to events they own.', 'events-manager'), $privacy_options );
+				?>
+                <thead>
+                    <tr class="em-header">
+                        <th colspan="2"><h4><?php esc_html_e('Erase Personal Data'); ?></h4></th>
+                    </tr>
+                </thead>
+                <?php
+                em_options_select ( __( 'Events', 'events-manager'), 'dbem_data_privacy_erase_events', $privacy_options );
+                em_options_select ( __( 'Locations', 'events-manager'), 'dbem_data_privacy_erase_locations', $privacy_options, __('Locations submitted by guest users are not included, unless they are linked to events also submitted by them.', 'events-manager') );
+                em_options_select ( __( 'Bookings', 'events-manager'), 'dbem_data_privacy_erase_bookings', $privacy_options, __('This is specific to bookings made by the user, not bookings that may have been made to events they own.', 'events-manager'), $privacy_options );
+                ?>
+                <thead>
+                    <tr class="em-header">
+                        <th colspan="2">
+                            <h4><?php esc_html_e('Consent', 'events-manager'); ?></h4>
+                            <p><?php esc_html_e('If you collect personal data, you may want to request their consent. The options below will automatically add checkboxes requesting this consent.', 'events-manager'); ?></p>
+                        </th>
+                    </tr>
+                </thead>
+                <?php
+                $consent_options = array(
+                    0 => __('Do not show', 'events-manager'),
+                    1 => __('Show to all', 'events-manager'),
+                    2 => __('Only show to guests', 'events-manager')
+                );
+                $consent_remember = array(
+	                0 => __('Always show and ask for consent', 'events-manager'),
+                	1 => __('Remember and hide checkbox', 'events-manager'),
+	                2 => __('Remember and show checkbox', 'events-manager')
+                );
+                em_options_input_text( __('Consent Text', 'events-manager'), 'dbem_data_privacy_consent_text', __('%s will be replaced by a link to your site privacy policy page.', 'events-manager') );
+                em_options_select( __('Remembering Consent', 'events-manager'), 'dbem_data_privacy_consent_remember', $consent_remember, __('You can hide or leave the consent box checked for registered users who have provided consent previously.', 'events-manager') );
+                em_options_select( __( 'Event Submission Forms', 'events-manager'), 'dbem_data_privacy_consent_events', $privacy_options );
+                em_options_select( __( 'Location Submission Forms', 'events-manager'), 'dbem_data_privacy_consent_locations', $privacy_options );
+                em_options_select( __( 'Bookings Forms', 'events-manager'), 'dbem_data_privacy_consent_bookings', $privacy_options );
+
+                echo $save_button;
+                ?>
+            </table>
+        </div> <!-- . inside -->
+    </div> <!-- .postbox -->
+	<?php
 }
 ?>

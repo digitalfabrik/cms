@@ -25,7 +25,7 @@ if( !empty($_REQUEST['success']) ){
 ?>	
 <form enctype='multipart/form-data' id="event-form" class="em-event-admin-editor <?php if( $EM_Event->is_recurring() ) echo 'em-event-admin-recurring' ?>" method="post" action="<?php echo esc_url(add_query_arg(array('success'=>null))); ?>">
 	<div class="wrap">
-		<?php do_action('em_front_event_form_header'); ?>
+		<?php do_action('em_front_event_form_header', $EM_Event); ?>
 		<?php if(get_option('dbem_events_anonymous_submissions') && !is_user_logged_in()): ?>
 			<h3 class="event-form-submitter"><?php esc_html_e( 'Your Details', 'events-manager'); ?></h3>
 			<div class="inside event-form-submitter">
@@ -102,7 +102,7 @@ if( !empty($_REQUEST['success']) ){
 		<!-- END Bookings -->
 		<?php endif; ?>
 		
-		<?php do_action('em_front_event_form_footer'); ?>
+		<?php do_action('em_front_event_form_footer', $EM_Event); ?>
 	</div>
 	<p class="submit">
 	    <?php if( empty($EM_Event->event_id) ): ?>

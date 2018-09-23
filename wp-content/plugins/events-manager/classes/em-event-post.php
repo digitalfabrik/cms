@@ -7,7 +7,6 @@
 class EM_Event_Post {
 	
 	public static function init(){
-		global $wp_query;
 		//Front Side Modifiers
 		if( !is_admin() ){
 			//override single page with formats? 
@@ -41,7 +40,7 @@ class EM_Event_Post {
 	}
 	
 	public static function publish_future_post($post_id){
-		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
+		global $EM_Event;
 		$post_type = get_post_type($post_id);
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
