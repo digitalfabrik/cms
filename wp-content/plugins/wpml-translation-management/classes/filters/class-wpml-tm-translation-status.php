@@ -50,7 +50,7 @@ class WPML_TM_Translation_Status {
 			}
 		}
 
-		return false !== $new_status ? $new_status : $status;
+		return (int) ( false !== $new_status ? $new_status : $status );
 	}
 
 	public function reload(){

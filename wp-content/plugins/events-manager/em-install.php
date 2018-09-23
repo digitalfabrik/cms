@@ -496,23 +496,23 @@ function em_add_options() {
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
-	<strong>'.__('Date/Time','events-manager').'</strong><br/>
+	<strong>'.esc_html__('Date/Time','events-manager').'</strong><br/>
 	Date(s) - #_EVENTDATES<br /><i>#_EVENTTIMES</i>
 </p>
 {has_location}
 <p>
-	<strong>'.__('Location','events-manager').'</strong><br/>
+	<strong>'.esc_html__('Location','events-manager').'</strong><br/>
 	#_LOCATIONLINK
 </p>
 {/has_location}
 <p>
-	<strong>'.__('Categories','events-manager').'</strong>
+	<strong>'.esc_html__('Categories','events-manager').'</strong>
 	#_CATEGORIES
 </p>
 <br style="clear:both" />
 #_EVENTNOTES
 {has_bookings}
-<h3>Bookings</h3>
+<h3>'.esc_html__('Bookings','events-manager').'</h3>
 #_BOOKINGFORM
 {/has_bookings}',
 	    'dbem_event_excerpt_format' => '#_EVENTDATES @ #_EVENTTIMES - #_EVENTEXCERPT',
@@ -603,18 +603,17 @@ function em_add_options() {
 		'dbem_tag_event_list_order' => 'ASC',
 		'dbem_tag_default_color' => '#a8d145',
 		//RSS Stuff
-		'dbem_rss_limit' => 0,
+		'dbem_rss_limit' => 50,
 		'dbem_rss_scope' => 'future',
 		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events', 'events-manager'),
 		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events', 'events-manager'),
 		'dbem_rss_description_format' => "#_EVENTDATES - #_EVENTTIMES <br/>#_LOCATIONNAME <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_EVENTNAME",
-		'dbem_rss_scope' =>'future',
 		'dbem_rss_order' => get_option('dbem_events_default_order', 'ASC'), //get event order and orderby or use same new installation defaults
 		'dbem_rss_orderby' => get_option('dbem_events_default_orderby', 'event_start_date,event_start_time,event_name'),
 		'em_rss_pubdate' => date('D, d M Y H:i:s +0000'),
 		//iCal Stuff
-		'dbem_ical_limit' => 0,
+		'dbem_ical_limit' => 50,
 		'dbem_ical_scope' => "future",
 		'dbem_ical_description_format' => "#_EVENTNAME",
 		'dbem_ical_real_description_format' => "#_EVENTEXCERPT",
@@ -823,7 +822,19 @@ function em_add_options() {
 	    //feedback reminder
 	    'dbem_feedback_reminder' => time(),
 	    'dbem_events_page_ajax' => 0,
-	    'dbem_conditional_recursions' => 1
+	    'dbem_conditional_recursions' => 1,
+        //data privacy/protection
+        'dbem_data_privacy_consent_text' => esc_html__('I consent to my submitted data being collected and stored as outlined by the site %s.','events-manager'),
+        'dbem_data_privacy_consent_remember' => 1,
+		'dbem_data_privacy_consent_events' => 1,
+		'dbem_data_privacy_consent_locations' => 1,
+		'dbem_data_privacy_consent_bookings' => 1,
+		'dbem_data_privacy_export_events' => 1,
+		'dbem_data_privacy_export_locations' => 1,
+		'dbem_data_privacy_export_bookings' => 1,
+		'dbem_data_privacy_erase_events' => 1,
+		'dbem_data_privacy_erase_locations' => 1,
+		'dbem_data_privacy_erase_bookings' => 1
 	);
 	
 	//do date js according to locale:
@@ -1065,6 +1076,19 @@ function em_upgrade_current_installation(){
 		'where' => 'all',
 		'message' => $message
 		));
+		EM_Admin_Notices::add($EM_Admin_Notice, is_multisite());
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.93 ){
+		$message = __('Events Manager has introduced new privacy tools to help you comply with international laws such as the GDPR, <a href="%s">see our documentation</a> for more information.','events-manager');
+		$message = sprintf( $message, 'https://wp-events-plugin.com/documentation/data-privacy-gdpr-compliance/?utm_source=plugin&utm_campaign=gdpr_update');
+		$EM_Admin_Notice = new EM_Admin_Notice(array( 'name' => 'gdpr_update', 'who' => 'admin', 'where' => 'all', 'message' => $message ));
+		EM_Admin_Notices::add($EM_Admin_Notice, is_multisite());
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.95 ){
+		$message = esc_html__('Google has introduced new pricing for displaying maps on your site. If you have moderate traffic levels, this may likely affect you with surprise and unexpected costs!', 'events-manager');
+		$message2 = esc_html__('Events Manager has implemented multiple ways to help prevent or reduce these costs drastically, please check our %s page for more information.', 'events-manager');
+		$message2 = sprintf($message2, '<a href="https://wp-events-plugin.com/documentation/google-maps/api-usage/?utm_source=plugin&utm_source=medium=settings&utm_campaign=gmaps-update">'.esc_html__('documentation', 'events-manager') .'</a>');
+		$EM_Admin_Notice = new EM_Admin_Notice(array( 'name' => 'gdpr_update', 'who' => 'admin', 'where' => 'all', 'message' => "<p>$message</p><p>$message2</p>" ));
 		EM_Admin_Notices::add($EM_Admin_Notice, is_multisite());
 	}
 }

@@ -27,27 +27,27 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 		$this->tm_api            = &$tm_api;
 		$this->post_link_factory = &$post_link_factory;
 
-		$this->post_types       = $sitepress->get_translatable_documents( true );
-		$this->post_types       = apply_filters( 'wpml_get_translatable_types', $this->post_types );
+		$this->post_types = $sitepress->get_translatable_documents( true );
+		$this->post_types = apply_filters( 'wpml_get_translatable_types', $this->post_types );
 	}
 
 	public function get() {
 		$model = array();
 
-		$model[ 'strings' ] = array( 'job_id'    => __( 'Job ID', 'wpml-translation-management' ),
-									 'title'     => __( 'Title', 'wpml-translation-management' ),
-									 'type'      => __( 'Type', 'wpml-translation-management' ),
-									 'language'  => __( 'Language', 'wpml-translation-management' ),
-									 'status'    => __( 'Translation status', 'wpml-translation-management' ),
-									 'deadline'  => __( 'Deadline', 'wpml-translation-management' ),
-									 'check_all' => __( 'Check all', 'wpml-translation-management' ),
-									 'confirm'   => __( 'Are you sure you want to resign from this job?', 'wpml-translation-management' ),
-								   );
+		$model['strings'] = array(
+			'job_id'    => __( 'Job ID', 'wpml-translation-management' ),
+			'title'     => __( 'Title', 'wpml-translation-management' ),
+			'type'      => __( 'Type', 'wpml-translation-management' ),
+			'language'  => __( 'Language', 'wpml-translation-management' ),
+			'status'    => __( 'Translation status', 'wpml-translation-management' ),
+			'deadline'  => __( 'Deadline', 'wpml-translation-management' ),
+			'check_all' => __( 'Check all', 'wpml-translation-management' ),
+			'confirm'   => __( 'Are you sure you want to resign from this job?', 'wpml-translation-management' ),
+		);
 
-		$model[ 'jobs' ] = array();
+		$model['jobs'] = array();
 
-
-		foreach( $this->translation_jobs as $job ) {
+		foreach ( $this->translation_jobs as $job ) {
 			$job->post_title   = apply_filters( 'the_title', $job->post_title );
 			$job->tm_post_link = $this->get_post_link( $job );
 			$job->post_type    = $this->get_post_type( $job );
@@ -59,7 +59,7 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 			$job->resign_text  = $this->get_resign_text( $job );
 			$job->resign_url   = $this->get_resign_url( $job );
 
-			$model[ 'jobs' ][] = $job;
+			$model['jobs'][] = $job;
 		}
 
 		return $model;
@@ -78,11 +78,16 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 		$original_element_type = $job->original_post_type;
 		$original_element_type = explode( '_', $original_element_type );
 		if ( count( $original_element_type ) > 1 ) {
-			unset( $original_element_type[ 0 ] );
+			unset( $original_element_type[0] );
 		}
 		$original_element_type = join( '_', $original_element_type );
 
-		$tm_post_link = apply_filters( 'wpml_document_view_item_link', $tm_post_link, $view_original_text, $job, $element_type_prefix, $original_element_type );
+		$tm_post_link = apply_filters( 'wpml_document_view_item_link',
+		                               $tm_post_link,
+		                               $view_original_text,
+		                               $job,
+		                               $element_type_prefix,
+		                               $original_element_type );
 
 		return $tm_post_link;
 	}
@@ -101,7 +106,7 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 					break;
 			}
 
-			if ( isset( $this->post_types[ $type ]) ) {
+			if ( isset( $this->post_types[ $type ] ) ) {
 				$name = $this->post_types[ $type ]->labels->singular_name;
 			}
 
@@ -113,8 +118,8 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 
 	private function get_status_text( $job ) {
 		$status = $this->tm_api->get_translation_status_label( $job->status );
-		if($job->needs_update) {
-			$status .= __(' - (needs update)', 'wpml-translation-management');
+		if ( $job->needs_update ) {
+			$status .= __( ' - (needs update)', 'wpml-translation-management' );
 		}
 
 		return $status;
@@ -123,7 +128,10 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 	private function get_edit_url( $job ) {
 		$edit_url = '';
 		if ( $job->original_doc_id ) {
-			$translation_queue_page = admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php&job_id=' . $job->job_id );
+			$translation_queue_page = admin_url( 'admin.php?page='
+			                                     . WPML_TM_FOLDER
+			                                     . '/menu/translations-queue.php&job_id='
+			                                     . $job->job_id );
 			$edit_url               = apply_filters( 'icl_job_edit_url', $translation_queue_page, $job->job_id );
 		}
 
@@ -132,10 +140,13 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 
 	private function get_button_text( $job ) {
 
-		$needs_edit  = in_array( $job->status, array( ICL_TM_WAITING_FOR_TRANSLATOR, ICL_TM_IN_PROGRESS, ICL_TM_COMPLETE ) );
-		$is_editable = $job->translator_id > 0 && $needs_edit;
+		$job_status  = (int) $job->status;
+		$needs_edit  = in_array( $job_status,
+		                         array( ICL_TM_WAITING_FOR_TRANSLATOR, ICL_TM_IN_PROGRESS, ICL_TM_COMPLETE ),
+		                         true );
+		$is_editable = ( (int) $job->translator_id ) > 0 && $needs_edit;
 		if ( $is_editable ) {
-			if ( $job->status == ICL_TM_COMPLETE ) {
+			if ( $job_status == ICL_TM_COMPLETE ) {
 				$button_text = __( 'Edit', 'wpml-translation-management' );
 			} else {
 				$button_text = __( 'Translate', 'wpml-translation-management' );
@@ -148,15 +159,20 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 	}
 
 	private function get_resign_text( $job ) {
-		return $this->is_doing_job( $job ) ? __('Resign', 'wpml-translation-management') : '';
+		return $this->is_doing_job( $job ) ? __( 'Resign', 'wpml-translation-management' ) : '';
 	}
 
-	private function is_doing_job( $job	) {
-        return $job->translator_id > 0 && ( $job->status == ICL_TM_WAITING_FOR_TRANSLATOR || $job->status == ICL_TM_IN_PROGRESS );
+	private function is_doing_job( $job ) {
+		return $job->translator_id > 0
+		       && ( $job->status == ICL_TM_WAITING_FOR_TRANSLATOR
+		            || $job->status == ICL_TM_IN_PROGRESS );
 	}
 
 	private function get_resign_url( $job ) {
-		return admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/translations-queue.php&icl_tm_action=save_translation&resign=1&job_id=' . $job->job_id );
+		return admin_url( 'admin.php?page='
+		                  . WPML_TM_FOLDER
+		                  . '/menu/translations-queue.php&icl_tm_action=save_translation&resign=1&job_id='
+		                  . $job->job_id );
 	}
 
 }

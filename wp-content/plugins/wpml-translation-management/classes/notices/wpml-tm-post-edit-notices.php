@@ -22,16 +22,20 @@ class WPML_TM_Post_Edit_Notices {
 	/** @var WPML_TM_Translation_Status_Display $status_display */
 	private $status_display;
 
+	/** @var WPML_Translation_Element_Factory $element_factory */
+	private $element_factory;
+
 	/** @var bool $use_translation_editor */
 	private $use_translation_editor;
 
 	/**
-	 * @param WPML_Post_Status              $post_status
-	 * @param SitePress                     $sitepress
-	 * @param IWPML_Template_Service        $template_render
-	 * @param WPML_Super_Globals_Validation $super_globals
+	 * @param WPML_Post_Status                   $post_status
+	 * @param SitePress                          $sitepress
+	 * @param IWPML_Template_Service             $template_render
+	 * @param WPML_Super_Globals_Validation      $super_globals
 	 * @param WPML_TM_Translation_Status_Display $status_display
-	 * @param bool                          $use_translation_editor
+	 * @param WPML_Translation_Element_Factory   $element_factory
+	 * @param bool                               $use_translation_editor
 	 */
 	public function __construct(
 		WPML_Post_Status $post_status,
@@ -39,6 +43,7 @@ class WPML_TM_Post_Edit_Notices {
 		IWPML_Template_Service $template_render,
 		WPML_Super_Globals_Validation $super_globals,
 		WPML_TM_Translation_Status_Display $status_display,
+		WPML_Translation_Element_Factory $element_factory,
 		$use_translation_editor
 	) {
 		$this->post_status            = $post_status;
@@ -46,6 +51,7 @@ class WPML_TM_Post_Edit_Notices {
 		$this->template_render        = $template_render;
 		$this->super_globals          = $super_globals;
 		$this->status_display         = $status_display;
+		$this->element_factory        = $element_factory;
 		$this->use_translation_editor = $use_translation_editor;
 	}
 
@@ -88,7 +94,7 @@ class WPML_TM_Post_Edit_Notices {
 			return;
 		}
 
-		$post_element = new WPML_Post_Element( $post_id, $this->sitepress );
+		$post_element = $this->element_factory->create( $post_id, 'post' );
 		$is_original  = ! $post_element->get_source_language_code();
 
 		if ( ! $trid ) {

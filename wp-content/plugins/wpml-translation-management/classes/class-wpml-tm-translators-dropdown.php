@@ -6,15 +6,15 @@
 class WPML_TM_Translators_Dropdown {
 
 	/**
-	 * @var WPML_TM_Blog_Translators @translators
+	 * @var WPML_TM_Blog_Translators $blog_translators
 	 */
-	private $translators;
+	private $blog_translators;
 
 	/**
 	 * @param WPML_TM_Blog_Translators $blog_translators
 	 */
 	public function __construct( $blog_translators ) {
-		$this->translators = $blog_translators;
+		$this->blog_translators = $blog_translators;
 	}
 
 	/**
@@ -112,7 +112,7 @@ class WPML_TM_Translators_Dropdown {
 					'ID'           => 0,
 					'display_name' => __( 'First available', 'wpml-translation-management' ),
 				);
-				$translators   = array_merge( $translators, TranslationManagement::get_blog_translators( array(
+				$translators   = array_merge( $translators, $this->blog_translators->get_blog_translators( array(
 					'from' => $from,
 					'to'   => $to
 				) ) );
@@ -137,10 +137,10 @@ class WPML_TM_Translators_Dropdown {
 
 				$dropdown_selected = selected( $selected, $current_translator, false );
 				$dropdown .= '<option value="' . $current_translator . '" ' . $dropdown_selected . '>';
-				$dropdown .= esc_html( $t->display_name );
+				$dropdown .= isset( $t->service ) ? $t->service : esc_html__( 'Local', 'wpml-translation-management' );
 				if ( $show_service ) {
 					$dropdown .= ' (';
-					$dropdown .= isset( $t->service ) ? $t->service : esc_html__( 'Local', 'wpml-translation-management' );
+					$dropdown .= esc_html( $t->display_name );
 					$dropdown .= ')';
 				}
 				$dropdown .= '</option>';

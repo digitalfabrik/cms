@@ -1,6 +1,6 @@
 /*jshint browser:true, devel:true */
 /*global _, jQuery, ajaxurl, icl_ajx_url, icl_ajxloaderimg, wpActiveEditor, tinyMCE,
- tinymce, icl_thickbox_reopen, icl_tb_init, icl_tb_set_size, iclSaveForm,
+ tinymce, iclSaveForm,
  tmEditorStrings, WPML_TM.editorFooterView, WPML_TM.editorHeaderView,
  WpmlTmEditorMainView,
  WpmlTranslationEditorTemplates, WpmlTemplateCompiler */
@@ -208,4 +208,6 @@ jQuery(document).ready(function () {
     tmEditor.update_copy_link_visibility();
 
     jQuery(window).trigger('customEvent');
+
 });
+

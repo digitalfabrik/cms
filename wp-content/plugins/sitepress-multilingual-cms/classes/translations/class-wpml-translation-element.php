@@ -191,6 +191,11 @@ abstract class WPML_Translation_Element extends WPML_SP_User {
 		$this->wpml_cache->flush_group_cache();
 	}
 
+	/** @return bool */
+	public function is_in_default_language() {
+		return $this->get_language_code() === $this->sitepress->get_default_language();
+	}
+
 	abstract function is_translatable();
 	abstract function is_display_as_translated();
 

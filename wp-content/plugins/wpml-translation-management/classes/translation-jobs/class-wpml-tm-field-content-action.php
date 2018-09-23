@@ -13,7 +13,7 @@ class WPML_TM_Field_Content_Action extends WPML_TM_Job_Factory_User {
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function __construct( &$job_factory, $job_id ) {
+	public function __construct( $job_factory, $job_id ) {
 		parent::__construct( $job_factory );
 		if ( ! ( is_int( $job_id ) && $job_id > 0 ) ) {
 			throw new InvalidArgumentException( 'Invalid job id provided, received: ' . serialize( $job_id ) );

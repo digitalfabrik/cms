@@ -1,21 +1,29 @@
 jQuery(document).ready(function () {
-	jQuery( '.js-otgs-components-report-user-choice' ).click(function () {
-		var spinner = jQuery(this).parent().prev();
+	var container = jQuery('.otgs-installer-component-setting');
+	container.find('.js-otgs-components-report-user-choice').click(function () {
+		var spinner = container.find('.spinner');
 
 		spinner.addClass('is-active');
 
+		var element = jQuery(this);
+
+		var agree = element.is(':checked') ? 1 : 0;
+		if (element.is(':radio')) {
+			agree = element.val();
+		}
+
 		jQuery.ajax({
-			url: ajaxurl,
-			type: 'POST',
-			data: {
-				action: jQuery(this).data('nonce-action'),
-				nonce: jQuery(this).data('nonce-value'),
-				agree: jQuery(this).is(':checked') ? 1 : 0,
-				repo: jQuery(this).data('repo')
-			},
-			success: function () {
-				spinner.removeClass('is-active');
-			}
-		});
+									url:     ajaxurl,
+									type:    'POST',
+									data:    {
+										action: element.data('nonce-action'),
+										nonce:  element.data('nonce-value'),
+										agree:  agree,
+										repo:   element.data('repo'),
+									},
+									success: function () {
+										spinner.removeClass('is-active');
+									},
+								});
 	});
 });

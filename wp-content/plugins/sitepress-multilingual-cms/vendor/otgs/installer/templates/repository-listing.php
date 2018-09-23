@@ -33,52 +33,80 @@
                 <input type="hidden" name="nonce" value="<?php echo wp_create_nonce('save_site_key_' . $repository_id) ?>" />
                 <input type="hidden" name="repository_id" value="<?php echo $repository_id ?>">
 
-                <p >
-	                <?php
-	                $repo_site = str_replace( array(
-		                'https://',
-		                'http://'
-	                ), '', $this->settings['repositories'][ $repository_id ]['data']['url'] );
+					<?php
+					$repo_site = str_replace( array(
+												  'https://',
+												  'http://'
+											  ),
+											  '',
+											  $this->settings['repositories'][ $repository_id ]['data']['url'] );
 
-	                printf(
-		                __( '1. Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise', 'installer' ),
-		                str_replace( array(
-			                'https://',
-			                'http://'
-		                ), '', $this->get_installer_site_url( $repository_id ) ),
-		                '<a target="_blank" href="'. $this->settings['repositories'][ $repository_id ]['data']['site_keys_management_url'] . '?add=' . urlencode( $this->get_installer_site_url( $repository_id ) ) . '">' . __( 'your account', 'installer' ) . '</a>'
-	                );
-	                ?>
-	                <a target="_blank"
-	                   href="<?php echo $this->settings['repositories'][ $repository_id ]['data']['url'] ?>"> <?php printf( esc_attr( 'register on %s.', 'installer' ), $repo_site ) ?> </a>
-                </p>
+					$current_site_domain = str_replace( array(
+															'https://',
+															'http://'
+														),
+														'',
+														$this->get_installer_site_url( $repository_id ) );
 
-                <p>
-	                <?php
-	                printf(
-		                __( '2. Insert your key and activate automatic updates:', 'installer' ),
-		                '<a href="' . $this->settings['repositories'][ $repository_id ]['data']['site_keys_management_url'] . '?add=' . urlencode( $this->get_installer_site_url( $repository_id ) ) . '">',
-		                $generic_product_name, '</a>', $this->get_installer_site_url( $repository_id )
-	                );
-	                ?>
-									<span class="otgs-installer-register-inputs">
-										<input type="text" size="20" name="site_key_<?php echo $repository_id ?>" placeholder="<?php echo esc_attr('site key') ?>" />
-										<input class="button-primary" type="submit" value="<?php esc_attr_e('OK', 'installer') ?>" />
-										<input class="button-secondary cancel_site_key_js" type="button" value="<?php esc_attr_e('Cancel registration', 'installer') ?>" />
-									</span>
-                </p>
+					$your_account_link = '<a target="_blank" rel="nofollow" href="'
+										 . $this->settings['repositories'][ $repository_id ]['data']['site_keys_management_url']
+										 . '?add='
+										 . urlencode( $this->get_installer_site_url( $repository_id ) )
+										 . '">'
+										 . __( 'your account', 'installer' )
+										 . '</a>';
 
-	            <?php
-	            $template_service            = new OTGS_Installer_Twig_Template_Service_Loader(
-		            array( WP_Installer()->plugin_path() . '/templates/components-setting/' )
-	            );
-	            $components_setting_template = new OTGS_Installer_WP_Components_Setting_Templates( $template_service->get_service() );
-	            $components_setting_template->render_commercial( $repo_site, $generic_product_name, $repository_id );
-	            ?>
+					$register_link = '<a target="_blank" rel="nofollow" href="'
+									 . $this->settings['repositories'][ $repository_id ]['data']['url']
+									 . '">'
+									 . sprintf( esc_attr( 'register on %s.', 'installer' ), $repo_site )
+									 . '</a>';
+
+					$steps = array(
+						1 => sprintf( __( 'Get your site-key for %1$s. If you already have a key, get it from %2$s. Otherwise, %3$s',
+										  'installer' ),
+									  $current_site_domain,
+									  $your_account_link,
+									  $register_link ),
+						2 => __( 'Insert your key and activate automatic updates:', 'installer' )
+							 . '<span class="otgs-installer-register-inputs">'
+							 . '<input type="text" size="20" name="site_key_'
+							 . $repository_id
+							 . '" placeholder="'
+							 . esc_attr( 'site key' )
+							 . '" />'
+							 . '<input class="button-primary" type="submit" value="'
+							 . esc_attr__( 'OK', 'installer' )
+							 . '" />'
+							 . '<input class="button-secondary cancel_site_key_js" type="button" value="'
+							 . esc_attr__( 'Cancel registration', 'installer' )
+							 . '" />'
+							 . '</span>'
+
+					);
+
+					$required_items_count = count( $steps );
+
+					$filtered_items = apply_filters( 'otgs_installer_repository_registration_steps', $steps, $repository_id );
+					if ( ! $filtered_items || ! is_array( $filtered_items ) || $required_items_count < 2 ) {
+						$filtered_items = $steps;
+					}
+
+					$steps = $filtered_items;
+					ksort( $steps );
+					?>
+	                <ol>
+					  <?php
+					  foreach ( $steps as $item ) {
+						  ?>
+				                <li>
+							<?php echo $item; ?>
+				                </li>
+						  <?php
+					  }
+					  ?>
+	                </ol>
                 </form>
-
-
-
 
             <?php
                 $site_key = false;

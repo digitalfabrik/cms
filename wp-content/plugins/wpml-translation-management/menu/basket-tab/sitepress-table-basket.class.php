@@ -88,6 +88,7 @@ class SitePress_Table_Basket extends SitePress_Table {
 			'type'      => __( 'Type', 'wpml-translation-management' ),
 			'status'    => __( 'Status', 'wpml-translation-management' ),
 			'languages' => __( 'Languages', 'wpml-translation-management' ),
+			'delete'    => '',
 		);
 
 		return $columns;
@@ -129,19 +130,25 @@ class SitePress_Table_Basket extends SitePress_Table {
 	}
 
 	function column_title( $item ) {
-		$qs                = $_GET;
-		$qs[ 'page' ]      = $_REQUEST[ 'page' ];
-		$qs[ 'action' ]    = 'delete';
-		$qs[ 'id' ]        = $item[ 'ID' ];
-		$qs[ 'item_type' ] = $item[ 'item_type' ];
+		return esc_html( $item['title'] );
+	}
+
+	/**
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	function column_delete( $item ) {
+		$qs              = $_GET;
+		$qs['page']      = $_REQUEST['page'];
+		$qs['action']    = 'delete';
+		$qs['id']        = $item['ID'];
+		$qs['item_type'] = $item['item_type'];
 
 		$new_qs = esc_attr( http_build_query( $qs ) );
 
-		$actions = array(
-			'delete' => sprintf( '<a href="?%s">%s</a>', $new_qs, __( 'Remove', 'wpml-translation-management' ) ),
-		);
-
-		return sprintf( '%1$s %2$s', esc_html($item[ 'title' ]), $this->row_actions( $actions ) );
+		return sprintf( '<a href="?%s" title="%s" class="otgs-ico-delete wpml-tm-delete"></a>',
+			$new_qs, __( 'Remove from Translation Basket', 'wpml-translation-management' ) );
 	}
 
 	function no_items() {
@@ -292,14 +299,22 @@ class SitePress_Table_Basket extends SitePress_Table {
 		}
 	}
 
+	function display_tablenav( $which ) {
+		return;
+	}
+
 	function display() {
 		parent::display();
-		$clear_basket_nonce = wp_create_nonce( 'clear_basket' );
-		?>
-		<a href="admin.php?page=<?php echo WPML_TM_FOLDER ?>/menu/main.php&sm=basket&clear_basket=1&clear_basket_nonce=<?php echo $clear_basket_nonce; ?>"
-		   class="button-secondary" name="clear-basket"><?php _e( 'Clear Basket',
-		                                                          'wpml-translation-management' ); ?></a>
-	<?php
+		if ( TranslationProxy_Basket::get_basket_items_count() ) {
+			$clear_basket_nonce = wp_create_nonce( 'clear_basket' );
+			?>
+			<a href="admin.php?page=<?php echo WPML_TM_FOLDER ?>/menu/main.php&sm=basket&clear_basket=1&clear_basket_nonce=<?php echo $clear_basket_nonce; ?>"
+			   class="button-secondary wpml-tm-clear-basket-button" name="clear-basket">
+				<i class="otgs-ico-delete"></i>
+				<?php _e( 'Clear Basket', 'wpml-translation-management' ); ?>
+			</a>
+			<?php
+		}
 	}
 
 }

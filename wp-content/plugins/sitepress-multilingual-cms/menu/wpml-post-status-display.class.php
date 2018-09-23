@@ -1,6 +1,10 @@
 <?php
 
 class WPML_Post_Status_Display {
+	const ICON_TRANSLATION_EDIT         = 'otgs-ico-edit';
+	const ICON_TRANSLATION_NEEDS_UPDATE = 'otgs-ico-refresh';
+	const ICON_TRANSLATION_ADD          = 'otgs-ico-add';
+
 	private $active_langs;
 
 	public function __construct( $active_languages ) {
@@ -10,22 +14,24 @@ class WPML_Post_Status_Display {
 	/**
 	 * Returns the html of a status icon.
 	 *
-	 * @param $link string Link the status icon is to point to.
-	 * @param $text string Hover text for the status icon.
-	 * @param $img  string Name of the icon image file to be used.
+	 * @param string $link Link the status icon is to point to.
+	 * @param string $text Hover text for the status icon.
+	 * @param string $img Name of the icon image file to be used.
+	 * @param string $css_class
 	 *
 	 * @return string
 	 */
-	private function render_status_icon( $link, $text, $img ) {
+	private function render_status_icon( $link, $text, $img, $css_class ) {
 
 		$icon_html = '<a href="' . esc_url( $link ) . '" title="' . esc_attr( $text ) . '">';
-		$icon_html .= '<img style="padding:1px;margin:2px;" border="0" src="'
-		              . ICL_PLUGIN_URL . '/res/img/'
-		              . esc_attr( $img ) . '" alt="'
-		              . esc_attr( $text ) . '" width="16" height="16"/>';
+		$icon_html .= $this->get_action_icon( $css_class, $text );
 		$icon_html .= '</a>';
 
 		return $icon_html;
+	}
+
+	private function get_action_icon( $css_class, $label ) {
+		return '<span class="' . $css_class . '" title="' . esc_attr( $label ) . '"></span>';
 	}
 
 	/**
@@ -39,33 +45,33 @@ class WPML_Post_Status_Display {
 	 * @return string
 	 */
 	public function get_status_html( $post_id, $lang ) {
-		list( $icon, $text, $link, $trid ) = $this->get_status_data( $post_id, $lang );
+		list( $icon, $text, $link, $trid, $css_class ) = $this->get_status_data( $post_id, $lang );
 		if ( ! did_action( 'wpml_pre_status_icon_display' ) ) {
 			do_action( 'wpml_pre_status_icon_display' );
 		}
-		$link = apply_filters( 'wpml_link_to_translation', $link, $post_id, $lang, $trid );
-		$icon = apply_filters( 'wpml_icon_to_translation', $icon, $post_id, $lang, $trid );
-		$text = apply_filters( 'wpml_text_to_translation', $text, $post_id, $lang, $trid );
+		$link = apply_filters( 'wpml_link_to_translation', $link, $post_id, $lang, $trid, $css_class );
+		$icon = apply_filters( 'wpml_icon_to_translation', $icon, $post_id, $lang, $trid, $css_class );
+		$text = apply_filters( 'wpml_text_to_translation', $text, $post_id, $lang, $trid, $css_class );
 
-		return $this->render_status_icon( $link, $text, $icon );
+		return $this->render_status_icon( $link, $text, $icon, $css_class );
 	}
 
 	public function get_status_data( $post_id, $lang ) {
 		global $wpml_post_translations;
 
-		$status_helper        = wpml_get_post_status_helper ();
-		$trid                 = $wpml_post_translations->get_element_trid ( $post_id );
-		$status               = $status_helper->get_status ( false, $trid, $lang );
-		$source_language_code = $wpml_post_translations->get_element_lang_code ( $post_id );
-		$correct_id           = $wpml_post_translations->element_id_in ( $post_id, $lang );
+		$status_helper        = wpml_get_post_status_helper();
+		$trid                 = $wpml_post_translations->get_element_trid( $post_id );
+		$status               = $status_helper->get_status( false, $trid, $lang );
+		$source_language_code = $wpml_post_translations->get_element_lang_code( $post_id );
+		$correct_id           = $wpml_post_translations->element_id_in( $post_id, $lang );
 
-		list( $icon, $text, $link ) = $status && $correct_id
-			? $this->generate_edit_allowed_data (
-				$correct_id,
-				$status_helper->needs_update ( $correct_id )
-			) : $this->generate_add_data ( $trid, $lang, $source_language_code, $post_id );
+		if ( $status && $correct_id ) {
+			list( $icon, $text, $link, $css_class ) = $this->generate_edit_allowed_data( $correct_id, $status_helper->needs_update( $correct_id ) );
+		} else {
+			list( $icon, $text, $link, $css_class ) = $this->generate_add_data( $trid, $lang, $source_language_code, $post_id );
+		}
 
-		return array( $icon, $text, $link, $trid );
+		return array( $icon, $text, $link, $trid, $css_class );
 	}
 
 	/**
@@ -80,14 +86,21 @@ class WPML_Post_Status_Display {
 
 		$lang_code    = $wpml_post_translations->get_element_lang_code( $post_id );
 		$post_type    = $wpml_post_translations->get_type( $post_id );
-		$icon         = $update && ! $wpml_post_translations->is_a_duplicate( $post_id ) ? 'needs-update.png' : 'edit_translation.png';
 
-		$text = sprintf (
-			$update
-				? __ ( 'Update %s translation', 'sitepress' )
-				: __ ( 'Edit the %s translation', 'sitepress' ),
-			$this->active_langs[ $lang_code ][ 'display_name' ]
-		);
+		$icon      = 'edit_translation.png';
+		$css_class = self::ICON_TRANSLATION_EDIT;
+		if ( $update && ! $wpml_post_translations->is_a_duplicate( $post_id ) ) {
+			$icon      = 'needs-update.png';
+			$css_class = self::ICON_TRANSLATION_NEEDS_UPDATE;
+		}
+
+		if ( $update ) {
+			$text = __( 'Update %s translation', 'sitepress' );
+		} else {
+			$text = __( 'Edit the %s translation', 'sitepress' );
+		}
+
+		$text = sprintf( $text, $this->active_langs[ $lang_code ]['display_name'] );
 
 		$link = 'post.php?' . http_build_query (
 				array( 'lang'      => $lang_code,
@@ -97,7 +110,7 @@ class WPML_Post_Status_Display {
 				)
 			);
 
-		return array( $icon, $text, $link );
+		return array( $icon, $text, $link, $css_class );
 	}
 
 	/**
@@ -112,13 +125,6 @@ class WPML_Post_Status_Display {
 	 * @return array
 	 */
 	private function generate_add_data( $trid, $lang_code, $source_language, $original_id ) {
-
-		$icon = 'add_translation.png';
-		$text = sprintf (
-			__ ( 'Add translation to %s', 'sitepress' ),
-			$this->active_langs[ $lang_code ][ 'display_name' ]
-		);
-
 		$link = 'post-new.php?' . http_build_query (
 				array(
 					'lang'        => $lang_code,
@@ -128,6 +134,11 @@ class WPML_Post_Status_Display {
 				)
 			);
 
-		return array( $icon, $text, $link );
+		return array(
+			'add_translation.png',
+			sprintf( __( 'Add translation to %s', 'sitepress' ), $this->active_langs[ $lang_code ]['display_name'] ),
+			$link,
+			self::ICON_TRANSLATION_ADD,
+		);
 	}
 }

@@ -1,7 +1,9 @@
 <?php
 // TODO make person details more secure and integrate with WP user data 
 class EM_Person extends WP_User{
-	
+
+    public $custom_user_fields = array();
+
 	function __construct( $person_id = false, $username = '', $blog_id='' ){
 		if( is_array($person_id) ){
 			if( array_key_exists('person_id',$person_id) ){
@@ -104,7 +106,17 @@ class EM_Person extends WP_User{
 		<?php
 		return apply_filters('em_person_display_summary', ob_get_clean(), $this);
 	}
-	
+
+	function get_summary(){
+	    $summary = array(
+            'dbem_phone' => array('name' => __('Name','events-manager'), 'value' => $this->get_name()),
+		    'user_name' => array('name' => __('Email','events-manager'), 'value' => $this->user_email),
+		    'user_email' => array('name' => __('Phone','events-manager'), 'value' => $this->phone),
+        );
+	    $summary = array_merge( $summary, $this->custom_user_fields );
+	    return apply_filters('em_person_get_summary', $summary, $this);
+    }
+
 	function get_name(){
 		$full_name = $this->first_name  . " " . $this->last_name ;
 		$full_name = wp_kses_data(trim($full_name));

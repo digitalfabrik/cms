@@ -17,6 +17,7 @@ class WPML_TM_Records {
 
 	/** @var WPML_Term_Translation $wpml_term_translations */
 	private $wpml_term_translations;
+	private $job_id;
 
 	public function __construct( $wpdb, $wpml_post_translations, $wpml_term_translations ) {
 		$this->wpdb                   = &$wpdb;

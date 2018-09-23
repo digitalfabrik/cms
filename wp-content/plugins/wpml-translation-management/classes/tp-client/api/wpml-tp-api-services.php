@@ -7,15 +7,23 @@
  */
 class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 
+	const ENDPOINT_SERVICES      = '/services.json';
+	const ENDPOINT_SERVICE       = '/services/{service_id}.json';
+	const ENDPOINT_LANGUAGES_MAP = '/services/{service_id}/language_identifiers.json';
+	const ENDPOINT_CUSTOM_FIELDS = '/services/{service_id}/custom_fields.json';
+
 	const TRANSLATION_MANAGEMENT_SYSTEM = 'tms';
-	const TRANSLATION_SERVICE = 'ts';
-	const CACHED_SERVICES_KEY_DATA = 'wpml_translation_services';
+	const PARTNER                       = 'partner';
+	const TRANSLATION_SERVICE           = 'ts';
+	const CACHED_SERVICES_KEY_DATA      = 'wpml_translation_services';
 	const CACHED_SERVICES_TRANSIENT_KEY = 'wpml_translation_services_list';
 	const CACHED_SERVICES_KEY_TIMESTAMP = 'wpml_translation_services_timestamp';
 
+	private $endpoint;
+
 	/** @return string */
 	protected function get_endpoint_uri() {
-		return '/services.json';
+		return $this->endpoint;
 	}
 
 	/** @return bool */
@@ -29,6 +37,8 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 * @return array
 	 */
 	public function get_all( $reload = false ) {
+		$this->endpoint = self::ENDPOINT_SERVICES;
+
 		$translation_services = $reload ? null : $this->get_cached_services();
 
 		if ( ! $translation_services ) {
@@ -110,17 +120,18 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	}
 
 	/**
+	 * @param bool $partner
 	 * @return array
 	 */
-	public function get_translation_services() {
-		return wp_list_filter( $this->get_all(), array( self::TRANSLATION_MANAGEMENT_SYSTEM => false ) );
+	public function get_translation_services( $partner = true ) {
+		return array_values( wp_list_filter( $this->get_all(), array( self::TRANSLATION_MANAGEMENT_SYSTEM => false, self::PARTNER => $partner ) ) );
 	}
 
 	/**
 	 * @return array
 	 */
 	public function get_translation_management_systems() {
-		return wp_list_filter( $this->get_all(), array( self::TRANSLATION_MANAGEMENT_SYSTEM => true ) );
+		return array_values( wp_list_filter( $this->get_all(), array( self::TRANSLATION_MANAGEMENT_SYSTEM => true ) ) );
 	}
 
 	/**
@@ -163,6 +174,9 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 */
 	private function get_one( $translation_service_id, $reload = false ) {
 		$translation_service = null;
+		if ( ! $translation_service_id ) {
+			return $translation_service;
+		}
 
 		/** @var array $translation_services */
 		$translation_services = $this->get_all( $reload );
@@ -175,8 +189,56 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 
 		if ( $translation_services ) {
 			$translation_service = current( $translation_services );
+		} else {
+			$translation_service = $this->get_unlisted_service( $translation_service_id );
 		}
 
 		return $translation_service;
+	}
+
+	/**
+	 * @param string $translation_service_id
+	 *
+	 * @return null|WPML_TP_Service
+	 */
+	private function get_unlisted_service( $translation_service_id ) {
+		$this->endpoint = self::ENDPOINT_SERVICE;
+		$service        = parent::get( array( 'service_id' => $translation_service_id ) );
+
+		if ( $service instanceof stdClass ) {
+			return new WPML_TP_Service( $service );
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param $service_id
+	 *
+	 * @return array
+	 */
+	public function get_languages_map( $service_id ) {
+		$this->endpoint = self::ENDPOINT_LANGUAGES_MAP;
+
+		$args = array(
+			'service_id' => $service_id,
+		);
+
+		return parent::get( $args );
+	}
+
+	/**
+	 * @param $service_id
+	 *
+	 * @return mixed
+	 */
+	public function get_custom_fields( $service_id ) {
+		$this->endpoint = self::ENDPOINT_CUSTOM_FIELDS;
+
+		$args = array(
+			'service_id' => $service_id,
+		);
+
+		return parent::get( $args );
 	}
 }

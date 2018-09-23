@@ -92,13 +92,21 @@ class WPML_Basket_Tab_Ajax {
 			$response               = $this->project && $has_remote_translators ? $this->project->commit_batch_job() : true;
 			$response               = ! empty( $this->project->errors ) ? false : $response;
 			if ( $response !== false && is_object( $response ) ) {
-				$response->call_to_action = '<strong>' . sprintf(
+				$response->call_to_action = sprintf(
 						__(
-							'You have sent items to %s. Please check if additional steps are required on their end',
+							'You\'ve sent the content for translation to %s. Please continue to their site, to make sure that the translation starts.',
 							'wpml-translation-management'
 						),
 						$this->project->current_service_name()
-					) . '</strong>';
+				);
+				$batch_url                = OTG_TRANSLATION_PROXY_URL . sprintf( '/projects/%d/external', $this->project->get_batch_job_id() );
+				$response->ts_batch_link  = array(
+					'href' => $batch_url,
+					'text' => sprintf( __( 'Continue to %s', 'wpml-translation-management' ),
+						$this->project->current_service_name()
+					),
+				);
+
 			}
 
 			$errors = $response === false && $this->project ? $this->project->errors : $errors;
