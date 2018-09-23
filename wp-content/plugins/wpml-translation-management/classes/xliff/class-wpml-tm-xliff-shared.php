@@ -5,6 +5,15 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	protected $error;
 
 	/**
+	 * @param $string
+	 *
+	 * @return mixed
+	 */
+	protected function replace_xliff_new_line_tag_with_new_line( $string ) {
+		return preg_replace( '/<br class="xliff-newline"\s*\/>/i', "\n", $string );
+	}
+
+	/**
 	 * @param SimpleXMLElement $xliff
 	 *
 	 * @return string
@@ -18,18 +27,18 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	/**
 	 * @param SimpleXMLElement $xliff
 	 *
-	 * @return stdClass|void|WP_Error
+	 * @return stdClass|WP_Error
 	 */
-	protected function get_job_for_xliff( $xliff ) {
+	public function get_job_for_xliff( SimpleXMLElement $xliff ) {
 		$identifier           = $this->identifier_from_xliff( $xliff );
-		$job_identifier_parts = explode( '-', (string) $identifier );
-		if ( sizeof( $job_identifier_parts ) == 2 && is_numeric( $job_identifier_parts[0] ) ) {
+		$job_identifier_parts = explode( '-', $identifier );
+		if ( count( $job_identifier_parts ) === 2 && is_numeric( $job_identifier_parts[0] ) ) {
 			$job_id = $job_identifier_parts[0];
 			$job_id = apply_filters( 'wpml_job_id', $job_id );
 			$md5    = $job_identifier_parts[1];
 			/** @var stdClass $job */
 			$job = $this->job_factory->get_translation_job( (int) $job_id, false, 1, false );
-			if ( ! $job || $md5 != md5( $job_id . $job->original_doc_id ) ) {
+			if ( ! $job || $md5 !== md5( $job_id . $job->original_doc_id ) ) {
 				$job = $this->does_not_belong_error();
 			}
 		} else {
@@ -55,7 +64,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		return $target;
 	}
 
-	protected function generate_job_data( $xliff, $job ) {
+	protected function generate_job_data( SimpleXMLElement $xliff, $job ) {
 		$data = array(
 			'job_id'   => $job->job_id,
 			'fields'   => array(),
@@ -66,13 +75,13 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 			$type   = (string) $attr['id'];
 			$target = $this->get_xliff_node_target( $node );
 
-			if ( ! $this->is_valid_unit_content( $target ) ) {
+			if ( ! $this->is_valid_target( $target ) ) {
 				return $this->invalid_xliff_error( array( 'target' ) );
 			}
 
 			foreach ( $job->elements as $element ) {
-				if ( strpos( $type, $element->field_type ) === 0 || strpos( $element->field_type, $type ) === 0 ) {
-					$target              = str_replace( '<br class="xliff-newline" />', "\n", $target );
+				if ( $element->field_type === $type ) {
+					$target              = $this->replace_xliff_new_line_tag_with_new_line( $target );
 					$field               = array();
 					$field['data']       = $target;
 					$field['finished']   = 1;
@@ -121,7 +130,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	}
 
 	/**
-	 * @param string $filename 
+	 * @param string $filename
 	 * @return bool
 	 */
 	function validate_file_name( $filename ) {
@@ -146,8 +155,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 * @return bool|SimpleXMLElement|WP_Error
 	 */
 	protected function check_xml_file( $name, $content ) {
-		$new_error_handler = create_function( '$errno, $errstr, $errfile, $errline', 'throw new ErrorException( $errstr, $errno, 1, $errfile, $errline );' );
-		set_error_handler( $new_error_handler );
+		set_error_handler( array( $this, 'error_handler' ) );
 		try {
 			$xml = simplexml_load_string( $content );
 		} catch ( Exception $e ) {
@@ -162,6 +170,20 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	}
 
 	/**
+	 * @param $errno
+	 * @param $errstr
+	 * @param $errfile
+	 * @param $errline
+	 *
+	 * @throws ErrorException
+	 */
+	protected function error_handler( $errno, $errstr, $errfile, $errline ){
+		throw new ErrorException( $errstr, $errno, 1, $errfile, $errline );
+	}
+
+	/**
+	 * @param string $name
+	 *
 	 * @return WP_Error
 	 */
 	protected function not_xml_file_error( $name ) {
@@ -175,7 +197,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 *
 	 * @return WP_Error
 	 */
-	protected function invalid_xliff_error( $missing_data = array() ) {
+	protected function invalid_xliff_error( array $missing_data = array() ) {
 		$message = __( 'The uploaded xliff file does not seem to be properly formed.', 'wpml-translation-management' );
 
 		if ( $missing_data ) {

@@ -3,7 +3,7 @@
 /**
  * @link https://git.onthegosystems.com/tp/translation-proxy/wikis/translation_services
  */
-class WPML_TP_Service extends WPML_TP_REST_Object {
+class WPML_TP_Service extends WPML_TP_REST_Object implements Serializable {
 
 	/**
 	 * @var int
@@ -34,6 +34,11 @@ class WPML_TP_Service extends WPML_TP_REST_Object {
 	 * @var bool
 	 */
 	public $tms;
+
+	/**
+	 * @var bool
+	 */
+	public $partner;
 
 	/**
 	 * @var stdClass
@@ -101,17 +106,25 @@ class WPML_TP_Service extends WPML_TP_REST_Object {
 	public $translation_feedback;
 	/** @var string */
 	public $feedback_forward_method;
+	/** @var int */
+	public $last_refresh;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	public $popup_message;
+
+	/** @var string */
+	public $how_to_get_credentials_desc;
+
+	/** @var string */
+	public $how_to_get_credentials_url;
+
+	/** @var string */
+	public $client_create_account_page_url;
 
 	public function __construct( stdClass $object = null ) {
 		parent::__construct( $object );
 		$this->set_custom_fields_data();
 		$this->set_requires_authentication();
-		$this->set_has_language_pairs();
 	}
 
 	/**
@@ -157,13 +170,35 @@ class WPML_TP_Service extends WPML_TP_REST_Object {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_partner() {
+		return $this->partner;
+	}
+
+	/**
+	 * @param bool $partner
+	 */
+	public function set_partner( $partner ) {
+		$this->partner = $partner;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function get_custom_fields() {
 		$custom_fields = array();
 
+		/** @TODO: This is odd. It appears that if it's the active service then it's
+		 * stored with an extra custom_fields property eg. $this->custom_fields->custom_fields
+		 * It looks like we call the api to get the custom field when we activate the service and store
+		 * it directly here
+		 */
+
 		if ( is_object( $this->custom_fields ) && isset( $this->custom_fields->custom_fields ) ) {
 			$custom_fields = $this->custom_fields->custom_fields;
+		} elseif ( isset( $this->custom_fields ) ) {
+			$custom_fields = $this->custom_fields;
 		}
 
 		return $custom_fields;
@@ -194,7 +229,7 @@ class WPML_TP_Service extends WPML_TP_REST_Object {
 	 * @return bool
 	 */
 	public function get_has_language_pairs() {
-		return $this->has_language_pairs;
+		return (bool) $this->has_language_pairs;
 	}
 
 	/**
@@ -294,14 +329,11 @@ class WPML_TP_Service extends WPML_TP_REST_Object {
 		$this->requires_authentication = (bool) $this->custom_fields;
 	}
 
-	public function set_has_language_pairs() {
-		global $sitepress;
-
-		$translation_service      = $sitepress->get_setting( 'translation_service' );
-		$this->has_language_pairs = $translation_service
-		                            && property_exists( $translation_service,
-		                                                'has_language_pairs' )
-		                            && $translation_service->has_language_pairs;
+	/**
+	 * @param bool $value
+	 */
+	public function set_has_language_pairs( $value  ) {
+		$this->has_language_pairs = (bool) $value;
 	}
 
 	/**
@@ -542,41 +574,101 @@ class WPML_TP_Service extends WPML_TP_REST_Object {
 		$this->feedback_forward_method = $feedback_forward_method;
 	}
 
+	/** @return null|int */
+	public function get_last_refresh() {
+		return $this->last_refresh;
+	}
+
+	/** @param int */
+	public function set_last_refresh( $timestamp ) {
+		$this->last_refresh = $timestamp;
+	}
+
+	/** @return null|string */
+	public function get_how_to_get_credentials_desc() {
+		return $this->how_to_get_credentials_desc;
+	}
+
+	/** @param string */
+	public function set_how_to_get_credentials_desc( $desc ) {
+		$this->how_to_get_credentials_desc = $desc;
+	}
+
+	/** @return null|string */
+	public function get_how_to_get_credentials_url() {
+		return $this->how_to_get_credentials_url;
+	}
+
+	/** @param string */
+	public function set_how_to_get_credentials_url( $url ) {
+		$this->how_to_get_credentials_url = $url;
+	}
+
+	/** @return null|string */
+	public function get_client_create_account_page_url() {
+		return $this->client_create_account_page_url;
+	}
+
+	/** @param string */
+	public function set_client_create_account_page_url( $url ) {
+		$this->client_create_account_page_url = $url;
+	}
+
+	public function serialize() {
+		return serialize( get_object_vars( $this ) );
+	}
+
+	public function unserialize( $serialized ) {
+		$simple_array = unserialize( $serialized );
+
+		foreach ( $simple_array as $property => $value ) {
+			if ( property_exists( $this, $property ) ) {
+				$this->$property = $value;
+			}
+		}
+	}
+
 	/**
 	 * @return array
 	 */
 	protected function get_properties() {
 		return array(
-			'id'                            => 'id',
-			'logo_url'                      => 'logo_url',
-			'url'                           => 'url',
-			'name'                          => 'name',
-			'description'                   => 'description',
-			'doc_url'                       => 'doc_url',
-			'tms'                           => 'tms',
-			'custom_fields'                 => 'custom_fields',
-			'custom_fields_data'            => 'custom_fields_data',
-			'requires_authentication'       => 'requires_authentication',
-			'has_language_pairs'            => 'has_language_pairs',
-			'rankings'                      => 'rankings',
-			'popup_message'                 => 'popup_message',
-			'project_details_url'           => 'project_details_url',
-			'add_language_pair_url'         => 'add_language_pair_url',
-			'custom_text_url'               => 'custom_text_url',
-			'select_translator_iframe_url'  => 'select_translator_iframe_url',
-			'translator_contact_iframe_url' => 'translator_contact_iframe_url',
-			'quote_iframe_url'              => 'quote_iframe_url',
-			'has_translator_selection'      => 'has_translator_selection',
-			'project_name_length'           => 'project_name_length',
-			'suid'                          => 'suid',
-			'notification'                  => 'notification',
-			'preview_bundle'                => 'preview_bundle',
-			'deadline'                      => 'deadline',
-			'oauth'                         => 'oauth',
-			'oauth_url'                     => 'oauth_url',
-			'default_service'               => 'default_service',
-			'translation_feedback'          => 'translation_feedback',
-			'feedback_forward_method'       => 'feedback_forward_method',
+			'id'                             => 'id',
+			'logo_url'                       => 'logo_url',
+			'url'                            => 'url',
+			'name'                           => 'name',
+			'description'                    => 'description',
+			'doc_url'                        => 'doc_url',
+			'tms'                            => 'tms',
+			'partner'                        => 'partner',
+			'custom_fields'                  => 'custom_fields',
+			'custom_fields_data'             => 'custom_fields_data',
+			'requires_authentication'        => 'requires_authentication',
+			'has_language_pairs'             => 'has_language_pairs',
+			'rankings'                       => 'rankings',
+			'popup_message'                  => 'popup_message',
+			'project_details_url'            => 'project_details_url',
+			'add_language_pair_url'          => 'add_language_pair_url',
+			'custom_text_url'                => 'custom_text_url',
+			'select_translator_iframe_url'   => 'select_translator_iframe_url',
+			'translator_contact_iframe_url'  => 'translator_contact_iframe_url',
+			'quote_iframe_url'               => 'quote_iframe_url',
+			'has_translator_selection'       => 'has_translator_selection',
+			'project_name_length'            => 'project_name_length',
+			'suid'                           => 'suid',
+			'notification'                   => 'notification',
+			'preview_bundle'                 => 'preview_bundle',
+			'deadline'                       => 'deadline',
+			'oauth'                          => 'oauth',
+			'oauth_url'                      => 'oauth_url',
+			'default_service'                => 'default_service',
+			'translation_feedback'           => 'translation_feedback',
+			'feedback_forward_method'        => 'feedback_forward_method',
+			'last_refresh'                   => 'last_refresh',
+			'how_to_get_credentials_desc'    => 'how_to_get_credentials_desc',
+			'how_to_get_credentials_url'     => 'how_to_get_credentials_url',
+			'client_create_account_page_url' => 'client_create_account_page_url',
+
 		);
 	}
 }

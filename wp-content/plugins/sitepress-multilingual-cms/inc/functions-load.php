@@ -74,14 +74,20 @@ function load_essential_globals( $is_admin = null ) {
 function wpml_load_post_translation( $is_admin, $settings ) {
 	global $wpml_post_translations, $wpdb;
 
-	if ( $is_admin === true ) {
+	$http_referer_factory = new WPML_URL_HTTP_Referer_Factory();
+	$http_referer = $http_referer_factory->create();
+
+	if ( $is_admin === true
+	     || $http_referer->is_rest_request_called_from_post_edit_page()
+	     || ( defined( 'WP_CLI' ) && WP_CLI )
+	) {
 		$wpml_post_translations = new WPML_Admin_Post_Actions( $settings, $wpdb );
 	} else {
 		$wpml_post_translations = new WPML_Frontend_Post_Actions( $settings, $wpdb );
 		wpml_load_frontend_tax_filters ();
 	}
 
-	$wpml_post_translations->init ();
+	$wpml_post_translations->init();
 }
 
 function wpml_load_request_handler( $is_admin, $active_language_codes, $default_language ) {

@@ -13,6 +13,10 @@ class WPML_Media_Dependencies
 			$all_ok = false;
 		}
 
+		if ( ! WPML_Core_Version_Check::is_ok( WPML_MEDIA_PATH . '/wpml-dependencies.json' ) ) {
+			$all_ok = false;
+		}
+
 		if ( !$all_ok )
 		{
 			return false;

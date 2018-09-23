@@ -4,6 +4,8 @@
  * Registers scripts so that they can be reused throughout WPML plugins
  */
 function wpml_tm_register_js_scripts() {
+	global $sitepress;
+
 	wp_register_script(
 		'wpml-tm-editor-templates',
 		WPML_TM_URL . '/res/js/translation-editor/templates.js',
@@ -35,8 +37,9 @@ function wpml_tm_register_js_scripts() {
 		'wpml-tm-editor-footer-view',
 		'wpml-tm-editor-languages-view',
 		'wpml-tm-editor-copy-all-dialog',
-		'wpml-tm-editor-edit-independently-dialog'
-		);
+		'wpml-tm-editor-edit-independently-dialog',
+		'wpml-tm-editor-translation-memory',
+	);
 	
 	foreach( $scripts as $script ) {
 		wp_register_script(

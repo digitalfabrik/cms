@@ -63,6 +63,7 @@ class WPML_Translation_Editor extends WPML_WPDB_And_SP_User {
 			'translation_complete' => __( 'Translation is complete',
 				'wpml-translation-management' ),
 			'contentNonce'         => wp_create_nonce( 'wpml_save_job_nonce' ),
+			'translationMemoryNonce'=> apply_filters( 'wpml_st_translation_memory_nonce', '' ),
 			'source_lang'          => __( 'Original',
 				'wpml-translation-management' ),
 			'target_lang'          => __( 'Translation to',

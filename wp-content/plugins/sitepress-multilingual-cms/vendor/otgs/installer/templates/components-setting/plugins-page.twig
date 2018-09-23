@@ -1,24 +1,9 @@
-{% if should_display_subscription_notice or should_display_setting_notice %}
-    <tr class="{{ css.tr_classes }}">
-        <td colspan="{{ col_count }}" class="plugin-update colspanchange">
-            <div class="{{ css.notice_classes }}">
-
-                {% if should_display_subscription_notice %}
-
-                <p class="installer-q-icon">
-                    {{ strings.valid_subscription|raw }}
-                </p>
-
-                {% endif %}
-
-                {% if should_display_setting_notice %}
-                <div class="spinner otgs-components-report-setting-spinner"></div>
-                <p>
-                    <input type="checkbox" {{ repo_checked }} class="js-otgs-components-report-user-choice" value="1" data-nonce-action="{{ nonce.action }}" data-nonce-value="{{ nonce.value }}" data-repo="{{ repo }}" />
-                    {{ strings.send_report|raw }}
-                </p>
-                {% endif %}
-            </div>
-        </td>
-    </tr>
-{% endif %}
+<tr class="{{ css.tr_classes }}">
+    <td colspan="{{ col_count }}" class="plugin-update colspanchange">
+        <div class="{{ css.notice_classes }}">
+            <p class="installer-q-icon">
+                {{ strings.valid_subscription|raw }}
+            </p>
+        </div>
+    </td>
+</tr>
