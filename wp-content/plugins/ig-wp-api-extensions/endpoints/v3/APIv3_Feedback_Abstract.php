@@ -109,15 +109,22 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 					'language' => $language,
 					'category' => $request->get_param('category'),
 					'text' => $text,
+					'rating' => $rating
 				];
 			}
 			add_comment_meta($comment_id, 'content', json_encode($content));
-			if ($rating === 'up') {
+			/*
+			 * If text + rating are sent both, we don't count the rating but use it only for the comment.
+			 */
+			if ($text === null && $rating === 'up') {
 				add_comment_meta($comment_id, 'rating_up', 1);
-				add_comment_meta($comment_id, 'rating_down', 0);
-			} elseif ($rating === 'down') {
+			} else {
 				add_comment_meta($comment_id, 'rating_up', 0);
+			}
+			if ($text === null && $rating === 'down') {
 				add_comment_meta($comment_id, 'rating_down', 1);
+			} else {
+				add_comment_meta($comment_id, 'rating_down', 0);
 			}
 			if (defined('static::META')) {
 				add_comment_meta($comment_id, static::META, $request->get_param(static::META));
@@ -126,13 +133,6 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 			/*
 			 * If there exists exactly one comment for the given post, we update the comment meta
 			 */
-			if ($rating === 'up') {
-				$rating_up_old = (int) get_comment_meta($comments[0]->comment_ID, 'rating_up', true);
-				update_comment_meta($comments[0]->comment_ID, 'rating_up', $rating_up_old + 1);
-			} elseif ($rating === 'down') {
-				$rating_down_old = (int) get_comment_meta($comments[0]->comment_ID, 'rating_down', true);
-				update_comment_meta($comments[0]->comment_ID, 'rating_down', $rating_down_old + 1);
-			}
 			if ($text !== null) {
 				$content = json_decode(get_comment_meta($comments[0]->comment_ID, 'content', true));
 				$content[] = [
@@ -140,6 +140,7 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 					'language' => $language,
 					'category' => $request->get_param('category'),
 					'text' => $text,
+					'rating' => $rating
 				];
 				update_comment_meta($comments[0]->comment_ID, 'content', json_encode($content));
 				/*
@@ -149,6 +150,17 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 					'comment_ID' => $comments[0]->comment_ID,
 					'comment_approved' => 0,
 				]);
+			} else {
+				/*
+				 * If text + rating are sent both, we don't count the rating but use it only for the comment.
+				 */
+				if ($rating === 'up') {
+					$rating_up_old = (int) get_comment_meta($comments[0]->comment_ID, 'rating_up', true);
+					update_comment_meta($comments[0]->comment_ID, 'rating_up', $rating_up_old + 1);
+				} elseif ($rating === 'down') {
+					$rating_down_old = (int) get_comment_meta($comments[0]->comment_ID, 'rating_down', true);
+					update_comment_meta($comments[0]->comment_ID, 'rating_down', $rating_down_old + 1);
+				}
 			}
 		} else {
 			/*
