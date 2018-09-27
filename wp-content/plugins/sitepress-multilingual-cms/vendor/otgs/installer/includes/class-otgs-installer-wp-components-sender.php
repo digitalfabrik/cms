@@ -17,7 +17,7 @@ class OTGS_Installer_WP_Components_Sender {
 		$this->settings = $settings;
 	}
 
-	public function send( array $components ) {
+	public function send( array $components, $force = false ) {
 
 		if ( ! $this->installer->get_repositories() ) {
 			$this->installer->load_repositories_list();
@@ -28,16 +28,18 @@ class OTGS_Installer_WP_Components_Sender {
 		}
 
 		foreach ( $this->installer->get_repositories() as $key => $repository ) {
-			if ( $this->settings->is_repo_allowed( $key ) ) {
+			$site_key = $this->installer->get_site_key( $key );
+			if ( $site_key && $this->settings->is_repo_allowed( $key ) ) {
 				wp_remote_post(
 					$repository['api-url'] . '?action=update_site_components',
 					apply_filters( 'installer_fetch_components_data_request', array(
 						'body' => array(
 							'action'     => 'update_site_components',
-							'site_key'   => $this->installer->get_site_key( $key ),
+							'site_key'   => $site_key,
 							'site_url'   => get_site_url(),
 							'components' => $components,
 							'phpversion' => phpversion(),
+							'force'      => $force,
 						),
 					) )
 				);

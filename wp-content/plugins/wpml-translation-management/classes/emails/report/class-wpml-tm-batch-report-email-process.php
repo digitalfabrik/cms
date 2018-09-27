@@ -37,7 +37,6 @@ class WPML_TM_Batch_Report_Email_Process {
 
 	private function send_emails() {
 		$headers = array();
-		$headers[] = 'MIME-Version: 1.0';
 		$headers[] = 'Content-type: text/html; charset=UTF-8';
 
 		foreach ( $this->email_builder->get_emails() as $email ) {

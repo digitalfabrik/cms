@@ -532,7 +532,7 @@ jQuery(document).ready( function($){
 	}
 	
 	//Manual Booking
-	$('a.em-booking-button').click(function(e){
+	$(document).on('click', 'a.em-booking-button', function(e){
 		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_booked && $(this).text() != EM.bb_booking){
@@ -559,7 +559,7 @@ jQuery(document).ready( function($){
 		}
 		return false;
 	});	
-	$('a.em-cancel-button').click(function(e){
+	$(document).on('click', 'a.em-cancel-button', function(e){
 		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_cancelled && button.text() != EM.bb_canceling){

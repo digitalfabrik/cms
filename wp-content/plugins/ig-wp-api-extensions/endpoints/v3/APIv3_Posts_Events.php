@@ -25,6 +25,9 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		]);
 		$events = [];
 		foreach ($events_query->posts as $event) {
+			if ($event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
+				continue;
+			}
 			$events[] = $this->prepare($event);
 		}
 		/*
@@ -52,6 +55,9 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 				'posts_per_page' => -1,
 			]);
 			foreach ($recurring_events_query->posts as $recurring_event) {
+				if ($recurring_event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
+					continue;
+				}
 				$recurring_events[] = $this->prepare($recurring_event);
 			}
 		}

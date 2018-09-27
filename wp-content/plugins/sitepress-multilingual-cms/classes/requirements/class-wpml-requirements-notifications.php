@@ -42,6 +42,7 @@ class WPML_Requirements_Notification {
 		if ( $integrations ) {
 			$model = array(
 				'strings' => array(
+					/* translators: %s will be replaced with a list of plugins or themes. */
 					'title'   => sprintf( __( 'One more step before you can translate %s', 'sitepress' ), $this->build_items_in_sentence( $integrations ) ),
 					'message' => __( "You need to enable WPML's Translation Editor, to translate conveniently.", 'sitepress' ),
 					'enable_done' => __( 'Done.', 'sitepress' ),
@@ -76,7 +77,8 @@ class WPML_Requirements_Notification {
 	 */
 	private function build_items_in_sentence( $items ) {
 		if ( count( $items ) <= 2 ) {
-			$product_names = implode( _x( ' and ', 'between two elements of a list', 'sitepress' ) . ' ', $items );
+			/* translators: Used between elements of a two elements list */
+			$product_names = implode( ' ' . _x( 'and', 'Used between elements of a two elements list', 'sitepress' ) . ' ', $items );
 
 			return $product_names;
 		}
@@ -84,7 +86,8 @@ class WPML_Requirements_Notification {
 		$last          = array_slice( $items, - 1 );
 		$first         = implode( ', ', array_slice( $items, 0, - 1 ) );
 		$both          = array_filter( array_merge( array( $first ), $last ), 'strlen' );
-		$product_names = implode( _x( ', and ', 'before the element of a list', 'sitepress' ) . ' ', $both );
+		/* translators: Used before the last element of a three or more elements list */
+		$product_names = implode( _x( ', and', 'Used before the last element of a three or more elements list', 'sitepress' ) . ' ', $both );
 
 		return $product_names;
 	}

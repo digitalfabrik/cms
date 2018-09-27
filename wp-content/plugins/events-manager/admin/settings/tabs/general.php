@@ -96,12 +96,53 @@
 			?>
 		</table>
 		    
-	</div> <!-- . inside --> 
+	</div> <!-- . inside -->
 	</div> <!-- .postbox -->
 	
 	<?php if ( !is_multisite() ){ em_admin_option_box_image_sizes(); } ?>
 	
 	<?php if ( !is_multisite() || (em_wp_is_super_admin() && !get_site_option('dbem_ms_global_caps')) ){ em_admin_option_box_caps(); } ?>
+
+	<div  class="postbox" id="em-opt-google-maps" >
+		<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Google Maps and Location Services', 'events-manager'); ?></span></h3>
+		<div class="inside">
+			<div class="em-boxheader">
+				<p><?php esc_html_e('Google Maps API provides you with ways to display maps of your locations and help site visitors find events near their desired locations.','events-manager'); ?></p>
+				<p style="font-weight: bold; color:#ca4a1f;">
+					<?php
+					$msg = esc_html__('Google may charge you for usage, depending on how much traffic your site receives. For more information about how and where Events Manager uses the Google Maps API, and how to manage costs, please see our %s page.', 'events-manager');
+					echo sprintf($msg, '<a href="https://wp-events-plugin.com/documentation/google-maps/api-usage/?utm_source=plugin&utm_medium=settings&utm_campaign=gmaps-general">'.esc_html__('documentation', 'events-manager').'</a>');
+					?>
+				</p>
+			</div>
+			<table class="form-table">
+				<?php
+					em_options_radio_binary( esc_html__( 'Enable Google Maps integration?', 'events-manager'), 'dbem_gmap_is_active', esc_html__( 'Check this option to enable Google Map integration.', 'events-manager'), '', '.em-google-maps-enabled' );
+				?>
+				<tbody class="form-table em-google-maps-enabled">
+					<?php
+					em_options_input_text(__('Google Maps API Browser Key','events-manager'), 'dbem_google_maps_browser_key', sprintf(__('Google Maps require an API key, please see our %s page for instructions on obtaining one.', 'events-manager'), '<a href="https://wp-events-plugin.com/documentation/google-maps/api-key/?utm_source=plugin&utm_medium=settings&utm_campaign=gmaps-api-key">'.esc_html__('documentation','events-manager').'</a>'));
+					$google_map_options = apply_filters('em_settings_google_maps_options', array(
+						'dynamic' => _x('Dynamic', 'Google Map Type', 'events-manager'),
+						'embed' => _x('Embedded', 'Google Map Type', 'events-manager')
+					));
+					$google_map_options_pro = !defined('EMP_VERSION') || EMP_VERSION < 2.64 ? '<strong>'.sprintf(__('Upgrade to %s for more options!', 'events-manager'), '<a target="_blank" href="https://wp-events-plugin.com/google-maps/static-maps/?utm_source=plugin&utm_medium=settings&utm_campaign=gmaps-types">Events Manager Pro</a>').'</strong>' : '';
+					$google_map_options_desc = sprintf(__('Google offers different map displays, each with varying prices and free usage allowance. See our %s page for more information on these display options.', 'events-manager'), '<a href="https://wp-events-plugin.com/google-maps/map-types/?utm_source=plugin&utm_medium=settings&utm_campaign=gmaps-types">'.__('documentation', 'events-manager').'</a>') .' '. $google_map_options_pro;
+					em_options_select(__('Google Map Type', 'events-manager'), 'dbem_gmap_type', $google_map_options, $google_map_options_desc);
+					$embed_options = array('place' => __('Location name and address', 'events-manager'), 'address' => __('Address only', 'events-manager'), 'coordinates' => __('Location coordinates', 'events-manager'));
+					em_options_select(__('Embed Display Type', 'events-manager'), 'dbem_gmap_embed_type', $embed_options, __('When displaying embedded maps for a location, choose what information Google will use to generate a map from, each producing varying results.', 'events-manager'));
+					em_options_textarea(__('Google Maps Style', 'events-manager'), 'dbem_google_maps_styles', sprintf(__('You can add styles to your maps to give them a unique look. Build one using the %s or choose from the many free templates on %s paste the generated JSON code here.', 'events-manager'), '<a href="https://mapstyle.withgoogle.com/" target="_blank">'.esc_html__('Google Maps Styling Wizard', 'events-manager').'</a>', '<a href="https://snazzymaps.com/explore" target="_blank">Snazzy Maps</a>'));
+					?>
+				</tbody>
+				<tbody class="form-table em-google-maps-enabled em-google-maps-static">
+					<?php do_action('em_settings_google_maps_general'); ?>
+				</tbody>
+				<?php
+					echo $save_button;
+				?>
+			</table>
+		</div> <!-- . inside -->
+	</div> <!-- .postbox -->
 	
 	<div  class="postbox" id="em-opt-event-submissions" >
 	<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Forms', 'events-manager'); ?></span></h3>
@@ -262,7 +303,8 @@
 		</table>
 	</div> <!-- . inside --> 
 	</div> <!-- .postbox -->
-	
+
+	<?php em_admin_option_box_data_privacy(); ?>
 	<?php if ( !is_multisite() ) { em_admin_option_box_uninstall(); } ?>
 	
 	<?php if( get_option('dbem_migrate_images') ): ?>

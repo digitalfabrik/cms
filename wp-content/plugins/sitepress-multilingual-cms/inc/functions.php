@@ -121,17 +121,23 @@ function wpml_get_sub_setting_filter( $default, $key, $sub_key, $deprecated = nu
  * @param string $key
  * @param mixed  $value
  * @param bool   $save_now Must call icl_save_settings() to permanently store the value
+ *
+ * @return bool Always True. If `$save_now === true`, it returns the result of `update_option`
  */
 function icl_set_setting( $key, $value, $save_now = false ) {
 	global $sitepress_settings;
+
+	$result = true;
 
 	$sitepress_settings[ $key ] = $value;
 
 	if ( $save_now === true ) {
 		//We need to save settings anyway, in this case
-		update_option( 'icl_sitepress_settings', $sitepress_settings );
+	  $result = update_option( 'icl_sitepress_settings', $sitepress_settings );
 		do_action( 'icl_save_settings', $sitepress_settings );
 	}
+
+	return $result;
 }
 
 function icl_save_settings() {
@@ -176,6 +182,15 @@ if ( ! function_exists( 'icl_js_escape' ) ) {
 
 		return $str;
 	}
+}
+
+function wpml_get_site_id() {
+	static $site_id;
+
+	if ( ! $site_id ) {
+		$site_id = new WPML_Site_ID();
+	}
+	return $site_id->get_site_id();
 }
 
 function _icl_tax_has_objects_recursive( $id, $term_id = - 1, $rec = 0 ) {
@@ -240,31 +255,20 @@ function _icl_trash_restore_prompt() {
 function icl_pop_info( $message, $icon = 'info', $args = array() ) {
 	switch ( $icon ) {
 		case 'info':
-			$icon = ICL_PLUGIN_URL . '/res/img/info.png';
+			$icon = 'otgs-ico-info';
 			break;
 		case 'question':
-			$icon = ICL_PLUGIN_URL . '/res/img/question1.png';
+			$icon = 'otgs-ico-help';
 			break;
 	}
 
-	$defaults = array(
-		'icon_size' => 16,
-		'but_style' => array()
-	);
-	extract( $defaults );
 	extract( $args, EXTR_OVERWRITE );
-
-	/** @var $but_style array */
-	/** @var $icon_size string */
-
-	$close_icon = ICL_PLUGIN_URL . '/res/img/ico-close.png';
 	?>
 	<div class="icl_pop_info_wrap">
-		<img class="icl_pop_info_but <?php echo esc_attr( join( ' ', $but_style ) ); ?>" src="<?php echo esc_url( $icon ); ?>"
-		     width="<?php echo esc_attr( $icon_size ) ?>" height="<?php echo esc_attr( $icon_size ); ?>" alt="info"/>
+		<a class="<?php echo $icon ;?> icl_pop_info_but"></a>
 
 		<div class="icl_cyan_box icl_pop_info">
-			<img class="icl_pop_info_but_close" align="right" src="<?php echo esc_url( $close_icon ); ?>" width="12" height="12" alt="x"/>
+			<span class="icl_pop_info_but_close otgs-ico-close"></span>
 			<?php echo $message; ?>
 		</div>
 	</div>

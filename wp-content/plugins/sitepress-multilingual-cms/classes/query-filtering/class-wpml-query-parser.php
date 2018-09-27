@@ -278,6 +278,7 @@ class WPML_Query_Parser {
 		$q = apply_filters( 'wpml_pre_parse_query', $q );
 
 		list( $q, $redir_pid ) = $this->maybe_adjust_name_var( $q );
+
 		/** @var WP_Query $q */
 		if ( $q->is_main_query() && (bool) $redir_pid === true ) {
 			if ( (bool) ( $redir_target = $this->is_redirected( $redir_pid, $q ) ) ) {

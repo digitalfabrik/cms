@@ -214,6 +214,7 @@ if( !class_exists('EM_Permalinks') ){
 			if( get_option('dbem_locations_enabled') ){
 				$em_rules[EM_POST_TYPE_LOCATION_SLUG."/([^/]+)/rss/?$"] = 'index.php?'.EM_POST_TYPE_LOCATION.'=$matches[1]&rss=1';
 			}
+			$em_rules = apply_filters('em_rewrite_rules_array', $em_rules);
 			return $em_rules + $rules;
 		}
 		

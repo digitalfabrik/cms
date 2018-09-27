@@ -1,5 +1,5 @@
 <?php
-class EM_Taxonomy_Terms extends EM_Object implements Iterator{
+class EM_Taxonomy_Terms extends EM_Object implements Iterator, Countable{
 
 	protected $is_ms_global = false;
 	protected $meta_key = 'event-taxonomy';
@@ -93,14 +93,16 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
 	}
 	
 	public function save(){
-		$term_slugs = array();
-		foreach($this->terms as $EM_Taxonomy_Term){
-			/* @var $EM_Taxonomy_Term EM_Taxonomy_Term */
-			if( !empty($EM_Taxonomy_Term->slug) ) $term_slugs[] = $EM_Taxonomy_Term->slug; //save of taxonomy will soft-fail if slug is empty
-		}
-		if( count($term_slugs) == 0 && get_option('dbem_default_'.$this->singular) > 0 ){
-			$default_term = get_term_by('id',get_option('dbem_default_'.$this->singular), $this->taxonomy);
-			if($default_term) $term_slugs[] = $default_term->slug;
+		if( empty($this->terms) ){
+			$EM_Taxonomy_Term = new $this->term_class();
+			$opt = 'dbem_default_'.$EM_Taxonomy_Term->option_name;
+			$default_category = EM_MS_GLOBAL && $this->is_ms_global ? get_blog_option( get_current_site()->blog_id, $opt ) : get_option($opt);
+			if( $default_category > 0 ){
+				$EM_Taxonomy_Term = new $this->term_class($default_category);
+				if( !empty($EM_Taxonomy_Term->slug) ){
+					$this->terms[] = $EM_Taxonomy_Term;
+				}
+			}
 		}
 		if( is_multisite() && $this->is_ms_global ){
 			//In MS Global mode, we also save taxonomy meta information for global lookups
@@ -109,10 +111,10 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
 				$this->save_index();
 			}
 			if( !EM_MS_GLOBAL || is_main_site() ){
-				wp_set_object_terms($this->post_id, $term_slugs, $this->taxonomy);
+				wp_set_object_terms($this->post_id, $this->get_slugs(), $this->taxonomy);
 			}
 		}else{
-			wp_set_object_terms($this->post_id, $term_slugs, $this->taxonomy);
+			wp_set_object_terms($this->post_id, $this->get_slugs(), $this->taxonomy);
 		}
 		do_action('em_'. $this->terms_name .'_save', $this);
 	}
@@ -153,6 +155,14 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
 			}
 		}
 		return $ids;
+	}
+	
+	public function get_slugs(){
+		$term_slugs = array();
+		foreach( $this->terms as $EM_Taxonomy_Term ){ /* @var EM_Taxonomy_Term $EM_Taxonomy_Term */
+			$term_slugs[] = $EM_Taxonomy_Term->slug;
+		}
+		return $term_slugs;
 	}
 	
 	/**
@@ -325,5 +335,8 @@ class EM_Taxonomy_Terms extends EM_Object implements Iterator{
         $key = key($this->terms);
         $var = ($key !== NULL && $key !== FALSE);
         return $var;
+    }
+    public function count(){
+    	return count($this->terms);
     }
 }

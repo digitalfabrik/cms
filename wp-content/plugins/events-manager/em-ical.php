@@ -73,7 +73,7 @@
 	 * @return string
 	 */
 	function em_mb_ical_wordwrap($string){
-		if( !defined('EM_MB_ICAL_WORDWRAP') || !EM_MB_ICAL_WORDWRAP ){
+		if( !defined('EM_MB_ICAL_WORDWRAP') || EM_MB_ICAL_WORDWRAP ){
 			/*
 			// Match anything 1 to $width chars long followed by whitespace or EOS, otherwise match anything $width chars long
 			$search = '/(.{1,74})(?:\s|$)|(.{74})/uS';

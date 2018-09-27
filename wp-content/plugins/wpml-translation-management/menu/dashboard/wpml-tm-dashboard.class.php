@@ -53,6 +53,8 @@ class WPML_TM_Dashboard {
 			'sort_by'     => 'date',
 			'sort_order'  => 'DESC',
 			'limit_no'    => ICL_TM_DOCS_PER_PAGE,
+			'parent_type' => 'any',
+			'parent_id'   => false,
 			'type'        => '',
 			'title'       => '',
 			'status'      => array( 'publish', 'pending', 'draft', 'future', 'private', 'inherit' ),
@@ -122,11 +124,52 @@ class WPML_TM_Dashboard {
 			'offset'                   => $offset,
 		);
 
+		if ( 'any' !== $args['parent_type'] ) {
+			switch ( $args['parent_type'] ) {
+				case 'page':
+					$query_args['post_parent'] = (int) $args['parent_id'];
+					break;
+				default:
+					$query_args['tax_query'] = array(
+						array(
+							'taxonomy' => $args['parent_type'],
+							'field'    => 'term_id',
+							'terms'    => (int) $args['parent_id'],
+						),
+					);
+					break;
+			}
+		}
+
+		if ( isset( $args['translation_priority'] ) ) {
+
+			$translation_priorities = new WPML_TM_Translation_Priorities();
+
+			if( $translation_priorities->get_default_value_id() === (int)$args['translation_priority'] ){
+				$tax_query = array(
+					'relation' => 'OR',
+					array(
+						'taxonomy' => 'translation_priority',
+						'operator' => 'NOT EXISTS'
+					),
+				);
+			}
+
+			$tax_query[] = array(
+				'taxonomy' => 'translation_priority',
+				'field'    => 'term_id',
+				'terms'    => $args['translation_priority']
+			);
+
+			$query_args['tax_query'] = $tax_query;
+
+		}
+
 		if ( ! empty( $args['title'] ) ) {
 			$query_args['post_title_like'] = $args['title'];
 		}
 
-		$lang = $this->sitepress->get_current_language();
+		$lang = $this->sitepress->get_admin_language();
 		$this->sitepress->switch_lang( $args['from_lang'] );
 		$query_args = apply_filters( 'wpml_tm_dashboard_post_query_args', $query_args, $args );
 		$query = new WPML_TM_WP_Query( $query_args );

@@ -244,7 +244,7 @@ function icl_get_languages_locales() {
 			'gl'      => 'gl_ES',
 			'he'      => 'he_IL',
 			'hi'      => 'hi_IN',
-			'hr'      => 'hr_HR',
+			'hr'      => 'hr',
 			'hu'      => 'hu_HU',
 			'hy'      => 'hy_AM',
 			'id'      => 'id_ID',

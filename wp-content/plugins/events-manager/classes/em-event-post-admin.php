@@ -56,7 +56,7 @@ class EM_Event_Post_Admin{
 	
 	public static function admin_notices_filter($messages){
 		//When editing
-		global $post, $EM_Notices;
+		global $post, $EM_Notices; /* @var EM_Notices $EM_Notices */
 		if( $post->post_type == EM_POST_TYPE_EVENT || $post->post_type == 'event-recurring' ){
 			if ( $EM_Notices->count_errors() > 0 ) {
 				unset($_GET['message']);
@@ -96,7 +96,7 @@ class EM_Event_Post_Admin{
 	}
 	
 	public static function save_post($post_id, $post = false){
-		global $wpdb, $EM_Event, $EM_Location, $EM_Notices, $EM_SAVING_EVENT, $EM_EVENT_SAVE_POST;
+		global $wpdb, $EM_Event, $EM_Notices, $EM_SAVING_EVENT, $EM_EVENT_SAVE_POST; /* @var EM_Notices $EM_Notices */
 		if( !empty($EM_SAVING_EVENT) ) return; //never proceed with this if using EM_Event::save();
 		if ( isset($_GET['preview_id']) && isset($_GET['preview_nonce']) && wp_verify_nonce( $_GET['preview_nonce'], 'post_preview_' . $post_id ) ) return; //don't proceed with saving when previewing, may cause issues
 		$post_type = get_post_type($post_id);
@@ -306,7 +306,7 @@ class EM_Event_Post_Admin{
 	public static function meta_box_anonymous(){
 		global $EM_Event;
 		?>
-		<div class='updated'><p><?php _e('This event was submitted by a guest. You will find their details in the <em>Anonymous Submitter Info</em> box','events-manager')?></p></div>
+		<div class='updated'><p><?php echo sprintf(__('This %s was submitted by a guest. You will find their details in the <em>Anonymous Submitter Info</em> box','events-manager'), __('event', 'events-manager')); ?></p></div>
 		<p><strong><?php _e('Name','events-manager'); ?> :</strong> <?php echo $EM_Event->event_owner_name; ?></p> 
 		<p><strong><?php _e('Email','events-manager'); ?> :</strong> <?php echo $EM_Event->event_owner_email; ?></p> 
 		<?php

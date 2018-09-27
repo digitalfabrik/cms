@@ -10,7 +10,8 @@ var WPML_TM = WPML_TM || {};
 		className: 'wpml-form-row',
 		events: {
 			'click .icl_tm_copy_link': 'copyField',
-			'click .js-toggle-diff': 'toggleDiff'
+			'click .js-toggle-diff': 'toggleDiff',
+			'change .js-field-translation-complete' : 'setInputStatus'
 		},
 		toggleDiff: function(e) {
 			e.preventDefault();
@@ -71,6 +72,8 @@ var WPML_TM = WPML_TM || {};
 			}
 			self.$el.find('.field-diff').find('.diff').hide();
 
+			self.setInputStatus();
+
 			jQuery(document).trigger('WPML_TM.editor.field_view_ready', self);
 		},
 
@@ -86,8 +89,27 @@ var WPML_TM = WPML_TM || {};
 
 		getFieldType: function () {
 			return this.field.field_type;
-		}
+		},
 
+		setInputStatus: function() {
+			var self = this;
+			self.setTranslatedColor( self.getStatusColors() );
+		},
+
+		getStatusColors: function () {
+			var self = this;
+			if (self.translationCompleteCheckbox.is(':checked')) {
+				return {
+					background: '#e8f7e3',
+					borderColor: '#d0e9c6'
+				};
+			} else {
+				return {
+					background: '',
+					borderColor: ''
+				};
+			}
+		}
 
 	});
 
