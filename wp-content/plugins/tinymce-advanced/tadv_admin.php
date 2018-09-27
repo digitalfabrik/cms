@@ -17,6 +17,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 $message = '';
 
+$this->set_paths();
 $imgpath = TADV_URL . 'images/';
 $tadv_options_updated = false;
 $settings = $admin_settings = array();

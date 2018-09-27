@@ -1,9 +1,9 @@
 === TinyMCE Advanced ===
 Contributors: azaozz
 Tags: wysiwyg, formatting, tinymce, write, editor
-Requires at least: 4.9.6
+Requires at least: 4.9.8
 Tested up to: 4.9
-Stable tag: 4.7.11
+Stable tag: 4.8.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,6 +36,12 @@ In that terms TinyMCE Advanced does not affect your website's user privacy in an
 Best is to install directly from WordPress. If manual installation is required, please make sure that the plugin files are in a folder named "tinymce-advanced" (not two nested folders) in the WordPress plugins folder, usually "wp-content/plugins".
 
 == Changelog ==
+
+= 4.8.0 =
+* Updated for WordPress 4.9.8 and TinyMCE 4.8.0. 
+
+= 4.7.13 =
+* Updated the table and anchor plugins to 4.7.13 (2018-05-16). Fixes a bug in the table plugin in Edge.
 
 = 4.7.11 =
 * Updated for WordPress 4.9.6 and TinyMCE 4.7.11.
