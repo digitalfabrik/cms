@@ -144,8 +144,8 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 
 		$default_language = $this->sitepress->get_default_language();
 
-		$current_language = $requested_id ? $this->post_translations->get_element_lang_code( $requested_id ) : $this->sitepress->get_current_language();
-		$current_language = $current_language ? $current_language : $default_language;
+		$post_language = $this->post_translations->get_element_lang_code( $requested_id );
+		$current_language = $requested_id && $post_language ? $post_language : $this->sitepress->get_current_language();
 
 		$condition = $current_language === 'all' ? $this->all_langs_where() : $this->specific_lang_where( $current_language, $default_language );
 		$where     .= $condition;

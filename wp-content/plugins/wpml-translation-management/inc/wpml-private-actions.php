@@ -13,14 +13,14 @@ add_action( 'wpml_save_job_fields_from_post', 'wpml_tm_save_job_fields_from_post
 
 /**
  * @param array $data
+ * @param bool  $redirect_after_saving
  */
-function wpml_tm_save_data( array $data ) {
-	global $wpml_translation_job_factory;
-
-	$save_factory     = new WPML_TM_Job_Action_Factory( $wpml_translation_job_factory );
+function wpml_tm_save_data( array $data, $redirect_after_saving = true ) {
+	$job_factory      = wpml_tm_load_job_factory();
+	$save_factory     = new WPML_TM_Job_Action_Factory( $job_factory );
 	$save_data_action = $save_factory->save_action( $data );
 	$save_data_action->save_translation();
-	$redirect_target = $save_data_action->get_redirect_target();
+	$redirect_target = $redirect_after_saving ? $save_data_action->get_redirect_target() : false;
 	if ( (bool) $redirect_target === true ) {
 		wp_redirect( $redirect_target );
 	}
@@ -38,13 +38,18 @@ add_action( 'wpml_add_translation_job', 'wpml_tm_add_translation_job', 10, 4 );
 
 require_once dirname( __FILE__ ) . '/wpml-private-filters.php';
 
-function wpml_set_job_translated_term_values( $job_id, $delete = false ) {
+/**
+ * @param int $job_id
+ */
+function wpml_set_job_translated_term_values( $job_id ) {
+	global $sitepress;
 
+	$delete     = $sitepress->get_setting( 'tm_block_retranslating_terms' );
 	$job_object = new WPML_Post_Translation_Job( $job_id );
 	$job_object->load_terms_from_post_into_job( $delete );
 }
 
-add_action( 'wpml_added_local_translation_job', 'wpml_set_job_translated_term_values', 10, 2 );
+add_action( 'wpml_added_local_translation_job', 'wpml_set_job_translated_term_values' );
 
 function wpml_tm_save_post( $post_id, $post, $force_set_status ) {
 	global $wpdb, $wpml_post_translations, $wpml_term_translations;

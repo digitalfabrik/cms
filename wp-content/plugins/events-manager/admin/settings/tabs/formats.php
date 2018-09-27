@@ -436,19 +436,10 @@
 	<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Maps', 'events-manager'); ?> </span></h3>
 	<div class="inside">
 		<p class="em-boxheader"><?php echo sprintf(__('You can use Google Maps to show where your events are located. For more information on using maps, <a href="%s">see our documentation</a>.','events-manager'),'http://wp-events-plugin.com/documentation/google-maps/'); ?>
-		<table class='form-table'> 
-			<?php $gmap_is_active = get_option ( 'dbem_gmap_is_active' ); ?>
+		<table class='form-table'>
 			<tr valign="top">
-				<th scope="row"><?php _e ( 'Enable Google Maps integration?', 'events-manager'); ?></th>
-				<td>
-					<?php _e ( 'Yes' ); ?> <input id="dbem_gmap_is_active_yes" name="dbem_gmap_is_active" type="radio" value="1" <?php echo ($gmap_is_active) ? "checked='checked'":''; ?> />
-					<?php _e ( 'No' ); ?> <input name="dbem_gmap_is_active" type="radio" value="0" <?php echo ($gmap_is_active) ? '':"checked='checked'"; ?> /><br />
-					<em><?php _e ( 'Check this option to enable Goggle Map integration.', 'events-manager')?></em>
-				</td>
-				<?php em_options_input_text(__('Google Maps API Browser Key','events-manager'), 'dbem_google_maps_browser_key', sprintf(__('Google Maps require an API key, please see our %s page for instructions on obtaining one.', 'events-manager'), sprintf('<a href="http://wp-events-plugin.com/documentation/google-maps/api-key/">%s</a>', __('documentation','events-manager')))); ?>
 				<?php em_options_input_text(__('Default map width','events-manager'), 'dbem_map_default_width', sprintf(__('Can be in form of pixels or a percentage such as %s or %s.', 'events-manager'), '<code>100%</code>', '<code>100px</code>')); ?>
 				<?php em_options_input_text(__('Default map height','events-manager'), 'dbem_map_default_height', sprintf(__('Can be in form of pixels or a percentage such as %s or %s.', 'events-manager'), '<code>100%</code>', '<code>100px</code>')); ?>
-				<?php em_options_textarea(__('Google Maps Style', 'events-manager'), 'dbem_google_maps_styles', sprintf(__('You can add styles to your maps to give them a unique look. Build one using the %s or choose from the many free templates on %s paste the generated JSON code here.', 'events-manager'), '<a href="https://mapstyle.withgoogle.com/" target="_blank">'.__('Google Maps Styling Wizard', 'events-manager').'</a>', '<a href="https://snazzymaps.com/explore" target="_blank">Snazzy Maps</a>')); ?>
 			</tr>
 			<tr class="em-header"><td colspan="2">
 				<h4><?php _e('Global Map Format','events-manager'); ?></h4>

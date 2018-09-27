@@ -72,7 +72,8 @@ table.events-table .category { color:#888; }
 	.em-booking-form label { display:block; float:left; }
 	.em-booking-form span.input-group input { margin-left:-20px; }
 	.em-booking-form span.input-group { display:block; margin-left:120px; }
-	.em-booking-form label  { display:inline-block; width:100px; }	
+	.em-booking-form label  { display:inline-block; width:100px; }
+	.em-booking-form p.input-field-data_privacy_consent label { display:block; width:100%; }
 	.em-booking-form-details .em-booking-submit { width:auto; }	
 	/* Tickets */
 		.em-tickets { margin-bottom:20px; }

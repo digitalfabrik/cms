@@ -21,9 +21,7 @@ class WPML_Config {
 		if (defined('WPML_ST_FOLDER')) {
 			$white_list_pages[] = WPML_ST_FOLDER . '/menu/string-translation.php';
 		}
-		if(defined('WPML_TM_FOLDER')) {
-			$white_list_pages[] = WPML_TM_FOLDER . '/menu/main.php';
-		}
+		$white_list_pages = apply_filters( 'wpml_config_white_list_pages', $white_list_pages );
 
 		//Runs the load config process only on specific pages
 		$current_page = isset($_GET[ 'page' ]) ? $_GET[ 'page' ] : null;

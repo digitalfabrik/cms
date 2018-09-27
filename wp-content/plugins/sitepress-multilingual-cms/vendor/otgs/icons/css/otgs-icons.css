@@ -2,11 +2,11 @@
 
 @font-face {
   font-family: "otgs-icons";
-  src:url("fonts/otgs-icons.eot");
-  src:url("fonts/otgs-icons.eot?#iefix") format("embedded-opentype"),
-    url("fonts/otgs-icons.woff") format("woff"),
-    url("fonts/otgs-icons.ttf") format("truetype"),
-    url("fonts/otgs-icons.svg#otgs-icons") format("svg");
+  src:url("../fonts/otgs-icons.eot");
+  src:url("../fonts/otgs-icons.eot?#iefix") format("embedded-opentype"),
+    url("../fonts/otgs-icons.woff") format("woff"),
+    url("../fonts/otgs-icons.ttf") format("truetype"),
+    url("../fonts/otgs-icons.svg#otgs-icons") format("svg");
   font-weight: normal;
   font-style: normal;
 

@@ -12,11 +12,11 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 	private $translate_link_targets_in_posts;
 	private $translate_link_targets_in_strings;
 
-	public function __construct( $data, &$tm_records ) {
+	public function __construct( $data, $tm_records ) {
 		global $wpdb, $ICL_Pro_Translation, $sitepress;
 		parent::__construct();
 		$this->data                              = $data;
-		$this->tm_records                        = &$tm_records;
+		$this->tm_records                        = $tm_records;
 		$translate_link_targets_global_state = new WPML_Translate_Link_Target_Global_State( $sitepress );
 		$this->translate_link_targets_in_posts   = new WPML_Translate_Link_Targets_In_Posts( $translate_link_targets_global_state, $wpdb, $ICL_Pro_Translation );
 		$this->translate_link_targets_in_strings = new WPML_Translate_Link_Targets_In_Strings( $translate_link_targets_global_state, $wpdb, new WPML_WP_API(), $ICL_Pro_Translation );
@@ -181,6 +181,8 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 						}
 					}
 
+					$data['fields'] = apply_filters( 'wpml_tm_job_fields', $data['fields'], $job );
+
 					do_action( 'icl_pro_translation_saved', $new_post_id, $data['fields'], $job );
 					do_action( 'wpml_translation_job_saved', $new_post_id, $data['fields'], $job );
 
@@ -191,9 +193,10 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 
 					// update body translation with the links fixed
 					$new_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID=%d", $new_post_id ) );
-					foreach ( $job->elements as $jel ) {
-						if ( $jel->field_type === 'body' ) {
-							$fields_data_translated = $this->encode_field_data( $new_post_content, $jel->field_format );
+					foreach ( $job->elements as $job_element ) {
+						if ( $job_element->field_type === 'body' ) {
+							$fields_data_translated = apply_filters( 'wpml_tm_job_data_post_content', $new_post_content );
+							$fields_data_translated = $this->encode_field_data( $fields_data_translated, $job_element->field_format );
 							$wpdb->update( $wpdb->prefix . 'icl_translate', array( 'field_data_translated' => $fields_data_translated ), array(
 								'job_id'     => $data['job_id'],
 								'field_type' => 'body'
@@ -212,7 +215,7 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 						stick_post( $new_post_id );
 					} else {
 						if ( $original_post->post_type == 'post' && ! is_null( $element_id ) ) {
-							unstick_post( $new_post_id ); //just in case - if this is an update and the original post stckiness has changed since the post was sent to translation
+							unstick_post( $new_post_id ); //just in case - if this is an update and the original post stickiness has changed since the post was sent for translation
 						}
 					}
 

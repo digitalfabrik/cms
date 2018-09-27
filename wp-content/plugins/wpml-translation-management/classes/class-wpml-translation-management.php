@@ -3,6 +3,11 @@
  * Class WPML_Translation_Management
  */
 class WPML_Translation_Management {
+
+	const PAGE_SLUG_MANAGEMENT = '/menu/main.php';
+	const PAGE_SLUG_SETTINGS   = '/menu/settings';
+	const PAGE_SLUG_QUEUE      = '/menu/translations-queue.php';
+
 	var $load_priority = 200;
 
 	/** @var  SitePress $sitepress */
@@ -16,7 +21,9 @@ class WPML_Translation_Management {
 
 	/** @var  WPML_Translations_Queue $tm_queue */
 	private $tm_queue;
-	private $wpml_tm_menus;
+
+	/** @var WPML_TM_Menus_Management $wpml_tm_menus_management */
+	private $wpml_tm_menus_management;
 
 	/** @var WPML_Ajax_Route $ajax_route */
 	private $ajax_route;
@@ -38,19 +45,29 @@ class WPML_Translation_Management {
 	 */
 	function __construct( $sitepress, $tm_loader, $tm_instance, WPML_TP_Translator $wpml_tp_translator = null ) {
 		$this->sitepress = $sitepress;
-		global $wpdb;
 
 		$this->tm_loader     = $tm_loader;
 		$this->tm_instance   = $tm_instance;
 
-		$template_service_loader = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/tm-menus/' ) );
-		$this->wpml_tm_menus = new WPML_TM_Menus( $template_service_loader->get_template() );
-
 		$this->wpml_tp_translator = $wpml_tp_translator;
-		if ( null === $this->wpml_tp_translator ) {
+	}
+
+	public function init() {
+		global $wpdb;
+
+		$template_service_loader        = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/tm-menus/' ) );
+		$manager_records                = new WPML_Translation_Manager_Records( $wpdb, new WPML_WP_User_Query_Factory() );
+		$translator_records             = new WPML_Translator_Records( $wpdb, new WPML_WP_User_Query_Factory() );
+		$this->wpml_tm_menus_management = new WPML_TM_Menus_Management( $template_service_loader->get_template(), $manager_records, $translator_records );
+
+	  $mcs_factory = new WPML_TM_Scripts_Factory();
+	  $mcs_factory->init_hooks();
+
+	  if ( null === $this->wpml_tp_translator ) {
 			$this->wpml_tp_translator = new WPML_TP_Translator();
 		}
-		$this->ajax_route    = new WPML_Ajax_Route( new WPML_TM_Ajax_Factory( $wpdb, $sitepress, $_POST ) );
+		$this->ajax_route    = new WPML_Ajax_Route( new WPML_TM_Ajax_Factory( $wpdb, $this->sitepress, $_POST ) );
+
 	}
 
 	function load() {
@@ -108,7 +125,6 @@ class WPML_Translation_Management {
 			add_action( 'wp_ajax_icl_populate_translations_pickup_box', 'icl_populate_translations_pickup_box' );
 			add_action( 'wp_ajax_icl_pickup_translations', 'icl_pickup_translations' );
 			add_action( 'wp_ajax_icl_pickup_translations_complete', 'icl_pickup_translations_complete' );
-			add_action( 'wp_ajax_icl_get_blog_users_not_translators', 'icl_get_blog_users_not_translators' );
 			add_action( 'wp_ajax_get_translator_status', array( 'TranslationProxy_Translator', 'get_translator_status_ajax' ) );
 			add_action( 'wp_ajax_wpml-flush-website-details-cache', array( 'TranslationProxy_Translator', 'flush_website_details_cache_action' ) );
 			add_action( 'wpml_updated_translation_status', array( 'TranslationProxy_Batch', 'maybe_assign_generic_batch' ),  10, 2 );
@@ -120,20 +136,20 @@ class WPML_Translation_Management {
 			$this->add_custom_xml_config();
 			}
 
-			add_action( 'icl_wpml_top_menu_added', array( $this, '_icl_hook_top_menu' ) );
-			add_action( 'admin_menu', array( $this, 'menu' ) );
-			add_action( 'admin_menu', array( $this, 'menu_fix_order' ), 999 ); // force 'Translations' at the end
+			add_action( 'wpml_admin_menu_configure', array( $this, 'management_menu' ) );
+			add_action( 'wpml_admin_menu_configure', array( $this, 'translators_menu' ) );
+			add_action( 'wpml_admin_menu_configure', array( $this, 'settings_menu' ) );
 			add_filter( 'plugin_action_links', array( $this, 'plugin_action_links' ), 10, 2 );
 
-			if ( $this->sitepress->get_wp_api()->is_translation_queue_page() ) {
-				//  Use WP_Table_List class to get standard WP pagination links
-				if ( ! class_exists( 'WP_List_Table' ) ) {
-					require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
-				}
-				$this->tm_queue = new WPML_Translations_Queue(
-					$this->sitepress,
-					new WPML_UI_Screen_Options_Factory( $this->sitepress ) );
+			if ( $this->sitepress->get_wp_api()
+			                     ->is_translation_queue_page() ) {
+
+				$translation_queue_factory = new WPML_Translations_Queue_Factory();
+
+				$this->tm_queue = $translation_queue_factory->create();
+				$this->tm_queue->init_hooks();
 			}
+
 			if ( $this->sitepress->get_wp_api()->is_dashboard_tab() ) {
 				$screen_options_factory = new WPML_UI_Screen_Options_Factory( $this->sitepress );
 				$this->dashboard_screen_options = $screen_options_factory->create_pagination( 'tm_dashboard_per_page', ICL_TM_DOCS_PER_PAGE );
@@ -146,7 +162,6 @@ class WPML_Translation_Management {
 			}
 
 			add_action( 'wp_ajax_dismiss_icl_side_by_site', array( $this, 'dismiss_icl_side_by_site' ) );
-			add_action( 'wp_ajax_icl_tm_parent_filter', array( $this, '_icl_tm_parent_filter' ) );
 			add_action( 'wp_ajax_icl_tm_toggle_promo', array( $this, '_icl_tm_toggle_promo' ) );
 			add_action ( 'wpml_support_page_after', array( $this, 'add_com_log_link' ) );
 			add_action ( 'wpml_translation_basket_page_after', array( $this, 'add_com_log_link' ) );
@@ -160,14 +175,26 @@ class WPML_Translation_Management {
 		}
 
 		$this->api_hooks();
+
+		add_filter( 'wpml_config_white_list_pages', array( $this, 'filter_wpml_config_white_list_pages' ) );
 		do_action( 'wpml_tm_loaded' );
 
 		return true;
 	}
 
 	public function api_hooks() {
-		add_action( 'wpml_save_custom_field_translation_option', array( $this, 'wpml_save_custom_field_translation_option' ), 10, 2 );
-  }
+		add_action( 'wpml_save_custom_field_translation_option', array(
+			$this,
+			'wpml_save_custom_field_translation_option'
+		), 10, 2 );
+	}
+
+	public function filter_wpml_config_white_list_pages( array $white_list_pages ) {
+		$white_list_pages[] = WPML_TM_FOLDER . self::PAGE_SLUG_MANAGEMENT;
+		$white_list_pages[] = WPML_TM_FOLDER . self::PAGE_SLUG_SETTINGS;
+
+		return $white_list_pages;
+	}
 
 	public function maybe_show_wpml_not_installed_warning() {
 		if ( ! ( isset( $_GET['page'] ) && 'sitepress-multilingual-cms/menu/languages.php' === $_GET['page'] ) ) {
@@ -201,8 +228,13 @@ class WPML_Translation_Management {
 		return $this->is_tm_page('translators');
 	}
 
+	function is_translation_services_tab() {
+		return $this->is_tm_page('translation-services');
+	}
+
 	function admin_enqueue_scripts() {
 		if ( ! defined( 'DOING_AJAX' ) ) {
+
 			wp_register_script( 'wpml-tm-progressbar', WPML_TM_URL . '/res/js/wpml-progressbar.js', array(
 					'jquery',
 					'jquery-ui-progressbar',
@@ -219,15 +251,28 @@ class WPML_Translation_Management {
 			wp_enqueue_style('wpml-tm-queue', WPML_TM_URL . '/res/css/translations-queue.css', array(), WPML_TM_VERSION);
 
 			if ( filter_input(INPUT_GET, 'page') === WPML_TM_FOLDER . '/menu/main.php' ) {
-				if ( isset( $_GET[ 'sm' ] ) && ( $_GET[ 'sm' ] == 'services' || $_GET[ 'sm' ] === 'translators' ) ) {
-					wp_register_script( 'wpml-tm-translation-services',
-					                    WPML_TM_URL . '/res/js/translation-services.js',
-					                    array( 'wpml-tm-scripts', 'jquery-ui-dialog' ),
-					                    WPML_TM_VERSION );
+				if ( isset( $_GET[ 'sm' ] ) && ( $_GET[ 'sm' ] == 'translation-services' || $_GET[ 'sm' ] === 'translators' ) ) {
+
 					wp_register_script( 'wpml-tm-translation-translators',
-					                    WPML_TM_URL . '/res/js/translation-translators.js',
-					                    array( 'wpml-tm-scripts', 'jquery-ui-autocomplete', 'underscore' ),
+					                    WPML_TM_URL . '/dist/js/translators/app.js',
+					                    array( 'jquery-ui-dialog' ),
 					                    WPML_TM_VERSION );
+					wp_register_script( 'wpml-tm-translation-managers',
+						WPML_TM_URL . '/res/js/translation-managers.js',
+						array( 'wpml-tm-scripts', 'underscore' ),
+						WPML_TM_VERSION );
+
+					wp_enqueue_script( 'wpml-select-2', ICL_PLUGIN_URL . '/lib/select2/select2.min.js', array( 'jquery' ), ICL_SITEPRESS_VERSION, true );
+
+					wp_enqueue_script( 'wpml-tm-translation-roles-select2',
+						WPML_TM_URL . '/res/js/translation-roles-select2.js',
+						array(),
+						WPML_TM_VERSION );
+
+					wp_enqueue_script( 'wpml-tm-set-translation-roles',
+						WPML_TM_URL . '/res/js/set-translation-role.js',
+						array(),
+						WPML_TM_VERSION );
 
 					$active_service = TranslationProxy::get_current_service();
 					$service_name = isset($active_service->name) ? $active_service->name : __('Translation Service', 'wpml-translation-management');
@@ -251,10 +296,14 @@ class WPML_Translation_Management {
 
 					$tm_ts_data = apply_filters( 'translation_service_js_data', $tm_ts_data );
 
-					wp_localize_script( 'wpml-tm-translation-services', 'tm_ts_data', $tm_ts_data );
+					$tm_tm_data = array(
+						'restNonce' => wp_create_nonce( 'wp_rest' ),
+					);
+
 					wp_localize_script( 'wpml-tm-translation-translators', 'tm_tt_data', $tm_tt_data );
-					wp_enqueue_script( 'wpml-tm-translation-services' );
 					wp_enqueue_script( 'wpml-tm-translation-translators' );
+					wp_localize_script( 'wpml-tm-translation-managers', 'tm_tm_data', $tm_tm_data );
+					wp_enqueue_script( 'wpml-tm-translation-managers' );
 				}
 
 				wp_enqueue_script( 'wpml-tm-translation-proxy',
@@ -263,9 +312,12 @@ class WPML_Translation_Management {
 				                   WPML_TM_VERSION );
 			}
 
+			if ( WPML_TM_Page::is_settings() ) {
+				WPML_Simple_Language_Selector::enqueue_scripts();
+			}
+
 			wp_enqueue_style ( 'wp-jquery-ui-dialog' );
 			wp_enqueue_script( 'thickbox' );
-			wp_enqueue_script( 'sitepress-icl_reminders', WPML_TM_URL . '/res/js/icl_reminders.js', array(), WPML_TM_VERSION );
 			do_action('wpml_tm_scripts_enqueued');
 		}
 	}
@@ -319,7 +371,6 @@ class WPML_Translation_Management {
 			$auth_content[] = $authorization_button;
 			$auth_content[] = '</a>';
 			$auth_content[] = $nonce_field;
-			$auth_content[] = '<input type="hidden" name="custom_fields_serialized" id="custom_fields_serialized" value="" />';
 		}
 		if(!TranslationProxy::get_tp_default_suid()) {
 			$auth_content[] = '<a href="#" class="js-deactivate-service button-secondary" data-id="' . $active_service->id . '" data-custom-fields="' . esc_attr( wp_json_encode( $custom_fields ) ) . '">';
@@ -383,45 +434,81 @@ class WPML_Translation_Management {
 			<div class="message updated wpml-admin-notice"><p><?php printf(__('Translation saved.', 'wpml-translation-management') ); ?></p></div>
 		<?php
 	}
-	
+
 	function job_cancelled_message() {
 		?>
 			<div class="message updated wpml-admin-notice"><p><?php printf(__('Translation cancelled.', 'wpml-translation-management') ); ?></p></div>
 		<?php
 	}
-	
-	function _icl_hook_top_menu() {
-		if ( !defined( 'ICL_PLUGIN_PATH' ) ) {
+
+	/**
+	 * @param string $menu_id
+	 */
+	public function management_menu( $menu_id ) {
+		if ( 'WPML' !== $menu_id ) {
 			return;
 		}
-		$top_page = apply_filters( 'icl_menu_main_page', basename( ICL_PLUGIN_PATH ) . '/menu/languages.php' );
+		$menu_label = __( 'Translation Management', 'wpml-translation-management' );
 
-		$menu_label = __('Translation Management', 'wpml-translation-management');
-		add_submenu_page( $top_page, $menu_label, $menu_label, 'wpml_manage_translation_management', WPML_TM_FOLDER . '/menu/main.php', array($this, 'options_page')  );
+		$is_translation_manager = current_user_can( WPML_Manage_Translations_Role::CAPABILITY );
+
+		$menu               = array();
+		$menu['order']      = 400;
+		$menu['page_title'] = $menu_label;
+		$menu['menu_title'] = $menu_label;
+		$menu['capability'] = $is_translation_manager ? WPML_Manage_Translations_Role::CAPABILITY : 'wpml_manage_translation_management';
+		$menu['menu_slug']  = WPML_TM_FOLDER . self::PAGE_SLUG_MANAGEMENT;
+		$menu['function']   = array( $this, 'management_page' );
+
+		do_action( 'wpml_admin_menu_register_item', $menu );
 	}
 
-	function options_page() {
-		$this->wpml_tm_menus->display_main( $this->dashboard_screen_options );
+	function management_page() {
+		$this->wpml_tm_menus_management->display_main( $this->dashboard_screen_options );
 	}
 
 	/**
 	 * Sets up the menu items for non-admin translators pointing at the TM
 	 * and ST translators interfaces
+	 *
+	 * @param string $menu_id
 	 */
-	function menu() {
-		if ( $this->sitepress->setup() ) {
-			$wp_api = $this->sitepress->get_wp_api();
-			if ( $wp_api->current_user_can( 'wpml_manage_translation_management' ) ) {
-				$wp_api->add_submenu_page( apply_filters( 'icl_menu_main_page', ICL_PLUGIN_FOLDER . '/menu/languages.php' ),
-					__( 'Translations', 'wpml-translation-management' ), __( 'Translations', 'wpml-translation-management' ),
-					'wpml_manage_translation_management', WPML_TM_FOLDER . '/menu/translations-queue.php', array( $this, 'translation_queue_page' ) );
-			} elseif ( (bool) $this->tm_instance->get_current_translator()->language_pairs === true ) {
-				$wp_api->add_menu_page( __( 'Translation interface', 'wpml-translation-management' ),
-					__( 'Translation interface', 'wpml-translation-management' ), 'translate',
-					WPML_TM_FOLDER . '/menu/translations-queue.php', array( $this, 'translation_queue_page' ), ICL_PLUGIN_URL . '/res/img/icon16.png' );
-			}
+	function translators_menu( $menu_id ) {
+		if ( 'WPML' !== $menu_id ) {
+			return;
 		}
-	}
+		$wp_api = $this->sitepress->get_wp_api();
+
+		$is_translation_manager = $wp_api->current_user_can( WPML_Manage_Translations_Role::CAPABILITY );
+
+		$can_manage_translation_management = $is_translation_manager ||
+		                                     $wp_api->current_user_can( 'wpml_manage_translation_management' );
+		$has_language_pairs                = (bool) $this->tm_instance->get_current_translator()->language_pairs
+		                                     === true;
+
+	  if ( $can_manage_translation_management || $has_language_pairs ) {
+		  $menu               = array();
+		  $menu['order']      = 400;
+		  $menu['page_title'] = __( 'Translations', 'wpml-translation-management' );
+		  $menu['menu_title'] = __( 'Translations', 'wpml-translation-management' );
+		  $menu['menu_slug']  = WPML_TM_FOLDER . '/menu/translations-queue.php';
+		  $menu['function']   = array( $this, 'translation_queue_page' );
+		  $menu['icon_url']   = ICL_PLUGIN_URL . '/res/img/icon16.png';
+		  $menu['capability'] = $is_translation_manager ? WPML_Manage_Translations_Role::CAPABILITY : 'wpml_manage_translation_management';
+
+		  if ( $can_manage_translation_management ) {
+			  do_action( 'wpml_admin_menu_register_item', $menu );
+		  } elseif ( $has_language_pairs ) {
+			  $menu['capability'] = WPML_Translator_Role::CAPABILITY;
+			  add_menu_page( $menu['page_title'],
+			                 $menu['menu_title'],
+			                 $menu['capability'],
+			                 $menu['menu_slug'],
+			                 $menu['function'],
+			                 $menu['icon_url'] );
+		  }
+	  }
+  }
 
 	/**
 	 * Renders the TM queue
@@ -433,29 +520,38 @@ class WPML_Translation_Management {
 			$this->tm_queue->display();
 		}
 	}
-	
+
+	/**
+	 * @param string $menu_id
+	 */
+	public function settings_menu( $menu_id ) {
+		if ( 'WPML' !== $menu_id ) {
+			return;
+		}
+		$menu_label = __( 'Settings', 'wpml-translation-management' );
+
+		$is_translation_manager = current_user_can( WPML_Manage_Translations_Role::CAPABILITY );
+
+		$menu               = array();
+		$menu['order']      = 9900; // see WPML_Main_Admin_Menu::MENU_ORDER_SETTINGS
+		$menu['page_title'] = $menu_label;
+		$menu['menu_title'] = $menu_label;
+		$menu['capability'] = $is_translation_manager ? WPML_Manage_Translations_Role::CAPABILITY : 'wpml_manage_translation_management';
+		$menu['menu_slug']  = WPML_TM_FOLDER . self::PAGE_SLUG_SETTINGS;
+		$menu['function']   = array( $this, 'settings_page' );
+
+		do_action( 'wpml_admin_menu_register_item', $menu );
+	}
+
+	public function settings_page() {
+		$settings_page = new WPML_TM_Menus_Settings();
+		$settings_page->init();
+		$settings_page->display_main();
+	}
+
 	private function is_the_main_request() {
 		return ! isset( $_SERVER['HTTP_ACCEPT'] ) || false !== strpos( $_SERVER['HTTP_ACCEPT'], 'text/html' );
 	}
-
-    function menu_fix_order(){
-        global $submenu;
-
-        if(!isset($submenu[WPML_TM_FOLDER . '/menu/main.php'])) return;
-
-        // Make sure 'Translations' stays at the end
-        $found = false;
-        foreach($submenu[WPML_TM_FOLDER . '/menu/main.php'] as $id => $sm){
-            if($sm[2] == WPML_TM_FOLDER . '/menu/translations-queue.php'){
-                $found = $sm;
-                unset($submenu[WPML_TM_FOLDER . '/menu/main.php'][$id]);
-                break;
-            }
-        }
-        if($found){
-            $submenu[WPML_TM_FOLDER . '/menu/main.php'][] = $found;
-        }
-    }
 
     function dismiss_icl_side_by_site(){
         global $iclTranslationManagement;
@@ -476,44 +572,6 @@ class WPML_Translation_Management {
     // Localization
     function plugin_localization(){
         load_plugin_textdomain( 'wpml-translation-management', false, WPML_TM_FOLDER . '/locale');
-    }
-
-    //
-    function _icl_tm_parent_filter(){
-        global $sitepress;
-		$current_language = $sitepress->get_current_language();
-		$request_post_type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-		$request_post_lang = filter_input(INPUT_POST, 'lang', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-		$request_post_parent_id = filter_input(INPUT_POST, 'parent_id', FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE);
-		$request_post_parent_all = filter_input(INPUT_POST, 'parent_all', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE);
-		$sitepress->switch_lang($request_post_lang);
-        if($request_post_type == 'page'){
-            $html = wp_dropdown_pages(array('echo'=>0, 'name'=>'filter[parent_id]', 'selected'=>$request_post_parent_id));
-        }elseif($request_post_type == 'category'){
-            $html = wp_dropdown_categories(array('echo'=>0, 'orderby'=>'name', 'name'=>'filter[parent_id]', 'selected'=>$request_post_parent_id));
-        }else{
-            $html = '';
-        }
-        $sitepress->switch_lang($current_language);
-
-        $html .= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-				if(is_null($request_post_parent_all) || $request_post_parent_all) {
-					$checked = ' checked="checked"';
-				} else {
-					$checked="";
-				}
-        $html .= "<label><input type=\"radio\" name=\"filter[parent_all]\" value=\"1\" {$checked} />&nbsp;" . __('Show all items under this parent.', 'wpml-translation-management') . '</label>';
-        $html .= "<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        if(empty($request_post_parent_all)) {
-					$checked = ' checked="checked"';
-				} else {
-					$checked="";
-				}
-        $html .= "<label><input type=\"radio\" name=\"filter[parent_all]\" value=\"0\" {$checked} />&nbsp;" . __('Show only items that are immediately under this parent.', 'wpml-translation-management') . '</label>';
-
-        echo wp_json_encode(array('html'=>$html));
-        exit;
-
     }
 
 	function _icl_tm_toggle_promo() {
@@ -635,22 +693,10 @@ class WPML_Translation_Management {
 
 	private function service_authentication_notice() {
 		$message_id = 'current_service_authentication_required';
-		if ( $this->service_activation_incomplete() ) {
+		if ( current_user_can( WPML_Manage_Translations_Role::CAPABILITY ) && $this->service_activation_incomplete() ) {
 			$current_service_name = TranslationProxy::get_current_service_name();
 
-			if ( $this->is_translators_tab() ) {
-				if ( $this->service_requires_translators() && 'ICanLocalize' === $current_service_name ) {
-					$message     = __( 'You selected %1$s as your translation service. Next, you need to add translators from %1$s to your site. Click on the "Add translators" button. Select the source and target language and choose %1$s as the source of the translator. You can add different translators between different languages.', 'wpml-translation-management' );
-					$button_text = __( 'Getting started with ICanLocalize', 'wpml-translation-management' );
-					$button_url  = 'https://wpml.org/translation-service/icanlocalize/';
-
-					$notification_message = '';
-					$notification_message .= '<p>';
-					$notification_message .= sprintf( $message, $current_service_name );
-					$notification_message .= '</p>';
-					$notification_message .= '<a href="' . $button_url . '" target="_blank">' . $button_text . '</a>';
-				}
-			} else {
+			if( ! $this->is_translation_services_tab() ) {
 				$service_tab_name    = esc_html__( 'Translation Services Tab', 'wpml-translation-management' );
 				$translator_tab_name = esc_html__( 'Translators Tab', 'wpml-translation-management' );
 

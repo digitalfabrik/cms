@@ -105,7 +105,11 @@ class WPML_URL_Converter_Subdir_Strategy extends WPML_URL_Converter_Abstract_Str
 			}
 		}
 
-		return $this->slash_helper->maybe_user_trailingslashit( $source_url, 'untrailingslashit' );
+		return $this->slash_helper->maybe_user_trailingslashit( $source_url, 'trailingslashit' );
+	}
+
+	public function convert_admin_url_string( $source_url, $lang ) {
+		return $source_url; // Admin strings should not be converted with language in directories
 	}
 
 	/**

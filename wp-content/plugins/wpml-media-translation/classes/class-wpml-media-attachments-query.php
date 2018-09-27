@@ -3,7 +3,7 @@
 /**
  * Class WPML_Media_Attachments_Query
  */
-class WPML_Media_Attachments_Query {
+class WPML_Media_Attachments_Query implements IWPML_Action {
 
 
 	public function add_hooks(){
@@ -13,9 +13,9 @@ class WPML_Media_Attachments_Query {
 	/**
 	 * Set `suppress_filters` to false if attachment is displayed.
 	 *
-	 * @param $query
+	 * @param WP_Query $query
 	 *
-	 * @return mixed
+	 * @return WP_Query
 	 */
 	public function adjust_attachment_query( $query ) {
 		if ( isset( $query->query['post_type'] ) && 'attachment' === $query->query['post_type'] ) {

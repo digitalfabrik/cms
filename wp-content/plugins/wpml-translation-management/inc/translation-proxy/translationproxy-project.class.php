@@ -365,7 +365,8 @@ class TranslationProxy_Project {
 		$target_language,
 		$word_count,
 		$translator_id = 0,
-		$note = ''
+		$note = '',
+		$uuid = null
 	) {
 
 		$batch_id = $this->get_batch_job_id();
@@ -379,6 +380,7 @@ class TranslationProxy_Project {
 			'word_count'      => $word_count,
 			'title'           => $title,
 			'cms_id'          => $cms_id,
+			'udid'            => $uuid,
 			'url'             => $url,
 			'translator_id'   => $translator_id,
 			'note'            => $note,

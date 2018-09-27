@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Translation Management
 Plugin URI: https://wpml.org/
-Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-5-2/">WPML Translation Management 2.5.2 release notes</a>
+Description: Add a complete translation process for WPML | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/translation-management-2-6-7/">WPML Translation Management 2.6.7 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 2.5.2
+Version: 2.6.7
 Plugin Slug: wpml-translation-management
 */
 
@@ -13,29 +13,14 @@ if ( defined( 'WPML_TM_VERSION' ) || get_option( '_wpml_inactive' ) ) {
 	return;
 }
 
-/** @var array $bundle */
-$bundle = json_decode( file_get_contents( dirname( __FILE__ ) . '/wpml-dependencies.json' ), true );
-if ( defined( 'ICL_SITEPRESS_VERSION' ) && is_array( $bundle ) ) {
-	$sp_version_stripped = ICL_SITEPRESS_VERSION;
-	$dev_or_beta_pos = strpos( ICL_SITEPRESS_VERSION, '-' );
-	if ( $dev_or_beta_pos > 0 ) {
-		$sp_version_stripped = substr( ICL_SITEPRESS_VERSION, 0, $dev_or_beta_pos );
-	}
-	if ( version_compare( $sp_version_stripped, $bundle[ 'sitepress-multilingual-cms' ], '<' ) ) {
-		return;
-	}
-}
-
-define( 'WPML_TM_VERSION', '2.5.2' );
+define( 'WPML_TM_VERSION', '2.6.7' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
 //define( 'WPML_TM_DEV_VERSION', '2.0.3-dev' );
 
-define( 'WPML_TM_PATH', dirname( __FILE__ ) );
-
-if ( ! defined( 'WPML_TM_WC_CHUNK' ) ) {
-	define( 'WPML_TM_WC_CHUNK', 1000 );
+if ( ! defined( 'WPML_TM_PATH' ) ) {
+    define('WPML_TM_PATH', dirname(__FILE__));
 }
 
 $autoloader_dir = WPML_TM_PATH . '/vendor';
@@ -53,10 +38,15 @@ require_once WPML_TM_PATH . '/inc/js-scripts.php';
 
 new WPML_TM_Requirements();
 
-function wpml_tm_load_ui( $sitepress = null ) {
+function wpml_tm_load( $sitepress = null ) {
+	if ( ! WPML_Core_Version_Check::is_ok( dirname( __FILE__ ) . '/wpml-dependencies.json' ) ) {
+		return;
+	}
+
 	if ( ! $sitepress ) {
 		global $sitepress;
 	}
+
 	if ( ! $sitepress || ! $sitepress instanceof SitePress || ! $sitepress->is_setup_complete() ) {
 		return;
 	}
@@ -64,7 +54,8 @@ function wpml_tm_load_ui( $sitepress = null ) {
 	require_once WPML_TM_PATH . '/menu/basket-tab/sitepress-table-basket.class.php';
 	require_once WPML_TM_PATH . '/menu/dashboard/wpml-tm-dashboard.class.php';
 	require_once WPML_TM_PATH . '/menu/wpml-tm-menus.class.php';
-	require_once WPML_TM_PATH . '/menu/wpml-translator-settings.class.php';
+
+	$action_filter_loader = new WPML_Action_Filter_Loader();
 
 	if ( version_compare( ICL_SITEPRESS_VERSION, '3.3.1', '>=' ) ) {
 		global $wpdb, $WPML_Translation_Management, $ICL_Pro_Translation;
@@ -73,6 +64,7 @@ function wpml_tm_load_ui( $sitepress = null ) {
 		$tm_loader                   = new WPML_TM_Loader();
 		$wpml_tp_translator          = new WPML_TP_Translator();
 		$WPML_Translation_Management = new WPML_Translation_Management( $sitepress, $tm_loader, $core_translation_management, $wpml_tp_translator );
+		$WPML_Translation_Management->init();
 		$WPML_Translation_Management->load();
 
 		if ( ! $ICL_Pro_Translation ) {
@@ -95,8 +87,6 @@ function wpml_tm_load_ui( $sitepress = null ) {
 				$wpml_tm_pickup_mode_ajax->ajax_hooks();
 			}
 		}
-
-		$action_filter_loader = new WPML_Action_Filter_Loader();
 
 		if ( class_exists( 'WPML_TF_Settings_Read' ) ) {
 			$tf_settings_read = new WPML_TF_Settings_Read();
@@ -122,35 +112,42 @@ function wpml_tm_load_ui( $sitepress = null ) {
 		'WPML_TM_Default_Settings_Factory',
 		'WPML_TP_Lock_Notice_Factory',
 		'WPML_TM_API_Hooks_Factory',
+		'WPML_TM_Parent_Filter_Ajax_Factory',
+		'WPML_TM_Upgrade_Loader_Factory',
+		'WPML_TM_Translation_Priorities_Factory',
+		'WPML_Upgrade_Admins_To_Manage_Translations_Factory',
+		'WPML_Translation_Roles_Ajax_Factory',
+		'WPML_TM_Wizard_Steps_Factory',
+		'WPML_TM_Translation_Basket_Hooks_Factory',
+		'WPML_TM_Word_Count_Hooks_Factory',
+		'WPML_TM_Admin_Menus_Factory',
+		'WPML_TM_Privacy_Content_Factory',
+		'WPML_TM_ATE_Translator_Login_Factory',
 	);
-
-	$action_filter_loader = new WPML_Action_Filter_Loader();
 	$action_filter_loader->load( $actions );
+
+	$rest_actions = array(
+		'WPML_TM_REST_ATE_Jobs_Factory',
+		'WPML_TM_REST_XLIFF_Factory',
+		'WPML_TM_REST_AMS_Clients_Factory',
+		'WPML_TM_REST_ATE_API_Factory',
+		'WPML_TM_REST_Jobs_Factory',
+		'WPML_TM_REST_ATE_Public_Factory',
+		'WPML_TM_REST_Settings_Translation_Editor_Factory',
+	);
+	$action_filter_loader->load( $rest_actions );
+
+	$ams_ate_actions = array(
+		'WPML_TM_AMS_Synchronize_Actions_Factory',
+		'WPML_TM_ATE_Jobs_Store_Actions_Factory',
+		'WPML_TM_ATE_Jobs_Actions_Factory',
+		'WPML_TM_ATE_Post_Edit_Actions_Factory',
+		'WPML_TM_ATE_Translator_Message_Classic_Editor_Factory',
+	);
+	$action_filter_loader->load( $ams_ate_actions );
 }
 
-add_action( 'wpml_loaded', 'wpml_tm_load_ui', 10, 1 );
-
-function wpml_tm_word_count_init() {
-	global $sitepress, $wpdb;
-
-	$wpml_wp_api = $sitepress->get_wp_api();
-	$wpml_tm_words_count = new WPML_TM_Words_Count( $wpdb, $sitepress );
-	$wpml_tm_words_count->init();
-
-	if ( $wpml_wp_api->is_dashboard_tab() ) {
-		new WPML_TM_Words_Count_Resources( $wpml_wp_api );
-		new WPML_TM_Words_Count_Box_UI( $wpml_wp_api );
-	}
-
-	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-		$wpml_tm_words_count_summary = new WPML_TM_Words_Count_Summary_UI( $wpml_tm_words_count, $wpml_wp_api );
-		new WPML_TM_Words_Count_AJAX( $wpml_tm_words_count, $wpml_tm_words_count_summary, $wpml_wp_api );
-	}
-}
-
-if ( is_admin() && isset( $GLOBALS['sitepress'] ) ) {
-	add_action( 'wpml_tm_loaded', 'wpml_tm_word_count_init' );
-}
+add_action( 'wpml_loaded', 'wpml_tm_load', 10, 1 );
 
 /**
  * @param array $blocks
@@ -184,5 +181,20 @@ if ( ! empty( $GLOBALS['sitepress'] ) && is_admin() ) {
 	add_action( 'wpml_tm_loaded', 'wpml_tm_icl20_migration' );
 }
 
+add_filter( 'wpml_reset_options', 'wpml_tm_reset_options' );
+function wpml_tm_reset_options( array $options ) {
+	$options[] = WPML_TM_ATE_Job_Records::WPML_TM_ATE_JOB_RECORDS;
+	$options[] = WPML_TM_ATE_Authentication::AMS_DATA_KEY;
+	$options[] = WPML_Upgrade_Admins_To_Manage_Translations_Factory::HAS_RUN_OPTION;
+	$options[] = WPML_TM_Wizard_For_Manager_Options::WIZARD_COMPLETE;
+	$options[] = WPML_TM_Wizard_For_Manager_Options::CURRENT_STEP;
 
+	return $options;
+}
 
+add_filter( 'wpml_reset_user_options', 'wpml_tm_reset_user_options' );
+function wpml_tm_reset_user_options( array $options ) {
+	$options[] = WPML_TM_Menus_Management::SKIP_TM_WIZARD_META_KEY;
+
+	return $options;
+}

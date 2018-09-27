@@ -91,7 +91,7 @@ function em_admin_dashicon(){
 	<style type="text/css">
 		@font-face {
 		  font-family: 'em_dashicons';
-		  src: url('../fonts/em-dashicons.eot'); // this is for IE
+		  src: url('<?php echo EM_DIR_URI; ?>includes/fonts/em-dashicons.eot'); // this is for IE
 		}
 		@font-face {
 		  font-family: 'em_dashicons';

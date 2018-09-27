@@ -31,6 +31,7 @@ class WPML_WPSEO_Filters {
 		add_filter( 'wpml_translatable_user_meta_fields', array( $this, 'translatable_user_meta_fields_filter' ) );
 		add_action( 'wpml_before_make_duplicate',         array( $this, 'before_make_duplicate_action' ) );
 		add_filter( 'wpseo_canonical',                    array( $this, 'canonical_filter' ) );
+		add_filter( 'wpml_must_translate_canonical_url',  array( $this, 'must_translate_canonical_url_filter' ), 10, 2 );
 	}
 
 	/**
@@ -72,5 +73,25 @@ class WPML_WPSEO_Filters {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Filter canonical url. If Yoast canonical is set, returns false, otherwise returns $should_translate.
+	 * False is the signal that Yoast canonical exists and we have to stop further processing of url.
+	 *
+	 * @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-5707
+	 *
+	 * @param bool $should_translate Should translate flag.
+	 * @param WPML_Post_Element $post_element Post Element
+	 *
+	 * @return bool
+	 */
+	public function must_translate_canonical_url_filter( $should_translate, $post_element ) {
+		$post_id = $post_element->get_element_id();
+		if ( $post_id && get_post_meta( $post_id, '_yoast_wpseo_canonical', true ) ) {
+			return false;
+		}
+
+		return $should_translate;
 	}
 }
