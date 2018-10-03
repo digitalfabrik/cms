@@ -13,7 +13,9 @@ function write_firebase_notification() {
 	}
 
 	wp_enqueue_style( 'ig-fb-style-send', plugin_dir_url(__FILE__) . '/css/send.css' );
-	wp_enqueue_script( 'ig-fb-js-send', plugin_dir_url(__FILE__) . '/js/send.js' );
+	wp_enqueue_script('char-count', plugin_dir_url(__FILE__) . 'js/jquery-simply-countable/jquery.simplyCountable.js');
+	wp_enqueue_script( 'ig-fb-js-send', plugin_dir_url(__FILE__) . 'js/send.js');
+
 	// display form
 	echo write_firebase_notification_form();
 }
@@ -64,8 +66,8 @@ function write_firebase_notification_form() {
 				<a href='#".$default."'>".$value['translated_name']."</a>
 				<div>
 					<table class='tabtable'>
-						<tr><td>".__('Title', 'firebase-notifications')."</td><td><input name='pn-title_".$value['code']."' type='text' class='pn-title' maxlength='50'></td></tr>
-						<tr><td>".__('Message', 'firebase-notifications')."</td><td><textarea name='pn-message_".$value['code']."' class='pn-message' maxlength='140'></textarea></td></tr>
+						<tr><td>".__('Title', 'firebase-notifications')."</td><td><input name='pn-title_".$value['code']."' type='text' class='pn-title' maxlength='50'></td><td>Sie haben noch <span class='counter'></span> Zeichen übrig!</td></tr>
+						<tr><td>".__('Message', 'firebase-notifications')."</td><td><textarea name='pn-message_".$value['code']."' class='pn-message' maxlength='140'></textarea></td><td>Sie haben noch <span class='counter2'></span> Zeichen übrig!</td></tr>
 					</table>
 				</div>
 			</div>
