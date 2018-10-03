@@ -9,19 +9,19 @@ class WPML_TM_Package_Element extends WPML_TM_Translatable_Element {
 	private $st_package;
 
 	/**
-	 * @param                              $id
-	 * @param SitePress                    $sitepress
-	 * @param wpdb                         $wpdb
-	 * @param WPML_ST_Package_Factory|null $st_package_factory
+	 * @param int                               $id
+	 * @param WPML_TM_Word_Count_Records        $word_count_records
+	 * @param WPML_TM_Word_Count_Single_Process $single_process
+	 * @param WPML_ST_Package_Factory|null      $st_package_factory
 	 */
 	public function __construct(
 		$id,
-		SitePress $sitepress,
-		wpdb $wpdb,
+		WPML_TM_Word_Count_Records $word_count_records,
+		WPML_TM_Word_Count_Single_Process $single_process,
 		WPML_ST_Package_Factory $st_package_factory = null
 	) {
 		$this->st_package_factory = $st_package_factory;
-		parent::__construct( $id, $sitepress, $wpdb );
+		parent::__construct( $id, $word_count_records, $single_process );
 
 	}
 
@@ -32,22 +32,13 @@ class WPML_TM_Package_Element extends WPML_TM_Translatable_Element {
 		}
 	}
 
+	protected function get_type() {
+		return 'package';
+	}
+
 	/** @return int */
-	public function get_words_count() {
-		$result = 0;
-
-		if ( $this->st_package ) {
-			$lang    = $this->st_package->get_package_language();
-			$strings = $this->st_package->get_package_strings();
-
-			if ( $strings ) {
-				foreach ( $strings as $string ) {
-					$result += $this->get_string_words_count( $lang, $string->value );
-				}
-			}
-		}
-
-		return $result;
+	protected function get_total_words() {
+		return $this->word_count_records->get_package_word_count( $this->id )->get_total_words();
 	}
 
 	/**

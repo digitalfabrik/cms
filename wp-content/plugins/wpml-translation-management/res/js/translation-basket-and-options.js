@@ -502,7 +502,7 @@
 										call_to_action = jQuery('<p>' + result.result.call_to_action + '</p>');
 										update_message(call_to_action, true, 'updated', true);
 									}
-                                    batch_send_basket_to_tp_completed();
+                                    batch_send_basket_to_tp_completed(result);
 								} else {
                                     handle_response(result);
                                     batch_send_basket_to_tp_rollback();
@@ -523,7 +523,7 @@
                 };
 
 
-				var batch_send_basket_to_tp_completed = function () {
+				var batch_send_basket_to_tp_completed = function (response) {
 					update_message('Done', false, 'updated', true);
 					progress_bar_object.complete(progressbar_finish_text, progressbar_callback);
 					form_send_button.attr('disabled', 'disabled');
@@ -534,7 +534,12 @@
 					batch_deadline.attr('readonly', 'readonly');
 					form.attr('disabled', 'disabled');
 					form.attr('readonly', 'readonly');
-					
+					form.trigger('wpml-tm-basket-submitted', response);
+
+					if (0 === wpmlTMBasket.dialogs.length) {
+						location.href = wpmlTMBasket.redirect;
+					}
+
 					// hide the badge
 					jQuery('#wpml-basket-items').hide();
 

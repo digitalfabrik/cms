@@ -111,10 +111,9 @@ class WPML_TranslationProxy_Communication_Log {
 	public function add_com_log_link() {
 		$url = esc_attr( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=com-log' );
 		?>
-			<p style="margin-top: 20px;">
-		  <?php printf( __( 'For retrieving debug information for communication between your site and the translation system, use the <a href="%s">communication log</a> page.',
-		                    'wpml-translation-management' ),
-		                $url ); ?>
+			<p class="wpml-tm-basket-help-text">
+		  <?php printf( __( 'For retrieving debug information for communication between your%s site and the translation system, use the <a href="%s">communication log</a> page.',
+		                    'wpml-translation-management' ), '<br>', $url ); ?>
 			</p>
 		<?php
 	}

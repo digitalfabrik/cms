@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class WPML_Translation_Job_Factory
+ *
+ * Use `wpml_tm_load_job_factory` to get an instance of this class
+ */
 class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 
 	/** @var  WPML_TM_Records $tm_records */
@@ -47,20 +52,37 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 	 * @return int|null
 	 */
 	public function create_local_post_job( $post_id, $target_language_code, $translator_id = null ) {
-		/**
-		 * @var $wpml_post_translations   WPML_Post_Translation
-		 * @var $iclTranslationManagement TranslationManagement
-		 */
-		global $wpml_post_translations, $iclTranslationManagement;
+		return $this->create_local_job( $post_id, $target_language_code, $translator_id );
+	}
 
-		$source_language_code = $wpml_post_translations->get_element_lang_code( $post_id );
-		$trid                 = $wpml_post_translations->get_element_trid( $post_id );
-		if ( $source_language_code && $trid ) {
+	public function create_local_job( $element_id, $target_language_code, $translator_id, $element_type = null ) {
+		/**
+		 * @var TranslationManagement $iclTranslationManagement
+		 */
+		global $iclTranslationManagement;
+
+		$trid                = null;
+		$element_type_prefix = 'post';
+
+		if ( $element_type ) {
+			$element_type_prefix = preg_replace( '#^([^_]+)(.*)$#', "$1", $element_type );
+		}
+
+		$translation_record = $this->tm_records()
+		                           ->icl_translations_by_element_id_and_type_prefix( $element_id, $element_type_prefix );
+
+		if ( $translation_record ) {
+			$trid = $translation_record->trid();
+
 			$dummy_basket_data = array(
-				'post'           => array( $post_id ),
-				'translate_from' => $source_language_code,
-				'translate_to'   => array( $target_language_code => 1 )
+				'post'                => array( $element_id ),
+				'translate_from'      => $translation_record->language_code(),
+				'translate_to'        => array( $target_language_code => 1 ),
 			);
+
+			if ( $element_type ) {
+				$dummy_basket_data['element_type_prefix'] = $element_type_prefix;
+			}
 
 			if ( null !== $translator_id ) {
 				$dummy_basket_data['translators'] = array( $target_language_code => $translator_id );
@@ -347,6 +369,7 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				{$icl_translation_status_alias}.status,
 				{$icl_translation_status_alias}.needs_update,
 				{$icl_translation_status_alias}.translation_service,
+				{$icl_translation_status_alias}.uuid,
 				{$icl_translations_translated_alias}.trid,
 				{$icl_translations_translated_alias}.language_code,
 				{$icl_translations_translated_alias}.source_language_code,
@@ -359,7 +382,7 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 	}
 
 	private function add_job_elements( $job, $include_non_translatable_elements ) {
-		global $wpdb;
+		global $wpdb, $sitepress;
 
 		$jelq = ! $include_non_translatable_elements ? ' AND field_translate = 1' : '';
 

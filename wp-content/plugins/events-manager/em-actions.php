@@ -221,6 +221,9 @@ function em_init_actions() {
 				}elseif( !is_user_logged_in() ){
 					$location_cond = " AND location_private=0";		    
 				}
+				if( EM_MS_GLOBAL && !get_site_option('dbem_ms_mainblog_locations') ){
+					$location_cond .= " AND blog_id=". absint(get_current_blog_id());
+				}
 				$location_cond = apply_filters('em_actions_locations_search_cond', $location_cond);
 				$term = (isset($_REQUEST['term'])) ? '%'.$wpdb->esc_like(wp_unslash($_REQUEST['term'])).'%' : '%'.$wpdb->esc_like(wp_unslash($_REQUEST['q'])).'%';
 				$sql = $wpdb->prepare("

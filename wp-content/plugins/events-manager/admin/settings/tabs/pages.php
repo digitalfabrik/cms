@@ -16,15 +16,15 @@
 			<p class="em-boxheader"><?php _e('You can change the permalink structure of your events, locations, categories and tags here. Be aware that you may want to set up redirects if you change your permalink structures to maintain SEO rankings.','events-manager'); ?></p>
         	<table class="form-table">
         	<?php
-        	em_options_input_text ( __( 'Events', 'events-manager'), 'dbem_cp_events_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'</code>/2012-olympics/</strong>'), EM_POST_TYPE_EVENT_SLUG );
+        	em_options_input_text ( __( 'Events', 'events-manager'), 'dbem_cp_events_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.esc_html(get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG)).'</code>/2012-olympics/</strong>'), EM_POST_TYPE_EVENT_SLUG );
 			if( get_option('dbem_locations_enabled')  && !(EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') && !is_main_site()) ){
-            	em_options_input_text ( __( 'Locations', 'events-manager'), 'dbem_cp_locations_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.get_option('dbem_cp_locations_slug',EM_POST_TYPE_LOCATION_SLUG).'</code>/wembley-stadium/</strong>'), EM_POST_TYPE_LOCATION_SLUG );
+            	em_options_input_text ( __( 'Locations', 'events-manager'), 'dbem_cp_locations_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.esc_html(get_option('dbem_cp_locations_slug',EM_POST_TYPE_LOCATION_SLUG)).'</code>/wembley-stadium/</strong>'), EM_POST_TYPE_LOCATION_SLUG );
 			}
         	if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ){
-        		em_options_input_text ( __( 'Event Categories', 'events-manager'), 'dbem_taxonomy_category_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.get_option('dbem_taxonomy_category_slug',EM_TAXONOMY_CATEGORY_SLUG).'</code>/sports/</strong>'), EM_TAXONOMY_CATEGORY_SLUG );
+        		em_options_input_text ( __( 'Event Categories', 'events-manager'), 'dbem_taxonomy_category_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.esc_html(get_option('dbem_taxonomy_category_slug',EM_TAXONOMY_CATEGORY_SLUG)).'</code>/sports/</strong>'), EM_TAXONOMY_CATEGORY_SLUG );
         	}
         	if( get_option('dbem_tags_enabled') ){
-            	em_options_input_text ( __( 'Event Tags', 'events-manager'), 'dbem_taxonomy_tag_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.get_option('dbem_taxonomy_tag_slug',EM_TAXONOMY_TAG_SLUG).'</code>/running/</strong>'), EM_TAXONOMY_TAG_SLUG );
+            	em_options_input_text ( __( 'Event Tags', 'events-manager'), 'dbem_taxonomy_tag_slug', sprintf(__('e.g. %s - you can use / Separators too', 'events-manager'), '<strong>'.home_url().'/<code>'.esc_html(get_option('dbem_taxonomy_tag_slug',EM_TAXONOMY_TAG_SLUG)).'</code>/running/</strong>'), EM_TAXONOMY_TAG_SLUG );
         	}
         	echo $save_button;
         	?>
@@ -72,7 +72,7 @@
 			<tr class="em-header">
 				<td colspan="2">
 					<h4><?php echo sprintf(__('WordPress %s Archives','events-manager'), __('Event','events-manager')); ?></h4>
-					<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s', 'events-manager'), __('Event','events-manager'), '<code>'.home_url().'/'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'/</code>', __('events','events-manager')); ?></p>
+					<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s', 'events-manager'), __('Event','events-manager'), '<code>'.home_url().'/'.esc_html(get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG)).'/</code>', __('events','events-manager')); ?></p>
 					<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default setting, and is recommended for maximum plugin compatibility). You can have both at the same time, but you must ensure that your page and %s slugs are different.','events-manager'), __('events','events-manager'), __('event','events-manager')); ?></p>
 				</td>
 			</tr>
@@ -256,7 +256,7 @@
 			<tr class="em-header">
 				<td colspan="2">
 					<h4><?php echo sprintf(__('WordPress %s Archives','events-manager'), __('Location','events-manager')); ?></h4>
-					<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s', 'events-manager'), __('Location','events-manager'), '<code>'.home_url().'/'.get_option('dbem_cp_locations_slug',EM_POST_TYPE_LOCATION_SLUG).'/</code>', __('locations','events-manager')); ?></p>
+					<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s', 'events-manager'), __('Location','events-manager'), '<code>'.home_url().'/'.esc_html(get_option('dbem_cp_locations_slug',EM_POST_TYPE_LOCATION_SLUG)).'/</code>', __('locations','events-manager')); ?></p>
 					<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default settings, and is recommended for maximum plugin compatibility). You can have both at the same time, but you must ensure that your page and %s slugs are different.','events-manager'), __('locations','events-manager'), __('location','events-manager')); ?></p>
 				</td>
 			</tr>

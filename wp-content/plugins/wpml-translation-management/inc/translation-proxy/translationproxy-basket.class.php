@@ -149,9 +149,13 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			self::get_basket();
 			$basket_items_count = self::get_basket_items_count(true);
 
+			$limit_to_page = array();
+			if ( defined( 'WPML_ST_FOLDER' ) ) {
+				$limit_to_page[] = WPML_ST_FOLDER . '/menu/string-translation.php';
+			}
 
 			// if we have something in the basket
-			if ( $basket_items_count > 0 && ( !isset($_GET['clear_basket']) || $_GET['clear_basket'] != 1 ) && ( !isset($_GET['action']) || $_GET['action'] != 'delete' ) ){
+			if ( self::is_st_page() && $basket_items_count > 0 && ( !isset($_GET['clear_basket']) || $_GET['clear_basket'] != 1 ) && ( !isset($_GET['action']) || $_GET['action'] != 'delete' ) ){
 
 				$text =  __( 'The items you have selected are now in the translation basket &ndash;', 'wpml-translation-management' );
 				$text .= ' ' . sprintf( __( '<a href="%s">Send to translation &raquo;</a>', 'wpml-translation-management' ), $basket_link );
@@ -166,6 +170,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 					'admin_notice'		=> false,
 					'hide_per_user'		=> false,
 					'dismiss_per_user'	=> false,
+					'limit_to_page'     => $limit_to_page,
 					'capability'		=> 'manage_options',
 				);
 				ICL_AdminNotifier::add_message( $message_args );
@@ -175,7 +180,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			}
 
 			$admin_basket_message_id = $positions[ 'admin_notice' ];
-			if ( self::$messages || $basket_items_count > 0 ) {
+			if ( ( self::$messages || $basket_items_count > 0 ) && self::is_st_page() ) {
 
 				$additional_messages = array();
 				if ( isset( self::$messages ) && is_array( self::$messages ) ) {
@@ -187,9 +192,6 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 				if ( count( $additional_messages ) > 0 ) {
 					$additional_messages_text = '<ul><li>' . implode( '</li><li>', $additional_messages ) . '</li></ul>';
 				}
-                
-				$limit_to_page = array();
-				$limit_to_page[] = WPML_TM_FOLDER . '/menu/main.php';
 
 				$message_args = array(
 					'id'               => $admin_basket_message_id,
@@ -211,6 +213,10 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 			} else {
 				ICL_AdminNotifier::remove_message( $admin_basket_message_id );
 			}
+		}
+
+		private static function is_st_page() {
+			return defined( 'WPML_ST_FOLDER' ) && array_key_exists( 'page', $_GET ) && false !== strpos( $_GET['page'], WPML_ST_FOLDER );
 		}
 
 		/**

@@ -6,14 +6,15 @@
 class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	private $xliff_version;
 	const TAB = "\t";
+	const FIELD_FINISHED = '1';
 
 	/**
 	 * WPML_TM_xliff constructor.
 	 *
 	 * @param WPML_Translation_Job_Factory $job_factory
-	 * @param string                       $xliff_version
+	 * @param string                      $xliff_version
 	 */
-	public function __construct( &$job_factory, $xliff_version = TRANSLATION_PROXY_XLIFF_VERSION ) {
+	public function __construct( $job_factory, $xliff_version = TRANSLATION_PROXY_XLIFF_VERSION ) {
 		parent::__construct( $job_factory );
 		$this->xliff_version = $xliff_version;
 	}
@@ -66,6 +67,7 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	 * @return resource XLIFF file
 	 */
 	public function get_strings_xliff_file( $strings, $source_language, $target_language ) {
+		$strings = $this->pre_populate_strings_with_translation_memory( $strings, $source_language, $target_language );
 
 		return $this->generate_xliff_file(
 			$this->generate_xliff(
@@ -124,12 +126,60 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	 */
 	private function generate_strings_translation_units_data( $strings ) {
 		$translation_units = array();
+
 		foreach ( $strings as $string ) {
 			$id                  = 'string-' . $string->id;
-			$translation_units[] = $this->get_translation_unit_data( $id, 'string', $string->value, $string->value );
+			$translation_units[] = $this->get_translation_unit_data( $id, 'string', $string->value, $string->translation, $string->translated_from_memory );
 		}
 
 		return $translation_units;
+	}
+
+	/**
+	 * @param stdClass[] $strings
+	 * @param string     $source_lang
+	 * @param string     $target_lang
+	 *
+	 * @return stdClass[]
+	 */
+	private function pre_populate_strings_with_translation_memory( $strings, $source_lang, $target_lang ) {
+		$strings_to_translate    = wp_list_pluck( $strings, 'value' );
+		$original_translated_map = $this->get_original_translated_map_from_translation_memory( $strings_to_translate, $source_lang, $target_lang );
+
+		foreach ( $strings as &$string ) {
+			$string->translated_from_memory = false;
+			$string->translation            = $string->value;
+
+			if ( array_key_exists( $string->value, $original_translated_map ) ) {
+				$string->translation = $original_translated_map[ $string->value ];
+				$string->translated_from_memory = true;
+			}
+		}
+
+		return $strings;
+	}
+
+	/**
+	 * @param array  $strings_to_translate
+	 * @param string $source_lang
+	 * @param string $target_lang
+	 *
+	 * @return array
+	 */
+	private function get_original_translated_map_from_translation_memory( $strings_to_translate, $source_lang, $target_lang ) {
+		$args = array(
+			'strings'     => $strings_to_translate,
+			'source_lang' => $source_lang,
+			'target_lang' => $target_lang,
+		);
+
+		$strings_in_memory = apply_filters( 'wpml_st_get_translation_memory', array(), $args );
+
+		if ( $strings_in_memory ) {
+			return wp_list_pluck( $strings_in_memory, 'translation', 'original' );
+		}
+
+		return array();
 	}
 
 	/**
@@ -147,6 +197,8 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		/** @var array $elements */
 		$elements = $job->elements;
 		if ( $elements ) {
+			$elements = $this->pre_populate_elements_with_translation_memory( $elements, $job->source_language_code, $job->language_code );
+
 			foreach ( $elements as $element ) {
 				if ( 1 === (int) $element->field_translate ) {
 					$field_data_translated = base64_decode( $element->field_data_translated );
@@ -167,7 +219,8 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 						$translation_units[] = $this->get_translation_unit_data( $element->field_type,
 						                                                         $element->field_type,
 						                                                         $field_data,
-						                                                         $field_data_translated );
+						                                                         $field_data_translated,
+						                                                         $element->translated_from_memory );
 					}
 				}
 			}
@@ -175,24 +228,71 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		return $translation_units;
 	}
 
-	private function get_translation_unit_data( $field_id, $field_name, $field_data, $field_data_translated ) {
+	/**
+	 * @param array  $elements
+	 * @param string $source_lang
+	 * @param string $target_lang
+	 *
+	 * @return array
+	 */
+	private function pre_populate_elements_with_translation_memory( array $elements, $source_lang, $target_lang ) {
+		$strings_to_translate = array();
+
+		foreach ( $elements as &$element ) {
+			$element->translated_from_memory = false;
+
+			if ( self::FIELD_FINISHED !== $element->field_finished && preg_match( '/^package-string/', $element->field_type ) ) {
+				$strings_to_translate[ $element->tid ] = base64_decode( $element->field_data );
+			}
+		}
+
+		$original_translated_map = $this->get_original_translated_map_from_translation_memory( $strings_to_translate, $source_lang, $target_lang );
+
+		if ( $original_translated_map ) {
+
+			foreach ( $elements as &$element ) {
+
+				if ( self::FIELD_FINISHED !== $element->field_finished
+				     && array_key_exists( $element->tid, $strings_to_translate )
+				     && array_key_exists( $strings_to_translate[ $element->tid ], $original_translated_map )
+				) {
+					$element->field_data_translated  = base64_encode( $original_translated_map[ $strings_to_translate[ $element->tid ] ] );
+					$element->translated_from_memory = true;
+				}
+			}
+		}
+
+		return $elements;
+	}
+
+	private function get_translation_unit_data( $field_id, $field_name, $field_data, $field_data_translated, $is_translated_from_memory = false ) {
 		global $sitepress;
 
 		$field_data = $this->remove_etx_char( $field_data );
 
 		$translation_unit = array();
+
+		$field_data            = $this->remove_line_breaks_inside_tags( $field_data );
+		$field_data_translated = $this->remove_line_breaks_inside_tags( $field_data_translated );
+
 		if ( $sitepress->get_setting( 'xliff_newlines' ) === WPML_XLIFF_TM_NEWLINES_REPLACE ) {
-			$field_data            = str_replace( "\n", '<br class="xliff-newline" />', $field_data );
-			$field_data_translated = str_replace( "\n", '<br class="xliff-newline" />', $field_data_translated );
+			$field_data            = $this->replace_new_line_with_tag( $field_data );
+			$field_data_translated = $this->replace_new_line_with_tag( $field_data_translated );
 		}
 
 		$translation_unit['attributes']['resname']  = $field_name;
 		$translation_unit['attributes']['restype']  = 'string';
 		$translation_unit['attributes']['datatype'] = 'html';
 		$translation_unit['attributes']['id']       = $field_id;
-		$translation_unit['source']   = $field_data;
-		$translation_unit['target']   = $field_data_translated;
+		$translation_unit['source'] = array( 'content' => $field_data );
+		$translation_unit['target'] = array( 'content' => $field_data_translated );
 
+		if ( $is_translated_from_memory ) {
+			$translation_unit['target']['attributes'] = array(
+				'state'           => 'needs-review-translation',
+				'state-qualifier' => 'tm-suggestion',
+			);
+		}
 
 		return $translation_unit;
 	}
@@ -202,8 +302,37 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	 *
 	 * @return string
 	 */
+	protected function replace_new_line_with_tag( $string ) {
+		return str_replace( array( "\n", "\r" ), array( '<br class="xliff-newline" />', '' ), $string );
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	private function remove_line_breaks_inside_tags( $string ) {
+		return preg_replace_callback( '/(<[^>]*>)/m', array( $this, 'remove_line_breaks_inside_tag_callback' ), $string );
+	}
+
+	/**
+	 * @param array $matches
+	 *
+	 * @return string
+	 */
+	private function remove_line_breaks_inside_tag_callback( array $matches ) {
+		$tag_string = preg_replace( '/([\n\r\t ]+)/', ' ', $matches[0] );
+		$tag_string = preg_replace( '/(<[\s]+)/', '<', $tag_string );
+		return preg_replace( '/([\s]+>)/', '>', $tag_string );
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
 	private function remove_etx_char( $string ) {
-		return preg_replace('/\x03/', '', $string);
+		return preg_replace('/[\x03\x05\x11]/', '', $string);
 	}
 
 	/**

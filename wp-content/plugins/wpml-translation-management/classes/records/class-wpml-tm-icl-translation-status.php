@@ -75,7 +75,7 @@ class WPML_TM_ICL_Translation_Status {
 		if ( $this->status_result === null ) {
 			$status = $this->tm_records->get_preloaded_translation_status( $this->translation_id, $this->rid );
 			if ( $status ) {
-				$this->status_result = $status->status;
+				$this->status_result = (int) $status->status;
 			} else {
 				$this->status_result = (int) $this->wpdb->get_var(
 					"SELECT status
@@ -83,7 +83,7 @@ class WPML_TM_ICL_Translation_Status {
 					. $this->get_where() );
 			}
 		}
-		return $this->status_result;
+		return (int) $this->status_result;
 	}
 
 	/**

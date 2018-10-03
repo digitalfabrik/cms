@@ -141,7 +141,11 @@
         		$string = '';
                 foreach ($this->notices[$type] as $message){
                     if( !is_array($message['string']) ){
-	                    $string .= "<p>{$message['string']}</p>";
+                        if( preg_match('/<p>/', $message['string']) ){
+                            $string .= $message['string'];
+                        }else{
+                            $string .= "<p>{$message['string']}</p>";
+                        }
                     }else{
                         $string .= "<p><strong>".$message['title']."</strong><ul>";
                         foreach($message['string'] as $msg){

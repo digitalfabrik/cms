@@ -16,3 +16,7 @@ class IGSimplifyUI {
 }
 $igsimplifyui = new IGSimplifyUI();
 add_action('admin_enqueue_scripts', [$igsimplifyui, 'enqueue_styles_and_scripts']);
+
+add_action('admin_menu', function () {
+	remove_menu_page('edit.php');
+});

@@ -1,6 +1,7 @@
 <?php
 
 class WPML_Translate_Link_Targets_UI extends WPML_TM_MCS_Section_UI {
+	const ID = 'ml-content-setup-sec-links-target';
 
 	/** @var WPDB $wpdb */
 	private $wpdb;
@@ -11,14 +12,18 @@ class WPML_Translate_Link_Targets_UI extends WPML_TM_MCS_Section_UI {
 	/** @var  SitePress $sitepress */
 	private $sitepress;
 
-	public function __construct( $id, $title, $wpdb, $sitepress, $pro_translation ) {
-		parent::__construct( $id, $title );
+	public function __construct(  $title, $wpdb, $sitepress, $pro_translation ) {
+		parent::__construct( self::ID, $title );
 		$this->wpdb            = $wpdb;
 		$this->pro_translation = $pro_translation;
 		$this->sitepress       = $sitepress;
 	}
 
+	/**
+	 * @return string
+	 */
 	protected function render_content() {
+		$output = '';
 
 		$main_message = __( 'Adjust links in posts so they point to the translated content', 'wpml-translation-management' );
 		$complete_message = __( 'All posts have been processed. %s links were changed to point to the translated content.', 'wpml-translation-management' );
@@ -34,23 +39,26 @@ class WPML_Translate_Link_Targets_UI extends WPML_TM_MCS_Section_UI {
 			$complete_message = __( 'All posts and strings have been processed. %s links were changed to point to the translated content.', 'wpml-translation-management' );
 		}
 
-		?>
-		<p><?php echo $main_message ?></p>
-		<button id="wpml-scan-link-targets"
-		        class="button-secondary"
-		        data-post-message="<?php echo esc_attr__( 'Processing posts... %1$s of %2$s done.', 'wpml-translation-management' ); ?>"
-		        data-post-count="<?php echo $post_count; ?>"
-		        data-string-message="<?php echo esc_attr__( 'Processing strings... %1$s of %2$s done.', 'wpml-translation-management' ); ?>"
-		        data-string-count="<?php echo $string_count; ?>"
-		        data-complete-message="<?php echo esc_attr( $complete_message ); ?>"
-		><?php echo esc_html__( 'Scan now and adjust links', 'wpml-translation-management' ); ?></button>
-		<span class="spinner"> </span>
-		<p class="results"> </p>
+		$data_attributes = array(
+			'post-message'     => esc_attr__( 'Processing posts... %1$s of %2$s done.', 'wpml-translation-management' ),
+			'post-count'       => $post_count,
+			'string-message'   => esc_attr__( 'Processing strings... %1$s of %2$s done.', 'wpml-translation-management' ),
+			'string-count'     => $string_count,
+			'complete-message' => esc_attr( $complete_message ),
+		);
 
-		<?php
+		$output .= '<p>' . $main_message . '</p>';
+		$output .= '<button id="wpml-scan-link-targets" class="button-secondary"';
 
-		wp_nonce_field( 'WPML_Ajax_Update_Link_Targets', 'wpml-translate-link-targets' );
+		foreach ( $data_attributes as $key => $value ) {
+			$output .= ' data-' . $key . '="' . $value . '"';
+		}
+		$output .= '>' . esc_html__( 'Scan now and adjust links', 'wpml-translation-management' ) . '</button>';
+		$output .= '<span class="spinner"> </span>';
+		$output .= '<p class="results"> </p>';
+		$output .= wp_nonce_field( 'WPML_Ajax_Update_Link_Targets', 'wpml-translate-link-targets', true, false );
 
+		return $output;
 	}
 }
 

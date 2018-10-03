@@ -16,7 +16,7 @@ abstract class WPML_TM_Xliff_Reader extends WPML_TM_Xliff_Shared {
 	 *
 	 * @return SimpleXMLElement|WP_Error The parsed XLIFF or a WP error in case it could not be parsed
 	 */
-	protected function load_xliff( $content ) {
+	public function load_xliff( $content ) {
 		try {
 			$xml = simplexml_load_string( $content );
 		} catch ( Exception $e ) {

@@ -8,9 +8,9 @@ class APIv3_Sites extends APIv3_Base_Abstract {
 	const ROUTE = 'sites';
 
 	public function get_sites() {
-		return array_map([$this, 'prepare'], array_filter(get_sites(), function ($site) {
+		return array_values(array_map([$this, 'prepare'], array_filter(get_sites(), function ($site) {
 			return !$this->is_disabled($site);
-		}));
+		})));
 	}
 
 	public function prepare(WP_Site $site) {

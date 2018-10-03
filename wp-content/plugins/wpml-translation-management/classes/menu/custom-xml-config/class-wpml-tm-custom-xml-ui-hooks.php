@@ -22,8 +22,9 @@ class WPML_TM_Custom_XML_UI_Hooks {
 	}
 
 	function add_items( $tab_items ) {
-		$tab_items['custom-xml-config']['caption']  = __( 'Custom XML Configuration', 'wpml-translation-management' );
-		$tab_items['custom-xml-config']['callback'] = array( $this, 'build_content' );
+		$tab_items['custom-xml-config']['caption']          = __( 'Custom XML Configuration', 'wpml-translation-management' );
+		$tab_items['custom-xml-config']['callback']         = array( $this, 'build_content' );
+		$tab_items['custom-xml-config']['current_user_can'] = 'manage_options';
 
 		return $tab_items;
 	}
