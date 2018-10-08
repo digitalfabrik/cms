@@ -47,7 +47,7 @@ class WPML_TF_WP_Cron_Events implements IWPML_Action {
 
 	private function add_synchronize_ratings_event() {
 		if ( ! wp_next_scheduled( self::SYNCHRONIZE_RATINGS_EVENT ) ) {
-			wp_schedule_event( time(), 'daily', self::SYNCHRONIZE_RATINGS_EVENT );
+			wp_schedule_event( time(), 'twicedaily', self::SYNCHRONIZE_RATINGS_EVENT );
 		}
 	}
 

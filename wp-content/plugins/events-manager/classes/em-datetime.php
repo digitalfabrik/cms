@@ -34,11 +34,15 @@ class EM_DateTime extends DateTime {
 	public function __construct( $time = null, $timezone = null ){
 		//get our EM_DateTimeZone
 		$timezone = EM_DateTimeZone::create($timezone);
+		//save timezone name for use in getTimezone()
+		$this->timezone_name = $timezone->getName();
+		$this->timezone_manual_offset = $timezone->manual_offset;
 		//fix DateTime error if a regular timestamp is supplied without prepended @ symbol
 		if( is_numeric($time) ) $time = '@'.$time;
 		//finally, run parent function with our custom timezone
 		try{
 			@parent::__construct($time, $timezone);
+			if( substr($time,0,1) == '@' || $time == 'now' ) $this->setTimezone($timezone);
 			$this->valid = true; //if we get this far, supplied time is valid
 		}catch( Exception $e ){
 			//get current date/time in relevant timezone and set valid flag to false
@@ -48,11 +52,8 @@ class EM_DateTime extends DateTime {
 			$this->setTime(0,0,0);
 			$this->valid = false;
 		}
-		//save timezone name for use in getTimezone()
-		$this->timezone_name = $timezone->getName();
-		$this->timezone_manual_offset = $timezone->manual_offset;
 		//deal with manual UTC offsets, but only if we haven't defaulted to the current timestamp since that would already be a correct relative value
-		if( $time !== null && $time != 'now' ) $this->handleOffsets($timezone);
+		if( $time !== null && $time != 'now' && substr($time,0,1) != '@' ) $this->handleOffsets($timezone);
 	}
 	
 	/**
@@ -80,6 +81,7 @@ class EM_DateTime extends DateTime {
 		if( !$this->valid && ($format == 'Y-m-d' || $format == em_get_date_format())) return '';
 		//if we deal with offsets, then we offset UTC time by that much
 		if( $this->timezone_manual_offset !== false ){
+			$format = $this->formatTimezones( $format );
 			if( function_exists('date_timestamp_get') ){
 				return date($format, $this->getTimestampWithOffset(true) );
 			}else{
@@ -90,6 +92,60 @@ class EM_DateTime extends DateTime {
 			}
 		}
 		return parent::format($format);
+	}
+	
+	/**
+	 * Formats timezone placeholders when there is a manual offset, which would be passed onto date formatting functions and usually output UTC timezone information.
+	 * The $force_format flag is also useful if passing a format to any date() type of function, such as date_i18n, which will not inherit this function's timezone settings.
+	 * @param string $format The format to be parsed.
+	 * @param bool $force_format If set to true timezone placeholders will be formatted regardless.
+	 * @return string
+	 */
+	public function formatTimezones($format, $force_format = false ){
+		$timezone_formats = array( 'P', 'I', 'O', 'T', 'Z', 'e' );
+		$timezone_formats_regex = "/P|I|O|T|Z|e/";
+		if( $this->timezone_manual_offset !== false ){
+			if ( preg_match( $timezone_formats_regex, $format ) ) {
+				foreach ( $timezone_formats as $timezone_format ) {
+					if ( false !== strpos( $format, $timezone_format ) ) {
+						switch( $timezone_format ){
+							case 'P':
+							case 'O':
+								$offset = $this->getOffset();
+								$formatted_format = $timezone_format == 'P' ? 'H:i':'Hi';
+								$plus_minus = $offset < 0 ? '-':'+';
+								$formatted = $plus_minus . gmdate($formatted_format, absint($offset));
+								break;
+							case 'I':
+								$formatted = '0';
+								break;
+							case 'T':
+							case 'e':
+								$formatted = $this->getTimezone()->getName();
+								break;
+							case 'Z':
+								$formatted = $this->getOffset();
+								break;
+						}
+						$format = ' '.$format;
+						$format = preg_replace( "/([^\\\])$timezone_format/", "\\1" . backslashit( $formatted ), $format );
+						$format = substr( $format, 1, strlen( $format ) -1 );
+					}
+				}
+			}
+		}elseif( $force_format ){
+			//useful in cases where we may pass a format onto a date() function e.g. date_i18n, where the timezone is not relative to this object
+			if ( preg_match( $timezone_formats_regex, $format ) ) {
+				foreach ( $timezone_formats as $timezone_format ) {
+					if ( false !== strpos( $format, $timezone_format ) ) {
+						$format = ' '.$format;
+						$format = preg_replace( "/([^\\\])$timezone_format/", "\\1" . backslashit( $this->format( $timezone_format ) ), $format );
+						$format = substr( $format, 1, strlen( $format ) -1 );
+					}
+				}
+			}
+		}
+		return $format;
 	}
 	
 	/**
@@ -111,6 +167,8 @@ class EM_DateTime extends DateTime {
 	 */
 	public function i18n( $format = 'Y-m-d H:i:s' ){
 		if( !$this->valid && $format == em_get_date_format()) return '';
+		//since we use WP's date functions which don't use DateTime (and if so, don't inherit our timezones), we need to preformat timezone related formats, adapted from date_i18n
+		$format = $this->formatTimezones( $format, true );
 		//if we deal with offsets, then we offset UTC time by that much
 		if( !function_exists('date_timestamp_get') && $this->timezone_manual_offset !== false ){
 			//PHP < 5.3 fallback :/ Messed up, but it works...
@@ -195,17 +253,17 @@ class EM_DateTime extends DateTime {
 		 * action: set the time to 12:00
 		 * result: 2018-01-01 02:00 UTC => 2018-01-01 12:00 UTC+10 -> after offset handling 
 		 * expected: 2018-01-02 02:00 UTC => 2018-01-02 12:00 UTC+10 -> after offset handling
-		 * solution : change date AFTER setting the time and BEFORE offset handling
+		 * solution : change date AFTER setting the time and offset handling
 		 */
 		if( $this->timezone_manual_offset !== false ){
 			$date_array = explode('-', $this->format('Y-m-d')); 
 		}
 		$return = parent::setTime( $hour, $minute, $second );
-		//pre-handle offsets for time changes where dates change as stated above 
+		$this->handleOffsets();
+		//post-handle offsets for time changes where dates change as stated above
 		if( $this->timezone_manual_offset !== false ){
 			$this->setDate($date_array[0], $date_array[1], $date_array[2]);
 		}
-		$this->handleOffsets();
 		$this->valid = $return !== false;
 		return $this;
 	}

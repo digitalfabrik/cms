@@ -58,14 +58,17 @@ var WPML_TM = WPML_TM || {};
 				self.$el.find('.wp-media-buttons').hide();
 			}
 
-			_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self), 1000);
+			_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self, self.translationCompleteCheckbox.is( ':checked' )), 1000);
+
+			_.delay(_.bind(self.setInputStatus, self, 1000 ) );
+
 		},
 
 		getTextAreaElement: function () {
 			return this.$el.find('textarea#' + this.field.field_type);
 		},
 
-		waitForEditorAndThenInstallHooks: function () {
+		waitForEditorAndThenInstallHooks: function (checked) {
 			var self = this;
 			var editor = tinymce.get(self.field.field_type);
 			if (editor && editor instanceof tinyMCE.Editor) {
@@ -84,6 +87,11 @@ var WPML_TM = WPML_TM || {};
 				self.setRtlAttributes(editor);
 				self.setOriginalBackgroundGray( editor );
 
+				if( checked ) {
+					self.translationCompleteCheckbox.prop('checked', true);
+					self.translationCompleteCheckbox.prop('disabled', false);
+					self.translationCompleteCheckbox.trigger('change');
+				}
 			} else {
 				_.delay(_.bind(self.waitForEditorAndThenInstallHooks, self), 1000);
 			}
@@ -124,7 +132,20 @@ var WPML_TM = WPML_TM || {};
 
 			body.css( 'background-color', '#eee' );
 			sizer.css( 'background-color', '#eee' );
+		},
+		setTranslatedColor: function ( css ) {
+			var input = this.$el.find( '.translated_value' ),
+				html  = input.find( 'iframe' ).contents().find( 'html' ),
+				body  = html.find( 'body' ),
+				sizer = input.find( '.mce-statusbar' ).find( '.mce-flow-layout' ),
+				textArea = input.find( '.translated_value' );
+
+			body.css( 'background-color', css.background );
+			sizer.css( 'background-color', css.background );
+			textArea.css( 'background-color', css.background );
+
 		}
+
 
 	});
 }());

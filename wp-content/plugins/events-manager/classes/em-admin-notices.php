@@ -37,9 +37,15 @@ class EM_Admin_Notices {
 		$network = $network && is_multisite(); //make sure we are actually in multisite!
 		if( is_string($EM_Admin_Notice) ) $EM_Admin_Notice = new EM_Admin_Notice( $EM_Admin_Notice );
 		if( !$EM_Admin_Notice->name ) return false;
+		//get options data
 		$data = $network ? get_site_option('dbem_data') : get_option('dbem_data');
-		$notices = !empty($data['admin_notices']) ? $data['admin_notices'] : array();
+		$data = empty($data) ? array() : maybe_unserialize($data);
+		if( !is_array($data)) $data = array();
 		$notices_data = $network ? get_site_option('dbem_admin_notices') : get_option('dbem_admin_notices');
+		$notices_data = empty($notices_data) ? array() : maybe_unserialize($notices_data);
+		if( !is_array($notices_data)) $notices_data = array();
+		//start building data
+		$notices = !empty($data['admin_notices']) ? $data['admin_notices'] : array();
 		$notices[$EM_Admin_Notice->name] = !empty($EM_Admin_Notice->when) ? $EM_Admin_Notice->when : 0;
 		//if no message supplied, we assume it's a hook, possibly with a time-to-show assigned above
 		if( !empty($EM_Admin_Notice->message) ){
@@ -103,7 +109,7 @@ class EM_Admin_Notices {
 	public static function admin_notices( $network = false ){
 		$notices = array();
 		$data = $network ? get_site_option('dbem_data') : get_option('dbem_data');
-		$possible_notices = !empty($data['admin_notices']) ? $data['admin_notices'] : array();
+		$possible_notices = is_array($data) && !empty($data['admin_notices']) ? $data['admin_notices'] : array();
 		//we may have something to show, so we make sure that there's something to show right now
 		foreach( $possible_notices as $key => $val ){
 			//to avoid extra loading etc. we weed out time-based notices that aren't triggered right now 

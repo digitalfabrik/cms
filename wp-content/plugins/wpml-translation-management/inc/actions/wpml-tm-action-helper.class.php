@@ -64,7 +64,12 @@ class WPML_TM_Action_Helper {
 	}
 
 	private function get_post_terms( $post, $taxonomy, $sort = false ) {
+		global $sitepress;
+
 		$terms               = array();
+		//we shouldn't adjust term by current language need get terms by post_id
+		remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
+
 		$post_taxonomy_terms = wp_get_object_terms( $post->ID, $taxonomy );
 		if ( ! is_wp_error( $post_taxonomy_terms ) ) {
 			foreach ( $post_taxonomy_terms as $trm ) {
@@ -75,6 +80,8 @@ class WPML_TM_Action_Helper {
 		if ( $terms ) {
 			sort( $terms, SORT_STRING );
 		}
+
+		add_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
 
 		return $terms;
 	}
@@ -114,9 +121,10 @@ class WPML_TM_Action_Helper {
 		global $iclTranslationManagement;
 
 		$custom_fields_values = array();
+
 		if ( isset( $iclTranslationManagement->settings['custom_fields_translation'] ) && is_array( $iclTranslationManagement->settings['custom_fields_translation'] ) ) {
 			foreach ( $iclTranslationManagement->settings['custom_fields_translation'] as $cf => $op ) {
-				if ( in_array( (int) $op, array( 1, 2 ), true ) ) {
+				if ( in_array( (int) $op, array( WPML_TRANSLATE_CUSTOM_FIELD, WPML_COPY_ONCE_CUSTOM_FIELD ), true ) ) {
 					$value = get_post_meta( $post->ID, $cf, true );
 					if ( ! is_array( $value ) && ! is_object( $value ) ) {
 						$custom_fields_values[] = $value;

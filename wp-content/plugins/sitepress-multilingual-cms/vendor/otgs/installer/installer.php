@@ -1,57 +1,65 @@
 <?php
-define( 'WP_INSTALLER_VERSION', '1.8.10' );
+// included from \wpml_installer_instance_delegator
 
-include_once dirname( __FILE__ ) . '/includes/functions-core.php';
-include_once dirname( __FILE__ ) . '/includes/class-wp-installer.php';
+include_once untrailingslashit( plugin_dir_path( __FILE__ ) ) . '/includes/class-otgs-installer-wp-share-local-components-setting.php';
 
-include_once WP_Installer()->plugin_path() . '/includes/class-wp-installer-api.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-translation-service-info.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-installer-dependencies.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-wp-installer-channels.php';
+if ( version_compare( $delegate['version'], '1.8.12', '>=' ) ) {
+	define( 'WP_INSTALLER_VERSION', $delegate['version'] );
+}
 
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-sender.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-storage.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-hooks.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-share-local-components-setting.php';
+$plugin_path = dirname( __FILE__ );
 
-include_once WP_Installer()->plugin_path() . '/templates/template-service/interface-iotgs-installer-template-service.php';
-include_once WP_Installer()->plugin_path() . '/templates/template-service/class-otgs-installer-twig-template-service.php';
-include_once WP_Installer()->plugin_path() . '/templates/template-service/class-otgs-installer-twig-template-service-loader.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-setting-templates.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-setting-resources.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-plugins-page-notice.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-wp-components-setting-ajax.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-filename-hooks.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-php-functions.php';
-include_once WP_Installer()->plugin_path() . '/includes/class-otgs-installer-icons.php';
+include_once $plugin_path . '/includes/functions-core.php';
+include_once $plugin_path . '/includes/class-otgs-installer-subscription.php';
+include_once $plugin_path . '/includes/class-wp-installer.php';
 
-include_once WP_Installer()->plugin_path() . '/includes/functions-templates.php';
+$installer_plugin_path = WP_Installer()->plugin_path();
+
+include_once $installer_plugin_path . '/includes/class-wp-installer-api.php';
+include_once $installer_plugin_path . '/includes/class-translation-service-info.php';
+include_once $installer_plugin_path . '/includes/class-installer-dependencies.php';
+include_once $installer_plugin_path . '/includes/class-wp-installer-channels.php';
+
+include_once $installer_plugin_path . '/includes/class-otgs-installer-php-functions.php';
+
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-sender.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-storage.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-hooks.php';
+
+include_once $installer_plugin_path . '/templates/template-service/interface-iotgs-installer-template-service.php';
+include_once $installer_plugin_path . '/templates/template-service/class-otgs-installer-twig-template-service.php';
+include_once $installer_plugin_path . '/templates/template-service/class-otgs-installer-twig-template-service-loader.php';
+
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-setting-resources.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugins-page-notice.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-components-setting-ajax.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-filename-hooks.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-icons.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-wp-share-local-components-setting-hooks.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-factory.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugin.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugin-factory.php';
+include_once $installer_plugin_path . '/includes/class-otgs-installer-plugin-finder.php';
+
+include_once $installer_plugin_path . '/includes/functions-templates.php';
+include_once $installer_plugin_path . '/includes/class-otgs-twig-autoloader.php';
 
 // Initialization
 WP_Installer();
 WP_Installer_Channels();
 
-$local_components_resources = new OTGS_Installer_WP_Components_Setting_Resources( WP_Installer() );
-$local_components_resources->add_hooks();
+$installer_factory = get_OTGS_Installer_Factory();
 
-$local_components_setting = new OTGS_Installer_WP_Share_Local_Components_Setting();
-$local_components_sender  = new OTGS_Installer_WP_Components_Sender(
-	WP_Installer(),
-	$local_components_setting
-);
+$installer_factory->create_resources()
+				  ->add_hooks();
+$installer_factory->create_settings_hooks()
+				  ->add_hooks();
+$installer_factory->create_wp_components_hooks()
+				  ->add_hooks();
+$installer_factory->create_local_components_ajax_setting()
+				  ->add_hooks();
+$installer_factory->create_filename_hooks()
+				  ->add_hooks();
+$installer_factory->create_icons()
+				  ->add_hooks();
 
-$local_components_storage = new OTGS_Installer_WP_Components_Storage();
-$local_components_hooks   = new OTGS_Installer_WP_Components_Hooks( $local_components_storage, $local_components_sender, $local_components_setting );
-$local_components_hooks->add_hooks();
-
-$local_components_ajax_setting = new OTGS_Installer_WP_Components_Setting_Ajax(
-	$local_components_setting,
-	WP_Installer()
-);
-$local_components_ajax_setting->add_hooks();
-
-$filename_hooks = new OTGS_Installer_Filename_Hooks( new OTGS_Installer_PHP_Functions() );
-$filename_hooks->add_hooks();
-
-$icons = new OTGS_Installer_Icons( WP_Installer() );
-$icons->add_hooks();

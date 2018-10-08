@@ -19,6 +19,9 @@
         <custom-field action="ignore">_wp_attached_file</custom-field>
         <custom-field action="translate">_wp_attachment_image_alt</custom-field>
     </custom-fields>
+    <taxonomies>
+        <taxonomy translate="1">translation_priority</taxonomy>
+    </taxonomies>
     <language-switcher-settings>
         <key name="link_empty">0</key>
         <key name="statics">
@@ -57,4 +60,7 @@
             </key>
         </key>
     </language-switcher-settings>
+    <custom-types>
+        <custom-type translate="1">attachment</custom-type>
+    </custom-types>
 </wpml-config>

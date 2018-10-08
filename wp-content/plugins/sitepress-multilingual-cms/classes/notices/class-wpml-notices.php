@@ -376,6 +376,17 @@ class WPML_Notices {
 	}
 
 	/**
+	 * @param string $notice_group
+	 */
+	public function remove_notice_group( $notice_group ) {
+		$notices     = $this->get_notices_for_group( $notice_group );
+		$notices_ids = array_keys( $notices );
+		foreach ( $notices_ids as $notices_id ) {
+			$this->remove_notice( $notice_group, $notices_id );
+		}
+	}
+
+	/**
 	 * @param WPML_Notice $notice
 	 * @param bool        $persist
 	 */
@@ -439,6 +450,9 @@ class WPML_Notices {
 		add_action( 'wp_ajax_otgs-hide-notice', array( $this, 'wp_ajax_hide_notice' ) );
 		add_action( 'wp_ajax_otgs-dismiss-notice', array( $this, 'wp_ajax_dismiss_notice' ) );
 		add_action( 'wp_ajax_otgs-dismiss-group', array( $this, 'wp_ajax_dismiss_group' ) );
+		add_action( 'otgs_add_notice', array( $this, 'add_notice' ), 10, 2 );
+		add_action( 'otgs_remove_notice', array( $this, 'remove_notice' ), 10, 2 );
+		add_action( 'otgs_remove_notice_group', array( $this, 'remove_notice_group' ), 10, 1 );
 	}
 
 	private function filter_invalid_notices( $notices ) {

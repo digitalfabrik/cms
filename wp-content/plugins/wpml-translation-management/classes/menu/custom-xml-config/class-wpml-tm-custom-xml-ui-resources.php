@@ -19,7 +19,7 @@ class WPML_TM_Custom_XML_UI_Resources {
 	}
 
 	function admin_enqueue_scripts() {
-		if ( $this->wpml_wp_api->is_tm_page( 'custom-xml-config' ) ) {
+		if ( $this->wpml_wp_api->is_tm_page( 'custom-xml-config', 'settings' ) ) {
 			$this->add_vk_beautify();
 			$this->add_code_mirror();
 

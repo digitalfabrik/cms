@@ -62,7 +62,9 @@ class WPML_Post_Custom_Field_Setting extends WPML_Custom_Field_Setting {
 	 * @return string
 	 */
 	protected function get_unlocked_setting_index() {
-		return WPML_POST_META_UNLOCKED_SETTING_INDEX;
+		return defined( 'WPML_POST_META_UNLOCKED_SETTING_INDEX' )
+			? WPML_POST_META_UNLOCKED_SETTING_INDEX
+			: 'custom_fields_unlocked_config';
 	}
 
 	/**

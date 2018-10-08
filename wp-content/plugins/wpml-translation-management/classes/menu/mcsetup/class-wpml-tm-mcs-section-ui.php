@@ -10,32 +10,41 @@ abstract class WPML_TM_MCS_Section_UI {
 		$this->title = $title;
 	}
 
-	public function render_top_link() {
-		?>
-		<a href="#<?php echo esc_attr( $this->id ); ?>"><?php echo esc_html( $this->title ); ?></a>
-		<?php
+	/**
+	 * @return mixed
+	 */
+	public function get_id() {
+		return $this->id;
+	}
+
+	public function add_hooks() {
+		add_filter( 'wpml_mcsetup_navigation_links', array( $this, 'mcsetup_navigation_links' ) );
+	}
+
+	public function mcsetup_navigation_links( array $mcsetup_sections ) {
+		$mcsetup_sections[ $this->id ] = esc_html( $this->title );
+
+		return $mcsetup_sections;
 	}
 
 	public function render() {
+		$output = '';
 
-		?>
+		$output .= '<div class="wpml-section" id="' . esc_attr( $this->id ) . '">';
+		$output .= '<div class="wpml-section-header">';
+		$output .= '<h3>' . esc_html( $this->title ) . '</h3>';
+		$output .= '</div>';
+		$output .= '<div class="wpml-section-content">';
+		$output .= $this->render_content();
+		$output .= '</div>';
+		$output .= '</div>';
 
-		<div class="wpml-section" id="<?php echo esc_attr( $this->id ); ?>">
-
-		    <div class="wpml-section-header">
-		        <h3><?php echo esc_html( $this->title ); ?></h3>
-			</div>
-
-			<div class="wpml-section-content">
-				<?php $this->render_content(); ?>
-			</div>
-
-		</div>
-
-		<?php
-
+		return $output;
 	}
 
-	protected abstract function render_content();
+	/**
+	 * @return string
+	 */
+	abstract protected function render_content();
 }
 

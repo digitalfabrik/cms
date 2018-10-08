@@ -48,7 +48,7 @@ global $sitepress;
 
 							<p>
 	                <label>
-	                    <input type="radio" name="icl_xliff_newlines" value="<?php echo WPML_XLIFF_TM_NEWLINES_REPLACE ?>"<?php if ( $xliff_newlines == WPML_XLIFF_TM_NEWLINES_REPLACE ): ?>checked<?php endif ?>/>
+	                    <input type="radio" name="icl_xliff_newlines" value="<?php echo WPML_XLIFF_TM_NEWLINES_REPLACE ?>" <?php if ( $xliff_newlines == WPML_XLIFF_TM_NEWLINES_REPLACE ): ?>checked<?php endif ?>/>
 	                    <?php printf(
 															__('All new lines should be replaced by HTML element %s. Use this option if translation tool used by translator does not support new lines characters (for example Virtaal software)', 'wpml-translation-management')
 															, '&lt;br class="xliff-newline" />'); ?>

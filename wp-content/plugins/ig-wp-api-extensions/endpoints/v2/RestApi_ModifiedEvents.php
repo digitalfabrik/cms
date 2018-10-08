@@ -41,6 +41,12 @@ class RestApi_ModifiedEventsV2 extends RestApi_ModifiedContentV2 {
 					ON terms.term_id = term_relationships.term_taxonomy_id";
 	}
 
+	protected function build_query_where() {
+		$where = parent::build_query_where();
+		$where[] = "em_events.event_end_date >= '" . date('Y-m-d') . "'";
+		return $where;
+	}
+
 	protected function build_query_groups() {
 		$groups = parent::build_query_groups();
 		$groups[] = "posts.id";

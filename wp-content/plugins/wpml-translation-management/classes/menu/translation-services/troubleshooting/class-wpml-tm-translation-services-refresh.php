@@ -42,7 +42,7 @@ class WPML_TM_Translation_Services_Refresh {
 
 	public function refresh_services() {
 		if ( $this->is_valid_request() ) {
-			if ( $this->tp_services->refresh_cache() ) {
+			if ( $this->tp_services->refresh_cache() && $this->refresh_active_service() ) {
 				wp_send_json_success( array(
 					'message' => __( 'Services Refreshed.', 'wpml-translation-management' ),
 				));
@@ -57,6 +57,17 @@ class WPML_TM_Translation_Services_Refresh {
 				'message' => __( 'Invalid Request.', 'wpml-translation-management' ),
 			));
 		}
+	}
+
+	private function refresh_active_service() {
+		$active_service = $this->tp_services->get_active();
+
+		if ( $active_service ) {
+			$active_service = (object) (array) $active_service; // Cast to stdClass
+			TranslationProxy::build_and_store_active_translation_service( $active_service, $active_service->custom_fields_data );
+		}
+
+		return true;
 	}
 
 	/**

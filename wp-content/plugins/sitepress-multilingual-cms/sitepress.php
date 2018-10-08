@@ -2,10 +2,10 @@
 /*
 Plugin Name: WPML Multilingual CMS
 Plugin URI: https://wpml.org/
-Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-3-9-4/">WPML 3.9.4 release notes</a>
+Description: WPML Multilingual CMS | <a href="https://wpml.org">Documentation</a> | <a href="https://wpml.org/version/wpml-4-0-7/">WPML 4.0.7 release notes</a>
 Author: OnTheGoSystems
 Author URI: http://www.onthegosystems.com/
-Version: 3.9.4
+Version: 4.0.7
 Plugin Slug: sitepress-multilingual-cms
 */
 
@@ -18,7 +18,7 @@ if ( defined( 'ICL_SITEPRESS_VERSION' ) || ( (bool) get_option( '_wpml_inactive'
 	return;
 }
 
-define( 'ICL_SITEPRESS_VERSION', '3.9.4' );
+define( 'ICL_SITEPRESS_VERSION', '4.0.7' );
 
 // Do not uncomment the following line!
 // If you need to use this constant, use it in the wp-config.php file
@@ -171,6 +171,19 @@ if ( $sitepress->is_setup_complete() ) {
 		'WPML_API_Hooks_Factory',
 		'WPML_Cache_Terms_Per_Lang_Factory',
 		'WPML_Display_As_Translated_Message_For_New_Post_Factory',
+		'WPML_Custom_Fields_Post_Meta_Info_Factory',
+		'WPML_Display_As_Translated_Default_Lang_Messages_Factory',
+		'WPML_Absolute_Url_Persisted_Filters_Factory',
+		'WPML_Meta_Boxes_Post_Edit_Ajax_Factory',
+		'WPML_Wizard_Fetch_Content_Factory',
+		'WPML_Privacy_Content_Factory',
+		'WPML_Attachment_Action_Factory',
+		'WPML_Media_Attachments_Duplication_Factory',
+		'WPML_Deactivate_Old_Media_Factory',
+		'WPML_Set_Attachments_Language_Factory',
+		'WPML_Display_As_Translated_Attachments_Query_Factory',
+		'WPML_Media_Settings_Factory',
+		'WPML_Custom_Columns_Factory',
 	);
 	$action_filter_loader->load( $actions );
 }
@@ -209,7 +222,7 @@ wpml_maybe_setup_post_edit();
 require WPML_PLUGIN_PATH . '/modules/cache-plugins-integration/cache-plugins-integration.php';
 require WPML_PLUGIN_PATH . '/inc/plugins-integration.php';
 
-if ( is_admin() ) {
+if ( ( defined( 'DOING_CRON' ) && DOING_CRON ) || is_admin() ) {
 	activate_installer( $sitepress );
 	if ( $sitepress->get_setting( 'setup_complete' ) ) {
 		setup_admin_menus();
@@ -255,9 +268,24 @@ function wpml_mlo_init() {
 	$wpml_ml_options->init_hooks();
 }
 
-function wpml_loaded() {
+/**
+ * @param SitePress $sitepress
+ */
+function wpml_loaded( $sitepress ) {
 	wpml_init_language_switcher();
 	wpml_mlo_init();
+
+	$wpml_wp_api = $sitepress->get_wp_api();
+	/**
+	 * Also allow `troubleshooting.php` and `theme-localization.php` because we have direct AJAX calls
+	 * @see https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-5167
+	 */
+	if ( $wpml_wp_api->is_back_end()
+	     || $wpml_wp_api->is_core_page( 'troubleshooting.php' )
+	     || $wpml_wp_api->is_core_page( 'theme-localization.php' )) {
+		$main_menu = new WPML_Main_Admin_Menu( $sitepress );
+		$main_menu->configure();
+	}
 }
 
 add_action( 'wpml_loaded', 'wpml_loaded' );

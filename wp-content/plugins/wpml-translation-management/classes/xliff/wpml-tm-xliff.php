@@ -149,8 +149,16 @@ class WPML_TM_XLIFF {
 	private function appendData( $type, $trans_unit, $trans_unit_element ) {
 		if ( array_key_exists( $type, $trans_unit ) ) {
 			$source       = $this->dom->createElement( $type );
-			$source_cdata = $this->dom->createCDATASection( $trans_unit[ $type ] );
+			$source_cdata = $this->dom->createCDATASection( $trans_unit[ $type ]['content'] );
 			$source->appendChild( $source_cdata );
+
+			if ( array_key_exists( 'attributes', $trans_unit[ $type ] ) ) {
+
+				foreach ( $trans_unit[ $type ]['attributes'] as $name => $value ) {
+					$source->setAttribute( $name, $value );
+				}
+			}
+
 			$trans_unit_element->appendChild( $source );
 		}
 	}

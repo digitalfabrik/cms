@@ -36,5 +36,13 @@ if ( ! defined( 'TA_SCHEDULE_OCCURENCE' ) ) {
 	define('TA_SCHEDULE_OCCURENCE', 'daily');
 }
 
+if ( ! defined( 'JSON_UNESCAPED_UNICODE' ) ) {
+	define( 'JSON_UNESCAPED_UNICODE', 256 );
+}
+
+if ( ! defined( 'JSON_UNESCAPED_SLASHES' ) ) {
+	define( 'JSON_UNESCAPED_SLASHES', 64 );
+}
+
 global $asian_languages;
 $asian_languages = array('ja', 'ko', 'zh-hans', 'zh-hant', 'mn', 'ne', 'hi', 'pa', 'ta', 'th');
