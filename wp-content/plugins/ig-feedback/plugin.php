@@ -72,46 +72,73 @@ add_action('manage_comments_custom_column', function ($column, $comment_id) {
 			}
 			break;
 		case 'ig_rating':
-			$rating_up = get_comment_meta($comment_id, 'rating_up', true);
-			$rating_down = get_comment_meta($comment_id, 'rating_down', true);
-			if ($rating_up > 0) {
-				echo '<span class="dashicons dashicons-thumbs-up"></span> ' . $rating_up . '<br>';
+			$ratings = array_filter(json_decode(get_comment_meta($comment_id, 'ratings', true)), function ($rating) {
+				/*
+				 * Skip rating if the language filter is on and the language does not match
+				 */
+				if (isset($_GET['ig-feedback-language']) && $_GET['ig-feedback-language'] !== 'all' && $_GET['ig-feedback-language'] !== $rating->language) {
+					return false;
+				}
+				/*
+				 * Skip rating if the date filter is on and the date does not match
+				 */
+				if (isset($_GET['ig-feedback-month']) && $_GET['ig-feedback-month'] !== 'all' && date('m.Y', strtotime('-' . $_GET['ig-feedback-month'] . ' month')) !== date('m.Y', strtotime($rating->date))) {
+					return false;
+				}
+				/*
+				 * Else remain rating in ratings array
+				 */
+				return true;
+			});
+			$ratings_up = count(array_filter($ratings, function ($rating) {
+				return $rating->rating === 'up';
+			}));
+			if ($ratings_up > 0) {
+				echo '<span class="dashicons dashicons-thumbs-up"></span> ' . $ratings_up . '<br>';
 			}
-			if ($rating_down > 0) {
-				echo '<span class="dashicons dashicons-thumbs-down"></span> ' . $rating_down . '<br>';
+			$ratings_down = count(array_filter($ratings, function ($rating) {
+				return $rating->rating === 'down';
+			}));
+			if ($ratings_down > 0) {
+				echo '<span class="dashicons dashicons-thumbs-down"></span> ' . $ratings_down . '<br>';
 			}
 			break;
 		case 'ig_content':
-			$content = json_decode(get_comment_meta($comment_id, 'content', true));
+			$content = array_filter(json_decode(get_comment_meta($comment_id, 'content', true)), function ($item) {
+				/*
+				 * Skip comment if the category filter is on and the category does not match
+				 */
+				if (isset($_GET['ig-feedback-category']) && $_GET['ig-feedback-category'] !== 'all' && $_GET['ig-feedback-category'] !== $item->category) {
+					return false;
+				}
+				/*
+				 * Skip comment if the type filter is on and the category does not match
+				 */
+				if (isset($_GET['comment_type']) && $_GET['comment_type'] !== '' && $_GET['comment_type'] !== $item->rating) {
+					return false;
+				}
+				/*
+				 * Skip comment if the language filter is on and the language does not match
+				 */
+				if (isset($_GET['ig-feedback-language']) && $_GET['ig-feedback-language'] !== 'all' && $_GET['ig-feedback-language'] !== $item->language) {
+					return false;
+				}
+				/*
+				 * Skip comment if the date filter is on and the date does not match
+				 */
+				if (isset($_GET['ig-feedback-month']) && $_GET['ig-feedback-month'] !== 'all' && date('m.Y', strtotime('-' . $_GET['ig-feedback-month'] . ' month')) !== date('m.Y', strtotime($item->date))) {
+					return false;
+				}
+				/*
+				 * Else remain comment in content array
+				 */
+				return true;
+			});
 			if (count($content) > 0) {
 				echo '<a href="#" class="ig-feedback-spoiler-show" data-ig-feedback-comment-id="' . $comment_id . '"><span class="label gray"><span class="dashicons dashicons-arrow-down-alt2"></span> Ausklappen</span></a>';
 				echo '<a href="#" class="ig-feedback-spoiler-hide" data-ig-feedback-comment-id="' . $comment_id . '"><span class="label gray"><span class="dashicons dashicons-arrow-up-alt2"></span>Einklappen</span></a>';
 				echo '<div class="ig-feedback-spoiler-content" data-ig-feedback-comment-id="' . $comment_id . '">';
 				foreach ($content as $item) {
-					/*
-					 * Skip comment if the category filter is on and the category does not match
-					 */
-					if (isset($_GET['ig-feedback-category']) && $_GET['ig-feedback-category'] !== 'all' && $_GET['ig-feedback-category'] !== $item->category) {
-						continue;
-					}
-					/*
-					 * Skip comment if the language filter is on and the language does not match
-					 */
-					if (isset($_GET['ig-feedback-language']) && $_GET['ig-feedback-language'] !== 'all' && $_GET['ig-feedback-language'] !== $item->language) {
-						continue;
-					}
-					/*
-					 * Skip comment if the rating filter is on and the rating is either not given or does not match
-					 */
-					if (isset($_GET['comment_type']) && $_GET['comment_type'] !== '' && (!isset($item->rating) || $_GET['comment_type'] !== $item->rating)) {
-						continue;
-					}
-					/*
-					 * Skip comment if the date filter is on and the date does not match
-					 */
-					if (isset($_GET['ig-feedback-month']) && $_GET['ig-feedback-month'] !== 'all' && date('m.Y', strtotime('-' . $_GET['ig-feedback-month'] . ' month')) !== date('m.Y', strtotime($item->date))) {
-						continue;
-					}
 					echo '<hr><span class="label blue"><span class="dashicons dashicons-clock"></span> ' . $item->date . '</span>';
 					if (isset($item->rating)) {
 						if ($item->rating === 'up') {
@@ -205,24 +232,46 @@ add_action('restrict_manage_comments', function() {
 add_filter('pre_get_comments', function ($query) {
 	global $pagenow;
 	if (is_admin() && $pagenow=='edit-comments.php'){
-		$meta_value = '';
+		$meta_value_content = '';
 		if (isset( $_GET['ig-feedback-month'] ) && $_GET['ig-feedback-month'] !== 'all') {
 			$regex_day = '(0[1-9]|[1-2][0-9]|3[0-1]).';
 			$regex_time = ' ([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]';
-			$meta_value .= '{"date":"' . $regex_day . date('m.Y', strtotime('-' . $_GET['ig-feedback-month'] . ' month')) . $regex_time . '",';
+			$meta_value_content .= '{"date":"' . $regex_day . date('m.Y', strtotime('-' . $_GET['ig-feedback-month'] . ' month')) . $regex_time . '",';
 		}
 		if (isset( $_GET['ig-feedback-language'] ) && $_GET['ig-feedback-language'] !== 'all') {
-			$meta_value .= '[^}]*"language":"' . $_GET['ig-feedback-language'] . '",';
+			$meta_value_content .= '[^}]*"language":"' . $_GET['ig-feedback-language'] . '",';
 		}
+		/*
+		 * Ratings have the same structure for date and language attributes, hence we can just copy the regex
+		 */
+		$meta_value_ratings = $meta_value_content;
 		if (isset( $_GET['ig-feedback-category'] ) && $_GET['ig-feedback-category'] !== 'all') {
-			$meta_value .= '[^}]*"category":"' . $_GET['ig-feedback-category'] . '","text":"';
+			$meta_value_content .= '[^}]*"category":"' . $_GET['ig-feedback-category'] . '","text":"';
+			/*
+			 * If category filter is on, we don't want any rating results.
+			 */
+			$meta_value_ratings = 'this string does not exist';
 		}
 		if (isset( $_GET['comment_type'] ) && $_GET['comment_type'] !== '') {
-			$meta_value .= '[^}]*"rating":"' . $_GET['comment_type'] . '"}';
+			$meta_value_content .= '[^}]*"rating":"' . $_GET['comment_type'] . '"}';
+			/*
+			 * If type filter is on, we don't want any rating results.
+			 */
+			$meta_value_ratings = 'this string does not exist';
 		}
-		$query->query_vars['meta_key'] = 'content';
-		$query->query_vars['meta_value'] = $meta_value;
-		$query->query_vars['meta_compare'] = 'REGEXP';
+		$query->query_vars['meta_query'] = [
+			'relation' => 'OR',
+			[
+				'key' => 'content',
+				'value' => $meta_value_content,
+				'compare' => 'REGEXP'
+			],
+			[
+				'key' => 'ratings',
+				'value' => $meta_value_ratings,
+				'compare' => 'REGEXP'
+			]
+		];
 		/*
 		 * We have to remove the type filter, because we misuse the comment_type filter for comment categories
 		 */

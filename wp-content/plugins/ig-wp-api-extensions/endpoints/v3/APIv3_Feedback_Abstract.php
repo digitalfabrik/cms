@@ -103,6 +103,7 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 			}
 			add_comment_meta($comment_id, 'type', static::TYPE);
 			$content = [];
+			$ratings = [];
 			if ($text !== null) {
 				$content[] = [
 					'date' => date('d.m.Y H:i:s'),
@@ -111,21 +112,18 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 					'text' => $text,
 					'rating' => $rating
 				];
-			}
-			add_comment_meta($comment_id, 'content', json_encode($content));
-			/*
-			 * If text + rating are sent both, we don't count the rating but use it only for the comment.
-			 */
-			if ($text === null && $rating === 'up') {
-				add_comment_meta($comment_id, 'rating_up', 1);
 			} else {
-				add_comment_meta($comment_id, 'rating_up', 0);
+				/*
+				 * If text + rating are sent both, we don't count the rating but use it only for the comment.
+				 */
+				$ratings[] = [
+					'date' => date('d.m.Y H:i:s'),
+					'language' => $language,
+					'rating' => $rating
+				];
 			}
-			if ($text === null && $rating === 'down') {
-				add_comment_meta($comment_id, 'rating_down', 1);
-			} else {
-				add_comment_meta($comment_id, 'rating_down', 0);
-			}
+			add_comment_meta($comment_id, 'content', json_encode($content, JSON_UNESCAPED_UNICODE));
+			add_comment_meta($comment_id, 'ratings', json_encode($ratings, JSON_UNESCAPED_UNICODE));
 			if (defined('static::META')) {
 				add_comment_meta($comment_id, static::META, $request->get_param(static::META));
 			}
@@ -142,7 +140,7 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 					'text' => $text,
 					'rating' => $rating
 				];
-				update_comment_meta($comments[0]->comment_ID, 'content', json_encode($content));
+				update_comment_meta($comments[0]->comment_ID, 'content', json_encode($content, JSON_UNESCAPED_UNICODE));
 				/*
 				 * If comment was approved before, unapprove it to mark it red in admin view
 				 */
@@ -154,13 +152,13 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 				/*
 				 * If text + rating are sent both, we don't count the rating but use it only for the comment.
 				 */
-				if ($rating === 'up') {
-					$rating_up_old = (int) get_comment_meta($comments[0]->comment_ID, 'rating_up', true);
-					update_comment_meta($comments[0]->comment_ID, 'rating_up', $rating_up_old + 1);
-				} elseif ($rating === 'down') {
-					$rating_down_old = (int) get_comment_meta($comments[0]->comment_ID, 'rating_down', true);
-					update_comment_meta($comments[0]->comment_ID, 'rating_down', $rating_down_old + 1);
-				}
+				$ratings = json_decode(get_comment_meta($comments[0]->comment_ID, 'ratings', true));
+				$ratings[] = [
+					'date' => date('d.m.Y H:i:s'),
+					'language' => $language,
+					'rating' => $rating
+				];
+				update_comment_meta($comments[0]->comment_ID, 'ratings', json_encode($ratings, JSON_UNESCAPED_UNICODE));
 			}
 		} else {
 			/*
