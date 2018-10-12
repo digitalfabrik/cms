@@ -9,12 +9,13 @@
  */
 
 add_action('admin_menu', 'example_admin_menu');
- 
+
 /**
 * add external link to Tools area
 */
 function example_admin_menu() {
+    load_plugin_textdomain( 'integreat-help', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
     global $submenu;
-    $url = 'https://hilfe.integreat-app.de/qa/';
-    $submenu['tools.php'][] = array('Integreat Hilfe', 'edit_pages', $url);
+    $url = 'https://wiki.integreat-app.de/';
+    $submenu['tools.php'][] = array(__('Integreat Help'), 'edit_pages', $url);
 }
