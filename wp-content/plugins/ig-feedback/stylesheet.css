@@ -9,3 +9,28 @@
 .ig-feedback-spoiler-hide {
     display: none;
 }
+
+.label {
+    display: inline-block;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    margin: 5px;
+}
+
+.green {background-color: #4CAF50;}
+.blue {background-color: #2196F3;}
+.orange {background-color: #ff9800;}
+.red {background-color: #f44336;}
+.yellow {background-color: rgb(251, 218, 22); color: black;}
+.gray {background-color: gray;}
+
+hr {
+	border-top: 3px double #8c8b8b;
+}
+
+.ig-comment {
+	font-size: 18px;
+    font-weight: bold;
+}
