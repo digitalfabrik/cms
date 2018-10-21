@@ -132,10 +132,14 @@ class FirebaseNotificationsDatabase {
         $defaults = array(
             'order' => 'DESC',
             'orderby' => 'timestamp',
-            'limit' => False
+            'limit' => False,
+            'timestamp' => 0
         );
         $args = wp_parse_args( $args, $defaults );
         $query = "SELECT * FROM " . $wpdb->prefix . "fcm_messages ";
+        if ( $args['timestamp'] != 0 ) {
+            $query .= "WHERE timestamp >= '" . $args['timestamp'] . "' ";
+        }
         $query .= "ORDER BY " . $args['orderby'] . " " . $args['order'] . ( $args['limit'] != False ? " Limit " . $args['limit'] : "");
         if($results = $wpdb->get_results( $query )) {
             $this->last_status = true;
@@ -176,15 +180,17 @@ class FirebaseNotificationsDatabase {
      * Retrieve messages by language.
      *
      * @param string $lang language code
-     * @param integer $amount number of messages that are returned
+     * @param integer $amount number of messages that are returned, 0 = all
+     * @param integer $timestamp only get messages after this time
      * @return array of messages as assoc arrays
      */
-    public function messages_by_language( $lang = ICL_LANGUAGE_CODE, $amount = 10 ) {
+    public function messages_by_language( $lang = ICL_LANGUAGE_CODE, $amount = 10, $timestamp = 0 ) {
         $fcmdb = New FirebaseNotificationsDatabase();
         $args = array(
             'order' => 'DESC',
             'orderby' => 'timestamp',
-            'limit' => False
+            'limit' => False,
+            'timestamp' => $timestamp
         );
         $result = array();
         $messages = $fcmdb->get_messages( $args );
@@ -192,10 +198,10 @@ class FirebaseNotificationsDatabase {
         foreach( $messages as $message ){
             if( $message['request']['data']['language_code'] == $lang ) {
                 $result[] = $message;
-            }
-            $count ++;
-            if( $count === $amount ) {
-                break;
+                if( $count === $amount ) {
+                    break;
+                }
+                $count ++;
             }
         }
         return $result;
