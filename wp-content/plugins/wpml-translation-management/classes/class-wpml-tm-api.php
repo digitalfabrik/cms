@@ -77,7 +77,7 @@ class WPML_TM_API {
 
 		$user = new WP_User( $user_id );
 		if ( $user->exists() ) {
-			$translater_roles = [ 'manager', 'trustworthy_organization', 'organizer', 'revisor' ];
+			$translater_roles = [ 'manager', 'trustworthy_organization' ];
 			$result = ( count( array_intersect( $translater_roles, $user->roles ) ) > 0 );
 		}
 
