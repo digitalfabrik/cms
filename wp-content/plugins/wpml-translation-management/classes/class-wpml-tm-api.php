@@ -75,12 +75,6 @@ class WPML_TM_API {
 			$result = $this->blog_translators->is_translator( $user_id, $args );
 		}
 
-		$user = new WP_User( $user_id );
-		if ( $user->exists() ) {
-			$translater_roles = [ 'manager', 'trustworthy_organization' ];
-			$result = ( count( array_intersect( $translater_roles, $user->roles ) ) > 0 );
-		}
-
 		return $result;
 	}
 
