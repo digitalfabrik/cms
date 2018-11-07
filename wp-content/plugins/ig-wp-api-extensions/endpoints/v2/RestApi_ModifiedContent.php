@@ -79,9 +79,15 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 		$this->current_request->post_type = $type;
 		$this->current_request->rest_request = $request;
 
+		// array which does not contain published pages with an unpublished parent
+		$post_ids = $this->get_post_ids_recursive(0);
+
 		global $wpdb;
 		$querystr = $this->build_query_string();
-		$query_result = $wpdb->get_results($querystr, OBJECT);
+		$query_result = array_filter($wpdb->get_results($querystr, OBJECT), function ($post) use ($post_ids) {
+			// filter pages which have an unpublished parent
+			return in_array($post->ID, $post_ids);
+		});
 
 		if( $type == 'event' ) {
 			// fetch the initial of several recurring events (the initial events have a different post_type)
@@ -98,11 +104,9 @@ abstract class RestApi_ModifiedContentV2 extends RestApi_ExtensionBase {
 			$query_result = array_merge($query_result, $recurring_events);
 		}
 
-		$post_ids = $this->get_post_ids_recursive(0);
-
 		$result = [];
 		foreach ($query_result as $post) {
-			if((isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash") || !in_array($post->ID, $post_ids)) {
+			if(isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash") {
 				continue;
 			}
 			$result[] = $this->prepare_item($post);
