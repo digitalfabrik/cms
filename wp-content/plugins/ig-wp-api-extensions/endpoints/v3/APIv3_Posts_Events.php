@@ -141,6 +141,13 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		unset($prepared_event['parent']);
 		unset($prepared_event['order']);
 		unset($prepared_event['hash']);
+		$instance = get_bloginfo( 'name' );
+		$slug1 = substr( $prepared_event["url"], 0, 35 + strlen( $instance ) );
+		$slug2 = substr( $prepared_event["url"], 35 + strlen( $instance ) );
+		if ( $slug1 === get_site_url( null, "/events/" ) ) {
+			$prepared_event["url"] = get_site_url( null, "/$this->current_language/events/" . $slug2 );
+			$prepared_event["path"] = wp_make_link_relative( $prepared_event["url"] );
+		}
 		$prepared_event['hash'] = md5(json_encode($prepared_event));
 		return $prepared_event;
 	}
