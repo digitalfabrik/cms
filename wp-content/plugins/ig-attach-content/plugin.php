@@ -59,15 +59,16 @@ function ig_ac_meta_box_html( ) {
 	</script>
 	<!-- Radio-button: Insert foreign content before or after page and preselect saved item, if there was any -->
 	<p id="cl_metabox_position">
-		<span style="font-weight:600" class="cl-row-title"><?php __( 'Attach Page', 'ig-attach-content' )?></span>
+		<span style="font-weight:600" class="cl-row-title"><?php __( 'Insert Live-Content', 'ig-attach-content' )?></span>
 		<div class="cl-row-content">
+			<p id="positioninfo"><?php echo __( 'Where should the mirrored data be displayed?', 'ig-attach-content')?></p>
 			<label for="ig-attach-content-position-one" style="display: block;box-sizing: border-box; margin-bottom: 8px;">
 				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-one" value="beginning" <?php checked( $ac_position, 'beginning' ); ?>>
-				<?php echo __( 'Beginning', 'ig-attach-content' )?>
+				<?php echo __( 'At the Beginning', 'ig-attach-content' )?>
 			</label>
 			<label for="ig-attach-content-position-two">
 				<input type="radio" name="ig-attach-content-position" id="ig-attach-content-position-two" value="end" <?php checked( $ac_position, 'end' ); ?>>
-				<?php echo __( 'End', 'ig-attach-content' )?>
+				<?php echo __( 'At the End', 'ig-attach-content' )?>
 			</label>
 		</div>
 	</p>
@@ -101,7 +102,7 @@ add_action('edit_post', 'ig_ac_save_meta_box');
 
 /**
  * This function creates an HTML select with all available blogs.
- * 
+ *
  * @param boolean $ajax Set to false if HTML should not be written to output buffer
  * @return string
  */
@@ -278,7 +279,7 @@ register_activation_hook( __FILE__, 'ig_ac_cl_migration' );
  */
 function ig_attach_content_tree_view_status( $status, $post_id ) {
 	if( get_post_meta( $post_id, 'ig-attach-content-page', true ) != "" ) {
-		$status[] = __('Attachment', 'ig-attach-content');
+		$status[] = __('Live-Content', 'ig-attach-content');
 	}
 	return $status;
 }
