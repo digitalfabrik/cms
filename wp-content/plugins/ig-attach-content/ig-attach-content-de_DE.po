@@ -1,17 +1,20 @@
-msgid "Attachment"
-msgstr "Anhang"
+msgid "Live-Content"
+msgstr "Live-Inhalte"
 
-msgid "Attach Page"
-msgstr "Seite anhängen"
+msgid "Insert Live-Content"
+msgstr "Live-Inhalte einbinden"
 
-msgid "Beginning"
-msgstr "Anfang"
+msgid "At the Beginning"
+msgstr "Am Anfang"
 
-msgid "End"
-msgstr "Ende"
+msgid "At the End"
+msgstr "Am Ende"
 
 msgid "Please select"
 msgstr "Bitte w&auml;hlen"
 
 msgid "Select city"
-msgstr "Stadt w&auml;hlen"
+msgstr "Integreat-Kommune w&auml;hlen"
+
+msgid "Where should the mirrored data be displayed?"
+msgstr "An welcher Position sollen die Inhalte eingefügt werden?"
