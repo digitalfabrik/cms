@@ -48,7 +48,6 @@ class WPML_Requirements {
 				'woocommerce-multilingual',
 				'wpml-translation-management',
 				'wpml-string-translation',
-				'wpml-media-translation',
 			),
 		),
 		'gravityforms'  => array(

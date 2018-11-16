@@ -48,20 +48,22 @@ class IntegreatExtraConfig {
 			self::$current_error[] = 'extra_id';
 			return false;
 		}
-		$plz = $wpdb->get_var("SELECT value
+		foreach (['plz', 'wb_url', 'wb_api', 'wb_thumb'] as $setting) {
+			$setting_value = $wpdb->get_var("SELECT value
 			FROM {$wpdb->base_prefix}ig_settings
 				AS settings
 			JOIN {$wpdb->prefix}ig_settings_config
 				AS config
 				ON settings.id = config.setting_id
-			WHERE settings.alias = 'plz'");
-		if ($this->enabled && (strpos($extra->url, '{plz}') !== false || strpos($extra->post, '{plz}') !== false) && !$plz){
-			IntegreatSettingsPlugin::$admin_notices[] = [
-				'type' => 'error',
-				'message' => 'The extra "' . htmlspecialchars($extra->name) . '" can not be enabled because it depends on the setting "plz" for this location'
-			];
-			self::$current_error[] = 'enabled';
-			return false;
+			WHERE settings.alias = '$setting'");
+			if ($this->enabled && (strpos($extra->url, "{$setting}") !== false || strpos($extra->post, "{$setting}") !== false || strpos($extra->thumbnail, "{$setting}") !== false) && !$setting_value){
+				IntegreatSettingsPlugin::$admin_notices[] = [
+					'type' => 'error',
+					'message' => 'The extra "' . htmlspecialchars($extra->name) . '" can not be enabled because it depends on the setting "' . $setting . '" for this location'
+				];
+				self::$current_error[] = 'enabled';
+				return false;
+			}
 		}
 		return true;
 	}

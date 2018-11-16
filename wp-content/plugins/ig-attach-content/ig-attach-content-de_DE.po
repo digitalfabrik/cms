@@ -1,0 +1,20 @@
+msgid "Live-Content"
+msgstr "Live-Inhalte"
+
+msgid "Insert Live-Content"
+msgstr "Live-Inhalte einbinden"
+
+msgid "At the Beginning"
+msgstr "Am Anfang"
+
+msgid "At the End"
+msgstr "Am Ende"
+
+msgid "Please select"
+msgstr "Bitte w&auml;hlen"
+
+msgid "Select city"
+msgstr "Integreat-Kommune w&auml;hlen"
+
+msgid "Where should the mirrored data be displayed?"
+msgstr "An welcher Position sollen die Inhalte eingefügt werden?"

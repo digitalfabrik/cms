@@ -41,16 +41,22 @@ class WPML_Flags {
 	}
 
 	public function get_flag_url( $lang_code ) {
-
 		$flag = $this->get_flag( $lang_code );
-		if ( $flag->from_template ) {
-			$wp_upload_dir = wp_upload_dir();
-			$flag_url = $wp_upload_dir['baseurl'] . '/flags/' . $flag->flag;
-		} else {
-			$flag_url = $this->get_wpml_flags_url() . $flag->flag;
+		if ( ! $flag ) {
+			return '';
 		}
 
-		return $flag_url;
+		$path = '';
+		if ( $flag->from_template ) {
+			$wp_upload_dir = wp_upload_dir();
+			$base_url      = $wp_upload_dir['baseurl'];
+			$path          = 'flags/';
+		} else {
+			$base_url = $this->get_wpml_flags_url();
+		}
+		$path .= $flag->flag;
+
+		return $this->append_path_to_url( $base_url, $path );
 	}
 
 	public function clear() {
@@ -108,5 +114,29 @@ class WPML_Flags {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param $base_url
+	 * @param $path
+	 *
+	 * @return string
+	 */
+	private function append_path_to_url( $base_url, $path ) {
+		$base_url_parts = wp_parse_url( $base_url );
+
+		$base_url_path_components = '';
+		if ( array_key_exists( 'path', $base_url_parts ) ) {
+			$base_url_path_components = explode( '/', untrailingslashit( $base_url_parts['path'] ) );
+		}
+
+		$sub_dir_path_components = explode( '/', trim( $path, '/' ) );
+		foreach ( $sub_dir_path_components as $sub_dir_path_part ) {
+			$base_url_path_components[] = $sub_dir_path_part;
+		}
+
+		$base_url_parts['path'] = implode( '/', $base_url_path_components );
+
+		return http_build_url( $base_url_parts );
 	}
 }

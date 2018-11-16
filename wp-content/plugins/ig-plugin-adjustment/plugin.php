@@ -14,6 +14,11 @@ add_action('upgrader_process_complete', function ($upgrader_object, $options) {
 		if (in_array('sitepress-multilingual-cms', $options['plugins'])) {
 			PluginAdjustment::apply_wpml_adjustment();
 		}
+
+		if (in_array('cms-tree-page-view', $options['plugins'])) {
+			PluginAdjustment::apply_revisionary_adjustments();
+		}
+
 	}
 }, 10, 2);
 
@@ -53,6 +58,15 @@ abstract class PluginAdjustment {
 					urlData.post_status = statuses.join(\',\');
 				}';
 		self::replace_in_file($file_path, $search, $replace);
+
+	}
+
+	public function apply_revisionary_adjustments() {
+		$tree_view_file = plugin_dir_path(__FILE__) . '../cms-tree-page-view/functions.php';
+		$search = '"post_status": "<?php echo $onePage->post_status ?>",';
+		$replace = '"post_status": "<?php echo ig_tree_view_labels ($onePage->ID, $onePage->post_status ) ?>",';
+		self::replace_in_file($tree_view_file, $search, $replace);
+
 	}
 
 }

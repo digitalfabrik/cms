@@ -180,6 +180,10 @@ class EM_Location_Post_Admin{
 		if( get_option('dbem_location_attributes_enabled') ){
 			add_meta_box('em-location-attributes', __('Attributes','events-manager'), array('EM_Location_Post_Admin','meta_box_attributes'),EM_POST_TYPE_LOCATION, 'normal','default');
 		}
+		//anonymous submission meta
+		if( !empty($EM_Location->owner_anonymous) ){
+			add_meta_box('em-location-anonymous', __('Anonymous Submitter Info','events-manager'), array('EM_Location_Post_Admin','meta_box_anonymous'),EM_POST_TYPE_LOCATION, 'side','high');
+		}
 	}
 	
 	public static function meta_box_metadump(){
@@ -187,6 +191,7 @@ class EM_Location_Post_Admin{
 		echo "<pre>"; print_r(get_post_custom($post->ID)); echo "</pre>";
 		echo "<pre>"; print_r($EM_Location); echo "</pre>";
 	}
+	
 	public static function meta_box_where(){
 		?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_location'); ?>" /><?php
 		em_locate_template('forms/location/where.php',true);		
@@ -194,6 +199,15 @@ class EM_Location_Post_Admin{
 	
 	public static function meta_box_attributes(){
 		em_locate_template('forms/location/attributes.php',true);
+	}
+	
+	public static function meta_box_anonymous(){
+		global $EM_Location; /* @var EM_Location $EM_Location */
+		?>
+		<div class='updated'><p><?php echo sprintf(__('This %s was submitted by a guest. You will find their details in the <em>Anonymous Submitter Info</em> box','events-manager'), __('location', 'events-manager')); ?></p></div>
+		<p><strong><?php _e('Name','events-manager'); ?> :</strong> <?php echo $EM_Location->owner_name; ?></p>
+		<p><strong><?php _e('Email','events-manager'); ?> :</strong> <?php echo $EM_Location->owner_email; ?></p>
+		<?php
 	}
 }
 add_action('admin_init',array('EM_Location_Post_Admin','init'));

@@ -51,6 +51,12 @@ class WPML_TP_API {
 		return TranslationProxy::get_current_service();
 	}
 
+	/**
+	 * @param $service_id
+	 * @param bool $custom_fields
+	 *
+	 * @throws WPMLTranslationProxyApiException
+	 */
 	public function select_service( $service_id, $custom_fields = false ) {
 		TranslationProxy::select_service( $service_id, $custom_fields );
 	}

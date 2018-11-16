@@ -46,8 +46,6 @@ class WPML_Translation_Editor_UI {
 		if ( $job_instance->get_translator_id() <= 0 ) {
 			$job_instance->assign_to( $sitepress->get_wp_api()->get_current_user_id() );
 		}
-		$job_instance->maybe_load_terms_from_post_into_job( $sitepress->get_setting( 'tm_block_retranslating_terms' ) );
-
 	}
 
 	function render() {
@@ -62,10 +60,12 @@ class WPML_Translation_Editor_UI {
 			<h1 id="wpml-translation-editor-header" class="wpml-translation-title"></h1>
 			<?php
 			do_action( 'icl_tm_messages' );
+			do_action( 'wpml_tm_editor_messages' );
 			$this->init_original_post();
 			$this->init_editor_object();
 
 			$this->output_model();
+			$this->output_gutenberg_notice();
 			$this->output_wysiwyg_editors();
 			$this->output_copy_all_dialog();
 			if ( $this->is_duplicate ) {
@@ -147,13 +147,14 @@ class WPML_Translation_Editor_UI {
 			true
 		);
 
-	  $this->fields             = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
-	  $this->fields             = $this->add_titles_and_adjust_styles( $this->fields );
-	  $this->fields             = $this->add_rtl_attributes( $this->fields );
-	  $model['fields']          = $this->fields;
-	  $model['layout']          = $this->job_layout->run( $model['fields'], $this->tm_instance );
-	  $model['rtl_original']    = $this->rtl_original;
-	  $model['rtl_translation'] = $this->rtl_translation;
+		$this->fields                = $this->job_factory->field_contents( (int) $this->job_instance->get_id() )->run();
+		$this->fields                = $this->add_titles_and_adjust_styles( $this->fields );
+		$this->fields                = $this->add_rtl_attributes( $this->fields );
+		$model['fields']             = $this->fields;
+		$model['layout']             = $this->job_layout->run( $model['fields'], $this->tm_instance );
+		$model['rtl_original']       = $this->rtl_original;
+		$model['rtl_translation']    = $this->rtl_translation;
+		$model['translation_memory'] = (bool) $this->sitepress->get_setting( 'translation_memory', 1 );
 
 		$model = $this->filter_the_model( $model );
 		?>
@@ -161,6 +162,24 @@ class WPML_Translation_Editor_UI {
 				var WpmlTmEditorModel = <?php echo wp_json_encode( $model ); ?>;
 			</script>
 		<?php
+	}
+
+	private function output_gutenberg_notice() {
+		$has_gutenberg_block = false;
+
+		foreach ( $this->fields as $field ) {
+			if ( preg_match( '#<!-- wp:#', $field['field_data'] ) ) {
+				$has_gutenberg_block = true;
+				break;
+			}
+		}
+
+		if ( $has_gutenberg_block ) {
+			echo '<div class="notice notice-info">
+					<p>' . esc_html__( 'This content came from the Gutenberg editor and you need to translate it carefully so that formatting in not broken.', 'wpml-translation-management' ) . '</p>
+					<p><a href="https://wpml.org/documentation/translating-your-contents/translating-gutenberg-content-with-wpml/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-gutenberg-content-with-wpml" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
+				</div>';
+		}
 	}
 
 	private function output_wysiwyg_editors() {

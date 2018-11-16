@@ -68,14 +68,14 @@ class WPML_Translation_Proxy_Basket_Networking {
 	 *
 	 * @param string $posted_basket_name basket name in the currently handled request
 	 *
-	 * @uses \WPML_Translation_Batch::cancel_all_remote_jobs
+	 * @uses \WPML_Translation_Batch::cancel_all_jobs
 	 */
 	function rollback_basket_commit( $posted_basket_name ) {
 		$this->basket->get_basket( true );
 		$basket_name = $this->basket->get_name();
 		$basket_name = $basket_name ? $basket_name : $posted_basket_name;
 		$batch       = $this->basket->get_basket_batch( $basket_name );
-		$batch->cancel_all_remote_jobs();
+		$batch->cancel_all_jobs();
 		$batch->clear_batch_data();
 	}
 

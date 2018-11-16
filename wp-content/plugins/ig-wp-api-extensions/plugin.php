@@ -32,6 +32,7 @@ require_once __DIR__ . '/endpoints/v2/RestApi_ModifiedDisclaimer.php';
 // v3
 require_once __DIR__ . '/endpoints/v3/APIv3_Base_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Extras.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_FCM.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Categories.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Feedback_Cities.php';
@@ -49,6 +50,7 @@ require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Relatives_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Children.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Disclaimer.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Events.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Locations.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Pages.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Parents.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Post.php';
@@ -96,6 +98,7 @@ add_action('rest_api_init', function () {
 		],
 		3 => [
 			new APIv3_Extras(),
+			new APIv3_FCM(),
 			new APIv3_Feedback_Post(),
 			new APIv3_Feedback_Categories(),
 			new APIv3_Feedback_Cities(),
@@ -107,6 +110,7 @@ add_action('rest_api_init', function () {
 			new APIv3_Posts_Children(),
 			new APIv3_Posts_Disclaimer(),
 			new APIv3_Posts_Events(),
+			new APIv3_Posts_Locations(),
 			new APIv3_Posts_Pages(),
 			new APIv3_Posts_Parents(),
 			new APIv3_Posts_Post(),

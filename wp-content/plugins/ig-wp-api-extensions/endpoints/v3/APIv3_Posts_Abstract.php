@@ -37,7 +37,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'post_parent' => $id,
 			'orderby' => 'menu_order post_title',
 			'order' => 'ASC',
-			'posts_per_page' => -1,
+			'posts_per_page' => -1
 		]))->posts;
 		$post = ($id == 0 ? [] : [get_post($id)]);
 		if (empty($direct_children)) {
@@ -87,7 +87,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'thumbnail' => has_post_thumbnail($post->ID) ? wp_get_attachment_image_src(get_post_thumbnail_id($post->ID))[0] : null,
 		];
 		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
-		$output_post['hash'] = md5(json_encode($post));
+		$output_post['hash'] = md5(json_encode($output_post));
 		return $output_post;
 	}
 

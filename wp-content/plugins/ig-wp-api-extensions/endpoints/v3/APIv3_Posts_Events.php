@@ -25,6 +25,9 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		]);
 		$events = [];
 		foreach ($events_query->posts as $event) {
+			if ($event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
+				continue;
+			}
 			$events[] = $this->prepare($event);
 		}
 		/*
@@ -52,6 +55,9 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 				'posts_per_page' => -1,
 			]);
 			foreach ($recurring_events_query->posts as $recurring_event) {
+				if ($recurring_event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
+					continue;
+				}
 				$recurring_events[] = $this->prepare($recurring_event);
 			}
 		}
@@ -132,7 +138,20 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		$prepared_event = parent::prepare($event);
 		$prepared_event['event'] = $this->prepare_event($event);
 		$prepared_event['location'] = $this->prepare_location($event);
+		unset($prepared_event['parent']);
+		unset($prepared_event['order']);
 		unset($prepared_event['hash']);
+		/*
+		 * Normally, the site_url should be followed by the language slug.
+		 * Unfortunately, for recurring events this does not work.
+		 * To circumvent this, we insert the language slug if it is not there.
+		 * If the url consists of site_url directly followed by the events slug, the language slug is missing.
+		 */
+		if ( substr( $prepared_event["url"], strlen( get_site_url() ), 8 ) === "/events/" ) {
+			$slug = substr( $prepared_event["url"], strlen( get_site_url() ) + 8 );
+			$prepared_event["url"] = get_site_url( null, "/$this->current_language/events/" . $slug );
+			$prepared_event["path"] = wp_make_link_relative( $prepared_event["url"] );
+		}
 		$prepared_event['hash'] = md5(json_encode($prepared_event));
 		return $prepared_event;
 	}

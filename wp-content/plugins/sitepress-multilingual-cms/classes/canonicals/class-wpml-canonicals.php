@@ -83,7 +83,16 @@ class WPML_Canonicals {
 	public function get_canonical_url( $canonical_url, $post, $request_language ) {
 		if ( $post && $this->sitepress->get_wp_api()->is_front_end() ) {
 			try {
+				/** @var WPML_Post_Element $post_element */
 				$post_element = $this->translation_element_factory->create( $post->ID, 'post' );
+
+				$should_translate_canonical_url = apply_filters(
+					'wpml_must_translate_canonical_url', true, $post_element
+				);
+
+				if ( ! $should_translate_canonical_url ) {
+					return $canonical_url;
+				}
 
 				if ( ! $post_element->is_translatable() ) {
 					global $wpml_url_filters;

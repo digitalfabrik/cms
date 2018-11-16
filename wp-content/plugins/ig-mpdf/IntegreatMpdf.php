@@ -183,7 +183,9 @@ class IntegreatMpdf {
 			if ($this->toc) {
 				$this->mpdf->TOC_Entry(htmlspecialchars($page->post_title, ENT_QUOTES), count(get_post_ancestors($page)));
 			}
-			$this->mpdf->WriteHTML('<h2>' . $page->post_title . '</h2>' . wpautop($page->post_content) . '</div>');
+			// remove tel links because they can not be handled in the pdf
+			$content_without_tel_links = preg_replace('/<a href="tel:.*">(\+?[\d\s]*)<\/a>/', '$1', $page->post_content);
+			$this->mpdf->WriteHTML('<h2>' . $page->post_title . '</h2>' . wpautop($content_without_tel_links) . '</div>');
 		}
 		$this->mpdf->WriteHTML('</body></html>');
 

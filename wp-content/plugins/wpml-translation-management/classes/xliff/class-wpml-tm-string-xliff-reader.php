@@ -21,7 +21,7 @@ class WPML_TM_String_Xliff_Reader extends WPML_TM_Xliff_Reader {
 				if ( ! $target && $target !== "0" ) {
 					return $this->invalid_xliff_error();
 				}
-				$target                       = str_replace( '<br class="xliff-newline" />', "\n", $target );
+				$target                       = $this->replace_xliff_new_line_tag_with_new_line( $target );
 				$attr                         = $node->attributes();
 				$data[ (string) $attr['id'] ] = $target;
 			}

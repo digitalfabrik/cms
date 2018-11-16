@@ -20,6 +20,10 @@ class OTGS_Installer_Twig_Template_Service_Loader {
 	 * @return OTGS_Installer_Twig_Template_Service
 	 */
 	public function get_service() {
+		if ( ! class_exists( 'Twig_Loader_Filesystem' ) ) {
+			OTGS_Twig_Autoloader::register();
+		}
+
 		$twig_loader      = new Twig_Loader_Filesystem( $this->paths );
 		$environment_args = array();
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {

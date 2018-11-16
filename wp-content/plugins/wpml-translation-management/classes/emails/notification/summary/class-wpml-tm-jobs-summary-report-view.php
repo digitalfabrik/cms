@@ -41,7 +41,6 @@ class WPML_TM_Jobs_Summary_Report_View extends WPML_TM_Email_View {
 			'text'              => $this->summary_text,
 			'site_name'         => get_bloginfo( 'name' ),
 			'number_of_updates' => isset( $this->jobs['completed'] ) ? count( $this->jobs['completed'] ) : 0,
-			'date'              => time(),
 			'strings'           => array(
 				'jobs_waiting'          => __( 'Jobs that are waiting for translation', 'wpml-translation-management' ),
 				'original_page'         => __( 'Original Page', 'wpml-translation-management' ),
@@ -63,11 +62,6 @@ class WPML_TM_Jobs_Summary_Report_View extends WPML_TM_Email_View {
 						'link_url'  => admin_url( 'admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php#wpml-translation-feedback-options' ),
 						'link_text' => __( 'Translation Feedback', 'wpml-translation-management' ),
 						'text'      => __( 'Allow visitors to tell you about translation issues by enabling %s', 'wpml-translation-management' ),
-					),
-					array(
-						'link_url'  => 'https://wpml.org/documentation/translating-your-contents/using-the-translation-editor/setting-translation-deadlines/',
-						'link_text' => __( 'learn more', 'wpml-translation-management' ),
-						'text'      => __( 'Set realistic deadlines when sending jobs to translation (%s)', 'wpml-translation-management' ),
 					),
 					array(
 						'link_url'  => admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=translation-services' ),

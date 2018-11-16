@@ -5,6 +5,8 @@
  */
 class WPML_TM_Mail_Notification {
 
+	const JOB_COMPLETE_TEMPLATE = 'notification/job-completed.twig';
+
 	private $mail_cache = array();
 	private $process_mail_queue;
 
@@ -79,7 +81,6 @@ class WPML_TM_Mail_Notification {
 
 					if ( 'completed' === $type ) {
 						$headers = array(
-							'MIME-Version: 1.0',
 							'Content-type: text/html; charset=UTF-8',
 						);
 
@@ -206,7 +207,7 @@ class WPML_TM_Mail_Notification {
 		);
 		$model['overdue_job'] = ! $job->is_completed_on_time();
 
-		$mail['body']     = $this->email_view->render_job_complete( $model );
+		$mail['body']     = $this->email_view->render_model( $model, self::JOB_COMPLETE_TEMPLATE );
 		$mail['type']     = 'completed';
 		$this->enqueue_mail( $mail );
 

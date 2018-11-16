@@ -72,7 +72,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 				                                             $cf_translation_settings );
 			}
 
-			foreach ( (array) $sitepress->get_translatable_taxonomies( true, $post->post_type ) as $taxonomy ) {
+			foreach ( (array) $sitepress->get_translatable_taxonomies( false, $post->post_type ) as $taxonomy ) {
 				$terms = get_the_terms( $post->ID, $taxonomy );
 				if ( is_array( $terms ) ) {
 					foreach ( $terms as $term ) {
@@ -134,7 +134,8 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	 * @param array  $fields
 	 */
 	function save_job_custom_fields( $job, $post_id, $fields ) {
-		$field_names = array();
+		$field_names      = array();
+
 		foreach ( $fields as $field_name => $val ) {
 			if ( '' === (string) $field_name ) {
 				continue;
@@ -144,7 +145,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 			foreach ( $job->elements as $el_data ) {
 				if ( strpos( $el_data->field_data, (string) $field_name ) === 0
 				     && 1 === preg_match( '/field-(.*?)-name/U', $el_data->field_type, $match )
-				     && 1 === preg_match( '/field-' . $field_name . '-.*?-name/', $el_data->field_type )
+				     && 1 === preg_match( '/field-' . $field_name . '-[0-9].*?-name/', $el_data->field_type )
 				) {
 					$field_names[ $field_name ] = isset( $field_names[ $field_name ] )
 							? $field_names[ $field_name ] : array();

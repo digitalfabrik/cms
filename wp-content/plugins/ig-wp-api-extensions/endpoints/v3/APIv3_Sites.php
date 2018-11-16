@@ -8,9 +8,9 @@ class APIv3_Sites extends APIv3_Base_Abstract {
 	const ROUTE = 'sites';
 
 	public function get_sites() {
-		return array_map([$this, 'prepare'], array_filter(get_sites(), function ($site) {
+		return array_values(array_map([$this, 'prepare'], array_filter(get_sites(), function ($site) {
 			return !$this->is_disabled($site);
-		}));
+		})));
 	}
 
 	public function prepare(WP_Site $site) {
@@ -28,7 +28,7 @@ class APIv3_Sites extends APIv3_Base_Abstract {
 			$result['live'] = !$this->is_hidden($site);
 		}
 		if (class_exists('IntegreatSettingsPlugin')) {
-			$result = array_merge($result, apply_filters('ig-settings', null));
+			$result = array_merge($result, apply_filters('ig-settings-api', null));
 		}
 		restore_current_blog();
 		return $result;

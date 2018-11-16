@@ -8,9 +8,8 @@ cms-tree-page-view \
 disable-new-user-notifications \
 events-manager \
 firebase-notifications \
+ig-attach-content \
 ig-cms-tree-page-view-extensions \
-ig-content-loader-base \
-ig-content-loader-instance \
 ig-customize-editor-integreat \
 ig-customize-login-integreat \
 ig-enhanced-help-menu \
@@ -36,7 +35,7 @@ simple-page-ordering \
 sitepress-multilingual-cms \
 tinymce-advanced \
 use-google-libraries \
-user-role-editor \
+user-role-editor-pro \
 welcome-email-editor \
 wpml-media-translation \
 wpml-translation-management \

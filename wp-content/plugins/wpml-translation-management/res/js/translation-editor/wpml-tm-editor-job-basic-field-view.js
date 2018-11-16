@@ -26,6 +26,10 @@ var WPML_TM = WPML_TM || {};
 		setTranslation: function (value) {
 			this.$el.find('.js-translated-value').val(value);
 			this.updateUI();
+		},
+
+		setTranslatedColor: function(css) {
+			this.$el.find('.js-translated-value').css(css);
 		}
 	
 	});

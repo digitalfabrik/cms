@@ -79,9 +79,15 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 		$this->current_request->post_type = $type;
 		$this->current_request->rest_request = $request;
 
+		// array which does not contain published pages with an unpublished parent
+		$post_ids = $this->get_post_ids_recursive(0);
+
 		global $wpdb;
 		$querystr = $this->build_query_string();
-		$query_result = $wpdb->get_results($querystr, OBJECT);
+		$query_result = array_filter($wpdb->get_results($querystr, OBJECT), function ($post) use ($post_ids) {
+			// filter pages which have an unpublished parent
+			return in_array($post->ID, $post_ids);
+		});
 
 		if( $type == 'event' ) {
 			// fetch the initial of several recurring events (the initial events have a different post_type)
@@ -98,11 +104,9 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 			$query_result = array_merge($query_result, $recurring_events);
 		}
 
-		$post_ids = $this->get_post_ids_recursive(0);
-
 		$result = [];
 		foreach ($query_result as $post) {
-			if((isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash") || !in_array($post->ID, $post_ids)) {
+			if(isset($_GET['no_trash']) && $_GET['no_trash'] == '1' && $post->post_status == "trash") {
 				continue;
 			}
 			$result[] = $this->prepare_item($post);
@@ -150,8 +154,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 	 */
 	protected function build_query_select() {
 		return "posts.ID, posts.post_title, posts.post_type, posts.post_status, posts.post_modified_gmt,
-					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order, posts.guid,
-					users.user_login, usermeta_firstname.meta_value as author_firstname, usermeta_lastname.meta_value as author_lastname";
+					posts.post_excerpt, posts.post_content, posts.post_parent, posts.menu_order, posts.guid";
 	}
 
 	/**
@@ -170,15 +173,7 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 				JOIN {$wpdb->prefix}icl_translations translations
 						ON translations.element_type = 'post_{$this->current_request->post_type}'
 						AND translations.element_id = posts.ID
-						AND translations.language_code = '$current_language'" ) . "
-				JOIN $wpdb->users users
-						ON users.ID = posts.post_author
-				JOIN $wpdb->usermeta usermeta_firstname
-						ON usermeta_firstname.user_id = users.ID
-						AND usermeta_firstname.meta_key = 'first_name'
-				JOIN $wpdb->usermeta usermeta_lastname
-						ON usermeta_lastname.user_id = users.ID
-						AND usermeta_lastname.meta_key = 'last_name'";
+						AND translations.language_code = '$current_language'" );
 	}
 
 	/**
@@ -259,14 +254,6 @@ abstract class RestApi_ModifiedContentV0 extends RestApi_ExtensionBase {
 		}
 		$image_src = wp_get_attachment_image_src(get_post_thumbnail_id($post->ID));
 		return $image_src[0];
-	}
-
-	protected function prepare_author($post) {
-		return [
-			'login' => $post->user_login,
-			'first_name' => $post->author_firstname,
-			'last_name' => $post->author_lastname
-		];
 	}
 
 	protected function prepare_url($post){

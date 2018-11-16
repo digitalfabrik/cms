@@ -69,9 +69,9 @@ class WPML_Translation_Batch extends WPML_Abstract_Job_Collection{
 	}
 
 	/**
-	 * Cancels all remote translation jobs in this batch
+	 * Cancels all translation jobs in this batch
 	 */
-	public function cancel_all_remote_jobs() {
+	public function cancel_all_jobs() {
 		/**
 		 * @var wpdb                    $wpdb
 		 * @var TranslationManagement   $iclTranslationManagement
@@ -83,8 +83,7 @@ class WPML_Translation_Batch extends WPML_Abstract_Job_Collection{
 			$wpdb->prepare(
 				"SELECT translation_id
                  FROM {$wpdb->prefix}icl_translation_status
-                 WHERE batch_id = %d
-                  AND translation_service <> 'local' ",
+                 WHERE batch_id = %d",
 				$this->id
 			)
 		);
@@ -94,8 +93,7 @@ class WPML_Translation_Batch extends WPML_Abstract_Job_Collection{
 
 		$string_translation_ids = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}icl_string_translations WHERE batch_id = %d
-                  AND translation_service <> 'local' ",
+				"SELECT id FROM {$wpdb->prefix}icl_string_translations WHERE batch_id = %d",
 				$this->id
 			)
 		);

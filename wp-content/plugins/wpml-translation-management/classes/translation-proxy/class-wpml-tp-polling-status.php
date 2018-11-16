@@ -35,7 +35,7 @@ class WPML_TP_Polling_Status {
 			$data = $this->filter_obsolete( $this->project->jobs() );
 		} catch ( Exception $e ) {
 			throw new WPMLTranslationProxyApiException( 'Got the following error when trying to load status data from Translation Proxy via polling: '
-			                                            . $e->getMessage(), 0, $e );
+			                                            . $e->getMessage(), 0 );
 		}
 		$button_text = esc_html__( 'Check status and get translations', 'wpml-translation-management' );
 		if ( ( $job_in_progress = $this->in_progress_count( $data ) ) == 1 ) {

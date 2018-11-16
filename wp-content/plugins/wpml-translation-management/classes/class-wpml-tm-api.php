@@ -81,8 +81,27 @@ class WPML_TM_API {
 	public function edit_translator_action( $user, $language_pairs ) {
 		$user_id = $this->get_user_id( $user );
 		if ( is_numeric( $user_id ) ) {
-			$this->TranslationManagement->edit_translator( $user_id, $language_pairs );
+			$this->edit_translator( $user_id, $language_pairs );
 		}
+	}
+
+	/**
+	 * @param int   $user_id
+	 * @param array $language_pairs
+	 */
+	private function edit_translator( $user_id, $language_pairs ) {
+		global $wpdb;
+
+		$user = new WP_User( $user_id );
+
+		if ( empty( $language_pairs ) ) {
+			$user->remove_cap( WPML_Translator_Role::CAPABILITY );
+		} elseif ( ! $user->has_cap( WPML_Translator_Role::CAPABILITY ) ) {
+			$user->add_cap( WPML_Translator_Role::CAPABILITY );
+		}
+
+		$language_pair_records = new WPML_Language_Pair_Records( $wpdb, new WPML_Language_Records( $wpdb ) );
+		$language_pair_records->store( $user_id, $language_pairs );
 	}
 	
 	public function translator_languages_pairs_filter( $default, $user ) {
