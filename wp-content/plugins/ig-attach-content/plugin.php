@@ -22,7 +22,7 @@ add_action( 'plugins_loaded', function() {
  * for the page. It also contains 2 radio buttons: attach content to beginning or end of current page.
  */
 function ig_ac_generate_selection_box() {
-	add_meta_box( 'ig_ac_metabox', __( 'Attach Page', 'ig-attach-content' ), 'ig_ac_create_metabox', 'page', 'side' );
+	add_meta_box( 'ig_ac_metabox', __( 'Live-Content', 'ig-attach-content' ), 'ig_ac_create_metabox', 'page', 'side' );
 }
 add_action( 'add_meta_boxes_page', 'ig_ac_generate_selection_box' );
 
