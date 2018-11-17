@@ -29,6 +29,7 @@ class APIv3_Sites extends APIv3_Base_Abstract {
 		}
 		if (class_exists('IntegreatSettingsPlugin')) {
 			$result = array_merge($result, apply_filters('ig-settings-api', null));
+			$result['city-aliases'] = json_decode($result['city-aliases']);
 		}
 		restore_current_blog();
 		return $result;
