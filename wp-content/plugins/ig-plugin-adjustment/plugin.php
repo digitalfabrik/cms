@@ -19,6 +19,10 @@ add_action('upgrader_process_complete', function ($upgrader_object, $options) {
 			PluginAdjustment::apply_revisionary_adjustments();
 		}
 
+		if (in_array('broken-link-checker', $options['plugins'])) {
+			PluginAdjustment::broken_link_checker();
+		}
+
 	}
 }, 10, 2);
 
@@ -67,6 +71,13 @@ abstract class PluginAdjustment {
 		$replace = '"post_status": "<?php echo ig_tree_view_labels ($onePage->ID, $onePage->post_status ) ?>",';
 		self::replace_in_file($tree_view_file, $search, $replace);
 
+	}
+
+	public function broken_link_checker(){
+		$broken_link_file = plugin_dir_path(__FILE__) . '../broken-link-checker/core/core.php';
+		$search = "			'edit_others_posts',";
+		$replace = "			'create_users',";
+		self::replace_in_file($broken_link_file, $search, $replace);
 	}
 
 }
