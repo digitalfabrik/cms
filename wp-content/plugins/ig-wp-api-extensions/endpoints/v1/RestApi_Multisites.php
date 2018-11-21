@@ -15,7 +15,7 @@ class RestApi_MultisitesV1 extends RestApi_ExtensionBase {
 	}
 
 	public function get_multisites() {
-		return array_map([$this, 'prepare_item'], get_sites());
+		return array_map([$this, 'prepare_item'], get_sites(array('number'=>0)));
 	}
 
 	private function prepare_item($blog) {
