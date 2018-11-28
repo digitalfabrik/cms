@@ -62,6 +62,14 @@ class IntegreatSettingConfig {
 			self::$current_error[] = $setting->alias;
 			return false;
 		}
+		if ($setting->type === 'json' && !json_decode($this->value)) {
+			IntegreatSettingsPlugin::$admin_notices[] = [
+				'type' => 'error',
+				'message' => 'The value "' . htmlspecialchars($this->value) . '" is no valid json'
+			];
+			self::$current_error[] = $setting->alias;
+			return false;
+		}
 		if ($setting->alias === 'plz') {
 			if ($this->value === '') {
 				/*
@@ -270,7 +278,7 @@ class IntegreatSettingConfig {
 					'setting_id' => $setting->id
 				]);
 			}
-			if ($setting->type === 'string') {
+			if ($setting->type === 'string' || $setting->type === 'json') {
 				$form .= '
 					<div>
 						<label for="' . $setting->id . '">' . htmlspecialchars($setting->name) . '</label>
@@ -316,7 +324,7 @@ class IntegreatSettingConfig {
 					} else {
 						$setting_config->value = '0';
 					}
-				} elseif ($setting->type === 'string') {
+				} elseif ($setting->type === 'string' || $setting->type === 'json') {
 					if (isset($_POST[$setting_config->setting_id])) {
 						$setting_config->value = str_replace('&quot;', '"', stripslashes($_POST[$setting_config->setting_id]));
 					} else {

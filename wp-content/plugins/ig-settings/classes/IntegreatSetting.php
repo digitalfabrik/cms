@@ -21,7 +21,7 @@ class IntegreatSetting {
 		$this->id = isset($setting->id) ? (int) $setting->id : null;
 		$this->name = isset($setting->name) && $setting->name !== '' ? $setting->name : null;
 		$this->alias = isset($setting->alias) && $setting->alias !== '' ? $setting->alias : null;
-		$this->type = isset($setting->type) && in_array($setting->type, ['string', 'bool']) ? $setting->type : null;
+		$this->type = isset($setting->type) && in_array($setting->type, ['string', 'bool', 'json']) ? $setting->type : null;
 	}
 
 	private function validate() {
@@ -49,10 +49,10 @@ class IntegreatSetting {
 			];
 			self::$current_error[] = 'alias';
 		}
-		if (!in_array($this->type, ['string', 'bool'])) {
+		if (!in_array($this->type, ['string', 'bool', 'json'])) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The given type "' . htmlspecialchars($this->type) . '" is not valid (must be "string" or "bool")'
+				'message' => 'The given type "' . htmlspecialchars($this->type) . '" is not valid (must be "string", "bool" or "json")'
 			];
 			self::$current_error[] = 'type';
 		}
@@ -223,6 +223,7 @@ class IntegreatSetting {
 					<select name="setting[type]">
 						<option value="string" ' . ($setting && $setting->type === 'string' ?  'selected' : '') . '>String</option>
 						<option value="bool" ' . ($setting && $setting->type === 'bool' ? 'selected' : '') . '>Boolean</option>
+						<option value="json" ' . ($setting && $setting->type === 'json' ? 'selected' : '') . '>JSON</option>
 					</select>
 				</div>
 				<br>
