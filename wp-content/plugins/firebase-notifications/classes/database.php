@@ -39,6 +39,9 @@ class FirebaseNotificationsDatabase {
      */
     private function create_table_v_2_0_mu( $table_name ) {
         global $wpdb;
+        if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            return False;
+        }
         $charset_collate = $wpdb->get_charset_collate();
         $sql = "CREATE TABLE $table_name (
                     `id` INT NOT NULL AUTO_INCREMENT,
@@ -47,7 +50,7 @@ class FirebaseNotificationsDatabase {
                     `timestamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                     PRIMARY KEY (`id`)
                 ) $charset_collate;";
-        file_put_contents( "fcmdb.log", $sql, FILE_APPEND );
+        file_put_contents( "fcmdb.log", "$sql\n", FILE_APPEND );
         return $wpdb->query( $sql );
     }
 
@@ -58,7 +61,7 @@ class FirebaseNotificationsDatabase {
      */
     public function new_blog( $blog_id ) {
         global $wpdb;
-        create_table_v_2_0_mu( $wpdb->base_prefix . $blog->blog_id . "_" . "fcm_messages" );
+        $this->create_table_v_2_0_mu( $wpdb->base_prefix . $blog_id . "_" . "fcm_messages" );
     }
 
     /**
