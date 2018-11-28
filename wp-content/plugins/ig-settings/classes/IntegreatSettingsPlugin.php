@@ -240,7 +240,13 @@ class IntegreatSettingsPlugin {
 			// get all settings and union it with an additional extra setting which is true if at least one extra is enabled
 			return array_map(function ($setting) {
 				// cast setting value by its desired type
-				return ($setting->type === 'bool' ? (bool) $setting->value : ($setting->value === '' ? null : $setting->value));
+				if ($setting->type === 'bool') {
+					return (bool) $setting->value;
+				} elseif ($setting->type === 'json') {
+					return json_decode($setting->value);
+				} else {
+					return ($setting->value === '' ? null : $setting->value);
+				}
 			}, $wpdb->get_results(
 				"SELECT alias, type, value
 					FROM {$wpdb->base_prefix}ig_settings
