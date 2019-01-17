@@ -15,6 +15,14 @@ RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes|activate).*) $2 [L]
 RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
 RewriteRule . index.php [L]
 
+<Files deploy.php>
+	Order Allow,Deny
+	Deny from all
+</Files>
+<Files migrate-database.php>
+	Order Allow,Deny
+	Deny from all
+</Files>
 <Files wp-config.php>
 	Order Allow,Deny
 	Deny from all
