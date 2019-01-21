@@ -17,5 +17,17 @@ function example_admin_menu() {
     load_plugin_textdomain( 'integreat-help', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
     global $submenu;
     $url = 'https://wiki.integreat-app.de/';
-    $submenu['tools.php'][] = array(__('Integreat Help'), 'edit_pages', $url);
+    $submenu['tools.php'][] = array('<div id="wikiblank">'.__('Integreat Wiki').'</div>', 'edit_pages', $url);
+}
+
+add_action( 'admin_footer', 'make_wiki_blank' );
+function make_wiki_blank()
+{
+    ?>
+    <script type="text/javascript">
+    jQuery(document).ready(function($) {
+        $('#wikiblank').parent().attr('target','_blank');
+    });
+    </script>
+    <?php
 }
