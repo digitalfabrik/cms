@@ -11,11 +11,15 @@ RewriteCond %{ENV:REDIRECT_STATUS} 200 [OR]
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
-RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes|activate).*) $2 [L]
 RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
-RewriteRule . index.php [L]
+RewriteRule (.*) https://web.integreat-app.de/$1 [R=301,L]
 
-<Files database.sql>
+<Files deploy.php>
+	Order Allow,Deny
+	Deny from all
+</Files>
+<Files migrate-database.php>
 	Order Allow,Deny
 	Deny from all
 </Files>
