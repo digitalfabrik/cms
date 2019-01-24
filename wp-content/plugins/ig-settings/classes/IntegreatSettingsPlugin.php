@@ -262,9 +262,24 @@ class IntegreatSettingsPlugin {
 						alias = 'push-notifications' OR
 						alias = 'city-aliases' OR
 						alias = 'longitude' OR
-						alias = 'latitude'
+						alias = 'latitude' OR
+						alias = 'license-name' OR
+						alias = 'license-url'
 				UNION SELECT 'extras', 'bool', (SELECT enabled FROM {$wpdb->prefix}ig_extras_config WHERE enabled LIMIT 1)", OBJECT_K));
 		}, 10, 0);
+		/*
+		 * For some settings, default values are required if the value is still empty.
+		 */
+		add_filter('ig-settings-api', function ($settings) {
+			if ( array_key_exists( 'license-name', $settings ) && Null === $settings['license-name'] ) {
+				$settings['license-name'] = 'CC BY-NC 4.0';
+			}
+			if ( array_key_exists( 'license-url', $settings ) && Null === $settings['license-url'] ) {
+				$settings['license-url'] = 'https://creativecommons.org/licenses/by-nc/4.0/';
+			}
+			return $settings;
+		}, 11, 1);
+		
 		/*
 		 * Take an array of settings and a setting alias and return the settings value as string
 		 */
