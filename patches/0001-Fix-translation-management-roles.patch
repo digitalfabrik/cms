@@ -1,0 +1,28 @@
+From 947254ede1383ea557d05bec2a9f8e34c643e8f3 Mon Sep 17 00:00:00 2001
+From: Sven Seeberg <mail@sven-seeberg.de>
+Date: Wed, 30 Jan 2019 15:47:46 +0100
+Subject: [PATCH] Fix translation management roles
+
+* For Integreat, the manager role requires access
+  to the WPML translation management.
+---
+ .../classes/user/class-wpml-translator-admin-records.php                | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wp-content/plugins/wpml-translation-management/classes/user/class-wpml-translator-admin-records.php b/wp-content/plugins/wpml-translation-management/classes/user/class-wpml-translator-admin-records.php
+index e0dd24b2..b4c82753 100644
+--- a/wp-content/plugins/wpml-translation-management/classes/user/class-wpml-translator-admin-records.php
++++ b/wp-content/plugins/wpml-translation-management/classes/user/class-wpml-translator-admin-records.php
+@@ -3,7 +3,7 @@
+ class WPML_Translator_Admin_Records extends WPML_Translator_Records {
+ 
+ 	protected function get_required_wp_roles() {
+-		return array( 'administrator' );
++		return array( 'manager', 'administrator' );
+ 	}
+ 
+ }
+\ No newline at end of file
+-- 
+2.16.4
+
