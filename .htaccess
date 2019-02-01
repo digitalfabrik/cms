@@ -11,7 +11,7 @@ RewriteRule ^([^/]+/)?wp-admin$ $1wp-admin/ [R=301,L]
 RewriteRule ^([^/]+\/){0,2}(wp-json/.*)$ index.php [L]
 
 # If a /wp-admin/, /wp-includes/, etc is in the path, strip leading directories
-RewriteRule ^([^/]+\/){0,2}(wp-(content|includes|admin)\/.*)$ $2 [L]
+RewriteRule ^([^/]+\/){0,2}(wp-(content|includes|admin)\/.*)$ $2 [L,END]
 
 # Strip max 2 dirs before wp-*.php /wp-*.php files
 RewriteRule ^([^/]+\/){0,2}(wp-([^/]+)\.php)$ $2 [L]
