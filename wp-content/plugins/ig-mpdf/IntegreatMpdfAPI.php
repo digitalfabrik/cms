@@ -24,7 +24,7 @@ class IntegreatMpdfAPI {
 					'url' => [
 						'required' => false,
 						'validate_callback' => function($url) {
-							return $this->is_valid(url_to_postid(ltrim($url, '/')));
+							return $this->is_valid(url_to_postid(get_site_url('/') . $url));
 						}
 					],
 				]
@@ -40,10 +40,10 @@ class IntegreatMpdfAPI {
 	 */
 	public function get_pdf(WP_REST_Request $request) {
 		$id = $request->get_param('id');
-		$url = $request->get_param('url');
+		$url = get_site_url('/') . $request->get_param('url');
 		if ($id !== null || $url !== null) {
 			if ($id === null) {
-				$id = url_to_postid(ltrim($url, '/'));
+				$id = url_to_postid($url);
 			}
 			// change current language to language of given post
 			$GLOBALS['sitepress']->switch_lang(apply_filters('wpml_element_language_code', null, ['element_id' => $id, 'element_type' => 'page']), true);
