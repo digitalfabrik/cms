@@ -34,7 +34,6 @@ sitepress-multilingual-cms \
 tinymce-advanced \
 use-google-libraries \
 user-role-editor-pro \
-welcome-email-editor \
 wpml-media-translation \
 wpml-translation-management \
 wp-better-emails \
