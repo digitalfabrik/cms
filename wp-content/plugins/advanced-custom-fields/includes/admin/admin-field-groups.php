@@ -145,23 +145,25 @@ class acf_admin_field_groups {
 	
 	function check_duplicate() {
 		
-		// message
+		// Display notice
 		if( $ids = acf_maybe_get_GET('acfduplicatecomplete') ) {
 			
 			// explode
 			$ids = explode(',', $ids);
 			$total = count($ids);
 			
-			if( $total == 1 ) {
-				
-				acf_add_admin_notice( sprintf(__('Field group duplicated. %s', 'acf'), '<a href="' . get_edit_post_link($ids[0]) . '">' . get_the_title($ids[0]) . '</a>') );
-				
-			} else {
-				
-				acf_add_admin_notice( sprintf(_n( '%s field group duplicated.', '%s field groups duplicated.', $total, 'acf' ), $total) );
-				
-			}
+			// Generate text.
+			$text = sprintf( _n( 'Field group duplicated.', '%s field groups duplicated.', $total, 'acf' ), $total );
 			
+			// Add links to text.
+			$links = array();
+			foreach( $ids as $id ) {
+				$links[] = '<a href="' . get_edit_post_link( $id ) . '">' . get_the_title( $id ) . '</a>';
+			}
+			$text .= ' ' . implode( ', ', $links );
+			
+			// Add notice
+			acf_add_admin_notice( $text, 'success' );
 		}
 		
 		
@@ -230,23 +232,25 @@ class acf_admin_field_groups {
 	
 	function check_sync() {
 		
-		// message
+		// Display notice
 		if( $ids = acf_maybe_get_GET('acfsynccomplete') ) {
 			
 			// explode
 			$ids = explode(',', $ids);
 			$total = count($ids);
 			
-			if( $total == 1 ) {
-				
-				acf_add_admin_notice( sprintf(__('Field group synchronised. %s', 'acf'), '<a href="' . get_edit_post_link($ids[0]) . '">' . get_the_title($ids[0]) . '</a>') );
-				
-			} else {
-				
-				acf_add_admin_notice( sprintf(_n( '%s field group synchronised.', '%s field groups synchronised.', $total, 'acf' ), $total) );
-				
-			}
+			// Generate text.
+			$text = sprintf( _n( 'Field group synchronised.', '%s field groups synchronised.', $total, 'acf' ), $total );
 			
+			// Add links to text.
+			$links = array();
+			foreach( $ids as $id ) {
+				$links[] = '<a href="' . get_edit_post_link( $id ) . '">' . get_the_title( $id ) . '</a>';
+			}
+			$text .= ' ' . implode( ', ', $links );
+			
+			// Add notice
+			acf_add_admin_notice( $text, 'success' );
 		}
 		
 		
@@ -619,7 +623,7 @@ class acf_admin_field_groups {
 	<div class="acf-box">
 		<div class="inner">
 			<h2><?php echo acf_get_setting('name'); ?></h2>
-			<p><?php _e('Customise WordPress with powerful, professional and intuitive fields.','acf'); ?></p>
+			<p><?php _e('Customize WordPress with powerful, professional and intuitive fields.','acf'); ?></p>
 			
 			<h3><?php _e("Changelog",'acf'); ?></h3>
 			<p><?php 
