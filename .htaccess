@@ -10,6 +10,9 @@ RewriteRule ^([^/]+/)?wp-admin$ $1wp-admin/ [R=301,L]
 # Redirect all URLs containing wp-json/ to the index.php
 RewriteRule ^([^/]+\/){0,2}(wp-json/.*)$ index.php [L]
 
+# Redirect URLs containing newbloguser/ to wp-activate.php for account activation
+RewriteRule ^([^/]+\/){0,2}(newbloguser\/)(.*)$ wp-activate.php [L,END]
+
 # If a /wp-admin/, /wp-includes/, etc is in the path, strip leading directories
 RewriteRule ^([^/]+\/){0,2}(wp-(content|includes|admin)\/.*)$ $2 [L,END]
 
