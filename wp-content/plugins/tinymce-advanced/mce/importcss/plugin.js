@@ -74,7 +74,37 @@ var importcss = (function () {
     var selectors = [], contentCSSUrls = {};
     function append(styleSheet, imported) {
       var href = styleSheet.href, rules;
-      href = removeCacheSuffix(href);
+
+		if ( editor.settings.classic_block_editor ) {
+			// Attempt to import the CSS rules from the style tag.
+			tinymce.$( 'style' ).each( function( i, node ) {
+				var css = node.textContent || '';
+
+				if ( /theme name: /i.test( css ) || css.indexOf( 'TinyMCE' ) > -1 ) {
+					try{
+						rules = node.sheet.cssRules;
+					} catch ( er ) {}
+				}
+			});
+
+			if ( rules ) {
+				tinymce.each( rules, function ( cssRule ) {
+					if ( cssRule.selectorText ) {
+						tinymce.each( cssRule.selectorText.split(','), function ( selector ) {
+							selector = selector.replace( /^\.editor-styles-wrapper/, '' );
+
+							if ( selector ) {
+								selectors.push( tinymce.trim( selector ) );
+							}
+						});
+					}
+				});
+
+				return;
+			}
+		}
+
+	  href = removeCacheSuffix(href);
       if (!href || !fileFilter(href, imported) || isSkinContentCss(editor, href)) {
         return;
       }

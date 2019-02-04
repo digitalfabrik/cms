@@ -1,0 +1,358 @@
+/**
+ * This file is part of the TinyMCE Advanced WordPress plugin and is released under the same license.
+ * For more information please see tinymce-advanced.php.
+ *
+ * Copyright (c) 2007-2019 Andrew Ozz. All rights reserved.
+ */
+
+/* Fixes for the Block Editor */
+.block-library-classic__toolbar:empty {
+    height: 40px;
+}
+
+.block-library-classic__toolbar:empty::before {
+	padding: 0 14px;
+	vertical-align: text-bottom;
+}
+
+.editor-block-list__layout .editor-block-list__block[data-type="core/freeform"] .editor-block-list__block-edit::before {
+	outline: none;
+}
+
+.editor-block-list__block[data-type="core/freeform"] > .editor-block-list__insertion-point {
+	z-index: 11;
+}
+
+.editor-block-list__block[data-type="core/freeform"] .editor-block-list__insertion-point-inserter .editor-inserter__toggle {
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	margin-top: 5px;
+}
+
+.block-library-classic__toolbar .mce-menubar {
+	min-height: 38px;
+}
+
+.block-library-classic__toolbar .mce-menubar + .mce-toolbar-grp .mce-container-body .mce-toolbar {
+	padding: 0;
+}
+
+.block-library-classic__toolbar .mce-btn .mce-txt {
+	font-size: 14px;
+}
+
+@media (min-width: 600px) {
+	.block-library-classic__toolbar .mce-menubar > .mce-container-body {
+		padding-top: 6px;
+		padding-right: 36px;
+		white-space: normal;
+		width: auto !important;
+	}
+
+	.rtl .block-library-classic__toolbar .mce-menubar > .mce-container-body {
+		padding-right: 0;
+		padding-left: 36px;
+	}
+}
+
+.block-library-classic__toolbar .mce-menubar i.mce-caret {
+	margin-top: 0.4em;
+}
+
+/* Classic Block styling regressions fixes */
+.wp-block-freeform.block-library-rich-text__tinymce {
+	padding: 6px; /* For wpview outlines and image resize handles. */
+}
+
+/* Remove blue highlighting of selected images in WebKit */
+.wp-block-freeform.block-library-rich-text__tinymce img[data-mce-selected]::selection {
+	background-color: transparent;
+}
+/* Image resize handles */
+.wp-block-freeform.block-library-rich-text__tinymce .mce-content-body div.mce-resizehandle {
+	border-color: #191e23;
+	width: 6px;
+	height: 6px;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .mce-content-body img[data-mce-selected] {
+	outline: 1px solid #191e23;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .mce-content-body img[data-mce-resize="false"] {
+	outline: 0;
+}
+
+/* Image captions */
+.wp-block-freeform.block-library-rich-text__tinymce .wp-caption {
+	margin: 0; /* browser reset */
+	max-width: 100%;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption dt.wp-caption-dt img {
+	display: inline-block;
+	margin-bottom: -1ex;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce div.mceTemp {
+	-ms-user-select: element;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption,
+.wp-block-freeform.block-library-rich-text__tinymce dl.wp-caption * {
+	-webkit-user-drag: none;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wp-caption-dd {
+	padding-top: 0.5em;
+	margin: 0; /* browser reset */
+}
+
+/* WP Views */
+.wp-block-freeform.block-library-rich-text__tinymce .wpview {
+	width: 99.99%; /* All IE need hasLayout, incl. 11 (ugh, not again!!) */
+	position: relative;
+	clear: both;
+	margin-bottom: 16px;
+	border: 1px solid transparent;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .mce-shim {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview[data-mce-selected="2"] .mce-shim {
+	display: none;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview .loading-placeholder {
+	border: 1px dashed $light-gray-400;
+	padding: 10px;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview[data-mce-selected] .loading-placeholder {
+	border-color: transparent;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview .wpview-content > iframe {
+	max-width: 100%;
+	background: transparent;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview-error {
+	border: 1px solid $light-gray-400;
+	padding: 1em 0;
+	margin: 0;
+	word-wrap: break-word;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview[data-mce-selected] .wpview-error {
+	border-color: transparent;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview-error .dashicons,
+.wp-block-freeform.block-library-rich-text__tinymce .loading-placeholder .dashicons {
+	display: block;
+	margin: 0 auto;
+	width: 32px;
+	height: 32px;
+	font-size: 32px;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce .wpview-error p {
+	margin: 0;
+	text-align: center;
+}
+
+/* Toolbars (some get appended to <body>) */
+div.mce-toolbar-grp .mce-btn:hover button,
+div.mce-toolbar-grp .mce-btn:hover i,
+div.mce-toolbar-grp .mce-btn.mce-active button,
+div.mce-toolbar-grp .mce-btn.mce-active:hover button,
+div.mce-toolbar-grp .mce-btn.mce-active i,
+div.mce-toolbar-grp .mce-btn.mce-active:hover i
+div.mce-inline-toolbar-grp .mce-btn:hover button,
+div.mce-inline-toolbar-grp .mce-btn:hover i,
+div.mce-inline-toolbar-grp .mce-btn.mce-active button,
+div.mce-inline-toolbar-grp .mce-btn.mce-active:hover button,
+div.mce-inline-toolbar-grp .mce-btn.mce-active i,
+div.mce-inline-toolbar-grp .mce-btn.mce-active:hover i {
+	color: #191e23;
+}
+
+div.mce-toolbar-grp .mce-btn i,
+div.mce-inline-toolbar-grp .mce-btn i {
+	font-style: normal;
+}
+
+div.mce-widget.mce-tooltip .mce-tooltip-inner {
+	font-size: 13px;
+	opacity: 1;
+}
+
+.block-library-classic__toolbar .mce-menubar .mce-flow-layout-item {
+	margin: 2px 0;
+}
+
+/* Menu */
+div.mce-menu .mce-menu-item:hover,
+div.mce-menu .mce-menu-item.mce-selected,
+div.mce-menu .mce-menu-item:focus,
+div.mce-menu .mce-menu-item-normal.mce-active,
+div.mce-menu .mce-menu-item-preview.mce-active {
+	background: #0073aa; /* See color scheme. */
+	color: #fff;
+}
+
+div.mce-menu-item:hover .mce-text,
+div.mce-menu-item:focus .mce-text,
+div.mce-menu-item:hover .mce-ico,
+div.mce-menu-item:focus .mce-ico,
+div.mce-menu-item:hover .mce-menu-shortcut,
+div.mce-menu-item:focus .mce-menu-shortcut,
+div.mce-menu-item.mce-active .mce-menu-shortcut,
+div.mce-menu-item.mce-disabled:hover .mce-text,
+div.mce-menu-item.mce-disabled:hover .mce-ico {
+	color: inherit;
+}
+
+div.mce-menu .mce-menu-item.mce-disabled {
+	cursor: default;
+}
+
+div.mce-menu .mce-menu-item.mce-disabled:hover {
+    background: #ccc;
+}
+
+/* Menubar */
+div.mce-menubar {
+	border-color: #e5e5e5;
+	background: #fff;
+	border-width: 0px 0px 1px;
+}
+
+div.mce-menubar .mce-menubtn:hover,
+div.mce-menubar .mce-menubtn.mce-active,
+div.mce-menubar .mce-menubtn:focus {
+	border-color: transparent;
+	background: transparent;
+}
+
+div.mce-menubar .mce-menubtn:focus {
+	color: #124964;
+	box-shadow:
+		0 0 0 1px #5b9dd9,
+		0 0 2px 1px rgba(30, 140, 190, .8);
+}
+
+div.mce-menu .mce-menu-item-sep,
+div.mce-menu-item-sep:hover {
+	border-bottom: 1px solid #ddd;
+	height: 0px;
+	margin: 5px 0;
+}
+
+div.mce-menubtn span {
+	margin-right: 0;
+	padding-left: 3px;
+}
+
+div.mce-menu-has-icons i.mce-ico:before {
+	margin-left: 0;
+}
+
+div.mce-menu-has-icons i.mce-ico {
+	line-height: 16px;
+}
+
+.block-library-classic__toolbar .mce-menubar .mce-menubtn:hover,
+.block-library-classic__toolbar .mce-menubar .mce-menubtn.mce-active,
+.block-library-classic__toolbar .mce-menubar .mce-menubtn:focus {
+	border-color: transparent;
+	background: transparent;
+}
+
+.wp-block-freeform.block-library-rich-text__tinymce p {
+	margin: 1em 0;
+}
+
+.mce-content-body img[data-mce-selected],
+.mce-content-body hr[data-mce-selected] {
+    outline: 1px solid black;
+    resize: none;
+}
+
+/* Increase editor width a bit... */
+@media (min-width: 600px) {
+	.edit-post-layout.is-sidebar-opened .editor-post-title,
+	.edit-post-layout.is-sidebar-opened .editor-block-list__layout {
+	    padding-left: 0;
+	    padding-right: 0;
+	}
+
+	.edit-post-layout .editor-styles-wrapper .wp-block {
+		margin-left: auto;
+    	margin-right: auto;
+	}
+
+
+	.edit-post-layout .wp-block-columns .editor-styles-wrapper .wp-block {
+		min-width: 0;
+	}
+}
+
+/* Fix regression in toolbar buttons :-( */
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i {
+    font-family: tinymce !important;
+}
+
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-bold,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-italic,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-bullist,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-numlist,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-blockquote,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-alignleft,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-aligncenter,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-alignright,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-link,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-unlink,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp_more,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-strikethrough,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-spellchecker,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-fullscreen,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp_fullscreen,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-dfw,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp_adv,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-underline,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-alignjustify,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-forecolor,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-backcolor,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-pastetext,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-pasteword,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-removeformat,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-charmap,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-outdent,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-indent,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-undo,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-redo,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-help,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp_help,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp-media-library,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-ltr,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp_page,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-hr,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-wp_code,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-dashicon,
+.editor-styles-wrapper .wp-block[data-type="core/freeform"] .mce-toolbar-grp .mce-btn i.mce-i-remove {
+	font-family: dashicons !important;
+}
+
+/* Editor content */
+.wp-block-freeform.block-library-rich-text__tinymce table {
+	width: 100%;
+}
