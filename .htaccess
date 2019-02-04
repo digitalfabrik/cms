@@ -1,19 +1,29 @@
 Header set Access-Control-Allow-Origin "*"
 
 RewriteEngine On
-RewriteBase /wordpress/
+RewriteBase /wordpress
 RewriteRule ^index\.php$ - [L]
 
 # add a trailing slash to /wp-admin
-RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
+RewriteRule ^([^/]+/)?wp-admin$ $1wp-admin/ [R=301,L]
 
-RewriteCond %{ENV:REDIRECT_STATUS} 200 [OR]
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
-RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes|activate).*) $2 [L]
-RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
-RewriteRule (.*) https://web.integreat-app.de/$1 [R=301,L]
+# Redirect all URLs containing wp-json/ to the index.php
+RewriteRule ^([^/]+\/){0,2}(wp-json/.*)$ index.php [L]
+
+# Redirect URLs containing newbloguser/ to wp-activate.php for account activation
+RewriteRule ^([^/]+\/){0,2}(newbloguser\/)(.*)$ wp-activate.php [L,END]
+
+# If a /wp-admin/, /wp-includes/, etc is in the path, strip leading directories
+RewriteRule ^([^/]+\/){0,2}(wp-(content|includes|admin)\/.*)$ $2 [L,END]
+
+# Strip max 2 dirs before wp-*.php /wp-*.php files
+RewriteRule ^([^/]+\/){0,2}(wp-([^/]+)\.php)$ $2 [L]
+
+# END if URL ends with .php to prevent redirect loops
+RewriteRule ^(.*)\.php$ - [L,END]
+
+# Redirect everything except of /wp-content/ and /wp-includes/ - both contain ressources like images
+RewriteRule ^(?!wp-(content|includes))(.*)$ https://integreat.app/$1$2 [R=301,L]
 
 <Files deploy.php>
 	Order Allow,Deny
@@ -31,3 +41,4 @@ RewriteRule (.*) https://web.integreat-app.de/$1 [R=301,L]
 	Order Allow,Deny
 	Deny from all
 </Files>
+

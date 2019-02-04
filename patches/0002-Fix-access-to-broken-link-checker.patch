@@ -1,0 +1,28 @@
+From cb8489cbc6151929f324d6fcfe4cfd013c56f45b Mon Sep 17 00:00:00 2001
+From: Sven Seeberg <mail@sven-seeberg.de>
+Date: Wed, 30 Jan 2019 16:03:40 +0100
+Subject: [PATCH] Fix access to broken link checker
+
+* In Integreat, we do not use the 'view-broken-links'
+  capability. Access is granted to managers with the
+  capability 'create_users'.
+---
+ wp-content/plugins/broken-link-checker/core/core.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/wp-content/plugins/broken-link-checker/core/core.php b/wp-content/plugins/broken-link-checker/core/core.php
+index 52c8f21c..5568f5ac 100644
+--- a/wp-content/plugins/broken-link-checker/core/core.php
++++ b/wp-content/plugins/broken-link-checker/core/core.php
+@@ -335,7 +335,7 @@ class wsBrokenLinkChecker {
+         $links_page_hook = add_management_page(
+ 			__('View Broken Links', 'broken-link-checker'),
+ 			$menu_title,
+-			'edit_others_posts',
++			'create_users',
+             'view-broken-links',array($this, 'links_page')
+ 		);
+ 
+-- 
+2.16.4
+

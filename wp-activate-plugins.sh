@@ -16,7 +16,6 @@ ig-enhanced-help-menu \
 ig-login-redirect-pages \
 ig-menu-help \
 ig-mpdf \
-ig-plugin-adjustment \
 ig-project-user-roles \
 ig-remove-403-forbidden \
 ig-revisions \
