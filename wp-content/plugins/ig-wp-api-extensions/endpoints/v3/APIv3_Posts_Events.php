@@ -110,6 +110,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 			'event_all_day',
 			'event_start_time',
 			'event_end_time',
+			'event_timezone',
 			'recurrence_id',
 		];
 		$location_fields = [
@@ -180,6 +181,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 			'all_day' => (bool) $event->event_all_day,
 			'start_time' => $event->event_start_time,
 			'end_time' => $event->event_end_time,
+			'timezone' => $event->event_timezone,
 			'recurrence_id' => $event->recurrence_id // event_id of meta-event (null if not recurring)
 		];
 	}
