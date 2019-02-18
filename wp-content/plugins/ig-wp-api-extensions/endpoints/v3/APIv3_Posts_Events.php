@@ -24,58 +24,67 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 			'posts_per_page' => -1,
 		]);
 		$events = [];
-		$recurring_events_working = false;
 		foreach ($events_query->posts as $event) {
 			if ($event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
-				continue;
-			}
-			if (!$recurring_events_working && $event->recurrence_id !== null) {
-				$recurring_events_working = true;
+					continue;
 			}
 			$events[] = $this->prepare($event);
 		}
-		if (!$recurring_events_working) {
-			/*
-			 * Get the meta-events of all recurring events:
-			 */
-			$recurring_meta_events_query = new WP_Query([
-				'post_type' => 'event-recurring',
+		/*
+		 * Get the meta-events of all recurring events:
+		 */
+		$recurring_meta_events_query = new WP_Query([
+			'post_type' => 'event-recurring',
+			'post_status' => 'publish',
+			'orderby' => 'id',
+			'order'   => 'ASC',
+			'posts_per_page' => -1,
+		]);
+		/*
+		 * Add filters to the SQL query to make it work with recurring events.
+		 */
+		add_filter('posts_join', [ $this, 'join_translations' ]);
+		add_filter( 'posts_where', [ $this, 'where_recurrence' ] );
+		$recurring_events = [];
+		foreach($recurring_meta_events_query->posts as $this->recurring_meta_event) {
+			$recurring_events_query = new WP_Query([
+				'post_type' => 'event',
 				'post_status' => 'publish',
 				'orderby' => 'id',
 				'order'   => 'ASC',
 				'posts_per_page' => -1,
 			]);
-			/*
-			 * Add filters to the SQL query to make it work with recurring events.
-			 */
-			add_filter('posts_join', [ $this, 'join_translations' ]);
-			add_filter( 'posts_where', [ $this, 'where_recurrence' ] );
-			$recurring_events = [];
-			foreach($recurring_meta_events_query->posts as $this->recurring_meta_event) {
-				$recurring_events_query = new WP_Query([
-					'post_type' => 'event',
-					'post_status' => 'publish',
-					'orderby' => 'id',
-					'order'   => 'ASC',
-					'posts_per_page' => -1,
-				]);
-				foreach ($recurring_events_query->posts as $recurring_event) {
-					if ($recurring_event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
-						continue;
-					}
-					$recurring_events[] = $this->prepare($recurring_event);
+			foreach ($recurring_events_query->posts as $recurring_event) {
+				if ($recurring_event->event_end_date <= date('Y-m-d', strtotime('-1 day'))) {
+					continue;
 				}
+				$recurring_events[] = $this->prepare($recurring_event);
 			}
-			$events = array_merge($events, $recurring_events);
-			/*
-			 * Remove all filters so they don't affect other queries
-			 */
-			remove_filter('posts_join', [ $this, 'join_translations' ]);
-			remove_filter('posts_where', [ $this, 'where_recurrence' ]);
 		}
+		$events = array_merge($events, $recurring_events);
+
+		/*
+		 * Events can be duplicated as normal events and recurring events.
+		 * We need to check, if the event id is unique in the end result
+		 * and return each event id only once.
+		 */
+		$unique_ids = array();
+		$unique_events = array();
+		foreach ( $events as $event ) {
+			if ( !in_array( $event['id'], $unique_ids ) ) {
+				$unique_ids[] = $event['id'];
+				$unique_events[] = $event;
+			}
+		}
+		/*
+		 * Remove all filters so they don't affect other queries
+		 */
+		remove_filter('posts_join', [ $this, 'join_translations' ]);
+		remove_filter('posts_where', [ $this, 'where_recurrence' ]);
+
 		remove_filter('posts_fields', [ $this, 'select_events' ]);
 		remove_filter('posts_join', [ $this, 'join_events' ]);
-		return parent::get_changed_posts($request, $events);
+		return parent::get_changed_posts($request, $unique_events);
 	}
 
 	/*
