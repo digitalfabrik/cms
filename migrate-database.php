@@ -75,14 +75,19 @@
 		$db->query( $update );
 	}
 
-	/* update the wp_posts */
+	/* update the wp_x_posts and wp_x_options */
 	foreach( $blogs as $blog_id ) {
 		$update = "UPDATE " . $table_prefix . $blog_id . "_posts SET post_content = REPLACE(post_content, '" . REPL_DOMAIN_OLD . REPL_PATH_OLD . "', '" . REPL_DOMAIN_NEW . REPL_PATH_NEW . "')";
-		if($debug)
-			var_dump($update);
-		else {
-			var_dump( $update );
-			$db->query( $update );
+		$update2 = "UPDATE " . $table_prefix . $blog_id . "_options SET option_value = REPLACE(option_value, '" . REPL_DOMAIN_OLD . REPL_PATH_OLD . "', '" . REPL_DOMAIN_NEW . REPL_PATH_NEW . "')";
+		if($debug) {
+				var_dump( $update );
+				var_dump( $update2 );
+		} else {
+				var_dump( $update );
+				$db->query( $update );
+				var_dump( $update2 );
+				$db->query( $update2 );
 		}
 	}
+
 ?>
