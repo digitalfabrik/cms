@@ -103,6 +103,7 @@ function modify_buttons($buttons)
 		insert_button($settings, 'indent', 'toolbar_2', 6);
 		insert_button($settings, 'outdent', 'toolbar_2', 7);
 		insert_button($settings, 'link', 'toolbar_2', 8);
+		insert_button($settings, 'notranslate', 'toolbar_2', 9);
 
 		update_option('tadv_settings', $settings);
 	} elseif ($settings && $restore_defaults) {
