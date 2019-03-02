@@ -1,0 +1,2 @@
+msgid "My Statistics"
+msgstr "Meine Statistiken"
