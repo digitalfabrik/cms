@@ -67,7 +67,8 @@ add_action( 'admin_notices', 'ig_revisions_notice' );
  * @param array $new_post data of new post submitted by author
  */
 function ig_revisions_page_update( $post_id, $new_post ) {
-	if ( current_user_can( 'publish_pages' ) ) {
+	$permission = apply_filters( 'ig_allow_publishing', False );
+	if ( current_user_can( 'publish_pages' ) OR $permission ) {
 		// if user can publish pages, change ig revision id to -1 (always current version)
 		update_post_meta( $post_id, 'ig_revision_id', '-1' );
 	} else {
