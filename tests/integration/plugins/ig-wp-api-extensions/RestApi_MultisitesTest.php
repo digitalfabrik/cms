@@ -12,16 +12,15 @@ class RestApi_MultisitesTest extends TestCase {
 
 	public function setUp() {
 		parent::setUp();
-		$this->client = new GuzzleHttp\Client([
-			'base_uri' => 'http://localhost'
-		]);
 	}
 
 	public function testResult() {
-		$response = $this->client->get('/wordpress/wp-json/extensions/v1/multisites/');
-		$this->assertEquals(200, $response->getStatusCode());
-
-		$body = $response->getBody();
+		$ch = curl_init("http://localhost/wordpress/wp-json/extensions/v1/multisites/");
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		$body = curl_exec($ch);
+		$this->assertEquals(200, curl_getinfo($ch, CURLINFO_HTTP_CODE));
+		curl_close($ch);
 		echo "SNAFU\n";
 		var_dump($body);
 		$this->assertNotNull($body);
