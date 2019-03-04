@@ -22,6 +22,8 @@ class RestApi_MultisitesTest extends TestCase {
 		$this->assertEquals(200, $response->getStatusCode());
 
 		$body = $response->getBody();
+		echo "SNAFU\n";
+		var_dump($body);
 		$this->assertNotNull($body);
 		echo "FOO\n";
 		var_dump($body);
