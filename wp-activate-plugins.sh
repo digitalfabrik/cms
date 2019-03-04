@@ -17,6 +17,7 @@ ig-login-redirect-pages \
 ig-menu-help \
 ig-mpdf \
 ig-project-user-roles \
+ig-push-content \
 ig-remove-403-forbidden \
 ig-revisions \
 ig-separate-disclaimer \
