@@ -284,3 +284,40 @@ function ig_attach_content_tree_view_status( $status, $post_id ) {
 	return $status;
 }
 add_filter( 'ig-cms-tree-view-status',  'ig_attach_content_tree_view_status', 10, 2);
+
+/**
+ * Add a meta box directly below the editor.
+ *
+ * @param  string $post_type
+ * @return null
+ */
+function ig_ac_preview_metabox( $post_type ) {
+	if ( in_array( $post_type, array( 'page' ) ) ) {
+		add_meta_box( 'ig_attach_content_preview', __( 'Live-Content Preview', 'ig-attach-content' ), 'ig_attach_content_preview', 'page', 'normal', 'high' );
+	}
+}
+add_action( 'add_meta_boxes', 'ig_ac_preview_metabox' );
+
+
+/**
+ * Check if an attached page is selected and then output its content.
+ *
+ * @return null
+ */
+function ig_attach_content_preview ( ) {
+	global $post;
+	echo "<div id='attach_content_preview'>";
+	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
+	if(strlen($ac_position) > 0 ) {
+		$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
+		$ac_page = get_post_meta( $post->ID, 'ig-attach-content-page', true );
+
+		switch_to_blog($ac_blog);
+		$attach_content = get_post($ac_page)->post_content;
+		restore_current_blog();
+		echo $attach_content;
+	} else {
+		echo __("No live content selected.", "ig-attach-content");
+	}
+	echo "</div>";
+}
