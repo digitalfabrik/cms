@@ -45,6 +45,7 @@ require_once __DIR__ . '/endpoints/v3/APIv3_Languages.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Hidden.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Sites_Live.php';
+require_once __DIR__ . '/endpoints/v3/APIv3_PC_Page.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Relatives_Abstract.php';
 require_once __DIR__ . '/endpoints/v3/APIv3_Posts_Children.php';
@@ -107,6 +108,7 @@ add_action('rest_api_init', function () {
 			new APIv3_Feedback_Extras(),
 			new APIv3_Feedback_Search(),
 			new APIv3_Languages(),
+			new APIv3_PC_Page(),
 			new APIv3_Posts_Children(),
 			new APIv3_Posts_Disclaimer(),
 			new APIv3_Posts_Events(),
@@ -159,14 +161,14 @@ function wp_api_extension_hide_delete_css()
 }
 add_action( 'admin_head-edit.php', 'wp_api_extension_hide_delete_css' );
 
-function wp_api_extension_hide_row_action( $actions, $post ) 
+function wp_api_extension_hide_row_action( $actions, $post )
 {
 	if( is_super_admin() ) {
 		return $actions;
 	}
 	if( isset( $_REQUEST['post_status'] ) && 'trash' == $_REQUEST['post_status'] )
 		unset( $actions['delete'] );
-	return $actions; 
+	return $actions;
 }
 add_filter( 'post_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );
 add_filter( 'page_row_actions', 'wp_api_extension_hide_row_action', 10, 2 );

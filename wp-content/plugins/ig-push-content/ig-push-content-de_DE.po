@@ -1,0 +1,11 @@
+msgid "Push Content"
+msgstr "Push Content"
+
+msgid "Require review"
+msgstr "Review erforderlich"
+
+msgid "Generate token"
+msgstr "Token generieren"
+
+msgid "Revoke token"
+msgstr "Token widerrufen"
