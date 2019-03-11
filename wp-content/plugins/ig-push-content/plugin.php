@@ -54,7 +54,6 @@ function ig_pc_html( $token, $review ) {
 '<input type="button" class="button-secondary" value="<?php echo __( 'Revoke token', 'ig-push-content' ); ?>" onclick="pc_revoke_token();" />');
         }
         function pc_revoke_token() {
-            var token = Math.random().toString(36).substr(2) + Math.random().toString(36).substr(2);
             jQuery('#pc_token').html('<input type="button" class="button-secondary" value="<?php echo __( 'Generate token', 'ig-push-content' ); ?>" onclick="pc_generate_token()">');
         }
 	</script>
@@ -81,15 +80,18 @@ function ig_pc_html( $token, $review ) {
 * @param int $post_id Post ID
 */
 function ig_pc_save_meta_box( $post_id ) {
-	$key_token = 'ig_push_content_token';
+    $key_token = 'ig_push_content_token';
     $key_require_review = 'ig_push_content_review';
+    $key_denied = 'ig_push_content_denied';
     if ( current_user_can( 'publish_pages' ) ) {
         if ( Null == $_POST[$key_token] ) {
             delete_post_meta( $post_id, $key_token);
             delete_post_meta( $post_id, $key_require_review);
+            delete_post_meta( $post_id, $key_denied );
         } else {
             update_post_meta( $post_id, $key_token, $_POST[$key_token] );
             update_post_meta( $post_id, $key_require_review, $_POST[$key_require_review] );
+            update_post_meta( $post_id, $key_denied, 0 );
         }
     }
 }
@@ -110,8 +112,13 @@ function ig_pc_save_page( WP_REST_Request $request ) {
     $page_meta_token = get_post_meta( $post_id, 'ig_push_content_token', true );
     $page_meta_review = get_post_meta( $post_id, 'ig_push_content_review', true );
     // If the token does not match, abort
-    if ( $token != $page_meta_token )
+    $denied = (int)get_post_meta( $post_id, 'ig_push_content_denied', true );
+    if ( $token != $page_meta_token or $denied > 5 ) {
+        update_post_meta( $post_id, 'ig_push_content_denied', $denied + 1 );
         return array( "status" => "denied" );
+    } else {
+        update_post_meta( $post_id, 'ig_push_content_denied', 0 );
+    }
 
     // allow filtering the data
     $data = apply_filters( 'ig_pc_update_page', $data );
