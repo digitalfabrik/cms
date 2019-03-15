@@ -29,6 +29,10 @@ RewriteRule ^(?!wp-(content|includes))(.*)$ https://integreat.app/$1$2 [R=301,L]
 	Order Allow,Deny
 	Deny from all
 </Files>
+<Files xmlrpc.php>
+	Order Allow,Deny
+	Deny from all
+</Files>
 <Files deploy.php>
 	Order Allow,Deny
 	Deny from all
