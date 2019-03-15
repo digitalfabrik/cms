@@ -25,6 +25,10 @@ RewriteRule ^(.*)\.php$ - [L,END]
 # Redirect everything except of /wp-content/ and /wp-includes/ - both contain ressources like images
 RewriteRule ^(?!wp-(content|includes))(.*)$ https://integreat.app/$1$2 [R=301,L]
 
+<Files wp-includes/comment.php>
+	Order Allow,Deny
+	Deny from all
+</Files>
 <Files deploy.php>
 	Order Allow,Deny
 	Deny from all
