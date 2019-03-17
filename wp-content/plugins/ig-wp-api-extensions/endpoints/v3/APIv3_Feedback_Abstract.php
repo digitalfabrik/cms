@@ -29,6 +29,12 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 		$text = $request->get_param('comment');
 		$rating = $request->get_param('rating');
 		/*
+		 * Sanitize text
+		 */
+		if ($text !== null) {
+			$text = htmlentities($text);
+		}
+		/*
 		 * Throw an error if both comment and rating are missing
 		 */
 		if ($text === null && $rating === null) {
