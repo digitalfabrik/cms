@@ -155,6 +155,7 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		$prepared_event = parent::prepare($event);
 		$prepared_event['event'] = $this->prepare_event($event);
 		$prepared_event['location'] = $this->prepare_location($event);
+		$prepared_event['featured_image'] = $this->prepare_featured_image($event);
 		unset($prepared_event['parent']);
 		unset($prepared_event['order']);
 		unset($prepared_event['hash']);
@@ -171,6 +172,24 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		}
 		$prepared_event['hash'] = md5(json_encode($prepared_event));
 		return $prepared_event;
+	}
+
+	private function prepare_featured_image(WP_Post $event) {
+		if( has_post_thumbnail( $event->ID )) {
+			$image_data = array();
+			$image_data['description'] = the_post_thumbnail_caption( $event->ID );
+			$attachment_id = get_post_thumbnail_id( $event->ID );
+			$image_data['mimetype'] = get_post_mime_type( $attachment_id );
+			foreach ( array('thumbnail', 'medium', 'large', 'full') as $name ) {
+				$img_properties = wp_get_attachment_image_src( $attachment_id, $name );
+				$image_data[$name][0]['url'] = $img_properties[0];
+				$image_data[$name][0]['height'] = $img_properties[2];
+				$image_data[$name][0]['width'] = $img_properties[1];
+			}
+			return $image_data;
+		} else {
+			return null;
+		}
 	}
 
 	private function prepare_event(WP_Post $event) {
