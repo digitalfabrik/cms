@@ -1,0 +1,8 @@
+msgid "Page stamp"
+msgstr "Seiten-Stempel"
+
+msgid "Verified by"
+msgstr "Verifiziert durch"
+
+msgid "Show positive feedback"
+msgstr "Positives Feedback anzeigen"

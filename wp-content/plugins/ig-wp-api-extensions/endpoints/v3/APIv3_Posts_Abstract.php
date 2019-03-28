@@ -75,6 +75,8 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'path' => wp_make_link_relative(get_permalink($post)),
 			'title' => $post->post_title,
 			'modified_gmt' => $post->post_modified_gmt,
+			'verified_by' => ( get_post_meta( $post->ID, 'ig_ps_activate', true ) == "on" ? get_post_meta( $post->ID, 'ig_ps_organisation', true ) : null),
+			'upvotes' => ( get_post_meta( $post->ID, 'ig_ps_activate', true ) == "on" ? get_upvotes( $post->ID) : null),
 			'excerpt' => $this->prepare_excerpt($post),
 			'content' => $content,
 			'parent' => [
