@@ -88,3 +88,16 @@ function replace_logo() {
 	</style>
 <?php }
 add_action( 'login_enqueue_scripts', 'replace_logo' );
+
+
+function ig_successful_login( $user_login, $user ) {
+	$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	syslog(LOG_NOTICE, "INTEGREAT CMS - LOGIN SUCCEEDED: $user_login via $url");
+}
+add_action('wp_login', 'ig_successful_login', 10, 2);
+
+function ig_failed_login( $user_login ) {
+	$url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+	syslog(LOG_WARNING, "INTEGREAT CMS - LOGIN FAILED: $user_login from ".$_SERVER['REMOTE_ADDR']." via $url");
+}
+add_action('wp_login_failed', 'ig_failed_login', 10, 1);
