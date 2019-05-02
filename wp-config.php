@@ -106,6 +106,7 @@ define('TRANSLATION_MICROSOFT_CLIENT_SECRET', $translation_config['client-secret
 $piwik_config = $configuration['piwik'];
 define('PIWIK_DEFAULT_AUTH_TOKEN', $piwik_config['default_auth_token']);
 define('PIWIK_DEFAULT_SITE_ID', $piwik_config['default_site_id']);
+define('PIWIK_ENABLE_TRACKING', $piwik_config['enable_tracking']);
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
