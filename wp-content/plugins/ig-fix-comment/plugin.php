@@ -18,5 +18,3 @@ function ig_drop_comment_content( $commentdata ) {
 	return $commentdata;
 }
 add_filter( 'preprocess_comment' , 'ig_drop_comment_content' );
-?>
-
