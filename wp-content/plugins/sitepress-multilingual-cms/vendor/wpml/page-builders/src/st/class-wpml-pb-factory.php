@@ -18,7 +18,7 @@ class WPML_PB_Factory {
 	public function get_string_translations( IWPML_PB_Strategy $strategy ) {
 		$kind = $strategy->get_package_kind();
 		if ( ! array_key_exists( $kind, $this->string_translations ) ) {
-			$this->string_translations[ $kind ] = new WPML_PB_String_Translation( $this->wpdb, $this, $strategy );
+			$this->string_translations[ $kind ] = new WPML_PB_String_Translation_By_Strategy( $this->wpdb, $this, $strategy );
 		}
 
 		return $this->string_translations[ $kind ];
@@ -54,7 +54,7 @@ class WPML_PB_Factory {
 			$string_registration,
 			$strategy,
 			new WPML_PB_Shortcode_Encoding(),
-			$migration_mode ? null : new WPML_PB_Reuse_Translations( $strategy, $string_factory )
+			$migration_mode ? null : new WPML_PB_Reuse_Translations_By_Strategy( $strategy, $string_factory )
 		);
 	}
 
@@ -68,5 +68,26 @@ class WPML_PB_Factory {
 
 	public function get_api_hooks_content_updater( IWPML_PB_Strategy $strategy ) {
 		return new WPML_PB_Update_API_Hooks_In_Content( $strategy );
+	}
+
+	public function get_package_strings_resave() {
+		return new WPML_PB_Package_Strings_Resave( new WPML_ST_String_Factory( $this->wpdb ) );
+	}
+
+	public function get_handle_post_body() {
+		return new WPML_PB_Handle_Post_Body(
+			new WPML_Page_Builders_Page_Built(
+				new WPML_Config_Built_With_Page_Builders()
+			)
+		);
+	}
+
+	public function get_last_translation_edit_mode() {
+		return new WPML_PB_Last_Translation_Edit_Mode();
+	}
+
+	public function get_post_element( $post_id ) {
+		$factory = new WPML_Translation_Element_Factory( $this->sitepress );
+		return $factory->create_post( $post_id );
 	}
 }

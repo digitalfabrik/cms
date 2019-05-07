@@ -40,12 +40,12 @@ class WPML_TM_ATE_API {
 		$signed_url = $this->auth->get_signed_url( $verb, $url, $params );
 
 		$result = $this->wp_http->request( $signed_url,
-		                                   array(
-			                                   'timeout' => 60,
-			                                   'method'  => $verb,
-			                                   'headers' => $this->json_headers(),
-			                                   'body'    => wp_json_encode( $params, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ),
-		                                   ) );
+			array(
+				'timeout' => 60,
+				'method'  => $verb,
+				'headers' => $this->json_headers(),
+				'body'    => wp_json_encode( $params, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ),
+			) );
 
 		return $this->get_response( $result );
 	}
@@ -118,6 +118,11 @@ class WPML_TM_ATE_API {
 	}
 
 	/**
+	 * If `$job_ids` is not an empty array,
+	 * the `$statuses` parameter will be ignored in ATE's endpoint.
+	 *
+	 * @see https://bitbucket.org/emartini_crossover/ate/wiki/API/V1/jobs/status
+	 *
 	 * @param null|array $job_ids
 	 * @param null|array $statuses
 	 *
@@ -141,19 +146,25 @@ class WPML_TM_ATE_API {
 	}
 
 	/**
-	 * @param null|array $job_ids
+	 * @param $wpml_job_ids
 	 *
-	 * @return array|mixed|null|object|WP_Error
-	 * @throws \InvalidArgumentException
+	 * @return array|mixed|object|WP_Error|null
 	 */
-	public function get_non_delivered_ate_jobs( $job_ids ) {
-		return $this->get_jobs( $job_ids,
-		                        array(
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_CREATED,
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_TRANSLATING,
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_TRANSLATED,
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_DELIVERING,
-		                        ) );
+	public function get_jobs_by_wpml_ids( $wpml_job_ids ) {
+		$verb = 'GET';
+
+		$url = $this->endpoints->get_ate_jobs_by_wpml_job_ids( $wpml_job_ids );
+		$url = $this->auth->get_signed_url( $verb, $url, null );
+
+		$result = $this->wp_http->request(
+			$url,
+			array(
+				'timeout' => 60,
+				'method'  => $verb,
+				'headers' => $this->json_headers(),
+			) );
+
+		return $this->get_response( $result );
 	}
 
 	private function get_response( $result ) {
@@ -207,4 +218,48 @@ class WPML_TM_ATE_API {
 			'Content-Type' => 'application/json',
 		);
 	}
+
+	/**
+	 * @param string $xliff_url
+	 *
+	 * @return string
+	 * @throws Requests_Exception
+	 */
+	public function get_remote_xliff_content( $xliff_url ) {
+		/** @var \WP_Error|array $response */
+		$response = wp_remote_get( $xliff_url );
+		if ( is_wp_error( $response ) ) {
+			throw new Requests_Exception( $response->get_error_message(), $response->get_error_code() );
+		} elseif ( isset( $response['response']['code'] ) && 200 !== (int) $response['response']['code'] ) {
+			throw new Requests_Exception( $response['response']['message'], $response['response']['code'] );
+		} elseif ( ! isset( $response['body'] ) || ! trim( $response['body'] ) ) {
+			throw new Requests_Exception( 'Missing body', 0 );
+		}
+
+		return $response['body'];
+	}
+
+	public function override_site_id( $site_id ) {
+		$this->auth->override_site_id( $site_id);
+	}
+
+	public function get_website_id( $site_url ) {
+		$sites = $this->get_response(
+			$this->wp_http->request(
+				$this->auth->get_signed_url(
+					'GET',
+					$this->endpoints->get_websites()
+				)
+			)
+		);
+
+		foreach( $sites as $site ) {
+			if ( $site->url === $site_url ) {
+				return $site->uuid;
+			}
+		}
+
+		return null;
+	}
+
 }

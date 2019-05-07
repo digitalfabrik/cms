@@ -4,8 +4,8 @@
  * @author OnTheGo Systems
  */
 class WPML_TM_ATE_Jobs {
-	const UPDATED_JOB_STATUS = 'status_updated';
-	const UPDATED_XLIFF = 'xliff_updated';
+
+	/** @var WPML_TM_ATE_Job_Records $records */
 	private $records;
 
 	/**
@@ -61,66 +61,49 @@ class WPML_TM_ATE_Jobs {
 	/**
 	 * @param int $wpml_job_id
 	 * @param array $ate_job_data
-	 *
-	 * @return array
 	 */
 	public function store( $wpml_job_id, $ate_job_data ) {
-		$wpml_job_id = (int) $wpml_job_id;
-
-		try {
-			$this->records->store( $wpml_job_id, $ate_job_data );
-
-			return $this->update_wpml_job( $wpml_job_id );
-		} catch ( Exception $ex ) {
-			return array(
-				'error' => array(
-					'code'    => $ex->getCode(),
-					'message' => $ex->getMessage(),
-					'trace'   => $ex->getTraceAsString(),
-				)
-			);
-		}
+		$this->records->store( (int) $wpml_job_id, $ate_job_data );
 	}
 
 	/**
-	 * @param int $wpml_job_id
+	 * We update the status from ATE only for non-completed ATE statuses
+	 * in all other cases, we mark the job as completed when we receive it
+	 * from ATE in `WPML_TM_ATE_Jobs::apply` which calls `wpml_tm_save_data`.
 	 *
-	 * @return array
-	 * @throws \Requests_Exception
+	 * @param int $wpml_job_id
+	 * @param int $ate_status
 	 */
-	private function update_wpml_job( $wpml_job_id ) {
-		$result = array();
+	public function set_wpml_status_from_ate( $wpml_job_id, $ate_status ) {
+		$ate_status = (int) $ate_status;
 
-		$xliff = $this->records->get_translated_xliff( $wpml_job_id );
-		if ( $xliff ) {
-			$this->update_translated_content( $xliff );
-			$result[] = self::UPDATED_XLIFF;
+		switch ( $ate_status ) {
+			case WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_CREATED:
+				$wpml_status = ICL_TM_WAITING_FOR_TRANSLATOR;
+				break;
+
+			case WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_TRANSLATING:
+				$wpml_status = ICL_TM_IN_PROGRESS;
+				break;
+
+			default:
+				$wpml_status = null;
 		}
 
-		$status             = $this->records->get_ate_job_status( $wpml_job_id );
-		$factory            = wpml_tm_load_job_factory();
-		$job                = $factory->get_translation_job( $wpml_job_id, false, 0, true );
-		$translation_id     = $job->get_translation_id();
-
-		if ( $translation_id ) {
-			$translation_status = wpml_tm_get_records()->icl_translation_status_by_translation_id( $translation_id );
-
-			if ( $status && (int) $translation_status->status() !== (int) $status ) {
-				$translation_status->update( array( 'status' => $status ) );
-				$result[] = self::UPDATED_JOB_STATUS;
-			}
+		if ( $wpml_status ) {
+			WPML_TM_Update_Translation_Status::by_job_id( $wpml_job_id, (int) $wpml_status );
 		}
-
-		return $result;
 	}
 
 	/**
-	 * @param $xliff
+	 * @todo: Check possible duplicated code / We already have functionality to import XLIFF files from Translator's queue
+	 *
+	 * @param string $xliff
 	 *
 	 * @return bool
-	 * @throws \Requests_Exception
+	 * @throws \Requests_Exception|Exception
 	 */
-	private function update_translated_content( $xliff ) {
+	public function apply( $xliff ) {
 		$factory       = wpml_tm_load_job_factory();
 		$xliff_factory = new WPML_TM_Xliff_Reader_Factory( $factory );
 		$xliff_reader  = $xliff_factory->general_xliff_reader();
@@ -130,9 +113,27 @@ class WPML_TM_ATE_Jobs {
 		}
 
 		kses_remove_filters();
-		wpml_tm_save_data( $job_data, false );
+
+		try {
+			$is_saved = wpml_tm_save_data( $job_data, false );
+		} catch ( Exception $e ) {
+			throw new Exception(
+				'The XLIFF file could not be applied to the content of the job ID: ' . $job_data['job_id'],
+				$e->getCode()
+			);
+		}
+
 		kses_init();
 
-		return true;
+		return $is_saved;
+	}
+
+	/**
+	 * @param int $wpml_job_id
+	 *
+	 * @return bool
+	 */
+	public function is_editing_job( $wpml_job_id ) {
+		return $this->records->is_editing_job( $wpml_job_id );
 	}
 }

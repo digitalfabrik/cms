@@ -101,7 +101,7 @@ class WPML_Translation_Basket {
 		$old_value           = $basket_name;
 		$basket_name         = strip_tags( $basket_name );
 
-		if ( strlen( $basket_name ) > $basket_name_max_length ) {
+		if ( mb_strlen( $basket_name ) > $basket_name_max_length ) {
 			$result['valid']   = true;
 			$result['message'] = sprintf(
 				__( 'The length of the batch name exceeds the maximum length of %s', 'wpml-translation-management' ),
@@ -146,15 +146,15 @@ class WPML_Translation_Basket {
 		                          && $basket_name_array[ count( $basket_name_array ) - 2 ] !== $this->get_source_language() )
 			? $name . '|' . $this->get_source_language() : $name;
 
-		$name = strlen( $name ) > $max_length
+		$name = mb_strlen( $name ) > $max_length
 			? $this->sanitize_basket_name( $name, $max_length ) : $name;
 
 		if ( $this->get_batch_id_from_name( $name ) ) {
 			$suffix = 2;
-			$name   = $this->sanitize_basket_name( $name, $max_length - strlen( (string) $suffix ) - 1 );
+			$name   = $this->sanitize_basket_name( $name, $max_length - mb_strlen( (string) $suffix ) - 1 );
 			while ( $this->get_batch_id_from_name( $name . '|' . $suffix ) ) {
 				$suffix ++;
-				$name = $this->sanitize_basket_name( $name, $max_length - strlen( (string) $suffix ) - 1 );
+				$name = $this->sanitize_basket_name( $name, $max_length - mb_strlen( (string) $suffix ) - 1 );
 			}
 			$name .= '|' . $suffix;
 		}
@@ -196,7 +196,7 @@ class WPML_Translation_Basket {
 
 	private function sanitize_basket_name( $basket_name, $max_length ) {
 		//input basket name is separated by pipes so we explode it
-		$to_trim = strlen( $basket_name ) - $max_length;
+		$to_trim = mb_strlen( $basket_name ) - $max_length;
 		if ( $to_trim <= 0 ) {
 			return $basket_name;
 		}
@@ -205,7 +205,7 @@ class WPML_Translation_Basket {
 
 		if ( $wpml_flag === false && count( $basket_name_array ) < 2 ) {
 
-			return substr( $basket_name, $max_length - 1 );
+			return mb_substr( $basket_name, $max_length - 1 );
 		}
 
 		//first we trim the middle part holding the "WPML"
@@ -227,12 +227,12 @@ class WPML_Translation_Basket {
 	}
 
 	private function shorten_basket_name( $name_array, $index, $to_trim ) {
-		if ( strlen( $name_array [ $index ] ) > $to_trim ) {
-			$name_array[ $index ] = substr( $name_array[ $index ], 0, strlen( $name_array [ $index ] ) - $to_trim - 1 );
+		if ( mb_strlen( $name_array [ $index ] ) > $to_trim ) {
+			$name_array[ $index ] = mb_substr( $name_array[ $index ], 0, mb_strlen( $name_array [ $index ] ) - $to_trim - 1 );
 			$name_array           = array_filter( $name_array );
 			$to_trim              = 0;
 		} else {
-			$to_trim = $to_trim - strlen( $name_array [ $index ] ) - 1; //subtract one here since we lose a downstroke
+			$to_trim = $to_trim - mb_strlen( $name_array [ $index ] ) - 1; //subtract one here since we lose a downstroke
 			unset( $name_array [ $index ] );
 		}
 

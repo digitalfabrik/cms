@@ -50,15 +50,7 @@ function icl_reset_language_data(){
 function icl_sitepress_activate() {
 	global $wpdb;
 
-	$charset_collate = '';
-	if ( method_exists( $wpdb, 'has_cap' ) && $wpdb->has_cap( 'collation' ) ) {
-		if ( ! empty( $wpdb->charset ) ) {
-			$charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
-		}
-		if ( ! empty( $wpdb->collate ) ) {
-			$charset_collate .= " COLLATE $wpdb->collate";
-		}
-	}
+	$charset_collate = SitePress_Setup::get_charset_collate();
 
 	try {
 		SitePress_Setup::fill_languages();
@@ -104,6 +96,9 @@ function icl_sitepress_activate() {
                  `links_fixed` tinyint(4) NOT NULL DEFAULT 0,
                  `_prevstate` longtext,
                  `uuid` varchar(36) NULL,
+                 `tp_id` INT NULL DEFAULT NULL,
+                 `tp_revision` INT NOT NULL DEFAULT 1,
+                 `ts_status` TEXT NULL DEFAULT NULL,
                  PRIMARY KEY (`rid`),
                  UNIQUE KEY `translation_id` (`translation_id`)
                 ) {$charset_collate}    
@@ -127,6 +122,7 @@ function icl_sitepress_activate() {
                 `title` VARCHAR(160) NULL,
                 `deadline_date` DATETIME NULL,
                 `completed_date` DATETIME NULL,
+                `editor` VARCHAR(16) NULL,
                 INDEX ( `rid` , `translator_id` )
                 ) {$charset_collate}    
             ";
@@ -145,6 +141,7 @@ function icl_sitepress_activate() {
                 `content_id` BIGINT UNSIGNED NOT NULL ,
                 `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
                 `field_type` VARCHAR( 160 ) NOT NULL ,
+                `field_wrap_tag` VARCHAR( 16 ) NOT NULL ,
                 `field_format` VARCHAR( 16 ) NOT NULL ,
                 `field_translate` TINYINT NOT NULL ,
                 `field_data` longtext NOT NULL ,
@@ -203,6 +200,7 @@ function icl_sitepress_activate() {
                   `value` longtext NOT NULL,
                   `string_package_id` BIGINT unsigned NULL,
                   `location` BIGINT unsigned NULL,
+                  `wrap_tag` VARCHAR( 16 ) NOT NULL,
                   `type` VARCHAR(40) NOT NULL DEFAULT 'LINE',
                   `title` VARCHAR(160) NULL,
                   `status` TINYINT NOT NULL,
@@ -307,6 +305,8 @@ function icl_sitepress_activate() {
             `origin` VARCHAR( 64 ) NOT NULL ,
             `target` VARCHAR( 64 ) NOT NULL ,
             `status` SMALLINT NOT NULL,
+            `tp_revision` INT NOT NULL DEFAULT 1,
+            `ts_status` TEXT NULL DEFAULT NULL,
             PRIMARY KEY ( `id` ) ,
             INDEX ( `rid` )
             ) {$charset_collate}
@@ -382,11 +382,7 @@ function icl_sitepress_activate() {
 	}
 
 	//Set new caps for all administrator role
-	if ( is_multisite() ) {
-		add_action( 'plugins_loaded', 'wpml_enable_capabilities' );
-	} else {
-		wpml_enable_capabilities();
-	}
+	wpml_enable_capabilities();
 
 	repair_el_type_collate();
 
@@ -463,6 +459,20 @@ function icl_enable_capabilities() {
 function wpml_enable_capabilities() {
 	global $sitepress_settings;
 
-	icl_enable_capabilities();
-	$sitepress_settings = get_option('icl_sitepress_settings');
+	/**
+	 * In case of multisite, in network activation,
+	 * including of pluggable.php before muplugins_loaded event trigger errors -
+	 * we postpone executing of icl_enable_capabilities to after plugins_loaded event.
+	 *
+	 * In other cases we include pluggable.php earlier than in wp-settings.php
+	 */
+	if ( ! did_action( 'muplugins_loaded' ) ) {
+		add_action( 'plugins_loaded', 'wpml_enable_capabilities' );
+	} else {
+		if ( ! function_exists( 'get_user_by' ) ) {
+			require( ABSPATH . WPINC . '/pluggable.php' );
+		}
+		icl_enable_capabilities();
+		$sitepress_settings = get_option( 'icl_sitepress_settings' );
+	}
 }

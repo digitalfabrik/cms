@@ -11,5 +11,7 @@ class WPML_TP_Service_Invalidation extends WPML_TP_Service_Action {
 		}
 		$service->custom_fields_data = false;
 		$this->set_current_service( $service );
+
+		do_action( 'wpml_tp_service_de_authorized', $service );
 	}
 }

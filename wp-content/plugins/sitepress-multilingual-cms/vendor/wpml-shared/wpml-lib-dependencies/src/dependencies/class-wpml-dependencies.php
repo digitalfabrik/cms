@@ -52,6 +52,11 @@ class WPML_Dependencies {
 		add_action( 'activated_plugin', array( $this, 'activated_plugin_action' ) );
 		add_action( 'deactivated_plugin', array( $this, 'deactivated_plugin_action' ) );
 		add_action( 'upgrader_process_complete',  array( $this, 'upgrader_process_complete_action' ), 10, 2 );
+		add_action( 'load-plugins.php', array( $this, 'run_validation_on_plugins_page' ) );
+	}
+
+	public function run_validation_on_plugins_page() {
+		$this->reset_validation();
 	}
 
 	public function activated_plugin_action() {

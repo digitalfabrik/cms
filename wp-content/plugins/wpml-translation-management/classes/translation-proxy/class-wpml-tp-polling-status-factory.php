@@ -16,7 +16,6 @@ class WPML_TP_Polling_Status_Factory extends WPML_SP_User {
 		$wpml_tm_records = new WPML_TM_Records( $wpdb, $wpml_post_translations, $wpml_term_translations );
 		$cms_id_helper   = new WPML_TM_CMS_ID( $wpml_tm_records, $job_factory );
 
-		return new WPML_TP_Polling_Status( $project, $this->sitepress,
-			$cms_id_helper );
+		return new WPML_TP_Polling_Status( $project, $this->sitepress, $cms_id_helper );
 	}
 }

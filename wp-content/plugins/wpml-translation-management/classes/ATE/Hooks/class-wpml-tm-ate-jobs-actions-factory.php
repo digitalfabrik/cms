@@ -10,19 +10,16 @@ class WPML_TM_ATE_Jobs_Actions_Factory implements IWPML_Backend_Action_Loader {
 	private $current_screen;
 
 	/**
-	 * @return IWPML_Action|IWPML_Action[]|null
+	 * @return WPML_TM_ATE_Jobs_Actions|null
 	 */
 	public function create() {
 		if ( WPML_TM_ATE_Status::is_enabled() && $this->is_active() ) {
-			$wp_http        = $this->get_http();
-			$auth           = $this->get_auth();
-			$endpoints      = $this->get_endpoints();
 			$sitepress      = $this->get_sitepress();
 			$current_screen = $this->get_current_screen();
 
-			$ate_api   = new WPML_TM_ATE_API( $wp_http, $auth, $endpoints );
-			$records   = new WPML_TM_ATE_Job_Records();
-			$ate_jobs  = new WPML_TM_ATE_Jobs( $records );
+			$ate_api  = $this->create_ate_api();
+			$records  = wpml_tm_get_ate_job_records();
+			$ate_jobs = new WPML_TM_ATE_Jobs( $records );
 
 			$translator_activation_records = new WPML_TM_AMS_Translator_Activation_Records( new WPML_WP_User_Factory() );
 
@@ -31,11 +28,26 @@ class WPML_TM_ATE_Jobs_Actions_Factory implements IWPML_Backend_Action_Loader {
 				$ate_jobs,
 				$sitepress,
 				$current_screen,
-				$translator_activation_records
+				$translator_activation_records,
+				new WPML_TM_ATE_Jobs_Sync_Script_Loader(
+					wpml_tm_get_ate_jobs_repository(),
+					new WPML_TM_Scripts_Factory()
+				)
 			);
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return WPML_TM_ATE_API
+	 */
+	public function create_ate_api() {
+		$wp_http        = $this->get_http();
+		$auth           = $this->get_auth();
+		$endpoints      = $this->get_endpoints();
+
+		return new WPML_TM_ATE_API( $wp_http, $auth, $endpoints );
 	}
 
 	/**

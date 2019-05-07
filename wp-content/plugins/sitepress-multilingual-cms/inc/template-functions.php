@@ -943,7 +943,7 @@ function wpml_footer_language_selector_action() {
  * @global SitePress $sitepress
  * @return string|null HTML input field or null
  * @since      3.2
- * @deprecated 3.2 use 'wpml_add_language_form_field' filter instead
+ * @deprecated 3.2 use 'wpml_add_language_form_field' action instead
  */
 function wpml_get_language_input_field() {
 	global $sitepress;

@@ -34,15 +34,23 @@ class WPML_Elementor_Data_Settings implements IWPML_Page_Builders_Data_Settings 
 	 * @return mixed
 	 */
 	public function mark_css_field_as_empty( $value, $translated_post_id, $original_post_id, $meta_key ) {
-		if ( '_elementor_css' === $meta_key ) {
-			$value['status'] = '';
+		if ( '_elementor_css' === $meta_key && is_array( $value ) ) {
+			if ( ! isset( $value['status'] ) ) {
+				$value           = current( $value );
+				$value['status'] = '';
+				$value           = array( $value );
+			} else {
+				$value['status'] = '';
+			}
 		}
 
 		return $value;
 	}
 
 	public function save_post_body_as_plain_text( $type, $post_id, $original_post, $string_translations, $lang ) {
-		$this->elementor_db->save_plain_text( $post_id );
+		if ( get_post_meta( $post_id, $this->get_meta_field() ) ) {
+			$this->elementor_db->save_plain_text( $post_id );
+		}
 	}
 
 	/**

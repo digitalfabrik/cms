@@ -2,31 +2,24 @@
 
 class WPML_TP_HTTP_Request_Filter {
 
-	/** @var  array $request */
-	private $request;
-
-	public function __construct( $request ) {
-		$this->request = $request;
-	}
-
 	/**
 	 * @return array filtered response
 	 */
-	public function out() {
-		if ( $this->contains_resource( $this->request ) === false ) {
-			$this->request['headers'] = 'Content-type: application/json';
-			$this->request['body']    = wp_json_encode( $this->request['body'] );
+	public function build_request_context(array $request) {
+		if ( ! $this->contains_resource( $request ) ) {
+			$request['headers'] = 'Content-type: application/json';
+			$request['body']    = wp_json_encode( $request['body'] );
 		} else {
-			list( $headers, $body ) = $this->_prepare_multipart_request( $this->request['body'] );
-			$this->request['headers'] = $headers;
-			$this->request['body']    = $body;
+			list( $headers, $body ) = $this->_prepare_multipart_request( $request['body'] );
+			$request['headers'] = $headers;
+			$request['body']    = $body;
 		}
 
-		if ( $this->request['method'] === 'GET' ) {
-			unset( $this->request['body'] );
+		if ( $request['method'] === 'GET' ) {
+			unset( $request['body'] );
 		}
 
-		return $this->request;
+		return $request;
 	}
 
 	/**

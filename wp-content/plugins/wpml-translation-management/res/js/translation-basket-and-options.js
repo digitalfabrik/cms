@@ -52,16 +52,17 @@
 				var basket_name_element = form.find('#basket_name');
 				var basket_extra_fields_list = form.find('#basket_extra_fields_list');
 				var message_box;
+				var message_box_content;
 				var additional_data;
                 var progress_bar_object = new ProgressBar();
 				var progress_bar = progress_bar_object.getDomElement();
 				var batch_basket_items = [];
 				var batch_number = 0;
-				var initial_basket_size = 0;
+				var batch_size;
 				var batch_deadline = form.find( '#basket-deadline' );
 
 				var init = function () {
-					form.bind('submit', submit_form); 
+					form.bind('submit', submit_form);
 					
 					// prevent sending basket by pressing Enter
 					form.bind("keypress", function(e) {
@@ -73,13 +74,14 @@
 
 					basket_name_element.bind('blur', basket_name_blur);
 
-					message_box = jQuery('<div class="message_box"></div>');
-					message_box.css('margin-top', '5px');
-					message_box.css('margin-bottom', '5px');
-					message_box.insertBefore(form_send_button);
+					message_box = jQuery('<div class="message_box"><div class="wpml-tm-basket-message-icon"></div></div>');
+					message_box_content = jQuery('<div class="wpml-tm-basket-message-content"></div>');
+					message_box_content.appendTo(message_box);
+					message_box.insertBefore(form_send_button).hide();
 
 					additional_data = jQuery('<div class="additional_data"></div>');
-					progress_bar.insertBefore(message_box);
+
+					progress_bar.insertAfter(message_box_content);
 					progress_bar.hide();
 
 					initDatePicker();
@@ -131,7 +133,7 @@
 						e.preventDefault();
 					}
 
-					var spinner = jQuery('<span class="spinner waiting-1" style="display: inline-block;"></span>');
+					var spinner = jQuery('<span class="spinner" style="display: inline-block;"></span>');
 					spinner.hide();
 
 					spinner.insertAfter(jQuery(this));
@@ -176,7 +178,7 @@
 									if (result.modified) {
 										set_basket_name(result.new_value);
 									}
-									form_send_button.removeAttr('disabled');
+									form_send_button.removeAttr('disabled').show();
 								} else {
 									form_send_button.attr('disabled', 'disabled');
 									alert(result.message);
@@ -271,19 +273,22 @@
 						return false;
 					}
 
-					message_box.empty();
+					additional_data.empty();
 					message_box.hide();
-					additional_data.appendTo(message_box);
+					additional_data.appendTo(message_box_content);
 
 					var basket_name = get_basket_name();
 					var translators = get_translators();
 
 					translation_jobs_basket_form.find('.row-actions').hide();
 
-					form_send_button.attr('disabled', 'disabled');
+					form_send_button.attr('disabled', 'disabled').hide();
 					form_delete_button.attr('disabled', 'disabled');
 
 					message_box.show();
+
+					update_message('<h4>' + tm_basket_data.strings['sending_batch'].replace('%s', '<span>' + basket_name + '</span>') + '</h4>', true, 'sending', false);
+
 
 					if (typeof translators === 'undefined' || translators.length === 0) {
 						update_message(tm_basket_data.strings['error_no_translators'], true, 'error', false);
@@ -313,7 +318,7 @@
 								/** @namespace result.allowed_item_types */
 								var allowed_item_types = result.allowed_item_types;
 
-								update_message(result.message, false, 'updated', false);
+								update_message(result.message, false, 'sending', false);
 
 								batch_basket_items = [];
 
@@ -347,11 +352,10 @@
 					return false;
 				};
 
-                var progressbar_finish_text = tm_basket_data.strings['done_msg'];
+                var progressbar_finish_text = '100%';
                 var progressbar_callback = function(){
                     // trigger an event that it's complete.
-                    // Translation Analytics uses this event to display a message if required.
-                    jQuery(document).trigger('wpml-tm-basket-commit-complete', progress_bar_object);
+					jQuery(document).trigger('wpml-tm-basket-commit-complete', progress_bar_object);
                 };
 
 				var update_basket_badge_count = function (count) {
@@ -370,10 +374,11 @@
 					if (typeof skip_items === 'undefined') {
 						skip_items = 0;
 						batch_number = 0;
-						initial_basket_size = batch_basket_items.length;
+						// We consider 2s per doc and per lang, and we don't want to exceed 20s per request
+						var langs = Object.keys(translators);
+						batch_size = Math.ceil(20 / langs.length); // 1 to 20
+						batch_size = Math.min(5, batch_size); // 1 to 5
 					}
-
-					var batch_size = Math.max(5, initial_basket_size / 10);
 					
 					batch_number++;
 					
@@ -385,9 +390,12 @@
 						return;
 					}
 
-					var batch_number_label = jQuery('<p>'+tm_basket_data.strings['batch']+' # ' + batch_number + '</p>');
+					if (batch_length > 1) {
 
-					update_message(batch_number_label, true, 'updated', true);
+						var batch_number_label = jQuery('<p><strong>' + tm_basket_data.strings['batch'] + ' #' + batch_number + '</strong></p>');
+
+						update_message(batch_number_label, true, 'sending', true);
+					}
 
 					var batch_data = batch_basket_items.slice(skip_items, skip_items + batch_size);
 
@@ -460,7 +468,7 @@
 				};
 
 				var batch_send_basket_to_tp_commit = function () {
-					update_message(tm_basket_data.strings['jobs_committing'], false, 'updated', false);
+					update_message(tm_basket_data.strings['jobs_committing'], false, 'sending', false);
 
                     var action = 'send_basket_commit';
                     var nonce = get_nonce(action);
@@ -479,7 +487,15 @@
                                 var success = result.success;
                                 result = result.data;
 								if (success) {
-                                    var message = jQuery(tm_basket_data.strings['jobs_committed']);
+                                    if(typeof result.result.is_local !== 'undefined' && result.result.is_local ) {
+                                        var message = tm_basket_data.strings['jobs_committed_local'];
+
+                                        if(typeof result.result.emails_did_not_sent !== 'undefined' && result.result.emails_did_not_sent ){
+                                        	message = message.replace(/<ul><li>[\s\S]*?<\/li>/, '<ul>' + tm_basket_data.strings['jobs_emails_local_did_not_sent'] );
+										}
+                                    }else{
+                                        var message = tm_basket_data.strings['jobs_committed'];
+									}
 									if (typeof result.links !== 'undefined') {
 										var links = jQuery('<ul></ul>');
 										jQuery.each(
@@ -502,7 +518,9 @@
 										call_to_action = jQuery('<p>' + result.result.call_to_action + '</p>');
 										update_message(call_to_action, true, 'updated', true);
 									}
-                                    batch_send_basket_to_tp_completed(result);
+
+									batch_send_basket_to_tp_completed(result);
+
 								} else {
                                     handle_response(result);
                                     batch_send_basket_to_tp_rollback();
@@ -524,7 +542,6 @@
 
 
 				var batch_send_basket_to_tp_completed = function (response) {
-					update_message('Done', false, 'updated', true);
 					progress_bar_object.complete(progressbar_finish_text, progressbar_callback);
 					form_send_button.attr('disabled', 'disabled');
 					form_delete_button.attr('disabled', 'disabled');
@@ -535,10 +552,6 @@
 					form.attr('disabled', 'disabled');
 					form.attr('readonly', 'readonly');
 					form.trigger('wpml-tm-basket-submitted', response);
-
-					if (0 === wpmlTMBasket.dialogs.length) {
-						location.href = wpmlTMBasket.redirect;
-					}
 
 					// hide the badge
 					jQuery('#wpml-basket-items').hide();
@@ -551,7 +564,7 @@
 						batch_send_basket_to_tp_commit();
 					} else {
                         form_delete_button.removeAttr('disabled');
-                        form_send_button.removeAttr('disabled');
+                        form_send_button.removeAttr('disabled').show();
                         batch_send_basket_to_tp_rollback();
 					}
 				};
@@ -581,21 +594,21 @@
 
 					if (typeof status !== 'undefined') {
 						message_box.removeClass();
-						message_box.addClass(status);
+						message_box.addClass('wpml-tm-basket-message wpml-tm-basket-message-' + status);
 					}
 
 					if (typeof details !== 'undefined' && details !== false) {
 						target = additional_data;
 						if (!target.length) {
-							target = message_box;
+							target = message_box_content;
 						}
 					} else {
-						target = message_box;
+						target = message_box_content;
 					}
 					if (!append) {
 						target.empty();
-						if (target === message_box) {
-							additional_data.appendTo(message_box);
+						if (target === message_box_content) {
+							additional_data.appendTo(message_box_content);
 						}
 					}
 					build_message(target, message);
@@ -608,7 +621,7 @@
                             container.show();
                         }
                         if (typeof message_element_or_string === 'string') {
-                            message_element_or_string = jQuery('<div>' + message_element_or_string + '</div>');
+                            message_element_or_string = jQuery('<p>' + message_element_or_string + '</p>');
                         }
                         if (typeof message_element_or_string === 'object') {
                             message_element_or_string.appendTo(container);

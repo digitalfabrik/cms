@@ -45,6 +45,22 @@ class WPML_Upgrade {
 	public function run() {
 		$result = false;
 
+		/**
+		 * Add commands to the upgrade logic.
+		 *
+		 * The filter must be added before the `wpml_loaded` action is fired (the action is fired on `plugins_loaded`).
+		 *
+		 * @since 4.1.0
+		 * @see   \wpml_create_upgrade_command_definition
+		 *
+		 * @param array $commands     An empty array.
+		 * @param array $new_commands Array of classes created with \wpml_create_upgrade_command_definition.
+		 */
+		$new_commands = apply_filters( 'wpml_upgrade_commands', array() );
+		if ( $new_commands && is_array( $new_commands ) ) {
+			$this->add_commands( $new_commands );
+		}
+
 		if ( $this->sitepress->get_wp_api()->is_admin() ) {
 			if ( $this->sitepress->get_wp_api()->is_ajax() ) {
 				$result = $this->run_ajax();

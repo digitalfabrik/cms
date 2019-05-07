@@ -5,9 +5,7 @@
  *
  * @package wpml-core
  */
-class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
-
-	const CUSTOM_FIELD_KEY_SEPARATOR = ':::';
+class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper {
 
 	/** @var WPML_WP_API $wp_api */
 	private $wp_api;
@@ -20,6 +18,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 			$this->wp_api = $sitepress->get_wp_api();
 		}
 	}
+
 	/**
 	 * create translation package
 	 *
@@ -30,13 +29,13 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	public function create_translation_package( $post ) {
 		global $sitepress;
 
-		$package   = array();
-		$post      = is_numeric( $post ) ? get_post( $post ) : $post;
+		$package = array();
+		$post    = is_numeric( $post ) ? get_post( $post ) : $post;
 		if ( apply_filters( 'wpml_is_external', false, $post ) ) {
 			/** @var stdClass $post */
-			$post_contents    = (array) $post->string_data;
-			$original_id      = isset( $post->post_id ) ? $post->post_id : $post->ID;
-			$type             = 'external';
+			$post_contents = (array) $post->string_data;
+			$original_id   = isset( $post->post_id ) ? $post->post_id : $post->ID;
+			$type          = 'external';
 
 			if ( isset( $post->title ) ) {
 				$package['title'] = apply_filters( 'wpml_tm_external_translation_job_title', $post->title, $original_id );
@@ -65,11 +64,19 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 			}
 
 			$original_id             = $post->ID;
-			$cf_translation_settings = $this->get_tm_setting( array( 'custom_fields_translation' ) );
-			if ( ! empty( $cf_translation_settings ) ) {
-				$package = $this->add_custom_field_contents( $package,
-				                                             $post,
-				                                             $cf_translation_settings );
+
+			$custom_fields_to_translate = array_keys(
+				$this->get_tm_setting( array( 'custom_fields_translation' ) ),
+				WPML_TRANSLATE_CUSTOM_FIELD
+			);
+
+			if ( ! empty( $custom_fields_to_translate ) ) {
+				$package = $this->add_custom_field_contents(
+					$package,
+					$post,
+					$custom_fields_to_translate,
+					$this->get_tm_setting( array( 'custom_fields_encoding' ) )
+				);
 			}
 
 			foreach ( (array) $sitepress->get_translatable_taxonomies( false, $post->post_type ) as $taxonomy ) {
@@ -82,13 +89,17 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 			}
 			$type = 'post';
 		}
-		$package['contents']['original_id'] = array( 'translate' => 0, 'data' => $original_id );
+		$package['contents']['original_id'] = array(
+			'translate' => 0,
+			'data'      => $original_id,
+		);
 		$package['type']                    = $type;
+
 		foreach ( $post_contents as $key => $entry ) {
 			$package['contents'][ $key ] = array(
 				'translate' => 1,
 				'data'      => base64_encode( $entry ),
-				'format'    => 'base64'
+				'format'    => 'base64',
 			);
 		}
 
@@ -110,6 +121,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 				'job_id'                => $job_id,
 				'content_id'            => 0,
 				'field_type'            => $field,
+				'field_wrap_tag'        => isset( $value['wrap_tag'] ) ? $value['wrap_tag'] : '',
 				'field_format'          => isset( $value['format'] ) ? $value['format'] : '',
 				'field_translate'       => $value['translate'],
 				'field_data'            => $value['data'],
@@ -122,36 +134,59 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 				$job_translate['field_finished']        = $prev_translation[ $field ]->is_finished( $value['data'] );
 			}
 
+			$job_translate = $this->filter_non_translatable_fields( $job_translate );
+
 			$wpdb->insert( $wpdb->prefix . 'icl_translate', $job_translate );
 		}
 
 		$wpdb->show_errors( $show );
 	}
 
+	private function filter_non_translatable_fields( $job_translate ) {
+
+		if ( $job_translate['field_translate'] ) {
+			$data = $job_translate['field_data'];
+			if ( 'base64' === $job_translate['field_format'] ) {
+				$data = base64_decode( $data );
+			}
+			if (
+				WPML_String_Functions::is_not_translatable( $data ) ||
+				! apply_filters( 'wpml_translation_job_post_meta_value_translated', 1, $job_translate['field_type'] )
+			) {
+				$job_translate['field_translate']       = 0;
+				$job_translate['field_data_translated'] = $job_translate['field_data'];
+				$job_translate['field_finished']        = 1;
+			}
+		}
+
+		return $job_translate;
+	}
+
 	/**
 	 * @param object $job
-	 * @param int    $post_id
-	 * @param array  $fields
+	 * @param int $post_id
+	 * @param array $fields
 	 */
 	function save_job_custom_fields( $job, $post_id, $fields ) {
-		$field_names      = array();
+		$field_names = array();
 
 		foreach ( $fields as $field_name => $val ) {
 			if ( '' === (string) $field_name ) {
 				continue;
 			}
 
-			// find it in the translation
+			// find it in the translation.
 			foreach ( $job->elements as $el_data ) {
-				if ( strpos( $el_data->field_data, (string) $field_name ) === 0
-				     && 1 === preg_match( '/field-(.*?)-name/U', $el_data->field_type, $match )
-				     && 1 === preg_match( '/field-' . $field_name . '-[0-9].*?-name/', $el_data->field_type )
+				if (
+					strpos( $el_data->field_data, (string) $field_name ) === 0
+					&& 1 === preg_match( '/field-(.*?)-name/U', $el_data->field_type, $match )
+					&& 1 === preg_match( '/field-' . $field_name . '-[0-9].*?-name/', $el_data->field_type )
 				) {
 					$field_names[ $field_name ] = isset( $field_names[ $field_name ] )
-							? $field_names[ $field_name ] : array();
+						? $field_names[ $field_name ] : array();
 
-					$field_id_string            = $match[1];
-					$field_translation          = false;
+					$field_id_string   = $match[1];
+					$field_translation = false;
 					foreach ( $job->elements as $v ) {
 						if ( $v->field_type === 'field-' . $field_id_string ) {
 							$field_translation = $this->decode_field_data(
@@ -166,10 +201,10 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 					}
 					if ( false !== $field_translation && isset( $field_type ) && 'custom_field' === $field_type ) {
 						$field_translation = str_replace( '&#0A;', "\n", $field_translation );
-						// always decode html entities  eg decode &amp; to &
+						// always decode html entities  eg decode &amp; to &.
 						$field_translation = html_entity_decode( $field_translation );
-						$meta_keys = explode( '-', preg_replace( '#' . $field_name . '-?#', '', $field_id_string ) );
-						$meta_keys = array_map( array( $this, 'replace_separator' ), $meta_keys );
+						$meta_keys         = explode( '-', preg_replace( '#' . $field_name . '-?#', '', $field_id_string ) );
+						$meta_keys         = array_map( array( 'WPML_TM_Field_Type_Encoding', 'decode_hyphen' ), $meta_keys );
 						$field_names       = $this->insert_under_keys(
 							array_merge( array( $field_name ), $meta_keys ), $field_names, $field_translation
 						);
@@ -179,10 +214,6 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 		}
 
 		$this->save_custom_field_values( $field_names, $post_id );
-	}
-
-	private function replace_separator( $el ) {
-		return str_replace( self::CUSTOM_FIELD_KEY_SEPARATOR, '-', $el );
 	}
 
 	/**
@@ -200,7 +231,7 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 		$array[ $keys[0] ] = count( $keys ) === 1
 			? $value
 			: $this->insert_under_keys(
-				array_slice($keys, 1),
+				array_slice( $keys, 1 ),
 				( isset( $array[ $keys[0] ] ) ? $array[ $keys[0] ] : array() ),
 				$value );
 
@@ -208,8 +239,17 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	}
 
 	private function save_custom_field_values( $fields_in_job, $post_id ) {
+		$encodings = $this->get_tm_setting( array( 'custom_fields_encoding' ) );
 		foreach ( $fields_in_job as $name => $contents ) {
 			$this->wp_api->delete_post_meta( $post_id, $name );
+
+			foreach ( $contents as $index => $value ) {
+				if ( isset( $encodings[ $name ] ) ) {
+					$contents[ $index ] = WPML_Encoding::encode( $value, $encodings[ $name ] );
+				}
+				$contents[ $index ] = apply_filters( 'wpml_encode_custom_field', $contents[ $index ], $name );
+			}
+
 			$single   = count( $contents ) === 1;
 			$contents = (array) $contents;
 			foreach ( $contents as $val ) {
@@ -221,16 +261,18 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	/**
 	 * @param array $package
 	 * @param object $post
-	 * @param array $fields
+	 * @param array $fields_to_translate
+	 * @param array $fields_encoding
 	 *
 	 * @return array
 	 */
-	private function add_custom_field_contents( $package, $post, $fields ) {
-		$fields_to_translate = array_keys( $fields, 2 );
+	private function add_custom_field_contents( $package, $post, $fields_to_translate, $fields_encoding ) {
 		foreach ( $fields_to_translate as $key ) {
+			$encoding             = isset( $fields_encoding[ $key ] ) ? $fields_encoding[ $key ] : '';
 			$custom_fields_values = array_values( array_filter( get_post_meta( $post->ID, $key ) ) );
 			foreach ( $custom_fields_values as $index => $custom_field_val ) {
-				$package          = $this->add_single_field_content( $package, $key, $index, $custom_field_val );
+				$custom_field_val = apply_filters( 'wpml_decode_custom_field', $custom_field_val, $key );
+				$package          = $this->add_single_field_content( $package, $key, array( $index ), $custom_field_val, $encoding );
 			}
 		}
 
@@ -238,34 +280,46 @@ class WPML_Element_Translation_Package extends WPML_Translation_Job_Helper{
 	}
 
 	/**
-	 * Uses the wpml_translation_job_post_meta_value_translated to exclude certain fields from being translated.
 	 * For array valued custom fields cf is given in the form field-{$field_name}-join('-', $indicies)
 	 *
 	 * @param array $package
 	 * @param string $key
-	 * @param string $custom_field_index
+	 * @param array $custom_field_index
 	 * @param array|stdClass|string $custom_field_val
+	 * @param string $encoding
 	 *
 	 * @return array
 	 */
-	private function add_single_field_content( $package, $key, $custom_field_index, $custom_field_val ) {
+	private function add_single_field_content( $package, $key, $custom_field_index, $custom_field_val, $encoding ) {
+		if ( $encoding && is_scalar( $custom_field_val ) ) {
+			$custom_field_val = WPML_Encoding::decode( $custom_field_val, $encoding );
+			$encoding = '';
+		}
 		if ( is_scalar( $custom_field_val ) ) {
-			$key_index = $key . '-' . $custom_field_index;
-			$cf        = 'field-' . $key_index;
+			list( $cf, $key_index ) = WPML_TM_Field_Type_Encoding::encode($key, $custom_field_index );
 			$package['contents'][ $cf ] = array(
-				'translate' => apply_filters( 'wpml_translation_job_post_meta_value_translated', 1, $cf ),
+				'translate' => 1,
 				'data'      => base64_encode( $custom_field_val ),
 				'format'    => 'base64',
 			);
-			foreach ( array( 'name' => $key_index, 'type' => 'custom_field' ) as $field_key => $setting ) {
-				$package['contents'][ $cf . '-' . $field_key ] = array(
-					'translate' => 0,
-					'data'      => $setting,
-				);
-			}
+			$package['contents'][ $cf . '-name' ] = array(
+				'translate' => 0,
+				'data'      => $key_index,
+			);
+			$package['contents'][ $cf . '-type' ] = array(
+				'translate' => 0,
+				'data'      => 'custom_field',
+			);
+
 		} else {
 			foreach ( (array) $custom_field_val as $ind => $value ) {
-				$package = $this->add_single_field_content( $package, $key, $custom_field_index . '-' . str_replace( '-', self::CUSTOM_FIELD_KEY_SEPARATOR, $ind ), $value );
+				$package = $this->add_single_field_content(
+					$package,
+					$key,
+					array_merge( $custom_field_index, array( $ind ) ),
+					$value,
+					$encoding
+				);
 			}
 		}
 

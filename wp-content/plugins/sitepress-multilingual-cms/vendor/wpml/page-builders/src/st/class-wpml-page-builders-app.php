@@ -5,8 +5,6 @@
  */
 class WPML_Page_Builders_App {
 
-	private $integrations = array();
-
 	/**
 	 * @var WPML_Page_Builders_Defined
 	 */
@@ -44,7 +42,6 @@ class WPML_Page_Builders_App {
 			foreach ( $factories as $factory ) {
 				$integration = $factory->create();
 				$integration->add_hooks();
-				$this->integrations[] = $integration;
 			}
 		}
 	}

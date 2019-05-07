@@ -4,6 +4,9 @@
  * @author OnTheGo Systems
  */
 class WPML_TM_AMS_API {
+
+	const HTTP_ERROR_CODE_400 = 400;
+
 	private $auth;
 	private $endpoints;
 	private $wp_http;
@@ -63,7 +66,7 @@ class WPML_TM_AMS_API {
 		$url = $this->endpoints->get_subscription_status();
 
 		$url = str_replace( '{translator_email}', base64_encode( $translator_email ), $url );
-		$url = str_replace( '{WEBSITE_UUID}', wpml_get_site_id(), $url );
+		$url = str_replace( '{WEBSITE_UUID}', $this->auth->get_site_id(), $url );
 
 		$response = $this->signed_request( 'GET', $url );
 
@@ -116,15 +119,19 @@ class WPML_TM_AMS_API {
 	}
 
 	/**
-	 * @param int     $manager_id
-	 * @param WP_User $manager
-	 * @param array   $translators
-	 * @param array   $managers
+	 * Used to register a manager and, at the same time, create a website in AMS.
+	 * This is called only when registering the site with AMS.
+	 * To register new managers or translators `\WPML_TM_ATE_AMS_Endpoints::get_ams_synchronize_managers`
+	 * and `\WPML_TM_ATE_AMS_Endpoints::get_ams_synchronize_translators` will be used.
+	 *
+	 * @param WP_User   $manager     The WP_User instance of the manager.
+	 * @param WP_User[] $translators An array of WP_User instances representing the current translators.
+	 * @param WP_User[] $managers    An array of WP_User instances representing the current managers.
 	 *
 	 * @return array|bool|null|WP_Error
-	 * @throws \InvalidArgumentException
 	 */
-	public function register_manager( $manager_id, WP_User $manager, array $translators, array $managers ) {
+	public function register_manager( WP_User $manager, array $translators, array $managers ) {
+		static $recreate_site_id = false;
 
 		$manager_data     = $this->get_user_data( $manager, true );
 		$translators_data = $this->get_users_data( $translators );
@@ -137,7 +144,7 @@ class WPML_TM_AMS_API {
 
 			$params                 = $manager_data;
 			$params['website_url']  = get_site_url();
-			$params['website_uuid'] = wpml_get_site_id();
+			$params['website_uuid'] = wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE, $recreate_site_id );
 
 			$params['translators']          = $translators_data;
 			$params['translation_managers'] = $managers_data;
@@ -153,12 +160,17 @@ class WPML_TM_AMS_API {
 
 					$registration_data = $this->get_registration_data();
 
-					$registration_data['user_id'] = $manager_id;
+					$registration_data['user_id'] = $manager->ID;
 					$registration_data['secret']  = $response_body['secret_key'];
 					$registration_data['shared']  = $response_body['shared_key'];
 					$registration_data['status']  = WPML_TM_ATE_Authentication::AMS_STATUS_ENABLED;
 
 					$result = $this->set_registration_data( $registration_data );
+				}
+
+				if ( is_wp_error( $result ) && $result->get_error_code() === 409 && ! $recreate_site_id ) {
+					$recreate_site_id = true;
+					return $this->register_manager( $manager, $translators, $managers );
 				}
 			}
 		}
@@ -167,9 +179,10 @@ class WPML_TM_AMS_API {
 	}
 
 	/**
-	 * @param WP_User $wp_user
+	 * Gets the data required by AMS to register a user.
 	 *
-	 * @param bool    $with_name_details
+	 * @param WP_User $wp_user           The user from which data should be extracted.
+	 * @param bool    $with_name_details True if name details should be included.
 	 *
 	 * @return array
 	 */
@@ -190,8 +203,10 @@ class WPML_TM_AMS_API {
 	}
 
 	/**
-	 * @param array $users
-	 * @param bool  $with_name_details
+	 * Converts an array of WP_User instances into an array of data nedded by AMS to identify users.
+	 *
+	 * @param WP_User[] $users             An array of WP_User instances.
+	 * @param bool      $with_name_details True if name details should be included.
 	 *
 	 * @return array
 	 */
@@ -207,7 +222,9 @@ class WPML_TM_AMS_API {
 	}
 
 	/**
-	 * @param $response
+	 * Checks if a reponse has a body.
+	 *
+	 * @param array|\WP_Error $response The response of the remote request.
 	 *
 	 * @return bool
 	 */
@@ -220,30 +237,43 @@ class WPML_TM_AMS_API {
 
 		if ( is_wp_error( $response ) ) {
 			$response_errors = $response;
-		} elseif ( array_key_exists( 'body', $response ) && $response['response']['code'] >= 400 ) {
-			$errors = array();
-
+		} elseif ( array_key_exists( 'body', $response ) && $response['response']['code'] >= self::HTTP_ERROR_CODE_400 ) {
+			$main_error    = array();
+			$errors        = array();
 			$error_message = $response['response']['message'];
 
 			$response_body = json_decode( $response['body'], true );
 			if ( ! $response_body ) {
 				$error_message = $response['body'];
-				$errors        = array( $error_message );
+				$main_error    = array( $response['body'] );
 			} elseif ( array_key_exists( 'errors', $response_body ) ) {
-				$errors = $response_body['errors'];
+				$errors     = $response_body['errors'];
+				$main_error = array_shift( $errors );
+				$error_message = $this->get_error_message( $main_error, $response['body'] );
 			}
 
-			$response_errors = new WP_Error( 'ams_error:' . $response['response']['code'], $error_message, array(
-				                                                                             'status' => $response['response']['code'],
-				                                                                             'errors' => $errors,
-			                                                                             ) );
-			// Candidate for handling better errors: to be implemented
+			$response_errors = new WP_Error( $main_error['status'], $error_message, $main_error );
+
 			foreach ( $errors as $error ) {
-				$response_errors->add( $response['response']['code'], $error );
+				$error_message = $this->get_error_message( $error, $response['body'] );
+				$error_status = isset( $error['status'] ) ? 'ams_error: ' . $error['status'] : '';
+				$response_errors->add( $error_status, $error_message, $error );
 			}
 		}
 
 		return $response_errors;
+	}
+
+	/**
+	 * @param array  $ams_error
+	 * @param string $default
+	 *
+	 * @return string
+	 */
+	private function get_error_message( $ams_error, $default ) {
+		$title   = isset( $ams_error['title'] ) ? $ams_error['title'] . ': ' : '';
+		$details = isset( $ams_error['detail'] ) ? $ams_error['detail'] : $default;
+		return $title . $details;
 	}
 
 	private function response_has_keys( $response ) {
@@ -286,7 +316,7 @@ class WPML_TM_AMS_API {
 
 		if ( $managers_data ) {
 			$url = $this->endpoints->get_ams_synchronize_managers();
-			$url = str_replace( '{WEBSITE_UUID}', wpml_get_site_id(), $url );
+			$url = str_replace( '{WEBSITE_UUID}', wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE ), $url );
 
 			$params = array( 'translation_managers' => $managers_data );
 
@@ -395,4 +425,9 @@ class WPML_TM_AMS_API {
 
 		return $url;
 	}
+
+	public function override_site_id( $site_id ) {
+		$this->auth->override_site_id( $site_id);
+	}
+
 }

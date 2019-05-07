@@ -7,20 +7,31 @@ $action_filter_loader->load(
 	)
 );
 
+// We have to do this early because wordpress-seo does it early too.
+$redirector = new WPML_WPSEO_Redirection_Old();
+if ( $redirector->is_redirection() ) {
+	add_filter( 'wpml_skip_convert_url_string', '__return_true' );
+}
+
 add_action( 'plugins_loaded', 'wpml_plugins_integration_setup', 10 );
 
 function wpml_plugins_integration_setup() {
 	/** @var WPML_URL_Converter $wpml_url_converter */
 	global $sitepress, $wpml_url_converter, $wpdb, $pagenow;
 	// WPSEO integration
-	if ( defined( 'WPSEO_VERSION' ) && version_compare( WPSEO_VERSION, '1.0.3', '>=' ) ) {
-		$wpml_wpseo_xml_sitemap_filters = new WPML_WPSEO_XML_Sitemaps_Filter( $sitepress, $wpml_url_converter );
+	if ( $sitepress->get_wp_api()->defined( 'WPSEO_VERSION' ) &&
+	     version_compare( $sitepress->get_wp_api()->constant( 'WPSEO_VERSION' ), '1.0.3', '>=' ) &&
+	     !  $sitepress->get_wp_api()->defined( 'WPML_WPSEO_VERSION' ) ) {
+		$wpml_wpseo_xml_sitemap_filters = new WPML_WPSEO_XML_Sitemaps_Filter_Old( $sitepress, $wpml_url_converter );
 		$wpml_wpseo_xml_sitemap_filters->init_hooks();
 		$canonical     = new WPML_Canonicals( $sitepress, new WPML_Translation_Element_Factory( $sitepress ) );
-		$wpseo_filters = new WPML_WPSEO_Filters( $canonical );
+		$wpseo_filters = new WPML_WPSEO_Filters_Old( $canonical );
 		$wpseo_filters->init_hooks();
-		$metabox_hooks = new WPML_WPSEO_Metabox_Hooks( new WPML_Debug_BackTrace( phpversion() ), $wpml_url_converter, $pagenow );
+		$metabox_hooks = new WPML_WPSEO_Metabox_Hooks_Old( new WPML_Debug_BackTrace( phpversion() ), $wpml_url_converter, $pagenow );
 		$metabox_hooks->add_hooks();
+
+		$categories = new WPML_Compatibility_Wordpress_Seo_Categories_Old();
+		$categories->add_hooks();
 	}
 	if ( class_exists( 'bbPress' ) ) {
 		$wpml_bbpress_api     = new WPML_BBPress_API();
@@ -61,6 +72,15 @@ function wpml_plugins_integration_setup() {
 
 	if ( defined( 'FUSION_BUILDER_VERSION' ) ) {
 		$factories_to_load[] = 'WPML_Compatibility_Plugin_Fusion_Hooks_Factory';
+	}
+
+	if ( class_exists( 'Tiny_Plugin' ) ) {
+		$factories_to_load[] = 'WPML_Compatibility_Tiny_Compress_Images_Factory';
+	}
+
+	global $DISQUSVERSION;
+	if ( $DISQUSVERSION ) {
+		$factories_to_load[] = 'WPML_Compatibility_Disqus_Factory';
 	}
 
 	$action_filter_loader = new WPML_Action_Filter_Loader();

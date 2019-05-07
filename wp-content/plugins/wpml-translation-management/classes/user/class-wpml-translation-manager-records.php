@@ -7,7 +7,7 @@ class WPML_Translation_Manager_Records extends WPML_Translation_Roles_Records {
 	}
 
 	protected function get_required_wp_roles() {
-		return array( 'administrator', 'manager', 'trustworthy_organization' );
+		return array( 'administrator', 'editor' );
 	}
 
 }

@@ -62,6 +62,8 @@ class WPML_TP_Service_Authentication extends WPML_TP_Service_Action {
 		);
 		$this->sitepress->set_setting( 'icl_translation_projects',
 			$translation_projects, true );
+
+		do_action( 'wpml_tm_translation_service_authorized', $service, $project );
 	}
 
 	/**
@@ -72,18 +74,32 @@ class WPML_TP_Service_Authentication extends WPML_TP_Service_Action {
 	private function create_project( $service ) {
 		$icl_translation_projects = $this->sitepress->get_setting( 'icl_translation_projects',
 			array() );
+		if ( ! is_array( $icl_translation_projects ) ) {
+			$icl_translation_projects = array();
+		}
 		$delivery                 = (int) $this->sitepress->get_setting( 'translation_pickup_method' ) === ICL_PRO_TRANSLATION_PICKUP_XMLRPC
 			? "xmlrpc" : "polling";
 		if ( isset( $icl_translation_projects[ TranslationProxy_Project::generate_service_index( $service ) ] ) ) {
 			$project = $this->project_factory->project( $service, $delivery );
 		} else {
 			$wp_api      = $this->sitepress->get_wp_api();
-			$url         = $wp_api->get_option( 'siteurl' );
-			$name        = $wp_api->get_option( 'blogname' );
-			$description = $wp_api->get_option( 'blogdescription' );
+			$blog_info = array(
+				'url'         => $wp_api->get_option( 'siteurl' ),
+				'name'        => $wp_api->get_option( 'blogname' ),
+				'description' => $wp_api->get_option( 'blogdescription' ),
+			);
+
+			$current_user = wp_get_current_user();
+			$client_data  = array(
+				'email' => $current_user->user_email,
+				'name'  => $current_user->display_name,
+			);
+
 			$project     = $this->project_factory->project( $service );
-			$project->create( $url, $name, $description, $delivery );
+			$project->create( $blog_info, $client_data, $delivery );
 		}
+
+		do_action( 'wpml_tp_project_created', $service, $project, $icl_translation_projects );
 
 		return $project;
 	}

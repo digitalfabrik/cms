@@ -143,7 +143,7 @@ class WPML_Translation_Editor_UI {
 
 		$model['note'] = $this->sitepress->get_wp_api()->get_post_meta(
 			$this->job_instance->get_original_element_id(),
-			'_icl_translator_note',
+			WPML_TM_Translator_Note::META_FIELD_KEY,
 			true
 		);
 
@@ -177,7 +177,7 @@ class WPML_Translation_Editor_UI {
 		if ( $has_gutenberg_block ) {
 			echo '<div class="notice notice-info">
 					<p>' . esc_html__( 'This content came from the Gutenberg editor and you need to translate it carefully so that formatting in not broken.', 'wpml-translation-management' ) . '</p>
-					<p><a href="https://wpml.org/documentation/translating-your-contents/translating-gutenberg-content-with-wpml/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-gutenberg-content-with-wpml" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
+					<p><a href="https://wpml.org/documentation/getting-started-guide/translating-content-created-using-gutenberg-editor/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-content-created-using-gutenberg-editor" class="wpml-external-link" target="_blank" rel="noopener">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
 				</div>';
 		}
 	}

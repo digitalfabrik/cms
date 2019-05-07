@@ -7,7 +7,20 @@ WPML_TM.translationRolesSelect2 = function ( elementSelector, nonce, role, onCha
 	"use strict";
 
 	var formatResult = function ( user ) {
-		return user.display_name;
+		/** @namespace user.full_name */
+		var result = user.full_name;
+
+		if (!result) {
+			result += user.display_name;
+		}
+
+		result += ' - ' + user.user_login;
+
+		if (user.user_email) {
+			result += ' (' + user.user_email + ')';
+		}
+
+		return result;
 	};
 
 	/**
@@ -41,7 +54,7 @@ WPML_TM.translationRolesSelect2 = function ( elementSelector, nonce, role, onCha
 					search: params
 				};
 			},
-			results: function ( data, params ) {
+			results: function ( data ) {
 				return {
 					results: data.data
 				};

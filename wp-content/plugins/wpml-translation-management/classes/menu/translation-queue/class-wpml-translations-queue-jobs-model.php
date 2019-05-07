@@ -5,6 +5,9 @@
  */
 class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 
+	/** @var WPML_Post_Translation $post_translations */
+	private $post_translations;
+
 	private $translation_jobs;
 	private $tm_api;
 	private $post_link_factory;
@@ -19,8 +22,9 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 	 * @param WPML_TM_API               $tm_api
 	 * @param WPML_TM_Post_Link_Factory $post_link_factory
 	 * @param array                     $translation_jobs
+	 * @param WPML_Post_Translation     $post_translations
 	 */
-	public function __construct( $sitepress, &$tm_instance, &$tm_api, &$post_link_factory, array $translation_jobs ) {
+	public function __construct( $sitepress, &$tm_instance, &$tm_api, &$post_link_factory, array $translation_jobs, WPML_Post_Translation $post_translations ) {
 		parent::__construct( $tm_instance );
 
 		$this->translation_jobs  = $translation_jobs;
@@ -29,6 +33,8 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 
 		$this->post_types = $sitepress->get_translatable_documents( true );
 		$this->post_types = apply_filters( 'wpml_get_translatable_types', $this->post_types );
+
+		$this->post_translations = $post_translations;
 	}
 
 	public function get() {
@@ -48,7 +54,7 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 		$model['jobs'] = array();
 
 		foreach ( $this->translation_jobs as $job ) {
-			$job->post_title   = apply_filters( 'the_title', $job->post_title );
+			$job->post_title   = apply_filters( 'the_title', $job->post_title, $job->original_doc_id );
 			$job->tm_post_link = $this->get_post_link( $job );
 			$job->post_type    = $this->get_post_type( $job );
 			$job->icon         = $this->tm_instance->status2icon_class( $job->status, $job->needs_update );
@@ -58,6 +64,7 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 			$job->is_doing_job = $this->is_doing_job( $job );
 			$job->resign_text  = $this->get_resign_text( $job );
 			$job->resign_url   = $this->get_resign_url( $job );
+			$job->view_link    = $this->get_view_translation_link( $job );
 
 			$model['jobs'][] = $job;
 		}
@@ -65,14 +72,16 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 		return $model;
 	}
 
-	private function get_post_link( $job ) {
-		$view_original_text = __( 'View original', 'wpml-translation-management' );
-		$tm_post_link       = $this->post_link_factory->view_link_anchor( $job->original_doc_id, $view_original_text );
+	private function get_post_link( $job, $element_id = null, $view_text = null ) {
+		$view_text  = $view_text ? $view_text : __( 'View original', 'wpml-translation-management' );
+		$element_id = $element_id ? $element_id : $job->original_doc_id;
+
+		$tm_post_link = $this->post_link_factory->view_link_anchor( $element_id, $view_text, '_blank' );
 
 		$element_type_prefix = $this->tm_instance->get_element_type_prefix_from_job( $job );
 		if ( $this->tm_instance->is_external_type( $element_type_prefix ) ) {
-			$url          = apply_filters( 'wpml_external_item_url', '', $job->original_doc_id );
-			$tm_post_link = '<a href="' . $url . '">' . $view_original_text . '</a>';
+			$url          = apply_filters( 'wpml_external_item_url', '', $element_id );
+			$tm_post_link = '<a href="' . $url . '">' . $view_text . '</a>';
 		}
 
 		$original_element_type = $job->original_post_type;
@@ -84,12 +93,25 @@ class WPML_Translations_Queue_Jobs_Model extends WPML_TM_User {
 
 		$tm_post_link = apply_filters( 'wpml_document_view_item_link',
 		                               $tm_post_link,
-		                               $view_original_text,
+		                               $view_text,
 		                               $job,
 		                               $element_type_prefix,
 		                               $original_element_type );
 
 		return $tm_post_link;
+	}
+
+	private function get_view_translation_link( $job ) {
+		$element_type_prefix = $this->tm_instance->get_element_type_prefix_from_job( $job );
+		if ( ! $this->tm_instance->is_external_type( $element_type_prefix ) ) {
+			$translated_id = $this->post_translations->element_id_in( $job->original_doc_id, $job->language_code );
+
+			if ( $translated_id ) {
+				return $this->get_post_link( $job, $translated_id, __( 'View', 'wpml-translation-management' ) );
+			}
+		}
+
+		return '';
 	}
 
 	private function get_post_type( $job ) {

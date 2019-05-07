@@ -318,7 +318,7 @@ class WPML_Nav_Menu {
 		$this->_load_menu();
 		$default_language = $sitepress->get_default_language();
 		$current_lang     = isset( $this->current_menu['language'] ) ? $this->current_menu['language'] : $sitepress->get_current_language();
-        $langsel = '<br class="clear" />';    
+		$langsel = '<br class="clear" />';
         
         // show translations links if this is not a new element              
         if(isset($this->current_menu['id']) && $this->current_menu['id']){
@@ -381,6 +381,7 @@ class WPML_Nav_Menu {
 			$langsel .= '<span id="icl_translation_of_wrap">';
 			$trid_current = ! empty( $this->current_menu['trid'] ) ? $this->current_menu['trid'] : ( isset( $_GET['trid'] ) ? $_GET['trid'] : 0 );
 			$langsel .= $this->render_translation_of( $current_lang, (int)$trid_current );
+
 			$langsel .= '</span>';
 		}
 		$langsel .= '</span>';

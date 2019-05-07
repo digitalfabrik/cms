@@ -1,6 +1,7 @@
 <?php
 
 class WPML_TM_Translation_Services_Admin_Section implements IWPML_TM_Admin_Section {
+	const SLUG = 'translation-services';
 
 	/**
 	 * @var SitePress
@@ -45,7 +46,7 @@ class WPML_TM_Translation_Services_Admin_Section implements IWPML_TM_Admin_Secti
 	 * @return string
 	 */
 	public function get_slug() {
-		return 'translation-services';
+		return self::SLUG;
 	}
 
 	/**

@@ -204,9 +204,12 @@ class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 	 * @return null|string
 	 */
 	public function get_save_post_lang( $post_id, $sitepress ) {
-		$language_code = filter_var(
-			( isset( $_POST['icl_post_language'] ) ? $_POST['icl_post_language'] : '' ),
-			FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$language_code = null;
+		if ( isset( $_POST['post_ID'] ) && (int) $_POST['post_ID'] === (int) $post_id ) {
+			$language_code = filter_var(
+				( isset( $_POST['icl_post_language'] ) ? $_POST['icl_post_language'] : '' ),
+				FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		}
 		$language_code = $language_code
 			? $language_code
 			: filter_input(

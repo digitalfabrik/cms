@@ -21,12 +21,11 @@ class WPML_Slash_Management {
 
 	/**
 	 * @param string $url
-	 * @param string $method
+	 * @param string $method Deprecated.
 	 *
 	 * @return mixed|string
 	 */
-	public function maybe_user_trailingslashit( $url, $method ) {
-		global $wp_rewrite;
+	public function maybe_user_trailingslashit( $url, $method = '' ) {
 		$url_parts = wpml_parse_url( $url );
 
 		if ( ! $url_parts ) {
@@ -47,14 +46,40 @@ class WPML_Slash_Management {
 			$url_parts['path'] = '/';
 		} elseif ( $this->is_file_path( $path ) ) {
 			$url_parts['path'] = untrailingslashit( $path );
-		} elseif ( null !== $wp_rewrite ) {
-			$url_parts['path'] = user_trailingslashit( $path );
+		} elseif ( $method ) {
+			$url_parts['path'] = 'untrailingslashit' === $method ? untrailingslashit( $path ) : trailingslashit( $path );
 		} else {
-			$url_parts['path'] = 'untrailingslashit' === $method
-				? untrailingslashit( $path ) : trailingslashit( $path );
+			$url_parts['path'] = $this->user_trailingslashit( $path );
 		}
 
 		return http_build_url( $url_parts );
+	}
+
+	/**
+	 * Follows the logic of WordPress core user_trailingslashit().
+	 * Can be called on plugins_loaded event, when $wp_rewrite is not set yet.
+	 *
+	 * @param $path
+	 *
+	 * @return string
+	 */
+	private function user_trailingslashit( $path ) {
+		global $wp_rewrite;
+
+		if ( $wp_rewrite ) {
+			return user_trailingslashit( $path );
+		}
+
+		$permalink_structure  = get_option( 'permalink_structure' );
+		$use_trailing_slashes = ( '/' === substr( $permalink_structure, - 1, 1 ) );
+
+		if ( $use_trailing_slashes ) {
+			$path = trailingslashit( $path );
+		} else {
+			$path = untrailingslashit( $path );
+		}
+
+		return apply_filters( 'user_trailingslashit', $path, '' );
 	}
 
 	/**

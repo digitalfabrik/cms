@@ -34,7 +34,6 @@ class WPML_TM_Translators_Dropdown {
 		/** @var $echo bool */
 		/** @var $add_label bool */
 		/** @var $services array */
-		/** @var $show_service bool */
 		/** @var $disabled bool */
 		/** @var $default_name bool|string */
 		/** @var $local_only bool */
@@ -48,7 +47,6 @@ class WPML_TM_Translators_Dropdown {
 		$echo         = true;
 		$add_label    = false;
 		$services     = array( 'local' );
-		$show_service = true;
 		$disabled     = false;
 		$default_name = false;
 		$local_only   = false;
@@ -137,12 +135,7 @@ class WPML_TM_Translators_Dropdown {
 
 				$dropdown_selected = selected( $selected, $current_translator, false );
 				$dropdown .= '<option value="' . $current_translator . '" ' . $dropdown_selected . '>';
-				$dropdown .= isset( $t->service ) ? $t->service : esc_html__( 'Local', 'wpml-translation-management' );
-				if ( $show_service ) {
-					$dropdown .= ' (';
-					$dropdown .= esc_html( $t->display_name );
-					$dropdown .= ')';
-				}
+				$dropdown .= isset( $t->service ) ? $t->service : esc_html( $t->display_name );
 				$dropdown .= '</option>';
 			}
 			$dropdown .= '</select>';

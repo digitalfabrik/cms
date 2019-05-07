@@ -29,7 +29,7 @@ class WPML_TP_Service_Authentication_Ajax_Action extends WPML_TP_Service_Ajax_Ac
 
 	protected function error_message() {
 
-		return __( 'Unable to activate this service. Please check entered data and try again.',
+		return __( "The authentication didn't work. Please make sure you entered your details correctly and try again.",
 			'wpml-translation-management' );
 	}
 }

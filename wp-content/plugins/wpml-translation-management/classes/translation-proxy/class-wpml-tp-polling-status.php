@@ -12,8 +12,8 @@ class WPML_TP_Polling_Status {
 	 * WPML_TP_Polling_Status constructor.
 	 *
 	 * @param TranslationProxy_Project $project
-	 * @param SitePress                $sitepress
-	 * @param WPML_TM_CMS_ID           $cms_id_helper
+	 * @param SitePress $sitepress
+	 * @param WPML_TM_CMS_ID $cms_id_helper
 	 */
 	public function __construct(
 		TranslationProxy_Project $project,
@@ -34,21 +34,35 @@ class WPML_TP_Polling_Status {
 		try {
 			$data = $this->filter_obsolete( $this->project->jobs() );
 		} catch ( Exception $e ) {
-			throw new WPMLTranslationProxyApiException( 'Got the following error when trying to load status data from Translation Proxy via polling: '
-			                                            . $e->getMessage(), 0 );
+			throw new WPMLTranslationProxyApiException(
+				'Got the following error when trying to load status data from Translation Proxy via polling: ' . $e->getMessage(),
+				0
+			);
 		}
-		$button_text = esc_html__( 'Check status and get translations', 'wpml-translation-management' );
-		if ( ( $job_in_progress = $this->in_progress_count( $data ) ) == 1 ) {
-			$jobs_in_progress_text = sprintf( esc_html__( '%s1 translation job%s has been sent to remote translators',
-				'wpml-translation-management' ), '<strong>', '</strong>' );
+		$button_text     = esc_html__( 'Check status and get translations', 'wpml-translation-management' );
+		$job_in_progress = $this->in_progress_count();
+		if ( 1 === $job_in_progress ) {
+			$jobs_in_progress_text = sprintf(
+				/* translators: Jobs count */
+				esc_html__( '%1$s1 translation job%2$s has been sent to remote translators', 'wpml-translation-management' ),
+				'<strong>',
+				'</strong>'
+			);
 		} else {
-			$jobs_in_progress_text = sprintf( esc_html__( '%s%d translation jobs%s have been sent to remote translators',
-				'wpml-translation-management' ), '<strong>', $job_in_progress, '</strong>' );
+			$jobs_in_progress_text = sprintf(
+				/* translators: Jobs count */
+				esc_html__( '%1$s%2$d translation jobs%3$s have been sent to remote translators', 'wpml-translation-management' ),
+				'<strong>',
+				$job_in_progress,
+				'</strong>'
+			);
 		}
 		$last_picked_up      = $this->sitepress->get_setting( 'last_picked_up' );
-		$last_time_picked_up = ! empty( $last_picked_up ) ? date_i18n( 'Y, F jS @g:i a',
-			$last_picked_up ) : esc_html__( 'never', 'wpml-translation-management' );
-		$last_pickup_text    = sprintf( esc_html__( 'Last check: %s', 'wpml-translation-management' ), $last_time_picked_up );
+		$last_time_picked_up = ! empty( $last_picked_up ) ?
+			date_i18n( 'Y, F jS @g:i a', $last_picked_up ) :
+			esc_html__( 'never', 'wpml-translation-management' );
+		/* translators: Last pickup time */
+		$last_pickup_text = sprintf( esc_html__( 'Last check: %s', 'wpml-translation-management' ), $last_time_picked_up );
 
 		return array(
 			'jobs_in_progress_text' => $jobs_in_progress_text,
@@ -58,27 +72,18 @@ class WPML_TP_Polling_Status {
 		);
 	}
 
-	/**
-	 * @param array $data
-	 *
-	 * @return int number of jobs that are in progress with the translation service
-	 */
-	private function in_progress_count( array $data ) {
-		$count = 0;
-		foreach ( $data as $job ) {
-			$count += in_array( $job->job_state, array(
-				'waiting_translation',
-				'translation_ready',
-				'received'
-			), true )
-			          || ( $job->job_state === 'cancelled'
-			               && $job->cms_id
-			               && $this->cms_id_helper->get_translation_id( $job->cms_id ) )
-			          || apply_filters( 'wpml_st_job_state_pending', false, $job )
-				? 1 : 0;
-		}
+	private function in_progress_count() {
+		$jobs_repository = wpml_tm_get_jobs_repository();
+		$jobs_count      = $jobs_repository->get_count(
+			new WPML_TM_Jobs_Search_Params(
+				array(
+					'scope'  => WPML_TM_Jobs_Search_Params::SCOPE_REMOTE,
+					'status' => array( ICL_TM_TRANSLATION_READY_TO_DOWNLOAD, ICL_TM_IN_PROGRESS ),
+				)
+			)
+		);
 
-		return $count;
+		return $jobs_count;
 	}
 
 	/**
@@ -91,17 +96,22 @@ class WPML_TP_Polling_Status {
 	 */
 	private function filter_known_pending( array $jobs ) {
 		foreach ( $jobs as &$job ) {
-			if ( $job->cms_id
-			     && in_array( $job->job_state, array(
-					'waiting_translation',
-					'delivered'
-				) )
-			     && $this->cms_id_helper->get_translation_id( $job->cms_id )
+			if (
+				$job->cms_id &&
+				in_array(
+					$job->job_state,
+					array(
+						'waiting_translation',
+						'delivered',
+					),
+					true
+				) &&
+				$this->cms_id_helper->get_translation_id( $job->cms_id )
 			) {
 				$job = null;
-			} elseif ( $job->job_state === 'delivered'
-			           && ! $job->cms_id
-			           && apply_filters( 'wpml_st_job_state_pending', false, $job )
+			} elseif (
+				'delivered' === $job->job_state &&
+				! $job->cms_id && apply_filters( 'wpml_st_job_state_pending', false, $job )
 			) {
 				$job->job_state = 'translation_ready';
 			}

@@ -40,6 +40,10 @@ class WPML_Translator_Ajax extends WPML_Translation_Roles_Ajax {
 		$user->data->language_pairs = $this->post_vars->post('languagePairs' );
 	}
 
+	public function on_remove_role( WP_User $user ) {
+		delete_user_meta( $user->ID, WPML_TM_Wizard_Options::ONLY_I_USER_META );
+	}
+
 	public function send_instructions_to_user( WP_User $user ) {
 		// Not needed at this stage.
 	}

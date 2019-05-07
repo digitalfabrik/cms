@@ -121,6 +121,9 @@ class WPML_TP_Service extends WPML_TP_REST_Object implements Serializable {
 	/** @var string */
 	public $client_create_account_page_url;
 
+	/** bool */
+	public $redirect_to_ts;
+
 	public function __construct( stdClass $object = null ) {
 		parent::__construct( $object );
 		$this->set_custom_fields_data();
@@ -614,6 +617,22 @@ class WPML_TP_Service extends WPML_TP_REST_Object implements Serializable {
 		$this->client_create_account_page_url = $url;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function get_redirect_to_ts() {
+		return $this->redirect_to_ts;
+	}
+
+	/**
+	 * @param mixed $redirect_to_ts
+	 */
+	public function set_redirect_to_ts( $redirect_to_ts ) {
+		$this->redirect_to_ts = $redirect_to_ts;
+	}
+
+
+
 	public function serialize() {
 		return serialize( get_object_vars( $this ) );
 	}
@@ -668,7 +687,7 @@ class WPML_TP_Service extends WPML_TP_REST_Object implements Serializable {
 			'how_to_get_credentials_desc'    => 'how_to_get_credentials_desc',
 			'how_to_get_credentials_url'     => 'how_to_get_credentials_url',
 			'client_create_account_page_url' => 'client_create_account_page_url',
-
+			'redirect_to_ts?'                => 'redirect_to_ts',
 		);
 	}
 }

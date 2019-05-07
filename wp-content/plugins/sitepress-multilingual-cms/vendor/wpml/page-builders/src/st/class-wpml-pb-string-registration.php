@@ -65,16 +65,27 @@ class WPML_PB_String_Registration {
 	}
 
 	/**
-	 * @param int $post_id
-	 * @param string $content
-	 * @param string $type
-	 * @param string $title
-	 * @param string $name
-	 * @param int $location
+	 * Register string.
 	 *
-	 * @return int $string_id
+	 * @param int    $post_id  Post Id.
+	 * @param string $content  String content.
+	 * @param string $type     String editor type.
+	 * @param string $title    String title.
+	 * @param string $name     String name.
+	 * @param int    $location String location.
+	 * @param string $wrap_tag String wrap tag.
+	 *
+	 * @return null|integer $string_id
 	 */
-	public function register_string( $post_id, $content = '', $type = 'LINE', $title = '', $name = '', $location = 0 ) {
+	public function register_string(
+		$post_id,
+		$content = '',
+		$type = 'LINE',
+		$title = '',
+		$name = '',
+		$location = 0,
+		$wrap_tag = ''
+	) {
 
 		$string_id = 0;
 
@@ -85,7 +96,7 @@ class WPML_PB_String_Registration {
 			if ( $this->migration_mode ) {
 
 				$string_id = $this->get_string_id_from_package( $post_id, $content, $string_name );
-				$this->set_location( $string_id, $location );
+				$this->update_string_data( $string_id, $location, $wrap_tag );
 
 			} else {
 
@@ -99,7 +110,7 @@ class WPML_PB_String_Registration {
 				do_action( 'wpml_register_string', $string_value, $string_name, $package, $string_title, $type );
 
 				$string_id = $this->get_string_id_from_package( $post_id, $content, $string_name );
-				$this->set_location( $string_id, $location );
+				$this->update_string_data( $string_id, $location, $wrap_tag );
 
 				if ( 'LINK' === $type ) {
 					$this->set_link_translations( $string_id );
@@ -111,12 +122,17 @@ class WPML_PB_String_Registration {
 	}
 
 	/**
-	 * @param int $string_id
-	 * @param int $location
+	 * Update string data: location and wrap tag.
+	 * Wrap tag is used for SEO significance, can contain values as h1 ... h6, etc.
+	 *
+	 * @param int    $string_id String id.
+	 * @param string $location  String location inside of the page builder content.
+	 * @param string $wrap_tag  String wrap tag for SEO significance.
 	 */
-	private function set_location( $string_id, $location ) {
+	private function update_string_data( $string_id, $location, $wrap_tag ) {
 		$string = $this->string_factory->find_by_id( $string_id );
 		$string->set_location( $location );
+		$string->set_wrap_tag( $wrap_tag );
 	}
 
 	private function set_link_translations( $string_id ) {

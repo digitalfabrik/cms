@@ -11,7 +11,7 @@ class WPML_Elementor_Translate_IDs implements IWPML_Action {
 
 	public function add_hooks() {
 		add_filter( 'elementor/theme/get_location_templates/template_id', array( $this, 'translate_theme_location_template_id' ) );
-		add_filter( 'elementor/theme/get_location_templates/sub_id', array( $this, 'translate_location_condition_sub_id' ), 10, 2 );
+		add_filter( 'elementor/theme/get_location_templates/condition_sub_id', array( $this, 'translate_location_condition_sub_id' ), 10, 2 );
 		add_filter( 'elementor/documents/get/post_id', array(
 			$this,
 			'translate_template_id'

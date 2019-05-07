@@ -38,6 +38,10 @@ class WPML_Translation_Manager_Ajax extends WPML_Translation_Roles_Ajax {
 
 	}
 
+	public function on_remove_role( WP_User $user ) {
+
+	}
+
 	public function send_instructions_to_user( WP_User $user ) {
 		$site_name             = get_option( 'blogname' );
 		$translation_setup_url = admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php' );

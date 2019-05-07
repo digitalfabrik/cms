@@ -6,21 +6,6 @@
 					<h4><?php esc_html_e( 'Translation Batch sent on ', 'wpml-translation-management' ) ?><%= TJ.last_update %></h4>
 					<%= TJ.batch_name ? '<p><?php esc_html_e( 'Batch Name: ', 'wpml-translation-management' ) ?> <strong>' + TJ.batch_name + '</strong></p>' : '' %>
 				</div>
-				<% if(TJ.tp_batch_id && TJ.in_active_ts) { %>
-				<div class="group-check-wrapper">
-					<div class="wpml_tp_sync_status" style="display:none"><p></p></div>
-					<span class="spinner"></span>
-					<input type="button"
-								 class="button-secondary group-action group-check"
-								 value="<?php esc_attr_e( "Synchronize status", "sitepress" ); ?>"
-								 data-message-sent="<?php esc_attr_e( 'Your request has been sent. Please wait a few minutes to synchronize the status with the Translation service', 'wpml-translation-management' ); ?>"
-								 data-message-request-sending="<?php esc_attr_e( 'Sending request...', 'wpml-translation-management' ); ?>"
-								 data-message-request-sent="<?php esc_attr_e( 'Your request was sent.', 'wpml-translation-management' ); ?>"
-								 data-action="<?php echo 'wpml_check_batch_status'; ?>"
-								 data-nonce="<?php echo wp_create_nonce( 'wpml_check_batch_status' ); ?>"/>
-					<input type="hidden" class="group-check-batch-id" value="<%= TJ.tp_batch_id%>"/>
-				</div>
-				<% } %>
 			</div>
 			<div class="buttons">
 				<div href="#" class="button-secondary group-action group-expand"><span

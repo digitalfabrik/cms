@@ -16,8 +16,13 @@ class WPML_Meta_Boxes_Post_Edit_Ajax implements IWPML_Action {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
-	public function enqueue_scripts() {
-		wp_enqueue_script( 'wpml-refresh-meta-box', ICL_PLUGIN_URL . '/dist/js/wpml-meta-box/refresh-wpml-meta-box.js' );
+	/**
+	 * @param string $hook
+	 */
+	public function enqueue_scripts( $hook ) {
+		if ( in_array( $hook, array( 'post.php', 'post-new.php', 'edit.php' ) ) ) {
+			wp_enqueue_script( 'wpml-meta-box', ICL_PLUGIN_URL . '/dist/js/wpml-meta-box/wpml-meta-box.js' );
+		}
 	}
 
 	public function render_meta_boxes_html() {

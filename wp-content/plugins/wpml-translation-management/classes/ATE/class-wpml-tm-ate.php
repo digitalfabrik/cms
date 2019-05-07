@@ -3,6 +3,8 @@
  * @author OnTheGo Systems
  */
 class WPML_TM_ATE {
+	const SITE_ID_SCOPE = 'ate';
+
 	private $translation_method_ate_enabled;
 
 	public function is_translation_method_ate_enabled() {

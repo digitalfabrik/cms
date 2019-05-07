@@ -3,8 +3,9 @@
 abstract class WPML_Wizard extends WPML_Twig_Template_Loader {
 
 	const TEMPLATE_PATH = '/templates/wizard';
-	const NONCE = 'wpml_wizard_fetch_content';
+	const NONCE         = 'wpml_wizard_fetch_content';
 
+	/** @var array $model */
 	private $model = array();
 
 	public function __construct() {
@@ -25,18 +26,34 @@ abstract class WPML_Wizard extends WPML_Twig_Template_Loader {
 		return $this->get_template()->show( $this->model, 'wizard.twig' );
 	}
 
+	/**
+	 * @param string $slug
+	 * @param string $title
+	 */
 	protected function add_step( $slug, $title ) {
-		$this->model['steps'][] = array( 'slug' => $slug, 'title' => $title );
+		$this->model['steps'][] = array(
+			'slug'  => $slug,
+			'title' => $title,
+		);
 	}
 
+	/**
+	 * @param string $current_step_slug
+	 */
 	protected function set_current_step( $current_step_slug ) {
-		$this->model['current_step_slug' ] = $current_step_slug;
+		$allowed_step_slugs = wp_list_pluck( $this->model['steps'], 'slug' );
+
+		if ( ! in_array( $current_step_slug, $allowed_step_slugs, true ) ) {
+			$current_step_slug = reset( $allowed_step_slugs );
+		}
+
+		$this->model['current_step_slug'] = $current_step_slug;
 	}
 
 	protected function initialize_strings() {
 		$this->model['strings'] = array(
-			'back' => __( '<<< Back', 'sitepress' ),
-			'next' => __( 'Next >>>', 'sitepress' ),
+			'back'     => __( '<<< Back', 'sitepress' ),
+			'next'     => __( 'Next >>>', 'sitepress' ),
 			'finished' => __( 'Finished', 'sitepress' ),
 		);
 	}

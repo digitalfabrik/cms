@@ -55,7 +55,7 @@ class WPML_Custom_Types_Translation_UI {
 			?>
 			<div
 				class="wpml-flex-table-cell text-center <?php echo $this->translation_option_class_names[ $value ]; ?>"
-				data-header="<?php esc_attr( $label ) ?>">
+				data-header="<?php echo esc_attr( $label ) ?>">
 				<input type="radio" name="<?php echo $radio_name; ?>"
 				       value="<?php echo esc_attr( $value ); ?>" <?php echo $disabled_state_for_mode['html_attribute'] ?>
 					<?php checked( $value, $current_translation_mode ) ?> />

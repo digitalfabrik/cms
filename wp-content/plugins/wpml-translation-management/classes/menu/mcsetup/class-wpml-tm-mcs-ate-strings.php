@@ -42,13 +42,12 @@ class WPML_TM_MCS_ATE_Strings {
 				'button' => __( 'Request activation', 'wpml-translation-management' ),
 			),
 			WPML_TM_ATE_Authentication::AMS_STATUS_ENABLED => array(
-				'type'   => 'warning',
+				'type'   => 'info',
 				'message'   => array(
-					'status' => __( 'Advanced Translation Editor is enabled but not active yet', 'wpml-translation-management' ),
-					'text'   => __( 'You should have received an email with directions to activate the service.',
-					                'wpml-translation-management' ),
+					'status' => __( 'Advanced Translation Editor is being activated', 'wpml-translation-management' ),
+					'text'   => '',
 				),
-				'button' => __( 'Resend activation email', 'wpml-translation-management' ),
+				'button' => '',
 			),
 			WPML_TM_ATE_Authentication::AMS_STATUS_ACTIVE  => array(
 				'type'   => 'success',
@@ -73,7 +72,7 @@ class WPML_TM_MCS_ATE_Strings {
 	 * @return string|WP_Error
 	 * @throws \InvalidArgumentException
 	 */
-	private function get_auto_login() {
+	public function get_auto_login() {
 		$shared = null;
 		if ( array_key_exists( 'shared', $this->authentication_data ) ) {
 			$shared = $this->authentication_data['shared'];
@@ -105,7 +104,7 @@ class WPML_TM_MCS_ATE_Strings {
 		}
 		$message = $this->get_status_attribute( $status, 'message' );
 
-		return '<strong>' . $message['status'] . '</strong> ' . $message['text'];
+		return '<strong>' . $message['status'] . '</strong>' . $message['text'];
 	}
 
 	/**
@@ -116,7 +115,7 @@ class WPML_TM_MCS_ATE_Strings {
 		$ate_console_link = '';
 		if ( current_user_can( WPML_Manage_Translations_Role::CAPABILITY )
 		     || $this->is_authenticated_user() ) {
-			$ate_console_link_text = __( 'Manage translator subscriptions', 'wpml-translation-management' );
+			$ate_console_link_text = __( "Advanced Translation Editor settings", 'wpml-translation-management' );
 			$ate_console_link_url  = $this->get_auto_login();
 			$ate_console_link      = '<a class="wpml-external-link js-ate-console" href="'
 			                         . $ate_console_link_url

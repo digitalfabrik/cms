@@ -9,12 +9,14 @@ class WPML_TM_ICL20_Migrate_Local {
 	private $progress;
 	private $sitepress;
 	private $status;
-	private $tp_api;
+
+	/** @var WPML_TP_Services */
+	private $tp_services;
 
 	/**
 	 * WPML_TM_ICL20 constructor.
 	 *
-	 * @param WPML_TP_API                      $tp_api
+	 * @param WPML_TP_Services                 $tp_services
 	 * @param WPML_TM_ICL20_Migration_Status   $status
 	 * @param WPML_TM_ICL20_Migration_Progress $progress
 	 * @param SitePress                        $sitepress
@@ -22,21 +24,21 @@ class WPML_TM_ICL20_Migrate_Local {
 	 * @internal param SitePress $sitepress
 	 */
 	public function __construct(
-		WPML_TP_API $tp_api,
+		WPML_TP_Services $tp_services,
 		WPML_TM_ICL20_Migration_Status $status,
 		WPML_TM_ICL20_Migration_Progress $progress,
 		SitePress $sitepress
 	) {
-		$this->tp_api    = $tp_api;
-		$this->status    = $status;
-		$this->progress  = $progress;
-		$this->sitepress = $sitepress;
+		$this->tp_services = $tp_services;
+		$this->status      = $status;
+		$this->progress    = $progress;
+		$this->sitepress   = $sitepress;
 	}
 
 	public function migrate_jobs( $table ) {
 		$result = false;
 
-		$current_service = $this->tp_api->get_current_service();
+		$current_service = $this->tp_services->get_current_service();
 
 		if ( $this->status->get_ICL_20_TS_ID() === $current_service->id ) {
 			$step = null;
@@ -70,15 +72,15 @@ class WPML_TM_ICL20_Migrate_Local {
 		$wpdb = $this->sitepress->get_wpdb();
 
 		$update = $wpdb->update( $wpdb->prefix . $table,
-		                         array(
-			                         'translator_id'       => 0,
-			                         'translation_service' => $this->status->get_ICL_20_TS_ID(),
-		                         ),
-		                         array(
-			                         'translation_service' => $this->status->get_ICL_LEGACY_TS_ID(),
-		                         ),
-		                         array( '%d', '%d' ),
-		                         array( '%d' ) );
+			array(
+				'translator_id'       => 0,
+				'translation_service' => $this->status->get_ICL_20_TS_ID(),
+			),
+			array(
+				'translation_service' => $this->status->get_ICL_LEGACY_TS_ID(),
+			),
+			array( '%d', '%d' ),
+			array( '%d' ) );
 
 		if ( false === $update ) {
 			$this->progress->log_failed_attempt( __METHOD__ . ' - ' . $wpdb->last_error );
@@ -93,7 +95,7 @@ class WPML_TM_ICL20_Migrate_Local {
 		$migrated = false;
 
 		if ( $old_index ) {
-			$current_service = $this->tp_api->get_current_service();
+			$current_service = $this->tp_services->get_current_service();
 
 			if ( $current_service && null !== $current_service->id ) {
 				$new_index = md5( $current_service->id . serialize( $current_service->custom_fields_data ) );
@@ -140,7 +142,7 @@ class WPML_TM_ICL20_Migrate_Local {
 	}
 
 	public function migrate_service( $new_token ) {
-		$current_service = $this->tp_api->get_current_service();
+		$current_service = $this->tp_services->get_current_service();
 
 		$migrated = false;
 
@@ -149,11 +151,11 @@ class WPML_TM_ICL20_Migrate_Local {
 			$this->progress->set_project_to_migrate( $old_index );
 
 			$icl20_service_id = $this->status->get_ICL_20_TS_ID();
-			$this->tp_api->select_service( $icl20_service_id,
-			                               array(
-				                               'api_token' => $new_token,
-			                               ) );
-			$active_service = $this->tp_api->get_current_service();
+			$this->tp_services->select_service( $icl20_service_id,
+				array(
+					'api_token' => $new_token,
+				) );
+			$active_service = $this->tp_services->get_current_service();
 			$migrated       = $active_service->id === $icl20_service_id;
 		}
 
@@ -163,13 +165,13 @@ class WPML_TM_ICL20_Migrate_Local {
 	}
 
 	public function rollback_service() {
-		$current_service = $this->tp_api->get_current_service();
+		$current_service = $this->tp_services->get_current_service();
 
 		$rolled_back = false;
 
 		if ( $current_service ) {
-			$this->tp_api->select_service( $this->status->get_ICL_LEGACY_TS_ID() );
-			$active_service = $this->tp_api->get_current_service();
+			$this->tp_services->select_service( $this->status->get_ICL_LEGACY_TS_ID() );
+			$active_service = $this->tp_services->get_current_service();
 			$rolled_back    = $active_service->id === $this->status->get_ICL_LEGACY_TS_ID();
 		}
 		$this->progress->set_completed_step( WPML_TM_ICL20_Migration_Progress::STEP_MIGRATE_LOCAL_SERVICE, false );

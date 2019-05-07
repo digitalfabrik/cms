@@ -18,7 +18,12 @@ class WPML_Translation_Roles_Ajax_Factory implements IWPML_AJAX_Action_Loader {
 			),
 
 			new WPML_Translator_Ajax(
-				new WPML_Translator_View( apply_filters( 'wpml_tm_allowed_source_languages', new WPML_Language_Collection( $sitepress ) ) ),
+				new WPML_Translator_View(
+					apply_filters(
+						'wpml_tm_allowed_source_languages',
+						new WPML_Language_Collection( $sitepress, array_keys( $sitepress->get_active_languages() ) )
+					)
+				),
 				new WPML_Translator_Records( $wpdb, new WPML_WP_User_Query_Factory() ),
 				new WPML_Super_Globals_Validation(),
 				new WPML_WP_User_Factory(),

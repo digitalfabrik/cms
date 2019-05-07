@@ -171,7 +171,7 @@ if ( ! class_exists( 'TranslationProxy_Basket' ) ) {
 					'hide_per_user'		=> false,
 					'dismiss_per_user'	=> false,
 					'limit_to_page'     => $limit_to_page,
-					'capability'		=> 'manage_options',
+					'capability'		=> 'manage_translations',
 				);
 				ICL_AdminNotifier::add_message( $message_args );
 

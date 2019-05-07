@@ -11,3 +11,7 @@
 		{% endfor %}
 	</ul>
 {% endfor %}
+
+{% if strings.closing_sentence %}
+	<p>{{ strings.closing_sentence|raw }}</p>
+{% endif %}

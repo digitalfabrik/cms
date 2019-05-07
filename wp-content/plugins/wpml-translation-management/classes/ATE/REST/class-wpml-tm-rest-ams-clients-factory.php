@@ -15,7 +15,8 @@ class WPML_TM_REST_AMS_Clients_Factory extends WPML_REST_Factory_Loader {
 		$auth                          = new WPML_TM_ATE_Authentication();
 		$api                           = new WPML_TM_AMS_API( $http, $auth, $endpoints );
 		$translator_activation_records = new WPML_TM_AMS_Translator_Activation_Records( new WPML_WP_User_Factory() );
+		$strings                       = new WPML_TM_MCS_ATE_Strings( $auth, $endpoints );
 
-		return new WPML_TM_REST_AMS_Clients( $api, $users, $translator_activation_records );
+		return new WPML_TM_REST_AMS_Clients( $api, $users, $translator_activation_records, $strings );
 	}
 }

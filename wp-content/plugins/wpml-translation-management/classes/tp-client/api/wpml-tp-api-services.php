@@ -38,7 +38,6 @@ class WPML_TP_API_Services extends WPML_TP_Abstract_API {
 	 */
 	public function get_all( $reload = false ) {
 		$this->endpoint = self::ENDPOINT_SERVICES;
-
 		$translation_services = $reload ? null : $this->get_cached_services();
 
 		if ( ! $translation_services ) {

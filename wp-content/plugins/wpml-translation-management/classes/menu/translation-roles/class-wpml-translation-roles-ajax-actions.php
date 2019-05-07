@@ -39,6 +39,7 @@ abstract class WPML_Translation_Roles_Ajax extends WPML_TM_AJAX implements IWPML
 	public function remove_translation_role() {
 		if ( $this->is_valid_request( $this->get_nonce() ) && $user = $this->get_user() ) {
 			$user->remove_cap( $this->get_capability() );
+			$this->on_remove_role( $user );
 			do_action( 'wpml_tm_ate_synchronize_' . $this->get_role() . 's' );
 			wp_send_json_success();
 		} else {
@@ -145,5 +146,6 @@ abstract class WPML_Translation_Roles_Ajax extends WPML_TM_AJAX implements IWPML
 	abstract public function get_capability();
 	abstract public function get_user_row_template();
 	abstract public function on_user_created( WP_User $user );
+	abstract public function on_remove_role( WP_User $user );
 	abstract public function send_instructions_to_user( WP_User $user );
 }

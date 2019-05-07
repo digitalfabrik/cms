@@ -12,15 +12,6 @@
         </div>
     </td>
     <td class="column-email">{{ user.user_email }}</td>
-    {% if strings.ate is defined %}
-        <td class="column-subscription">
-            {% if user.subscription %}
-                {{ strings.yes }}
-            {% else %}
-                {{ strings.no }}
-            {% endif %}
-        </td>
-    {% endif %}
     <td class="column-languages">
         {% for from_lang, to_langs in user.language_pairs %}
             <div>

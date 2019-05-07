@@ -101,15 +101,15 @@
 					self.set('cache', cache, {silent: true});
 				}else {
                     return jQuery.ajax({
-                        type: 'POST',
-                        url: ajaxurl,
-                        data: requestData,
-						success: function (json) {
-                            cache = {};
-                            cache[hash] = json;
-                            self.set('cache', cache, {silent: true});
-                            self.successfulResponse(json, self);
-                        }
+	                    type: 'POST',
+	                    url: ajaxurl,
+	                    data: requestData,
+	                    success: function (json) {
+		                    cache = {};
+		                    cache[hash] = json;
+		                    self.set('cache', cache, {silent: true});
+		                    self.successfulResponse(json, self);
+	                    }
                     });
                 }
 			},

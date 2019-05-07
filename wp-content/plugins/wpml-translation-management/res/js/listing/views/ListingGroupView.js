@@ -72,7 +72,6 @@
 			events           : {
 				"click .group-expand"  : "open_group_click",
 				"click .group-collapse": "close_group_click",
-				'click .group-check': "groupCheck"
 			},
 			open_group_click : function (e) {
 				var self = this;
@@ -105,48 +104,6 @@
 					}
 				);
 				self.$el.find(".listing-heading-summary").show();
-			},
-			groupCheck: function (e) {
-				var self = this;
-				var btn = self.$el.find('.group-check');
-				var batchID = btn.siblings('input.group-check-batch-id');
-				var batchGroup = btn.closest('.listing-heading-inner-wrap');
-				var ajaxLoader = jQuery(icl_ajxloaderimg).insertBefore(btn);
-				var ajaxAction = btn.data('action');
-				var ajaxNonce = btn.data('nonce');
-				var syncSentText = btn.data('message-sent');
-				var requestSendingText = btn.data('message-request-sending');
-				var requestSentText = btn.data('message-request-sent');
-				var messageWrap = batchGroup.find(".wpml_tp_sync_status");
-
-				e.preventDefault();
-
-				btn.prop({
-					disabled: true,
-					value: requestSendingText
-				});
-
-				jQuery.ajax({
-					type:     "POST",
-					url:      ajaxurl,
-					data:     {
-						'action':   ajaxAction,
-						'nonce':    ajaxNonce,
-						'batch_id': batchID.val()
-					},
-					success:  function (response) {
-						if (response.success) {
-							messageWrap.text(syncSentText);
-						} else {
-							messageWrap.text(response.data);
-						}
-					},
-					complete: function () {
-						ajaxLoader.remove();
-						messageWrap.show().delay(5000).fadeOut('slow');
-						btn.prop({value: requestSentText});
-					}
-				});
 			}
 		}
 	);

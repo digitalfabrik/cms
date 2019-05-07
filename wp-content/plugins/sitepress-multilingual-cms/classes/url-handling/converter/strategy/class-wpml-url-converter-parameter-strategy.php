@@ -7,6 +7,10 @@ class WPML_URL_Converter_Parameter_Strategy extends WPML_URL_Converter_Abstract_
 	}
 
 	public function convert_url_string( $source_url, $lang_code ) {
+		if ( $this->skip_convert_url_string( $source_url, $lang_code ) ) {
+			return $source_url;
+		}
+
 		if ( ! $lang_code || $lang_code === $this->default_language ) {
 			$lang_code = '';
 		}
@@ -23,7 +27,7 @@ class WPML_URL_Converter_Parameter_Strategy extends WPML_URL_Converter_Abstract_
 		$url_parts['query'] = http_build_query( $query_args );
 		$converted_url      = http_build_url( $url_parts );
 
-		return $this->slash_helper->maybe_user_trailingslashit( $converted_url, 'trailingslashit' );
+		return $this->slash_helper->maybe_user_trailingslashit( $converted_url );
 	}
 
 	public function convert_admin_url_string( $source_url, $lang ) {
@@ -71,7 +75,7 @@ class WPML_URL_Converter_Parameter_Strategy extends WPML_URL_Converter_Abstract_
 			$source_url = str_replace( '?' . $query, '', $source_url );
 		}
 
-		$source_url = $this->slash_helper->maybe_user_trailingslashit( $source_url, 'trailingslashit' );
+		$source_url = $this->slash_helper->maybe_user_trailingslashit( $source_url );
 
 		if ( ! empty( $query ) ) {
 			$source_url .= '?' . untrailingslashit( $query );

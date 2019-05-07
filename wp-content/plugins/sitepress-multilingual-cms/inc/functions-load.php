@@ -91,6 +91,10 @@ function wpml_load_post_translation( $is_admin, $settings ) {
 }
 
 function wpml_load_request_handler( $is_admin, $active_language_codes, $default_language ) {
+	/**
+	 * @var WPML_Request       $wpml_request_handler
+	 * @var WPML_URL_Converter $wpml_url_converter
+	 */
 	global $wpml_request_handler, $wpml_url_converter;
 
 	if ( ! isset( $wpml_request_handler ) ) {
@@ -101,7 +105,11 @@ function wpml_load_request_handler( $is_admin, $active_language_codes, $default_
 	$wpml_cookie = new WPML_Cookie();
 	$wp_api      = new WPML_WP_API();
 
-	if ( $is_admin === true ) {
+	$rest_request_analyze = new WPML_REST_Request_Analyze( $wpml_url_converter, $active_language_codes );
+	$is_backend_rest      = $rest_request_analyze->is_rest_request()
+	                        && ! $rest_request_analyze->should_load_on_frontend();
+
+	if ( $is_admin === true || $is_backend_rest ) {
 		$wpml_request_handler = new WPML_Backend_Request(
 			$wpml_url_converter,
 			$active_language_codes,
@@ -406,6 +414,41 @@ function wpml_show_user_options() {
 	$user = new WP_User( $user_id );
 	$user_options_menu = new WPML_User_Options_Menu( $sitepress, $user );
 	echo $user_options_menu->render();
+}
+
+/**
+ * @return \WPML_Upgrade_Command_Factory
+ */
+function wpml_get_upgrade_command_factory() {
+	static $factory;
+	if ( ! $factory ) {
+		$factory = new WPML_Upgrade_Command_Factory();
+	}
+
+	return $factory;
+}
+
+function wpml_get_upgrade_schema() {
+	global $wpdb;
+	static $instance;
+
+	if ( ! $instance ) {
+		$instance = new WPML_Upgrade_Schema( $wpdb );
+	}
+
+	return $instance;
+}
+
+/**
+ * @param string      $class_name   A class implementing \IWPML_Upgrade_Command.
+ * @param array       $dependencies An array of dependencies passed to the `$class_name`'s constructor.
+ * @param array       $scopes       An array of scope values. Accepted values are: `\WPML_Upgrade::SCOPE_ADMIN`, `\WPML_Upgrade::SCOPE_AJAX`, and `\WPML_Upgrade::SCOPE_FRONT_END`.
+ * @param string|null $method       The method to call to run the upgrade (otherwise, it calls the "run" method),
+ *
+ * @return \WPML_Upgrade_Command_Definition
+ */
+function wpml_create_upgrade_command_definition( $class_name, array $dependencies, array $scopes, $method = null ) {
+	return wpml_get_upgrade_command_factory()->create_command_definition( $class_name, $dependencies, $scopes, $method );
 }
 
 if ( is_admin() ) {

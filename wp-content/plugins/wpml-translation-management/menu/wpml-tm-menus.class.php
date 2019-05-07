@@ -69,7 +69,7 @@ abstract class WPML_TM_Menus {
             $href = 'admin.php?page=' . WPML_TM_FOLDER . $this->get_page_slug() . '&sm=' . $id;
             ?>
             <a class="<?php echo esc_attr( $class ); ?>" href="<?php echo esc_attr( $href ); ?>">
-                <?php echo $caption; ?>
+	            <?php echo $caption; ?>
             </a>
         <?php
         }
@@ -106,12 +106,12 @@ abstract class WPML_TM_Menus {
     {
         if ($this->tab_items) {
             ?>
-            <p class="icl-translation-management-menu wpml-tabs">
+            <div class="icl-translation-management-menu wpml-tabs">
                 <?php
                 $this->build_tabs();
                 ?>
-            </p>
-            <div class="icl_tm_wrap">
+            </div>
+            <div class="icl_tm_wrap wpml-wrap">
                 <?php
                 $this->build_content();
                 ?>
@@ -122,10 +122,11 @@ abstract class WPML_TM_Menus {
 
 	public function build_content_dashboard_fetch_translations_box() {
 		if ( TranslationProxy::is_current_service_active_and_authenticated() ) {
-			$tp_polling_box = new WPML_TP_Polling_Box();
-			echo $tp_polling_box->render();
+			$tm_polling_box = new WPML_TM_Polling_Box();
+			echo $tm_polling_box->render();
 		}
 	}
+
 
     /**
      * Used only by unit tests at the moment

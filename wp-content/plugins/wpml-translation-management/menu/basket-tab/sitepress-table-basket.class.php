@@ -10,7 +10,7 @@ class SitePress_Table_Basket extends SitePress_Table {
         wp_enqueue_script(
             'wpml-tm-translation-basket-and-options',
             WPML_TM_URL . '/res/js/translation-basket-and-options.js',
-            array( 'wpml-tm-scripts', 'jquery-ui-progressbar', 'jquery-ui-datepicker', 'wpml-tooltip' ),
+            array( 'wpml-tm-scripts', 'jquery-ui-progressbar', 'jquery-ui-datepicker', 'wpml-tooltip', 'wpml-tm-progressbar' ),
             WPML_TM_VERSION
         );
 
@@ -34,17 +34,58 @@ class SitePress_Table_Basket extends SitePress_Table {
 	    $message = esc_html_x( 'You are about to translate duplicated posts.', '1/2 Confirm to disconnect duplicates', 'wpml-translation-management' ) . "\n";
 	    $message .= esc_html_x( 'These items will be automatically disconnected from originals, so translation is not lost when you update the originals.', '2/2 Confirm to disconnect duplicates', 'wpml-translation-management' );
 
+
+	    $translation_dashboard_url = admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php' );
+	    $translation_dashboard_text = esc_html__( 'Translation Dashboard', 'wpml-translation-management' );
+	    $translation_dashboard_link = '<a href="'.esc_url( $translation_dashboard_url ) .'">' . $translation_dashboard_text . '</a>';
+
+	    $translation_jobs_url = admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=jobs' );
+	    $translation_jobs_text = esc_html__( 'Translation Jobs', 'wpml-translation-management' );
+	    $translation_jobs_link = '<a href="'.esc_url( $translation_jobs_url ) .'">' . $translation_jobs_text . '</a>';
+
+	    $translation_notifications_url = admin_url( 'admin.php?page=' . WPML_TM_FOLDER . WPML_Translation_Management::PAGE_SLUG_SETTINGS . '&sm=notifications' );
+	    $translation_notifications_text = esc_html__( 'WPML->Settings->Translation notifications', 'wpml-translation-management' );
+	    $translation_notifications_link = '<a href="'.esc_url( $translation_notifications_url ) .'">' . $translation_notifications_text . '</a>';
+
+	    $jobs_committed_message_local = '<p>' . esc_html__( 'All done. What happens next?', 'wpml-translation-management' ) . '</p>';
+	    $jobs_committed_message_local .= '<ul>';
+	    $jobs_committed_message_local .= '<li>' . esc_html__( 'WPML sent emails to the translators, telling them about the new work from you.', 'wpml-translation-management' ) . '</li>';
+	    $jobs_committed_message_local .= '<li>' . sprintf(
+			    esc_html__( 'Your translators should log-in to their accounts in this site and go to %sWPML->Translations%s. There, they will see the jobs that are waiting for them.',
+                    'wpml-translation-management' ),
+                '<strong>', '</strong>'
+            ) . '</li>';
+	    $jobs_committed_message_local .= '<li>' . sprintf(
+			    esc_html__( 'You can always follow the progress of translation in the %s. For a more detailed view and to cancel jobs, visit the %s list.',
+                    'wpml-translation-management' ),
+			    $translation_dashboard_link,
+			    $translation_jobs_link
+            ) . '</li>';
+	    $jobs_committed_message_local .= '<li>' . sprintf(
+			    esc_html__( 'You can control email notifications to translators and yourself in %s.',
+                    'wpml-translation-management' ),
+			    $translation_notifications_link
+            ) . '</li>';
+	    $jobs_committed_message_local .= '</ul>';
+
+	    $jobs_committed_message_local_emails_did_not_sent = '<li><strong>' . esc_html__( 'WPML could not send notification emails to the translators, telling them about the new work from you.', 'wpml-translation-management' ).'</strong></li>';
+
+	    $jobs_committed_message = '<p>' . esc_html__( 'Jobs committed...', 'wpml-translation-management' ) . '</p>';
+	    $jobs_committed_message .= '<p>';
+	    $jobs_committed_message .= sprintf(
+		    esc_html__(
+			    'You can check current status of this job in %s.',
+			    'wpml-translation-management'
+		    ), $translation_jobs_link
+	    );
+	    $jobs_committed_message .= '</p>';
+
         $tm_basket_data = array(
             'nonce' => array(),
             'strings' => array(
-                'done_msg' => __( "Done! ", 'wpml-translation-management' ),
-                'jobs_committed' => sprintf(
-                    __(
-                        "<p>Jobs committed...</p><p>You can check current status of this job in  <a href='%s'>Translation Jobs tab</a>.</p>",
-                        'wpml-translation-management'
-                    ),
-                    admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=jobs' )
-                ),
+                'jobs_committed_local' => $jobs_committed_message_local,
+                'jobs_emails_local_did_not_sent' => $jobs_committed_message_local_emails_did_not_sent,
+                'jobs_committed' => $jobs_committed_message,
                 'jobs_committing' => __( 'Committing jobs...', 'wpml-translation-management' ),
                 'error_occurred' => __( 'An error occurred:', 'wpml-translation-management' ),
                 'error_not_allowed' => __( 'You are not allowed to run this action.', 'wpml-translation-management' ),
@@ -53,6 +94,7 @@ class SitePress_Table_Basket extends SitePress_Table {
                 'rollbacks' => __( 'Rollback jobs...', 'wpml-translation-management' ),
                 'rolled' => __( 'Batch rolled back', 'wpml-translation-management' ),
                 'errors' => __( 'Errors:', 'wpml-translation-management' ),
+                'sending_batch' => __( 'Sending batch %s to translation.', 'wpml-translation-management' ),
             ),
 	        'tmi_message' => $message,
         );
@@ -88,6 +130,7 @@ class SitePress_Table_Basket extends SitePress_Table {
 			'type'      => __( 'Type', 'wpml-translation-management' ),
 			'status'    => __( 'Status', 'wpml-translation-management' ),
 			'languages' => __( 'Languages', 'wpml-translation-management' ),
+			'words'     => __( 'Words to translate', 'wpml-translation-management' ),
 			'delete'    => '',
 		);
 
@@ -105,6 +148,9 @@ class SitePress_Table_Basket extends SitePress_Table {
 				break;
 			case 'status':
 				return $this->get_post_status_label( $item[ $column_name ] );
+				break;
+			case 'words':
+				return $item[ $column_name ];
 				break;
 			case 'languages':
 				$target_languages_data = $item[ 'target_languages' ];
@@ -147,7 +193,7 @@ class SitePress_Table_Basket extends SitePress_Table {
 
 		$new_qs = esc_attr( http_build_query( $qs ) );
 
-		return sprintf( '<a href="?%s" title="%s" class="otgs-ico-delete wpml-tm-delete"></a>',
+		return sprintf( '<a href="?%s" title="%s" class="otgs-ico-cancel wpml-tm-delete"></a>',
 			$new_qs, __( 'Remove from Translation Basket', 'wpml-translation-management' ) );
 	}
 
@@ -161,6 +207,7 @@ class SitePress_Table_Basket extends SitePress_Table {
 			'type'      => array( 'type', false ),
 			'status'    => array( 'status', false ),
 			'languages' => array( 'languages', false ),
+			'words'     => array( 'words', false ),
 		);
 
 		return $sortable_columns;
@@ -172,14 +219,32 @@ class SitePress_Table_Basket extends SitePress_Table {
 	 * @param $item_type
 	 */
 	private function build_basket_item( $post_id, $data, $item_type ) {
-		$this->items[ $item_type . '|' . $post_id ][ 'ID' ]               = $post_id;
-		$this->items[ $item_type . '|' . $post_id ][ 'title' ]            = $data[ 'post_title' ];
-		$this->items[ $item_type . '|' . $post_id ][ 'notes' ]            = isset( $data[ 'post_notes' ] ) ? $data[ 'post_notes' ] : "";
-		$this->items[ $item_type . '|' . $post_id ][ 'type' ]             = $data[ 'post_type' ];
-		$this->items[ $item_type . '|' . $post_id ][ 'status' ]           = isset( $data[ 'post_status' ] ) ? $data[ 'post_status' ] : "";
-		$this->items[ $item_type . '|' . $post_id ][ 'source_language' ]  = $data[ 'from_lang_string' ];
-		$this->items[ $item_type . '|' . $post_id ][ 'target_languages' ] = $data[ 'to_langs_string' ];
-		$this->items[ $item_type . '|' . $post_id ][ 'item_type' ]        = $item_type;
+		$this->items[ $item_type . '|' . $post_id ]['ID']               = $post_id;
+		$this->items[ $item_type . '|' . $post_id ]['title']            = $data['post_title'];
+		$this->items[ $item_type . '|' . $post_id ]['notes']            = isset( $data['post_notes'] ) ? $data['post_notes'] : "";
+		$this->items[ $item_type . '|' . $post_id ]['type']             = $data['post_type'];
+		$this->items[ $item_type . '|' . $post_id ]['status']           = isset( $data['post_status'] ) ? $data['post_status'] : "";
+		$this->items[ $item_type . '|' . $post_id ]['source_language']  = $data['from_lang_string'];
+		$this->items[ $item_type . '|' . $post_id ]['target_languages'] = $data['to_langs_string'];
+		$this->items[ $item_type . '|' . $post_id ]['item_type']        = $item_type;
+		$this->items[ $item_type . '|' . $post_id ]['words']            = $this->get_words_count( $post_id, $item_type, count( $data['to_langs'] ) );
+	}
+
+	/**
+	 * @param $element_id
+	 * @param $element_type
+     * @param $languages_count
+	 */
+	private function get_words_count( $element_id, $element_type, $languages_count ) {
+		$records_factory        = new WPML_TM_Word_Count_Records_Factory();
+		$single_process_factory = new WPML_TM_Word_Count_Single_Process_Factory();
+		$st_package_factory     = class_exists( 'WPML_ST_Package_Factory' ) ? new WPML_ST_Package_Factory() : null;
+		$element_provider       = new WPML_TM_Translatable_Element_Provider( $records_factory->create(), $single_process_factory->create(), $st_package_factory );
+		$translatable_element   = $element_provider->get_from_type( $element_type, $element_id );
+
+		$count = null !== $translatable_element ? $translatable_element->get_words_count() : 0 ;
+
+		return $count * $languages_count;
 	}
 
 	/**
@@ -310,11 +375,63 @@ class SitePress_Table_Basket extends SitePress_Table {
 			?>
 			<a href="admin.php?page=<?php echo WPML_TM_FOLDER ?>/menu/main.php&sm=basket&clear_basket=1&clear_basket_nonce=<?php echo $clear_basket_nonce; ?>"
 			   class="button-secondary wpml-tm-clear-basket-button" name="clear-basket">
-				<i class="otgs-ico-delete"></i>
+				<i class="otgs-ico-cancel"></i>
 				<?php _e( 'Clear Basket', 'wpml-translation-management' ); ?>
 			</a>
 			<?php
 		}
+
+		$this->display_total_word_count_info();
+	}
+
+	private function display_total_word_count_info() {
+
+		$grand_total_words_count = 0;
+
+		if ( $this->items ) {
+			foreach ( $this->items as $item ) {
+				$grand_total_words_count += $item['words'];
+			}
+		}
+
+		$service = TranslationProxy::get_current_service();
+		$tm_ate  = new WPML_TM_ATE();
+		$is_ate_enabled = $tm_ate->is_translation_method_ate_enabled();
+		$display_message = '';
+
+		if ( $is_ate_enabled ) {
+			$ate_name     = __( 'Advanced Translation Editor', 'wpml-translation-management' );
+			$ate_doc_link = 'https://wpml.org/documentation/translating-your-contents/advanced-translation-editor/';
+		}
+
+		if ( $service && $is_ate_enabled ) {
+			$service_message = __( '%s and the %s use a translation memory, which can reduce the number of words you need to translate.', 'wpml-translation-management' );
+			$display_message = sprintf( $service_message,
+				'<a class="wpml-external-link" href="' . $service->doc_url . '" target="blank">' . $service->name . '</a>',
+				'<a class="wpml-external-link" href="' . $ate_doc_link . '" target="blank">' . $ate_name . '</a>'
+			);
+		} elseif ( $service ) {
+			$service_message = __( '%s uses a translation memory, which can reduce the number of words you need to translate.', 'wpml-translation-management' );
+			$display_message = sprintf( $service_message, '<a class="wpml-external-link" href="' . $service->doc_url . '" target="blank">' . $service->name . '</a>' );
+		} elseif ( $is_ate_enabled ) {
+			$service_message = __( 'The %s uses a translation memory, which can reduce the number of words you need to translate.', 'wpml-translation-management' );
+			$display_message = sprintf( $service_message, '<a class="wpml-external-link" href="' . $ate_doc_link . '" target="blank">' . $ate_name . '</a>' );
+		}
+
+		?>
+        <div class="words-count-summary">
+            <p class="words-count-summary-info">
+                <strong><?php _e( 'The number of words WPML will send to translation:', 'wpml-translation-management' ); ?></strong>
+	            <span class="words-count-total"><?php echo $grand_total_words_count; ?></span>
+            </p>
+            <?php if( $display_message ){ ?>
+                <p class="words-count-summary-ts">
+                    <?php echo $display_message; ?>
+                </p>
+            <?php } ?>
+        </div>
+
+		<?php
 	}
 
 }

@@ -24,7 +24,7 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 	}
 
 	function save_translation() {
-		global $wpdb, $sitepress, $ICL_Pro_Translation, $iclTranslationManagement, $wpml_post_translations;
+		global $wpdb, $sitepress, $iclTranslationManagement, $wpml_post_translations;
 
 		$new_post_id         = false;
 		$is_incomplete       = false;
@@ -90,18 +90,22 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 				if ( $is_external ) {
 					$this->save_external( $element_type_prefix, $job );
 				} else {
-					if ( ! is_null( $element_id ) ) {
+					if ( $element_id ) {
 						$postarr['ID'] = $_POST['post_ID'] = $element_id;
 					} else {
 						$postarr['post_status'] = ! $sitepress->get_setting( 'translated_document_status' ) ? 'draft' : $original_post->post_status;
 					}
+
 					foreach ( $job->elements as $field ) {
 						switch ( $field->field_type ) {
 							case 'title':
 								$postarr['post_title'] = $this->decode_field_data( $field->field_data_translated, $field->field_format );
 								break;
 							case 'body':
-								$postarr['post_content'] = $this->decode_field_data( $field->field_data_translated, $field->field_format );
+								$postarr['post_content'] = $this->decode_field_data(
+									$field->field_data_translated,
+									$field->field_format
+								);
 								break;
 							case 'excerpt':
 								$postarr['post_excerpt'] = $this->decode_field_data( $field->field_data_translated, $field->field_format );
@@ -156,15 +160,15 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 					$postarr = apply_filters( 'wpml_pre_save_pro_translation', $postarr, $job );
 
 					// it's an update and user do not want to translate urls so do not change the url
-					if ( isset( $element_id ) && $sitepress->get_setting( 'translated_document_page_url' ) !== 'translate' ) {
-						$postarr['post_name'] = $wpdb->get_var( $wpdb->prepare( "SELECT post_name
+					if ( $element_id ) {
+						if ( $sitepress->get_setting( 'translated_document_page_url' ) !== 'translate' ) {
+							$postarr['post_name'] = $wpdb->get_var( $wpdb->prepare( "SELECT post_name
 																				 FROM {$wpdb->posts}
 																			     WHERE ID=%d
 																			     LIMIT 1",
-							$element_id ) );
-					}
+								$element_id ) );
+						}
 
-					if ( isset( $element_id ) ) { // it's an update so dont change post date
 						$existing_post            = get_post( $element_id );
 						$postarr['post_date']     = $existing_post->post_date;
 						$postarr['post_date_gmt'] = $existing_post->post_date_gmt;
@@ -186,11 +190,6 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 					do_action( 'icl_pro_translation_saved', $new_post_id, $data['fields'], $job );
 					do_action( 'wpml_translation_job_saved', $new_post_id, $data['fields'], $job );
 
-					if ( $ICL_Pro_Translation ) {
-						/** @var WPML_Pro_Translation $ICL_Pro_Translation */
-						$ICL_Pro_Translation->fix_links_to_translated_content( $new_post_id, $job->language_code );
-					}
-
 					// update body translation with the links fixed
 					$new_post_content = $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM {$wpdb->posts} WHERE ID=%d", $new_post_id ) );
 					foreach ( $job->elements as $job_element ) {
@@ -203,19 +202,6 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 							) );
 
 							break;
-						}
-					}
-
-					// set stickiness
-					//is the original post a sticky post?
-					$sticky_posts       = get_option( 'sticky_posts' );
-					$is_original_sticky = $original_post->post_type == 'post' && in_array( $original_post->ID, $sticky_posts );
-
-					if ( $is_original_sticky && $sitepress->get_setting( 'sync_sticky_flag' ) ) {
-						stick_post( $new_post_id );
-					} else {
-						if ( $original_post->post_type == 'post' && ! is_null( $element_id ) ) {
-							unstick_post( $new_post_id ); //just in case - if this is an update and the original post stickiness has changed since the post was sent for translation
 						}
 					}
 
@@ -250,7 +236,7 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 						$link = get_permalink( $new_post_id );
 					}
 
-					if ( is_null( $element_id ) ) {
+					if ( ! $element_id ) {
 						$wpdb->delete( $wpdb->prefix . 'icl_translations', array(
 							'element_id'   => $new_post_id,
 							'element_type' => 'post_' . $postarr['post_type']
@@ -259,6 +245,19 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 						$user_message = __( 'Translation added: ', 'wpml-translation-management' ) . '<a href="' . $link . '">' . $postarr['post_title'] . '</a>.';
 					} else {
 						$user_message = __( 'Translation updated: ', 'wpml-translation-management' ) . '<a href="' . $link . '">' . $postarr['post_title'] . '</a>.';
+					}
+
+					// set stickiness
+					//is the original post a sticky post?
+					$sticky_posts       = get_option( 'sticky_posts' );
+					$is_original_sticky = $original_post->post_type == 'post' && in_array( $original_post->ID, $sticky_posts );
+
+					if ( $is_original_sticky && $sitepress->get_setting( 'sync_sticky_flag' ) ) {
+						stick_post( $new_post_id );
+					} else {
+						if ( $original_post->post_type == 'post' && ! is_null( $element_id ) ) {
+							unstick_post( $new_post_id ); //just in case - if this is an update and the original post stickiness has changed since the post was sent for translation
+						}
 					}
 
 					$this->add_message( array(
@@ -297,7 +296,7 @@ class WPML_Save_Translation_Data_Action extends WPML_Translation_Job_Helper_With
 				$this->translate_link_targets_in_posts->new_content();
 				$this->translate_link_targets_in_strings->new_content();
 
-				if ( ! defined( 'XMLRPC_REQUEST' ) && ! defined( 'DOING_AJAX' ) && ! isset( $_POST['xliff_upload'] ) ) {
+				if ( ! defined( 'REST_REQUEST' ) && ! defined( 'XMLRPC_REQUEST' ) && ! defined( 'DOING_AJAX' ) && ! isset( $_POST['xliff_upload'] ) ) {
 					$action_type           = is_null( $element_id ) ? 'added' : 'updated';
 					$element_id            = is_null( $element_id ) ? $new_post_id : $element_id;
 					$this->redirect_target = admin_url( sprintf( 'admin.php?page=%s&%s=%d&element_type=%s', WPML_TM_FOLDER . '/menu/translations-queue.php', $action_type, $element_id, $element_type_prefix ) );

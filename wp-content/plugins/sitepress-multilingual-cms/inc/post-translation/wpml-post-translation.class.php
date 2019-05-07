@@ -12,14 +12,6 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	protected $post_translation_sync;
 
 	/**
-	 * @var int[] $filtered_sticky_posts
-	 * @used-by \WPML_Post_Translation::pre_option_sticky_posts_filter to store sticky post_ids that were filtered
-	 *                                                                 for display but might have to be added back
-	 *                                                                 to an update of the option
-	 */
-	private $filtered_sticky_posts = array();
-
-	/**
 	 * @var WPML_Debug_BackTrace
 	 */
 	private $debug_backtrace;
@@ -40,78 +32,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	public function init() {
 		if ( $this->is_setup_complete() ) {
 			add_action ( 'save_post', array( $this, 'save_post_actions' ), 100, 2 );
-			add_filter( 'pre_update_option_sticky_posts', array( $this, 'pre_update_option_sticky_posts' ), 10, 1 );
 		}
-	}
-
-	/**
-	 * Filters the sticky posts option. If synchronization of sticky posts is activated it will translated
-	 * wrong language values, if deactivated filter out wrong language values.
-	 *
-	 * @param array     $posts
-	 * @param SitePress $sitepress
-	 *
-	 * @used-by \SitePress::option_sticky_posts which uses this function to filter the sticky posts array after
-	 *                                          having removed WPML per-language filtering on the sticky posts option.
-	 *
-	 * @return int[]|false
-	 */
-	public function pre_option_sticky_posts_filter( $posts, SitePress $sitepress ) {
-		if ( 'all' === $sitepress->get_current_language() ) {
-			return false;
-		}
-
-		/** @var array $posts */
-		$posts                       = $posts ? $posts : get_option( 'sticky_posts' );
-		$this->filtered_sticky_posts = array();
-		if ( $posts ) {
-			$current_lang = $sitepress->get_current_language();
-			$this->prefetch_ids( $posts );
-			if ( $sitepress->get_setting( 'sync_sticky_flag' ) ) {
-				$unfiltered = $posts;
-				foreach ( $posts as $index => $sticky_post_id ) {
-					$posts[ $index ] = $this->element_id_in(
-						$sticky_post_id,
-						$current_lang,
-						true
-					);
-				}
-				if ( $unfiltered !== $posts ) {
-					update_option( 'sticky_posts',
-						array_values( array_unique( array_filter( array_merge( $posts, $unfiltered ) ) ) )
-					);
-				}
-			} else {
-				foreach ( $posts as $index => $sticky_post_id ) {
-					if ( $this->get_element_lang_code( $sticky_post_id ) !== $current_lang ) {
-						$this->filtered_sticky_posts[] = $sticky_post_id;
-						unset( $posts[ $index ] );
-					}
-				}
-			}
-			$posts = array_values( array_unique( array_filter( $posts ) ) );
-		}
-
-		return $posts;
-	}
-
-	/**
-	 * @param int[] $posts updated sticky posts option
-	 *
-	 * @uses \WPML_Post_Translation::$filtered_sticky_posts to retrieve those sticky post ids that might have been
-	 *                                                      filtered at option retrieval by \WPML_Post_Translation::pre_option_sticky_posts_filter but need to be
-	 *                                                      in the updated option, as it stores sticky posts for all languages
-	 *
-	 * @return array sticky posts option with previously filtered values added
-	 *
-	 * @hook pre_update_option_sticky_posts
-	 */
-	public function pre_update_option_sticky_posts( $posts ) {
-		$updated_sticky_list         = array_values( array_unique( array_filter( array_merge( $posts,
-		                                                                                      $this->filtered_sticky_posts ) ) ) );
-		$this->filtered_sticky_posts = array();
-
-		return $updated_sticky_list;
 	}
 
 	public function get_original_post_status( $trid, $source_lang_code = null ) {
@@ -258,7 +179,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		}
 		icl_cache_clear( $post_vars['post_type'] . 's_per_language', true );
 		wp_defer_term_counting( false );
-		if ( $post_vars['post_type'] !== 'nav_menu_item' ) {
+		if ( ! in_array( $post_vars['post_type'], array( 'nav_menu_item', 'attachment' ), true ) ) {
 			do_action( 'wpml_tm_save_post', $post_vars['ID'], get_post( $post_vars['ID'] ), false );
 		}
 		// Flush object cache.
@@ -293,13 +214,13 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 		if ( in_array ( $attribute, $legal_attributes, true ) ) {
 			$attribute      = 'p.' . $attribute;
 			$source_snippet = $source_lang_code === null
-				? " AND t.source_language_code IS NULL "
-				: $this->wpdb->prepare ( " AND t.language_code = %s ", $source_lang_code );
+				? " AND wpml_translations.source_language_code IS NULL "
+				: $this->wpdb->prepare ( " AND wpml_translations.language_code = %s ", $source_lang_code );
 			$res            = $this->wpdb->get_var (
 				$this->wpdb->prepare (
 					"SELECT {$attribute}
 					 " . $this->get_element_join() . "
-					 WHERE t.trid=%d
+					 WHERE wpml_translations.trid=%d
 					{$source_snippet}
 					LIMIT 1",
 					$trid
@@ -340,10 +261,10 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 
 	protected function get_element_join() {
 
-		return "FROM {$this->wpdb->prefix}icl_translations t
+		return "FROM {$this->wpdb->prefix}icl_translations wpml_translations
 				JOIN {$this->wpdb->posts} p
-					ON t.element_id = p.ID
-						AND t.element_type = CONCAT('post_', p.post_type)";
+					ON wpml_translations.element_id = p.ID
+						AND wpml_translations.element_type = CONCAT('post_', p.post_type)";
 	}
 
 	protected function get_type_prefix() {
@@ -422,7 +343,7 @@ abstract class WPML_Post_Translation extends WPML_Element_Translation {
 	 */
 	private function get_debug_backtrace() {
 		if ( ! $this->debug_backtrace ) {
-			$this->debug_backtrace = new WPML_Debug_BackTrace( 20 );
+			$this->debug_backtrace = new WPML_Debug_BackTrace( phpversion(), 20 );
 		}
 
 		return $this->debug_backtrace;

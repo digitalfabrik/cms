@@ -450,6 +450,18 @@ class WPML_WP_API extends WPML_PHP_Functions {
 		return 'heartbeat' === $action;
 	}
 
+	public function is_post_edit_page() {
+		global $pagenow;
+
+		return 'post.php' === $pagenow && isset( $_GET['action'], $_GET['post'] ) && 'edit' === filter_var( $_GET['action'] );
+	}
+
+	public function is_new_post_page() {
+		global $pagenow;
+
+		return 'post-new.php' === $pagenow;
+	}
+
 	public function is_term_edit_page() {
 		global $pagenow;
 
@@ -1149,9 +1161,14 @@ class WPML_WP_API extends WPML_PHP_Functions {
 				$options |= DEBUG_BACKTRACE_PROVIDE_OBJECT;
 			}
 			if ( $ignore_args ) {
+				// phpcs:disable PHPCompatibility.Constants.NewConstants.debug_backtrace_ignore_argsFound -- It has a version check
 				$options |= DEBUG_BACKTRACE_IGNORE_ARGS;
+				// phpcs:enable PHPCompatibility.Constants.NewConstants.debug_backtrace_ignore_argsFound
 			}
 		}
+
+		// phpcs:disable PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection -- It has a version check
+		// phpcs:disable PHPCompatibility.FunctionUse.NewFunctionParameters.debug_backtrace_limitFound -- It has a version check
 		if ( version_compare( $this->phpversion(), '5.4.0' ) >= 0 ) {
 			$debug_backtrace = debug_backtrace( $options, $limit ); //add one item to include the current frame
 		} elseif ( version_compare( $this->phpversion(), '5.2.4' ) >= 0 ) {
@@ -1160,6 +1177,8 @@ class WPML_WP_API extends WPML_PHP_Functions {
 		} else {
 			$debug_backtrace = debug_backtrace( $options );
 		}
+		// phpcs:enable PHPCompatibility.FunctionUse.NewFunctionParameters.debug_backtrace_limitFound
+		// phpcs:enable PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 
 		//Remove the current frame
 		if($debug_backtrace) {

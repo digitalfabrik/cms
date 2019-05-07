@@ -32,7 +32,8 @@ class WPML_Term_Adjust_Id {
 		     || ! $this->sitepress->get_setting( 'auto_adjust_ids' )
 		     || $this->debug_backtrace->is_function_in_call_stack( 'get_category_parents' )
 		     || $this->debug_backtrace->is_function_in_call_stack( 'get_permalink' )
-		     || $this->debug_backtrace->is_class_function_in_call_stack( 'WPML_PB_Update_Shortcodes_In_Content', 'update' )
+		     || ( $this->debug_backtrace->is_function_in_call_stack( 'wp_update_post' )
+		          && $this->debug_backtrace->is_function_in_call_stack( 'get_term' ) )
 		     || $this->is_ajax_add_term_translation()
 		) {
 			return $term;

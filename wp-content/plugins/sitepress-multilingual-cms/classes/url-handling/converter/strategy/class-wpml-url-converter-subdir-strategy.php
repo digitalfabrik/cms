@@ -75,37 +75,35 @@ class WPML_URL_Converter_Subdir_Strategy extends WPML_URL_Converter_Abstract_Str
 	}
 
 	public function convert_url_string( $source_url, $code ) {
-		if ( ! $this->is_root_url( $source_url ) ) {
-			$source_url = $this->filter_source_url( $source_url );
-
-			$absolute_home_url = trailingslashit( preg_replace( '#^(http|https)://#', '', $this->get_url_helper()->get_abs_home() ) );
-			$absolute_home_url = strpos( $source_url, $absolute_home_url ) === false ? trailingslashit( get_option( 'home' ) ) : $absolute_home_url;
-
-			$code              = ! $this->dir_default && $code === $this->default_language ? '' : $code;
-			$current_language  = $this->get_lang_from_url_string( $source_url );
-			$current_language  = ! $this->dir_default && $current_language === $this->default_language ? '' : $current_language;
-
-			$code             = isset( $this->language_codes_map[ $code ] ) ? $this->language_codes_map[ $code ] : $code;
-			$current_language = isset( $this->language_codes_map[ $current_language ] ) ? $this->language_codes_map[ $current_language ] : $current_language;
-
-			$redirector = new WPML_WPSEO_Redirection();
-
-			if ( ! $redirector->is_redirection() ) {
-				$source_url = str_replace(
-					array(
-						trailingslashit( $absolute_home_url . $current_language ),
-						'/' . $code . '//',
-					),
-					array(
-						$code ? ( $absolute_home_url . $code . '/' ) : trailingslashit( $absolute_home_url ),
-						'/' . $code . '/',
-					),
-					$source_url
-				);
-			}
+		if ( $this->is_root_url( $source_url ) || $this->skip_convert_url_string( $source_url, $code ) ) {
+			return $source_url;
 		}
 
-		return $this->slash_helper->maybe_user_trailingslashit( $source_url, 'trailingslashit' );
+		$source_url = $this->filter_source_url( $source_url );
+
+		$absolute_home_url = trailingslashit( preg_replace( '#^(http|https)://#', '', $this->get_url_helper()->get_abs_home() ) );
+		$absolute_home_url = strpos( $source_url, $absolute_home_url ) === false ? trailingslashit( get_option( 'home' ) ) : $absolute_home_url;
+
+		$code              = ! $this->dir_default && $code === $this->default_language ? '' : $code;
+		$current_language  = $this->get_lang_from_url_string( $source_url );
+		$current_language  = ! $this->dir_default && $current_language === $this->default_language ? '' : $current_language;
+
+		$code             = isset( $this->language_codes_map[ $code ] ) ? $this->language_codes_map[ $code ] : $code;
+		$current_language = isset( $this->language_codes_map[ $current_language ] ) ? $this->language_codes_map[ $current_language ] : $current_language;
+
+		$source_url = str_replace(
+			array(
+				trailingslashit( $absolute_home_url . $current_language ),
+				'/' . $code . '//',
+			),
+			array(
+				$code ? ( $absolute_home_url . $code . '/' ) : trailingslashit( $absolute_home_url ),
+				'/' . $code . '/',
+			),
+			$source_url
+		);
+
+		return $this->slash_helper->maybe_user_trailingslashit( $source_url );
 	}
 
 	public function convert_admin_url_string( $source_url, $lang ) {

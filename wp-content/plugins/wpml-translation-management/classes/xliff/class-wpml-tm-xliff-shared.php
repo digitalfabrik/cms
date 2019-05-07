@@ -4,6 +4,9 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	/** @var  WP_Error $error */
 	protected $error;
 
+	/** @var WPML_TM_Validate_HTML */
+	private $validator = null;
+
 	/**
 	 * @param $string
 	 *
@@ -64,16 +67,38 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		return $target;
 	}
 
+	/**
+	 * @param $validator WPML_TM_Validate_HTML
+	 */
+	public function set_validator( $validator ) {
+		$this->validator = $validator;
+	}
+
+	/**
+	 * @return WPML_TM_Validate_HTML
+	 */
+	private function get_validator() {
+		if ( null === $this->validator ) {
+			$this->set_validator( new WPML_TM_Validate_HTML() );
+		}
+
+		return $this->validator;
+	}
+
 	protected function generate_job_data( SimpleXMLElement $xliff, $job ) {
 		$data = array(
 			'job_id'   => $job->job_id,
 			'fields'   => array(),
-			'complete' => 1
+			'complete' => 1,
 		);
+
 		foreach ( $xliff->file->body->children() as $node ) {
 			$attr   = $node->attributes();
 			$type   = (string) $attr['id'];
 			$target = $this->get_xliff_node_target( $node );
+			if ( 'html' === (string) $attr['datatype'] ) {
+				$target = $this->get_validator()->restore_html( $target );
+			}
 
 			if ( ! $this->is_valid_target( $target ) ) {
 				return $this->invalid_xliff_error( array( 'target' ) );
@@ -96,6 +121,17 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Validate XLIFF target on reading XLIFF.
+	 *
+	 * @param $target string
+	 *
+	 * @return bool
+	 */
+	private function is_valid_target( $target ) {
+		return $target || '0' === $target;
 	}
 
 	protected function validate_file( $name, $content, $current_user ) {

@@ -140,7 +140,8 @@ var WPML_TM = WPML_TM || {};
 		addFooterView: function () {
 			var self = this;
 			self.footerView = new WPML_TM.editorFooterView({
-				model: tmEditor.model
+				model: tmEditor.model,
+				mainView: self
 			});
 			self.footerView.render();
 			self.appendToDom(self.footerView);
@@ -178,7 +179,28 @@ var WPML_TM = WPML_TM || {};
 					view.copyField();
 				}
 			});
+		},
+		hideTranslated: function (state) {
+			var self = this;
+			_.each(self.fieldViews, function (view) {
+				view.hideTranslated(state);
+			});
+			self.hideEmptyGroups();
+		},
+		hideEmptyGroups: function () {
+			jQuery('.postbox').each( function () {
+				var elements = jQuery('[class*="wpml-form-row"]', jQuery(this));
+				var hiddenElements = elements.filter( function () {
+					return jQuery(this).css('display') === 'none';
+				} );
+				if ( elements.length === hiddenElements.length ) {
+					jQuery(this).hide();
+				} else {
+					jQuery(this).show();
+				}
+			} );
 		}
+
 	});
 }());
 	

@@ -182,7 +182,8 @@ class WPML_Settings_Helper {
 	 * @return array
 	 */
 	function _override_get_translatable_documents( $types ) {
-		$tm_settings = $this->sitepress->get_setting('translation-management', array());
+		$tm_settings          = $this->sitepress->get_setting( 'translation-management', array() );
+		$cpt_unlocked_options = $this->sitepress->get_setting( 'custom_posts_unlocked_option', array() );
 		foreach ( $types as $k => $type ) {
 			if ( isset( $tm_settings[ 'custom-types_readonly_config' ][ $k ] )
 				 && ! $tm_settings[ 'custom-types_readonly_config' ][ $k ]
@@ -190,7 +191,7 @@ class WPML_Settings_Helper {
 				unset( $types[ $k ] );
 			}
 		}
-		$types = $this->get_filters()->get_translatable_documents( $types, $tm_settings['custom-types_readonly_config'] );
+		$types = $this->get_filters()->get_translatable_documents( $types, $tm_settings['custom-types_readonly_config'], $cpt_unlocked_options );
 
 		return $types;
 	}

@@ -19,33 +19,34 @@ class WPML_TP_Project_Creation extends WPML_TP_Project_User {
 	 * @param TranslationProxy_Project          $project
 	 * @param SitePress                         $sitepress
 	 * @param WPML_Translation_Proxy_Networking $networking
-	 * @param array                             $params
 	 */
 	public function __construct(
 		&$project,
 		&$sitepress,
-		&$networking,
-		array $params
+		&$networking
 	) {
 		parent::__construct( $project );
 		$this->networking = &$networking;
 		$this->sitepress  = &$sitepress;
-		$this->params     = $params;
 	}
 
 	/**
 	 * Creates a translation project in TP.
 	 *
+	 * @param array $project
+	 * @param array $client
+	 *
 	 * @return object
 	 *
 	 * @throws RuntimeException in case the project could not be created
 	 */
-	public function run() {
+	public function run( array $project, array $client ) {
 		$service = $this->project->service();
 		$params  = array(
 			'service'       => array( 'id' => $service->id ),
-			'project'       => $this->params,
-			"custom_fields" => $service->custom_fields_data,
+			'project'       => $project,
+			'custom_fields' => $service->custom_fields_data,
+			'client'        => $client,
 		);
 
 		try {
