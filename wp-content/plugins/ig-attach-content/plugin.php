@@ -87,8 +87,8 @@ function ig_ac_save_meta_box( $post_id ) {
 	$key_blog = 'ig-attach-content-blog';
 	$key_page = 'ig-attach-content-page';
 
-	if ( ! in_array('ig-attach-content-blog', $_POST) ) {
-		// do nothing, page is saved without meta box present
+	if ( ! in_array( $key_blog, $_POST ) ) {
+		return;
 	} elseif ( -1 == $_POST[$key_blog] ) {
 		delete_post_meta( $post_id, $key_position);
 		delete_post_meta( $post_id, $key_blog);
