@@ -9,10 +9,14 @@ function wpse_73006_submenu_order( $menu_ord )
 {
     global $submenu;
     $arr = array();
-    $arr[] = $submenu['edit.php?post_type=page'][11];
-    $arr[] = $submenu['edit.php?post_type=page'][5];
-    $arr[] = $submenu['edit.php?post_type=page'][10];
-    $submenu['edit.php?post_type=page'] = $arr;
+    if(in_array('edit.php?post_type=page', $submenu)) {
+        $arr[] = $submenu['edit.php?post_type=page'][11];
+        $arr[] = $submenu['edit.php?post_type=page'][5];
+        $arr[] = $submenu['edit.php?post_type=page'][10];
+        $submenu['edit.php?post_type=page'] = $arr;
+    } else {
+        $submenu['edit.php?post_type=page'] = array(null, null, null);
+    }
     return $menu_ord;
 }
 
