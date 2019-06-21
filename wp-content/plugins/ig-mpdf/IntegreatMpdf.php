@@ -14,6 +14,9 @@ class IntegreatMpdf {
 	function __construct($page_ids, $toc = true) {
 		// init mpdf
 		require_once __DIR__ . '/vendor/autoload.php';
+		if (!file_exists(dirname(__FILE__, 3) . '/uploads/ig-mpdf-cache/tmp')) {
+			mkdir(dirname(__FILE__, 3) . '/uploads/ig-mpdf-cache/tmp', 0775, true);
+		}
 		$this->mpdf = new Mpdf([
 			'margin_top' => 20,
 			'margin_left' => 20,
