@@ -1070,6 +1070,8 @@ function wp_ajax_replyto_comment( $action ) {
 			if ( wp_create_nonce( 'unfiltered-html-comment' ) != $_POST['_wp_unfiltered_html_comment'] ) {
 				kses_remove_filters(); // start with a clean slate
 				kses_init_filters(); // set up the filters
+				remove_filter( 'pre_comment_content', 'wp_filter_post_kses' );
+				add_filter( 'pre_comment_content', 'wp_filter_kses' );
 			}
 		}
 	} else {
@@ -1480,19 +1482,6 @@ function wp_ajax_update_welcome_panel() {
 		wp_die( -1 );
 
 	update_user_meta( get_current_user_id(), 'show_welcome_panel', empty( $_POST['visible'] ) ? 0 : 1 );
-
-	wp_die( 1 );
-}
-
-/**
- * Ajax handler for updating whether to display the Try Gutenberg panel.
- *
- * @since 4.9.8
- */
-function wp_ajax_update_try_gutenberg_panel() {
-	check_ajax_referer( 'try-gutenberg-panel-nonce', 'trygutenbergpanelnonce' );
-
-	update_user_meta( get_current_user_id(), 'show_try_gutenberg_panel', empty( $_POST['visible'] ) ? 0 : 1 );
 
 	wp_die( 1 );
 }
@@ -2105,7 +2094,11 @@ function wp_ajax_upload_attachment() {
 		$post_id = null;
 	}
 
-	$post_data = isset( $_REQUEST['post_data'] ) ? $_REQUEST['post_data'] : array();
+	$post_data = ! empty( $_REQUEST['post_data'] ) ? _wp_get_allowed_postdata( _wp_translate_postdata( false, (array) $_REQUEST['post_data'] ) ) : array();
+
+	if ( is_wp_error( $post_data ) ) {
+		wp_die( $post_data->get_error_message() );
+	}
 
 	// If the context is custom header or background, make sure the uploaded file is an image.
 	if ( isset( $post_data['context'] ) && in_array( $post_data['context'], array( 'custom-header', 'custom-background' ) ) ) {
