@@ -31,3 +31,15 @@ function make_wiki_blank()
     </script>
     <?php
 }
+
+function ig_rename_comments() {
+    global $menu;
+    foreach ( $menu as $key => $value ) {
+        if ( strpos( $value[0], "Kommentare" ) === 0 ) {
+            $menu[$key][0] = str_replace( "Kommentare", "Feedback", $menu[$key][0] );
+        } elseif ( strpos( $value[0], "Comments" ) === 0 ) {
+            $menu[$key][0] = str_replace( "Comments", "Feedback", $menu[$key][0] );
+        }
+    }
+}
+add_action( 'admin_menu', 'ig_rename_comments' , 999);
