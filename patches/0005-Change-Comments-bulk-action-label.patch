@@ -1,0 +1,53 @@
+From bfc412080df520b4f29f09ce9047c596c7ff1fbc Mon Sep 17 00:00:00 2001
+From: Sven Seeberg <mail@sven-seeberg.de>
+Date: Tue, 16 Jul 2019 11:06:47 +0200
+Subject: [PATCH] Change Comments bulk action label
+
+* Partially fixes #973
+* Integreat uses the Comments for Feedback only. Therefore
+  Feedback is only read and does not need to be approved.
+---
+ wp-admin/includes/class-wp-comments-list-table.php |  4 ++--
+ wp-content/languages/admin-de_DE.po                | 10 ++++++++++
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/wp-admin/includes/class-wp-comments-list-table.php b/wp-admin/includes/class-wp-comments-list-table.php
+index f87ce81e..c9413629 100644
+--- a/wp-admin/includes/class-wp-comments-list-table.php
++++ b/wp-admin/includes/class-wp-comments-list-table.php
+@@ -293,9 +293,9 @@ class WP_Comments_List_Table extends WP_List_Table {
+ 
+ 		$actions = array();
+ 		if ( in_array( $comment_status, array( 'all', 'approved' ) ) )
+-			$actions['unapprove'] = __( 'Unapprove' );
++			$actions['unapprove'] = _x( 'Mark as not read', 'comment' );
+ 		if ( in_array( $comment_status, array( 'all', 'moderated' ) ) )
+-			$actions['approve'] = __( 'Approve' );
++			$actions['approve'] = _x( 'Mark as read', 'comment' );
+ 		if ( in_array( $comment_status, array( 'all', 'moderated', 'approved', 'trash' ) ) )
+ 			$actions['spam'] = _x( 'Mark as Spam', 'comment' );
+ 
+diff --git a/wp-content/languages/admin-de_DE.po b/wp-content/languages/admin-de_DE.po
+index 1852c181..ff719333 100644
+--- a/wp-content/languages/admin-de_DE.po
++++ b/wp-content/languages/admin-de_DE.po
+@@ -8278,6 +8278,16 @@ msgctxt "comment"
+ msgid "Mark as Spam"
+ msgstr "Als Spam markieren"
+ 
++#: wp-admin/includes/class-wp-comments-list-table.php:298
++msgctxt "comment"
++msgid "Mark as read"
++msgstr "Als gelesen markieren"
++
++#: wp-admin/includes/class-wp-comments-list-table.php:296
++msgctxt "comment"
++msgid "Mark as not read"
++msgstr "Als ungelesen markieren"
++
+ #: wp-admin/includes/media.php:2243
+ msgctxt "verb"
+ msgid "Clear"
+-- 
+2.16.4
+
