@@ -8278,6 +8278,16 @@ msgctxt "comment"
 msgid "Mark as Spam"
 msgstr "Als Spam markieren"
 
+#: wp-admin/includes/class-wp-comments-list-table.php:298
+msgctxt "comment"
+msgid "Mark as read"
+msgstr "Als gelesen markieren"
+
+#: wp-admin/includes/class-wp-comments-list-table.php:296
+msgctxt "comment"
+msgid "Mark as not read"
+msgstr "Als ungelesen markieren"
+
 #: wp-admin/includes/media.php:2243
 msgctxt "verb"
 msgid "Clear"

@@ -293,9 +293,9 @@ class WP_Comments_List_Table extends WP_List_Table {
 
 		$actions = array();
 		if ( in_array( $comment_status, array( 'all', 'approved' ) ) )
-			$actions['unapprove'] = __( 'Unapprove' );
+			$actions['unapprove'] = _x( 'Mark as not read', 'comment' );
 		if ( in_array( $comment_status, array( 'all', 'moderated' ) ) )
-			$actions['approve'] = __( 'Approve' );
+			$actions['approve'] = _x( 'Mark as read', 'comment' );
 		if ( in_array( $comment_status, array( 'all', 'moderated', 'approved', 'trash' ) ) )
 			$actions['spam'] = _x( 'Mark as Spam', 'comment' );
 
