@@ -1,2 +1,8 @@
 msgid "Integreat Help"
 msgstr "Integreat Hilfe"
+
+msgid "Mark as read"
+msgstr "Als gelesen markieren"
+
+msgid "Mark as not read"
+msgstr "Als nicht gelesen markieren"

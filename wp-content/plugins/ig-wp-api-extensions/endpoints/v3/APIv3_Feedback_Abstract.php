@@ -53,7 +53,7 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 				return new WP_Error('rest_missing_param', 'Either the id or the permalink parameter is required', ['status' => 400]);
 			}
 			if ($id === null) {
-				$id = url_to_postid($permalink);
+				$id = url_to_postid(ltrim($permalink, '/'));
 			}
 			$language = apply_filters('wpml_post_language_details', null, $id)['language_code'];
 			$id = apply_filters('wpml_object_id', $id, 'any', true, 'de');
