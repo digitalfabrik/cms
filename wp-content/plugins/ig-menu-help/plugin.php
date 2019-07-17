@@ -43,3 +43,10 @@ function ig_rename_comments() {
     }
 }
 add_action( 'admin_menu', 'ig_rename_comments' , 999);
+
+function ig_comment_bulk_actions($actions){
+    $actions["unapprove"] = __('Mark as not read', 'integreat-help');
+    $actions["approve"] = __('Mark as read', 'integreat-help');
+    return $actions;
+}
+add_filter('bulk_actions-edit-comments','ig_comment_bulk_actions');
