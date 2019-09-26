@@ -278,7 +278,7 @@ class IntegreatSettingConfig {
 					'setting_id' => $setting->id
 				]);
 			}
-			if ($setting->type === 'string' || $setting->type === 'json') {
+			if ($setting->type === 'string' || $setting->type === 'json' || $setting->type === 'float') {
 				$form .= '
 					<div>
 						<label for="' . $setting->id . '">' . htmlspecialchars($setting->name) . '</label>
@@ -335,6 +335,8 @@ class IntegreatSettingConfig {
 						$error_occurred = true;
 						continue;
 					}
+				} elseif ($setting->type === 'float') {
+					$setting_config->value = floatval($_POST[$setting_config->setting_id]);
 				}
 				if (!$setting_config->validate()) {
 					$error_occurred = true;
