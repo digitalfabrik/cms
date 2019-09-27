@@ -245,7 +245,7 @@ class IntegreatSettingsPlugin {
 				} elseif ($setting->type === 'json') {
 					return json_decode($setting->value);
 				} elseif ($setting->type === 'float') {
-					if ($setting->type === NULL)
+					if ($setting->value === NULL)
 						return NULL;
 					return floatval($setting->value);
 				} else {
