@@ -264,7 +264,7 @@ class IntegreatSettingsPlugin {
 						alias = 'plz' OR
 						alias = 'events' OR
 						alias = 'push-notifications' OR
-						alias = 'city-aliases' OR
+						alias = 'aliases' OR
 						alias = 'longitude' OR
 						alias = 'latitude'
 				UNION SELECT 'extras', 'bool', (SELECT enabled FROM {$wpdb->prefix}ig_extras_config WHERE enabled LIMIT 1)", OBJECT_K));
