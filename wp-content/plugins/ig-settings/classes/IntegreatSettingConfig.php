@@ -62,6 +62,9 @@ class IntegreatSettingConfig {
 			self::$current_error[] = $setting->alias;
 			return false;
 		}
+		if ($setting->type === 'json' && $this->value === "") {
+			$this->value = "{}";
+		}
 		if ($setting->type === 'json' && !json_decode($this->value)) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
