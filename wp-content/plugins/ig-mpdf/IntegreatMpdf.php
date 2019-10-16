@@ -178,6 +178,7 @@ class IntegreatMpdf {
 		$pages_iterator = new CachingIterator(new ArrayIterator($this->page_ids));
 		foreach($pages_iterator as $page_id) {
 			$page = get_post($page_id);
+			$page = ig_ac_modify_post( $page );
 			if ($pages_iterator->hasNext()) {
 				$this->mpdf->WriteHTML('<div class="page page-border">');
 			} else {
