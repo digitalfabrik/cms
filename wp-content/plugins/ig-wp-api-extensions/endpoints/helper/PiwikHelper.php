@@ -24,7 +24,12 @@ function ig_api_page_tracking ( $call_name ) {
 
     // Privay overrides
     $piwikTracker->setBrowserLanguage('en');
-    $piwikTracker->setUserAgent('');
+    if ( strpos($_SERVER['HTTP_USER_AGENT'], 'okhttp') !== false or // Android app
+         strpos($_SERVER['HTTP_USER_AGENT'], 'Darwin') !== false ) { // iOS app
+        $piwikTracker->setUserAgent('App');
+    } else {
+        $piwikTracker->setUserAgent('Web');
+    }
     $piwikTracker->setResolution(1, 1);
     $piwikTracker->setIp(mt_rand(0,255).".".mt_rand(0,255).".0.0");
 
