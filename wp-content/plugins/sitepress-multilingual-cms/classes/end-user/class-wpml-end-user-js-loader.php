@@ -43,8 +43,15 @@ class WPML_End_User_JS_Loader implements IWPML_Action {
 	}
 
 	private function get_how_to_link() {
+		$is_site_allowed_to_send_data = (int) $this->send_local_data_setting->is_repo_allowed( 'wpml' );
+		$endpoint = 'https://wpml.org/faq/how-to-get-compatibility-and-translation-information-for-the-theme-and-plugins-that-power-a-site/?utm_source=wpmlplugin&utm_campaign=compatibility-reporting&utm_medium=how-to-translate-button&utm_term=get-compatibility-and-translation-information"';
+
+		if ( $is_site_allowed_to_send_data ) {
+			$endpoint = WPML_COMPATIBILITY_ENDPOINT;
+		}
+
 		$button = '
-			<a href="https://wpml.org/faq/how-to-get-compatibility-and-translation-information-for-the-theme-and-plugins-that-power-a-site/?utm_source=wpmlplugin&utm_campaign=compatibility-reporting&utm_medium=how-to-translate-button&utm_term=get-compatibility-and-translation-information" id="icl_how_to_translate_link" 
+			<a href="' . $endpoint . '" id="icl_how_to_translate_link"
 			    class="otgs-ico-wpml wpml-external-link js-wpml-end-user-send-request"
 			    target="_blank"
 			    title="%1$s">
@@ -58,8 +65,8 @@ class WPML_End_User_JS_Loader implements IWPML_Action {
 
 		return array(
 			'button' => $button,
-			'is_site_allowed_to_send_data' => (int) $this->send_local_data_setting->is_repo_allowed( 'wpml' ),
-			'endpoint' => WPML_COMPATIBILITY_ENDPOINT,
+			'is_site_allowed_to_send_data' => $is_site_allowed_to_send_data,
+			'endpoint' => $endpoint,
 			'confirm_button_label' => esc_attr__( 'Continue', 'sitepress' ),
 		);
 	}

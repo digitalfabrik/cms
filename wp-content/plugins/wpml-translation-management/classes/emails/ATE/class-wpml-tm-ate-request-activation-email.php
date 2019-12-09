@@ -20,7 +20,7 @@ class WPML_TM_ATE_Request_Activation_Email {
 			'casual_name'     => $to_manager->user_firstname,
 			'username'        => $to_manager->display_name,
 			'intro_message_1' => sprintf( __( 'The translator %1$s is requesting to use the Advanced Translation Editor on site %2$s.', 'wpml-translation-management' ), $from_user->display_name, $site_name ),
-			'setup'           => __( 'Manage translator subscriptions', 'wpml-translation-management' ),
+			'setup'           => __( "Advanced Translation Editor settings", 'wpml-translation-management' ),
 			'reminder'        => sprintf( __( '* Remember, your login name for %1$s is %2$s. If you need help with your password, use the password reset in the login page.', 'wpml-translation-management' ), $site_name, $to_manager->user_login ),
 		);
 

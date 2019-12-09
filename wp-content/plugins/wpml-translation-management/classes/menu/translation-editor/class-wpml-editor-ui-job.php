@@ -103,6 +103,10 @@ class WPML_Editor_UI_Job {
 		return true;
 	}
 
+	public function display_hide_completed_switcher() {
+		return true;
+	}
+
 	public function is_hide_empty_fields() {
 		return true;
 	}

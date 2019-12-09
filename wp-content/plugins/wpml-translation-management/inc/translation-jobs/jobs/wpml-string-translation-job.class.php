@@ -7,10 +7,11 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 	protected function load_job_data( $string_translation_id ) {
 		global $wpdb;
 
-		$query = $wpdb->prepare( "SELECT st.id,
+		$query = $wpdb->prepare(
+			"SELECT st.id,
                          s.language AS source_language_code,
                          st.language AS language_code,
-                         st.status,
+                         IF(cs.status IS NULL, st.status, cs.status) as status,
                          st.string_id,
                          s.name,
                          s.value,
@@ -26,14 +27,17 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 				      ON tb.id = st.batch_id
 			        LEFT JOIN {$wpdb->users} u
                       ON st.translator_id = u.ID
+                    LEFT JOIN {$wpdb->prefix}icl_string_status ss ON ss.string_translation_id = st.id
+                    LEFT JOIN {$wpdb->prefix}icl_core_status cs ON cs.rid = ss.rid  
                     WHERE st.id = %d
                     LIMIT 1",
-								 $string_translation_id );
+			$string_translation_id
+		);
 
 		return $wpdb->get_row( $query );
 	}
 
-	public function get_title(){
+	public function get_title() {
 		$this->maybe_load_basic_data();
 
 		return esc_html( $this->basic_data->value );
@@ -63,11 +67,15 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 		global $WPML_String_Translation, $wpdb;
 		/** @var WPML_String_Translation $WPML_String_Translation */
 		if ( isset( $WPML_String_Translation ) ) {
-			$rid = $wpdb->get_var( $wpdb->prepare( "SELECT rid
+			$rid = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT rid
 													FROM {$wpdb->prefix}icl_string_status
 													WHERE string_translation_id = %d
 													LIMIT 1",
-			                                       $this->job_id ) );
+					$this->job_id
+				)
+			);
 			if ( $rid ) {
 				$WPML_String_Translation->cancel_remote_translation( $rid );
 			}
@@ -96,29 +104,46 @@ class WPML_String_Translation_Job extends WPML_Translation_Job {
 	protected function load_resultant_element_id() {
 		global $wpdb;
 
-		return $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}icl_string_translations
+		return $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT id FROM {$wpdb->prefix}icl_string_translations
 												WHERE string_id = %d AND language = %s",
-											   $this->get_original_element_id(),
-											   $this->get_language_code() ) );
+				$this->get_original_element_id(),
+				$this->get_language_code()
+			)
+		);
 	}
 
 	protected function save_updated_assignment() {
 		global $wpdb;
 
-		return $wpdb->update( $wpdb->prefix . 'icl_string_translations',
-		                      array(
-			                      'translator_id'       => $this->get_translator_id(),
-			                      'translation_service' => $this->get_translation_service()
-		                      ),
-		                      array(
-			                      'string_id' => $this->get_original_element_id(),
-			                      'language'  => $this->get_language_code()
-		                      ) );
+		return $wpdb->update(
+			$wpdb->prefix . 'icl_string_translations',
+			array(
+				'translator_id'       => $this->get_translator_id(),
+				'translation_service' => $this->get_translation_service(),
+			),
+			array(
+				'string_id' => $this->get_original_element_id(),
+				'language'  => $this->get_language_code(),
+			)
+		);
 	}
 
-	protected function get_batch_id_table_col() {
+	/**
+	 * Retrieves the batch ID for a string job
+	 */
+	protected function load_batch_id() {
 		global $wpdb;
 
-		return array( $wpdb->prefix . 'icl_string_translations', 'id' );
+		$this->batch_id = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT batch_id
+				FROM {$wpdb->prefix}icl_string_translations
+				WHERE id = %d
+				LIMIT 1",
+				$this->job_id
+			)
+		);
 	}
 }

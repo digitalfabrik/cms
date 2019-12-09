@@ -55,7 +55,7 @@ class WPML_Elementor_Price_List extends WPML_Elementor_Module_With_Items {
 		}
 
 		if ( 'item_description' === $field ) {
-			return 'VISUAL';
+			return 'AREA';
 		}
 
 		return '';

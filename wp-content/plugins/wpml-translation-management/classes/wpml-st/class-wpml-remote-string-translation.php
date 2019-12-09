@@ -3,70 +3,70 @@
 class WPML_Remote_String_Translation {
 
 	/**
-	 * @param $item_type_name
-	 * @param $item_type
-	 * @param $strings_basket_items
-	 * @param $translators
-	 * @param array $batch_options
+	 * @param WPML_TM_Translation_Batch $batch
+     * @param string $type
 	 */
-	public static function send_strings_jobs( $item_type_name, $item_type, $strings_basket_items, $translators, $batch_options ) {
+	public static function send_strings_jobs(WPML_TM_Translation_Batch $batch, $type ) {
+	    $elements = $batch->get_elements_by_type($type);
+		if ( empty( $elements ) ) {
+			return;
+		}
+
 		/** @var $iclTranslationManagement TranslationManagement */
 		global $iclTranslationManagement, $wpdb, $wpml_translation_job_factory;
+		$translators = $batch->get_translators();
 		$strings_local = array();
-		if ( ! empty( $strings_basket_items ) ) {
-			// for every string in cart
-			// collect strings for local translation
-			// collect string for remote translation
-			$strings_remote = array();
 
-			foreach ( $strings_basket_items as $basket_item_id => $basket_item ) {
-				foreach ( $basket_item['to_langs'] as $language_code => $action ) {
-					if ( is_numeric( $translators[ $language_code ] ) ) {
-						$strings_local[ $language_code ][] = $basket_item_id;
-					} else {
-						$strings_remote[ $language_code ][] = $basket_item_id;
-					}
-				}
-			}
+        // for every string in cart
+        // collect strings for local translation
+        // collect string for remote translation
+        $strings_remote = array();
 
-			if ( $strings_remote ) {
-				foreach ( $strings_remote as $target => $string_ids ) {
-					$basket    = new WPML_Translation_Basket( $wpdb );
-					$st_tp_job = new WPML_TP_String_Job( $wpdb, $basket, $wpml_translation_job_factory );
-					$result = $st_tp_job->send_strings_to_translation_service( $string_ids,
-						$target,
-						$translators[ $target ] );
-					if ( isset( $result['errors'] ) && count( $result['errors'] ) ) {
-						foreach ( $result['errors'] as $error ) {
-							$error_message = array(
-								'type' => 'error',
-								'text' => $error,
-							);
-							$iclTranslationManagement->add_message( $error_message );
-						}
-					}
-					if ( ! $result ) {
-						foreach ( $string_ids as $string_id ) {
-							$default_string_language = $basket->get_source_language();
+        foreach ( $elements as $element ) {
+            foreach ( $element->get_target_langs() as $language_code => $action) {
+                if ( is_numeric( $translators[ $language_code ] ) ) {
+                    $strings_local[ $language_code ][] = $element->get_element_id();
+                } else {
+                    $strings_remote[ $language_code ][] = $element->get_element_id();
+                }
+            }
+        }
 
-							$string  = icl_get_string_by_id( $string_id, $default_string_language );
-							$message = array(
-								'type' => 'error',
-								'text' => sprintf( __( 'String "%s" has not been sent.', 'wpml-translation-management' ), $string ),
-							);
-							$iclTranslationManagement->add_message( $message );
-						}
-						break;
-					}
-				}
-			}
+        if ( $strings_remote ) {
+            foreach ( $strings_remote as $target => $string_ids ) {
+                $basket    = new WPML_Translation_Basket( $wpdb );
+                $st_tp_job = new WPML_TP_String_Job( $wpdb, $basket, $wpml_translation_job_factory );
+                $result = $st_tp_job->send_strings_to_translation_service( $string_ids,
+                    $target,
+                    $translators[ $target ] );
+                if ( isset( $result['errors'] ) && count( $result['errors'] ) ) {
+                    foreach ( $result['errors'] as $error ) {
+                        $error_message = array(
+                            'type' => 'error',
+                            'text' => $error,
+                        );
+                        $iclTranslationManagement->add_message( $error_message );
+                    }
+                }
+                if ( ! $result ) {
+                    foreach ( $string_ids as $string_id ) {
+                        $default_string_language = $basket->get_source_language();
 
-			$batch_name = isset( $batch_options['basket_name'] ) ? $batch_options['basket_name'] : null;
+                        $string  = icl_get_string_by_id( $string_id, $default_string_language );
+                        $message = array(
+                            'type' => 'error',
+                            'text' => sprintf( __( 'String "%s" has not been sent.', 'wpml-translation-management' ), $string ),
+                        );
+                        $iclTranslationManagement->add_message( $message );
+                    }
+                    break;
+                }
+            }
+        }
 
-			foreach ( $strings_local as $target => $string_ids ) {
-				self::translation_send_strings_local( $string_ids, $target, $translators[ $target ], $batch_name );
-			}
-		}
+        foreach ( $strings_local as $target => $string_ids ) {
+            self::translation_send_strings_local( $string_ids, $target, $translators[ $target ], $batch->get_basket_name() );
+        }
 	}
 
 	public static function get_string_status_labels() {
@@ -79,6 +79,7 @@ class WPML_Remote_String_Translation {
 			ICL_TM_WAITING_FOR_TRANSLATOR  => __( 'Waiting for translator / In progress',
 				'wpml-translation-management' ),
 			ICL_TM_IN_BASKET               => __( 'Strings in the basket', 'wpml-translation-management' ),
+            ICL_TM_TRANSLATION_READY_TO_DOWNLOAD => __('Translation ready to download', 'wpml-translation-management'),
 		);
 	}
 

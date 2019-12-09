@@ -84,9 +84,11 @@ class WPML_Taxonomy_Translation_Table_Display {
 		return $labels;
 	}
 
-	public static function enqueue_taxonomy_table_js( $sitepress ) {
+	public static function enqueue_taxonomy_table_resources( $sitepress ) {
 
 		WPML_Simple_Language_Selector::enqueue_scripts();
+
+		wp_enqueue_style( 'translate-taxonomy', ICL_PLUGIN_URL . '/res/css/taxonomy-translation.css', array(), ICL_SITEPRESS_VERSION );
 
 		$core_dependencies = array( 'jquery', 'jquery-ui-dialog', 'backbone', 'wpml-underscore-template-compiler' );
 		wp_register_script(

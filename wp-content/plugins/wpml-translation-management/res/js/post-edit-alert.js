@@ -25,7 +25,7 @@
 			e.preventDefault();
 			dismiss_translation_editor_notice();
 			window.history.go(-1);
-		}).on('click', '.js-wpml-tm-use-standard-editor', function(e) {
+		}).on('click', '.js-wpml-tm-continue', function(e) {
 			e.preventDefault();
 			dismiss_translation_editor_notice();
 			alert.dialog('close');
@@ -34,13 +34,19 @@
 		} );
 
 		function dismiss_translation_editor_notice() {
-			if ( $( '.do-not-show-again' ).attr('checked') ) {
+
+			var show_again_checkbox = $( '.do-not-show-again' );
+
+			if ( show_again_checkbox.attr('checked') ) {
+
+				var action = show_again_checkbox.attr( 'data-action' );
+
 				$.ajax({
 					url: ajaxurl,
 					type: 'POST',
 					data: {
-						action: 'wpml_dismiss_post_edit_te_notice',
-						nonce: $( '#wpml_dismiss_post_edit_te_notice' ).val()
+						action: action,
+						nonce: $( '#'+action ).val()
 					}
 				});
 			}

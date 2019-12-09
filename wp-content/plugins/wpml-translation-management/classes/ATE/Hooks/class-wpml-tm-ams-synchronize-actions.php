@@ -51,7 +51,7 @@ class WPML_TM_AMS_Synchronize_Actions implements IWPML_Action {
 	public function synchronize_translators() {
 		$result = $this->ams_api->synchronize_translators( $this->ams_user_records->get_translators() );
 		if( ! is_wp_error( $result ) ) {
-			$this->translator_activation_records->update( $result['translators'] );
+			$this->translator_activation_records->update( isset( $result['translators'] ) ? $result['translators'] : array() );
 		}
 	}
 

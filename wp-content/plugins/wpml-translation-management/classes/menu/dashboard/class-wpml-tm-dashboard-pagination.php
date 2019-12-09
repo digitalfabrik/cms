@@ -6,23 +6,8 @@
 class WPML_TM_Dashboard_Pagination {
 
 	public function add_hooks() {
-		add_filter( 'wpml_tm_dashboard_external_type_sql_query', array( $this, 'filter_external_type_query_for_pagination' ), 10, 2 );
 		add_filter( 'wpml_tm_dashboard_post_query_args', array( $this, 'filter_dashboard_post_query_args_for_pagination' ), 10, 2 );
 		add_action( 'wpml_tm_dashboard_pagination', array( $this, 'add_tm_dashboard_pagination' ), 10, 2 );
-	}
-
-	/**
-	 * @param string $sql
-	 * @param array $args
-	 *
-	 * @return string
-	 */
-	public function filter_external_type_query_for_pagination( $sql, $args ) {
-		if ( ! empty( $args['type'] ) && false === strpos( $sql, 'SQL_CALC_FOUND_ROWS' ) ) {
-			$sql = str_replace( 'SELECT DISTINCT ', 'SELECT DISTINCT SQL_CALC_FOUND_ROWS ', $sql );
-		}
-
-		return $sql;
 	}
 
 	/**

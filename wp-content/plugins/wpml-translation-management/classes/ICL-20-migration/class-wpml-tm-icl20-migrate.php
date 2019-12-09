@@ -8,20 +8,22 @@ class WPML_TM_ICL20_Migrate {
 	private $progress;
 	private $remote_migration;
 	private $status;
-	private $tp_api;
+
+	/** @var WPML_TP_Services  */
+	private $tp_services;
 
 	public function __construct(
 		WPML_TM_ICL20_Migration_Progress $progress,
 		WPML_TM_ICL20_Migration_Status $status,
 		WPML_TM_ICL20_Migrate_Remote $remote_migration,
 		WPML_TM_ICL20_Migrate_Local $local_migration,
-		WPML_TP_API $tp_api
+		WPML_TP_Services $tp_services
 	) {
 		$this->progress         = $progress;
 		$this->status           = $status;
 		$this->remote_migration = $remote_migration;
 		$this->local_migration  = $local_migration;
-		$this->tp_api           = $tp_api;
+		$this->tp_services           = $tp_services;
 	}
 
 	public function migrate_project_rollback() {
@@ -29,7 +31,7 @@ class WPML_TM_ICL20_Migrate {
 			return false;
 		}
 
-		$project = $this->tp_api->get_current_project();
+		$project = $this->tp_services->get_current_project();
 		$token   = $this->get_token( $project );
 		if ( $token ) {
 			return $this->remote_migration->migrate_project_rollback( $project->id, $project->access_key );
@@ -41,7 +43,7 @@ class WPML_TM_ICL20_Migrate {
 	public function run() {
 		$this->progress->set_migration_started();
 
-		$project = $this->tp_api->get_current_project();
+		$project = $this->tp_services->get_current_project();
 		$token   = $project ? $this->get_token( $project ) : null;
 
 		if ( (bool) $token
@@ -113,7 +115,7 @@ class WPML_TM_ICL20_Migrate {
 	private function migrate_local_service( $token ) {
 		$service_migrated = $this->progress->get_completed_step( WPML_TM_ICL20_Migration_Progress::STEP_MIGRATE_LOCAL_SERVICE );
 		if ( WPML_TM_ICL20_Migration_Progress::STEP_DONE === $service_migrated ) {
-			$current_service  = $this->tp_api->get_current_service();
+			$current_service  = $this->tp_services->get_current_service();
 			$service_migrated = $current_service && $this->status->get_ICL_20_TS_ID() === $current_service->id;
 		}
 		if ( WPML_TM_ICL20_Migration_Progress::STEP_FAILED === $service_migrated ) {

@@ -48,6 +48,7 @@ class WPML_TM_Translation_Services_Admin_Section_Ajax {
 			}
 
 			if ( ! $enable && $service_id === TranslationProxy::get_current_service_id() ) {
+				TranslationProxy::clear_preferred_translation_service();
 				$response = $this->deactivate_service();
 			}
 

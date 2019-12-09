@@ -3,20 +3,30 @@
  * @package wpml-core
  */
 
-class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
+class WPML_TM_Xliff_Writer {
+	const TAB                        = "\t";
+
+	protected $job_factory;
 	private $xliff_version;
-	const TAB = "\t";
-	const FIELD_FINISHED = '1';
+	private $xliff_shortcodes;
+	private $translator_notes;
 
 	/**
 	 * WPML_TM_xliff constructor.
 	 *
-	 * @param WPML_Translation_Job_Factory $job_factory
-	 * @param string                      $xliff_version
+	 * @param WPML_Translation_Job_Factory   $job_factory
+	 * @param string                         $xliff_version
+	 * @param \WPML_TM_XLIFF_Shortcodes|null $xliff_shortcodes
 	 */
-	public function __construct( $job_factory, $xliff_version = TRANSLATION_PROXY_XLIFF_VERSION ) {
-		parent::__construct( $job_factory );
-		$this->xliff_version = $xliff_version;
+	public function __construct( WPML_Translation_Job_Factory $job_factory, $xliff_version = TRANSLATION_PROXY_XLIFF_VERSION, WPML_TM_XLIFF_Shortcodes $xliff_shortcodes = null ) {
+		$this->job_factory      = $job_factory;
+		$this->xliff_version    = $xliff_version;
+
+		if ( ! $xliff_shortcodes ) {
+			$xliff_shortcodes = wpml_tm_xliff_shortcodes();
+		}
+		$this->xliff_shortcodes = $xliff_shortcodes;
+		$this->translator_notes = new WPML_TM_XLIFF_Translator_Notes();
 	}
 
 	/**
@@ -43,16 +53,22 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		global $iclTranslationManagement;
 
 		// don't include not-translatable and don't auto-assign
-		$job               = $iclTranslationManagement->get_translation_job( (int) $job_id, false, false, 1 );
-		$translation_units = $this->get_job_translation_units_data( $job );
-		$original          = $job_id . '-' . md5( $job_id . $job->original_doc_id );
+		$job                = $iclTranslationManagement->get_translation_job( (int) $job_id, false, false, 1 );
+		$translation_units  = $this->get_job_translation_units_data( $job );
+		$original           = $job_id . '-' . md5( $job_id . $job->original_doc_id );
+		$original_post_type = isset( $job->original_post_type ) ? $job->original_post_type : null;
 
 		$external_file_url = $this->get_external_url( $job );
+		$this->get_translator_notes( $job );
 
-		$xliff = $this->generate_xliff( $original,
+		$xliff = $this->generate_xliff(
+			$original,
 			$job->source_language_code,
 			$job->language_code,
-			$translation_units, $external_file_url );
+			$translation_units,
+			$external_file_url,
+			$original_post_type
+		);
 
 		return $xliff;
 	}
@@ -83,21 +99,34 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		$source_language,
 		$target_language,
 		array $translation_units = array(),
-		$external_file_url = null
+		$external_file_url = null,
+		$original_post_type = null
 	) {
 		$xliff = new WPML_TM_XLIFF( $this->get_xliff_version(), '1.0', 'utf-8' );
 
-		$string = $xliff->setFileAttributes( array(
-			                                     'original'        => $original_id,
-			                                     'source-language' => $source_language,
-			                                     'target-language' => $target_language,
-			                                     'datatype'        => 'plaintext',
-		                                     ) )
-		                ->setReferences( array(
-			                                 'external-file' => $external_file_url,
-		                                 ) )->setPhaseGroup( $this->get_shortcodes_data() )
-		                ->setTranslationUnits( $translation_units )
-		                ->toString();
+		$phase_group     = array();
+		$phase_group     = array_merge( $phase_group, $this->xliff_shortcodes->get() );
+		$phase_group     = array_merge( $phase_group, $this->translator_notes->get() );
+		$post_type_phase = new WPML_TM_XLIFF_Post_Type( $original_post_type );
+		$phase_group     = array_merge( $phase_group, $post_type_phase->get() );
+
+		$string = $xliff
+			->setFileAttributes(
+				array(
+					'original'        => $original_id,
+					'source-language' => $source_language,
+					'target-language' => $target_language,
+					'datatype'        => 'plaintext',
+				)
+			)
+			->setReferences(
+				array(
+					'external-file' => $external_file_url,
+				)
+			)
+			->setPhaseGroup( $phase_group )
+			->setTranslationUnits( $translation_units )
+			->toString();
 
 		return $string;
 	}
@@ -213,14 +242,17 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 					}
 					// check for untranslated fields and copy the original if required.
 					if ( ! null === $field_data_translated || '' === $field_data_translated ) {
-						$field_data_translated = $this->remove_etx_char( $field_data );
+						$field_data_translated = $this->remove_invalid_chars( $field_data );
 					}
 					if ( $this->is_valid_unit_content( $field_data ) ) {
-						$translation_units[] = $this->get_translation_unit_data( $element->field_type,
-						                                                         $element->field_type,
-						                                                         $field_data,
-						                                                         $field_data_translated,
-						                                                         $element->translated_from_memory );
+						$translation_units[] = $this->get_translation_unit_data(
+							$element->field_type,
+							$element->field_type,
+							$field_data,
+							$field_data_translated,
+							$element->translated_from_memory,
+							$element->field_wrap_tag
+						);
 					}
 				}
 			}
@@ -241,7 +273,7 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		foreach ( $elements as &$element ) {
 			$element->translated_from_memory = false;
 
-			if ( self::FIELD_FINISHED !== $element->field_finished && preg_match( '/^package-string/', $element->field_type ) ) {
+			if ( preg_match( '/^package-string/', $element->field_type ) ) {
 				$strings_to_translate[ $element->tid ] = base64_decode( $element->field_data );
 			}
 		}
@@ -252,8 +284,7 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 
 			foreach ( $elements as &$element ) {
 
-				if ( self::FIELD_FINISHED !== $element->field_finished
-				     && array_key_exists( $element->tid, $strings_to_translate )
+				if ( array_key_exists( $element->tid, $strings_to_translate )
 				     && array_key_exists( $strings_to_translate[ $element->tid ], $original_translated_map )
 				) {
 					$element->field_data_translated  = base64_encode( $original_translated_map[ $strings_to_translate[ $element->tid ] ] );
@@ -265,10 +296,29 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		return $elements;
 	}
 
-	private function get_translation_unit_data( $field_id, $field_name, $field_data, $field_data_translated, $is_translated_from_memory = false ) {
+	/**
+	 * Get translation unit data.
+	 *
+	 * @param string  $field_id                  Field ID.
+	 * @param string  $field_name                Field name.
+	 * @param string  $field_data                Field content.
+	 * @param string  $field_data_translated     Field translated content.
+	 * @param boolean $is_translated_from_memory Boolean flag - is translated from memory.
+	 * @param string  $field_wrap_tag            Field wrap tag (h1...h6, etc.)
+	 *
+	 * @return array
+	 */
+	private function get_translation_unit_data(
+		$field_id,
+		$field_name,
+		$field_data,
+		$field_data_translated,
+		$is_translated_from_memory = false,
+		$field_wrap_tag = ''
+	) {
 		global $sitepress;
 
-		$field_data = $this->remove_etx_char( $field_data );
+		$field_data = $this->remove_invalid_chars( $field_data );
 
 		$translation_unit = array();
 
@@ -284,8 +334,9 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		$translation_unit['attributes']['restype']  = 'string';
 		$translation_unit['attributes']['datatype'] = 'html';
 		$translation_unit['attributes']['id']       = $field_id;
-		$translation_unit['source'] = array( 'content' => $field_data );
-		$translation_unit['target'] = array( 'content' => $field_data_translated );
+		$translation_unit['source']                 = array( 'content' => $field_data );
+		$translation_unit['target']                 = array( 'content' => $field_data_translated );
+		$translation_unit['note']                   = array( 'content' => $field_wrap_tag );
 
 		if ( $is_translated_from_memory ) {
 			$translation_unit['target']['attributes'] = array(
@@ -306,11 +357,6 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		return str_replace( array( "\n", "\r" ), array( '<br class="xliff-newline" />', '' ), $string );
 	}
 
-	/**
-	 * @param string $string
-	 *
-	 * @return string
-	 */
 	private function remove_line_breaks_inside_tags( $string ) {
 		return preg_replace_callback( '/(<[^>]*>)/m', array( $this, 'remove_line_breaks_inside_tag_callback' ), $string );
 	}
@@ -329,10 +375,14 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 	/**
 	 * @param string $string
 	 *
+	 * Remove all characters below 0x20 except for 0x09, 0x0A and 0x0D
+	 * @see https://www.w3.org/TR/xml/#charsets
+	 *
 	 * @return string
 	 */
-	private function remove_etx_char( $string ) {
-		return preg_replace('/[\x03\x05\x11]/', '', $string);
+
+	private function remove_invalid_chars( $string ) {
+		return preg_replace( '/[\x00-\x08\x0B-\x0C\x0E-\x1F]/', '', $string );
 	}
 
 	/**
@@ -367,30 +417,20 @@ class WPML_TM_Xliff_Writer extends WPML_TM_Job_Factory_User {
 		return $external_file_url;
 	}
 
-	private function get_shortcodes() {
-		global $shortcode_tags;
-		if ( $shortcode_tags ) {
-			return array_keys( $shortcode_tags );
-		}
+	/**
+	 * @param $content
+	 *
+	 * @return bool
+	 */
+	private function is_valid_unit_content( $content ) {
+		$content = preg_replace( '/[^#\w]*/u', '', $content );
 
-		return array();
+		return $content || '0' === $content;
 	}
 
-	/**
-	 * @return array
-	 */
-	private function get_shortcodes_data() {
-		$short_codes = $this->get_shortcodes();
-
-		if ( $short_codes ) {
-			return array(
-				'shortcodes' => array(
-					'process-name' => 'Shortcodes identification',
-					'note'         => implode( ',', $short_codes )
-				)
-			);
-		}
-
-		return array();
+	private function get_translator_notes( $job ) {
+		$this->translator_notes = new WPML_TM_XLIFF_Translator_Notes(
+			isset( $job->original_doc_id ) ? $job->original_doc_id : 0
+		);
 	}
 }

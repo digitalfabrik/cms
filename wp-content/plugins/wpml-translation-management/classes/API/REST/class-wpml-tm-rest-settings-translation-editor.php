@@ -38,7 +38,7 @@ class WPML_TM_REST_Settings_Translation_Editor extends WPML_REST_Base {
 	}
 
 	public function get_allowed_capabilities( WP_REST_Request $request ) {
-		return WPML_Manage_Translations_Role::CAPABILITY;
+		return array( WPML_Manage_Translations_Role::CAPABILITY, 'manage_options' );
 	}
 
 	/**

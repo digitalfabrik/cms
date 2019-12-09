@@ -1,5 +1,8 @@
 <?php
 
+use WPML\TM\ATE\Log\Entry;
+use WPML\TM\ATE\Log\ErrorEvents;
+
 /**
  * @author OnTheGo Systems
  */
@@ -34,20 +37,13 @@ class WPML_TM_ATE_API {
 	 * @throws \InvalidArgumentException
 	 */
 	public function create_jobs( array $params ) {
-		$verb = 'POST';
-		$url  = $this->endpoints->get_ate_jobs();
-
-		$signed_url = $this->auth->get_signed_url( $verb, $url, $params );
-
-		$result = $this->wp_http->request( $signed_url,
-		                                   array(
-			                                   'timeout' => 60,
-			                                   'method'  => $verb,
-			                                   'headers' => $this->json_headers(),
-			                                   'body'    => wp_json_encode( $params, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES ),
-		                                   ) );
-
-		return $this->get_response( $result );
+		return $this->requestWithLog(
+			$this->endpoints->get_ate_jobs(),
+			[
+				'method' => 'POST',
+				'body'   => $params,
+			]
+		);
 	}
 
 	/**
@@ -57,18 +53,7 @@ class WPML_TM_ATE_API {
 	 * @throws \InvalidArgumentException
 	 */
 	public function confirm_received_job( $ate_job_id ) {
-		$verb = 'GET';
-		$url  = $this->endpoints->get_ate_confirm_job( $ate_job_id );
-
-		$signed_url = $this->auth->get_signed_url( $verb, $url );
-		$result     = $this->wp_http->request( $signed_url,
-		                                       array(
-			                                       'timeout' => 60,
-			                                       'method'  => $verb,
-			                                       'headers' => $this->json_headers(),
-		                                       ) );
-
-		return $this->get_response( $result );
+		return $this->requestWithLog( $this->endpoints->get_ate_confirm_job( $ate_job_id ) );
 	}
 
 	/**
@@ -102,22 +87,19 @@ class WPML_TM_ATE_API {
 	 * @throws \InvalidArgumentException
 	 */
 	public function get_job( $ate_job_id ) {
-		$verb = 'GET';
-		$url  = $this->endpoints->get_ate_jobs( $ate_job_id );
+		if ( ! $ate_job_id ) {
+			return null;
+		}
 
-		$signed_url = $this->auth->get_signed_url( $verb, $url, null );
-
-		$result = $this->wp_http->request( $signed_url,
-		                                   array(
-			                                   'timeout' => 60,
-			                                   'method'  => $verb,
-			                                   'headers' => $this->json_headers(),
-		                                   ) );
-
-		return $this->get_response( $result );
+		return $this->requestWithLog( $this->endpoints->get_ate_jobs( $ate_job_id ) );
 	}
 
 	/**
+	 * If `$job_ids` is not an empty array,
+	 * the `$statuses` parameter will be ignored in ATE's endpoint.
+	 *
+	 * @see https://bitbucket.org/emartini_crossover/ate/wiki/API/V1/jobs/status
+	 *
 	 * @param null|array $job_ids
 	 * @param null|array $statuses
 	 *
@@ -125,35 +107,40 @@ class WPML_TM_ATE_API {
 	 * @throws \InvalidArgumentException
 	 */
 	public function get_jobs( $job_ids, $statuses = null ) {
-		$verb = 'GET';
-		$url  = $this->endpoints->get_ate_jobs( $job_ids, $statuses );
+		return $this->requestWithLog( $this->endpoints->get_ate_jobs( $job_ids, $statuses ) );
+	}
 
-		$signed_url = $this->auth->get_signed_url( $verb, $url, null );
+	/**
+	 * @param $wpml_job_ids
+	 *
+	 * @return array|mixed|object|WP_Error|null
+	 */
+	public function get_jobs_by_wpml_ids( $wpml_job_ids ) {
+		return $this->requestWithLog( $this->endpoints->get_ate_jobs_by_wpml_job_ids( $wpml_job_ids ) );
+	}
 
-		$result = $this->wp_http->request( $signed_url,
+	/**
+	 * @param array $pairs
+	 * @see https://bitbucket.org/emartini_crossover/ate/wiki/API/V1/migration/migrate
+	 * @return bool
+	 */
+	public function migrate_source_id( array $pairs ) {
+		$verb = 'POST';
+
+		$url = $this->auth->get_signed_url( $verb, $this->endpoints->get_source_id_migration(), $pairs );
+		if ( is_wp_error( $url ) ) {
+			return $url;
+		}
+
+		$result = $this->wp_http->request( $url,
 		                                   array(
 			                                   'timeout' => 60,
 			                                   'method'  => $verb,
 			                                   'headers' => $this->json_headers(),
+			                                   'body'    => wp_json_encode( $pairs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ),
 		                                   ) );
 
-		return $this->get_response( $result );
-	}
-
-	/**
-	 * @param null|array $job_ids
-	 *
-	 * @return array|mixed|null|object|WP_Error
-	 * @throws \InvalidArgumentException
-	 */
-	public function get_non_delivered_ate_jobs( $job_ids ) {
-		return $this->get_jobs( $job_ids,
-		                        array(
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_CREATED,
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_TRANSLATING,
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_TRANSLATED,
-			                        WPML_TM_ATE_AMS_Endpoints::ATE_JOB_STATUS_DELIVERING,
-		                        ) );
+		return $this->get_response_errors( $result ) === null;
 	}
 
 	private function get_response( $result ) {
@@ -206,5 +193,144 @@ class WPML_TM_ATE_API {
 			'Accept'       => 'application/json',
 			'Content-Type' => 'application/json',
 		);
+	}
+
+	/**
+	 * @param array $args
+	 *
+	 * @return string
+	 */
+	private function encode_body_args( array $args ) {
+		return wp_json_encode( $args, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES );
+	}
+
+	/**
+	 * @param string $xliff_url
+	 *
+	 * @return string
+	 * @throws Requests_Exception
+	 */
+	public function get_remote_xliff_content( $xliff_url ) {
+		/** @var \WP_Error|array $response */
+		$response = wp_remote_get( $xliff_url );
+		if ( is_wp_error( $response ) ) {
+			throw new Requests_Exception( $response->get_error_message(), $response->get_error_code() );
+		} elseif ( isset( $response['response']['code'] ) && 200 !== (int) $response['response']['code'] ) {
+			throw new Requests_Exception( $response['response']['message'], $response['response']['code'] );
+		} elseif ( ! isset( $response['body'] ) || ! trim( $response['body'] ) ) {
+			throw new Requests_Exception( 'Missing body', 0 );
+		}
+
+		return $response['body'];
+	}
+
+	public function override_site_id( $site_id ) {
+		$this->auth->override_site_id( $site_id);
+	}
+
+	public function get_website_id( $site_url ) {
+		$signed_url = $this->auth->get_signed_url( 'GET', $this->endpoints->get_websites() );
+		if ( is_wp_error( $signed_url ) ) {
+			return null;
+		}
+
+		$sites = $this->get_response( $this->wp_http->request( $signed_url ) );
+
+		foreach ( $sites as $site ) {
+			if ( $site->url === $site_url ) {
+				return $site->uuid;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * @see https://bitbucket.org/emartini_crossover/ate/wiki/API/V1/sync/all
+	 *
+	 * @param array $ateJobIds
+	 *
+	 * @return array|mixed|null|object|WP_Error
+	 * @throws \InvalidArgumentException
+	 */
+	public function sync_all( array $ateJobIds ) {
+		return $this->requestWithLog(
+			$this->endpoints->get_sync_all(),
+			[
+				'method' => 'POST',
+				'body'   => [ 'ids' => $ateJobIds ],
+			]
+		);
+	}
+
+	/**
+	 * @see https://bitbucket.org/emartini_crossover/ate/wiki/API/V1/sync/page
+	 *
+	 * @param string $token
+	 * @param int    $page
+	 *
+	 * @return array|mixed|null|object|WP_Error
+	 * @throws \InvalidArgumentException
+	 */
+	public function sync_page( $token, $page ) {
+		return $this->requestWithLog( $this->endpoints->get_sync_page( $token, $page ) );
+	}
+
+	/**
+	 * @param string $url
+	 * @param array  $requestArgs
+	 *
+	 * @return array|mixed|object|string|WP_Error|null
+	 */
+	private function request( $url, array $requestArgs = [] ) {
+		$requestArgs = array_merge(
+			[
+				'timeout' => 60,
+				'method'  => 'GET',
+				'headers' => $this->json_headers(),
+			],
+			$requestArgs
+		);
+
+		$bodyArgs = isset( $requestArgs['body'] ) && is_array( $requestArgs['body'] )
+			? $requestArgs['body'] : null;
+
+		$signedUrl = $this->auth->get_signed_url( $requestArgs['method'], $url, $bodyArgs );
+
+		if ( is_wp_error( $signedUrl ) ) {
+			return $signedUrl;
+		}
+
+		if ( $bodyArgs ) {
+			$requestArgs['body'] = $this->encode_body_args( $bodyArgs );
+		}
+
+		$result = $this->wp_http->request( $signedUrl, $requestArgs );
+
+		return $this->get_response( $result );
+	}
+
+	/**
+	 * @param string $url
+	 * @param array  $requestArgs
+	 *
+	 * @return array|mixed|object|string|WP_Error|null
+	 */
+	private function requestWithLog( $url, array $requestArgs = [] ) {
+		$response = $this->request( $url, $requestArgs );
+
+		if ( is_wp_error( $response ) ) {
+			$entry              = new Entry();
+			$entry->event       = ErrorEvents::SERVER_ATE;
+			$entry->description = $response->get_error_message();
+			$entry->extraData   = [
+				'url'         => $url,
+				'requestArgs' => $requestArgs,
+			];
+
+			wpml_tm_ate_ams_log( $entry );
+		}
+
+		return $response;
 	}
 }

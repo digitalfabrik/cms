@@ -13,13 +13,12 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 	/** @var WPML_Language_Collection $source_languages */
 	private $source_languages;
 
-	/** @var WPML_TM_AMS_Translator_Activation_Records */
-	private $translator_activation_records;
+	private $default_language;
 
 	public function __construct(
 		WPML_Translator_Records $user_records,
 		WPML_Language_Collection $active_languages,
-		WPML_TM_AMS_Translator_Activation_Records $translator_activation_records = null
+		$default_language
 	) {
 		parent::__construct( array_merge( array(
 				WPML_TM_PATH . '/templates/translators',
@@ -29,12 +28,12 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 
 		$this->user_records                  = $user_records;
 		$this->active_languages              = $active_languages;
-		$this->translator_activation_records = $translator_activation_records;
+		$this->default_language              = $default_language;
 
 		$this->source_languages = apply_filters( 'wpml_tm_allowed_source_languages', clone $this->active_languages );
 	}
 
-	public function render() {
+	public function render( $wizard_mode = false ) {
 		$this->add_users();
 		$this->add_strings();
 		$this->add_add_translator_dialog();
@@ -42,7 +41,7 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 		$this->add_roles();
 		$this->add_languages();
 		$this->add_nonce();
-		$this->add_capability();
+		$this->add_capability( $wizard_mode );
 
 		return $this->get_template()->show( $this->model, $this->get_twig_template() );
 	}
@@ -50,15 +49,14 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 	public function add_strings() {
 
 		$this->model['strings'] = array(
-			'title'          => __( 'Set Local Translators', 'wpml-translation-management' ),
+			'title'          => __( 'Translators', 'wpml-translation-management' ),
 			'sub_title'      => __( 'WPML’s Translation Editor makes it easy for your own translators to translate content in your site. You can create accounts for new translators or use existing WordPress users as your translators.', 'wpml-translation-management' ),
 			'columns'        => array(
 				'name'           => __( 'Name', 'wpml-translation-management' ),
 				'email'          => __( 'Email', 'wpml-translation-management' ),
-				'subscription'   => __( 'Advanced Translation Editor subscription', 'wpml-translation-management' ),
 				'language_pairs' => __( 'Language Pairs', 'wpml-translation-management' ),
 			),
-			'add_translator' => __( 'Add Translator', 'wpml-translation-management' ),
+			'add_translator' => __( 'Add a Translator', 'wpml-translation-management' ),
 			'go_back'        => __( 'Go back', 'wpml-translation-management' ),
 			'continue'       => __( 'Continue', 'wpml-translation-management' ),
 			'first_name'     => __( 'First name:', 'wpml-translation-management' ),
@@ -72,14 +70,11 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 			'no_capability'  => __( "Only Translation Managers can add translators to the site. You can assign a different WordPress user to be the site's Translation Manager or make yourself a Translation Manager.", 'wpml-translation-management' ),
 			'yes'            => __( 'Yes', 'wpml-translation-management' ),
 			'no'             => __( 'No', 'wpml-translation-management' ),
+			'only_i'         => __( 'You can translate to and from all languages', 'wpml-translation-management' ),
+			'remove_me'      => __( 'Remove me as a translator', 'wpml-translation-management' ),
 
 		);
 
-		$this->model['strings'] = apply_filters(
-			'wpml_tm_translators_view_strings',
-			$this->model['strings'],
-			$this->model['all_users_have_subscriptions']
-		);
 	}
 
 	private function add_roles() {
@@ -91,21 +86,22 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 			'id'               => 'js-add-translator-dialog',
 			'class'            => '',
 			'strings'          => array(
-				'title'               => __( 'Add new Translator', 'wpml-translation-management' ),
-				'set_languages_text'  => __( 'Set language pair(s)', 'wpml-translation-management' ),
-				'add_translator_text' => __( 'Add Translator', 'wpml-translation-management' ),
-				'previous_text'       => __( 'Previous', 'wpml-translation-management' ),
-				'cancel_text'         => __( 'Cancel', 'wpml-translation-management' ),
-				'existing_user'       => __( 'Select an existing user and set as Translator', 'wpml-translation-management' ),
-				'new_user'            => __( 'Create a new user and set as Translator', 'wpml-translation-management' ),
-				'set_lang'            => __( 'Set language pair(s) for Translator %USERNAME%', 'wpml-translation-management' ),
-				'from'                => __( 'From', 'wpml-translation-management' ),
-				'to'                  => __( 'to', 'wpml-translation-management' ),
-				'choose_language'     => __( '--Choose language--', 'wpml-translation-management' ),
-				'add_lang_pair_text'  => __( 'Add another language pair', 'wpml-translation-management' ),
+				'title'                => __( 'Add a Translator', 'wpml-translation-management' ),
+				'set_languages_text'   => __( 'Set language pair(s)', 'wpml-translation-management' ),
+				'save_translator_text' => __( 'Save', 'wpml-translation-management' ),
+				'previous_text'        => __( 'Previous', 'wpml-translation-management' ),
+				'cancel_text'          => __( 'Cancel', 'wpml-translation-management' ),
+				'existing_user'        => __( 'Select an existing user and set as Translator', 'wpml-translation-management' ),
+				'new_user'             => __( 'Create a new user and set as Translator', 'wpml-translation-management' ),
+				'set_lang'             => __( 'Set language pair(s) for Translator %USERNAME%', 'wpml-translation-management' ),
+				'from'                 => __( 'From', 'wpml-translation-management' ),
+				'to'                   => __( 'to', 'wpml-translation-management' ),
+				'choose_language'      => __( '--Choose language--', 'wpml-translation-management' ),
+				'add_lang_pair_text'   => __( 'Add more language pairs for this translator', 'wpml-translation-management' ),
 			),
 			'languages'        => $this->active_languages,
 			'source_languages' => $this->source_languages,
+			'default_language' => $this->default_language,
 			'nonce'            => $this->get_nonce(),
 		);
 	}
@@ -121,7 +117,7 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 				'from'               => __( 'From', 'wpml-translation-management' ),
 				'to'                 => __( 'to', 'wpml-translation-management' ),
 				'choose_language'    => __( '--Choose language--', 'wpml-translation-management' ),
-				'add_lang_pair_text' => __( 'Add another language pair', 'wpml-translation-management' ),
+				'add_lang_pair_text' => __( 'Add more language pairs for this translator', 'wpml-translation-management' ),
 			),
 			'languages'        => $this->active_languages,
 			'source_languages' => $this->source_languages,
@@ -134,19 +130,16 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 		$language_pair_records = new WPML_Language_Pair_Records( $wpdb, new WPML_Language_Records( $wpdb ) );
 
 		$this->model['users']                        = array();
-		$this->model['all_users_have_subscriptions'] = true;
 
 		$users = $this->user_records->get_users_with_capability();
 		foreach ( $users as $user ) {
 			$user->language_pairs = $language_pair_records->get( $user->ID );
-			$user->subscription   = false;
-			if ( $this->translator_activation_records ) {
-				$user->subscription = $this->translator_activation_records->is_activated( $user->user_email );
+			if ( get_user_meta( $user->ID, WPML_TM_Wizard_Options::ONLY_I_USER_META, true ) ) {
+				$user->avatar               = get_avatar( $user->ID, 70 );
+				$this->model['only_i_user'] = $user;
+			} else {
+				$this->model['users'][] = $user;
 			}
-			if ( ! $user->subscription ) {
-				$this->model['all_users_have_subscriptions'] = false;
-			}
-			$this->model['users'][] = $user;
 		}
 	}
 
@@ -158,8 +151,8 @@ abstract class WPML_TM_Translators_View extends WPML_Twig_Template_Loader {
 		$this->model['nonce'] = $this->get_nonce();
 	}
 
-	public function add_capability() {
-		$this->model['can_add_translators'] = current_user_can( WPML_Manage_Translations_Role::CAPABILITY );
+	public function add_capability( $wizard_mode ) {
+		$this->model['can_add_translators'] = $wizard_mode || current_user_can( WPML_Manage_Translations_Role::CAPABILITY );
 	}
 
 	private function get_nonce() {

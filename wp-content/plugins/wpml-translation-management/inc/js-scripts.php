@@ -4,8 +4,6 @@
  * Registers scripts so that they can be reused throughout WPML plugins
  */
 function wpml_tm_register_js_scripts() {
-	global $sitepress;
-
 	wp_register_script(
 		'wpml-tm-editor-templates',
 		WPML_TM_URL . '/res/js/translation-editor/templates.js',
@@ -20,7 +18,7 @@ function wpml_tm_register_js_scripts() {
 		WPML_TM_VERSION,
 		true
 	);
-	
+
 	$scripts = array(
 		'wpml-tm-editor-job-field-view',
 		'wpml-tm-editor-job-basic-field-view',
@@ -40,12 +38,19 @@ function wpml_tm_register_js_scripts() {
 		'wpml-tm-editor-edit-independently-dialog',
 		'wpml-tm-editor-translation-memory',
 	);
-	
-	foreach( $scripts as $script ) {
+
+	$additional_requirements = array(
+		'wpml-tm-editor-footer-view' => array( 'wpml-tm-progressbar' ),
+	);
+
+	foreach ( $scripts as $script ) {
 		wp_register_script(
 			$script,
 			WPML_TM_URL . '/res/js/translation-editor/' . $script . '.js',
-			array( 'wpml-tm-editor-job' ),
+			array_merge(
+				array( 'wpml-tm-editor-job' ),
+				isset( $additional_requirements[ $script ] ) ? $additional_requirements[ $script ] : array()
+			),
 			WPML_TM_VERSION,
 			true
 		);
@@ -54,25 +59,38 @@ function wpml_tm_register_js_scripts() {
 	wp_register_script(
 		'wpml-tm-editor-scripts',
 		WPML_TM_URL . '/res/js/translation-editor/translation-editor.js',
-		array_merge( array( 'jquery', 'jquery-ui-dialog', 'wpml-tm-editor-templates', 'wpml-tm-editor-job'), $scripts ),
+		array_merge( array( 'jquery', 'jquery-ui-dialog', 'wpml-tm-editor-templates', 'wpml-tm-editor-job' ), $scripts ),
 		WPML_TM_VERSION,
 		true
 	);
-	wp_register_script( 'wpml-tp-polling-box-populate',
+	wp_register_script(
+		'wpml-tp-polling-box-populate',
 		WPML_TM_URL . '/res/js/tp-polling/box-populate.js',
-		array( 'jquery' ), WPML_TM_VERSION );
-	wp_register_script( 'wpml-tp-polling',
+		array( 'jquery' ),
+		WPML_TM_VERSION,
+		true
+	);
+	wp_register_script(
+		'wpml-tp-polling',
 		WPML_TM_URL . '/res/js/tp-polling/poll-for-translations.js',
-		array( 'wpml-tp-polling-box-populate' ), WPML_TM_VERSION );
-	wp_register_script( 'wpml-tp-polling-setup',
-		WPML_TM_URL . '/res/js/tp-polling/box-setup.js',
-		array( 'wpml-tp-polling' ), WPML_TM_VERSION );
-	wp_register_script( 'wpml-tm-mcs',
+		array( 'wpml-tp-polling-box-populate' ),
+		WPML_TM_VERSION,
+		true
+	);
+	wp_register_script(
+		'wpml-tm-mcs',
 		WPML_TM_URL . '/res/js/mcs/wpml-tm-mcs.js',
-		array( 'wpml-tp-polling' ), WPML_TM_VERSION );
-	wp_register_script( 'wpml-tm-mcs-translate-link-targets',
+		array( 'wpml-tp-polling' ),
+		WPML_TM_VERSION,
+		true
+	);
+	wp_register_script(
+		'wpml-tm-mcs-translate-link-targets',
 		WPML_TM_URL . '/res/js/mcs/wpml-tm-mcs-translate-link-targets.js',
-		array(), WPML_TM_VERSION );
+		array(),
+		WPML_TM_VERSION,
+		true
+	);
 }
 
 if ( is_admin() ) {

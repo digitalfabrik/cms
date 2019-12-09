@@ -88,7 +88,7 @@ if ( isset( $action ) && wp_verify_nonce( $nonce, $action ) ) {
                 LEFT JOIN {$wpdb->comments} c ON t.element_id = c.comment_ID
                 WHERE t.element_type = 'comment' AND c.comment_ID IS NULL " );
 			if ( false === $orphans ) {
-				echo $wpdb->last_result; 
+				echo $wpdb->last_result;
 			}
 			if ( !empty( $orphans ) ) {
 
@@ -213,42 +213,7 @@ if ( isset( $action ) && wp_verify_nonce( $nonce, $action ) ) {
 			exit;
 			break;
 		case 'assign_translation_status_to_duplicates':
-			global $sitepress, $iclTranslationManagement;
-
-			$active_languages     = $sitepress->get_active_languages();
-			$duplicated_posts_sql = "SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key='_icl_lang_duplicate_of' AND meta_value<>'' GROUP BY meta_value;";
-			$duplicated_posts     = $wpdb->get_col( $duplicated_posts_sql );
-			$updated_items        = 0;
-			foreach ( $duplicated_posts as $original_post_id ) {
-				$element_type             = 'post_' . get_post_type( $original_post_id );
-				$trid                     = $sitepress->get_element_trid( $original_post_id, $element_type );
-				$element_language_details = $sitepress->get_element_translations( $trid, $element_type );
-				$item_updated             = false;
-				foreach ( $active_languages as $code => $active_language ) {
-					if ( ! isset( $element_language_details[ $code ] ) ) {
-						continue;
-					}
-					$element_translation = $element_language_details[ $code ];
-					if ( ! isset( $element_translation ) || $element_translation->original ) {
-						continue;
-					}
-					$translation = $iclTranslationManagement->get_element_translation( $element_translation->element_id,
-					                                                                   $code,
-					                                                                   $element_type );
-					if ( ! $translation ) {
-						$status_helper = wpml_get_post_status_helper();
-						$status_helper->set_status( $element_translation->element_id, ICL_TM_DUPLICATE );
-						$item_updated = true;
-					}
-				}
-				if ( $item_updated ) {
-					$updated_items ++;
-				}
-				if ( $updated_items >= 20 ) {
-					break;
-				}
-			}
-
+			$updated_items = WPML\Troubleshooting\AssignTranslationStatusToDuplicates::run();
 			echo json_encode( array( 'updated' => $updated_items ) );
 			exit;
 		case 'icl_ts_add_missing_language':
@@ -299,9 +264,10 @@ if ( isset( $action ) && wp_verify_nonce( $nonce, $action ) ) {
 		case 'icl_fix_terms_count':
 			global $sitepress;
 
-			remove_filter('get_terms_args', array($sitepress, 'get_terms_args_filter'));
-			$has_get_term_filter = remove_filter('get_term', array($sitepress,'get_term_adjust_id'), 1);
-			remove_filter('terms_clauses', array($sitepress,'terms_clauses'));
+			$has_get_terms_args_filter = remove_filter( 'get_terms_args', array( $sitepress, 'get_terms_args_filter' ) );
+			$has_get_term_filter       = remove_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1 );
+			$has_terms_clauses_filter  = remove_filter( 'terms_clauses', array( $sitepress, 'terms_clauses' ) );
+
 			foreach ( get_taxonomies( array(), 'names' ) as $taxonomy ) {
 
 				$terms_objects = get_terms( $taxonomy, 'hide_empty=0'  );
@@ -311,11 +277,17 @@ if ( isset( $action ) && wp_verify_nonce( $nonce, $action ) ) {
 				}
 
 			}
-			add_filter('terms_clauses', array($sitepress,'terms_clauses'));
+
+			if ( $has_terms_clauses_filter) {
+				add_filter( 'terms_clauses', array( $sitepress, 'terms_clauses' ), 10, 3 );
+			}
 			if ( $has_get_term_filter ) {
 				add_filter( 'get_term', array( $sitepress, 'get_term_adjust_id' ), 1, 1 );
 			}
-			add_filter('get_terms_args', array($sitepress, 'get_terms_args_filter'), 10, 2);
+			if ( $has_get_terms_args_filter ) {
+				add_filter( 'get_terms_args', array( $sitepress, 'get_terms_args_filter' ), 10, 2 );
+			}
+
 			exit;
 		case 'icl_remove_st_db_cache_logs' :
 			delete_option( 'wpml-st-persist-errors' );
@@ -655,6 +627,8 @@ echo '</textarea>';
 		<small style="margin-left:10px;"><?php _e( 'Fixes the collation of the element_type column in icl_translations in case this setting changed for your posts.post_type column.', 'sitepress' ) ?></small>
 	</p>
 
+    <?php do_action( 'wpml_troubleshooting_after_fix_element_type_collation' ); ?>
+
 	<?php if(class_exists('TranslationManagement')){ ?>
 	<p>
 		<input id="assign_translation_status_to_duplicates" type="button" class="button-secondary" value="<?php _e( 'Assign translation status to duplicated content', 'sitepress' ) ?>"/><span id="assign_translation_status_to_duplicates_resp"></span><br/>
@@ -828,6 +802,9 @@ echo WPML_Troubleshooting_Terms_Menu::display_terms_with_suffix();
 			echo '</p>';
 			echo '<p class="error" style="padding:6px;">';
 			_e(	"Please note that all translations you have sent to remote translation services will be lost if you reset WPML's data. They cannot be recovered later.", 'sitepress' );
+			echo '</p>';
+			echo '<p class="error" style="padding:6px;">';
+			_e( "If you are using the Advanced Translation Editor, you will lose the translations that are in progress, as well as the existing translation memory and glossary. You will also lose access to purchases, invoices, and history related to your work with the Advanced Translation Editor.", 'sitepress' );
 			echo '</p>';
 			echo '<label><input type="checkbox" name="icl-reset-all" ';
 			if ( !function_exists( 'is_super_admin' ) || is_super_admin() ) {

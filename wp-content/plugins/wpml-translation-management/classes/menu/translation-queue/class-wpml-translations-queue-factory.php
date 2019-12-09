@@ -4,6 +4,9 @@
  * @author OnTheGo Systems
  */
 class WPML_Translations_Queue_Factory {
+	/**
+	 * @return \WPML_Translations_Queue|null
+	 */
 	public function create() {
 		global $sitepress;
 
@@ -17,6 +20,9 @@ class WPML_Translations_Queue_Factory {
 
 		$screen_options_factory = new WPML_UI_Screen_Options_Factory( $sitepress );
 
-		return new WPML_Translations_Queue( $sitepress, $screen_options_factory );
+		return new WPML_Translations_Queue(
+			$sitepress,
+			$screen_options_factory
+		);
 	}
 }

@@ -2,26 +2,37 @@
 
 abstract class WPML_TM_Post_Link_Anchor extends WPML_TM_Post_Link {
 
-	/**
-	 * @var string $anchor
-	 */
+	/** @var string $anchor */
 	private $anchor;
 
-	public function __construct( &$sitepress, $post_id, $anchor ) {
+	/** @var string $target */
+	private $target;
+
+	/**
+	 * WPML_TM_Post_Link_Anchor constructor.
+	 *
+	 * @param SitePress $sitepress
+	 * @param int $post_id
+	 * @param string $anchor
+	 * @param string $target
+	 */
+	public function __construct( SitePress $sitepress, $post_id, $anchor, $target = '' ) {
 		parent::__construct( $sitepress, $post_id );
 		$this->anchor = $anchor;
+		$this->target = $target;
 	}
 
 	public function __toString() {
-		$opost = $this->sitepress->get_wp_api()->get_post( $this->post_id );
+		$post = $this->sitepress->get_wp_api()->get_post( $this->post_id );
 
-		return ! $opost
-		       || ( in_array( $opost->post_status,
+		return ! $post
+		       || ( in_array( $post->post_status,
 				array( 'draft', 'private', 'trash' ), true )
-		            && $opost->post_author != $this->sitepress->get_wp_api()
+		            && $post->post_author != $this->sitepress->get_wp_api()
 		                                                      ->get_current_user_id() )
-			? '' : sprintf( '<a href="%s">%s</a>',
+			? '' : sprintf( '<a href="%s"%s>%s</a>',
 				esc_url( $this->link_target() ),
+				$this->target ? ' target="' . $this->target . '"' : '',
 				esc_html( $this->anchor ) );
 	}
 

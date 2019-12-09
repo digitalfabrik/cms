@@ -35,7 +35,7 @@ class WPML_Display_As_Translated_Default_Lang_Messages_View {
 				$prev_default_lang,
 				$default_lang ),
 			'help_text'        => __( 'Tell me more', 'sitepress' ),
-			'help_link'        => 'https://wpml.org/documentation/translating-your-contents/displaying-untranslated-content-on-pages-in-secondary-languages/',
+			'help_link'        => 'https://wpml.org/?page_id=1451509',
 			'got_it'           => __( 'Got it', 'sitepress' ),
 			'lang_has_changed' => $prev_default_lang !== $default_lang,
 		);

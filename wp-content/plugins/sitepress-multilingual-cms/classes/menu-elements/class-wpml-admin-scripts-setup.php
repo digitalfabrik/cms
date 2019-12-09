@@ -28,22 +28,11 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 		wp_register_style( 'wpml-dialog', ICL_PLUGIN_URL . '/res/css/dialog.css', array( 'otgs-dialogs' ), ICL_SITEPRESS_VERSION );
 		wp_register_style( 'otgs-ico', ICL_PLUGIN_URL . '/res/css/otgs-ico.css', null, ICL_SITEPRESS_VERSION );
 		wp_register_style( 'wpml-wizard', ICL_PLUGIN_URL . '/res/css/wpml-wizard.css', null, ICL_SITEPRESS_VERSION );
-		wp_register_style( 'wpml-popover-tooltip', ICL_PLUGIN_URL . '/dist/css/shared/wpml-popover-tooltip.css', null, ICL_SITEPRESS_VERSION );
 	}
 
-	public function register_scripts() {
-		wp_register_script( 'wpml-popover-tooltip', ICL_PLUGIN_URL . '/dist/js/shared/wpml-popover-tooltip.js', null, ICL_SITEPRESS_VERSION );
-	  wp_register_script( 'otgs-table-sticky-header', ICL_PLUGIN_URL . '/dist/js/shared/otgs-table-sticky-header.js', array('jquery'), ICL_SITEPRESS_VERSION );
-  }
-
-
-
 	private function print_js_globals() {
-		$icl_ajax_url_root = rtrim( get_site_url(), '/' );
-		if ( defined( 'FORCE_SSL_ADMIN' ) && FORCE_SSL_ADMIN ) {
-			$icl_ajax_url_root = str_replace( 'http://', 'https://', $icl_ajax_url_root );
-		}
-		$icl_ajax_url = $icl_ajax_url_root . '/wp-admin/admin.php?page=' . WPML_PLUGIN_FOLDER . '/menu/languages.php';
+		$icl_ajax_url = wpml_get_admin_url( array( 'path' => 'admin.php', 'query' => array( 'page' => WPML_PLUGIN_FOLDER . '/menu/languages.php' ) ) );
+
 		?>
         <script type="text/javascript">
             // <![CDATA[
@@ -130,18 +119,9 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 		if ( 'post-new.php' === $pagenow ) {
 			if ( $trid ) {
 				$translations = $this->post_translations->get_element_translations( false, $trid );
-				remove_filter(
-					'pre_option_sticky_posts',
-					array(
-						$sitepress,
-						'option_sticky_posts',
-					)
-				); // remove filter used to get language relevant stickies. get them all
-				$sticky_posts = get_option( 'sticky_posts' );
-				add_filter( 'pre_option_sticky_posts',
-				            array( $sitepress, 'option_sticky_posts' ),
-				            10,
-				            2 ); // add filter back
+
+				$sticky_posts = wpml_sticky_post_sync()->get_unfiltered_sticky_posts_option();
+
 				$is_sticky = false;
 				foreach ( $translations as $t ) {
 					if ( in_array( $t, $sticky_posts ) ) {
@@ -171,10 +151,20 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 				<script type="text/javascript">
 					addLoadEvent(
 						function () {
-							jQuery('#sticky').attr('checked', 'checked');
-							var post_visibility_display = jQuery('#post-visibility-display');
-							post_visibility_display.html(post_visibility_display.html() + ', <?php echo icl_js_escape(__('Sticky', 'sitepress')) ?>');
-						});
+							var block_editor = wpml_get_block_editor();
+							if(block_editor){
+								document.addEventListener( 'DOMContentLoaded', function() {
+									block_editor.then( function () {
+										wp.data.dispatch( 'core/editor' ).editPost( { sticky: true } );
+									});
+								} );
+							} else {
+								jQuery('#sticky').attr('checked', 'checked');
+								var post_visibility_display = jQuery('#post-visibility-display');
+								post_visibility_display.html(post_visibility_display.html() + ', <?php echo icl_js_escape(__('Sticky', 'sitepress')) ?>');
+							}
+						}
+					);
 				</script>
 			<?php endif; ?>
 		<?php
@@ -446,8 +436,6 @@ class WPML_Admin_Scripts_Setup extends WPML_Full_Translation_API {
 		wp_enqueue_style( 'otgs-ico');
 		wp_enqueue_style( 'wpml-wizard' );
 		wp_enqueue_style( 'thickbox' );
-		wp_enqueue_style( 'translate-taxonomy', ICL_PLUGIN_URL . '/res/css/taxonomy-translation.css', array(), ICL_SITEPRESS_VERSION );
-		
 	}
 
 	private function verify_home_and_blog_pages_translations() {

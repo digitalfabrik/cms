@@ -127,6 +127,7 @@ class WPML_Translation_Editor_UI {
 			'translation_is_complete'                      => ICL_TM_COMPLETE === (int) $this->job->status,
 			'show_media_button'                            => false,
 			'is_duplicate'                                 => $this->is_duplicate,
+			'display_hide_completed_switcher'              => true,
 		);
 
 		if ( ! empty( $_GET['return_url'] ) ) {
@@ -143,7 +144,7 @@ class WPML_Translation_Editor_UI {
 
 		$model['note'] = $this->sitepress->get_wp_api()->get_post_meta(
 			$this->job_instance->get_original_element_id(),
-			'_icl_translator_note',
+			WPML_TM_Translator_Note::META_FIELD_KEY,
 			true
 		);
 
@@ -176,8 +177,8 @@ class WPML_Translation_Editor_UI {
 
 		if ( $has_gutenberg_block ) {
 			echo '<div class="notice notice-info">
-					<p>' . esc_html__( 'This content came from the Gutenberg editor and you need to translate it carefully so that formatting in not broken.', 'wpml-translation-management' ) . '</p>
-					<p><a href="https://wpml.org/documentation/translating-your-contents/translating-gutenberg-content-with-wpml/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-gutenberg-content-with-wpml" class="wpml-external-link" target="_blank">' . esc_html__( 'Learn how to translate content that comes from Gutenberg', 'wpml-translation-management' ) . '</a></p>
+					<p>' . esc_html__( 'This content came from the Block editor and you need to translate it carefully so that formatting in not broken.', 'wpml-translation-management' ) . '</p>
+					<p><a href="https://wpml.org/documentation/getting-started-guide/translating-content-created-using-gutenberg-editor/?utm_source=wpmlplugin&utm_campaign=gutenberg&utm_medium=translation-editor&utm_term=translating-content-created-using-gutenberg-editor" class="wpml-external-link" target="_blank" rel="noopener">' . esc_html__( 'Learn how to translate content that comes from Block editor', 'wpml-translation-management' ) . '</a></p>
 				</div>';
 		}
 	}
@@ -366,6 +367,7 @@ class WPML_Translation_Editor_UI {
 			$model['requires_translation_complete_for_each_field'] = $job->requires_translation_complete_for_each_field();
 			$model['hide_empty_fields']                            = $job->is_hide_empty_fields();
 			$model['show_media_button']                            = $job->show_media_button();
+			$model['display_hide_completed_switcher']              = $job->display_hide_completed_switcher();
 
 			$model['fields'] = $this->add_rtl_attributes( $job->get_all_fields() );
 			$this->fields    = $model['fields'];
@@ -404,6 +406,11 @@ class WPML_Translation_Editor_UI {
 		$element_field_type = apply_filters( 'wpml_editor_custom_field_name', $element_field_type );
 
 		$element_field_style = 0;
+
+		if ( false !== strpos( $element->field_data, "\n" ) ) {
+			$element_field_style = 1;
+		}
+
 		/**
 		 * @deprecated Use `wpml_editor_custom_field_style` filter instead
 		 * @since      3.2

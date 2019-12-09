@@ -209,6 +209,7 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 			$sql_statements[] = "SELECT s.translator_id,
 						j.job_id,
 						IF(p.post_type IS NOT NULL, 'post', 'package') AS element_type_prefix,
+						p.post_type AS post_type,
 						s.batch_id
 				FROM {$this->wpdb->prefix}icl_translation_status s
 				JOIN {$this->wpdb->prefix}icl_translations t
@@ -233,8 +234,9 @@ class WPML_Translation_Jobs_Collection extends WPML_Abstract_Job_Collection{
 
 		if ( count( $sql_statements ) > 0 ) {
 			$union_sql = '(' . implode( "\nUNION ALL\n", $sql_statements ) . ") jobs
-                INNER JOIN {$this->wpdb->prefix}icl_translation_batches b
-                    ON b.id = jobs.batch_id
+                INNER JOIN {$this->wpdb->prefix}icl_translation_batches translation_batches
+                    ON translation_batches.id = jobs.batch_id
+                WHERE translation_batches.tp_id IS NULL
                 ORDER BY jobs.batch_id DESC, jobs.element_type_prefix, jobs.job_id DESC";
 		}
 

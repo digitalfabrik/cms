@@ -192,8 +192,6 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 				}
 				$isClassicEditor = (string) ICL_TM_TMETHOD_EDITOR === (string) $doc_translation_method;
 				$isATEEditor     = (string) ICL_TM_TMETHOD_ATE === (string) $doc_translation_method;
-				$isManualEditor  = ( (string) ICL_TM_TMETHOD_MANUAL === (string) $doc_translation_method )
-				                   || ( ! $isClassicEditor && ! $isATEEditor );
 				?>
 
 				<div class="wpml-section-header">
@@ -207,37 +205,91 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 						<?php wp_nonce_field( 'icl_doc_translation_method_nonce', '_icl_nonce' ); ?>
 						<div class="wpml-section-content-inner">
 							<h4>
-								<?php echo esc_html__( 'Translation editor options', 'wpml-translation-management' ) ?>
+								<?php
+
+								/* translators: Heading shown for selecting the editor to use with WPML's Translation Management when creating new content */
+								echo esc_html__( 'New content', 'wpml-translation-management' );
+
+								?>
 							</h4>
 
 							<ul class="t_method">
 								<li>
 									<label>
-										<input type="radio" name="t_method" value="<?php echo ICL_TM_TMETHOD_EDITOR ?>"
-										       <?php if ( $isClassicEditor ): ?>checked="checked"<?php endif; ?> />
-										<?php echo esc_html__( 'Use the Classic Translation Editor',
-										                       'wpml-translation-management' ) ?>
-									</label>
-								</li>
-								<li>
-									<label>
 										<input type="radio" name="t_method" value="<?php echo ICL_TM_TMETHOD_ATE ?>"
-										       <?php if ( $isATEEditor ): ?>checked="checked"<?php endif; ?> />
-										<?php echo esc_html__( 'Use the Advanced Translation Editor',
-										                       'wpml-translation-management' ) ?>
+											   <?php if ( $isATEEditor ): ?>checked="checked"<?php endif; ?> />
+										<?php
+										/* translators: Editor to use with WPML's Translation Management when creating new content */
+										echo esc_html__( "Use WPML's Advanced Translation Editor", 'wpml-translation-management' );
+										?>
 									</label>
 									<?php do_action( 'wpml_tm_mcs_' . ICL_TM_TMETHOD_ATE ); ?>
 								</li>
 								<li>
 									<label>
-										<input type="radio" name="t_method" value="<?php echo ICL_TM_TMETHOD_MANUAL ?>"
-										       <?php if ( $isManualEditor ): ?>checked="checked"<?php endif; ?> />
-										<?php echo esc_html__( 'Create translations manually',
-										                       'wpml-translation-management' ) ?>
+										<input type="radio" name="t_method" value="<?php echo ICL_TM_TMETHOD_EDITOR ?>"
+										       <?php if ( $isClassicEditor ): ?>checked="checked"<?php endif; ?> />
+										<?php
+										/* translators: Editor to use with WPML's Translation Management when creating new content */
+										echo esc_html__( "Use WPML's Classic Translation Editor", 'wpml-translation-management' );
+										?>
 									</label>
 								</li>
 							</ul>
 						</div>
+
+						<?php
+                        $default_editor_for_old_jobs = get_option( WPML_TM_Old_Jobs_Editor::OPTION_NAME, null );
+						?>
+
+						<div class="wpml-section-content-inner">
+							<h4>
+								<?php
+
+								/* translators: heading shown for selecting the editor to use when updating content that was created with WPML's Classic Translation Editor */
+								esc_html_e( "Content that was created with WPML's Classic Translation Editor", 'wpml-translation-management' );
+
+								?>
+							</h4>
+
+							<ul class="<?php echo WPML_TM_Old_Jobs_Editor::OPTION_NAME; ?>">
+								<li>
+									<label>
+										<input
+											type="radio" name="<?php echo WPML_TM_Old_Jobs_Editor::OPTION_NAME; ?>"
+											value="<?php echo esc_attr( WPML_TM_Editors::ATE ); ?>"
+											<?php checked( $default_editor_for_old_jobs === WPML_TM_Editors::ATE ); ?> />
+										<?php
+
+										/* translators: Which editor to use when updating content that was created with WPML's Classic Translation Editor? */
+										esc_html_e( "Switch to using the Advanced Translation Editor (old translations may be unusable)", 'wpml-translation-management' );
+
+										?>
+									</label>
+								</li>
+
+								<li>
+									<label>
+										<input
+												type="radio" name="<?php echo WPML_TM_Old_Jobs_Editor::OPTION_NAME; ?>"
+												value="<?php echo esc_attr( WPML_TM_Editors::WPML ); ?>"
+											<?php checked( $default_editor_for_old_jobs === WPML_TM_Editors::WPML ); ?> />
+										<?php
+
+										/* translators: Which editor to use when updating content that was created with WPML's Classic Translation Editor? */
+										esc_html_e( "Use WPML's Classic Translation Editor", 'wpml-translation-management' );
+
+										?>
+									</label>
+								</li>
+
+								<li>
+									<a href="https://wpml.org/documentation/translating-your-contents/translation-editor-options/?utm_source=wpmlplugin&utm_campaign=tm-settings&utm_medium=translation-editor-options&utm_term=translation-management"
+									   target="_blank" rel="noopener" class="wpml-external-link">Translation editor options</a>
+								</li>
+							</ul>
+						</div>
+
 						<?php do_action( 'wpml_doc_translation_method_below' ); ?>
 						<div class="wpml-section-content-inner">
 							<h4>
@@ -517,19 +569,19 @@ class WPML_TM_Menus_Settings extends WPML_TM_Menus {
 	}
 
 	private function build_content_mcs_custom_fields() {
-		global $iclTranslationManagement, $wpdb;
+		global $wpdb;
 
-		$settings_factory = new WPML_Custom_Field_Setting_Factory( $iclTranslationManagement );
-		$settings_factory->show_system_fields = array_key_exists( 'show_system_fields', $_GET ) ? (bool) $_GET['show_system_fields'] : false;
-		$unlock_button_ui = new WPML_UI_Unlock_Button();
+		$factory = new WPML_TM_MCS_Custom_Field_Settings_Menu_Factory();
 
 		if ( $this->should_show_mcsetup_section( 'ml-content-setup-sec-cf' ) ) {
-			$menu_item = new WPML_TM_MCS_Post_Custom_Field_Settings_Menu( $settings_factory, $unlock_button_ui );
-			echo $menu_item->render();
+			$menu_item_posts = $factory->create_post();
+			$menu_item_posts->init_data();
+			echo $menu_item_posts->render();
 		}
 
 		if ( ! empty( $wpdb->termmeta ) && $this->should_show_mcsetup_section( 'ml-content-setup-sec-tcf' ) ) {
-			$menu_item_terms = new WPML_TM_MCS_Term_Custom_Field_Settings_Menu( $settings_factory, $unlock_button_ui );
+			$menu_item_terms = $factory->create_term();
+			$menu_item_terms->init_data();
 			echo $menu_item_terms->render();
 		}
 	}

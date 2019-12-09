@@ -165,14 +165,14 @@ class WPML_Translation_Proxy_Networking {
 	 * @return array
 	 */
 	private function filter_request_params( $params, $method ) {
-		$request_filter = new WPML_TP_HTTP_Request_Filter( array(
+		$request_filter = new WPML_TP_HTTP_Request_Filter();
+
+		return $request_filter->build_request_context( array(
 			'method'    => $method,
 			'body'      => $params,
-			'sslverify' => false,
+			'sslverify' => true,
 			'timeout'   => 60
 
 		) );
-
-		return $request_filter->out();
 	}
 }

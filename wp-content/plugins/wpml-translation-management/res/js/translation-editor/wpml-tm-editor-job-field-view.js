@@ -62,7 +62,7 @@ var WPML_TM = WPML_TM || {};
 			self.translationCompleteCheckbox = self.$el.find('.js-field-translation-complete');
 			_.defer(_.bind(self.updateUI, self));
 			if (WpmlTmEditorModel.hide_empty_fields && field.field_data === '') {
-				self.$el.hide();
+				self.$el.hide().addClass('hidden');
 				self.translationCompleteCheckbox.prop('checked', true);
 				self.translationCompleteCheckbox.prop('disabled', false);
 			}
@@ -72,7 +72,7 @@ var WPML_TM = WPML_TM || {};
 			}
 			self.$el.find('.field-diff').find('.diff').hide();
 
-			self.setInputStatus();
+			self.setTranslatedColor( self.getStatusColors() );
 
 			jQuery(document).trigger('WPML_TM.editor.field_view_ready', self);
 		},
@@ -94,6 +94,9 @@ var WPML_TM = WPML_TM || {};
 		setInputStatus: function() {
 			var self = this;
 			self.setTranslatedColor( self.getStatusColors() );
+			_.delay( function () {
+				jQuery( '.js-toggle-translated' ).trigger( 'change' );
+			}, 1000 );
 		},
 
 		getStatusColors: function () {
@@ -108,6 +111,17 @@ var WPML_TM = WPML_TM || {};
 					background: '',
 					borderColor: ''
 				};
+			}
+		},
+
+		hideTranslated: function ( state ) {
+			var self = this;
+			if ( self.translationCompleteCheckbox.is( ':checked' ) && state ) {
+				self.$el.hide();
+			} else {
+				if ( !self.$el.hasClass( 'hidden' ) ) {
+					self.$el.show();
+				}
 			}
 		}
 

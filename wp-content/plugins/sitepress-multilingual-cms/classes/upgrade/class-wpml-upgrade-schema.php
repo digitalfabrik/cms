@@ -30,6 +30,16 @@ class WPML_Upgrade_Schema {
 
 	/**
 	 * @param string $table_name
+	 * @param string $index_name
+	 *
+	 * @return bool
+	 */
+	public function does_index_exist( $table_name, $index_name ) {
+		return (bool) count( $this->wpdb->get_results( "SHOW INDEXES FROM {$this->wpdb->prefix}{$table_name} WHERE key_name = '{$index_name}'" ) );
+	}
+
+	/**
+	 * @param string $table_name
 	 * @param string $column_name
 	 * @param string $attribute_string
 	 *
@@ -52,6 +62,17 @@ class WPML_Upgrade_Schema {
 
 	/**
 	 * @param string $table_name
+	 * @param string $index_name
+	 * @param string $attribute_string
+	 *
+	 * @return false|int
+	 */
+	public function add_index( $table_name, $index_name, $attribute_string ) {
+		return $this->wpdb->query( "ALTER TABLE {$this->wpdb->prefix}{$table_name} ADD INDEX `{$index_name}` {$attribute_string}" );
+	}
+
+	/**
+	 * @param string $table_name
 	 * @param string $column_name
 	 *
 	 * @return null|string
@@ -65,6 +86,88 @@ class WPML_Upgrade_Schema {
 		);
 	}
 
+	/**
+	 * @param string $table_name
+	 *
+	 * @return string|null
+	 */
+	public function get_table_collation( $table_name ) {
+		$table_data = $this->wpdb->get_row(
+			$this->wpdb->prepare( 'SHOW TABLE status LIKE %s', $table_name )
+		);
+
+		if ( isset( $table_data->Collation ) ) {
+			return $table_data->Collation;
+		}
+
+		return null;
+	}
+
+	/**
+	 * We try to get the collation from the posts table first.
+	 *
+	 * @return string|null
+	 */
+	public function get_default_collate() {
+		$posts_table_collate = $this->get_table_collation( $this->wpdb->posts );
+
+		if ( $posts_table_collate ) {
+			return $posts_table_collate;
+		} elseif ( ! empty( $this->wpdb->collate ) ) {
+			return $this->wpdb->collate;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param string $table_name
+	 *
+	 * @return string|null
+	 */
+	public function get_table_charset( $table_name ) {
+		try {
+			$table_charset = $this->wpdb->get_row(
+				$this->wpdb->prepare(
+					'SELECT CCSA.character_set_name 
+					FROM information_schema.`TABLES` T, 
+					information_schema.`COLLATION_CHARACTER_SET_APPLICABILITY` CCSA 
+					WHERE CCSA.collation_name = T.table_collation 
+					AND T.table_schema = "%s" 
+					AND T.table_name = "%s";',
+					$this->wpdb->dbname,
+					$table_name
+				)
+			);
+		} catch ( Exception $e ) {}
+
+		if ( isset ( $table_charset->character_set_name ) ) {
+			return $table_charset->character_set_name;
+		}
+
+		return null;
+	}
+
+	/**
+	 * We try to get the charset from the posts table first.
+	 *
+	 * @return string|null
+	 */
+	public function get_default_charset() {
+		$post_table_charset = $this->get_table_charset( $this->wpdb->posts );
+
+		if ( $post_table_charset ) {
+			return $post_table_charset;
+		} elseif ( ! empty( $this->wpdb->charset ) ) {
+			return $this->wpdb->charset;
+		}
+
+		return null;
+	}
+
+	/**
+	 * @return wpdb
+	 */
 	public function get_wpdb() {
 		return $this->wpdb;
 	}

@@ -66,10 +66,11 @@ class WPML_TM_Translation_Services_Admin_Active_Template {
 			$authentication_message[] = __( 'Please, check the %2$s page for more details.', 'wpml-translation-management' );
 
 			$model['strings']['authentication'] = array(
-				'description'         => implode( ' ', $authentication_message ),
-				'authenticate_button' => __( 'Authenticate', 'wpml-translation-management' ),
-				'de_authorize_button' => __( 'De-authorize', 'wpml-translation-management' ),
-				'is_authorized'       => sprintf( __( '%s is authorized.', 'wpml-translation-management' ), $this->active_service->get_name() ),
+				'description'               => implode( ' ', $authentication_message ),
+				'authenticate_button'       => __( 'Authenticate', 'wpml-translation-management' ),
+				'de_authorize_button'       => __( 'De-authorize', 'wpml-translation-management' ),
+				'update_credentials_button' => __( 'Update credentials', 'wpml-translation-management' ),
+				'is_authorized'             => sprintf( __( '%s is authorized.', 'wpml-translation-management' ), $this->active_service->get_name() ),
 			);
 		}
 
