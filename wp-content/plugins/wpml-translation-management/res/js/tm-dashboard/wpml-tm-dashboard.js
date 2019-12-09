@@ -147,7 +147,7 @@ WPML_TM.Dashboard = Backbone.View.extend({
 					data: {
 						action: 'icl_tm_parent_filter',
 						type: val,
-						lang: self.$( 'select[name="filter[from_lang]"]' ).val(),
+						from_lang: self.$( 'select[name="filter[from_lang]"]' ).val(),
 						parent_id: self.$( '[name="filter[parent_id]"]' ).val()
 					},
 					success: function ( response ) {

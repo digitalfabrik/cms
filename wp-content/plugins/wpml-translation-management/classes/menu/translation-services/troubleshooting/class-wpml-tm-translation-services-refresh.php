@@ -22,7 +22,7 @@ class WPML_TM_Translation_Services_Refresh {
 
 	public function add_hooks() {
 		add_action( 'after_setup_complete_troubleshooting_functions', array( $this, 'render' ), 1 );
-		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( $this, 'refresh_services' ) );
+		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( $this, 'refresh_services_ajax_handler' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 	}
 
@@ -40,9 +40,9 @@ class WPML_TM_Translation_Services_Refresh {
 		);
 	}
 
-	public function refresh_services() {
+	public function refresh_services_ajax_handler() {
 		if ( $this->is_valid_request() ) {
-			if ( $this->tp_services->refresh_cache() && $this->refresh_active_service() ) {
+			if ( $this->refresh_services() ) {
 				wp_send_json_success( array(
 					'message' => __( 'Services Refreshed.', 'wpml-translation-management' ),
 				));
@@ -57,6 +57,13 @@ class WPML_TM_Translation_Services_Refresh {
 				'message' => __( 'Invalid Request.', 'wpml-translation-management' ),
 			));
 		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function refresh_services() {
+		return $this->tp_services->refresh_cache() && $this->refresh_active_service();
 	}
 
 	private function refresh_active_service() {

@@ -38,7 +38,7 @@ class WPML_TM_Batch_Report {
 		}
 
 		if ( $batch_jobs_raw !== $batch_jobs ) {
-			update_option( self::BATCH_REPORT_OPTION, $batch_jobs );
+			update_option( self::BATCH_REPORT_OPTION, $batch_jobs, 'no' );
 		}
 	}
 
@@ -80,6 +80,6 @@ class WPML_TM_Batch_Report {
 			unset( $batch_jobs[$translator_id] );
 		}
 
-		update_option( self::BATCH_REPORT_OPTION, $batch_jobs );
+		update_option( self::BATCH_REPORT_OPTION, $batch_jobs, 'no' );
 	}
 }

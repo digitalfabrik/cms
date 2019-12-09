@@ -1,17 +1,23 @@
 <?php
 
-class WPML_WP_API extends WPML_PHP_Functions {
-	public function get_file_mime_type( $filename ) {
+use WPML\Core\Twig_LoaderInterface;
+use WPML\Core\Twig_Environment;
+use WPML\Core\Twig_Loader_Filesystem;
+use WPML\Core\Twig_Loader_String;
 
-		$mime_type = 'application/octet-stream';
-		if ( file_exists( $filename ) ) {
-			if ( function_exists( 'finfo_open' ) ) {
-				$finfo     = finfo_open( FILEINFO_MIME_TYPE ); // return mime type ala mimetype extension
-				$mime_type = finfo_file( $finfo, $filename );
-				finfo_close( $finfo );
-			} else {
-				$mime_type = mime_content_type( $filename );
-			}
+class WPML_WP_API extends WPML_PHP_Functions {
+	/**
+	 * @param string $file
+	 * @param string $filename
+	 *
+	 * @return false | string
+	 */
+	public function get_file_mime_type( $file, $filename ) {
+
+		$mime_type = false;
+		if ( file_exists( $file ) ) {
+			$file_info = wp_check_filetype_and_ext( $file, $filename );
+			$mime_type = $file_info['type'];
 		}
 
 		return $mime_type;
@@ -448,6 +454,18 @@ class WPML_WP_API extends WPML_PHP_Functions {
 		$action = filter_input( INPUT_POST, 'action', FILTER_SANITIZE_STRING );
 
 		return 'heartbeat' === $action;
+	}
+
+	public function is_post_edit_page() {
+		global $pagenow;
+
+		return 'post.php' === $pagenow && isset( $_GET['action'], $_GET['post'] ) && 'edit' === filter_var( $_GET['action'] );
+	}
+
+	public function is_new_post_page() {
+		global $pagenow;
+
+		return 'post-new.php' === $pagenow;
 	}
 
 	public function is_term_edit_page() {
@@ -1149,9 +1167,14 @@ class WPML_WP_API extends WPML_PHP_Functions {
 				$options |= DEBUG_BACKTRACE_PROVIDE_OBJECT;
 			}
 			if ( $ignore_args ) {
+				// phpcs:disable PHPCompatibility.Constants.NewConstants.debug_backtrace_ignore_argsFound -- It has a version check
 				$options |= DEBUG_BACKTRACE_IGNORE_ARGS;
+				// phpcs:enable PHPCompatibility.Constants.NewConstants.debug_backtrace_ignore_argsFound
 			}
 		}
+
+		// phpcs:disable PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection -- It has a version check
+		// phpcs:disable PHPCompatibility.FunctionUse.NewFunctionParameters.debug_backtrace_limitFound -- It has a version check
 		if ( version_compare( $this->phpversion(), '5.4.0' ) >= 0 ) {
 			$debug_backtrace = debug_backtrace( $options, $limit ); //add one item to include the current frame
 		} elseif ( version_compare( $this->phpversion(), '5.2.4' ) >= 0 ) {
@@ -1160,6 +1183,8 @@ class WPML_WP_API extends WPML_PHP_Functions {
 		} else {
 			$debug_backtrace = debug_backtrace( $options );
 		}
+		// phpcs:enable PHPCompatibility.FunctionUse.NewFunctionParameters.debug_backtrace_limitFound
+		// phpcs:enable PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 
 		//Remove the current frame
 		if($debug_backtrace) {
@@ -1172,6 +1197,19 @@ class WPML_WP_API extends WPML_PHP_Functions {
 	 * @return WP_Filesystem_Direct
 	 */
 	public function get_wp_filesystem_direct() {
+		global $wp_filesystem;
+
+		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+		/**
+		 * We need to make sure that `WP_Filesystem` has been called
+		 * at least once so that some constants are defined with
+		 * default values.
+		 */
+		if ( ! $wp_filesystem ) {
+			WP_Filesystem();
+		}
+
 		require_once( ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php' );
 		require_once( ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php' );
 

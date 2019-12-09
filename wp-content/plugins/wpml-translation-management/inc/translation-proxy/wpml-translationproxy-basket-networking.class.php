@@ -21,9 +21,7 @@ class WPML_Translation_Proxy_Basket_Networking {
 	}
 
 	/**
-	 * @param array  $batch contains element types and ids of the items that are to be committed
-	 * @param array  $translators translators to be used for this chunk of elements
-	 * @param array  $batch_options
+	 * @param WPML_TM_Translation_Batch  $batch
 	 *
 	 * @uses \WPML_Translation_Basket::get_basket Gets the array representation of the translation basket
 	 * @uses \WPML_Translation_Proxy_Basket_Networking::generate_batch generates the batch in case no chunk was given for the commit from the basket
@@ -33,29 +31,11 @@ class WPML_Translation_Proxy_Basket_Networking {
 	 *
 	 * @return array
 	 */
-	function commit_basket_chunk( array $batch, array $translators, array $batch_options ) {
-		$basket_data = $this->basket->get_basket();
-		$batch  = (bool) $batch === true ? $batch : $this->generate_batch( $basket_data );
-		if ( (bool) $batch === false ) {
-			return array( true, false, array( __( 'Batch is empty', 'wpml-translation-management' ) ) );
-		}
-
-		foreach ( $batch as $batch_item ) {
-			if ( ! empty( $batch_options['basket_name'] ) ) {
-				break;
-			}
-			$element_type = $batch_item['type'];
-			$post_id      = $batch_item['post_id'];
-			if ( ! isset( $basket_data[ $element_type ][ $post_id ] ) ) {
-				continue;
-			}
-			$batch_options['basket_name'] = $this->get_batch_name( $post_id );
-		}
-
-		$result         = $this->send_all_jobs( $batch, $translators, $batch_options );
+	function commit_basket_chunk( WPML_TM_Translation_Batch $batch ) {
+		$result         = $this->send_all_jobs( $batch );
 		$error_messages = $this->tm_instance->messages_by_type( 'error' );
 		if ( ( $has_error = (bool) $error_messages ) === true ) {
-			$this->rollback_basket_commit( $batch_options['basket_name'] );
+			$this->rollback_basket_commit( $batch->get_basket_name() );
 			$result['message']             = "";
 			$result['additional_messages'] = $error_messages;
 		}
@@ -94,88 +74,27 @@ class WPML_Translation_Proxy_Basket_Networking {
 	/**
 	 * Sends all jobs from basket in batch mode to translation proxy
 	 *
-	 * @param array  $batch
+	 * @param WPML_TM_Translation_Batch  $batch
 	 * @param array  $translators
 	 * @param array  $batch_options
 	 *
 	 * @return bool false in case of errors (read from TranslationManagement::get_messages('error') to get errors details)
 	 */
-	private function send_all_jobs( array $batch, array $translators, array $batch_options ) {
-		$basket_name_saved = $this->basket->get_name();
-		$batch_options['basket_name'] = isset( $batch_options['basket_name'] ) ? $batch_options['basket_name'] : '';
-		$batch_options['basket_name'] = $basket_name_saved ? $basket_name_saved : $batch_options['basket_name'];
-		$this->basket->set_options( $batch_options );
+	private function send_all_jobs( WPML_TM_Translation_Batch $batch) {
+		$this->basket->set_options( $batch->get_batch_options() );
+		$this->basket->set_name( $batch->get_basket_name() );
 
-		if ( $batch_options['basket_name'] ) {
-			$this->basket->set_name( $batch_options['basket_name'] );
-		}
-
-		$valid_jobs = $this->get_valid_jobs_from_basket( $batch );
-		$this->basket->set_remote_target_languages( $this->generate_remote_target_langs( $translators, $valid_jobs ) );
+		$this->basket->set_remote_target_languages( $batch->get_remote_target_languages() );
 		$basket_items_types = $this->basket->get_item_types();
 		foreach ( $basket_items_types as $item_type_name => $item_type ) {
-			$type_basket_items = isset( $valid_jobs[ $item_type_name ] ) ? $valid_jobs[ $item_type_name ] : array();
 			do_action( 'wpml_tm_send_' . $item_type_name . '_jobs',
-			           $item_type_name,
-			           $item_type,
-			           $type_basket_items,
-			           $translators,
-			           $batch_options
+				$batch,
+				$item_type_name
 			);
 		}
 
 		// check if there were no errors
 		return ! $this->tm_instance->messages_by_type( 'error' );
-	}
-
-	/**
-	 * @param array $batch
-	 *
-	 * @return array
-	 */
-	private function get_valid_jobs_from_basket( array $batch ) {
-		$translation_jobs_basket = array();
-		$translation_jobs_basket_full    = $this->basket->get_basket();
-		$translation_jobs_basket['name'] = $translation_jobs_basket_full['name'];
-		foreach ( $batch as $batch_item ) {
-			$element_type = $batch_item['type'];
-			$element_id   = $batch_item['post_id'];
-			if ( isset( $translation_jobs_basket_full[ $element_type ][ $element_id ] ) ) {
-				$translation_jobs_basket[ $element_type ][ $element_id ] = $translation_jobs_basket_full[ $element_type ][ $element_id ];
-			}
-		}
-
-		return $translation_jobs_basket;
-	}
-
-	/**
-	 * @param array $translators
-	 * @param array $valid_jobs
-	 *
-	 * @return array
-	 */
-	private function generate_remote_target_langs( array $translators, array $valid_jobs ) {
-		$remote_target_languages = array();
-		$basket_items_types = $this->basket->get_item_types();
-		foreach ( $basket_items_types as $item_type_name => $item_type ) {
-			// check target languages for strings
-			if ( ! empty( $valid_jobs[ $item_type_name ] ) ) {
-				foreach ( $valid_jobs[ $item_type_name ] as $value ) {
-					foreach ( $value['to_langs'] as $target_language => $target_language_selected ) {
-						//for remote strings
-						if ( array_key_exists( $target_language, $translators ) && $value['from_lang'] != $target_language
-						     && ! is_numeric( $translators[ $target_language ] )
-						     && $target_language_selected
-						     && ! in_array( $target_language, $remote_target_languages, true )
-						) {
-							$remote_target_languages[] = $target_language;
-						}
-					}
-				}
-			}
-		}
-
-		return $remote_target_languages;
 	}
 
 	/**

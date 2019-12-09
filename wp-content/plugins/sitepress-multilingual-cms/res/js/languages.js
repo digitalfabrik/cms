@@ -109,29 +109,7 @@ jQuery(document).ready(function(){
 			height: 'auto'
 		});
 	});
-	if ( jQuery('#icl_setup_wizard_wrap').length) {
-		manageWizardHeader();
-	}
 });
-
-function manageWizardHeader() {
-	var wizardHeader = jQuery('#icl_setup_wizard_wrap');
-	var wizardHeaderInner = jQuery('.wpml-section-wizard-steps-inner');
-	var wizardHeaderInnerTop = wizardHeader.offset().top;
-	var adminbarHeight = jQuery('#wpadminbar').height();
-
-	jQuery(wizardHeader).css('height', wizardHeaderInner.outerHeight() );
-
-	jQuery(window).scroll(function() {
-
-		if (jQuery(window).scrollTop() >= wizardHeaderInnerTop - adminbarHeight) {
-			//Numeber is .wrap top margin
-			wizardHeaderInner.addClass('fixed').css('top', jQuery(window).scrollTop() - 10 );
-		} else {
-			wizardHeaderInner.removeClass('fixed').css('top', 0);
-		}
-	});
-}
 
 function manageWizardButtonStatesSpinner(){
     var buttons = jQuery( '#icl_setup_back_1, #icl_setup_next_1, #icl_setup_back_2' );

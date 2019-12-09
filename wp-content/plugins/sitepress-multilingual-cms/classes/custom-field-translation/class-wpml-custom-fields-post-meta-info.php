@@ -20,35 +20,7 @@ class WPML_Custom_Fields_Post_Meta_Info implements IWPML_Action {
 
 	public function add_hooks() {
 		add_action( 'wp_ajax_wpml_cf_get_info', array( $this, 'get_info_ajax' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'register_resources' ) );
 		add_filter( 'wpml_custom_field_original_data', array( $this, 'get_info_filter' ), 10, 3 );
-	}
-
-	public function register_resources( $hook ) {
-		if ( 'post.php' === $hook ) {
-			wp_enqueue_style( 'custom-fields-info',
-			                  ICL_PLUGIN_URL . '/dist/css/post-meta/custom-fields-info.css',
-			                  array(),
-			                  ICL_SITEPRESS_VERSION );
-			wp_register_script( self::RESOURCES_HANDLE,
-			                    ICL_PLUGIN_URL . '/dist/js/post-meta/custom-fields-info.js',
-			                    array( 'jquery', 'wp-pointer' ),
-			                    ICL_SITEPRESS_VERSION );
-			wp_localize_script( self::RESOURCES_HANDLE,
-			                    'wpmlCFInfo',
-			                    array(
-				                    'nonces'  => array(
-					                    'getInfo' => array(
-						                    'name'  => 'nonceGet',
-						                    'value' => wp_create_nonce( self::AJAX_ACTION )
-					                    )
-				                    ),
-				                    'strings' => array(
-					                    'originalLabel' => __( 'Original value:', 'sitepress' )
-				                    )
-			                    ) );
-			wp_enqueue_script( self::RESOURCES_HANDLE );
-		}
 	}
 
 	public function get_info_ajax() {

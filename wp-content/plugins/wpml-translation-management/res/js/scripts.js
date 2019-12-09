@@ -53,10 +53,12 @@ jQuery(document).ready(function () {
 		var anchor = jQuery(this);
 		anchor.closest('table').find('input').attr('disabled', 'disabled');
 		var tn_post_id = anchor.closest('table').find('.icl_tn_post_id').val();
+		var note = jQuery('#post_note_' + tn_post_id).val();
+
 		jQuery.ajax({
 			type: "POST",
 			url: icl_ajx_url,
-			data: "icl_ajx_action=save_translator_note&note=" + anchor.closest('table').prev().val() + '&post_id=' + tn_post_id + '&_icl_nonce=' + jQuery('#_icl_nonce_stn_').val(),
+			data: "icl_ajx_action=save_translator_note&note=" + note + '&post_id=' + tn_post_id + '&_icl_nonce=' + jQuery('#_icl_nonce_stn_').val(),
 			success: function () {
 				anchor.closest('table').find('input').removeAttr('disabled');
 				anchor.closest('table').parent().slideUp();
@@ -79,6 +81,7 @@ jQuery(document).ready(function () {
 	jQuery('form[name="icl_custom_posts_sync_options"]').submit(iclSaveForm);
 	jQuery('form[name="icl_cf_translation"]').submit(iclSaveForm);
 	jQuery('form[name="icl_tcf_translation"]').submit(iclSaveForm);
+	jQuery('form[name="wpml-old-jobs-editor"]').submit(iclSaveForm);
 
 	var icl_translation_jobs_basket = jQuery('#icl-translation-jobs-basket');
 	icl_translation_jobs_basket.find('th :checkbox').change(iclTmSelectAllJobsBasket);

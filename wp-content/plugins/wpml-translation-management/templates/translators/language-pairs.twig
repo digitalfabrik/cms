@@ -1,8 +1,6 @@
-<div class="js-language-pairs"></div>
+<div class="js-language-pairs" data-default-language="{{ dialog.default_language }}"></div>
 
-<div class="wpml-form-row">
-    <button class="button-secondary js-add-lang-pair">+ {{ dialog.strings.add_lang_pair_text }}</button>
-</div>
+<button class="button button-secondary button-small js-add-lang-pair">{{ dialog.strings.add_lang_pair_text }}</button>
 
 <div class="js-select-languages" style="width: 600px;display: none">
     <div class="wpml-form-row">
@@ -14,7 +12,7 @@
                 <option value="{{ lang_details.get_code() }}">{{ lang_details.get_display_name() }}</option>
             {% endfor %}
         </select>
-        <i class="otgs-ico-delete js-delete-language-pair"></i>
+        <i class="otgs-ico-close js-delete-language-pair delete-language-pair"></i>
     </div>
     <div class="languages-to js-to-languages" style="display: none;">
         <span class="languages-to-label">{{ dialog.strings.to }}:</span>

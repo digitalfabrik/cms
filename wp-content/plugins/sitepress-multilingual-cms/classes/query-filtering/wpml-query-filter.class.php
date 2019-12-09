@@ -180,9 +180,9 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 	private function any_post_type_join( $left = true ) {
 		$left = $left ? " LEFT " : "";
 
-		return $left . " JOIN {$this->wpdb->prefix}icl_translations t
-							ON {$this->wpdb->posts}.ID = t.element_id
-								AND t.element_type = CONCAT('post_', {$this->wpdb->posts}.post_type) ";
+		return $left . " JOIN {$this->wpdb->prefix}icl_translations wpml_translations
+							ON {$this->wpdb->posts}.ID = wpml_translations.element_id
+								AND wpml_translations.element_type = CONCAT('post_', {$this->wpdb->posts}.post_type) ";
 	}
 
 	private function has_translated_type($core_types){
@@ -271,7 +271,7 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 			foreach ( $tax_post_types as $k => $v ) {
 				$tax_post_types[ $k ] = 'post_' . $v;
 			}
-			$join .=   $this->any_post_type_join() . " AND t.element_type IN (" . wpml_prepare_in ( $tax_post_types ) . ") ";
+			$join .=   $this->any_post_type_join() . " AND wpml_translations.element_type IN (" . wpml_prepare_in ( $tax_post_types ) . ") ";
 		}
 
 		return $join;
@@ -306,13 +306,13 @@ class WPML_Query_Filter extends  WPML_Full_Translation_API {
 
 	private function all_langs_where() {
 
-		return ' AND t.language_code IN (' . wpml_prepare_in( array_keys( $this->sitepress->get_active_languages() ) ) . ') ';
+		return ' AND wpml_translations.language_code IN (' . wpml_prepare_in( array_keys( $this->sitepress->get_active_languages() ) ) . ') ';
 	}
 
 	private function specific_lang_where( $current_language, $fallback_language ) {
 
 		return $this->wpdb->prepare (
-			" AND ( ( ( t.language_code = %s OR "
+			" AND ( ( ( wpml_translations.language_code = %s OR "
 			. $this->display_as_translated_snippet( $current_language, $fallback_language )
 			. " ) AND "
 			. $this->in_translated_types_snippet ()

@@ -182,7 +182,8 @@ class WPML_Settings_Helper {
 	 * @return array
 	 */
 	function _override_get_translatable_documents( $types ) {
-		$tm_settings = $this->sitepress->get_setting('translation-management', array());
+		$tm_settings          = $this->sitepress->get_setting( 'translation-management', array() );
+		$cpt_unlocked_options = $this->sitepress->get_setting( 'custom_posts_unlocked_option', array() );
 		foreach ( $types as $k => $type ) {
 			if ( isset( $tm_settings[ 'custom-types_readonly_config' ][ $k ] )
 				 && ! $tm_settings[ 'custom-types_readonly_config' ][ $k ]
@@ -190,7 +191,7 @@ class WPML_Settings_Helper {
 				unset( $types[ $k ] );
 			}
 		}
-		$types = $this->get_filters()->get_translatable_documents( $types, $tm_settings['custom-types_readonly_config'] );
+		$types = $this->get_filters()->get_translatable_documents( $types, $tm_settings['custom-types_readonly_config'], $cpt_unlocked_options );
 
 		return $types;
 	}
@@ -230,10 +231,11 @@ class WPML_Settings_Helper {
 	 * @return array new taxonomy type settings after the update
 	 */
 	function update_taxonomy_sync_settings( array $new_options ) {
-		$taxonomy_sync_options = $this->sitepress->get_setting( WPML_Element_Sync_Settings_Factory::KEY_TAX_SYNC_OPTION, array() );
+		$taxonomy_sync_options = $this->sitepress->get_setting( WPML_Element_Sync_Settings_Factory::KEY_TAX_SYNC_OPTION, [] );
+		$changed_sync_options  = array_diff_assoc( $new_options, $taxonomy_sync_options );
 		$taxonomy_sync_options = array_merge( $taxonomy_sync_options, $new_options );
 
-		foreach ( $taxonomy_sync_options as $taxonomy_name => $taxonomy_sync_option ) {
+		foreach ( $changed_sync_options as $taxonomy_name => $taxonomy_sync_option ) {
 			$this->sitepress->verify_taxonomy_translations( $taxonomy_name );
 		}
 

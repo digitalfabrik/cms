@@ -48,7 +48,6 @@ class WPML_TM_Email_Jobs_Summary_View extends WPML_TM_Email_View {
 	 * @return null|string
 	 */
 	public function render_jobs_list( $language_pairs, $translator_id, $title_singular, $title_plural = '' ) {
-
 		$this->empty_assigned_jobs();
 
 		$model = array(
@@ -59,6 +58,7 @@ class WPML_TM_Email_Jobs_Summary_View extends WPML_TM_Email_View {
 				'strings_link' => admin_url(
 					'admin.php?page=wpml-string-translation%2Fmenu%2Fstring-translation.php'
 				),
+				'closing_sentence' => $this->get_closing_sentence(),
 			),
 		);
 
@@ -134,20 +134,6 @@ class WPML_TM_Email_Jobs_Summary_View extends WPML_TM_Email_View {
 	}
 
 	/**
-	 * @param int $jobs_count
-	 *
-	 * @return string
-	 */
-	private function get_jobs_count_text( $jobs_count ) {
-		$jobs_count_text = ' is 1 job';
-		if ( 1 < $jobs_count ) {
-			$jobs_count_text = ' are ' . $jobs_count . ' jobs';
-		}
-
-		return $jobs_count_text;
-	}
-
-	/**
 	 * @param int $job_id
 	 * @param string $type
 	 */
@@ -177,5 +163,17 @@ class WPML_TM_Email_Jobs_Summary_View extends WPML_TM_Email_View {
 
 	private function empty_assigned_jobs() {
 		$this->assigned_jobs = array();
+	}
+
+	private function get_closing_sentence() {
+		$sentence = null;
+
+		if ( WPML_TM_ATE_Status::is_enabled_and_activated() ) {
+			$link = '<a href="https://wpml.org/documentation/translating-your-contents/advanced-translation-editor/">' . __( "WPML's Advanced Translation Editor", 'wpml-translation-management' ) . '</a>';
+
+			$sentence = sprintf( __( "Need help translating? Read how to use %s.", 'wpml-translation-management' ), $link );
+		}
+
+		return $sentence;
 	}
 }

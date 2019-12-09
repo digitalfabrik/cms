@@ -12,7 +12,20 @@ class WPML_Page_Builders_Defined {
 	}
 
 	public function has( $page_builder ) {
-		return defined( $this->settings[ $page_builder ]['constant'] );
+		global $wp_version;
+		if ( 'gutenberg' === $page_builder ) {
+			if ( version_compare( $wp_version, '5.0-beta1', '>=' ) ) {
+				return true;
+			}
+		}
+
+		if ( ! empty( $this->settings[ $page_builder ]['constant'] ) ) {
+			return defined( $this->settings[ $page_builder ]['constant'] );
+		}
+
+		if ( ! empty( $this->settings[ $page_builder ]['function'] ) ) {
+			return function_exists( $this->settings[ $page_builder ]['function'] );
+		}
 	}
 
 	/**
@@ -22,20 +35,23 @@ class WPML_Page_Builders_Defined {
 	 */
 	public function add_components( $components ) {
 		if ( isset( $components['page-builders'] ) ) {
-			$components['page-builders']['beaver-builder'] = array(
-				'name'            => 'Beaver Builder',
-				'constant'        => $this->settings['beaver-builder']['constant'],
-				'notices-display' => array(
-					'wpml-translation-editor',
-				),
-			);
-			$components['page-builders']['elementor']      = array(
-				'name'            => 'Elementor',
-				'constant'        => $this->settings['elementor']['constant'],
-				'notices-display' => array(
-					'wpml-translation-editor',
-				),
-			);
+			foreach (
+				array(
+					'beaver-builder' => 'Beaver Builder',
+					'elementor'      => 'Elementor',
+					'gutenberg'      => 'Gutenberg',
+					'cornerstone'    => 'Cornerstone',
+				) as $key => $name
+			) {
+				$components['page-builders'][ $key ] = array(
+					'name'            => $name,
+					'constant'        => isset( $this->settings[ $key ]['constant'] ) ? $this->settings[ $key ]['constant'] : null,
+					'function'        => isset( $this->settings[ $key ]['function'] ) ? $this->settings[ $key ]['function'] : null,
+					'notices-display' => array(
+						'wpml-translation-editor',
+					),
+				);
+			}
 		}
 
 		return $components;
@@ -50,7 +66,15 @@ class WPML_Page_Builders_Defined {
 			'elementor' => array(
 				'constant' => 'ELEMENTOR_VERSION',
 				'factory' => 'WPML_Elementor_Integration_Factory',
-			)
+			),
+			'gutenberg' => array(
+				'constant' => 'GUTENBERG_VERSION',
+				'factory' => 'WPML_Gutenberg_Integration_Factory',
+			),
+			'cornerstone'    => array(
+				'function' => 'cornerstone_plugin_init',
+				'factory'  => 'WPML_Cornerstone_Integration_Factory',
+			),
 		);
 	}
 

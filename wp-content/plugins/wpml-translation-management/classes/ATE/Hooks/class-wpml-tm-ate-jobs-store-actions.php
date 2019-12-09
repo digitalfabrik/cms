@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * @todo The hook 'wpml_tm_ate_jobs_store' seems to be never used so this class and its factory may be obsolete
+ *
  * @author OnTheGo Systems
  */
 class WPML_TM_ATE_Jobs_Store_Actions implements IWPML_Action {

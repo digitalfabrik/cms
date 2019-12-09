@@ -2,13 +2,16 @@
 
 class WPML_TM_Word_Count_Records_Factory {
 
+	/**
+	 * @return \WPML_TM_Word_Count_Records
+	 * @throws \Auryn\InjectionException
+	 */
 	public function create() {
-		global $wpdb;
-
-		return new WPML_TM_Word_Count_Records(
-			new WPML_TM_Word_Count_Post_Records( $wpdb ),
-			class_exists( 'WPML_ST_Word_Count_Package_Records' ) ? new WPML_ST_Word_Count_Package_Records( $wpdb ) : null,
-			class_exists( 'WPML_ST_Word_Count_String_Records' ) ? new WPML_ST_Word_Count_String_Records( $wpdb ) : null
+		return \WPML\Container\make( '\WPML_TM_Word_Count_Records',
+			[
+				':package_records' => \WPML\Container\make( '\WPML_ST_Word_Count_Package_Records' ),
+				':string_records'  => \WPML\Container\make( '\WPML_ST_Word_Count_String_Records' ),
+			]
 		);
 	}
 }

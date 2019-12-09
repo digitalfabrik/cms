@@ -126,8 +126,10 @@ class WPML_TM_Action_Helper {
 			foreach ( $iclTranslationManagement->settings['custom_fields_translation'] as $cf => $op ) {
 				if ( in_array( (int) $op, array( WPML_TRANSLATE_CUSTOM_FIELD, WPML_COPY_ONCE_CUSTOM_FIELD ), true ) ) {
 					$value = get_post_meta( $post->ID, $cf, true );
-					if ( ! is_array( $value ) && ! is_object( $value ) ) {
+					if ( is_scalar( $value ) ) {
 						$custom_fields_values[] = $value;
+					} else {
+						$custom_fields_values[] = wp_json_encode( $value );
 					}
 				}
 			}

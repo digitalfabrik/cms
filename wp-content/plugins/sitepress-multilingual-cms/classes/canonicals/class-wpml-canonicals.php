@@ -114,6 +114,20 @@ class WPML_Canonicals {
 		return $canonical_url;
 	}
 
+	/**
+	 * @param $url
+	 *
+	 * @return string
+	 */
+	public function get_general_canonical_url( $url ) {
+		global $wpml_url_filters;
+		$wpml_url_filters->remove_global_hooks();
+		$canonical_url = $this->sitepress->convert_url_string( $url, $this->sitepress->get_current_language() );
+		$wpml_url_filters->add_global_hooks();
+
+		return $canonical_url;
+	}
+
 	private function has_wp_get_canonical_url() {
 		return $this->sitepress->get_wp_api()->function_exists( 'wp_get_canonical_url' );
 	}

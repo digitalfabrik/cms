@@ -84,7 +84,7 @@ class WPML_Root_Page_Actions {
 			if ( isset( $_GET['wpml_root_page'] ) && $_GET['wpml_root_page'] || ( isset( $_GET['post'] ) && $_GET['post'] == $root_id ) ) {
 				remove_action( 'admin_head', array( $sitepress, 'post_edit_language_options' ) );
 				add_action( 'admin_head', array( $this, 'wpml_home_url_language_box_setup' ) );
-				remove_action( 'page_link', array( $sitepress, 'permalink_filter' ), 1, 2 );
+				remove_action( 'page_link', array( $sitepress, 'permalink_filter' ), 1 );
 			}
 		}
 	}
@@ -151,13 +151,24 @@ class WPML_Root_Page_Actions {
 	}
 
 	function wpml_home_url_language_box_setup() {
-		add_meta_box (
-			'icl_div',
-			__ ( 'Language', 'sitepress' ),
+		add_meta_box(
+			WPML_Meta_Boxes_Post_Edit_HTML::WRAPPER_ID,
+			__( 'Language', 'sitepress' ),
 			array( $this, 'wpml_home_url_language_box' ),
 			'page',
-			'side',
-			'high'
+			/**
+			 * Filter meta box position.
+			 *
+			 * The context within the screen where the boxes should display. Available contexts vary from screen to screen.
+			 * Post edit screen contexts include 'normal', 'side', and 'advanced'.
+			 *
+			 * @param String WPML_Meta_Boxes_Post_Edit_HTML::WRAPPER_ID Meta box ID.
+			 *
+			 * @since 4.2.8
+			 *
+			 */
+			apply_filters( 'wpml_post_edit_meta_box_context', 'side', WPML_Meta_Boxes_Post_Edit_HTML::WRAPPER_ID ),
+			apply_filters( 'wpml_post_edit_meta_box_priority', 'high' )
 		);
 	}
 
@@ -183,10 +194,10 @@ class WPML_Root_Page_Actions {
 			$iclsettings[ 'urls' ][ 'root_page' ] = $post->ID;
 			$sitepress->save_settings ( $iclsettings );
 
-			remove_action ( 'save_post', array( $sitepress, 'save_post_actions' ), 10, 2 );
+			remove_action( 'save_post', array( $sitepress, 'save_post_actions' ), 10 );
 
 			if ( !is_null ( $iclTranslationManagement ) ) {
-				remove_action ( 'save_post', array( $iclTranslationManagement, 'save_post_actions' ), 11, 2 );
+				remove_action( 'save_post', array( $iclTranslationManagement, 'save_post_actions' ), 11 );
 			}
 
 			$update_args = array(
@@ -214,8 +225,8 @@ class WPML_Root_Page_Actions {
 		remove_action( 'template_redirect', 'redirect_canonical' );
 		add_action( 'parse_query', array( $this, 'wpml_home_url_parse_query' ) );
 
-		remove_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ), 10, 2 );
-		remove_filter( 'posts_where', array( $wpml_query_filter, 'posts_where_filter' ), 10, 2 );
+		remove_filter( 'posts_join', array( $wpml_query_filter, 'posts_join_filter' ), 10 );
+		remove_filter( 'posts_where', array( $wpml_query_filter, 'posts_where_filter' ), 10 );
 		$root_id = $this->get_root_page_id();
 		$rp      = get_post( $root_id );
 		if ( $rp && $rp->post_status != 'trash' ) {

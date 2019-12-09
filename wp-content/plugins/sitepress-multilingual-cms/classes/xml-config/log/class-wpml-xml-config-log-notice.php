@@ -15,7 +15,9 @@ class WPML_XML_Config_Log_Notice {
 	}
 
 	public function add_hooks() {
-		add_action( 'wpml_loaded', array( $this, 'refresh_notices' ) );
+		if ( is_admin() ) {
+			add_action( 'wpml_loaded', array( $this, 'refresh_notices' ) );
+		}
 	}
 
 	public function refresh_notices() {

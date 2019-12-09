@@ -1,28 +1,38 @@
 <?php
 
+use function WPML\Container\make;
+
 /**
- * @author OnTheGo Systems
+ * Factory class for \WPML_TM_ATE_Jobs_Actions.
+ *
+ * @package wpml\tm
+ *
+ * @author  OnTheGo Systems
  */
 class WPML_TM_ATE_Jobs_Actions_Factory implements IWPML_Backend_Action_Loader {
-	private $endpoints;
-	private $auth;
-	private $http;
+	/**
+	 * The instance of \WPML_Current_Screen.
+	 *
+	 * @var WPML_Current_Screen
+	 */
 	private $current_screen;
 
 	/**
-	 * @return IWPML_Action|IWPML_Action[]|null
+	 * It returns an instance of \WPML_TM_ATE_Jobs_Actions or null if ATE is not enabled and active.
+	 *
+	 * @return \WPML_TM_ATE_Jobs_Actions|null
+	 * @throws \Auryn\InjectionException
 	 */
 	public function create() {
-		if ( WPML_TM_ATE_Status::is_enabled() && $this->is_active() ) {
-			$wp_http        = $this->get_http();
-			$auth           = $this->get_auth();
-			$endpoints      = $this->get_endpoints();
+		$ams_ate_factories = wpml_tm_ams_ate_factories();
+
+		if ( WPML_TM_ATE_Status::is_enabled() && $ams_ate_factories->is_ate_active() ) {
 			$sitepress      = $this->get_sitepress();
 			$current_screen = $this->get_current_screen();
 
-			$ate_api   = new WPML_TM_ATE_API( $wp_http, $auth, $endpoints );
-			$records   = new WPML_TM_ATE_Job_Records();
-			$ate_jobs  = new WPML_TM_ATE_Jobs( $records );
+			$ate_api  = $ams_ate_factories->get_ate_api();
+			$records  = wpml_tm_get_ate_job_records();
+			$ate_jobs = new WPML_TM_ATE_Jobs( $records );
 
 			$translator_activation_records = new WPML_TM_AMS_Translator_Activation_Records( new WPML_WP_User_Factory() );
 
@@ -31,7 +41,8 @@ class WPML_TM_ATE_Jobs_Actions_Factory implements IWPML_Backend_Action_Loader {
 				$ate_jobs,
 				$sitepress,
 				$current_screen,
-				$translator_activation_records
+				$translator_activation_records,
+				make( \WPML_TM_ATE_Jobs_Sync_Script_Loader::class )
 			);
 		}
 
@@ -39,59 +50,8 @@ class WPML_TM_ATE_Jobs_Actions_Factory implements IWPML_Backend_Action_Loader {
 	}
 
 	/**
-	 * @return WP_Http
-	 */
-	private function get_http() {
-		if ( ! $this->http ) {
-			$this->http = new WP_Http();
-		}
-
-		return $this->http;
-	}
-
-	/**
-	 * @return WPML_TM_ATE_Authentication
-	 */
-	private function get_auth() {
-		if ( ! $this->auth ) {
-			$this->auth = new WPML_TM_ATE_Authentication();
-		}
-
-		return $this->auth;
-	}
-
-	/**
-	 * @return WPML_TM_ATE_AMS_Endpoints
-	 */
-	private function get_endpoints() {
-		if ( ! $this->endpoints ) {
-			$this->endpoints = new WPML_TM_ATE_AMS_Endpoints();
-		}
-
-		return $this->endpoints;
-	}
-
-	private function is_active() {
-		if ( ! WPML_TM_ATE_Status::is_active() ) {
-			$wp_http   = $this->get_http();
-			$auth      = $this->get_auth();
-			$endpoints = $this->get_endpoints();
-
-			$ams_api = new WPML_TM_AMS_API( $wp_http, $auth, $endpoints );
-
-			try {
-				$ams_api->get_status();
-
-				return WPML_TM_ATE_Status::is_active();
-			} catch ( Exception $ex ) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
+	 * The global instance of \Sitepress.
+	 *
 	 * @return SitePress
 	 */
 	private function get_sitepress() {
@@ -100,6 +60,11 @@ class WPML_TM_ATE_Jobs_Actions_Factory implements IWPML_Backend_Action_Loader {
 		return $sitepress;
 	}
 
+	/**
+	 * It gets the instance of \WPML_Current_Screen.
+	 *
+	 * @return \WPML_Current_Screen
+	 */
 	private function get_current_screen() {
 		if ( ! $this->current_screen ) {
 			$this->current_screen = new WPML_Current_Screen();

@@ -13,10 +13,12 @@ var WPML_TM = WPML_TM || {};
 			'click .js-save': 'save',
 			'click .js-resign': 'resign',
 			'click .js-dialog-cancel': 'cancel',
-			'click .js-save-and-close': 'save_and_close'
+			'click .js-save-and-close': 'save_and_close',
+			'change .js-toggle-translated': 'toggleTranslated'
 		},
-		initialize: function () {
+		initialize: function (options) {
 			var self = this;
+			self.mainView = options.mainView;
 			self.listenTo(self.model, 'translationUpdated', self.setDirty);
 		},
 		save: function () {
@@ -73,6 +75,7 @@ var WPML_TM = WPML_TM || {};
 			self.translationComplete = self.$el.find(':checkbox[name=complete]');
 			self.showProgressBar();
 			self.maybeShowTranslationComplete();
+			self.maybeHideHideCompletedSwitcher();
 
 			window.onbeforeunload = function (e) {
 				if (self.isDirty()) {
@@ -95,6 +98,7 @@ var WPML_TM = WPML_TM || {};
 			self.progressBar.progressbar({});
 			var value = parseInt(self.model.progressPercentage(), 10);
 			self.progressBar.find('.progress-bar-text').html(value + '% Complete');
+			self.progressBar.find('.ui-progressbar-value').attr('data-progressbar-text', value + '% Complete');
 			self.progressBar.progressbar({value: value});
 			self.progressBar.find('.ui-progressbar-value').height(self.progressBar.find('.progress-bar-text').height());
 
@@ -113,6 +117,12 @@ var WPML_TM = WPML_TM || {};
 				self.translationComplete.parent().hide();
 			} else {
 				self.translationComplete.prop('checked', WpmlTmEditorModel.translation_is_complete);
+			}
+		},
+		maybeHideHideCompletedSwitcher: function () {
+			var self = this;
+			if (!WpmlTmEditorModel.display_hide_completed_switcher) {
+				self.$el.find('#wpml_tm_toggle_translated').parent().hide();
 			}
 		},
 		progressBar: function () {
@@ -136,6 +146,10 @@ var WPML_TM = WPML_TM || {};
 			} else {
 				this.$el.find('.js-resign').show();
 			}
+		},
+		toggleTranslated: function() {
+			var toggle = this.$el.find('.js-toggle-translated');
+			this.mainView.hideTranslated(toggle.is(':checked'));
 		}
 	});
 }());

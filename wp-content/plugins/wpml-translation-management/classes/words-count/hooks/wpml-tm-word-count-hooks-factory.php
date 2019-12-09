@@ -65,8 +65,8 @@ class WPML_TM_Word_Count_Hooks_Factory implements IWPML_Backend_Action_Loader, I
 				$report_view,
 				$records_factory->create(),
 				$this->get_sitepress(),
-				class_exists( 'WPML_Package_Helper' ) ? new WPML_Package_Helper() : null,
-				$this->requested_types_status
+				$this->requested_types_status,
+				class_exists( 'WPML_Package_Helper' ) ? new WPML_Package_Helper() : null
 			);
 
 			$this->hooks['ajax'] = new WPML_TM_Word_Count_Ajax_Hooks(

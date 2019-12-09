@@ -3,6 +3,9 @@
  * @package    wpml-core
  * @subpackage wpml-core
  */
+
+use WPML\TM\TranslationProxy\Services\AuthorizationFactory;
+
 require_once WPML_TM_PATH . '/inc/translation-proxy/functions.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-basket.class.php';
 require_once WPML_TM_PATH . '/inc/translation-proxy/translationproxy-api.class.php';
@@ -65,7 +68,7 @@ class TranslationProxy {
 	 * @throws \WPMLTranslationProxyApiException
 	 * @throws \InvalidArgumentException
 	 */
-	public static function select_service( $service_id, $custom_fields_data = false ) {
+	public static function select_service( $service_id, $credentials = null ) {
 		global $sitepress;
 
 		$service_selected = false;
@@ -77,17 +80,13 @@ class TranslationProxy {
 		if ( $service ) {
 			self::deselect_active_service();
 
-			$service          = self::build_and_store_active_translation_service( $service, $custom_fields_data );
+			$service          = self::build_and_store_active_translation_service( $service, $credentials );
 			$result           = $service;
 			$service_selected = true;
 
 			//Force authentication if no user input is needed
 			if ( ! self::service_requires_authentication( $service ) ) {
-				$networking      = wpml_tm_load_tp_networking();
-				$project_factory = new WPML_TP_Project_Factory();
-				$auth            = new WPML_TP_Service_Authentication( $sitepress,
-					$networking, $project_factory, new stdClass() );
-				$auth->run();
+				( new AuthorizationFactory() )->create()->authorize( new \stdClass() );
 			}
 		} else {
 			$result = new WP_Error( '0', 'No service selected',
@@ -115,8 +114,17 @@ class TranslationProxy {
 		$sitepress->set_setting( 'translators_management_info', false );
 		$sitepress->set_setting( 'language_pairs', false );
 		$sitepress->save_settings();
+
+		do_action( 'wpml_tp_service_dectivated', self::get_current_service() );
 	}
 
+	/**
+	 * @param      $service
+	 * @param bool $custom_fields_data
+	 *
+	 * @return mixed
+	 * @throws \WPMLTranslationProxyApiException
+	 */
 	public static function build_and_store_active_translation_service( $service, $custom_fields_data = false ) {
 		global $sitepress;
 
@@ -307,7 +315,7 @@ class TranslationProxy {
 				$format_string = self::sanitize_custom_text( $string->format_string );
 
 				if ( $paragraph ) {
-					$format = '<p class="icl_status_jobs">' . $format_string . '</p>';
+					$format = '<p>' . $format_string . '</p>';
 				} else {
 					$format = '<div>' . $format_string . '</div>';
 				}
@@ -404,6 +412,7 @@ class TranslationProxy {
 	 *
 	 * @return bool
 	 * @throws \InvalidArgumentException
+	 * @throws \WPMLTranslationProxyApiException
 	 */
 	public static function service_requires_authentication( $service = false ) {
 		if ( ! $service ) {
