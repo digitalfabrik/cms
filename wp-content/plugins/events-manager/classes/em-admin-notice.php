@@ -167,7 +167,7 @@ class EM_Admin_Notice {
 		if( empty($this->message) ) return false;
 		$action = $this->network ? 'em_dismiss_network_admin_notice':'em_dismiss_admin_notice';
 		?>
-		<div class="em-admin-notice notice notice-<?php echo esc_attr($this->what); ?> <?php if($this->dismissible) echo 'is-dismissible'?>" data-dismiss-action="<?php echo $action; ?>" data-dismiss-key="<?php echo esc_attr($this->name); ?>">
+		<div class="em-admin-notice notice notice-<?php echo esc_attr($this->what); ?> <?php if($this->dismissible) echo 'is-dismissible'?>" id="notice-<?php echo esc_attr($this->name); ?>" data-dismiss-action="<?php echo $action; ?>" data-dismiss-key="<?php echo esc_attr($this->name); ?>">
 			<p><?php echo $this->message; ?></p>
 		</div>
 		<?php

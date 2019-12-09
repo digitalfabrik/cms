@@ -4,7 +4,7 @@
  * @author marcus
  *
  */
-class EM_Tickets_Bookings extends EM_Object implements Iterator{
+class EM_Tickets_Bookings extends EM_Object implements Iterator, Countable {
 	
 	/**
 	 * Array of EM_Ticket_Booking objects for a specific event
@@ -285,11 +285,15 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
     public function next(){
         $var = next($this->tickets_bookings);
         return $var;
-    }  
+    }
     public function valid(){
         $key = key($this->tickets_bookings);
         $var = ($key !== NULL && $key !== FALSE);
         return $var;
-    }	
+    }
+    //Countable Implementation
+    public function count(){
+		return count($this->tickets_bookings);
+    }
 }
 ?>

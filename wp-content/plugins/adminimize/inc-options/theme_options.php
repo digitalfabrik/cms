@@ -24,7 +24,7 @@ if ( ! function_exists( 'add_action' ) ) {
 				); ?>">
 					<?php wp_nonce_field( 'mw_adminimize_nonce' ); ?>
 					<p><?php esc_attr_e(
-							'For better peformance on sites with many users, you should load userlist data before making any changes in the theme options for users.',
+							'For better performance on sites with many users, you should load userlist data before making any changes in the theme options for users.',
 							'adminimize'
 						); ?></p>
 
@@ -127,7 +127,7 @@ if ( ! function_exists( 'add_action' ) ) {
 			<?php } ?>
 
 			<p>
-				<a class="alignright button" href="javascript:void(0);" onclick="window.scrollTo(0,0);" style="margin:3px 0 0 30px;"><?php esc_attr_e(
+                <a class="alignright button adminimize-scroltop" href="#" style="margin:3px 0 0 30px;"><?php esc_attr_e(
 						'scroll to top', 'adminimize'
 					); ?></a><br class="clear" /></p>
 		</div>

@@ -97,16 +97,16 @@ class EM_Tickets extends EM_Object implements Iterator, Countable {
 	}
 	
 	/**
-	 * Delete tickets in thie object
+	 * Delete tickets in this object
 	 * @return boolean
 	 */
 	function delete(){
 		global $wpdb;
 		//get all the ticket ids
 		$result = false;
+		$ticket_ids = array();
 		if( !empty($this->tickets) ){
 			//get ticket ids if tickets are already preloaded into the object
-			$ticket_ids = array();
 			foreach( $this->tickets as $EM_Ticket ){
 				$ticket_ids[] = $EM_Ticket->ticket_id;
 			}
@@ -124,6 +124,7 @@ class EM_Tickets extends EM_Object implements Iterator, Countable {
 			//if tickets aren't preloaded into object and this belongs to an event, delete via the event ID without loading any tickets
 			$event_id = absint($this->event_id);
 			$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (SELECT ticket_id FROM ".EM_TICKETS_TABLE." WHERE event_id='$event_id')");
+			$ticket_ids = $wpdb->get_col("SELECT ticket_id FROM ". EM_TICKETS_TABLE." WHERE event_id='$event_id'");
 			if( $bookings > 0 ){
 				$result = false;
 				$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','events-manager'));
@@ -131,7 +132,7 @@ class EM_Tickets extends EM_Object implements Iterator, Countable {
 				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id='$event_id'");
 			}
 		}
-		return ($result !== false);
+		return apply_filters('em_tickets_delete', ($result !== false), $ticket_ids, $this);
 	}
 	
 	/**

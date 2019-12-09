@@ -20,7 +20,7 @@
 			$map_url = $EM_Location->get_google_maps_embed_url();
 			?>
 			<div class="em-location-map-container"  style='position:relative; background: #CDCDCD; width: <?php echo $width ?>; height: <?php echo $height ?>;'>
-				<iframe style="width:100%; height:100%;" frameborder="0" style="border:0" src="<?php echo esc_attr($map_url); ?>" allowfullscreen></iframe>
+				<iframe style="width:100%; height:100%; border:0;" src="<?php echo esc_attr($map_url); ?>" allowfullscreen></iframe>
 			</div>
 			<?php
 		}else{

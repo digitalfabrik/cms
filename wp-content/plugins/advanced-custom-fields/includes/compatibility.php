@@ -34,9 +34,59 @@ class ACF_Compatibility {
 		add_filter('acf/validate_field/type=user',				array($this, 'validate_user_field'), 20, 1);
 		add_filter('acf/validate_field_group',					array($this, 'validate_field_group'), 20, 1);
 		
+		// Modify field wrapper attributes
+		add_filter('acf/field_wrapper_attributes',				array($this, 'field_wrapper_attributes'), 20, 2);
+		
 		// location
 		add_filter('acf/location/validate_rule/type=post_taxonomy', array($this, 'validate_post_taxonomy_location_rule'), 20, 1);
 		add_filter('acf/location/validate_rule/type=post_category', array($this, 'validate_post_taxonomy_location_rule'), 20, 1);
+		
+		// Update settings
+		add_action('acf/init', array($this, 'init'));
+	}
+	
+	/**
+	 * init
+	 *
+	 * Adds compatibility for deprecated settings.
+	 *
+	 * @date	10/6/19
+	 * @since	5.8.1
+	 *
+	 * @param	void
+	 * @return	void
+	 */
+	function init() {
+		
+		// Update "show_admin" setting based on defined constant.
+		if( defined('ACF_LITE') && ACF_LITE ) {
+			acf_update_setting( 'show_admin', false );
+		}
+	}
+	
+	/**
+	 * field_wrapper_attributes
+	 *
+	 * Adds compatibility with deprecated field wrap attributes.
+	 *
+	 * @date	21/1/19
+	 * @since	5.7.10
+	 *
+	 * @param	array $wrapper The wrapper attributes array.
+	 * @param	array $field The field array.
+	 */
+	function field_wrapper_attributes( $wrapper, $field ) {
+		
+		// Check compatibility setting.
+		if( acf_get_compatibility('field_wrapper_class') ) {
+			$wrapper['class'] .= " field_type-{$field['type']}";
+			if( $field['key'] ) {
+				$wrapper['class'] .= " field_key-{$field['key']}";
+			}
+		}
+		
+		// Return wrapper.
+		return $wrapper;
 	}
 	
 	/**
@@ -326,7 +376,7 @@ class ACF_Compatibility {
 		// detect ACF4 data and generate key
 		if( !$field_group['key'] ) {
 			$version = 4;
-			$field_group['key'] = uniqid('group_');
+			$field_group['key'] = isset($field_group['id']) ? "group_{$field_group['id']}" : uniqid('group_');
 		}
 		
 		// prior to version 5.0.0, settings were saved in an 'options' array
@@ -418,4 +468,17 @@ acf_new_instance('ACF_Compatibility');
 
 endif; // class_exists check
 
-?>
+/*
+ * acf_get_compatibility
+ *
+ * Returns true if compatibility is enabled for the given component.
+ *
+ * @date	20/1/15
+ * @since	5.1.5
+ *
+ * @param	string $name The name of the component to check.
+ * @return	bool
+ */
+function acf_get_compatibility( $name ) {
+	return apply_filters( "acf/compatibility/{$name}", false );
+}

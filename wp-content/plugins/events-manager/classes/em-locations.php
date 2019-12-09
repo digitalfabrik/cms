@@ -20,10 +20,12 @@ class EM_Locations extends EM_Object {
 	 */
 	public static $num_rows_found;
 	
+	protected static $context = 'location';
+	
 	/**
 	 * Returns an array of EM_Location objects
-	 * @param boolean $eventful
-	 * @param boolean $return_objects
+	 * @param array $args
+	 * @param boolean $count
 	 * @return array
 	 */
 	public static function get( $args = array(), $count=false ){
@@ -80,37 +82,11 @@ class EM_Locations extends EM_Object {
 				$selectors = $locations_table.'.post_id';
 			}
 			if( $calc_found_rows ) $selectors = 'SQL_CALC_FOUND_ROWS ' . $selectors; //for storing total rows found
-			$selectors = 'DISTINCT ' . $selectors; //duplicate avoidance
+			$selectors = $selectors; //duplicate avoidance
 		}
 		
-		//check if we need to join a location table for this search, which is necessary if any location-specific are supplied, or if certain arguments such as orderby contain location fields
-		$join_events_table = false;
-		//for we only will check optional joining by default for groupby searches, and for the original searches if EM_DISABLE_OPTIONAL_JOINS is set to true in wp-config.php
-		if( !empty($args['groupby']) || (defined('EM_DISABLE_OPTIONAL_JOINS') && EM_DISABLE_OPTIONAL_JOINS) ){
-			$event_specific_args = array('eventful', 'eventless', 'tag', 'category', 'event', 'recurrence', 'month', 'year', 'rsvp', 'bookings');
-			$join_events_table = $args['scope'] != 'all'; //only value where false is not default so we check that first
-			foreach( $event_specific_args as $arg ) if( !empty($args[$arg]) ) $join_events_table = true;
-			//if set to false the following would provide a false negative in the line above
-			if( $args['recurrences'] !== null ) $join_events_table = true;
-			if( $args['recurring'] !== null ) $join_events_table = true;
-			if( $args['event_status'] !== false ){ $join_events_table = true; }
-			//check ordering and grouping arguments for precense of event fields requiring a join
-			if( !$join_events_table ){
-				foreach( array('groupby', 'orderby', 'groupby_orderby') as $arg ){
-					if( !is_array($args[$arg]) ) continue; //ignore this argument if set to false
-					//we assume all these arguments are now array thanks to self::get_search_defaults() cleaning it up
-					foreach( $args[$arg] as $field_name ){
-						if( in_array($field_name, $event_fields) ){
-							$join_events_table = true;
-							break; //we join, no need to keep searching
-						}
-					}
-				}
-			}
-			//EM_Events has a special argument for recurring events (the template), where it automatically omits recurring event templates. If we are searching events, and recurring was not explicitly set, we set it to the same as in EM_Events default 
-			if( $join_events_table && $args['recurring'] === null ) $args['recurring'] = false;
-		}else{ $join_events_table = true; }//end temporary if( !empty($args['groupby']).... wrapper 
-		//plugins can override this optional joining behaviour here in case they add custom WHERE conditions or something like that
+		$join_events_table = self::check_events_table_join( $args, $event_fields );
+		// Deprecated, use em_locations_check_events_table_join instead, $count is unecessary
 		$join_events_table = apply_filters('em_locations_get_join_events_table', $join_events_table, $args, $count);
 		//depending on whether to join we do certain things like add a join SQL, change specific values like status search
 		$event_optional_join = $join_events_table ? "LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id" : '';
@@ -317,12 +293,48 @@ $limit $offset
 	}
 	
 	/**
+	 * Checks if we need to join an events table for this search, which is necessary if any event-specific arguments are supplied, or if certain arguments such as orderby contain location fields
+	 * @param array $args
+	 * @param array $event_fields
+	 * @return boolean
+	 */
+	public static function check_events_table_join( $args, $event_fields ){
+		//for we only will check optional joining by default for groupby searches, and for the original searches if EM_DISABLE_OPTIONAL_JOINS is set to true in wp-config.php
+		if( !empty($args['groupby']) || (defined('EM_DISABLE_OPTIONAL_JOINS') && EM_DISABLE_OPTIONAL_JOINS) ){
+			$event_specific_args = array('eventful', 'eventless', 'tag', 'category', 'event', 'recurrence', 'month', 'year', 'rsvp', 'bookings');
+			$event_specific_args = apply_filters('em_locations_event_specific_args', $event_specific_args);
+			$join_events_table = $args['scope'] != 'all'; //only value where false is not default so we check that first
+			foreach( $event_specific_args as $arg ) if( !empty($args[$arg]) ) $join_events_table = true;
+			//if set to false the following would provide a false negative in the line above
+			if( $args['recurrences'] !== null ) $join_events_table = true;
+			if( $args['recurring'] !== null ) $join_events_table = true;
+			if( $args['event_status'] !== false ){ $join_events_table = true; }
+			//check ordering and grouping arguments for precense of event fields requiring a join
+			if( !$join_events_table ){
+				foreach( array('groupby', 'orderby', 'groupby_orderby') as $arg ){
+					if( !is_array($args[$arg]) ) continue; //ignore this argument if set to false
+					//we assume all these arguments are now array thanks to self::get_search_defaults() cleaning it up
+					foreach( $args[$arg] as $field_name ){
+						if( in_array($field_name, $event_fields) ){
+							$join_events_table = true;
+							break; //we join, no need to keep searching
+						}
+					}
+				}
+			}
+			//EM_Events has a special argument for recurring events (the template), where it automatically omits recurring event templates. If we are searching events, and recurring was not explicitly set, we set it to the same as in EM_Events default
+			if( $join_events_table && $args['recurring'] === null ) $args['recurring'] = false;
+		}else{ $join_events_table = true; }//end temporary if( !empty($args['groupby']).... wrapper
+		//plugins can override this optional joining behaviour here in case they add custom WHERE conditions or something like that
+		return apply_filters('em_locations_check_events_table_join', $join_events_table, $args, $event_fields);
+	}
+	
+	/**
 	 * Builds an array of SQL query conditions based on regularly used arguments
 	 * @param array $args
 	 * @return array
 	 */
 	public static function build_sql_conditions( $args = array(), $count=false ){
-	    self::$context = EM_POST_TYPE_LOCATION;
 		global $wpdb;
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
@@ -434,7 +446,6 @@ $limit $offset
 	 * @uses EM_Object#get_default_search()
 	 */
 	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
-	    self::$context = EM_POST_TYPE_LOCATION;
 		$defaults = array(
 			'orderby' => 'location_name',
 			'groupby' => false,

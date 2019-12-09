@@ -35,7 +35,10 @@ class EM_Admin_Notices {
 	 */
 	public static function add( $EM_Admin_Notice, $network = false ){
 		$network = $network && is_multisite(); //make sure we are actually in multisite!
-		if( is_string($EM_Admin_Notice) ) $EM_Admin_Notice = new EM_Admin_Notice( $EM_Admin_Notice );
+		if( is_string($EM_Admin_Notice) ){
+		    $EM_Admin_Notice = new EM_Admin_Notice( $EM_Admin_Notice );
+		    $hook_notice = true;
+		}
 		if( !$EM_Admin_Notice->name ) return false;
 		//get options data
 		$data = $network ? get_site_option('dbem_data') : get_option('dbem_data');
@@ -43,14 +46,13 @@ class EM_Admin_Notices {
 		if( !is_array($data)) $data = array();
 		$notices_data = $network ? get_site_option('dbem_admin_notices') : get_option('dbem_admin_notices');
 		$notices_data = empty($notices_data) ? array() : maybe_unserialize($notices_data);
-		if( !is_array($notices_data)) $notices_data = array();
+		if( !is_array($notices_data)) $notices_data = array(); //we store the data regarldess of whether a message will require a hook, since it contains location and caps considtions
 		//start building data
 		$notices = !empty($data['admin_notices']) ? $data['admin_notices'] : array();
 		$notices[$EM_Admin_Notice->name] = !empty($EM_Admin_Notice->when) ? $EM_Admin_Notice->when : 0;
-		//if no message supplied, we assume it's a hook, possibly with a time-to-show assigned above
-		if( !empty($EM_Admin_Notice->message) ){
-			$notices_data[$EM_Admin_Notice->name] = $EM_Admin_Notice->to_array();
-		}
+		if( empty($hook_notice) ){ //we only skip this if simply a key is provided initially in $EM_Admin_Notice
+            $notices_data[$EM_Admin_Notice->name] = $EM_Admin_Notice->to_array();
+        }
 		if( !empty($notices) ){
 			$data['admin_notices'] = $notices;
 			$update_notices =  $network ? update_site_option('dbem_data', $data) : update_option('dbem_data', $data);

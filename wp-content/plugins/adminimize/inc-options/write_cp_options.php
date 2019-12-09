@@ -132,9 +132,9 @@ foreach ( get_post_types( $args ) as $post_type ) {
 					$metaboxes       = array_merge( $metaboxes, $quickedit_areas );
 
 					$metaboxes_names = array(
-						esc_attr__( 'Help' ),
-						esc_attr__( 'Screen Options' ),
-						esc_attr__( 'Add New' ),
+						esc_attr__( 'Help', 'adminimize' ),
+						esc_attr__( 'Screen Options', 'adminimize' ),
+						esc_attr__( 'Add New', 'adminimize' ),
 						esc_attr__( 'Permalink', 'adminimize' ),
 						esc_attr__( 'Tags', 'adminimize' ),
 						esc_attr__( 'Format', 'adminimize' ),
@@ -148,8 +148,8 @@ foreach ( get_post_types( $args ) as $post_type ) {
 						esc_attr__( 'Word count', 'adminimize' ),
 						esc_attr__( 'Post Slug', 'adminimize' ),
 						esc_attr__( 'Publish Actions', 'adminimize' ),
-						esc_attr__( 'Discussion' ),
-						esc_attr__( 'HTML Editor Button' ),
+						esc_attr__( 'Discussion', 'adminimize' ),
+						esc_attr__( 'HTML Editor Button', 'adminimize' ),
 					);
 
 					if ( ! empty( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] ) ) {
@@ -321,7 +321,7 @@ foreach ( get_post_types( $args ) as $post_type ) {
 					<input type="hidden" name="page_options" value="'dofollow_timeout'" />
 				</p>
 
-				<p><a class="alignright button" href="javascript:void(0);"
+                <a class="alignright button adminimize-scroltop" href="#"
 						onclick="window.scrollTo(0,0);" style="margin:3px 0 0 30px;">
 						<?php esc_attr_e( 'scroll to top', 'adminimize' ); ?></a>
 					<br class="clear" />

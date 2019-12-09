@@ -18,10 +18,9 @@
 	 * Generates an ics file for a single event 
 	 */
 	function em_ical_item(){
-		global $wpdb, $wp_query, $wp_rewrite;
+		global $wpdb, $wp_query;
 		//check if we're outputting an ical feed
 		if( !empty($wp_query) && $wp_query->get('ical') ){
-			$execute_ical = false;
 			$filename = 'events';
 			$args = array();
 			//single event
@@ -59,7 +58,7 @@
 			}else{
 				//no item exists, so redirect to original URL
 				$url_to_redirect = preg_replace("/ical\/$/",'', esc_url_raw(add_query_arg(array('ical'=>null))));				
-				wp_redirect($url_to_redirect, '302');
+				wp_safe_redirect($url_to_redirect, '302');
 				exit();
 			}
 		}
@@ -74,31 +73,6 @@
 	 */
 	function em_mb_ical_wordwrap($string){
 		if( !defined('EM_MB_ICAL_WORDWRAP') || EM_MB_ICAL_WORDWRAP ){
-			/*
-			// Match anything 1 to $width chars long followed by whitespace or EOS, otherwise match anything $width chars long
-			$search = '/(.{1,74})(?:\s|$)|(.{74})/uS';
-			$replace = '$1$2'."\r\n ";
-			$return = preg_replace($search, $replace, $string);
-			return $return;
-			return preg_replace('/\r\n $/', '', $return);
-			*/
-			/*
-			$str_len = mb_strlen($string,'UTF-8');
-			$while = ceil($str_len / 74);
-			$return = '';
-			for($i = 1; $i < $while; $i++){
-				preg_match('#^(?:[\x00-\x7F]|[\xC0-\xFF][\x80-\xBF]+){74}#', $string, $matches);
-				$return .= $matches[0]."\r\n ";
-				$string = substr($string, strlen($matches[0]));
-			}
-			return $return.$string;
-			*/
-			/*$strlen = strlen($string);
-			$return = '';
-			for( $i = 0; $i + 74 <= $strlen; $i = $i + 74 ){
-				$return = mb_strcut
-			}
-			*/
 			$return = '';
 			for ( $i = 0; strlen($string) > 0; $i++ ) {
 				$linewidth = ($i == 0? 75 : 74);

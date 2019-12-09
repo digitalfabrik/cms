@@ -5,7 +5,7 @@
  * Description: Disables new user notification emails.
  * Author:      Thomas Griffin
  * Author URI:  http://thomasgriffin.io
- * Version:     1.0.2
+ * Version:     1.0.3
  *
  * Disable New User Notifications is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,5 +91,3 @@ if ( ! function_exists( 'wp_new_user_notification' ) ) {
 		}
 	}
 }
-
-require plugin_dir_path( __FILE__ ) . 'utils.php';

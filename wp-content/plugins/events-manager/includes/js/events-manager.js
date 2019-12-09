@@ -671,12 +671,14 @@ jQuery(document).ready( function($){
 				jQuery('input#location-state').val(ui.item.state);
 				jQuery('input#location-region').val(ui.item.region);
 				jQuery('input#location-postcode').val(ui.item.postcode);
+				jQuery('input#location-latitude').val(ui.item.latitude);
+				jQuery('input#location-longitude').val(ui.item.longitude);
 				if( ui.item.country == '' ){
 					jQuery('select#location-country option:selected').removeAttr('selected');
 				}else{
 					jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
 				}
-				jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
+				jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').prop('readonly', true);
 				jQuery('#em-location-reset').show();
 				jQuery('#em-location-search-tip').hide();
 				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
@@ -687,7 +689,7 @@ jQuery(document).ready( function($){
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};
 		jQuery('#em-location-reset a').click( function(){
-			jQuery('div.em-location-data input').css('background-color','#fff').val('').removeAttr('readonly');
+			jQuery('div.em-location-data input').css('background-color','#fff').val('').prop('readonly', false);
 			jQuery('div.em-location-data select').css('background-color','#fff');
 			jQuery('div.em-location-data option:selected').removeAttr('selected');
 			jQuery('input#location-id').val('');
@@ -703,12 +705,12 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
-			jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
+			jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').prop('readonly', true);
 			jQuery('#em-location-reset').show();
 			jQuery('#em-location-search-tip').hide();
 		}
 	}
-	
+	jQuery(document).triggerHandler('em_javascript_loaded');
 });
 
 function em_load_jquery_css(){
@@ -724,7 +726,7 @@ function em_load_jquery_css(){
 function em_setup_datepicker(wrap){	
 	wrap = jQuery(wrap);
 	//default picker vals
-	var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay, yearRange:'-100:+10' };
+	var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay, yearRange:'c-100:c+15' };
 	if( EM.dateFormat ) datepicker_vals.dateFormat = EM.dateFormat;
 	if( EM.yearRange ) datepicker_vals.yearRange = EM.yearRange;
 	jQuery(document).triggerHandler('em_datepicker', datepicker_vals);
@@ -855,9 +857,9 @@ function em_maps_load(){
 			script.id = "google-maps";
 			var proto = (EM.is_ssl) ? 'https:' : 'http:';
 			if( typeof EM.google_maps_api !== 'undefined' ){
-				script.src = proto + '//maps.google.com/maps/api/js?v=3&libraries=places&callback=em_maps&key='+EM.google_maps_api;
+				script.src = proto + '//maps.google.com/maps/api/js?v=quarterly&libraries=places&callback=em_maps&key='+EM.google_maps_api;
 			}else{
-				script.src = proto + '//maps.google.com/maps/api/js?v=3&libraries=places&callback=em_maps';
+				script.src = proto + '//maps.google.com/maps/api/js?v=quarterly&libraries=places&callback=em_maps';
 			}
 			document.body.appendChild(script);
 		}else if( typeof google === 'object' && typeof google.maps === 'object' && !em_maps_loaded ){
@@ -1027,6 +1029,7 @@ function em_maps() {
 		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val());} );
 		jQuery('#location-name, #location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
 			//build address
+			if( jQuery(this).prop('readonly') === true ) return;
 			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
 			var address = '';
 			jQuery.each( addresses, function(i, val){

@@ -41,6 +41,7 @@ class Settings {
 			'piwik_url' => '',
 			'piwik_path' => '',
 			'piwik_user' => '',
+			'matomo_user' => '',
 			'piwik_token' => '',
 			'auto_site_config' => true,
 			// User settings: Stats configuration
@@ -94,6 +95,7 @@ class Settings {
 			'http_connection' => 'curl',
 			'http_method' => 'post',
 			'disable_timelimit' => false,
+			'filter_limit' => '',
 			'connection_timeout' => 5,
 			'disable_ssl_verify' => false,
 			'disable_ssl_verify_host' => false,
