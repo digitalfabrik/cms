@@ -19,12 +19,12 @@ function em_admin_update_timezone_backcompat(){
 		if( em_admin_update_timezone_backcompat_site() ){
 			$EM_Notices->add_confirm(__('You have successfully finalized upgrading your site.', 'events-manager'), true);
 			$redirect = esc_url_raw( remove_query_arg(array('action','update','confirmed','_wpnonce')) );
-			wp_redirect($redirect);
+			wp_safe_redirect($redirect);
 			exit();
 		}else{
 			$EM_Notices->add_error(__('There was an error upgrading your site, please try again or contact support.', 'events-manager'), true);
 			$redirect = esc_url_raw( remove_query_arg(array('confirmed','_wpnonce')) );
-			wp_redirect($redirect);
+			wp_safe_redirect($redirect);
 			exit();
 		}
 	}

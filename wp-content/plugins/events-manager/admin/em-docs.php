@@ -103,6 +103,9 @@ function em_docs_init($force_init = false){
 							'#_EVENTCATEGORIES' => array( 'desc' => 'Shows a list of category links this event belongs to.' ),
 							'#_EVENTCATEGORIESIMAGES'  => array( 'desc' => 'Shows a list of category images this event belongs to. Categories without an image will be ignored.' ),
 							'#_EVENTTAGS' => array( 'desc' => 'Shows a list of tag links this event belongs to.' ),
+							'#_RECURRINGDATERANGE' => array( 'desc' => 'Range of dates between the start/end of the recurring event pattern for an event recurrence, blank for non-recurrences.' ),
+							'#_RECURRINGPATTERN' => array( 'desc' => 'Describes the pattern of a recurring event when used on an event recurrence, blank for non-recurrences.' ),
+							'#_RECURRINGID' => array( 'desc' => 'The event ID of the recurring event template when displayed on a recurrence, blank for non-recurrences.' ),
 						)
 					),
 					'Date and Times' => array(
@@ -120,7 +123,7 @@ function em_docs_init($force_init = false){
 						'desc' => 'Events Manager allows extremely flexible date formatting by using <a href="http://www.php.net/manual/en/function.date.php">PHP date syntax format characters</a> along with placeholders.',
 						'placeholders' => array(
 							'# or #@' => array( 'desc' => 'Prepend <code>#</code> or <code>#@</code> before a valid PHP date syntax format character to show start and end date/time information respectively (e.g. <code>#F</code> will show the starting month name like "January", #@h shows the end hour).' ),
-							'#{x} or #@{x}' => array( 'desc' => 'You can also create a date format without prepending # to each character by wrapping a valid php date() format in <code>#{}</code> or <code>#@{}</code> (e.g. <code>#_{d/m/Y}</code>). If there is no end date (or is same as start date), the value is not shown. This is useful if you want to show event end dates only on events that are longer than one day, e.g. <code>#j #M #Y #@_{ \u\n\t\i\l j M Y}</code>.' ),
+							'#_{x} or #@_{x}' => array( 'desc' => 'You can also create a date format without prepending # to each character by wrapping a valid php date() format in <code>#_{}</code> or <code>#@_{}</code> (e.g. <code>#_{d/m/Y}</code>). If there is no end date (or is same as start date), the value is not shown. This is useful if you want to show event end dates only on events that are longer than one day, e.g. <code>#j #M #Y #@_{ \u\n\t\i\l j M Y}</code>.' ),
 						)
 					),
 					'Links/URLs' => array(

@@ -20,13 +20,15 @@ class EM_Events extends EM_Object {
 	 */
 	public static $num_rows_found;
 	
+	protected static $context = 'event';
+	
 	/**
 	 * Returns an array of EM_Events that match the given specs in the argument, or returns a list of future evetnts in future 
 	 * (see EM_Events::get_default_search() ) for explanation of possible search array values. You can also supply a numeric array
 	 * containing the ids of the events you'd like to obtain 
 	 * 
 	 * @param array $args
-	 * @return EM_Event array()
+	 * @return EM_Event[]
 	 */
 	public static function get( $args = array(), $count=false ) {
 		global $wpdb;	 
@@ -515,7 +517,6 @@ $limit $offset";
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
 	public static function build_sql_conditions( $args = array() ){
-	    self::$context = EM_POST_TYPE_EVENT;
 		global $wpdb;
 		//continue with conditions
 		$conditions = parent::build_sql_conditions($args);
@@ -636,7 +637,6 @@ $limit $offset";
 	 * @uses EM_Object#get_default_search()
 	 */
 	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
-	    self::$context = EM_POST_TYPE_EVENT;
 		$defaults = array(
 			'recurring' => false, //we don't initially look for recurring events only events and recurrences of recurring events
 			'orderby' => get_option('dbem_events_default_orderby'),

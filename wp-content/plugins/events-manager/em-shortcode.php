@@ -1,6 +1,5 @@
 <?php
 //TODO add a shortcode to link for a specific event, e.g. [event id=x]text[/event]
-
 /**
  * Returns the html of an events calendar with events that match given query attributes. Accepts any event query attribute.
  * @param array $atts
@@ -17,7 +16,7 @@ function em_get_gcal_shortcode($atts){
 	if( $img_url == $atts['img'] && $atts['button'] != 6 ){
 		$img_url = str_replace('gc_button6.gif', 'gc_button'.$atts['button'].'.gif', $img_url);
 	}
-	$url = '<a href="http://www.google.com/calendar/render?cid='.urlencode(trailingslashit(get_home_url()).'events.ics').'" target="_blank"><img src="'.$img_url.'" alt="0" border="0"></a>';
+	$url = '<a href="http://www.google.com/calendar/render?cid='.urlencode(trailingslashit(get_home_url()).'events.ics').'" target="_blank"><img src="'.esc_url($img_url).'" alt="0" border="0"></a>';
 	return $url;
 }
 add_shortcode('events_gcal', 'em_get_gcal_shortcode');
@@ -43,7 +42,7 @@ function em_get_locations_map_shortcode($args){
 	//add JSON style to map
 	$style = '';
 	if( !empty($args['map_style']) ){
-		$style= base64_decode($args['map_style']);
+		$style= wp_kses_data(base64_decode($args['map_style']));
 		$style_json= json_decode($style);
 		if( is_array($style_json) || is_object($style_json) ){
 			$style = preg_replace('/[\r\n\t\s]/', '', $style);
@@ -81,7 +80,7 @@ function em_get_events_map_shortcode($args){
 	//add JSON style to map
 	$style = '';
 	if( !empty($args['map_style']) ){
-		$style= base64_decode($args['map_style']);
+		$style= wp_kses_data(base64_decode($args['map_style']));
 		$style_json= json_decode($style);
 		if( is_array($style_json) || is_object($style_json) ){
 			$style = preg_replace('/[\r\n\t\s]/', '', $style);
@@ -99,6 +98,7 @@ add_shortcode('events_map', 'em_get_events_map_shortcode');
 /**
  * Shows a list of events according to given specifications. Accepts any event query attribute.
  * @param array $args
+ * @param string $format
  * @return string
  */
 function em_get_events_list_shortcode($args, $format='') {

@@ -9,8 +9,8 @@ function bp_em_group_event_save($result, $EM_Event){
 		    //firstly, we check that the event has been published, otherwise users without publish rights can submit an event at a private group and event is marked private/published immediately
 		    if( $EM_Event->event_status == 1 ){
     			//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
-    			if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
-    				$EM_Event->group_id = $_REQUEST['group_id'];
+    			if( groups_is_user_admin(get_current_user_id(), absint($_REQUEST['group_id']) ) ){
+    				$EM_Event->group_id = absint($_REQUEST['group_id']);
     			}
     			if( !empty($EM_Event->group_id) ){
     				//if group is private, make it private

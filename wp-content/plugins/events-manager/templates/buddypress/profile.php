@@ -12,7 +12,6 @@ if( user_can($bp->displayed_user->id,'edit_events') ){
 		'format' => get_option('dbem_bp_events_list_format'),
 		'format_footer' => get_option('dbem_bp_events_list_format_footer'),
 		'no_results_msg' => false,
-		'owner' => $bp->displayed_user->id,
 		'pagination'=>1
 	);
 	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');

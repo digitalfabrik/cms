@@ -22,7 +22,7 @@ function em_content($page_content) {
 	//general defaults
 	$args = array(				
 		'owner' => false,
-		'pagination' => 1
+		'pagination' => 1,
 	);
 	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	if( !post_password_required() && in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id, $tags_page_id)) ){
@@ -34,6 +34,7 @@ function em_content($page_content) {
 				if ( !empty($_REQUEST['calendar_day']) ) {
 					//Events for a specific day
 					$args = EM_Events::get_post_search( array_merge($args, $_REQUEST) );
+					$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 					em_locate_template('templates/calendar-day.php',true, array('args'=>$args));
 				}elseif ( is_object($EM_Event)) {
 					em_locate_template('templates/event-single.php',true, array('args'=>$args));	

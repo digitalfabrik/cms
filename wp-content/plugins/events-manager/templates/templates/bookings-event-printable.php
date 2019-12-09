@@ -11,7 +11,7 @@ global $EM_Event;
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 	<title><?php echo sprintf(__('Bookings for %s','events-manager'), $EM_Event->name); ?></title>
-	<link rel="stylesheet" href="<?php echo bloginfo('wpurl') ?>/wp-content/plugins/events-manager/includes/css/events_manager.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="<?php echo EM_DIR_URI; ?>includes/css/events_manager.css" type="text/css" media="screen" />
 </head>
 <body id="printable">
 	<div id="container">

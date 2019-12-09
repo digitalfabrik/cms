@@ -2,8 +2,8 @@
 
 Contributors: Braekling
 Requires at least: 4.0
-Tested up to: 4.8.2
-Stable tag: 1.0.19
+Tested up to: 5.2.2
+Stable tag: 1.0.22
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6046779
 Tags: matomo, tracking, statistics, stats, analytics
 
@@ -15,7 +15,7 @@ This plugin uses the Matomo API to show your Matomo statistics in your WordPress
 
 To use this plugin the Matomo web analytics application is required. If you do not already have a Matomo setup (e.g., provided by your web hosting service), you have two simple options: use either a [self-hosted Matomo](http://matomo.org/) or a [cloud-hosted Matomo by InnoCraft](https://www.innocraft.cloud/?pk_campaign=WP-Piwik).
 
-**Requirements:** PHP 7.0 (or higher), WordPress 4.0 (or higher), Matomo 3.0 (or higher)
+**Requirements:** PHP 7.0 (or higher), WordPress 5.0 (or higher), Matomo 3.0 (or higher)
  
 **Languages:** English, Albanian, Chinese, Dutch, French, German, Greek, Hungarian, Italian, Polish, Portuguese (Brazil). Partially supported: Azerbaijani, Belarusian, Hindi, Lithuanian, Luxembourgish, Norwegian, Persian, Romanian, Russian, Spanish, Swedish, Turkish, Ukrainian
 
@@ -47,8 +47,8 @@ is equal to *[wp-piwik module="overview" title="" period="day" date="yesterday"]
 = Credits =
 
 * Graphs powered by [jqPlot](http://www.jqplot.com/) (GPL 2.0 and MIT) and and [jQuery Sparklines](http://omnipotent.net/jquery.sparkline/) (New BSD License).
-* All translators at the [Transifex translation community](https://www.transifex.com/projects/p/wp-piwik/).
-* Donations: Marco L., Rolf W., Tobias U., Lars K., Donna F., Kevin D., Ramos S., Thomas M., John C., Andreas G., Ben M., Myra R. I., Carlos U. R.-S., Oleg I., M. N., Daniel K., James L., Jochen K., Cyril P., Thomas K., Patrik K., Zach, Sebastian W., Peakkom, Patrik K., Kati K., Helmut O., Valerie S., Jochen D., Atlas R., Harald W., Jan M., Addy K., Hans-Georg E.-B., Yvonne K., Andrew D., the Matomo team itself, and all people flattering this.
+* All translators at Transifex and WordPress.
+* Donations: Marco L., Rolf W., Tobias U., Lars K., Donna F., Kevin D., Ramos S., Thomas M., John C., Andreas G., Ben M., Myra R. I., Carlos U. R.-S., Oleg I., M. N., Daniel K., James L., Jochen K., Cyril P., Thomas K., Patrik K., Zach, Sebastian W., Peakkom, Patrik K., Kati K., Helmut O., Valerie S., Jochen D., Atlas R., Harald W., Jan M., Addy K., Hans-Georg E.-B., Yvonne K., Andrew D., Nicolas J., Andre M., Steve J., Jakub P., ditho.berlin, Robert R., Simon B., Grzegorz O., Bjarne O., the Matomo team itself, and all people flattering this.
 * All users who send me mails containing criticism, commendation, feature requests and bug reports - you help me to make WP-Matomo much better!
 
 Thank you all!
@@ -78,7 +78,7 @@ The Compatibility Checker shows two false positives. WP-Matomo is 100% PHP7 comp
 
 = Overview shortcode shows no unique visitors using a yearly range. =
 
-See [Matomo FAQ](http://matomo.org/faq/how-to/#faq_113).
+See [Matomo FAQ](http://piwik.org/faq/how-to/#faq_113).
 
 = WP-Matomo only shows the first 100 sites of my multisite network. How can I get all other sites? =
 
@@ -140,6 +140,20 @@ Add WP-Matomo to your /wp-content/plugins folder and enable it as [Network Plugi
 5. Matomo: Here you'll find your auth token.
 
 == Changelog ==
+
+= 1.0.22 =
+* Bugfix: Innocraft cloud URL *.matomo.cloud will work
+* Option to configure filter_limit parameter (see expert settings)
+* Replaced piwik.php proxy script by matomo.php proxy script
+
+= 1.0.21 =
+* Bugfix: Get HTTP mode working again
+
+= 1.0.20 =
+* Support for new Innocraft cloud URL (*.matomo.cloud)
+* Changed naming from Piwik to Matomo
+* Added City, Type and Model views
+* Bugfix: Avoid warnings on empty results
 
 = 1.0.19 =
 * Security fix: Escape request var
@@ -236,7 +250,7 @@ Add WP-Matomo to your /wp-content/plugins folder and enable it as [Network Plugi
 = 1.0.3 =
 * Several language updates.
 * Switch to JSON renderer (Matomo 3 compatibility preparation)
-* Workaround: PHP API will work with Matomo 2.14+, see https://github.com/matomo-org/piwik/issues/8311 for further information.
+* Workaround: PHP API will work with Matomo 2.14+, see https://github.com/piwik/piwik/issues/8311 for further information.
 * Feature: Heartbeat timer support
 * Feature: Expanded token & URL/path input fields
 * Bugfix: Site duplication fix.
@@ -399,7 +413,7 @@ Add WP-Matomo to your /wp-content/plugins folder and enable it as [Network Plugi
 
 = 0.9.9.4 =
 * Use Transients API (one week caching)
-* Option: Track visitors without JavaScript, see http://matomo.org/faq/how-to/#faq_176
+* Option: Track visitors without JavaScript, see http://piwik.org/faq/how-to/#faq_176
 
 = 0.9.9.3 = 
 * Sparkline script update (IE 10 compatibility)
@@ -429,7 +443,7 @@ Add WP-Matomo to your /wp-content/plugins folder and enable it as [Network Plugi
 
 = 0.9.8 =
 * WordPress 3.5 compatibility fix: http://wordpress.org/support/topic/v35-errors-fix?replies=5 (Thanks Christian Foellmann!)
-* Advanced Search Result Analytics, see http://matomo.org/docs/javascript-tracking/#toc-tracking-internal-search-keywords-categories-and-no-result-search-keywords
+* Advanced Search Result Analytics, see http://piwik.org/docs/javascript-tracking/#toc-tracking-internal-search-keywords-categories-and-no-result-search-keywords
 * Site Search stats added
 * Use js/index.php: Replaces piwik.js and piwik.php by js/ (instead of piwik.js only)
 * Connection timeout setting added
@@ -437,7 +451,7 @@ Add WP-Matomo to your /wp-content/plugins folder and enable it as [Network Plugi
 * Uninstall script added
 * Stats metaboxes: Date formatted
 * Use proxy settings defined in wp-config.php
-* Matomo.php proxy script added (see http://matomo.org/faq/how-to/#faq_132)
+* Matomo.php proxy script added (see http://piwik.org/faq/how-to/#faq_132)
 * Bugfix: After upgrade, Matomo automatically places cookies again (http://wordpress.org/support/topic/after-upgrade-piwik-automatically-places-cookies-again)
 
 = 0.9.7 =
@@ -463,7 +477,7 @@ Add WP-Matomo to your /wp-content/plugins folder and enable it as [Network Plugi
 * Bugfix: Sparkline script only loaded if required
 * Stats site supports up to 3 columns
 * Network admin stats: Choose site using a paged table (instead of a select box).
-* Feature: [Custom variables](http://matomo.org/docs/javascript-tracking/#toc-custom-variables), using [custom post meta boxes](http://wp.smashingmagazine.com/2011/10/04/create-custom-post-meta-boxes-wordpress/).
+* Feature: [Custom variables](http://piwik.org/docs/javascript-tracking/#toc-custom-variables), using [custom post meta boxes](http://wp.smashingmagazine.com/2011/10/04/create-custom-post-meta-boxes-wordpress/).
 * Some minor bugfixes
 
 = 0.9.5 =

@@ -7,15 +7,15 @@
  * Description: Visually compresses the administrative meta-boxes so that more admin page content can be initially seen. The plugin that lets you hide 'unnecessary' items from the WordPress administration menu, for all roles of your install. You can also hide post meta controls on the edit-area to simplify the interface. It is possible to simplify the admin in different for all roles.
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Version:     1.11.4
- * License:     GPLv3+
+ * Version:     1.11.5
+ * License:     GPLv2+
  *
  * Php Version 5.6
  *
  * @package WordPress
  * @author  Frank Bültge <frank@bueltge.de>
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 2017-12-14
+ * @version 2019-07-07
  */
 
 /**
@@ -96,26 +96,26 @@ function _mw_adminimize_exclude_super_admin() {
 function _mw_adminimize_exclude_settings_page() {
 
 	if ( ! is_admin() ) {
-		return FALSE;
+		return false;
 	}
 
-	if ( defined('DOING_AJAX') && DOING_AJAX ) {
-		return FALSE;
+	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+		return false;
 	}
 
 	$page = '';
-	if ( isset( $_GET[ 'page' ] ) ) {
-		$page = esc_attr( $_GET[ 'page' ] );
+	if ( isset( $_GET['page'] ) ) {
+		$page = esc_attr( $_GET['page'] );
 	}
 
 	$screen = $page;
 	if ( function_exists( 'get_current_screen' ) ) {
 		$screen_tmp = get_current_screen();
-	}
 
-	if ( isset( $screen_tmp->id ) && null !== $screen_tmp->id ) {
-		$screen = $screen_tmp->id;
+		if ( isset( $screen_tmp->id ) && null !== $screen_tmp->id ) {
+			$screen = $screen_tmp->id;
 	}
+}
 
 	// Don't filter on settings page
 	return FALSE !== strpos( $screen, 'adminimize' );
@@ -226,7 +226,7 @@ function _mw_adminimize_get_current_post_type() {
 	elseif ( $current_screen && $current_screen->post_type ) {
 		return $current_screen->post_type;
 	} // lastly check the post_type querystring
-	elseif ( isset( $_REQUEST[ 'post_type' ] ) ) {
+	elseif ( isset( $_REQUEST['post_type'] ) ) {
 		return sanitize_key( $_REQUEST[ 'post_type' ] );
 	}
 
@@ -370,13 +370,13 @@ function _mw_adminimize_admin_init() {
 
 			// Set default editor tinymce
 			if ( _mw_adminimize_recursive_in_array(
-					'#editor-toolbar #edButtonHTML, #quicktags, #content-html',
-					$disabled_metaboxes_page_all
-				)
-				|| _mw_adminimize_recursive_in_array(
-					'#editor-toolbar #edButtonHTML, #quicktags, #content-html',
-					$disabled_metaboxes_post_all
-				)
+				     '#editor-toolbar #edButtonHTML, #quicktags, #content-html',
+				     $disabled_metaboxes_page_all
+			     )
+			     || _mw_adminimize_recursive_in_array(
+				     '#editor-toolbar #edButtonHTML, #quicktags, #content-html',
+				     $disabled_metaboxes_post_all
+			     )
 			) {
 				add_filter( 'wp_default_editor', '_mw_admininimize_return_tinmyce' );
 				/**
@@ -392,7 +392,7 @@ function _mw_adminimize_admin_init() {
 
 			// Remove media buttons
 			if ( _mw_adminimize_recursive_in_array( 'media_buttons', $disabled_metaboxes_page_all )
-				|| _mw_adminimize_recursive_in_array( 'media_buttons', $disabled_metaboxes_post_all )
+			     || _mw_adminimize_recursive_in_array( 'media_buttons', $disabled_metaboxes_post_all )
 			) {
 				remove_action( 'media_buttons', 'media_buttons' );
 			}
@@ -409,7 +409,7 @@ function _mw_adminimize_admin_init() {
 	}
 	// set custom post type options
 	if ( function_exists( 'get_post_types' ) && in_array( $pagenow, $def_custom_pages, TRUE )
-		&& in_array( $current_post_type, $def_custom_types, TRUE )
+	     && in_array( $current_post_type, $def_custom_types, TRUE )
 	) {
 		add_action( 'admin_head', '_mw_adminimize_set_metabox_cp_option', 1 );
 	}
@@ -488,7 +488,7 @@ function _mw_adminimize_remove_dashboard() {
 		foreach ( $user_roles as $role ) {
 			if ( _mw_adminimize_current_user_has_role( $role ) ) {
 				if ( _mw_adminimize_recursive_in_array( 'index.php', $disabled_menu_[ $role ] )
-					|| _mw_adminimize_recursive_in_array( 'index.php', $disabled_submenu_[ $role ] )
+				     || _mw_adminimize_recursive_in_array( 'index.php', $disabled_submenu_[ $role ] )
 				) {
 					$redirect = TRUE;
 				}
@@ -599,7 +599,7 @@ function _mw_adminimize_set_menu_option() {
 	// Set admin-menu.
 	foreach ( $user_roles as $role ) {
 		if ( in_array( $role, $user->roles, TRUE )
-			&& _mw_adminimize_current_user_has_role( $role )
+		     && _mw_adminimize_current_user_has_role( $role )
 		) {
 			// Create array about all items with all affected roles.
 			foreach ( (array) $disabled_menu_[ $role ] as $menu_item ) {
@@ -735,33 +735,48 @@ function _mw_adminimize_set_metabox_post_option() {
 
 	$user_roles                = _mw_adminimize_get_all_user_roles();
 	$_mw_adminimize_admin_head = '';
-	$metaboxes                 = '';
+	// It's better to declare $metaboxes as an array for better manipulation later.
+	$metaboxes                 = array();
 
 	foreach ( $user_roles as $role ) {
 		$disabled_metaboxes_post_[ $role ] = _mw_adminimize_get_option_value(
 			'mw_adminimize_disabled_metaboxes_post_' . $role . '_items'
 		);
 
-		if ( ! isset( $disabled_metaboxes_post_[ $role ][ '0' ] ) ) {
-			$disabled_metaboxes_post_[ $role ][ '0' ] = '';
+		if ( ! isset( $disabled_metaboxes_post_[ $role ]['0'] ) ) {
+			$disabled_metaboxes_post_[ $role ]['0'] = '';
+
+			/**
+			 * @todo    Think why keep going if $role does not even have boxes to hide? We may as well jump to the next $role.
+			 */
+			continue;
 		}
 
-		// New since version 1.7.8.
-		$user = wp_get_current_user();
-		if ( is_array( $user->roles ) && in_array( $role, $user->roles, TRUE ) ) {
+		/**
+		 * @todo    Think why call a function as we can use a global variable already declared by WordPress.
+		 * @var WP_User $user Instance of WP_User.
+		 * @since   1.7.8
+		 * @version 1.11.4
+		 */
+		$user = $GLOBALS['current_user'];
+		if ( is_array( $user->roles ) && in_array( $role, $user->roles, true ) ) {
 			if ( _mw_adminimize_current_user_has_role( $role ) && isset( $disabled_metaboxes_post_[ $role ] )
-				&& is_array(
-					$disabled_metaboxes_post_[ $role ]
-				)
+			     && is_array(
+				     $disabled_metaboxes_post_[ $role ]
+			     )
 			) {
-				$metaboxes = implode( ',', $disabled_metaboxes_post_[ $role ] );
+				// The previous way $metaboxes was being filled it could be at some point non empty and empty afterwards.
+				// For instance, if a $role has items to be hidden and the user has this $role, $metaboxes will be filled.
+				// But in next loop $metaboxes may receive '' as the next $role might not have items to hide and the user might has the next $role.
+				$metaboxes[] = implode( ',', $disabled_metaboxes_post_[ $role ] );
 			}
 		}
 	}
 
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize metabox post options -->' . "\n";
+	// And below we implode $metaboxes because it's an array now.
 	$_mw_adminimize_admin_head .= '<style type="text/css">' .
-		$metaboxes . ' {display:none !important;}</style>' . "\n";
+	                              implode( ',', $metaboxes ) . ' {display:none !important;}</style>' . "\n";
 
 	if ( ! empty( $metaboxes ) ) {
 		echo $_mw_adminimize_admin_head;
@@ -800,8 +815,8 @@ function _mw_adminimize_set_metabox_page_option() {
 		$user = wp_get_current_user();
 		if ( is_array( $user->roles ) && in_array( $role, $user->roles, TRUE ) ) {
 			if ( _mw_adminimize_current_user_has_role( $role )
-				&& isset( $disabled_metaboxes_page_[ $role ] )
-				&& is_array( $disabled_metaboxes_page_[ $role ] )
+			     && isset( $disabled_metaboxes_page_[ $role ] )
+			     && is_array( $disabled_metaboxes_page_[ $role ] )
 			) {
 				$metaboxes = implode( ',', $disabled_metaboxes_page_[ $role ] );
 			}
@@ -810,7 +825,7 @@ function _mw_adminimize_set_metabox_page_option() {
 
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize metabox page options -->' . "\n";
 	$_mw_adminimize_admin_head .= '<style type="text/css">' .
-		$metaboxes . ' {display:none !important;}</style>' . "\n";
+	                              $metaboxes . ' {display:none !important;}</style>' . "\n";
 
 	if ( ! empty( $metaboxes ) ) {
 		echo $_mw_adminimize_admin_head;
@@ -855,31 +870,33 @@ function _mw_adminimize_set_metabox_cp_option() {
 
 	$user_roles                = _mw_adminimize_get_all_user_roles();
 	$_mw_adminimize_admin_head = '';
-	$metaboxes                 = '';
+	$metaboxes                 = array();
 
 	foreach ( $user_roles as $role ) {
 		$disabled_metaboxes_[ $current_post_type . '_' . $role ] = _mw_adminimize_get_option_value(
 			'mw_adminimize_disabled_metaboxes_' . $current_post_type . '_' . $role . '_items'
 		);
 
-		if ( ! isset( $disabled_metaboxes_[ $current_post_type . '_' . $role ][ '0' ] ) ) {
-			$disabled_metaboxes_[ $current_post_type . '_' . $role ][ '0' ] = '';
+		if ( ! isset( $disabled_metaboxes_[ $current_post_type . '_' . $role ]['0'] ) ) {
+			$disabled_metaboxes_[ $current_post_type . '_' . $role ]['0'] = '';
+
+			continue;
 		}
 
-		$user = wp_get_current_user();
-		if ( is_array( $user->roles ) && in_array( $role, $user->roles, TRUE ) ) {
+		$user = $GLOBALS['current_user'];
+		if ( is_array( $user->roles ) && in_array( $role, $user->roles, true ) ) {
 			if ( _mw_adminimize_current_user_has_role( $role )
-				&& isset( $disabled_metaboxes_[ $current_post_type . '_' . $role ] )
-				&& is_array( $disabled_metaboxes_[ $current_post_type . '_' . $role ] )
+			     && isset( $disabled_metaboxes_[ $current_post_type . '_' . $role ] )
+			     && is_array( $disabled_metaboxes_[ $current_post_type . '_' . $role ] )
 			) {
-				$metaboxes = implode( ',', $disabled_metaboxes_[ $current_post_type . '_' . $role ] );
+				$metaboxes[] = implode( ',', $disabled_metaboxes_[ $current_post_type . '_' . $role ] );
 			}
 		}
 	}
 
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize post options -->' . "\n";
 	$_mw_adminimize_admin_head .= '<style type="text/css">' .
-		$metaboxes . ' {display:none !important;}</style>' . "\n";
+	                              implode( ',', $metaboxes ) . ' {display:none !important;}</style>' . "\n";
 
 	if ( ! empty( $metaboxes ) ) {
 		echo $_mw_adminimize_admin_head;
@@ -931,7 +948,7 @@ function _mw_adminimize_set_link_option() {
 
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize links options -->' . "\n";
 	$_mw_adminimize_admin_head .= '<style type="text/css">' .
-		$link_options . ' {display:none !important;}</style>' . "\n";
+	                              $link_options . ' {display:none !important;}</style>' . "\n";
 
 	if ( ! empty( $link_options ) ) {
 		echo $_mw_adminimize_admin_head;
@@ -983,7 +1000,7 @@ function _mw_adminimize_set_nav_menu_option() {
 
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize WP Nav Menu options -->' . "\n";
 	$_mw_adminimize_admin_head .= '<style type="text/css">' .
-		$nav_menu_options . ' {display: none !important;}</style>' . "\n";
+	                              $nav_menu_options . ' {display: none !important;}</style>' . "\n";
 
 	if ( $nav_menu_options ) {
 		echo $_mw_adminimize_admin_head;
@@ -1035,7 +1052,7 @@ function _mw_adminimize_set_widget_option() {
 
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize Widget options -->' . "\n";
 	$_mw_adminimize_admin_head .= '<style type="text/css">' .
-		$widget_options . ' {display: none !important;}</style>' . "\n";
+	                              $widget_options . ' {display: none !important;}</style>' . "\n";
 
 	if ( $widget_options ) {
 		echo $_mw_adminimize_admin_head;
@@ -1101,7 +1118,7 @@ require_once 'inc-setup/import.php';
  * @param  array  $links
  * @param  string $file
  *
- * @return string $links
+ * @return array $links
  */
 function _mw_adminimize_filter_plugin_meta( $links, $file ) {
 
@@ -1409,7 +1426,7 @@ function _mw_adminimize_update() {
 		// global options
 		if ( isset( $_POST[ 'mw_adminimize_disabled_global_option_' . $role . '_items' ] ) ) {
 			$adminimizeoptions[ 'mw_adminimize_disabled_global_option_' . $role . '_items' ] =
-					$_POST[ 'mw_adminimize_disabled_global_option_' . $role . '_items' ];
+				$_POST[ 'mw_adminimize_disabled_global_option_' . $role . '_items' ];
 		} else {
 			$adminimizeoptions[ 'mw_adminimize_disabled_global_option_' . $role . '_items' ] = array();
 		}

@@ -5,7 +5,7 @@
 function bp_em_my_events() {
 	global $bp, $EM_Event;
 	if( !is_object($EM_Event) && !empty($_REQUEST['event_id']) ){
-		$EM_Event = new EM_Event($_REQUEST['event_id']);
+		$EM_Event = new EM_Event( absint($_REQUEST['event_id']) );
 	}
 	
 	do_action( 'bp_em_my_events' );

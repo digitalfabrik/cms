@@ -11,18 +11,18 @@ function em_init_actions() {
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
 		if(isset($_REQUEST['em_ajax_action']) && $_REQUEST['em_ajax_action'] == 'get_location') {
 			if(isset($_REQUEST['id'])){
-				$EM_Location = new EM_Location($_REQUEST['id'], 'location_id');
+				$EM_Location = new EM_Location( absint($_REQUEST['id']), 'location_id' );
 				$location_array = $EM_Location->to_array();
-				$location_array['location_balloon'] = $EM_Location->output(get_option('dbem_location_baloon_format'));
+				$location_array['location_balloon'] = $EM_Location->output( get_option('dbem_location_baloon_format') );
 		     	echo EM_Object::json_encode($location_array);
 			}
 			die();
 		}   
-	 	if(isset($_REQUEST['em_ajax_action']) && $_REQUEST['em_ajax_action'] == 'delete_ticket') {
-			if(isset($_REQUEST['id'])){
-				$EM_Ticket = new EM_Ticket($_REQUEST['id']);
+	 	if( isset($_REQUEST['em_ajax_action']) && $_REQUEST['em_ajax_action'] == 'delete_ticket' ) {
+			if( isset($_REQUEST['id']) ){
+				$EM_Ticket = new EM_Ticket( absint($_REQUEST['id']) );
 				$result = $EM_Ticket->delete();
-				if($result){
+				if( $result ){
 					$result = array('result'=>true);
 				}else{
 					$result = array('result'=>false, 'error'=>$EM_Ticket->feedback_message);
@@ -70,7 +70,7 @@ function em_init_actions() {
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,5) == 'event' ){
 		//Load the event object, with saved event if requested
 		if( !empty($_REQUEST['event_id']) ){
-			$EM_Event = new EM_Event($_REQUEST['event_id']);
+			$EM_Event = new EM_Event( absint($_REQUEST['event_id']) );
 		}else{
 			$EM_Event = new EM_Event();
 		}
@@ -96,7 +96,7 @@ function em_init_actions() {
 				}
 				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
 				$redirect = em_add_get_params($redirect, array('success'=>1), false, false);
-				wp_redirect( $redirect );
+				wp_safe_redirect( $redirect );
 				exit();
 			}else{
 				$EM_Notices->add_error( $EM_Event->get_errors() );
@@ -109,10 +109,10 @@ function em_init_actions() {
 			$event = $EM_Event->duplicate();
 			if( $event === false ){
 				$EM_Notices->add_error($EM_Event->errors, true);
-				wp_redirect( em_wp_get_referer() );
+				wp_safe_redirect( em_wp_get_referer() );
 			}else{
 				$EM_Notices->add_confirm($event->feedback_message, true);
-				wp_redirect( $event->get_edit_url() );
+				wp_safe_redirect( $event->get_edit_url() );
 			}
 			exit();
 		}
@@ -132,7 +132,7 @@ function em_init_actions() {
 				$message = ( !empty($EM_Event->errors) ) ? $EM_Event->errors : sprintf(__('%s could not be deleted.','events-manager'),$plural);
 				$EM_Notices->add_error( $message, true );		
 			}
-			wp_redirect( em_wp_get_referer() );
+			wp_safe_redirect( em_wp_get_referer() );
 			exit();
 		}elseif( $_REQUEST['action'] == 'event_detach' && wp_verify_nonce($_REQUEST['_wpnonce'],'event_detach_'.get_current_user_id().'_'.$EM_Event->event_id) ){ 
 			//Detach event and move on
@@ -141,16 +141,16 @@ function em_init_actions() {
 			}else{
 				$EM_Notices->add_error( $EM_Event->errors, true );			
 			}
-			wp_redirect(em_wp_get_referer());
+			wp_safe_redirect(em_wp_get_referer());
 			exit();
 		}elseif( $_REQUEST['action'] == 'event_attach' && !empty($_REQUEST['undo_id']) && wp_verify_nonce($_REQUEST['_wpnonce'],'event_attach_'.get_current_user_id().'_'.$EM_Event->event_id) ){ 
 			//Detach event and move on
-			if($EM_Event->attach($_REQUEST['undo_id'])){
+			if( $EM_Event->attach( absint($_REQUEST['undo_id']) ) ){
 				$EM_Notices->add_confirm( $EM_Event->feedback_message, true );
 			}else{
 				$EM_Notices->add_error( $EM_Event->errors, true );
 			}
-			wp_redirect(em_wp_get_referer());
+			wp_safe_redirect(em_wp_get_referer());
 			exit();
 		}
 		
@@ -171,7 +171,7 @@ function em_init_actions() {
 		global $EM_Location, $EM_Notices;
 		//Load the location object, with saved event if requested
 		if( !empty($_REQUEST['location_id']) ){
-			$EM_Location = new EM_Location($_REQUEST['location_id']);
+			$EM_Location = new EM_Location( absint($_REQUEST['location_id']) );
 		}else{
 			$EM_Location = new EM_Location();
 		}
@@ -182,7 +182,7 @@ function em_init_actions() {
 			if ( $EM_Location->get_post() && $EM_Location->save() ) { //EM_location gets the location if submitted via POST and validates it (safer than to depend on JS)
 				$EM_Notices->add_confirm($EM_Location->feedback_message, true);
 				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
-				wp_redirect( $redirect );
+				wp_safe_redirect( $redirect );
 				exit();
 			}else{
 				$EM_Notices->add_error( $EM_Location->get_errors() );
@@ -192,13 +192,20 @@ function em_init_actions() {
 			//delete location
 			//get object or objects			
 			if( !empty($_REQUEST['locations']) || !empty($_REQUEST['location_id']) ){
-				$args = !empty($_REQUEST['locations']) ? $_REQUEST['locations']:$_REQUEST['location_id'];
-				$locations = EM_Locations::get($args);
-				foreach($locations as $location) {
-					if( !$location->delete() ){
-						$EM_Notices->add_error($location->get_errors());
-						$errors = true;
-					}			
+				$args = false;
+				if( !empty($_REQUEST['locations']) && EM_Object::array_is_numeric($_REQUEST['locations']) ){
+					$args = $_REQUEST['locations'];
+				}elseif( !empty($_REQUEST['location_id']) ){
+					$args = absint($_REQUEST['location_id']);
+				}
+				if( !empty($args) ){
+					$locations = EM_Locations::get($args);
+					foreach($locations as $location) {
+						if( !$location->delete() ){
+							$EM_Notices->add_error($location->get_errors());
+							$errors = true;
+						}
+					}
 				}
 				if( empty($errors) ){
 					$result = true;
@@ -236,7 +243,9 @@ function em_init_actions() {
 						location_state AS `state`,
 						location_region AS `region`,
 						location_postcode AS `postcode`,
-						location_country AS `country`
+						location_country AS `country`,
+						location_latitude AS `latitude`,
+						location_longitude AS `longitude`
 					FROM ".EM_LOCATIONS_TABLE." 
 					WHERE ( `location_name` LIKE %s ) AND location_status=1 $location_cond LIMIT 10
 				", $term);
@@ -265,7 +274,7 @@ function em_init_actions() {
 			//Load the event object, with saved event if requested
 			$EM_Event = $EM_Booking->get_event();
 		}elseif( !empty($_REQUEST['event_id']) ){
-			$EM_Event = new EM_Event($_REQUEST['event_id']);
+			$EM_Event = new EM_Event( absint($_REQUEST['event_id']) );
 		}
 		$allowed_actions = array('bookings_approve'=>'approve','bookings_reject'=>'reject','bookings_unapprove'=>'unapprove', 'bookings_delete'=>'delete');
 		$result = false;
@@ -356,7 +365,7 @@ function em_init_actions() {
 						}else{
 							$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
 						}
-						wp_redirect( $_SERVER['HTTP_REFERER'] );
+						wp_safe_redirect( $_SERVER['HTTP_REFERER'] );
 						exit();
 					}
 				}else{
@@ -410,7 +419,7 @@ function em_init_actions() {
 				if ($EM_Booking->get_post(true) && $EM_Booking->validate(true) && $EM_Booking->save(false) ){
 					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
-					wp_redirect( $redirect );
+					wp_safe_redirect( $redirect );
 					exit();
 				}else{
 					$result = false;
@@ -435,7 +444,7 @@ function em_init_actions() {
 					}
 					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
-					wp_redirect( $redirect );
+					wp_safe_redirect( $redirect );
 					exit();
 				}else{
 					$result = false;
@@ -453,7 +462,7 @@ function em_init_actions() {
 				        $EM_Notices->add_confirm( _x('No emails to send for this booking.', 'bookings', 'events-manager'), true );
 				    }
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
-					wp_redirect( $redirect );
+					wp_safe_redirect( $redirect );
 					exit();
 				}else{
 					$result = false;
@@ -467,11 +476,11 @@ function em_init_actions() {
 			    global $wpdb;
 				if( //save just the booking meta, avoid extra unneccesary hooks and things to go wrong
 					$EM_Booking->is_no_user() && $EM_Booking->get_person_post() && 
-			    	$wpdb->update(EM_BOOKINGS_TABLE, array('booking_meta'=> serialize($EM_Booking->booking_meta)), array('booking_id'=>$EM_Booking->booking_id))
+			    	$wpdb->update(EM_BOOKINGS_TABLE, array('booking_meta'=> serialize($EM_Booking->booking_meta)), array('booking_id'=>$EM_Booking->booking_id)) !== false
 				){
 					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
-					wp_redirect( $redirect );
+					wp_safe_redirect( $redirect );
 					exit();
 				}else{
 					$result = false;
@@ -485,7 +494,7 @@ function em_init_actions() {
 			if( $EM_Booking->add_note(wp_unslash($_REQUEST['booking_note'])) ){
 				$EM_Notices->add_confirm($EM_Booking->feedback_message, true);
 				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : em_wp_get_referer();
-				wp_redirect( $redirect );
+				wp_safe_redirect( $redirect );
 				exit();
 			}else{
 				$EM_Notices->add_error($EM_Booking->errors);
@@ -628,7 +637,7 @@ function em_init_actions() {
 	//Export CSV - WIP
 	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')){
 		if( !empty($_REQUEST['event_id']) ){
-			$EM_Event = em_get_event($_REQUEST['event_id']);
+			$EM_Event = em_get_event( absint($_REQUEST['event_id']) );
 		}
 		//sort out cols
 		if( !empty($_REQUEST['cols']) && is_array($_REQUEST['cols']) ){
@@ -664,12 +673,10 @@ function em_init_actions() {
 		$handle = fopen("php://output", "w");
 		fputcsv($handle, $EM_Bookings_Table->get_headers(true), $delimiter);
 		while( !empty($EM_Bookings->bookings) ){
-			foreach( $EM_Bookings->bookings as $EM_Booking ) {
+			foreach( $EM_Bookings->bookings as $EM_Booking ) { /* @var EM_Booking $EM_Booking */
 				//Display all values
-				/* @var $EM_Booking EM_Booking */
-				/* @var $EM_Ticket_Booking EM_Ticket_Booking */
 				if( $show_tickets ){
-					foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
+					foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){ /* @var EM_Ticket_Booking $EM_Ticket_Booking */
 						$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
 						fputcsv($handle, $row, $delimiter);
 					}

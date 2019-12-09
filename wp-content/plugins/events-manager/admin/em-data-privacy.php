@@ -210,8 +210,8 @@ class EM_Data_Privacy {
 	}
 
 	public static function export_cleanup(){
-		delete_post_meta($_REQUEST['id'], '_em_locations_exported');
-		delete_post_meta($_REQUEST['id'], '_em_bookings_exported');
+		delete_post_meta( absint($_REQUEST['id']), '_em_locations_exported');
+		delete_post_meta( absint($_REQUEST['id']), '_em_bookings_exported' );
 	}
 
 	public static function export_user( $email_address ){
@@ -345,7 +345,7 @@ class EM_Data_Privacy {
 			'item_id' => 'location-post-ID', //replace ID with booking ID
 			'data' => array() // replace this with assoc array of name/value key arrays
 		);
-		$locations_exported = get_post_meta( $_REQUEST['id'], '_em_locations_exported', true);
+		$locations_exported = get_post_meta( absint($_REQUEST['id']), '_em_locations_exported', true);
 		if( empty($locations_exported) ) $locations_exported = array();
 
 		//EVENTS
@@ -423,7 +423,7 @@ class EM_Data_Privacy {
 		}
 
 		$done = $items_count < $limit; //if we didn't reach limit of bookings then we must be done
-		update_post_meta( $_REQUEST['id'], '_em_locations_exported', $locations_exported);
+		update_post_meta( absint($_REQUEST['id']), '_em_locations_exported', $locations_exported);
 		return array(
 			'data' => $export_items,
 			'done' => $done,
@@ -446,7 +446,7 @@ class EM_Data_Privacy {
 		);
 
 		//Locations - previous to 5.9.4 locations submitted anonymously did nint include
-		$locations_exported = get_post_meta( $_REQUEST['id'], '_em_locations_exported', true);
+		$locations_exported = get_post_meta( absint($_REQUEST['id']), '_em_locations_exported', true );
 		if( empty($locations_exported) ) $locations_exported = array();
 		
 		$locations = self::get_cpts($email_address, $page, EM_POST_TYPE_LOCATION);
@@ -473,7 +473,7 @@ class EM_Data_Privacy {
 				if( $items_count == $limit ) break;
 			}
 		}
-		update_post_meta( $_REQUEST['id'], '_em_locations_exported', $locations_exported);
+		update_post_meta( absint($_REQUEST['id']), '_em_locations_exported', $locations_exported );
 		$done = $items_count < $limit; //if we didn't reach limit of bookings then we must be done
 		return array(
 			'data' => $export_items,

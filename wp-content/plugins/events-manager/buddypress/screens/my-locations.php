@@ -5,7 +5,7 @@
 function bp_em_my_locations() {
 	global $bp, $EM_Location;
 	if( !is_object($EM_Location) && !empty($_REQUEST['location_id']) ){
-		$EM_Location = new EM_Location($_REQUEST['location_id']);
+		$EM_Location = new EM_Location( absint($_REQUEST['location_id']) );
 	}
 	
 	do_action( 'bp_em_my_locations' );

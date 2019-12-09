@@ -2,7 +2,7 @@
 
 //Function composing the options subpanel
 function em_options_save(){
-	global $EM_Notices;
+	global $EM_Notices; /* @var EM_Notices $EM_Notices */
 	/*
 	 * Here's the idea, we have an array of all options that need super admin approval if in multi-site mode
 	 * since options are only updated here, its one place fit all
@@ -11,13 +11,13 @@ function em_options_save(){
 		//Build the array of options here
 		$post = $_POST;
 		foreach ($_POST as $postKey => $postValue){
-			if( substr($postKey, 0, 5) == 'dbem_' ){
+			if( $postKey != 'dbem_data' && substr($postKey, 0, 5) == 'dbem_' ){
 				//TODO some more validation/reporting
 				$numeric_options = array('dbem_locations_default_limit','dbem_events_default_limit');
 				if( in_array($postKey, array('dbem_bookings_notify_admin','dbem_event_submitted_email_admin','dbem_js_limit_events_form','dbem_js_limit_search','dbem_js_limit_general','dbem_css_limit_include','dbem_css_limit_exclude','dbem_search_form_geo_distance_options')) ){ $postValue = str_replace(' ', '', $postValue); } //clean up comma separated emails, no spaces needed
 				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
 					//Do nothing, keep old setting.
-				}elseif( ($postKey == 'dbem_category_default_color' || $postKey == 'dbem_tag_default_color') && !preg_match("/^#([abcdef0-9]{3}){1,2}?$/i",$postValue)){
+				}elseif( ($postKey == 'dbem_category_default_color' || $postKey == 'dbem_tag_default_color') && !sanitize_hex_color($postValue) ){
 					$EM_Notices->add_error( sprintf(esc_html_x('Colors must be in a valid %s format, such as #FF00EE.', 'hex format', 'events-manager'), '<a href="http://en.wikipedia.org/wiki/Web_colors">hex</a>').' '. esc_html__('This setting was not changed.', 'events-manager'), true);					
 				}else{
 					//TODO slashes being added?
@@ -27,6 +27,16 @@ function em_options_save(){
 					    $postValue = wp_unslash($postValue);
 					}
 					update_option($postKey, $postValue);
+				}
+			}elseif( $postKey == 'dbem_data' && is_array($postValue) ){
+				foreach( $postValue as $postK => $postV ){
+					//TODO slashes being added?
+					if( is_array($postV) ){
+						foreach($postV as $postValue_key=>$postValue_val) $postV[$postValue_key] = wp_unslash($postValue_val);
+					}else{
+						$postV = wp_unslash($postV);
+					}
+					EM_Options::set( $postK, $postV );
 				}
 			}
 		}
@@ -73,7 +83,7 @@ function em_options_save(){
 			$referrer_array = explode('#', $referrer);
 			$referrer = esc_url_raw($referrer_array[0] . '#' . $_REQUEST['tab_path']);
 		}
-		wp_redirect($referrer);
+		wp_safe_redirect($referrer);
 		exit();
 	}
 	//Migration
@@ -84,7 +94,7 @@ function em_options_save(){
 			$failed = ( $result['fail'] > 0 ) ? $result['fail'] . ' images failed to migrate.' : '';
 			$EM_Notices->add_confirm('<strong>'.$result['success'].' images migrated successfully. '.$failed.'</strong>');
 		}
-		wp_redirect(admin_url().'edit.php?post_type=event&page=events-manager-options&em_migrate_images');
+		wp_safe_redirect(admin_url().'edit.php?post_type=event&page=events-manager-options&em_migrate_images');
 	}elseif( !empty($_GET['em_not_migrate_images']) && check_admin_referer('em_not_migrate_images','_wpnonce') ){
 		delete_option('dbem_migrate_images_nag');
 		delete_option('dbem_migrate_images');
@@ -124,7 +134,7 @@ function em_options_save(){
 			$wpdb->query('DELETE FROM '.$wpdb->options.' WHERE option_name LIKE \'em_%\' OR option_name LIKE \'dbem_%\'');
 			//deactivate and go!
 			deactivate_plugins(array('events-manager/events-manager.php','events-manager-pro/events-manager-pro.php'), true);
-			wp_redirect(admin_url('plugins.php?deactivate=true'));
+			wp_safe_redirect(admin_url('plugins.php?deactivate=true'));
 			exit();
 		}
 	}
@@ -144,7 +154,7 @@ function em_options_save(){
 			}
 			//go back to plugin options page
 			$EM_Notices->add_confirm(__('Settings have been reset back to default. Your events, locations and categories have not been modified.','events-manager'), true);
-			wp_redirect(em_wp_get_referer());
+			wp_safe_redirect(em_wp_get_referer());
 			exit();
 		}
 	}
@@ -170,7 +180,7 @@ function em_options_save(){
 		}
 		//go back to plugin options page
 		$EM_Notices->add_confirm(sprintf(__('Found %d orphaned events, deleted %d successfully','events-manager'), count($results), $deleted_events), true);
-		wp_redirect(em_wp_get_referer());
+		wp_safe_redirect(em_wp_get_referer());
 		exit();
 	}
 	//Force Update Recheck - Workaround for now
@@ -179,7 +189,7 @@ function em_options_save(){
 		delete_transient('update_plugins');
 		delete_site_transient('update_plugins');
 		$EM_Notices->add_confirm(__('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','events-manager'), true);
-		wp_redirect(em_wp_get_referer());
+		wp_safe_redirect(em_wp_get_referer());
 		exit();
 	}
 	//Flag version checking to look at trunk, not tag
@@ -189,7 +199,7 @@ function em_options_save(){
 		delete_site_transient('update_plugins');
 		update_option('em_check_dev_version', true);
 		$EM_Notices->add_confirm(__('Checking for dev versions.','events-manager').' '. __('If there are any new updates, you should now see them in your Plugins or Updates admin pages.','events-manager'), true);
-		wp_redirect(em_wp_get_referer());
+		wp_safe_redirect(em_wp_get_referer());
 		exit();
 	}
 	//import EM settings
@@ -213,12 +223,12 @@ function em_options_save(){
 					}
 				}
 				$EM_Notices->add_confirm(__('Settings imported.','events-manager'), true);
-				wp_redirect(em_wp_get_referer());
+				wp_safe_redirect(em_wp_get_referer());
 				exit();
 			}
 		}
 		$EM_Notices->add_error(__('Please upload a valid txt file containing Events Manager import settings.','events-manager'), true);
-		wp_redirect(em_wp_get_referer());
+		wp_safe_redirect(em_wp_get_referer());
 		exit();
 	}
 	//export EM settings
@@ -310,7 +320,7 @@ function em_options_save(){
 				$EM_Notices->add_confirm(sprintf(__('Event timezones have been reset to %s.','events-manager'), '<code>'.$timezone.'</code>'), true);
 			}
 		}
-		wp_redirect(em_wp_get_referer());
+		wp_safe_redirect(em_wp_get_referer());
 		exit();
 	}
 	
@@ -461,6 +471,14 @@ function em_admin_options_page() {
 			<a href="<?php echo $bookings_tab_link; ?>#bookings" id="em-menu-bookings" class="nav-tab"><?php _e('Bookings','events-manager'); ?></a>
 			<?php endif; ?>
 			<a href="<?php echo $emails_tab_link; ?>#emails" id="em-menu-emails" class="nav-tab"><?php _e('Emails','events-manager'); ?></a>
+			<?php
+			$custom_tabs = apply_filters('em_options_page_tabs', array());
+			foreach( $custom_tabs as $tab_key => $tab_name ){
+				$tab_link = !empty($tabs_enabled) ? esc_url(add_query_arg( array('em_tab'=>$tab_key))) : '';
+				$active_class = !empty($tabs_enabled) && !empty($_GET['em_tab']) && $_GET['em_tab'] == $tab_key ? 'nav-tab-active':'';
+				echo "<a href='$tab_link#$tab_key' id='em-menu-$tab_key' class='nav-tab $active_class'>$tab_name</a>";
+			}
+			?>
 		</h2>
 		<form id="em-options-form" method="post" action="">
 			<div class="metabox-holder">         
@@ -479,6 +497,13 @@ function em_admin_options_page() {
         			    include('settings/tabs/bookings.php');
         			}
         			if( $_REQUEST['em_tab'] == 'emails' ) include('settings/tabs/emails.php');
+					if( array_key_exists($_REQUEST['em_tab'], $custom_tabs) ){
+						?>
+						<div class="em-menu-<?php echo esc_attr($_REQUEST['em_tab']) ?> em-menu-group">
+						<?php do_action('em_options_page_tab_'. $_REQUEST['em_tab']); ?>
+						</div>
+						<?php
+					}
 			    }
 			}else{
     			include('settings/tabs/general.php');
@@ -488,6 +513,13 @@ function em_admin_options_page() {
     			    include('settings/tabs/bookings.php');
     			}
     			include('settings/tabs/emails.php');
+				foreach( $custom_tabs as $tab_key => $tab_name ){
+					?>
+					<div class="em-menu-<?php echo esc_attr($tab_key) ?> em-menu-group" style="display:none;">
+						<?php do_action('em_options_page_tab_'. $tab_key); ?>
+					</div>
+					<?php
+				}
 			}
 			?>
 			
@@ -574,7 +606,9 @@ function em_admin_option_box_email(){
 				<?php
 				em_options_input_text ( 'Mail sending port', 'dbem_rsvp_mail_port', __( "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port", 'events-manager') );
 				em_options_radio_binary ( __( 'Use SMTP authentication?', 'events-manager'), 'dbem_rsvp_mail_SMTPAuth', __( 'SMTP authentication is often needed. If you use Gmail, make sure to set this parameter to Yes', 'events-manager') );
-				em_options_input_text ( 'SMTP host', 'dbem_smtp_host', __( "The SMTP host. Usually it corresponds to 'localhost'. If you use Gmail, set this value to 'ssl://smtp.gmail.com:465'.", 'events-manager') );
+				em_options_select ( __( 'SMTP Encryption', 'events-manager'), 'dbem_smtp_encryption', array ('0' => __( 'None', 'events-manager'), 'ssl' => 'SSL', 'tls' => 'TLS' ), __( 'Encryption is always recommended if your SMTP server supports it. If your server supports TLS, this is also the most recommended method.', 'events-manager') );
+				em_options_radio_binary ( __( 'AutoTLS', 'events-manager'), 'dbem_smtp_autotls', __( 'We recommend leaving this on unless you are experiencing issues configuring your email.', 'events-manager') );
+				em_options_input_text ( 'SMTP host', 'dbem_smtp_host', __( "The SMTP host. Usually it corresponds to 'localhost'. If you use Gmail, set this value to 'tls://smtp.gmail.com:587'.", 'events-manager') );
 				em_options_input_text ( __( 'SMTP username', 'events-manager'), 'dbem_smtp_username', __( "Insert the username to be used to access your SMTP server.", 'events-manager') );
 				em_options_input_password ( __( 'SMTP password', 'events-manager'), "dbem_smtp_password", __( "Insert the password to be used to access your SMTP server", 'events-manager') );
 				?>

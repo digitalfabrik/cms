@@ -3,9 +3,10 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: bookings, calendar, tickets, events, buddypress, event management, google maps, maps, locations, registration
 Text Domain: events-manager
-Requires at least: 3.5
-Tested up to: 4.9.6
-Stable tag: 5.9.5
+Requires at least: 4.8
+Tested up to: 5.3
+Stable tag: 5.9.7.1
+Requires PHP: 5.3
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -110,6 +111,106 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.9.7.1 =
+* fixed minor typo in new email setting description
+* fixed CSV booking export files turning out blank due to change in EM_Bookings::__isset() in 5.9.7
+
+= 5.9.7 =
+* fixed google calendar add-to link not including location town/zip/state
+* fixed minor PHP warnings
+* added timestamps for keys to $post_ids array in em_event_save_events filter
+* tweaked deleting of recurrences to reduce possibility of mistken circumvention by other filters
+* added parameter option to include country to EM_Location->get_full_address()
+* added em_ticket_delete and em_tickets_delete filters
+* added language definition for events and locations allowing for faster multilingual searches where supported
+* added parent definition for events, tickets and locations paving the way for various hierarchical applications
+* added language search attribute for events and locations
+* fixed potential search inconsistencies when using 'recurrence' search attribute for finding recurrences by recurring event ID
+* added multilingual support for recurring events (requires update to any compatibility plugins)
+* added ability for event recurrences to assign corresponding parent ticket ids to recurrence tickets via ticket_parent db field
+* fixed potentially conflict-causing permalink rules for the calendar page (fixes WPML-EM conflict on these pages)
+* added support for location address translation in multilingual environments
+* removed filter pointer (previously used to fix ACF conflicts) in EM_ML_IO::event_save_meta() since WP now has fixed pointer issues for nested filter triggers
+* fixed EM_Event::is_recurrence() returning false when event not saved for first time
+* fixed delete_events not returning true to filter when events are actually deleted
+* fixed JS warning preventing address update on map when updating locations
+* added various precautionary data sanitization for security enhancement
+* replaced all uses of wp_redirect() with wp_safe_redirect() as a security precaution
+* added encryption and autotls options to email settings
+* added em_is_event() and em_is_location() object checking functions
+* added native primary handling of finding translations of events and locations before passing it onto filters where translation plugins can intervene
+* added native searching of events and locations based on new language/parent fields
+* added native support for searching eventful and eventless arguments in multilingual context
+* added native support for listing untranslated events and locations in original language when listing a second language in multilingual context
+* changed EM_Event and EM_Location blog_id to default to 0 rather than null
+* added shortname property names for common EM_Event and EM_Location fields language, parent, translation, id (event/location id), slug, status, name and owner
+* added get_parent() function for EM_Event and EM_Location classes
+* added $context peroperty to EM_Events and EM_Locations classes which leverage late static binding in PHP 5.3
+* added 'language' search argument for events and locations which can be used in multilingual contexts
+* moved table joining decision logic in EM_Locations into its own function, enabling overriding via filters
+* added em_booking_email_before_send, em_booking_email_after_send and em_booking_output_pre actions in EM_Booking
+* added em_booking_email filter in EM_Booking
+* added name/description shortname properties and modified ticket_name/description access in EM_Ticket to enable dynamic translation of ticket names
+* added price,id,spaces shortnames for EM_Ticket_Booking
+* added em_ticket_booking_get_ticket filter in EM_Ticket_Booking
+* added locale switching/restoring functions in EM_ML as well as syncing with the WP locale switcher
+* fixed booking emails not getting correctly translated in ML modes
+* fixed data privacy consent validation errors when booking in custom modes under certain setting configurations
+* removed load_plugin_textdomain call in favour of letting WordPress.org automatically handle language translation files
+* changed boolean database fields into tinyint(1) unsigned types
+
+= 5.9.6 =
+* fixed monthly recurrence pattern issues with PHP <5.6
+* fixed multiple minor PHP Warnings including Countable errors when saving a booking in PHP 7.2+
+* added em_bookings_table_get_bookings_args filter, allowing ordering and more for bookings admin tables
+* added Faroe Islands to countries list
+* added custom dataset variable for EM_Options, added ability to save dbem_data array options in settings page
+* fixed publishing issues with long multibyte character post titles in recurring events
+* added em_mailer_before_send action to EM_Mailer->send() just before a mail is sent
+* added em_javascript_loaded jQuery trigger
+* added ability to send attachments via WP_Mail in EM_Mailer::send(), provided the transport used by it allows
+* added recurring event placeholders #_RECURRINGDATERANGE, #_RECURRINGPATTERN, #_RECURRINGID
+* fixed incorrectly named #_EDITLOCATIONURL and #_EDITLOCATIONLINK which were previouly (and still are) working under #_LOCATIONEDITLINK and #_LOCATIONEDITURL
+* fixed pagination for calendar day archives when formatting is disabled
+* added custom tabs hooks to settings page (including multisite which now has a default single tab)
+* added id property to each EM_Admin_Notice that is output to screen
+* optimized EM_Admin_Notices::add() so that strings are assumed to be hooks and no extra logic necessary to register the notice initially
+* added em_booking_pre_calculate_price hook
+* fixed potential PHP warning when editing other CPTs with galleries
+* fixed some incorrect ticket end times related to saving rsvp end dates for recurring events in single ticket mode with blank end dates/times
+* fixed inconsistent rsvp_end __set() compared to end and start properties,
+* fixed event rsvp ending at 12:00 instead of event time when no date is supplied in single ticket mode,
+* unified PHP get_post logic of start/end date/time recurrence info for tickets to reduce redundant code
+* fixed invalid rsvp end date persisting unless changed when first saving an event with blank start date
+* **potentially-breaking for custom code email filters** changed $output_type/$target method param in EM_Booking::email() calls to EM_Booking::output() function calls to 'email', use get_option('dbem_smtp_html') to determine whether to use HTML or not if using that format
+* changed event category/tag and location lists to not include pagination in emails due to lack of predictability for pagination links
+* added css tweaks to to admin single booking view and modify booking form in dashboard area
+* fixed lack or confirm-redirect for no-user booking personal details editor when viewing a single booking
+* fixed edit/delete links showing in post admin lists to users without the right caps (clicking these links had no result)
+* added some strict_type future-proofing to EM_DateTime class
+* added em_event_detach and em_event_attach filters
+* fixed location coordinates not being supplied for examct Gmap pin placement when auto-complete attaching a location to an event,
+* fixed double google API call when choosing an existing location via auto-complete search
+* changed #_LOCATIONMAP so no 'map unavailable' messgage is shown if google maps are disabled
+* fixed google maps location bubble CSS formatting issues in admin area
+* changed datepicker to show relative year range dropdown selector according to currently selected date, allowing for flexible year selection
+* fixed potential stored XSS vulnerability, many thanks to Tobias Fink of SBA-Research for a good eye and responsible (pending) disclosure
+* fixed lack of validation when submitting tickets with higher min spaces than max spaces allowed in the ticket
+* added username to exportable/viewable field columns in booking admin
+* fixed embedded maps display errors when there is an & character in name or address
+* fixed certain recurrence patterns with "last x of the month" skipping months
+* fixed recurring events showing location meta boxes and columns when locations are disabled
+* fixed event count not showing up in event profile tab
+* fixed events admin table front-end showing location column when locations disabled,
+* fixed location placeholders getting processed if locations are disabled
+* fixed yearly recurring events not working for any value other than 1 yearly interval
+* fixed precision inconsistencies between location coordinates in wp_postmeta and wp_em_locations by changing mysql FLOAT to DECIMAL and rounding numbers on $_POST retrieval
+* fixed ticket prices input/display in event admin not accepting localized decimal separators
+* fixed minor CSS validation errors in events_manager.css
+* fixed #_BOOKINGDATE not working on first automated sent email
+* fixed port assignation errors in SMTP mail settings
+* pre-emptively hardened some lines of code as recommended by the wordpress security team
+
 = 5.9.5 =
 * added new Google Maps display options to help prevent cost increases
 * fixed booking status emails getting resent when attempting to change status to same status
