@@ -1,21 +1,11 @@
 <?php
 
 /**
- * @deprecated Most of the methods in this class are deprecated.
- *             You can work around these deprecations by following one or more of the following suggestions:
- *             - Use [`\WP_Mock`](https://github.com/10up/wp_mock)
- *             - Use [`\Mockery¡](http://docs.mockery.io/en/latest/)
- *             - Write tests which should run with different scenario using the [`@requires` annotation](https://phpunit.readthedocs.io/en/7.3/incomplete-and-skipped-tests.html#incomplete-and-skipped-tests-requires-tables-api)
- *             - [Run tests in separate processes](https://phpunit.de/manual/6.5/en/appendixes.annotations.html#appendixes.annotations.runTestsInSeparateProcesses)
- *             - [Run specific tests in separate processes](https://phpunit.de/manual/6.5/en/appendixes.annotations.html#appendixes.annotations.runInSeparateProcess)
- *
  * Wrapper class for basic PHP functions
  */
 class WPML_PHP_Functions {
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
-	 *
 	 * Wrapper around PHP constant defined
 	 *
 	 * @param string $constant_name
@@ -27,7 +17,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * Wrapper around PHP constant lookup
 	 *
 	 * @param string $constant_name
@@ -39,7 +28,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * @param string $function_name The function name, as a string.
 	 *
 	 * @return bool true if <i>function_name</i> exists and is a function, false otherwise.
@@ -51,7 +39,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * @param string $class_name The class name. The name is matched in a case-insensitive manner.
 	 * @param bool   $autoload   [optional] Whether or not to call &link.autoload; by default.
 	 *
@@ -63,7 +50,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * @param string $name The extension name
 	 *
 	 * @return bool true if the extension identified by <i>name</i> is loaded, false otherwise.
@@ -73,7 +59,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * @param $string
 	 *
 	 * @return string
@@ -87,7 +72,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * Wrapper for \phpversion()
 	 *
 	 * * @param string $extension (optional)
@@ -103,7 +87,6 @@ class WPML_PHP_Functions {
 	}
 
 	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * Compares two "PHP-standardized" version number strings
 	 * @see \WPML_WP_API::version_compare
 	 *
@@ -124,45 +107,10 @@ class WPML_PHP_Functions {
 	 * @return array
 	 */
 	public function array_unique( $array, $sort_flags = SORT_REGULAR ) {
-		if ( version_compare( $this->phpversion(), '5.2.9', '>=' ) ) {
-			return array_unique( $array, $sort_flags );
-		} else {
-			return $this->array_unique_fallback( $array, true );
-		}
+		return wpml_array_unique( $array, $sort_flags );
 	}
 
 	/**
-	 * @param $array
-	 * @param $keep_key_assoc
-	 *
-	 * @return array
-	 */
-	private function array_unique_fallback( $array, $keep_key_assoc ) {
-		$duplicate_keys = array();
-		$tmp            = array();
-
-		foreach ( $array as $key => $val ) {
-			// convert objects to arrays, in_array() does not support objects
-			if ( is_object( $val ) ) {
-				$val = (array) $val;
-			}
-
-			if ( ! in_array( $val, $tmp ) ) {
-				$tmp[] = $val;
-			} else {
-				$duplicate_keys[] = $key;
-			}
-		}
-
-		foreach ( $duplicate_keys as $key ) {
-			unset( $array[ $key ] );
-		}
-
-		return $keep_key_assoc ? $array : array_values( $array );
-	}
-
-	/**
-	 * @deprecated @see \WPML_PHP_Functions
 	 * @param string $message
 	 * @param int    $message_type
 	 * @param string $destination
@@ -172,5 +120,9 @@ class WPML_PHP_Functions {
 	 */
 	public function error_log( $message, $message_type = null, $destination = null, $extra_headers = null ) {
 		return error_log( $message, $message_type, $destination, $extra_headers );
+	}
+
+	public function exit_php() {
+		exit();
 	}
 }

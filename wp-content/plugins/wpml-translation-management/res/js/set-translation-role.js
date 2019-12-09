@@ -12,7 +12,6 @@ WPML_TM.setTranslationRole = function ( $, content, nonce, role, validStateCallb
 		if ( content ) {
 			self.newUserInputs = content.find( '.js-first-name, .js-last-name, .js-email, .js-user-name' );
 			self.wpRoleSelect = content.find( '.js-role' );
-			self.wpRoleSelect.val( 'editor' );
 
 			self.newUserInputs.on( 'input', inputChange );
 		}

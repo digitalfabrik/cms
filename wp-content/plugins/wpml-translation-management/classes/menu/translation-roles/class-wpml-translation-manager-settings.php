@@ -21,7 +21,9 @@ class WPML_Translation_Manager_Settings {
 
 	public function render() {
 		if ( current_user_can( 'manage_options' ) ) {
-			echo $this->view->show( $this->get_model(), self::MAIN_TEMPLATE );
+			return $this->view->show( $this->get_model(), self::MAIN_TEMPLATE );
+		} else {
+			return '';
 		}
 	}
 

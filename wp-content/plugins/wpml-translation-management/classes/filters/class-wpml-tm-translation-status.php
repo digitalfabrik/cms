@@ -33,15 +33,25 @@ class WPML_TM_Translation_Status {
 			if ( $trid ) {
 				$element_ids         = array_filter( $this->get_element_ids( $trid ) );
 				$element_type_prefix = $wpml_tm_element_translations->get_element_type_prefix( $trid, $target_lang_code );
+
+				$in_basket = false;
 				foreach ( $element_ids as $id ) {
 					if ( $this->is_in_basket( $id, $target_lang_code, $element_type_prefix ) ) {
-						$new_status = ICL_TM_IN_BASKET;
-						break;
-					} elseif ( $job_status = $this->is_in_active_job( $id, $target_lang_code, $element_type_prefix, true ) ) {
-						$new_status = $job_status;
+						$in_basket = true;
 						break;
 					}
 				}
+				if( $in_basket ){
+					$new_status = ICL_TM_IN_BASKET;
+				} else {
+					foreach ( $element_ids as $id ) {
+						if ( $job_status = $this->is_in_active_job( $id, $target_lang_code, $element_type_prefix, true ) ){
+							$new_status = $job_status;
+							break;
+						}
+					}
+				}
+
 				$new_status = ICL_TM_IN_BASKET !== $new_status && $wpml_tm_element_translations->is_update_needed( $trid, $target_lang_code ) ? ICL_TM_NEEDS_UPDATE : $new_status;
 			}
 

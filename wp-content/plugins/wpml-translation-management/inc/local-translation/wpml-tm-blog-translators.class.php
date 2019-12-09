@@ -28,6 +28,15 @@ class WPML_TM_Blog_Translators {
 	}
 
 	/**
+	 * It returns true if the site has translators.
+	 *
+	 * @return bool
+	 */
+	public function has_translators() {
+		return (bool) $this->get_raw_blog_translators();
+	}
+
+	/**
 	 * @param array $args
 	 *
 	 * @return array

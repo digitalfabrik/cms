@@ -6,6 +6,8 @@
 class WPML_TM_Mail_Notification {
 
 	const JOB_COMPLETE_TEMPLATE = 'notification/job-completed.twig';
+	const JOB_REVISED_TEMPLATE = 'notification/job-revised.twig';
+	const JOB_CANCELED_TEMPLATE = 'notification/job-canceled.twig';
 
 	private $mail_cache = array();
 	private $process_mail_queue;
@@ -50,12 +52,15 @@ class WPML_TM_Mail_Notification {
 
 		if ( $this->should_send_email_on_update() ) {
 			add_action( 'wpml_tm_complete_job_notification', array( $this, 'wpml_tm_job_complete_mail' ), 10, 2 );
+			add_action( 'wpml_tm_revised_job_notification', array( $this, 'revised_job_email' ), 10 );
+			add_action( 'wpml_tm_canceled_job_notification', array( $this, 'canceled_job_email' ), 10 );
 		}
 
 		add_action( 'wpml_tm_remove_job_notification', array( $this, 'translator_removed_mail' ), 10, 2 );
 		add_action( 'wpml_tm_resign_job_notification', array( $this, 'translator_resign_mail' ), 10, 2 );
 		add_action( 'icl_ajx_custom_call', array( $this, 'send_queued_mails' ), 10, 0 );
 		add_action( 'icl_pro_translation_completed', array( $this, 'send_queued_mails' ), 10, 0 );
+
 	}
 
 	/**
@@ -132,23 +137,29 @@ class WPML_TM_Mail_Notification {
 	}
 
 	/**
-	 * @param WPML_Translation_Job|int $job_id
-	 * @param bool|false               $update
+	 * @param int $job_id
 	 *
-	 * @return false|array representation of the email to be sent
+	 * @return array|null
 	 */
-	public function wpml_tm_job_complete_mail( $job_id, $update = false ) {
-		if ( $this->notification_settings['completed'] != ICL_TM_NOTIFICATION_IMMEDIATELY ) {
-			return false;
+	private function get_basic_mail_data( $job_id ) {
+		$manager_id = false;
+
+		/** @var WPML_Translation_Job|false $job */
+		if ( is_object( $job_id ) ) {
+			$job = $job_id;
+		} else {
+			$job = $this->job_factory->get_translation_job( $job_id, false, 0, true );
 		}
 
-		list( $manager_id, $job ) = $this->get_mail_elements( $job_id );
-
-		if ( ! $job || ( $manager_id && $manager_id == $job->get_translator_id() ) ) {
-			return false;
+		if ( is_object( $job ) ) {
+			$data       = $job->get_basic_data();
+			$manager_id = isset( $data->manager_id ) ? $data->manager_id : -1;
 		}
 
-		/** @var WPML_Translation_Job $job */
+		if ( ! $job || ( $manager_id && (int) $manager_id === (int) $job->get_translator_id() ) ) {
+			return null;
+		}
+
 		$manager       = new WP_User( $manager_id );
 		$translator    = new WP_User( $job->get_translator_id() );
 		$user_language = $this->sitepress->get_user_admin_language( $manager->ID );
@@ -177,6 +188,37 @@ class WPML_TM_Mail_Notification {
 			$model                         = $this->update_model_for_deadline( $model, $job );
 		}
 
+		return array(
+			'mail'           => $mail,
+			'document_title' => $document_title,
+			'job'            => $job,
+			'manager'        => $manager,
+			'translator'     => $translator,
+			'model'          => $model,
+		);
+	}
+
+	/**
+	 * @param WPML_Translation_Job|int $job_id
+	 * @param bool|false               $update
+	 *
+	 * @return false|array representation of the email to be sent
+	 */
+	public function wpml_tm_job_complete_mail( $job_id, $update = false ) {
+		$basic_mail_data = $this->get_basic_mail_data( $job_id );
+		if ( null === $basic_mail_data ) {
+			return null;
+		}
+
+		$mail           = $basic_mail_data['mail'];
+		$document_title = $basic_mail_data['document_title'];
+		$translator     = $basic_mail_data['translator'];
+		$job            = $basic_mail_data['job'];
+		$model          = $basic_mail_data['model'];
+		$lang_from      = $model['lang_from'];
+		$lang_to        = $model['lang_to'];
+
+
 		if ( $update ) {
 			$mail['subject']  = sprintf(
 				__( 'Translator has updated translation job for %s', 'wpml-translation-management' ),
@@ -195,9 +237,9 @@ class WPML_TM_Mail_Notification {
 				'wpml-translation-management'
 			);
 		}
-		$translator_name  = ! empty( $translator->display_name ) ? '(' . $translator->display_name . ') ' : '';
-		$model['message'] = sprintf( $body_placeholder, $translator_name, $document_title, $lang_from, $lang_to );
-		$model['needs_help'] = array(
+		$translator_name      = ! empty( $translator->display_name ) ? '(' . $translator->display_name . ') ' : '';
+		$model['message']     = sprintf( $body_placeholder, $translator_name, $document_title, $lang_from, $lang_to );
+		$model['needs_help']  = array(
 			'title' => __( 'Need help with translation?', 'wpml-translation-management' ),
 			'options_or' => __( 'or', 'wpml-translation-management' ),
 			'translators_link' => admin_url( 'admin.php?page=' . WPML_TM_FOLDER . '/menu/main.php&sm=translators' ),
@@ -207,8 +249,8 @@ class WPML_TM_Mail_Notification {
 		);
 		$model['overdue_job'] = ! $job->is_completed_on_time();
 
-		$mail['body']     = $this->email_view->render_model( $model, self::JOB_COMPLETE_TEMPLATE );
-		$mail['type']     = 'completed';
+		$mail['body'] = $this->email_view->render_model( $model, self::JOB_COMPLETE_TEMPLATE );
+		$mail['type'] = 'completed';
 		$this->enqueue_mail( $mail );
 
 		$this->sitepress->switch_locale();
@@ -217,10 +259,88 @@ class WPML_TM_Mail_Notification {
 	}
 
 	/**
+	 * @param $job_id
+	 *
+	 * @return array|bool
+	 */
+	public function revised_job_email( $job_id ) {
+
+		if( ! $this->should_send_immediate_notification( 'completed' ) ){
+			return false;
+		}
+
+		$subject     = sprintf( __( 'Translator job updated for %s', 'wpml-translation-management' ), get_bloginfo( 'name' ) );
+		$placeholder = esc_html__(
+			'A new translation for %1$s from %2$s to %3$s was created on the Translation Service. It&#8217;s ready to download and will be applied next time the Translation Service delivers completed translations to your site or when you manually fetch them.',
+			'wpml-translation-management'
+		);
+
+		return $this->generic_update_notification_email( $job_id, $subject, $placeholder, self::JOB_REVISED_TEMPLATE );
+
+	}
+
+	/**
+	 * @param WPML_TM_Job_Entity $job
+	 *
+	 * @return array|bool
+	 */
+	public function canceled_job_email( WPML_TM_Job_Entity $job ) {
+		if ( ! $job instanceof WPML_TM_Post_Job_Entity ) {
+			return false;
+		}
+
+		if( ! $this->should_send_immediate_notification( 'completed' ) ){
+			return false;
+		}
+
+		$subject     = sprintf( __( 'Translator job canceled for %s', 'wpml-translation-management' ), get_bloginfo( 'name' ) );
+		$placeholder = esc_html__(
+			'The translation for %1$s from %2$s to %3$s was canceled on the Translation Service. You can send this document to translation again from the Translation Dashboard.',
+			'wpml-translation-management'
+		);
+
+		return $this->generic_update_notification_email(
+			$job->get_translate_job_id(),
+			$subject,
+			$placeholder,
+			self::JOB_CANCELED_TEMPLATE
+		);
+	}
+
+	private function generic_update_notification_email( $job_id, $mail_subject, $body_placeholder, $template ) {
+		$basic_mail_data = $this->get_basic_mail_data( $job_id );
+		if ( null === $basic_mail_data ) {
+			return null;
+		}
+
+		$mail           = $basic_mail_data['mail'];
+		$document_title = $basic_mail_data['document_title'];
+
+		$model     = $basic_mail_data['model'];
+		$lang_from = $model['lang_from'];
+		$lang_to   = $model['lang_to'];
+
+		$mail['subject']  = $mail_subject;
+		$model['message'] = sprintf( $body_placeholder, $document_title, $lang_from, $lang_to );
+		$mail['body']     = $this->email_view->render_model( $model, $template );
+		$mail['type']     = 'completed';
+		$this->enqueue_mail( $mail );
+
+		$this->sitepress->switch_locale();
+
+		return $mail;
+	}
+
+	private function should_send_immediate_notification( $type ) {
+		return isset( $this->notification_settings[ $type ] ) &&
+			(int) $this->notification_settings[ $type ] === WPML_TM_Emails_Settings::NOTIFY_IMMEDIATELY;
+	}
+
+	/**
 	 * @param array                        $model
 	 * @param WPML_Element_Translation_Job $job
 	 *
-	 * @return string
+	 * @return array
 	 */
 	private function update_model_for_deadline( array $model,  WPML_Element_Translation_Job $job ) {
 		if ( $job->is_completed_on_time() ) {

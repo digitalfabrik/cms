@@ -23,17 +23,26 @@ class WPML_TM_ATE_AMS_Endpoints {
 	const ENDPOINTS_EDITOR              = '/api/wpml/jobs/{job_id}/open?translator={translator_email}&return_url={return_url}';
 	const ENDPOINTS_SUBSCRIPTION        = '/api/wpml/websites/translators/{translator_email}/enable';
 	const ENDPOINTS_SUBSCRIPTION_STATUS = '/api/wpml/websites/{WEBSITE_UUID}/translators/{translator_email}';
+	const ENDPOINTS_WEBSITES            = '/api/wpml/websites';
 	/**
 	 * ATE
 	 */
-	const ENDPOINTS_JOB         = '/api/wpml/job';
-	const ENDPOINTS_JOBS        = '/api/wpml/jobs';
-	const ENDPOINTS_MANAGERS    = '/api/wpml/websites/translation_managers';
-	const ENDPOINTS_SITE        = '/api/wpml/websites';
-	const ENDPOINTS_STATUS      = '/api/wpml/access_keys/{SHARED_KEY}/status';
-	const ENDPOINTS_TRANSLATORS = '/api/wpml/websites/translators';
-	const SERVICE_AMS           = 'ams';
-	const SERVICE_ATE           = 'ate';
+	const ENDPOINTS_JOB                 = '/api/wpml/job';
+	const ENDPOINTS_JOBS                = '/api/wpml/jobs';
+	const ENDPOINT_JOBS_BY_WPML_JOB_IDS = '/api/wpml/jobs/wpml';
+	const ENDPOINTS_MANAGERS            = '/api/wpml/websites/translation_managers';
+	const ENDPOINTS_SITE                = '/api/wpml/websites/create_unique';
+	const ENDPOINTS_STATUS              = '/api/wpml/access_keys/{SHARED_KEY}/status';
+	const ENDPOINTS_TRANSLATORS         = '/api/wpml/websites/translators';
+	const ENDPOINT_SOURCE_ID_MIGRATION  = '/api/wpml/migration';
+	const ENDPOINTS_SYNC_ALL            = '/api/wpml/sync/all';
+	const ENDPOINTS_SYNC_PAGE           = '/api/wpml/sync/page';
+	const SERVICE_AMS                   = 'ams';
+	const SERVICE_ATE                   = 'ate';
+
+	const STORE_JOB     = '/ate/jobs/store';
+	const SYNC_JOBS     = '/ate/jobs/sync';
+	const DOWNLOAD_JOBS = '/ate/jobs/download';
 
 	/**
 	 * @return string
@@ -84,7 +93,7 @@ class WPML_TM_ATE_AMS_Endpoints {
 	 * @return string
 	 * @throws \InvalidArgumentException
 	 */
-	private function get_base_url( $service ) {
+	public function get_base_url( $service ) {
 		switch ( $service ) {
 			case self::SERVICE_AMS:
 				return $this->get_AMS_base_url();
@@ -236,5 +245,57 @@ class WPML_TM_ATE_AMS_Endpoints {
 		return $this->get_endpoint_url( self::SERVICE_ATE,
 		                                self::ENDPOINTS_JOBS . $job_id_part,
 		                                array( 'status' => $statuses ) );
+	}
+
+	/**
+	 * @param int() $job_ids
+	 *
+	 * @return string
+	 */
+	public function get_ate_jobs_by_wpml_job_ids( $job_ids ) {
+		return $this->get_endpoint_url( self::SERVICE_ATE,
+			self::ENDPOINT_JOBS_BY_WPML_JOB_IDS,
+			array(
+				'site_identifier' => wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE ),
+				'wpml_job_ids'    => $job_ids,
+			) );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_websites() {
+		return $this->get_endpoint_url( self::SERVICE_AMS, self::ENDPOINTS_WEBSITES );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_source_id_migration() {
+		return $this->get_endpoint_url( self::SERVICE_ATE, self::ENDPOINT_SOURCE_ID_MIGRATION );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_sync_all() {
+		return $this->get_endpoint_url( self::SERVICE_ATE, self::ENDPOINTS_SYNC_ALL );
+	}
+
+	/**
+	 * @param string $paginationToken
+	 * @param int    $page
+	 *
+	 * @return string
+	 */
+	public function get_sync_page( $paginationToken, $page ) {
+		return $this->get_endpoint_url(
+			self::SERVICE_ATE,
+			self::ENDPOINTS_SYNC_PAGE,
+			[
+				'pagination_token' => $paginationToken,
+				'page'             => $page,
+			]
+		);
 	}
 }

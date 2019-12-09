@@ -8,10 +8,16 @@ class WPML_Language_Collection {
 	/** @var array $languages */
 	private $languages = array();
 
-	public function __construct( SitePress $sitepress ) {
+	/**
+	 * WPML_Language_Collection constructor.
+	 *
+	 * @param SitePress $sitepress
+	 * @param array $initial_languages Array of language codes
+	 */
+	public function __construct( SitePress $sitepress, $initial_languages = array() ) {
 		$this->sitepress = $sitepress;
-		foreach ( $sitepress->get_active_languages() as $lang ) {
-			$this->add( $lang['code'] );
+		foreach ( $initial_languages as $lang ) {
+			$this->add( $lang );
 		}
 	}
 

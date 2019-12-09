@@ -9,6 +9,9 @@ class WPML_TM_ATE_Authentication {
 	const AMS_STATUS_ENABLED    = 'enabled';
 	const AMS_STATUS_ACTIVE     = 'active';
 
+	/** @var string|null $site_id */
+	private $site_id = null;
+
 	public function get_signed_url( $verb, $url, $params = null ) {
 		if ( $this->has_keys() ) {
 			$url       = $this->add_required_arguments_to_url( $verb, $url, $params );
@@ -105,7 +108,7 @@ class WPML_TM_ATE_Authentication {
 		$query['wpml_tm_version']   = WPML_TM_VERSION;
 		$query['shared_key']        = $this->get_shared();
 		$query['token']             = uuid_v5( wp_generate_uuid4(), $url );
-		$query['website_uuid']      = wpml_get_site_id();
+		$query['website_uuid']      = $this->get_site_id();
 		$query['ui_language_code']  = apply_filters( 'wpml_get_user_admin_language',
 		                                            wpml_get_default_language(),
 		                                            get_current_user_id() );
@@ -145,5 +148,16 @@ class WPML_TM_ATE_Authentication {
 		}
 
 		return $final_query;
+	}
+
+	/**
+	 * @param string|null $site_id
+	 */
+	public function override_site_id( $site_id ) {
+		$this->site_id = $site_id;
+	}
+
+	public function get_site_id() {
+		return $this->site_id ? $this->site_id : wpml_get_site_id( WPML_TM_ATE::SITE_ID_SCOPE );
 	}
 }

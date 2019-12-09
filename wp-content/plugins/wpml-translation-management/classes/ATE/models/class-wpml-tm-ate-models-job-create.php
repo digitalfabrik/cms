@@ -22,11 +22,15 @@ class WPML_TM_ATE_Models_Job_Create {
 	public $source_language;
 	/** @var WPML_TM_ATE_Models_Language */
 	public $target_language;
+	/** @var string */
+	public $ate_ams_console_url;
 
 	/**
 	 * WPML_TM_ATE_Models_Job_Create constructor.
 	 *
 	 * @param array $args
+	 *
+	 * @throws \Auryn\InjectionException
 	 */
 	public function __construct( array $args = array() ) {
 		foreach ( $args as $key => $value ) {
@@ -41,5 +45,7 @@ class WPML_TM_ATE_Models_Job_Create {
 		if ( ! $this->target_language ) {
 			$this->target_language = new WPML_TM_ATE_Models_Language();
 		}
+
+		$this->ate_ams_console_url = wpml_tm_get_ams_ate_console_url();
 	}
 }

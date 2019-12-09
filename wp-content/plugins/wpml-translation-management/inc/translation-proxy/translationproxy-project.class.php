@@ -95,48 +95,6 @@ class TranslationProxy_Project {
 	}
 
 	/**
-	 * Create and configure project (Translation Service)
-	 *
-	 * @param string $url
-	 * @param string $name
-	 * @param string $description
-	 * @param string $delivery
-	 *
-	 * @return bool
-	 * @throws WPMLTranslationProxyApiException
-	 * @throws Exception
-	 */
-	public function create(
-		$url,
-		$name,
-		$description,
-		$delivery = 'xmlrpc'
-	) {
-		global $sitepress;
-
-		$networking          = wpml_tm_load_tp_networking();
-		$project_creation    = new WPML_TP_Project_Creation( $this, $sitepress, $networking, array(
-			'name'               => $name,
-			'description'        => $description,
-			'url'                => $url,
-			'delivery_method'    => $delivery,
-			'sitekey'            => WP_Installer_API::get_site_key( 'wpml' ),
-			'client_external_id' => WP_Installer_API::get_ts_client_id(),
-		) );
-		$response_project    = $project_creation->run();
-		$this->id            = $response_project->id;
-		$this->access_key    = $response_project->accesskey;
-		$this->ts_id         = $response_project->ts_id;
-		$this->ts_access_key = $response_project->ts_accesskey;
-
-		if ( isset( $response_project->polling_method ) && $response_project->polling_method !== $delivery ) {
-			$this->service->delivery_method = $response_project->polling_method;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Convert WPML language code to service language
 	 *
 	 * @param $language string
@@ -182,6 +140,10 @@ class TranslationProxy_Project {
 	function current_service_name() {
 
 		return TranslationProxy::get_current_service_name();
+	}
+
+	function current_service() {
+		return TranslationProxy::get_current_service();
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -484,18 +446,6 @@ class TranslationProxy_Project {
 
 		return TranslationProxy_Api::proxy_download( '/jobs/{job_id}/xliff.json',
 			$params );
-	}
-
-	public function check_status( $batch_id ) {
-		$tp_networking = wpml_tm_load_tp_networking();
-		$params        = array(
-			'batch_id'   => $batch_id,
-			'project_id' => $this->id,
-			'accesskey'  => $this->access_key,
-		);
-
-		$tp_networking->send_request( OTG_TRANSLATION_PROXY_URL . "/batches/{batch_id}/check.json",
-			$params, 'GET', true );
 	}
 
 	public function update_job( $job_id, $url = null, $state = 'delivered' ) {

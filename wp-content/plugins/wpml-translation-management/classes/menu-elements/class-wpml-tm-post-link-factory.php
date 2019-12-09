@@ -5,7 +5,14 @@
  *
  * Creates post links for the TM dashboard and the translation queue
  */
-class WPML_TM_Post_Link_Factory extends WPML_SP_User {
+class WPML_TM_Post_Link_Factory {
+
+	/** @var SitePress $sitepress */
+	private $sitepress;
+
+	public function __construct( SitePress $sitepress ) {
+		$this->sitepress = $sitepress;
+	}
 
 	/**
 	 * Link to the front end, link text is the post title
@@ -28,10 +35,10 @@ class WPML_TM_Post_Link_Factory extends WPML_SP_User {
 	 *
 	 * @return string
 	 */
-	public function view_link_anchor( $post_id, $anchor ) {
+	public function view_link_anchor( $post_id, $anchor, $target = '' ) {
 
 		return (string) ( new WPML_TM_Post_View_Link_Anchor( $this->sitepress,
-			(int) $post_id, $anchor ) );
+			(int) $post_id, $anchor, $target ) );
 	}
 
 	/**

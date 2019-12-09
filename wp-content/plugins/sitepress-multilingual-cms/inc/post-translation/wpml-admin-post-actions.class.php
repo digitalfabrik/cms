@@ -51,13 +51,11 @@ class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 	public function save_post_actions( $post_id, $post ) {
 		global $sitepress;
 
-		wp_defer_term_counting( true );
+		$this->defer_term_counting();
 		$post = isset( $post ) ? $post : get_post( $post_id );
 		// exceptions
 		$http_referer = $this->get_http_referer();
 		if ( ! $this->has_save_post_action( $post ) && ! $http_referer->is_rest_request_called_from_post_edit_page() ) {
-			wp_defer_term_counting( false );
-
 			return;
 		}
 		if ( WPML_WordPress_Actions::is_bulk_trash( $post_id ) ||
@@ -204,9 +202,12 @@ class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 	 * @return null|string
 	 */
 	public function get_save_post_lang( $post_id, $sitepress ) {
-		$language_code = filter_var(
-			( isset( $_POST['icl_post_language'] ) ? $_POST['icl_post_language'] : '' ),
-			FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		$language_code = null;
+		if ( isset( $_POST['post_ID'] ) && (int) $_POST['post_ID'] === (int) $post_id ) {
+			$language_code = filter_var(
+				( isset( $_POST['icl_post_language'] ) ? $_POST['icl_post_language'] : '' ),
+				FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+		}
 		$language_code = $language_code
 			? $language_code
 			: filter_input(
@@ -259,7 +260,7 @@ class WPML_Admin_Post_Actions extends WPML_Post_Translation {
 		return $http_referer->get_trid();
 	}
 
-	private function get_http_referer() {
+	protected function get_http_referer() {
 		if ( ! $this->http_referer ) {
 			$factory = new WPML_URL_HTTP_Referer_Factory();
 			$this->http_referer = $factory->create();

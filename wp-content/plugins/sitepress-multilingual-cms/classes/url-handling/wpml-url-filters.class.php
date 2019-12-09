@@ -68,23 +68,6 @@ class WPML_URL_Filters {
 		add_filter( 'post_type_link', array( $this, 'permalink_filter' ), 1, 2 );
 		add_filter( 'wpml_filter_link', array( $this, 'permalink_filter' ), 1, 2 );
 		add_filter( 'get_edit_post_link', array( $this, 'get_edit_post_link' ), 1, 3 );
-
-		/**
-		 * We can't append lang argument in the rest_url
-		 * when we are in the post page (e.g.: "wp-admin/post-new.php")
-		 * because we are producing malformed rest URLs which are breaking
-		 * Gutenberg editor
-		 *
-		 * @link https://onthegosystems.myjetbrains.com/youtrack/issue/wpmlcore-5265
-		 */
-		$http_referer_factory = new WPML_URL_HTTP_Referer_Factory();
-		$http_referer = $http_referer_factory->create();
-
-		if ( in_array( (int) $this->sitepress->get_setting( 'language_negotiation_type' ), array( WPML_LANGUAGE_NEGOTIATION_TYPE_PARAMETER, WPML_LANGUAGE_NEGOTIATION_TYPE_DIRECTORY ), true )
-		     && ! $http_referer->is_post_edit_page()
-		) {
-			add_filter( 'rest_url', array( $this, 'add_lang_in_rest_url' ) );
-		}
 	}
 
 	public function remove_global_hooks() {
@@ -401,10 +384,6 @@ class WPML_URL_Filters {
 		$url_snippet = $server_name . $request_uri;
 
 		return $this->url_converter->get_language_from_url( $url_snippet );
-	}
-
-	public function add_lang_in_rest_url( $url ) {
-		return $this->url_converter->convert_url( $url, $this->get_request_language() );
 	}
 
 	private function is_display_as_translated_mode( WPML_Post_Element $post_element ) {

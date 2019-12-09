@@ -45,6 +45,7 @@
 	$wp_api                             = $sitepress->get_wp_api();
 	$should_hide_admin_language         = $wp_api->version_compare_naked( get_bloginfo( 'version' ), '4.7', '>=' );
 	$encryptor                          = new WPML_Data_Encryptor();
+	$inactive_content                   = null;
 
 	if(!$existing_content_language_verified ){
 		// try to determine the blog language
@@ -78,7 +79,7 @@
 			}
 		}
 		$default_language_details = $sitepress->get_language_details( $default_language );
-		$inactive_content = $sitepress->get_inactive_content();
+		$inactive_content         = new WPML_Inactive_Content( $wpdb, $sitepress->get_current_language() );
 	}
 global $language_switcher_defaults, $language_switcher_defaults_alt;
 
@@ -276,83 +277,16 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 						<?php endif; ?>
 					</div> <!-- wpml-section-content-inner -->
 
-
-					<?php if( !empty($inactive_content) ): ?>
+					<?php if ( $setup_complete && $inactive_content && $inactive_content->has_entries() ) : ?>
 						<div class="wpml-section-content-inner">
 							<?php
-							$inactive_content_data   = array();
-							$inactive_content_totals = array(
-								'post'     => 0,
-								'page'     => 0,
-								'category' => 0,
-								'post_tag' => 0,
+							$render_inactive_content = new WPML_Inactive_Content_Render(
+								$inactive_content,
+								array( WPML_PLUGIN_PATH . '/templates/languages/' )
 							);
-							$t_posts                 = $t_pages = $t_cats = $t_tags = 0;
-							foreach ( $inactive_content as $language => $ic ) {
-								$inactive_content_data[ $language ] = array(
-									'post'     => 0,
-									'page'     => 0,
-									'category' => 0,
-									'post_tag' => 0,
-								);
 
-								if ( array_key_exists( 'post', $ic ) ) {
-									$inactive_content_data[ $language ]['post'] += (int) $ic['post'];
-									$inactive_content_totals['post'] += (int) $ic['post'];
-								}
-								if ( array_key_exists( 'page', $ic ) ) {
-									$inactive_content_data[ $language ]['page'] += (int) $ic['page'];
-									$inactive_content_totals['page'] += (int) $ic['page'];
-								}
-								if ( array_key_exists( 'category', $ic ) ) {
-									$inactive_content_data[ $language ]['category'] += (int) $ic['category'];
-									$inactive_content_totals['category'] += (int) $ic['category'];
-								}
-								if ( array_key_exists( 'post_tag', $ic ) ) {
-									$inactive_content_data[ $language ]['post_tag'] += (int) $ic['post_tag'];
-									$inactive_content_totals['post_tag'] += (int) $ic['post_tag'];
-								}
-							}
+							echo $render_inactive_content->render();
 							?>
-							<h4><?php esc_html_e( 'Inactive content', 'sitepress' ) ?></h4>
-							<p class="explanation-text"><?php esc_html_e( 'In order to edit or delete these you need to activate the corresponding language first', 'sitepress' ) ?></p>
-							<table class="widefat inactive-content-table">
-								<thead>
-									<tr>
-										<th><?php esc_html_e( 'Language', 'sitepress' ) ?></th>
-										<th><?php esc_html_e( 'Posts', 'sitepress' ) ?></th>
-										<th><?php esc_html_e( 'Pages', 'sitepress' ) ?></th>
-										<th><?php esc_html_e( 'Categories', 'sitepress' ) ?></th>
-										<th><?php esc_html_e( 'Tags', 'sitepress' ) ?></th>
-									</tr>
-								</thead>
-								<tfoot>
-									<tr>
-										<th><?php esc_html_e( 'Total', 'sitepress' ) ?></th>
-										<?php
-										foreach ( $inactive_content_totals as $count ) {
-											?>
-											<th><?php echo $count ?></th>
-											<?php
-										}
-										?>
-									</tr>
-								</tfoot>
-								<tbody>
-								<?php foreach ( $inactive_content_data as $language => $inactive_content_counts ): ?>
-										<tr>
-											<th><?php echo $language ?></th>
-											<?php
-											foreach ( $inactive_content_counts as $count ) {
-												?>
-												<th><?php echo $count ?></th>
-												<?php
-											}
-											?>
-										</tr>
-									<?php endforeach; ?>
-								</tbody>
-							</table>
 						</div> <!-- wpml-section-content-inner -->
 					<?php endif; ?>
 
@@ -379,7 +313,7 @@ $theme_wpml_config_file = WPML_Config::get_theme_wpml_config_file();
 				</div>
 				<div class="wpml-section-content">
 					<p class="wpml-wizard-instruction">
-			  <?php esc_html_e( 'WPML plugin can send to wpml.org the list of active plugins and theme in your site. This allows our support to help you much faster and to contact you in advance about potential compatibility problems and their solutions.',
+			  <?php esc_html_e( 'The WPML plugin can send a list of active plugins and theme used in your site to wpml.org. This allows our support team to help you much faster and to contact you in advance about potential compatibility problems and their solutions.',
 			                    'sitepress' ); ?>
 					</p>
 			<?php

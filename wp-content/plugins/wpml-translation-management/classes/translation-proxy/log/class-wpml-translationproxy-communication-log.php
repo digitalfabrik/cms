@@ -84,6 +84,8 @@ class WPML_TranslationProxy_Communication_Log {
 			$item = $this->sanitize_data( $item );
 		} elseif ( in_array( $key, $this->get_keys_to_block(), true ) ) {
 			$item = 'UNDISCLOSED';
+		} elseif ( $this->is_json( $item ) ) {
+			$item = json_encode( $this->sanitize_data_item( $key, json_decode( $item ) ) );
 		}
 
 		return $item;
@@ -146,4 +148,13 @@ class WPML_TranslationProxy_Communication_Log {
 	private function save_log( $log ) {
 		update_option( 'wpml_tp_com_log', $log, false );
 	}
+
+	/**
+	 * @param mixed $item
+	 *
+	 * @return bool
+	 */
+	private function is_json( $item ) {
+		return is_string( $item ) && json_decode( $item ) && json_last_error() === JSON_ERROR_NONE;
+}
 }

@@ -15,10 +15,10 @@
     <input type="text" class="js-user-name"/>
 </div>
 <div class="wpml-form-row">
-    <label>{{ strings.wp_role }}</label>
-    <select class="js-role">
+	<label for="roles">{{ strings.wp_role }}</label>
+	<select class="js-role" id="roles">
         {% for role in wp_roles %}
-            <option value="{{ role.id }}">{{ role.name }}</option>
+			<option value="{{ role.id }}" {% if role.default %}selected="selected"{% endif %}>{{ role.name }}</option>
         {% endfor %}
     </select>
 </div>

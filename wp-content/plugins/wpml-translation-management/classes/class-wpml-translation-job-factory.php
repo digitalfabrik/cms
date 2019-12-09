@@ -74,21 +74,20 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 		if ( $translation_record ) {
 			$trid = $translation_record->trid();
 
-			$dummy_basket_data = array(
-				'post'                => array( $element_id ),
-				'translate_from'      => $translation_record->language_code(),
-				'translate_to'        => array( $target_language_code => 1 ),
+			$batch = new WPML_TM_Translation_Batch(
+				array(
+					new WPML_TM_Translation_Batch_Element(
+						$element_id,
+						$element_type_prefix,
+						$translation_record->language_code(),
+						array( $target_language_code => 1 )
+					)
+				),
+				TranslationProxy_Batch::get_generic_batch_name(),
+				array( $target_language_code => $translator_id ? $translator_id : 0 )
 			);
 
-			if ( $element_type ) {
-				$dummy_basket_data['element_type_prefix'] = $element_type_prefix;
-			}
-
-			if ( null !== $translator_id ) {
-				$dummy_basket_data['translators'] = array( $target_language_code => $translator_id );
-			}
-
-			$iclTranslationManagement->send_jobs( $dummy_basket_data );
+			$iclTranslationManagement->send_jobs( $batch, $element_type_prefix );
 		}
 
 		return $this->job_id_by_trid_and_lang( $trid, $target_language_code );
@@ -234,7 +233,7 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 						$job->original_post_type,
 						$doc->ID );
 				}
-				$ldf                                      = $sitepress->get_language_details( $language_from_code );
+				$source                                   = $sitepress->get_language_details( $language_from_code );
 				$jobs[ $job_index ]->original_doc_id      = $doc->ID;
 				$jobs[ $job_index ]->language_code_source = $language_from_code;
 			} else {
@@ -243,24 +242,57 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				$jobs[ $job_index ]->original_doc_id      = 0;
 				$jobs[ $job_index ]->language_code_source = null;
 
-				$ldf[ 'display_name' ] = __( 'Deleted', 'wpml-translation-management' );
+				$source['display_name'] = __( 'Deleted', 'wpml-translation-management' );
 			}
 
 			$jobs[ $job_index ]->post_title = $post_title;
 			$jobs[ $job_index ]->edit_link  = $edit_url;
 
-			$ldt = $sitepress->get_language_details( $job->language_code );
+			$target = $sitepress->get_language_details( $job->language_code );
 
-			$jobs[ $job_index ]->lang_text            = $ldf[ 'display_name' ] . ' &raquo; ' . $ldt[ 'display_name' ];
-			$jobs[ $job_index ]->lang_text_with_flags = '<span class="wpml-title-flag">' . $sitepress->get_flag_img( $ldf[ 'code' ]) . '</span> ' . $ldf[ 'display_name' ] .
-															' &raquo; <span class="wpml-title-flag">' .
-															$sitepress->get_flag_img( $ldt[ 'code' ]) . '</span> ' . $ldt[ 'display_name' ];
-			$jobs[ $job_index ]->language_text_source = $ldf[ 'display_name' ];
-			$jobs[ $job_index ]->language_text_target = $ldt[ 'display_name' ];
+			$jobs[ $job_index ]->lang_text            = $source['display_name'] . ' &raquo; ' . $target['display_name'];
+			$jobs[ $job_index ]->lang_text_with_flags = $this->get_language_pair( $source, $target );
+			$jobs[ $job_index ]->language_text_source = $source['display_name'];
+			$jobs[ $job_index ]->language_text_target = $target['display_name'];
 			$jobs[ $job_index ]->language_code_target = $job->language_code;
 		}
 
 		return $jobs;
+	}
+
+	/**
+	 * It outputs the HTML for displaying a language pair
+	 *
+	 * @param array $source The source data. Requires a `display_name` key and an optional `code` for the language code.
+	 * @param array $target The target data. Requires a `display_name` key and an optional `code` for the language code.
+	 *
+	 * @return string
+	 */
+	private function get_language_pair( array $source, array $target ) {
+		global $sitepress;
+
+		$source_flag_image = '';
+		$target_flag_image = '';
+
+		if ( array_key_exists( 'code', $source ) ) {
+			$source_flag_image = $sitepress->get_flag_img( $source['code'] );
+		}
+		if ( array_key_exists( 'code', $target ) ) {
+			$target_flag_image = $sitepress->get_flag_img( $target['code'] );
+		}
+
+		$source_name = $source['display_name'];
+		$target_name = $target['display_name'];
+
+		return <<<LANG_WITH_FLAG
+<span class="wpml-lang-with-flag">
+	<span class="wpml-title-flag js-otgs-popover-tooltip" title="$source_name">$source_flag_image</span><span class="wpml-lang-name">$source_name</span>
+</span>
+&raquo; 
+<span class="wpml-lang-with-flag">
+	<span class="wpml-title-flag js-otgs-popover-tooltip" title="' . $target_name . '">$target_flag_image</span><span class="wpml-lang-name">$target_name</span>
+</span>
+LANG_WITH_FLAG;
 	}
 
 	private function retrieve_job_data( $job_ids ) {
@@ -352,6 +384,19 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 		return $output;
 	}
 
+	/**
+	 * @param int $job_id
+	 * @param array $data
+	 */
+	public function update_job_data( $job_id, array $data ) {
+		global $wpdb;
+		$wpdb->update(
+			$wpdb->prefix . 'icl_translate_job',
+			$data,
+			array( 'job_id' => $job_id )
+		);
+	}
+
 	private function get_job_select(
 		$icl_translate_alias = 'iclt',
 		$icl_translations_translated_alias = 't',
@@ -378,7 +423,8 @@ class WPML_Translation_Job_Factory extends WPML_Abstract_Job_Collection {
 				{$icl_translations_original_alias}.element_type AS original_post_type,
 				{$icl_translate_job_alias}.title,
 				{$icl_translate_job_alias}.deadline_date,
-				{$icl_translate_job_alias}.completed_date";
+				{$icl_translate_job_alias}.completed_date,
+				{$icl_translate_job_alias}.editor";
 	}
 
 	private function add_job_elements( $job, $include_non_translatable_elements ) {

@@ -82,10 +82,9 @@ class WPML_Taxonomy_Translation_Screen_Data extends WPML_WPDB_And_SP_User {
 			$terms_data['truncated'] = 1;
 		}
 
-//		We are not going to add term meta support in 3.6.3.
-//		if ( function_exists( 'get_term_meta' ) ) {
-//			$all_terms         = $this->add_metadata( $all_terms );
-//		}
+		if ( function_exists( 'get_term_meta' ) ) {
+			$all_terms = $this->add_metadata( $all_terms );
+		}
 		if ( $all_terms ) {
 			$terms_data['terms'] = $this->order_terms_list( $this->index_terms_array( $all_terms ) );
 		}
@@ -213,13 +212,24 @@ class WPML_Taxonomy_Translation_Screen_Data extends WPML_WPDB_And_SP_User {
 		return $where_clause;
 	}
 
+	/**
+	 * @param array $all_terms
+	 *
+	 * @return array
+	 */
 	private function add_metadata( $all_terms ) {
+
+		$setting_factory = $this->sitepress->core_tm()->settings_factory();
+
 		foreach ( $all_terms as $term ) {
 			$meta_data = get_term_meta( $term->term_id );
 			foreach ( $meta_data as $meta_key => $meta_data ) {
-				$term->meta_data[ $meta_key ] = $meta_data;
+				if ( in_array( $setting_factory->term_meta_setting( $meta_key )->status(), array( WPML_TRANSLATE_CUSTOM_FIELD, WPML_COPY_ONCE_CUSTOM_FIELD ), true ) ) {
+					$term->meta_data[ $meta_key ] = $meta_data;
+				}
 			}
 		}
+
 		return $all_terms;
 	}
 }

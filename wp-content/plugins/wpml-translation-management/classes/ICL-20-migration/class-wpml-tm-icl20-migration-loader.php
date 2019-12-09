@@ -35,7 +35,10 @@ class WPML_TM_ICL20_Migration_Loader {
 
 		$notices = $this->factory->create_notices();
 		$notices->clear_migration_required();
-		$notices->run( $requires_migration );
+
+		if ( $this->status->has_active_service() ) {
+			$notices->run( $requires_migration );
+		}
 
 		if ( $requires_migration ) {
 			if ( ! $this->progress->get_user_confirmed() ) {

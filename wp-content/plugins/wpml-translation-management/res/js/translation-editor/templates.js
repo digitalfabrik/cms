@@ -4,11 +4,15 @@ this["WPML_TM"]["templates/translation-editor/footer.html"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
 with (obj) {
-__p += '<div class="alignleft">\r\n\t<button class="cancel wpml-dialog-close-button js-dialog-cancel">' +
+__p += '<div class="wpml-translation-action-buttons-abort">\r\n\t<button class="cancel wpml-dialog-close-button js-dialog-cancel">' +
 ((__t = (cancel)) == null ? '' : __t) +
 '</button>\r\n\t<button class="button-secondary wpml-resign-button js-resign">' +
 ((__t = (resign)) == null ? '' : __t) +
-'</button>\r\n</div>\r\n<div class = "alignright">\r\n\t<span class = "js-saving-message" style = "display:none"><img src="' +
+'</button>\r\n</div>\r\n<div class="wpml-translation-action-buttons-status">\r\n\t<div class="progress-bar js-progress-bar"><div class="progress-bar-text"></div></div>\r\n\t<label><input class="js-translation-complete" name="complete" type="checkbox"/>' +
+((__t = (translation_complete)) == null ? '' : __t) +
+'</label>\r\n\r\n\r\n\t<div class="otgs-toggle-group">\r\n\t\t<input type="checkbox" class="js-toggle-translated otgs-switcher-input" id="wpml_tm_toggle_translated">\r\n\t\t<label for="wpml_tm_toggle_translated" class="otgs-switcher" data-on="ON" data-off="OFF">' +
+((__t = (hide_translated)) == null ? '' : __t) +
+'</label>\r\n\t</div>\r\n</div>\r\n<div class = "wpml-translation-action-buttons-apply">\r\n\t<span class = "js-saving-message" style = "display:none"><img src="' +
 ((__t = (loading_url)) == null ? '' : __t) +
 '" alt="' +
 ((__t = (saving)) == null ? '' : __t) +
@@ -18,9 +22,7 @@ __p += '<div class="alignleft">\r\n\t<button class="cancel wpml-dialog-close-but
 ((__t = (save_and_close)) == null ? '' : __t) +
 '</button>\r\n\t<button class = "button button-primary button-large wpml-dialog-close-button js-save">' +
 ((__t = (save)) == null ? '' : __t) +
-'</button>\r\n</div>\r\n<div class="text-center">\r\n\t<div class="progress-bar js-progress-bar"><div class="progress-bar-text"></div></div>\r\n\t<label><input class="js-translation-complete" name="complete" type="checkbox"/>' +
-((__t = (translation_complete)) == null ? '' : __t) +
-'</label>\r\n</div>';
+'</button>\r\n</div>\r\n\r\n\r\n';
 
 }
 return __p
@@ -89,19 +91,19 @@ __p += '\t<input type="hidden" name="source_lang" value="' +
 ((__t = ( language.target )) == null ? '' : __t) +
 '" />\r\n\t<h3 class="wpml-header-original">' +
 ((__t = ( labels.source_lang )) == null ? '' : __t) +
-':\r\n\t\t<span class="wpml-title-flag">\r\n\t\t\t<img src="' +
+':\r\n\t\t<span class="wpml-title-flag"><img src="' +
 ((__t = ( language.img.source_url )) == null ? '' : __t) +
-'"\r\n\t\t\t\t alt="' +
+'" alt="' +
 ((__t = ( language.source_lang )) == null ? '' : __t) +
-'"/>\r\n\t\t</span>\r\n\t\t<strong>' +
+'"/></span>\r\n\t\t<strong>' +
 ((__t = ( language.source_lang )) == null ? '' : __t) +
 '</strong>\r\n\t</h3>\r\n\r\n\t<h3 class="wpml-header-translation">' +
 ((__t = ( labels.target_lang )) == null ? '' : __t) +
-':\r\n\t\t<span class="wpml-title-flag">\r\n\t\t\t<img src="' +
+':\r\n\t\t<span class="wpml-title-flag"><img src="' +
 ((__t = ( language.img.target_url )) == null ? '' : __t) +
-'"\r\n\t\t\t\t alt="' +
+'" alt="' +
 ((__t = ( language.target_lang )) == null ? '' : __t) +
-'"/>\r\n\t\t</span>\r\n\t\t<strong>' +
+'"/></span>\r\n\t\t<strong>' +
 ((__t = ( language.target_lang )) == null ? '' : __t) +
 '</strong>\r\n\t</h3>\r\n\r\n\t<div class="wpml-copy-container">\r\n\t\t<button class="button-secondary button-copy-all js-button-copy-all" title="' +
 ((__t = ( labels.copy_from_original )) == null ? '' : __t) +

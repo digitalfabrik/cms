@@ -1,17 +1,25 @@
 <?php
 
+/**
+ * Class WPML_Elementor_Translate_IDs
+ */
 class WPML_Elementor_Translate_IDs implements IWPML_Action {
 
-	/** @var WPML_Debug_BackTrace */
+	/** @var \WPML\Utils\DebugBackTrace */
 	private $debug_backtrace;
 
-	public function __construct( WPML_Debug_BackTrace $debug_backtrace ) {
+	/**
+	 * WPML_Elementor_Translate_IDs constructor.
+	 *
+	 * @param \WPML\Utils\DebugBackTrace $debug_backtrace
+	 */
+	public function __construct( \WPML\Utils\DebugBackTrace $debug_backtrace ) {
 		$this->debug_backtrace = $debug_backtrace;
 	}
 
 	public function add_hooks() {
 		add_filter( 'elementor/theme/get_location_templates/template_id', array( $this, 'translate_theme_location_template_id' ) );
-		add_filter( 'elementor/theme/get_location_templates/sub_id', array( $this, 'translate_location_condition_sub_id' ), 10, 2 );
+		add_filter( 'elementor/theme/get_location_templates/condition_sub_id', array( $this, 'translate_location_condition_sub_id' ), 10, 2 );
 		add_filter( 'elementor/documents/get/post_id', array(
 			$this,
 			'translate_template_id'

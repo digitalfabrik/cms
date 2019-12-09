@@ -72,6 +72,6 @@ class WPML_Rewrite_Rules_Filter {
 	 * @return bool
 	 */
 	private function is_admin_screen( $screen_id ) {
-		return is_admin() && get_current_screen() && get_current_screen()->id === $screen_id;
+		return is_admin() && function_exists( 'get_current_screen' ) && get_current_screen() && get_current_screen()->id === $screen_id;
 	}
 }

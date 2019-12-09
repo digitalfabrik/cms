@@ -33,12 +33,21 @@ class WPML_TM_Word_Count_Report {
 	/** @var array $data */
 	private $data;
 
+	/**
+	 * WPML_TM_Word_Count_Report constructor.
+	 *
+	 * @param WPML_TM_Word_Count_Report_View $view
+	 * @param WPML_TM_Word_Count_Records     $records
+	 * @param SitePress                      $sitepress
+	 * @param string|false                   $requested_types_status
+	 * @param WPML_Package_Helper|null       $st_package_helper
+	 */
 	public function __construct(
 		WPML_TM_Word_Count_Report_View $view,
 		WPML_TM_Word_Count_Records $records,
 		SitePress $sitepress,
-		WPML_Package_Helper $st_package_helper = null,
-		$requested_types_status
+		$requested_types_status,
+		WPML_Package_Helper $st_package_helper = null
 	) {
 		$this->view                   = $view;
 		$this->records                = $records;

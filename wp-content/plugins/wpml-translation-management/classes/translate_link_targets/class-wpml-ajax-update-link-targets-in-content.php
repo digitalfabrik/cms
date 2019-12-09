@@ -1,6 +1,6 @@
 <?php
 
-abstract class WPML_Ajax_Update_Link_Targets_In_Content extends WPML_WPDB_User implements IWPML_Ajax_Action {
+abstract class WPML_Ajax_Update_Link_Targets_In_Content extends WPML_WPDB_User implements IWPML_AJAX_Action_Run {
 
 	/** @var WPML_Translate_Link_Targets_In_Content $translate_link_targets */
 	private $translate_link_targets;

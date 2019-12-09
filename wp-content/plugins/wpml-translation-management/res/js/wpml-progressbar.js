@@ -38,7 +38,7 @@ var ProgressBar = Backbone.View.extend({
         self.ajax_loader_img.remove();
         self.progress_label_value.text(text);
         if (typeof callback === 'function') {
-            callback();
+            callback(self);
         }
     },
     getRemainingCount: function () {

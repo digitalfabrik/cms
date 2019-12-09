@@ -1,5 +1,8 @@
 <?php
 
+use WPML\Core\Twig_Loader_Filesystem;
+use WPML\Core\Twig_Environment;
+
 /**
  * Class WPML_TM_Unsent_Jobs_Notice
  */

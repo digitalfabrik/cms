@@ -4,13 +4,16 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	/** @var  WP_Error $error */
 	protected $error;
 
+	/** @var WPML_TM_Validate_HTML */
+	private $validator = null;
+
 	/**
 	 * @param $string
 	 *
 	 * @return mixed
 	 */
 	protected function replace_xliff_new_line_tag_with_new_line( $string ) {
-		return preg_replace( '/<br class="xliff-newline"\s*\/>/i', "\n", $string );
+		return WPML_TP_Xliff_Parser::restore_new_line( $string );
 	}
 
 	/**
@@ -64,16 +67,38 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		return $target;
 	}
 
+	/**
+	 * @param $validator WPML_TM_Validate_HTML
+	 */
+	public function set_validator( $validator ) {
+		$this->validator = $validator;
+	}
+
+	/**
+	 * @return WPML_TM_Validate_HTML
+	 */
+	private function get_validator() {
+		if ( null === $this->validator ) {
+			$this->set_validator( new WPML_TM_Validate_HTML() );
+		}
+
+		return $this->validator;
+	}
+
 	protected function generate_job_data( SimpleXMLElement $xliff, $job ) {
 		$data = array(
 			'job_id'   => $job->job_id,
 			'fields'   => array(),
-			'complete' => 1
+			'complete' => 1,
 		);
+
 		foreach ( $xliff->file->body->children() as $node ) {
 			$attr   = $node->attributes();
 			$type   = (string) $attr['id'];
 			$target = $this->get_xliff_node_target( $node );
+			if ( 'html' === (string) $attr['datatype'] ) {
+				$target = $this->get_validator()->restore_html( $target );
+			}
 
 			if ( ! $this->is_valid_target( $target ) ) {
 				return $this->invalid_xliff_error( array( 'target' ) );
@@ -96,6 +121,17 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Validate XLIFF target on reading XLIFF.
+	 *
+	 * @param $target string
+	 *
+	 * @return bool
+	 */
+	private function is_valid_target( $target ) {
+		return $target || '0' === $target;
 	}
 
 	protected function validate_file( $name, $content, $current_user ) {
@@ -135,7 +171,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 */
 	function validate_file_name( $filename ) {
 		$ignored_files = apply_filters( 'wpml_xliff_ignored_files', array( '__MACOSX' ) );
-		return !( preg_match( '/(\/)/', $filename ) || in_array( $filename, $ignored_files, false ) );
+		return ! ( preg_match( '/(\/)/', $filename ) || in_array( $filename, $ignored_files, false ) );
 	}
 
 	protected function is_user_the_job_owner( $current_user, $job ) {
@@ -177,7 +213,7 @@ abstract class WPML_TM_Xliff_Shared extends WPML_TM_Job_Factory_User {
 	 *
 	 * @throws ErrorException
 	 */
-	protected function error_handler( $errno, $errstr, $errfile, $errline ){
+	protected function error_handler( $errno, $errstr, $errfile, $errline ) {
 		throw new ErrorException( $errstr, $errno, 1, $errfile, $errline );
 	}
 
