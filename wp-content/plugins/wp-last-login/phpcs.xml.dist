@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<ruleset name="WP Last Login">
+	<file>.</file>
+
+	<!-- Exclude JS/CSS files. -->
+	<exclude-pattern>*.[s]?css</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
+
+	<!-- Show sniff codes -->
+	<arg value="s"/>
+
+	<rule ref="WordPress">
+		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_get_user_meta" />
+		<exclude name="WordPress.VIP.RestrictedFunctions.user_meta_update_user_meta" />
+	</rule>
+	<rule ref="WordPress-Docs" />
+
+	<!-- Whitelist classes for select sniffs. -->
+	<rule ref="WordPress.Files.FileName">
+		<properties>
+			<property name="custom_test_class_whitelist" type="array" value="Obenland_Wp_Plugins_V4"/>
+		</properties>
+	</rule>
+</ruleset>

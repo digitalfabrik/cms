@@ -1,0 +1,72 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: \n"
+"X-Poedit-Country: \n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: obenland-wp-plugins.php:123
+#@ wp-last-login
+msgid "Donate"
+msgstr "Schenken"
+
+#. translators: plugin header field 'Name'
+#: wp-last-login.php:0
+#@ wp-last-login
+msgid "WP Last Login"
+msgstr ""
+
+#. translators: plugin header field 'PluginURI'
+#: wp-last-login.php:0
+#@ wp-last-login
+msgid "http://www.obenlands.de/en/portfolio/wp-last-login/?utm_source=wordpress&utm_medium=plugin&utm_campaign=wp-last-login"
+msgstr ""
+
+#. translators: plugin header field 'Description'
+#: wp-last-login.php:0
+#@ wp-last-login
+msgid "Displays the date of the last login in user lists."
+msgstr "Geeft de datum van de laatste login gebruiker lijsten."
+
+#. translators: plugin header field 'Author'
+#: wp-last-login.php:0
+#@ wp-last-login
+msgid "Konstantin Obenland"
+msgstr ""
+
+#. translators: plugin header field 'AuthorURI'
+#: wp-last-login.php:0
+#@ wp-last-login
+msgid "http://www.obenlands.de/en/?utm_source=wordpress&utm_medium=plugin&utm_campaign=wp-last-login"
+msgstr ""
+
+#. translators: plugin header field 'Version'
+#: wp-last-login.php:0
+#@ wp-last-login
+msgid "1.0"
+msgstr ""
+
+#: wp-last-login.php:100
+#@ wp-last-login
+msgid "Last Login"
+msgstr "Laatste aanmelding"
+
+#: wp-last-login.php:127
+#@ wp-last-login
+msgid "Never."
+msgstr "Nooit."
+

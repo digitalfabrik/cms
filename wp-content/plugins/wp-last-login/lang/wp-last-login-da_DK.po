@@ -1,0 +1,74 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Last Login\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Thomas Clausen <kontakt@thomasclausen.dk>\n"
+"Language-Team: Thomas Clausen <kontakt@thomasclausen.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Language: da_DK\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+
+# @ wp-last-login
+#: obenland-wp-plugins.php:123
+msgid "Donate"
+msgstr "Donér"
+
+# @ wp-last-login
+#. translators: plugin header field 'Name'
+#: wp-last-login.php:0
+msgid "WP Last Login"
+msgstr "WP Last Login"
+
+# @ wp-last-login
+#. translators: plugin header field 'Description'
+#: wp-last-login.php:0
+msgid "Displays the date of the last login in user lists."
+msgstr "Viser datoen for seneste login i listen af brugere."
+
+# @ wp-last-login
+#. translators: plugin header field 'Author'
+#: wp-last-login.php:0
+msgid "Konstantin Obenland"
+msgstr "Konstantin Obenland"
+
+# @ wp-last-login
+#: wp-last-login.php:120
+msgid "Last Login"
+msgstr "Seneste login"
+
+# @ wp-last-login
+#: wp-last-login.php:148
+msgid "Never."
+msgstr "Aldrig."
+
+# @ wp-last-login
+#. translators: plugin header field 'Version'
+#: wp-last-login.php:0
+msgid "1.1.0"
+msgstr "1.1.0"
+
+# @ wp-last-login
+#. translators: plugin header field 'PluginURI'
+#: wp-last-login.php:0
+msgid ""
+"http://en.wp.obenland.it/wp-last-login/?"
+"utm_source=wordpress&utm_medium=plugin&utm_campaign=wp-last-login"
+msgstr ""
+"http://en.wp.obenland.it/wp-last-login/?"
+"utm_source=wordpress&utm_medium=plugin&utm_campaign=wp-last-login"
+
+# @ wp-last-login
+#. translators: plugin header field 'AuthorURI'
+#: wp-last-login.php:0
+msgid ""
+"http://en.wp.obenland.it/?"
+"utm_source=wordpress&utm_medium=plugin&utm_campaign=wp-last-login"
+msgstr ""
+"http://en.wp.obenland.it/?"
+"utm_source=wordpress&utm_medium=plugin&utm_campaign=wp-last-login"
