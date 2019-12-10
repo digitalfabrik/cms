@@ -1,4 +1,6 @@
 <?php
+	if (php_sapi_name() !== "cli") die();
+
         $debug = false;
 
         $configuration = parse_ini_file("config.ini", true);
