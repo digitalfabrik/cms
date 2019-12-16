@@ -19,8 +19,9 @@ function ig_download_size_menu() {
 }
 
 function ig_download_size() {
-    echo "<div class=\"wrap\"><h1>Download Size</h1><ul>";
+    echo "<div class=\"wrap\"><h1>" . __("Download Size", "ig-download-size") . "</h1><ul>";
 
+    global $sitepress;
     $main_lang = $sitepress->get_default_language();
 
     $languages = apply_filters( 'wpml_active_languages', NULL, 'orderby=id&order=desc' );
