@@ -15,6 +15,10 @@ class WPML_Admin_Language_Switcher {
 	);
 
     function render() {
+
+	    wp_enqueue_script( OTGS_Assets_Handles::POPOVER_TOOLTIP );
+	    wp_enqueue_style( OTGS_Assets_Handles::POPOVER_TOOLTIP );
+
         /** @var $wp_admin_bar WP_Admin_Bar */
         global $wpdb, $wp_admin_bar, $pagenow, $mode, $sitepress;
 
@@ -212,13 +216,17 @@ class WPML_Admin_Language_Switcher {
 
         $parent = 'WPML_ALS';
         $lang   = $languages_links[ $current_language ];
+        $help_tip_text = __( 'This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to your profile.', 'sitepress' );
+
         // Current language
         $wp_admin_bar->add_menu( array(
-                                      'parent' => false, 'id' => $parent,
-                                      'title'  => wp_kses( $lang[ 'flag' ], $this->flag_kses_tags ) . '&nbsp;' . esc_html( $lang[ 'anchor' ] ) . '&nbsp;&nbsp;<i title="' . esc_attr__( 'help', 'sitepress' ) . '" id="wpml_als_help_link" class="otgs-ico-help"></i>',
-                                      'href'   => false, 'meta' => array(
-                'title' => __( 'Showing content in:', 'sitepress' ) . ' ' . $lang[ 'anchor' ],
-            )
+                                      'parent' => false,
+                                      'id' => $parent,
+                                      'title'  => '<span title="' . __( 'Showing content in:', 'sitepress' ) . ' ' . $lang[ 'anchor' ] .'">'
+                                                  . wp_kses( $lang[ 'flag' ], $this->flag_kses_tags ) . '&nbsp;' . esc_html( $lang[ 'anchor' ] )
+                                                  . '</span>'
+                                                  . '&nbsp;<i  class="otgs-ico-help js-otgs-popover-tooltip" data-tippy-zIndex="999999" title="' . $help_tip_text . '" ></i>',
+                                      'href'   => false
                                  ) );
     
         if ( $languages_links ) {
@@ -232,18 +240,6 @@ class WPML_Admin_Language_Switcher {
                                          ) );
             }
         }
-    
-        add_action( 'all_admin_notices', array($this, 'help_popup' ) );
-    }
-    
-    function help_popup()
-    {
-        ?>
-            <div id="icl_als_help_popup" class="icl_cyan_box icl_pop_info">
-	              <span class="icl_pop_info_but_close otgs-ico-close"></span>
-                <?php echo sprintf( __( 'This language selector determines which content to display. You can choose items in a specific language or in all languages. To change the language of the WordPress Admin interface, go to <a%s>your profile</a>.', 'sitepress' ), ' href="' . admin_url( 'profile.php' ) . '"' );?>
-            </div>
-        <?php
     }
     
 }

@@ -3,20 +3,11 @@ jQuery(document).ready(function ($) {
 
 	var dialog = $('.js-wpml-translation-basket-dialog');
 
-	var onDialogClose = function () {
-		wpmlTMBasket.dialogs.splice( wpmlTMBasket.dialogs.indexOf( 'ts' ), 1 );
-
-		if(0 === wpmlTMBasket.dialogs.length) {
-			location.href = dialog.data('redirect-url');
-		}
-	};
-
 	var openDialog = function(result) {
 		/** @namespace result.call_to_action */
 		/** @namespace result.ts_batch_link */
 
 		var hasAdditionalContent = typeof result.call_to_action !== 'undefined' || typeof result.ts_batch_link !== 'undefined';
-
 
 		var options = {
 			dialogClass: 'wpml-dialog otgs-ui-dialog',
@@ -41,38 +32,39 @@ jQuery(document).ready(function ($) {
 				if (batchLinkAnchor && typeof result.ts_batch_link !== 'undefined') {
 					batchLinkAnchor.attr('href', result.ts_batch_link.href);
 					batchLinkAnchor.text(result.ts_batch_link.text);
+					$(batchLinkAnchor).on('click', function () {
+						dialog.dialog('close');
+					});
+
 					batchLink.show();
 					hasAdditionalContent = true;
 				}
 				dialog.show();
 				repositionDialog();
-				wpmlTMBasket.dialogs.push( 'ts' );
-			},
-			close: onDialogClose
+			}
 		};
-
 
 		if (hasAdditionalContent) {
 			dialog.dialog(options);
-		} else if (0 === wpmlTMBasket.dialogs.length) {
-			wpmlTMBasket.redirect = dialog.data('redirect-url');;
 		}
 
 	};
 
 	var repositionDialog = function() {
-		var winH = $(window).height() - 180;
-		$(".otgs-ui-dialog .ui-dialog-content").css({
-			"max-height": winH
-		});
-		$(".otgs-ui-dialog").css({
-			"max-width": "95%"
-		});
-		dialog.dialog("option", "position", {
-			my: "center",
-			at: "center",
-			of: window
-		});
+		if (dialog.hasClass("ui-dialog-content") && dialog.dialog('isOpen')) {
+			var winH = $(window).height() - 180;
+			$(".otgs-ui-dialog .ui-dialog-content").css({
+				"max-height": winH
+			});
+			$(".otgs-ui-dialog").css({
+				"max-width": "95%"
+			});
+			dialog.dialog("option", "position", {
+				my: "center",
+				at: "center",
+				of: window
+			});
+		}
 	};
 
 	$(window).resize(repositionDialog);

@@ -192,7 +192,7 @@ class AbsoluteLinks{
 					$post_name = $category_name = $tax_name = false;
 	
 					if ( isset( $permalink_query_vars[ 'pagename' ] ) ) {
-						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress, new WPML_Debug_BackTrace( phpversion(), 7 ) );
+						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress, new WPML_Debug_BackTrace( null, 7 ) );
 						$page_by_path = $get_page_by_path->get( $permalink_query_vars[ 'pagename' ], $test_language );
 
 						$post_name = $permalink_query_vars[ 'pagename' ];
@@ -232,7 +232,7 @@ class AbsoluteLinks{
 	
 					if ( $post_name && isset( $post_type ) ) {
 
-						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress, new WPML_Debug_BackTrace( phpversion(), 7 ) );
+						$get_page_by_path = new WPML_Get_Page_By_Path( $wpdb, $sitepress, new WPML_Debug_BackTrace( null, 7 ) );
 						$p = $get_page_by_path->get( $post_name, $test_language, OBJECT, $post_type );
 
 						if ( empty( $p ) ) { // fail safe
@@ -418,7 +418,7 @@ class AbsoluteLinks{
 	function all_rewrite_rules($rewrite) {
 			global $sitepress;
 
-			if ( !class_exists( 'WPML_Slug_Translation' ) ) {
+			if ( !class_exists( 'WPML\ST\SlugTranslation\Hooks\Hooks' ) ) {
 				return $rewrite;
 			}
 
@@ -446,8 +446,8 @@ class AbsoluteLinks{
 				}
 				
 				$sitepress->switch_lang($next_language['code']);
-				
-				$translated_rules = WPML_Slug_Translation::rewrite_rules_filter($final_rules);
+
+				$translated_rules = ( new \WPML\ST\SlugTranslation\Hooks\HooksFactory() )->create()->filter( $final_rules );
 
 				if ( is_array( $translated_rules ) && is_array($final_rules) ) {
 					$new_rules = array_diff_assoc( $translated_rules, $final_rules );

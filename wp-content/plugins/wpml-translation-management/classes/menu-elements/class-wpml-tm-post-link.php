@@ -1,10 +1,11 @@
 <?php
 
-abstract class WPML_TM_Post_Link extends WPML_SP_User {
+abstract class WPML_TM_Post_Link {
 
-	/**
-	 * @var int $post
-	 */
+	/** @var SitePress $sitepress */
+	protected $sitepress;
+
+	/** @var int $post */
 	protected $post_id;
 
 	/**
@@ -13,8 +14,8 @@ abstract class WPML_TM_Post_Link extends WPML_SP_User {
 	 * @param SitePress $sitepress
 	 * @param int       $post_id
 	 */
-	public function __construct( &$sitepress, $post_id ) {
-		parent::__construct( $sitepress );
-		$this->post_id = $post_id;
+	public function __construct( $sitepress, $post_id ) {
+		$this->sitepress = $sitepress;
+		$this->post_id   = $post_id;
 	}
 }

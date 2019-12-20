@@ -13,25 +13,4 @@ abstract class WPML_TM_Job_Factory_User {
 	public function __construct( $job_factory ) {
 		$this->job_factory = $job_factory;
 	}
-
-	/**
-	 * @param $content
-	 *
-	 * @return bool
-	 */
-	protected function is_valid_unit_content( $content ) {
-		$content = preg_replace( '/[^#\w]*/u', '', $content );
-		return $content || '0' === $content;
-	}
-
-	/**
-	 * Validate XLIFF target on reading XLIFF.
-	 *
-	 * @param $target string
-	 *
-	 * @return bool
-	 */
-	protected function is_valid_target( $target ) {
-		return $target || '0' === $target;
-	}
 }

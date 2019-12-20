@@ -23,10 +23,11 @@ class EM_Taxonomy_Term extends EM_Object {
 	//extra attributes imposed by EM Taxonomies
 	var $image_url = '';
 	var $color;
+	var $link;
 
 	/**
 	 * Gets data from POST (default), supplied array, or from the database if an ID is supplied
-	 * @param $taxonomy
+	 * @param mixed $taxonomy_data
 	 */
 	public function __construct( $taxonomy_data = false ){
 		if( $this->option_ms_global ) self::ms_global_switch();
@@ -61,9 +62,9 @@ class EM_Taxonomy_Term extends EM_Object {
 	 * 
 	 * Shortcut using __construct since it checks globals and any other caches before executing a __construct call.  
 	 * 
-	 * @param int|string $id ID or slug. Name is not used for globals check since mixups between terms with same name/slug values.
+	 * @param int|string|EM_Taxonomy_Term $id ID or slug. Name is not used for globals check since mixups between terms with same name/slug values.
 	 * @param string $taxonomy_class The name of the EM class used for this taxonomy.
-	 * @return EM_Taxonomy
+	 * @return EM_Taxonomy_Term
 	 */
 	public static function get( $id, $taxonomy_class = 'EM_Taxonomy_Term' ){
 		//check if it's not already global so we don't instantiate again
@@ -272,6 +273,10 @@ class EM_Taxonomy_Term extends EM_Object {
 					$args['orderby'] = get_option('dbem_'. $this->option_name .'_event_list_orderby');
 					$args['order'] = get_option('dbem_'. $this->option_name .'_event_list_order');
 					$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
+					if( $target == 'email' ){
+						$args['pagination'] = 0;
+						$args['page'] = 1;
+					}
 				    $replace = EM_Events::output($args);
 					break;
 				case '#_'. $ph .'NEXTEVENT':

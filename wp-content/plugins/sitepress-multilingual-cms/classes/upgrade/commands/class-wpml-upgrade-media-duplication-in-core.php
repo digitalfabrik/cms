@@ -39,9 +39,13 @@ class WPML_Upgrade_Media_Duplication_In_Core implements IWPML_Upgrade_Command {
 	 */
 	public function run_admin() {
 		$this->update_global_settings();
-		$source_posts = $this->find_posts_altered_between_402_and_404();
 
-		if ( $source_posts ) {
+		if ( $this->has_notice() ) {
+			$this->create_or_refresh_notice();
+			return false;
+		}
+
+		if ( $this->find_posts_altered_between_402_and_404() ) {
 			/**
 			 * The rest of the upgrade needs to run when all the custom post types are registered
 			 */
@@ -49,22 +53,15 @@ class WPML_Upgrade_Media_Duplication_In_Core implements IWPML_Upgrade_Command {
 			return false;
 		}
 
-		$this->notices->remove_notice( 'default',  __CLASS__ );
+		$this->remove_notice();
 		return true;
 	}
 
 	public function deferred_upgrade_admin() {
-		if ( $this->notices->get_notice( __CLASS__, 'default' ) ) {
-			return;
-		}
-
 		list( $is_complete ) = $this->process_upgrade();
 
 		if ( ! $is_complete ) { // We could not complete the upgrade in the same request
-			$notice = $this->notices->create_notice( __CLASS__, $this->get_notice_content() );
-			$notice->add_display_callback( array( 'WPML_Notice_Show_On_Dashboard_And_WPML_Pages', 'is_on_page' ) );
-			$notice->set_css_class_types( 'info' );
-			$this->notices->add_notice( $notice );
+			$this->create_or_refresh_notice();
 		}
 	}
 
@@ -143,7 +140,7 @@ class WPML_Upgrade_Media_Duplication_In_Core implements IWPML_Upgrade_Command {
 
 		if ( ! $this->is_max_time_elapsed() ) {
 			$this->cleanup_display_featured_as_translated_meta();
-			$this->notices->remove_notice( 'default',  __CLASS__ );
+			$this->remove_notice();
 			$is_complete = true;
 		}
 
@@ -241,10 +238,6 @@ class WPML_Upgrade_Media_Duplication_In_Core implements IWPML_Upgrade_Command {
 		// Add the meta to the source post and its translations
 		$translations = $this->sitepress->get_element_translations( $post->trid, $post->element_type );
 		$post_ids     = wp_list_pluck( $translations, 'element_id' );
-
-		if ( ! $post_ids ) {
-			return;
-		}
 
 		$this->wpdb->query(
 			$this->wpdb->prepare(
@@ -361,5 +354,20 @@ class WPML_Upgrade_Media_Duplication_In_Core implements IWPML_Upgrade_Command {
 
 	private function is_max_time_elapsed() {
 		return self::MAX_TIME <= ( time() - $this->start_time );
+	}
+
+	private function remove_notice() {
+		$this->notices->remove_notice( 'default',  __CLASS__ );
+	}
+
+	private function create_or_refresh_notice() {
+		$notice = $this->notices->create_notice( __CLASS__, $this->get_notice_content() );
+		$notice->add_display_callback( array( 'WPML_Notice_Show_On_Dashboard_And_WPML_Pages', 'is_on_page' ) );
+		$notice->set_css_class_types( 'info' );
+		$this->notices->add_notice( $notice );
+	}
+
+	private function has_notice() {
+		return $this->notices->get_notice( __CLASS__, 'default' );
 	}
 }

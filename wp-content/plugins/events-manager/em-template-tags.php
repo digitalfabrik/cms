@@ -238,10 +238,10 @@ function em_events_admin($args = array()){
 			$show_add_new = isset($args['show_add_new']) ? $args['show_add_new']:true;
 			$args = array('order' => $order, 'search' => $search, 'owner' => get_current_user_id());
 			if( !empty($_REQUEST['recurrence_id']) ){
-				$Event = em_get_event($_REQUEST['recurrence_id']);
+				$Event = em_get_event( absint($_REQUEST['recurrence_id']) );
 				$EM_Notices->add_alert(sprintf(esc_html__('You are viewing individual recurrences of recurring event %s.', 'events-manager'), '<a href="'.$Event->get_edit_url().'">'.$Event->event_name.'</a>'));
 				$EM_Notices->add_alert(esc_html__('You can edit individual recurrences and disassociate them with this recurring event.', 'events-manager'));
-				$args['recurrence_id'] = $_REQUEST['recurrence_id'];
+				$args['recurrence_id'] = absint($_REQUEST['recurrence_id']);
 			}
 			$args = apply_filters('em_events_admin_args', $args);
 			//template $args for different views
@@ -478,6 +478,60 @@ function em_get_my_bookings(){
  * Conditionals - Yes/No functions
  * ---------------------------------------------------------------------
  */
+
+/**
+ * Returns whether or not this object is an event or not. This can be a loose verification method by supplying an EM_Event object, post object, post_id, or simply the post type.
+ * If you want to ensure this is an EM_Event or child of EM_Event, pass the second parameter $require_object as true to force an EM_Event object check.
+ * @param EM_Event|WP_Post|string|int $data
+ * @param bool $object_required
+ * @return bool
+ * @since 5.9.7
+ */
+function em_is_event( $data, $object_required = false ){
+	if( is_object($data) && !empty($data->post_type) ){
+		// we assume it's either a EM_Event class type or just a WP_Post object
+		$post_type = $data->post_type;
+		$is_event_object = get_class($data) == 'EM_Event' || is_subclass_of($data, 'EM_Object');
+	}elseif( is_numeric($data) ){
+		// we assume we were passed a post_id
+		$post_type = get_post_type($data);
+	}elseif( is_string($data) ){
+		// we assume we were passed a post type
+		$post_type = $data;
+	}
+	if( !empty($post_type) ){
+		$is_event_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
+		return $is_event_post_type && (!$object_required || !empty($is_event_object));
+	}
+	return false;
+}
+
+/**
+ * Returns whether or not this object is an location or not. This can be a loose verification method by supplying an EM_Location object, post object, post_id or simply the post type.
+ * If you want to ensure this is an EM_Location or child of EM_Location, pass the second parameter $require_object as true to force an EM_Location object check.
+ * @param EM_Location|WP_Post|string|int $data
+ * @param bool $object_required
+ * @return bool
+ * @since 5.9.7
+ */
+function em_is_location( $data, $object_required = false ){
+	if( is_object($data) && !empty($data->post_type) ){
+		// we assume it's either a EM_Location class type or just a WP_Post object
+		$post_type = $data->post_type;
+		$is_location_object = get_class($data) == 'EM_Location' || is_subclass_of($data, 'EM_Object');
+	}elseif( is_numeric($data) ){
+		// we assume we were passed a post_id
+		$post_type = get_post_type($data);
+	}elseif( is_string($data) ){
+		// we assume we were passed a post type
+		$post_type = $data;
+	}
+	if( !empty($post_type) ){
+		$is_location_post_type = $post_type == EM_POST_TYPE_LOCATION;
+		return $is_location_post_type && (!$object_required || !empty($is_location_object));
+	}
+	return false;
+}
 
 /**
  * Returns true if there are any events that exist in the given scope (default is future events).

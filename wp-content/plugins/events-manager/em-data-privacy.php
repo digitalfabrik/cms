@@ -89,9 +89,9 @@ function em_data_privacy_consent_booking_get_post( $result, $EM_Booking ){
  * @return bool
  */
 function em_data_privacy_consent_booking_validate( $result, $EM_Booking ){
-	if( is_user_logged_in() && $EM_Booking->person_id == get_current_user_id() ){
+	if( is_user_logged_in() && ($EM_Booking->person_id == get_current_user_id() || $EM_Booking->person_id === null) ){
 		//check if consent was previously given and ignore if settings dictate so
-		$consent_given_already = get_user_meta( $EM_Booking->person_id, 'em_data_privacy_consent', true );
+		$consent_given_already = get_user_meta( get_current_user_id(), 'em_data_privacy_consent', true );
 		if( !empty($consent_given_already) && get_option('dbem_data_privacy_consent_remember') == 1 ) return $result; //ignore if consent given as per settings
 	}
     if( empty($EM_Booking->booking_meta['consent']) ){

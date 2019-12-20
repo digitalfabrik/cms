@@ -318,13 +318,13 @@ class EM_Event_Post {
 		  	if( is_admin() ){
 		  		//admin areas don't need special ordering, so make it simple
 		  		if( !empty($_REQUEST['orderby']) && $_REQUEST['orderby'] != 'date-time' ){
-		  			$wp_query->query_vars['orderby'] = $_REQUEST['orderby'];
+		  			$wp_query->query_vars['orderby'] = sanitize_key($_REQUEST['orderby']);
 		  		}else{
 				  	$wp_query->query_vars['orderby'] = 'meta_value';
 				  	$wp_query->query_vars['meta_key'] = '_event_start_local';
 				  	$wp_query->query_vars['meta_type'] = 'DATETIME';
 		  		}
-				$wp_query->query_vars['order'] = (!empty($_REQUEST['order'])) ? $_REQUEST['order']:'ASC';
+				$wp_query->query_vars['order'] = (!empty($_REQUEST['order']) && preg_match('/^(ASC|DESC)$/i', $_REQUEST['order'])) ? $_REQUEST['order']:'ASC';
 		  	}else{
 			  	if( get_option('dbem_events_default_archive_orderby') == 'title'){
 			  		$wp_query->query_vars['orderby'] = 'title';

@@ -79,7 +79,8 @@ class EM_Event_Post_Admin{
 		$post_type = $data['post_type'];
 		$post_ID = !empty($postarr['ID']) ? $postarr['ID'] : false;
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
-		$saving_status = !in_array($data['post_status'], array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
+		$doing_add_meta_ajax = defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['action']) && $_REQUEST['action'] == 'add-meta' && check_ajax_referer( 'add-meta', '_ajax_nonce-add-meta', false );  //we don't need to save anything here, we don't use this action
+		$saving_status = !in_array($data['post_status'], array('trash','auto-draft')) && !defined('DOING_AUTOSAVE') && !$doing_add_meta_ajax;
 		$untrashing = $post_ID && defined('UNTRASHING_'.$post_ID);
 		if( !$untrashing && $is_post_type && $saving_status ){
 			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_event') ){ 
@@ -101,7 +102,8 @@ class EM_Event_Post_Admin{
 		if ( isset($_GET['preview_id']) && isset($_GET['preview_nonce']) && wp_verify_nonce( $_GET['preview_nonce'], 'post_preview_' . $post_id ) ) return; //don't proceed with saving when previewing, may cause issues
 		$post_type = get_post_type($post_id);
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
-		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
+		$doing_add_meta_ajax = defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['action']) && $_REQUEST['action'] == 'add-meta' && check_ajax_referer( 'add-meta', '_ajax_nonce-add-meta', false ); //we don't need to save anything here, we don't use this action
+		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE') && !$doing_add_meta_ajax;
 		$EM_EVENT_SAVE_POST = true; //first filter for save_post in EM for events
 		if(!defined('UNTRASHING_'.$post_id) && $is_post_type && $saving_status ){
 			//Reset server timezone to UTC in case other plugins are doing something naughty
@@ -501,7 +503,9 @@ class EM_Event_Recurring_Post_Admin{
 		}
 		add_meta_box('em-event-recurring', __('Recurrences','events-manager'), array('EM_Event_Recurring_Post_Admin','meta_box_recurrence'),'event-recurring', 'normal','high');
 		//add_meta_box('em-event-meta', 'Event Meta (debugging only)', array('EM_Event_Post_Admin','meta_box_metadump'),'event-recurring', 'normal','high');
-		add_meta_box('em-event-where', __('Where','events-manager'), array('EM_Event_Post_Admin','meta_box_location'),'event-recurring', 'normal','high');
+		if(get_option('dbem_locations_enabled', true)){
+			add_meta_box('em-event-where', __('Where','events-manager'), array('EM_Event_Post_Admin','meta_box_location'),'event-recurring', 'normal','high');
+		}
 		if( get_option('dbem_rsvp_enabled') && $EM_Event->can_manage('manage_bookings','manage_others_bookings') ){
 			add_meta_box('em-event-bookings', __('Bookings/Registration','events-manager'), array('EM_Event_Post_Admin','meta_box_bookings'),'event-recurring', 'normal','high');
 		}

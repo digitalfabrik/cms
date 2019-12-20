@@ -65,6 +65,7 @@ function em_ms_admin_options_page() {
 		return;
 	}	
 	//TODO place all options into an array
+	$tabs_enabled = defined('EM_SETTINGS_TABS') && EM_SETTINGS_TABS;
 	$events_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;events-manager-help#event-placeholders">'. __('Event Related Placeholders','events-manager') .'</a>';
 	$locations_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;events-manager-help#location-placeholders">'. __('Location Related Placeholders','events-manager') .'</a>';
 	$bookings_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;events-manager-help#booking-placeholders">'. __('Booking Related Placeholders','events-manager') .'</a>';
@@ -132,11 +133,26 @@ function em_ms_admin_options_page() {
 		});
 	</script>
 	<style type="text/css">.postbox h3 { cursor:pointer; }</style>
-	<div class="wrap">		
+	<div class="wrap <?php if(empty($tabs_enabled)) echo 'tabs-active' ?>">
 		<div id='icon-options-general' class='icon32'><br /></div>
 		<h1 id="em-options-title"><?php _e ( 'Event Manager Options', 'events-manager'); ?></h1>
 		<h2 class="nav-tab-wrapper">
-			<a href="#" id="em-menu-general" class="nav-tab nav-tab-active"><?php esc_html_e('General','events-manager'); ?></a>
+			<?php
+			if( $tabs_enabled ){
+				$general_tab_link = esc_url(add_query_arg( array('em_tab'=>'general')));
+			}else{
+				$general_tab_link = '';
+			}
+			?>
+			<a href="<?php echo $general_tab_link ?>#general" id="em-menu-general" class="nav-tab nav-tab-active"><?php esc_html_e('General','events-manager'); ?></a>
+			<?php
+			$custom_tabs = apply_filters('em_ms_options_page_tabs', array());
+			foreach( $custom_tabs as $tab_key => $tab_name ){
+				$tab_link = !empty($tabs_enabled) ? esc_url(add_query_arg( array('em_tab'=>$tab_key))) : '';
+				$active_class = !empty($tabs_enabled) && !empty($_GET['em_tab']) && $_GET['em_tab'] == $tab_key ? 'nav-tab-active':'';
+				echo "<a href='$tab_link#$tab_key' id='em-menu-$tab_key' class='nav-tab $active_class'>$tab_name</a>";
+			}
+			?>
 		</h2>
 		<?php echo $EM_Notices; ?>
 		<form id="em-options-form" method="post" action="">
@@ -144,7 +160,7 @@ function em_ms_admin_options_page() {
 			<!-- // TODO Move style in css -->
 			<div class='postbox-container' style='width: 99.5%'>
 			<div id="">
-		  
+			<?php if( !$tabs_enabled || ($tabs_enabled && (empty($_REQUEST['em_tab']) || $_REQUEST['em_tab'] == 'general')) ): //make less changes for now, since we don't have any core tabs to add yet ?>
 		  	<div class="em-menu-general em-menu-group">
 				<div  class="postbox " id="em-opt-ms-options" >
 					<div class="handlediv" title="<?php __('Click to toggle', 'events-manager'); ?>"><br /></div><h3><span><?php _e ( 'Multi Site Options', 'events-manager'); ?></span></h3>
@@ -192,10 +208,27 @@ function em_ms_admin_options_page() {
 				
 				<?php do_action('em_ms_options_page_footer'); ?>
 			</div> <!-- .em-menu-general -->
-			
-		  	<div class="em-menu-pages em-menu-group" style="display:none;">				
-		  	
-			</div> <!-- .em-menu-pages -->
+			<?php endif; ?>
+			<?php
+			//other tabs
+			if( $tabs_enabled ){
+				if( array_key_exists($_REQUEST['em_tab'], $custom_tabs) ){
+					?>
+					<div class="em-menu-bookings em-menu-group">
+						<?php do_action('em_ms_options_page_tab_'. $_REQUEST['em_tab']); ?>
+					</div>
+					<?php
+				}
+			}else{
+				foreach( $custom_tabs as $tab_key => $tab_name ){
+					?>
+					<div class="em-menu-<?php echo esc_attr($tab_key) ?> em-menu-group" style="display:none;">
+						<?php do_action('em_ms_options_page_tab_'. $tab_key); ?>
+					</div>
+					<?php
+				}
+			}
+			?>
 
 			<p class="submit">
 				<input type="submit" class="button-primary" name="Submit" value="<?php esc_attr_e( 'Save Changes', 'events-manager'); ?>" />

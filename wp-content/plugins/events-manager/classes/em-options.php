@@ -13,11 +13,12 @@ class EM_Options {
 	 * Get a specific setting form the EM options array. If no value is set, an empty array is provided by default.
 	 * @param string $option_name
 	 * @param mixed $default the default value to return
+	 * @param string $dataset
 	 * @param boolean $site if set to true it'll retrieve a site option in MultiSite instead
 	 * @return mixed
 	 */
-	public static function get( $option_name, $default = array(), $site = false ){
-		$data = $site ? get_site_option('dbem_data') : get_option('dbem_data');
+	public static function get( $option_name, $default = array(), $dataset = 'dbem_data', $site = false ){
+		$data = $site ? get_site_option($dataset) : get_option($dataset);
 		if( !empty($data[$option_name]) ){
 			return $data[$option_name];
 		}else{
@@ -29,13 +30,15 @@ class EM_Options {
 	 * Set a value in the EM options array. Returns result of storage, which may be false if no changes are made.
 	 * @param string $option_name
 	 * @param mixed $option_value
+	 * @param string $dataset
 	 * @param boolean $site if set to true it'll retrieve a site option in MultiSite instead
 	 * @return boolean
 	 */
-	public static function set( $option_name, $option_value, $site = false ){
-		$data = $site ? get_site_option('dbem_data') : get_option('dbem_data');
+	public static function set( $option_name, $option_value, $dataset = 'dbem_data', $site = false ){
+		$data = $site ? get_site_option($dataset) : get_option($dataset);
+		if( empty($data) ) $data = array();
 		$data[$option_name] = $option_value;
-		return $site ? update_site_option('dbem_data', $data) : update_option('dbem_data', $data);
+		return $site ? update_site_option($dataset, $data) : update_option($dataset, $data);
 	}
 	
 	/**
@@ -44,17 +47,18 @@ class EM_Options {
 	 * @param string $option_name
 	 * @param string $option_key
 	 * @param mixed $option_value
+	 * @param string $dataset
 	 * @param boolean $site
 	 * @return boolean
 	 */
-	public static function add( $option_name, $option_key, $option_value, $site = false ){
-		$data = $site ? get_site_option('dbem_data') : get_option('dbem_data');
+	public static function add( $option_name, $option_key, $option_value, $dataset = 'dbem_data', $site = false ){
+		$data = $site ? get_site_option($dataset) : get_option($dataset);
 		if( empty($data[$option_name]) ){
 			$data[$option_name] = array( $option_key => $option_value );
 		}else{
 			$data[$option_name][$option_key] = $option_value;
 		}
-		return $site ? update_site_option('dbem_data', $data) : update_option('dbem_data', $data);
+		return $site ? update_site_option($dataset, $data) : update_option($dataset, $data);
 	}
 	
 	/**
@@ -62,44 +66,62 @@ class EM_Options {
 	 *
 	 * @param string $option_name
 	 * @param string $option_key
-	 * @param string $site
+	 * @param string $dataset
+	 * @param boolean $site
 	 * @return boolean
 	 */
-	public static function remove( $option_name, $option_key, $site = false ){
-		$data = $site ? get_site_option('dbem_data') : get_option('dbem_data');
+	public static function remove( $option_name, $option_key, $dataset = 'dbem_data', $site = false ){
+		$data = $site ? get_site_option($dataset) : get_option($dataset);
 		if( !empty($data[$option_name][$option_key]) ){
 			unset($data[$option_name][$option_key]);
 			if( empty($data[$option_name]) ) unset($data[$option_name]);
-			return $site ? update_site_option('dbem_data', $data) : update_option('dbem_data', $data);
+			return $site ? update_site_option($dataset, $data) : update_option($dataset, $data);
 		}
 		return false;
 	}
 	
 	/**
 	 * @see EM_Options::get()
+	 * @param string $option_name
+	 * @param mixed $default
+	 * @param string $dataset
+	 * @return boolean
 	 */
-	public static function site_get( $option_name, $default = array() ){
-		return self::get( $option_name, $default, true );
+	public static function site_get( $option_name, $default = array(), $dataset = 'dbem_data' ){
+		return self::get( $option_name, $default, $dataset, true );
 	}
 	
 	/**
 	 * @see EM_Options::set()
+	 * @param string $option_name
+	 * @param mixed $option_value
+	 * @param string $dataset
+	 * @return boolean
 	 */
-	public static function site_set( $option_name, $option_value ){
-		return self::set( $option_name, $option_value, true );
+	public static function site_set( $option_name, $option_value, $dataset = 'dbem_data' ){
+		return self::set( $option_name, $option_value, $dataset, true );
 	}
 	
 	/**
 	 * @see EM_Options::add()
+	 * @param string $option_name
+	 * @param string $option_key
+	 * @param mixed $option_value
+	 * @param string $dataset
+	 * @return boolean
 	 */
-	public static function site_add( $option_name, $option_key, $option_value ){
-		return self::add( $option_name, $option_key, $option_value, true );
+	public static function site_add( $option_name, $option_key, $option_value, $dataset = 'dbem_data' ){
+		return self::add( $option_name, $option_key, $option_value, $dataset, true );
 	}
 	
 	/**
 	 * @see EM_Options::remove()
+	 * @param string $option_name
+	 * @param string $option_key
+	 * @param string $dataset
+	 * @return boolean
 	 */
-	public static function site_remove( $option_name, $option_key ){
-		return self::remove( $option_name, $option_key, true );
+	public static function site_remove( $option_name, $option_key, $dataset = 'dbem_data' ){
+		return self::remove( $option_name, $option_key, $dataset, true );
 	}
 }

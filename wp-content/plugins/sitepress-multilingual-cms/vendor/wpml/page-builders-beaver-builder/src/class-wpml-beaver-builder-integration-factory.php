@@ -2,7 +2,18 @@
 
 class WPML_Beaver_Builder_Integration_Factory {
 
+	const SLUG = 'beaver-builder';
+
 	public function create() {
+		$action_filter_loader = new WPML_Action_Filter_Loader();
+		$action_filter_loader->load(
+			array(
+				'WPML_PB_Beaver_Builder_Handle_Custom_Fields_Factory',
+				'WPML_Beaver_Builder_Media_Hooks_Factory',
+				'WPML_Beaver_Builder_Cleanup_Hooks_Factory',
+			)
+		);
+
 		$nodes = new WPML_Beaver_Builder_Translatable_Nodes();
 		$data_settings = new WPML_Beaver_Builder_Data_Settings();
 

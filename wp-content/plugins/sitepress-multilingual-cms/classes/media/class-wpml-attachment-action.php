@@ -1,18 +1,43 @@
 <?php
+/**
+ * WPML_Attachment_Action class file.
+ *
+ * @package WPML
+ */
 
+/**
+ * Class WPML_Attachment_Action
+ */
 class WPML_Attachment_Action implements IWPML_Action {
 
-	/** @var SitePress */
+	/**
+	 * Sitepress instance.
+	 *
+	 * @var SitePress
+	 */
 	private $sitepress;
 
-	/** @var wpdb */
+	/**
+	 * Wpdb instance.
+	 *
+	 * @var wpdb
+	 */
 	private $wpdb;
 
+	/**
+	 * WPML_Attachment_Action constructor.
+	 *
+	 * @param SitePress $sitepress Sitepress instance.
+	 * @param wpdb      $wpdb      wpdb instance.
+	 */
 	public function __construct( SitePress $sitepress, wpdb $wpdb ) {
 		$this->sitepress = $sitepress;
 		$this->wpdb      = $wpdb;
 	}
 
+	/**
+	 * Add hooks.
+	 */
 	public function add_hooks() {
 		if ( $this->is_admin_or_xmlrpc() && ! $this->is_uploading_plugin_or_theme() ) {
 
@@ -24,9 +49,14 @@ class WPML_Attachment_Action implements IWPML_Action {
 		}
 
 		add_filter( 'attachment_link', array( $this->sitepress, 'convert_url' ), 10, 1 );
-		add_filter( 'wp_delete_file', array( $this, 'delete_file_actions' ) );
+		add_filter( 'wp_delete_file', array( $this, 'delete_file_filter' ) );
 	}
 
+	/**
+	 * Check if we are in site console or xmlrpc request is active.
+	 *
+	 * @return bool
+	 */
 	private function is_admin_or_xmlrpc() {
 		$is_admin  = is_admin();
 		$is_xmlrpc = ( defined( 'XMLRPC_REQUEST' ) && XMLRPC_REQUEST );
@@ -34,21 +64,33 @@ class WPML_Attachment_Action implements IWPML_Action {
 		return $is_admin || $is_xmlrpc;
 	}
 
+	/**
+	 * Check if we are uploading plugin or theme.
+	 *
+	 * @return bool
+	 */
 	private function is_uploading_plugin_or_theme() {
 		global $action;
 
-		return ( isset( $action ) && ( $action == 'upload-plugin' || $action == 'upload-theme' ) );
+		return ( isset( $action ) && ( 'upload-plugin' === $action || 'upload-theme' === $action ) );
 	}
 
+	/**
+	 * Filter views.
+	 *
+	 * @param array $views Views.
+	 *
+	 * @return array
+	 */
 	public function views_upload_actions( $views ) {
 		global $pagenow;
 
-		if ( $pagenow == 'upload.php' ) {
-			//get current language
+		if ( 'upload.php' === $pagenow ) {
+			// Get current language.
 			$lang = $this->sitepress->get_current_language();
 
 			foreach ( $views as $key => $view ) {
-				// extract the base URL and query parameters
+				// Extract the base URL and query parameters.
 				$href_count = preg_match( '/(href=["\'])([\s\S]+?)\?([\s\S]+?)(["\'])/', $view, $href_matches );
 				if ( $href_count && isset( $href_args ) ) {
 					$href_base = $href_matches[2];
@@ -58,18 +100,21 @@ class WPML_Attachment_Action implements IWPML_Action {
 					$href_args = array();
 				}
 
-				if ( $lang != 'all' ) {
-					$sql = $this->wpdb->prepare( "
+				if ( 'all' !== $lang ) {
+					$sql = $this->wpdb->prepare(
+						"
 						SELECT COUNT(p.id)
 						FROM {$this->wpdb->posts} AS p
 							INNER JOIN {$this->wpdb->prefix}icl_translations AS t
 								ON p.id = t.element_id
 						WHERE p.post_type = 'attachment'
 						AND t.element_type='post_attachment'
-						AND t.language_code = %s ", $lang );
+						AND t.language_code = %s ",
+						$lang
+					);
 
 					switch ( $key ) {
-						case 'all';
+						case 'all':
 							$and = " AND p.post_status != 'trash' ";
 							break;
 						case 'detached':
@@ -86,20 +131,23 @@ class WPML_Attachment_Action implements IWPML_Action {
 							}
 					}
 
+					// phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
 					$and = apply_filters( 'wpml-media_view-upload-sql_and', $and, $key, $view, $lang );
 
 					$sql_and = $sql . $and;
 					$sql     = apply_filters( 'wpml-media_view-upload-sql', $sql_and, $key, $view, $lang );
 
 					$res = apply_filters( 'wpml-media_view-upload-count', null, $key, $view, $lang );
+					// phpcs:enable
+
 					if ( null === $res ) {
 						$res = $this->wpdb->get_col( $sql );
 					}
-					//replace count
+					// Replace count.
 					$view = preg_replace( '/\((\d+)\)/', '(' . $res[0] . ')', $view );
 				}
 
-				//replace href link, adding the 'lang' argument and the revised count
+				// Replace href link, adding the 'lang' argument and the revised count.
 				$href_args['lang'] = $lang;
 				$href_args         = array_map( 'urlencode', $href_args );
 				$new_href          = add_query_arg( $href_args, $href_base );
@@ -110,15 +158,23 @@ class WPML_Attachment_Action implements IWPML_Action {
 		return $views;
 	}
 
-	//check if the image is not duplicated to another post before deleting it physically
-	public function delete_file_actions( $file ) {
+	/**
+	 * Check if the image is not duplicated to another post before deleting it physically.
+	 *
+	 * @param string $file Full file name.
+	 *
+	 * @return string|null
+	 */
+	public function delete_file_filter( $file ) {
 		static $saved_request = array();
 		if ( $file ) {
 			$file_name = $this->get_file_name_without_size_from_full_name( $file );
 			if ( array_key_exists( $file_name, $saved_request ) ) {
 				$attachment = $saved_request[ $file_name ];
 			} else {
-				$attachment_prepared = $this->wpdb->prepare( "SELECT pm.meta_id, pm.post_id FROM {$this->wpdb->postmeta} AS pm WHERE pm.meta_value LIKE %s", array( '%' . $file_name ) );
+				$sql                 = "SELECT pm.meta_id, pm.post_id FROM {$this->wpdb->postmeta} AS pm 
+						WHERE pm.meta_value LIKE %s AND pm.meta_key='_wp_attached_file'";
+				$attachment_prepared = $this->wpdb->prepare( $sql, array( '%' . $file_name ) );
 				$attachment          = $this->wpdb->get_row( $attachment_prepared );
 
 				$saved_request [ $file_name ] = $attachment;
@@ -131,6 +187,13 @@ class WPML_Attachment_Action implements IWPML_Action {
 		return $file;
 	}
 
+	/**
+	 * Get file name without a size, i.e. 'a-600x400.png' -> 'a.png'.
+	 *
+	 * @param string $file Full file name.
+	 *
+	 * @return mixed|string|string[]|null
+	 */
 	private function get_file_name_without_size_from_full_name( $file ) {
 		$file_name = preg_replace( '/^(.+)\-\d+x\d+(\.\w+)$/', '$1$2', $file );
 		$file_name = preg_replace( '/^[\s\S]+(\/.+)$/', '$1', $file_name );
@@ -138,5 +201,4 @@ class WPML_Attachment_Action implements IWPML_Action {
 
 		return $file_name;
 	}
-
 }

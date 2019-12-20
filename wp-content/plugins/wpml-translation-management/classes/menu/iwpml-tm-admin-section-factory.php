@@ -3,7 +3,9 @@
 interface IWPML_TM_Admin_Section_Factory {
 
 	/**
-	 * @return WPML_TM_Admin_Section
+	 * Returns an instance of a class implementing \IWPML_TM_Admin_Section.
+	 *
+	 * @return \IWPML_TM_Admin_Section
 	 */
 	public function create();
 }

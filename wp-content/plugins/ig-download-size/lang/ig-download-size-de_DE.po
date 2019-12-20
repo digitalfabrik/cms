@@ -1,0 +1,8 @@
+msgid "Download Size"
+msgstr "Download Größe"
+
+msgid "Integreat Mobile App Download Size"
+msgstr "Integreat Mobile App Download-Größe"
+
+msgid "Loading"
+msgstr "Lade"

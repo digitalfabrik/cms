@@ -22,23 +22,22 @@ class WPML_TM_Translatable_Element_Provider {
 	}
 
 	/**
-	 * @param WPML_Translation_Job $job
+	 * @param WPML_TM_Job_Entity $job
 	 *
 	 * @return null|WPML_TM_Package_Element|WPML_TM_Post|WPML_TM_String
 	 */
-	public function get_from_job( WPML_Translation_Job $job ) {
+	public function get_from_job( WPML_TM_Job_Entity $job ) {
 		$id = $job->get_original_element_id();
 
-		if ( $job instanceof WPML_Post_Translation_Job ) {
-			return new WPML_TM_Post( $id, $this->word_count_records, $this->single_process );
-		}
+		switch ( $job->get_type() ) {
+			case WPML_TM_Job_Entity::POST_TYPE:
+				return $this->get_post( $id );
 
-		if ( $job instanceof WPML_String_Translation_Job ) {
-			return new WPML_TM_String( $id, $this->word_count_records, $this->single_process );
-		}
+			case WPML_TM_Job_Entity::STRING_TYPE:
+				return $this->get_string( $id );
 
-		if ( $job instanceof WPML_External_Translation_Job ) {
-			return new WPML_TM_Package_Element( $id, $this->word_count_records, $this->single_process, $this->st_package_factory );
+			case WPML_TM_Job_Entity::PACKAGE_TYPE:
+				return $this->get_package( $id );
 		}
 
 		return null;
@@ -53,15 +52,42 @@ class WPML_TM_Translatable_Element_Provider {
 	public function get_from_type( $type, $id ) {
 		switch ( $type ) {
 			case 'post':
-				return new WPML_TM_Post( $id, $this->word_count_records, $this->single_process );
+				return $this->get_post( $id );
 
 			case 'string':
-				return new WPML_TM_String( $id, $this->word_count_records, $this->single_process );
+				return $this->get_string( $id );
 
 			case 'package':
-				return new WPML_TM_Package_Element( $id, $this->word_count_records, $this->single_process, $this->st_package_factory );
+				return $this->get_package( $id );
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return WPML_TM_Post
+	 */
+	private function get_post( $id ) {
+		return new WPML_TM_Post( $id, $this->word_count_records, $this->single_process );
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return WPML_TM_String
+	 */
+	private function get_string( $id ) {
+		return new WPML_TM_String( $id, $this->word_count_records, $this->single_process );
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return WPML_TM_Package_Element
+	 */
+	private function get_package( $id ) {
+		return new WPML_TM_Package_Element( $id, $this->word_count_records, $this->single_process, $this->st_package_factory );
 	}
 }

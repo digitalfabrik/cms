@@ -1,6 +1,6 @@
 <?php
 
-class WPML_Translator_Settings extends WPML_TM_Translators_View {
+class WPML_Translator_Settings extends WPML_TM_Translators_View implements WPML_Translator_Settings_Interface {
 
 	public function get_twig_template() {
 		return 'translators.twig';

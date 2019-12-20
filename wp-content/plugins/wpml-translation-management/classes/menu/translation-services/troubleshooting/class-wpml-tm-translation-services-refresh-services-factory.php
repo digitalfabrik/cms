@@ -9,13 +9,21 @@ class WPML_TM_Translation_Services_Refresh_Services_Factory implements IWPML_Bac
 		$hooks = null;
 
 		if ( $this->is_visible() ) {
-			$template_service = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/menus/translation-services' ) );
-			$tp_client_factory = new WPML_TP_Client_Factory();
-			$tp_client = $tp_client_factory->create();
-			$hooks = new WPML_TM_Translation_Services_Refresh( $template_service->get_template(), $tp_client->services() );
+			$hooks = $this->create_an_instance();
 		}
 
 		return $hooks;
+	}
+
+	/**
+	 * @return WPML_TM_Translation_Services_Refresh
+	 */
+	public function create_an_instance() {
+		$template_service = new WPML_Twig_Template_Loader( array( WPML_TM_PATH . '/templates/menus/translation-services' ) );
+		$tp_client_factory = new WPML_TP_Client_Factory();
+		$tp_client = $tp_client_factory->create();
+
+		return new WPML_TM_Translation_Services_Refresh( $template_service->get_template(), $tp_client->services() );
 	}
 
 	/**

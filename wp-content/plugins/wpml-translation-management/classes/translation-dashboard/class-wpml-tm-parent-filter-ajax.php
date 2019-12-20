@@ -20,7 +20,7 @@ class WPML_TM_Parent_Filter_Ajax implements IWPML_Action {
 	public function get_parents_dropdown() {
 		$current_language       = $this->sitepress->get_current_language();
 		$request_post_type      = filter_var( $_POST['type'], FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
-		$request_post_lang      = filter_var( $_POST['lang'], FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
+		$request_post_lang      = filter_var( $_POST['from_lang'], FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_NULL_ON_FAILURE );
 		$request_post_parent_id = filter_var( $_POST['parent_id'], FILTER_SANITIZE_NUMBER_INT, FILTER_NULL_ON_FAILURE );
 
 		$this->sitepress->switch_lang( $request_post_lang );
@@ -46,11 +46,11 @@ class WPML_TM_Parent_Filter_Ajax implements IWPML_Action {
 			);
 		}
 
+		$this->sitepress->switch_lang( $current_language );
+
 		if ( ! $html ) {
 			$html = esc_html__( 'None found', 'wpml-translation-management' );
 		}
-
-		$this->sitepress->switch_lang( $current_language );
 
 		wp_send_json_success( array( 'html' => $html ) );
 	}

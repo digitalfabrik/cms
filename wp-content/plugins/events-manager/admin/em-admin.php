@@ -111,7 +111,7 @@ add_action('admin_head','em_admin_dashicon');
 
 function em_ms_admin_menu(){
 	add_menu_page( __('Events Manager','events-manager'), __('Events Manager','events-manager'), 'activate_plugins', 'events-manager-options', 'em_ms_admin_options_page', 'dashicons-calendar' );
-	add_submenu_page('events-manager-options', __('Update Blogs','events-manager'),__('Update Blogs','events-manager'), 'activate_plugins', "events-manager-update", 'em_ms_upgrade');	
+	add_submenu_page('events-manager-options', __('Update Blogs','events-manager'),__('Update Blogs','events-manager'), 'activate_plugins', "events-manager-update", 'em_ms_upgrade');
 }
 add_action('network_admin_menu','em_ms_admin_menu');
 
@@ -144,7 +144,7 @@ function em_admin_warnings() {
 			update_option('dbem_hello_to_user',0);
 		}elseif ( get_option ( 'dbem_hello_to_user' ) ) {
 			//FIXME update welcome msg with good links
-			$advice = sprintf( __("<p>Events Manager is ready to go! It is highly recommended you read the <a href='%s'>Getting Started</a> guide on our site, as well as checking out the <a href='%s'>Settings Page</a>. <a href='%s' title='Don't show this advice again'>Dismiss</a></p>", 'events-manager'), 'http://wp-events-plugin.com/documentation/getting-started-guide/?utm_source=em&utm_medium=plugin&utm_content=installationlink&utm_campaign=plugin_links', EM_ADMIN_URL .'&amp;page=events-manager-options',  $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'disable_hello_to_user=true');
+			$advice = sprintf( __("<p>Events Manager is ready to go! It is highly recommended you read the <a href='%s'>Getting Started</a> guide on our site, as well as checking out the <a href='%s'>Settings Page</a>. <a href='%s' title='Don't show this advice again'>Dismiss</a></p>", 'events-manager'), 'http://wp-events-plugin.com/documentation/getting-started-guide/?utm_source=em&utm_medium=plugin&utm_content=installationlink&utm_campaign=plugin_links', EM_ADMIN_URL .'&amp;page=events-manager-options', esc_url($_SERVER['REQUEST_URI'].$dismiss_link_joiner.'disable_hello_to_user=true'));
 			?>
 			<div id="message" class="updated">
 				<?php echo $advice; ?>
@@ -159,9 +159,9 @@ function em_admin_warnings() {
 			if ( !get_page($events_page_id) && !get_option('dbem_dismiss_events_page') ){
 				?>
 				<div id="em_page_error" class="updated">
-					<p><?php echo sprintf ( __( 'Uh Oh! For some reason WordPress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">settings page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'events-manager'), EM_ADMIN_URL .'&amp;page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' ); ?></p>
+					<p><?php echo sprintf ( __( 'Uh Oh! For some reason WordPress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">settings page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'events-manager'), EM_ADMIN_URL .'&amp;page=events-manager-options', esc_url($_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1') ); ?></p>
 				</div>
-				<?php		
+				<?php
 			}
 		}
 		
@@ -179,7 +179,7 @@ function em_admin_warnings() {
 			}else{
 				?>
 				<div id="em_page_error" class="updated">
-					<p><?php echo sprintf(__('MultiSite options have moved <a href="%s">here</a>. <a href="%s">Dismiss message</a>','events-manager'),admin_url().'network/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].'&amp;disable_dbem_ms_update_nag=1'); ?></p>
+					<p><?php echo sprintf(__('MultiSite options have moved <a href="%s">here</a>. <a href="%s">Dismiss message</a>','events-manager'),admin_url().'network/admin.php?page=events-manager-options', esc_url($_SERVER['REQUEST_URI'].'&amp;disable_dbem_ms_update_nag=1')); ?></p>
 				</div>
 				<?php
 			}

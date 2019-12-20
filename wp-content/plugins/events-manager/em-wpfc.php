@@ -240,7 +240,7 @@ function wpfc_em_ajax() {
 function wpfc_em_qtip_content( $content='' ){
 	if( !empty($_REQUEST['event_id'] ) && trim(get_option('dbem_emfc_qtips_format')) != '' ){
 		global $EM_Event;
-		$EM_Event = em_get_event($_REQUEST['event_id']);
+		$EM_Event = em_get_event( absint($_REQUEST['event_id']) );
 		if( !empty($EM_Event->event_id) ){
 			$content = $EM_Event->output(get_option('dbem_emfc_qtips_format', '#_EXCERPT'));
 		}

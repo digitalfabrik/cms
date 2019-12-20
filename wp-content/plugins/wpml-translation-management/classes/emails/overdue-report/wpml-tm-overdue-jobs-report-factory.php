@@ -6,7 +6,7 @@ class WPML_TM_Overdue_Jobs_Report_Factory {
 		global $wpdb, $iclTranslationManagement, $sitepress;
 
 		$jobs_collection                = new WPML_Translation_Jobs_Collection( $wpdb, array() );
-		$email_template_service_factory = new WPML_TM_Email_Twig_Template_Factory();
+		$email_template_service_factory = wpml_tm_get_email_twig_template_factory();
 		$report_email_view              = new WPML_TM_Email_Notification_View( $email_template_service_factory->create() );
 		$has_active_remote_service      = TranslationProxy::is_current_service_active_and_authenticated();
 		$notification_settings          = $iclTranslationManagement->settings['notification'];

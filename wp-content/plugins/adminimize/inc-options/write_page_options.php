@@ -120,20 +120,20 @@ if ( ! function_exists( 'add_action' ) ) {
 				$metaboxes_page       = array_merge( $metaboxes_page, $quickedit_page_areas );
 
 				$metaboxes_names_page = array(
-					esc_attr__( 'Help' ),
-					esc_attr__( 'Screen Options' ),
-					esc_attr__( 'Add New' ),
+					esc_attr__( 'Help', 'adminimize' ),
+					esc_attr__( 'Screen Options', 'adminimize' ),
+					esc_attr__( 'Add New', 'adminimize' ),
 					esc_attr__( 'Title', 'adminimize' ),
 					esc_attr__( 'Permalink', 'adminimize' ),
-					esc_attr__( 'Custom Fields' ),
+					esc_attr__( 'Custom Fields', 'adminimize' ),
 					esc_attr__( 'Comments &amp; Pings', 'adminimize' ),
-					esc_attr__( 'Date' ),
+					esc_attr__( 'Date', 'adminimize' ),
 					esc_attr__( 'Password Protect This Page', 'adminimize' ),
 					esc_attr__( 'Attributes', 'adminimize' ),
 					esc_attr__( 'Page Template', 'adminimize' ),
 					esc_attr__( 'Page Order', 'adminimize' ),
-					esc_attr__( 'Page Author' ),
-					esc_attr__( 'Page Revisions' ),
+					esc_attr__( 'Page Author', 'adminimize' ),
+					esc_attr__( 'Page Revisions', 'adminimize' ),
 					esc_attr__( 'Related', 'adminimize' ),
 					esc_attr__( 'Messages', 'adminimize' ),
 					esc_attr__( 'h2: Advanced Options', 'adminimize' ),
@@ -270,7 +270,7 @@ if ( ! function_exists( 'add_action' ) ) {
 				); ?> &raquo;" /><input type="hidden" name="page_options" value="'dofollow_timeout'" />
 			</p>
 			<p>
-				<a class="alignright button" href="javascript:void(0);" onclick="window.scrollTo(0,0);" style="margin:3px 0 0 30px;"><?php esc_attr_e(
+                <a class="alignright button adminimize-scroltop" href="#" style="margin:3px 0 0 30px;"><?php esc_attr_e(
 						'scroll to top', 'adminimize'
 					); ?></a><br class="clear" /></p>
 

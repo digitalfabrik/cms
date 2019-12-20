@@ -40,7 +40,7 @@ class WPML_TM_Emails_Settings {
 				'label_include_xliff' => __( 'Include XLIFF files in the notification emails', 'wpml-translation-management' ),
 				'label_resigned_job' => __( 'Notify translators when they are removed from jobs', 'wpml-translation-management' ),
 				'section_title_manager' => __( 'Notification emails to the translation manager', 'wpml-translation-management' ),
-				'label_completed_job' => esc_html__( 'Notify the translation manager when jobs complete %s', 'wpml-translation-management' ),
+				'label_completed_job' => esc_html__( 'Notify the translation manager when jobs are completed %s', 'wpml-translation-management' ),
 				'label_overdue_job' => esc_html__( 'Notify the translation manager when jobs are late by %s days', 'wpml-translation-management' ),
 			),
 			'settings' => array(

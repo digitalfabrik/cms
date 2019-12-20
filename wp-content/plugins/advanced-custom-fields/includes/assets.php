@@ -160,12 +160,24 @@ class ACF_Assets {
 		if( $args['uploader'] ) {
 			add_action($actions['admin_footer'], 'acf_enqueue_uploader', 5);
 		}
+	}
+	
+	
+	/**
+	*  admin_enqueue_scripts
+	*
+	*  description
+	*
+	*  @date	16/4/18
+	*  @since	5.6.9
+	*
+	*  @param	type $var Description. Default.
+	*  @return	type Description.
+	*/
+	
+	function admin_enqueue_scripts() {
 		
-		// enqueue
-		wp_enqueue_script('acf-input');
-		wp_enqueue_style('acf-input');
-		
-		// localize text
+		// Localize text.
 		acf_localize_text(array(
 			
 			// unload
@@ -205,31 +217,20 @@ class ACF_Assets {
 			'Value is less than'		=> __('Value is less than', 'acf'),
 			'Selection is greater than'	=> __('Selection is greater than', 'acf'),
 			'Selection is less than'	=> __('Selection is less than', 'acf'),
+			
+			// misc
+			'Edit field group'	=> __('Edit field group', 'acf'),
 		));
 		
-		// action
-		do_action('acf/enqueue_scripts');
-	}
-	
-	
-	/**
-	*  admin_enqueue_scripts
-	*
-	*  description
-	*
-	*  @date	16/4/18
-	*  @since	5.6.9
-	*
-	*  @param	type $var Description. Default.
-	*  @return	type Description.
-	*/
-	
-	function admin_enqueue_scripts() {
+		// enqueue
+		wp_enqueue_script('acf-input');
+		wp_enqueue_style('acf-input');
 		
 		// vars
 		$text = array();
 		
 		// actions
+		do_action('acf/enqueue_scripts');
 		do_action('acf/admin_enqueue_scripts');
 		do_action('acf/input/admin_enqueue_scripts');
 		
@@ -313,7 +314,8 @@ class ACF_Assets {
 			'acf_version'	=> acf_get_setting('version'),
 			'browser'		=> acf_get_browser(),
 			'locale'		=> acf_get_locale(),
-			'rtl'			=> is_rtl()
+			'rtl'			=> is_rtl(),
+			'editor'		=> acf_is_block_editor() ? 'block' : 'classic'
 		));
 		
 		// get l10n (old)

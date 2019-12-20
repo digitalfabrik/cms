@@ -26,8 +26,8 @@ class WPML_Support_Info_UI {
 	/** @return array */
 	private function get_model() {
 		$minimum_required_memory         = '128M';
-		$minimum_required_php_version    = '5.3';
-		$minimum_recommended_php_version = '5.6';
+		$minimum_required_php_version    = '5.6';
+		$minimum_recommended_php_version = '7.3';
 		$minimum_required_wp_version     = '3.9.0';
 
 		$php_version        = $this->support_info->get_php_version();
@@ -47,8 +47,8 @@ class WPML_Support_Info_UI {
 						'value'      => $php_version,
 						'url'        => 'http://php.net/supported-versions.php',
 						'messages'   => array(
-							__( 'PHP 5.6 and above are recommended. PHP 5.3 is the minimum requirement.', 'sitepress' ) => 'https://wpml.org/home/minimum-requirements/',
-							__( 'Find how you can update PHP.', 'sitepress' )                                           => 'http://www.wpupdatephp.com/update/',
+							sprintf( __( 'PHP %1$s and above are recommended. PHP %2$s is the minimum requirement.', 'sitepress' ), $minimum_recommended_php_version, $minimum_required_php_version ) => 'https://wpml.org/home/minimum-requirements/',
+							__( 'Find how you can update PHP.', 'sitepress' )                                                                                                                         => 'http://www.wpupdatephp.com/update/',
 						),
 						'is_error'   => $this->support_info->is_version_less_than( $minimum_required_php_version, $php_version ),
 						'is_warning' => $this->support_info->is_version_less_than( $minimum_recommended_php_version, $php_version ),
@@ -58,7 +58,7 @@ class WPML_Support_Info_UI {
 						'value'    => $php_memory_limit,
 						'url'      => 'http://php.net/manual/ini.core.php#ini.memory-limit',
 						'messages' => array(
-							__( 'A memory limit of at least 128MB is required.', 'sitepress' ) => 'https://wpml.org/home/minimum-requirements/',
+							sprintf( __( 'A memory limit of at least %s is required.', 'sitepress' ), $minimum_required_memory ) => 'https://wpml.org/home/minimum-requirements/',
 						),
 						'is_error' => $this->support_info->is_memory_less_than( $minimum_required_memory, $php_memory_limit ),
 					),

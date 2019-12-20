@@ -5,13 +5,24 @@
  */
 class EM_Object {
 	var $fields = array();
+	/**
+	 * @var array Associative array of shortname => property names for this object. For example, an EM_Event object will have a 'language' key to 'event_language' value.
+	 */
+	protected $shortnames = array();
 	var $required_fields = array();
 	var $feedback_message = "";
 	var $errors = array();
 	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
 	
 	private static $taxonomies_array; //see self::get_taxonomies()
-	protected static $context = 'event'; //this should be overridden to the db table name for deciding on ambiguous fields to look up 
+	
+	/**
+	 * Provides context in searches where ambiguous field names may coincide between event and location database searches requiring a specific field name for each type.
+	 * For example, status, location, taxonomy and language arguments are used interchangeably in event and location searches but both have different field names.
+	 * Child classes such as EM_Events and EM_Locations will override this field with 'event' or 'location' respectively to determine context.
+	 * @var string
+	 */
+	protected static $context = 'object_type';
 	
 	/**
 	 * Takes the array and provides a clean array of search parameters, along with details
@@ -60,7 +71,8 @@ class EM_Object {
 			'near'=>false, //lat,lng coordinates in array or comma-separated format
 			'near_unit'=>get_option('dbem_search_form_geo_unit_default'), //mi or km
 			'near_distance'=>get_option('dbem_search_form_geo_distance_default'), //distance from near coordinates - currently the default is the same as for the search form
-			'ajax'=> (defined('EM_AJAX') && EM_AJAX) //considered during pagination
+			'ajax'=> (defined('EM_AJAX') && EM_AJAX), //considered during pagination
+			'language' => null, //for language searches in ML mode
 		);
 		//auto-add taxonomies to defaults
 		foreach( self::get_taxonomies() as $item => $item_data ){ $super_defaults[$item] = false; }
@@ -119,6 +131,12 @@ class EM_Object {
 				if( !is_array($array['timezone']) ) {
 					$array['timezone'] = str_replace(' ', '', $array['timezone']);
 					$array['timezone'] = explode(',', $array['timezone']);
+				}
+			}
+			// Language
+			if( isset($array['language']) ){
+				if( $array['language'] !== false && !in_array($array['language'], EM_ML::$langs) ){
+					unset($array['language']);
 				}
 			}
 			//return clean array
@@ -188,8 +206,6 @@ class EM_Object {
 		}else{
 			$defaults['page'] = ($defaults['limit'] > 0 ) ? floor($defaults['offset']/$defaults['limit']) + 1 : 1;
 		}
-		//reset the context
-		self::$context = EM_POST_TYPE_EVENT;
 		//return values
 		return apply_filters('em_object_get_default_search', $defaults, $array, $super_defaults);
 	}
@@ -229,8 +245,8 @@ class EM_Object {
 		// e.g. if in events, search for 'publish' events and 0 location_status, it'll find events with a location pending review.
 		foreach( array('event_status', 'location_status') as $status_type ){
 			//find out whether the main status context we're after is an event or location i.e. are we running an events or location query
-			$is_location_status = $status_type == "location_status" && self::$context == EM_POST_TYPE_LOCATION;
-			$is_event_status = $status_type == "event_status" && self::$context == EM_POST_TYPE_EVENT;
+			$is_location_status = $status_type == "location_status" && static::$context == 'location';
+			$is_event_status = $status_type == "event_status" && static::$context == 'event';
 			//$is_joined_status decides whether this status we're dealing with is part of a joined table or the main table
 			$is_joined_status = (!$is_location_status || !$is_event_status) && $args[$status_type] !== false;
 			//we add a status condition if this is the main status context or if joining a table and joined status arg is not exactly false
@@ -266,7 +282,7 @@ class EM_Object {
 				$conditions['recurring'] = "`recurrence`=1";
 			}
 		}elseif( $recurrence > 0 ){
-			$conditions['recurrence'] = $wpdb->prepare("`recurrence_id`=%d", $recurrence);
+			$conditions['recurrence'] = $wpdb->prepare("(`recurrence_id`=%d AND `recurrence`!=1)", $recurrence);
 		}else{
 			//we choose to either exclusively show or completely omit recurrences, if not set then both are shown
 		    if( $recurrences !== null ){
@@ -390,7 +406,7 @@ class EM_Object {
 		}
 		
 		//Filter by Location - can be object, array, or id
-		$location_id_table = self::$context == EM_POST_TYPE_EVENT ? $events_table:$locations_table;
+		$location_id_table = static::$context == 'event' ? $events_table:$locations_table;
 		if ( is_numeric($location) && $location > 0 ) { //Location ID takes precedence
 			$conditions['location'] = " {$location_id_table}.location_id = $location";
 		}elseif ( $location === 0 ) { //only helpful is searching events
@@ -526,7 +542,7 @@ class EM_Object {
 					    //figure out context - what table/field to search
 					    $post_context = EM_EVENTS_TABLE.".post_id";
 					    $ms_context = EM_EVENTS_TABLE.".event_id";
-					    if( !empty($tax_data['context']) && self::$context == EM_POST_TYPE_LOCATION && in_array( self::$context, $tax_data['context']) ){
+					    if( !empty($tax_data['context']) && static::$context == 'location' && in_array( static::$context, $tax_data['context']) ){
 					        //context can be either locations or events, since those are the only two CPTs we deal with
 						    $post_context = EM_LOCATIONS_TABLE.".post_id";
 						    $ms_context = EM_LOCATIONS_TABLE.".event_id";
@@ -585,8 +601,15 @@ class EM_Object {
 		}elseif( self::array_is_numeric($owner) ){
 			$conditions['owner'] = 'event_owner IN ('.implode(',',$owner).')';
 		}
-		//reset the context
-		self::$context = EM_POST_TYPE_EVENT;
+		
+		// Language searches, only relevant if ML is activated via a third party plugin
+		if( EM_ML::$is_ml && $args['language'] ){ // language ignored if null or false
+			if( static::$context == 'event'){
+				$conditions['language'] = $wpdb->prepare('event_language = %s', EM_ML::$current_language);
+			}elseif( static::$context == 'location'){
+				$conditions['language'] = $wpdb->prepare('location_language = %s', EM_ML::$current_language);
+			}
+		}
 		//return values
 		return apply_filters('em_object_build_sql_conditions', $conditions);
 	}
@@ -1039,7 +1062,6 @@ class EM_Object {
 	 * @param integer $count The number of total items to paginate through
 	 * @param string $search_action The name of the action query var used to trigger a search - used in AJAX requests and normal searches
 	 * @param array $default_args The default arguments and values this object accepts, used to compare against $args to create a querystring
-	 * @param array $accepted_args Variables that can be passed on via a querystring and should be added to pagination links, objects should make use of this since the default may be EM_Object::get_default_search() due to late static binding issues
 	 * @return string
 	 * @uses em_paginate()
 	 */
@@ -1090,6 +1112,34 @@ class EM_Object {
 		return $return;
 	}
 	
+	public function __get( $shortname ){
+		if( !empty($this->shortnames[$shortname]) ){
+			$property = $this->shortnames[$shortname];
+			return $this->{$property};
+		}
+		return null;
+	}
+	
+	public function __set($prop, $val ){
+		if( !empty($this->shortnames[$prop]) ){
+			$property = $this->shortnames[$prop];
+			if( !empty($this->fields[$property]['type']) && $this->fields[$property]['type'] == '%d' ){
+				$val = absint($val);
+			}
+			$this->{$property} = $val;
+		}else{
+			$this->{$prop} = $val;
+		}
+	}
+	
+	public function __isset( $prop ){
+		if( !empty($this->shortnames[$prop]) ){
+			$property = $this->shortnames[$prop];
+			return !empty($this->{$property});
+		}
+		return !empty($this->{$prop});
+	}
+	
 	/**
 	 * Returns the id of a particular object in the table it is stored, be it Event (event_id), Location (location_id), Tag, Booking etc.
 	 * @return int 
@@ -1106,8 +1156,6 @@ class EM_Object {
 	            return $this->term_id;
 	        case 'EM_Ticket':
 	            return $this->ticket_id;
-	        case 'EM_Ticket_Booking':
-	            return $this->ticket_booking_id;
 	        case 'EM_Ticket_Booking':
 	            return $this->ticket_booking_id;
 	    }
@@ -1269,7 +1317,11 @@ class EM_Object {
 			$return = array();
 			foreach($this->fields as $fieldName => $fieldArray){
 				if($inverted_array){
-					$return[$fieldArray['name']] = $fieldName;
+					if( !empty($fieldArray['name']) ){
+						$return[$fieldArray['name']] = $fieldName;
+					}else{
+						$return[$fieldName] = $fieldName;
+					}
 				}else{
 					$return[$fieldName] = $fieldArray['name'];
 				}

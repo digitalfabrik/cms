@@ -2,7 +2,7 @@
 
 function em_install() {
 	global $wp_rewrite;
-	EM_ML::switch_to_lang(EM_ML::$wplang); //switch to blog language (if applicable)
+	switch_to_locale(EM_ML::$wplang); //switch to blog language (if applicable)
    	$wp_rewrite->flush_rules();
 	$old_version = get_option('dbem_version');
 	//Won't upgrade <4.300 anymore
@@ -25,6 +25,7 @@ function em_install() {
 				em_create_tickets_table();
 				em_create_tickets_bookings_table();
 		 		delete_option('em_ms_global_install'); //in case for some reason the user changed global settings
+			    add_action('em_ml_init', 'EM_ML::toggle_languages_index');
 		 	}else{
 		 		update_option('em_ms_global_install',1); //in case for some reason the user changes global settings in the future
 		 	}	
@@ -42,6 +43,7 @@ function em_install() {
 			em_set_capabilities();
 			em_add_options();
 			em_upgrade_current_installation();
+			do_action('events_manager_updated', $old_version );
 			//Update Version
 		  	update_option('dbem_version', EM_VERSION);
 			delete_option('dbem_upgrade_throttle');
@@ -60,7 +62,7 @@ function em_install() {
 			return;
 		}
 	}
-	EM_ML::restore_current_lang(); //now that we're done, switch back to current language (if applicable)
+	restore_previous_locale(); //now that we're done, switch back to current language (if applicable)
 }
 
 /**
@@ -133,30 +135,31 @@ function em_create_events_table() {
 	$sql = "CREATE TABLE ".$table_name." (
 		event_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		post_id bigint(20) unsigned NOT NULL,
+		event_parent bigint(20) unsigned NULL DEFAULT NULL,
 		event_slug VARCHAR( 200 ) NULL DEFAULT NULL,
 		event_owner bigint(20) unsigned DEFAULT NULL,
-		event_status int(1) NULL DEFAULT NULL,
+		event_status tinyint(1) unsigned NULL DEFAULT NULL,
 		event_name text NULL DEFAULT NULL,
 		event_start_date date NULL DEFAULT NULL,
 		event_end_date date NULL DEFAULT NULL,
 		event_start_time time NULL DEFAULT NULL,
 		event_end_time time NULL DEFAULT NULL,
- 		event_all_day int(1) NULL DEFAULT NULL,
+ 		event_all_day tinyint(1) unsigned NULL DEFAULT NULL,
 		event_start datetime NULL DEFAULT NULL,
 		event_end datetime NULL DEFAULT NULL,
 		event_timezone tinytext NULL DEFAULT NULL,
 		post_content longtext NULL DEFAULT NULL,
-		event_rsvp bool NOT NULL DEFAULT 0,
+		event_rsvp tinyint(1) unsigned NOT NULL DEFAULT 0,
 		event_rsvp_date date NULL DEFAULT NULL,
 		event_rsvp_time time NULL DEFAULT NULL,
 		event_rsvp_spaces int(5) NULL DEFAULT NULL,
 		event_spaces int(5) NULL DEFAULT 0,
-		event_private bool NOT NULL DEFAULT 0,
+		event_private tinyint(1) unsigned NOT NULL DEFAULT 0,
 		location_id bigint(20) unsigned NULL DEFAULT NULL,
 		recurrence_id bigint(20) unsigned NULL DEFAULT NULL,
   		event_date_created datetime NULL DEFAULT NULL,
   		event_date_modified datetime NULL DEFAULT NULL,
-		recurrence bool NULL DEFAULT 0,
+		recurrence tinyint(1) unsigned NULL DEFAULT 0,
 		recurrence_interval int(4) NULL DEFAULT NULL,
 		recurrence_freq tinytext NULL DEFAULT NULL,
 		recurrence_byday tinytext NULL DEFAULT NULL,
@@ -165,6 +168,8 @@ function em_create_events_table() {
 		recurrence_rsvp_days int(3) NULL DEFAULT NULL,
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
 		group_id bigint(20) unsigned NULL DEFAULT NULL,
+		event_language varchar(14) NULL DEFAULT NULL,
+		event_translation tinyint(1) unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY  (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 
@@ -229,6 +234,7 @@ function em_create_locations_table() {
 		location_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		post_id bigint(20) unsigned NOT NULL,
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
+		location_parent bigint(20) unsigned NULL DEFAULT NULL,
 		location_slug VARCHAR( 200 ) NULL DEFAULT NULL,
 		location_name text NULL DEFAULT NULL,
 		location_owner bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -238,11 +244,13 @@ function em_create_locations_table() {
 		location_postcode VARCHAR( 10 ) NULL DEFAULT NULL,
 		location_region VARCHAR( 200 ) NULL DEFAULT NULL,
 		location_country CHAR( 2 ) NULL DEFAULT NULL,
-		location_latitude FLOAT( 10, 6 ) NULL DEFAULT NULL,
-		location_longitude FLOAT( 10, 6 ) NULL DEFAULT NULL,
+		location_latitude DECIMAL( 9, 6 ) NULL DEFAULT NULL,
+		location_longitude DECIMAL( 9, 6 ) NULL DEFAULT NULL,
 		post_content longtext NULL DEFAULT NULL,
 		location_status int(1) NULL DEFAULT NULL,
-		location_private bool NOT NULL DEFAULT 0,
+		location_private tinyint(1) unsigned NOT NULL DEFAULT 0,
+		location_language varchar(14) NULL DEFAULT NULL,
+		location_translation tinyint(1) unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY  (location_id)
 		) DEFAULT CHARSET=utf8 ;";
 
@@ -324,6 +332,7 @@ function em_create_tickets_table() {
 		ticket_members_roles LONGTEXT NULL,
 		ticket_guests INT( 1 ) NULL ,
 		ticket_required INT( 1 ) NULL ,
+		ticket_parent BIGINT( 20 ) UNSIGNED NULL,
 		ticket_meta LONGTEXT NULL,
 		PRIMARY KEY  (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -634,6 +643,8 @@ function em_add_options() {
 		'dbem_rsvp_mail_SMTPAuth' => 1,
 		'dbem_smtp_html' => 1,
 		'dbem_smtp_html_br' => 1,
+		'dbem_smtp_encryption' => 'tls',
+		'dbem_smtp_autotls' => true,
 		//Image Manipulation
 		'dbem_image_max_width' => 700,
 		'dbem_image_max_height' => 700,
@@ -1090,6 +1101,25 @@ function em_upgrade_current_installation(){
 		$message2 = sprintf($message2, '<a href="https://wp-events-plugin.com/documentation/google-maps/api-usage/?utm_source=plugin&utm_source=medium=settings&utm_campaign=gmaps-update">'.esc_html__('documentation', 'events-manager') .'</a>');
 		$EM_Admin_Notice = new EM_Admin_Notice(array( 'name' => 'gdpr_update', 'who' => 'admin', 'where' => 'all', 'message' => "<p>$message</p><p>$message2</p>" ));
 		EM_Admin_Notices::add($EM_Admin_Notice, is_multisite());
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.9618 ){
+		$multisite_cond = '';
+		if( EM_MS_GLOBAL ){
+			if( is_main_site() ){
+				$multisite_cond = ' AND (blog_id='.absint(get_current_blog_id()).' OR blog_id=0)';
+			}else{
+				$multisite_cond = ' AND blog_id='.absint(get_current_blog_id());
+			}
+		}
+		$wpdb->query( $wpdb->prepare('UPDATE '.EM_EVENTS_TABLE.' SET event_language=%s WHERE event_language IS NULL'.$multisite_cond, EM_ML::$wplang) );
+		$wpdb->query( $wpdb->prepare('UPDATE '.EM_LOCATIONS_TABLE.' SET location_language=%s WHERE location_language IS NULL'.$multisite_cond, EM_ML::$wplang) );
+		$host = get_option('dbem_smtp_host');
+		//if port is supplied via the host address, give that precedence over the port setting
+		if( preg_match('/^(tls|ssl):\/\//', $host, $host_port_matches) ){
+			update_option('dbem_smtp_encryption', $host_port_matches[1]);
+		}else{
+			update_option('dbem_smtp_encryption', 0);
+		}
 	}
 }
 

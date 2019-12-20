@@ -3,8 +3,8 @@ class EM_Ticket extends EM_Object{
 	//DB Fields
 	var $ticket_id;
 	var $event_id;
-	var $ticket_name;
-	var $ticket_description;
+	protected $ticket_name;
+	protected $ticket_description;
 	var $ticket_price;
 	protected $ticket_start;
 	protected $ticket_end;
@@ -15,6 +15,7 @@ class EM_Ticket extends EM_Object{
 	var $ticket_members_roles = array();
 	var $ticket_guests = false;
 	var $ticket_required = false;
+	var $ticket_parent;
 	var $ticket_meta = array();
 	var $fields = array(
 		'ticket_id' => array('name'=>'id','type'=>'%d'),
@@ -31,6 +32,7 @@ class EM_Ticket extends EM_Object{
 		'ticket_members_roles' => array('name'=>'ticket_members_roles','type'=>'%s','null'=>1),
 		'ticket_guests' => array('name'=>'guests','type'=>'%d','null'=>1),
 		'ticket_required' => array('name'=>'required','type'=>'%d','null'=>1),
+		'ticket_parent' => array('type'=>'%d','null'=>1),
 		'ticket_meta' => array('name'=>'ticket_meta','type'=>'%s','null'=>1)			
 	);
 	//Other Vars
@@ -102,6 +104,15 @@ class EM_Ticket extends EM_Object{
 
 	
 	function __get( $var ){
+		if( $var == 'name' || $var == 'ticket_name' || $var == 'description' || $var == 'ticket_description' ){
+			$prop = $var == 'name' || $var == 'description' ? 'ticket_'.$var : $var;
+			$locale = get_locale();
+			if( EM_ML::$is_ml && !empty($this->ticket_meta['langs'][$locale][$prop]) ){
+				return $this->ticket_meta['langs'][EM_ML::$current_language][$prop];
+			}else{
+				return $this->{$prop};
+			}
+		}
 	    if( $var == 'ticket_start' || $var == 'ticket_end' ){
 	    	return $this->$var;
 	    }
@@ -113,15 +124,18 @@ class EM_Ticket extends EM_Object{
 	    	if( !$this->end()->valid ) return 0;
 	    	return $this->end()->getTimestampWithOffset();
 	    }
-	    return null;
+	    return parent::__get( $var );
 	}
 	
 	public function __set( $prop, $val ){
+		if( $prop == 'name' || $prop == 'description' ){
+			$prop = 'ticket_'.$prop;
+		}
 		if( $prop == 'ticket_start' ){
-			$this->$prop = $val;
+			$this->{$prop} = $val;
 			$this->start = false;
 		}elseif( $prop == 'ticket_end' ){
-			$this->$prop = $val;
+			$this->{$prop} = $val;
 			$this->end = false;
 		}
 		//These are deprecated and should not be used. Either use the class start() or end() equivalent methods
@@ -134,9 +148,9 @@ class EM_Ticket extends EM_Object{
 			$EM_DateTime = new EM_DateTime( $val, $this->get_event()->get_timezone() );
 			if( !$EM_DateTime->valid ) return false;
 			$when_prop = 'ticket_'.$prop;
-			$this->$when_prop = $EM_DateTime->getDateTime();
+			$this->{$when_prop} = $EM_DateTime->getDateTime();
 		}
-		$this->$prop = $val;
+		parent::__set( $prop, $val );
 	}
 	
 	public function __isset( $prop ){
@@ -146,6 +160,11 @@ class EM_Ticket extends EM_Object{
 		}elseif( $prop == 'ticket_end' || $prop == 'end_timestamp' ){
 			return !empty($this->ticket_end);
 		}
+		if( $prop == 'name' || $prop == 'ticket_name' || $prop == 'description' || $prop == 'ticket_description' ){
+			$prop = $prop == 'name' || $prop == 'description' ? 'ticket_'.$prop : $prop;
+			return !empty($this->{$prop});
+		}
+		return parent::__isset( $prop );
 	}
 	
 	function get_notes(){
@@ -192,7 +211,7 @@ class EM_Ticket extends EM_Object{
 				$result = $wpdb->query($sql);
 				$this->feedback_message = __('Changes saved','events-manager');
 			}else{
-				//TODO better error handling
+				if( isset($data['ticket_id']) && empty($data['ticket_id']) ) unset($data['ticket_id']);
 				$result = $wpdb->insert($table, $data, $this->get_types($data));
 			    $this->ticket_id = $wpdb->insert_id;
 				$this->feedback_message = __('Ticket created','events-manager'); 
@@ -222,16 +241,22 @@ class EM_Ticket extends EM_Object{
 		    $post = $_REQUEST;
 		}
 		do_action('em_ticket_get_post_pre', $this, $post);
-		$this->ticket_id = ( !empty($post['ticket_id']) && is_numeric($post['ticket_id']) ) ? $post['ticket_id']:'';
-		$this->event_id = ( !empty($post['event_id']) && is_numeric($post['event_id']) ) ? $post['event_id']:'';
+		$this->ticket_id = ( !empty($post['ticket_id']) && is_numeric($post['ticket_id']) ) ? absint($post['ticket_id']):'';
+		$this->event_id = ( !empty($post['event_id']) && is_numeric($post['event_id']) ) ? absint($post['event_id']):'';
 		$this->ticket_name = ( !empty($post['ticket_name']) ) ? wp_kses_data(wp_unslash($post['ticket_name'])):'';
 		$this->ticket_description = ( !empty($post['ticket_description']) ) ? wp_kses(wp_unslash($post['ticket_description']), $allowedposttags):'';
 		//spaces and limits
-		$this->ticket_min = ( !empty($post['ticket_min']) && is_numeric($post['ticket_min']) ) ? $post['ticket_min']:'';
-		$this->ticket_max = ( !empty($post['ticket_max']) && is_numeric($post['ticket_max']) ) ? $post['ticket_max']:'';
-		$this->ticket_spaces = ( !empty($post['ticket_spaces']) && is_numeric($post['ticket_spaces']) ) ? $post['ticket_spaces']:10;
+		$this->ticket_min = ( !empty($post['ticket_min']) && is_numeric($post['ticket_min']) ) ? absint($post['ticket_min']):'';
+		$this->ticket_max = ( !empty($post['ticket_max']) && is_numeric($post['ticket_max']) ) ? absint($post['ticket_max']):'';
+		$this->ticket_spaces = ( !empty($post['ticket_spaces']) && is_numeric($post['ticket_spaces']) ) ? absint($post['ticket_spaces']):10;
+		//sort out price and un-format in the event of special decimal/thousand seperators
+		$price = ( !empty($post['ticket_price']) ) ? wp_kses_data($post['ticket_price']):'';
+		if( preg_match('/^[0-9]*\.[0-9]+$/', $price) || preg_match('/^[0-9]+$/', $price) ){
+			$this->ticket_price = $price;
+		}else{
+			$this->ticket_price = str_replace( array( get_option('dbem_bookings_currency_thousands_sep'), get_option('dbem_bookings_currency_decimal_point') ), array('','.'), $price );
+		}
 		//Sort out date/time limits
-		$this->ticket_price = ( !empty($post['ticket_price']) ) ? wp_kses_data($post['ticket_price']):'';
 		$this->ticket_start = ( !empty($post['ticket_start']) ) ? wp_kses_data($post['ticket_start']):'';
 		$this->ticket_end = ( !empty($post['ticket_end']) ) ? wp_kses_data($post['ticket_end']):'';
 		$start_time = !empty($post['ticket_start_time']) ? $post['ticket_start_time'] : $this->get_event()->start()->format('H:i');
@@ -256,29 +281,19 @@ class EM_Ticket extends EM_Object{
 			if( empty($this->ticket_meta['recurrences']) ){
 				$this->ticket_meta['recurrences'] = array('start_days'=>false, 'start_time'=>false, 'end_days'=>false, 'end_time'=>false);
 			}
-			//start of ticket cut-off
-			if( array_key_exists('ticket_start_recurring_days', $post) && is_numeric($post['ticket_start_recurring_days']) ){
-				if( !empty($post['ticket_start_recurring_when']) && $post['ticket_start_recurring_when'] == 'after' ){
-					$this->ticket_meta['recurrences']['start_days'] = absint($post['ticket_start_recurring_days']);
-				}else{ //by default the start date is the point of reference
-					$this->ticket_meta['recurrences']['start_days'] = absint($post['ticket_start_recurring_days']) * -1;
+			foreach( array('start', 'end') as $start_or_end ){
+				//start/end of ticket cut-off
+				if( array_key_exists('ticket_'.$start_or_end.'_recurring_days', $post) && is_numeric($post['ticket_'.$start_or_end.'_recurring_days']) ){
+					if( !empty($post['ticket_'.$start_or_end.'_recurring_when']) && $post['ticket_'.$start_or_end.'_recurring_when'] == 'after' ){
+						$this->ticket_meta['recurrences'][$start_or_end.'_days'] = absint($post['ticket_'.$start_or_end.'_recurring_days']);
+					}else{ //by default the start/end date is the point of reference
+						$this->ticket_meta['recurrences'][$start_or_end.'_days'] = absint($post['ticket_'.$start_or_end.'_recurring_days']) * -1;
+					}
+					$this->ticket_meta['recurrences'][$start_or_end.'_time'] = ( !empty($post['ticket_'.$start_or_end.'_time']) ) ? $this->sanitize_time($post['ticket_'.$start_or_end.'_time']) : $this->get_event()->$start_or_end()->format('H:i');
+				}else{
+					unset($this->ticket_meta['recurrences'][$start_or_end.'_days']);
+					unset($this->ticket_meta['recurrences'][$start_or_end.'_time']);
 				}
-				$this->ticket_meta['recurrences']['start_time'] = ( !empty($post['ticket_start_time']) ) ? $this->sanitize_time($post['ticket_start_time']) : $this->get_event()->start()->format('H:i');
-			}else{
-				unset($this->ticket_meta['recurrences']['start_days']);
-				unset($this->ticket_meta['recurrences']['start_time']);
-			}
-			//end of ticket cut-off
-			if( array_key_exists('ticket_end_recurring_days', $post) && is_numeric($post['ticket_end_recurring_days']) ){
-				if( !empty($post['ticket_end_recurring_when']) && $post['ticket_end_recurring_when'] == 'after' ){
-					$this->ticket_meta['recurrences']['end_days'] = absint($post['ticket_end_recurring_days']);
-				}else{ //by default the end date is the point of reference
-					$this->ticket_meta['recurrences']['end_days'] = absint($post['ticket_end_recurring_days']) * -1;
-				}
-				$this->ticket_meta['recurrences']['end_time'] = ( !empty($post['ticket_end_time']) ) ? $this->sanitize_time($post['ticket_end_time']) : $this->get_event()->start()->format('H:i');
-			}else{
-				unset($this->ticket_meta['recurrences']['end_days']);
-				unset($this->ticket_meta['recurrences']['end_time']);
 			}
 			$this->ticket_start = $this->ticket_end = null;
 		}
@@ -300,7 +315,11 @@ class EM_Ticket extends EM_Object{
 			}
 		}
 		if( !empty($this->ticket_price) && !is_numeric($this->ticket_price) ){
-			$this->add_error(__('Please enter a valid ticket price e.g. 10.50 (no currency signs)','events-manager'));
+			$this->add_error(esc_html__('Please enter a valid ticket price e.g. 10.50 (no currency signs)','events-manager'));
+		}
+		if( !empty($this->ticket_min) && !empty($this->ticket_max) && $this->ticket_max < $this->ticket_min ) {
+			$error = esc_html__('Ticket %s has a higher minimum spaces requirement than the maximum spaces allowed.','events-manager');
+			$this->add_error( sprintf($error, '<em>'. esc_html($this->ticket_name) .'</em>'));
 		}
 		if ( count($missing_fields) > 0){
 			// TODO Create friendly equivelant names for missing fields notice in validation 
@@ -344,6 +363,8 @@ class EM_Ticket extends EM_Object{
 	
 	/**
 	 * Returns whether or not this ticket should be displayed based on availability and other ticket properties and general settings
+	 * @param bool $ignore_member_restrictions
+	 * @param bool $ignore_guest_restrictions
 	 * @return boolean
 	 */
 	function is_displayable( $ignore_member_restrictions = false, $ignore_guest_restrictions = false ){
@@ -382,6 +403,7 @@ class EM_Ticket extends EM_Object{
 	/**
 	 * Calculates how much the individual ticket costs with applicable event/site taxes included.
 	 * @param boolean $format
+	 * @return float|int|string
 	 */
 	function get_price_with_tax( $format = false ){
 	    $price = $this->get_price_without_tax() * (1 + $this->get_event()->get_tax_rate( true ));
@@ -392,6 +414,7 @@ class EM_Ticket extends EM_Object{
 	/**
 	 * Calculates how much the individual ticket costs with taxes excluded.
 	 * @param boolean $format
+	 * @return float|int|string
 	 */
 	function get_price_without_tax( $format = false ){
 	    if( $format ) return $this->format_price($this->ticket_price);
@@ -400,11 +423,18 @@ class EM_Ticket extends EM_Object{
 	
 	/**
 	 * Shows the ticket price which can contain long decimals but will show up to 2 decimal places and remove trailing 0s
-	 * For example: 10.010230 => 10.01023 and 10 => 10.00 
+	 * For example: 10.010230 => 10.01023 and 10 => 10.00
+	 * @param bool $format If true, the number is provided with localized digit separator and padded with 0, 2 or 4 digits
+	 * @return float|int|string
 	 */
-	function get_price_precise(){
+	function get_price_precise( $format = false ){
 		$price = $this->ticket_price * 1;
 		if( floor($price) == (float) $price ) $price = number_format($price, 2, '.', '');
+		if( $format ){
+			$digits = strlen(substr(strrchr($price, "."), 1));
+			$precision = ( $digits > 2 ) ? 4 : 2;
+			$price = number_format( $price, $precision, get_option('dbem_bookings_currency_decimal_point','.'), '');
+		}
 		return $price;
 	}
 		
@@ -508,6 +538,46 @@ class EM_Ticket extends EM_Object{
 	}
 	
 	/**
+	 *
+	 * @return mixed|void
+	 */
+	public function get_recurrence_ticket_ids(){
+		global $wpdb;
+		$ticket_ids = array();
+		if( $this->get_event()->is_recurring() ){
+			//try the new way, just search tickets with the recurring ticket id stored as parent
+			$sql = $wpdb->prepare('SELECT ticket_id FROM '.EM_TICKETS_TABLE." WHERE ticket_parent=%d", $this->ticket_id);
+			$ticket_ids = $wpdb->get_col($sql);
+			if( empty($ticket_ids) ){
+				$recurrence_event_ids = $wpdb->get_col('SELECT event_id FROM '.EM_EVENTS_TABLE.' WHERE recurrence_id='.absint($this->event_id));
+				if( !empty($recurrence_event_ids) ){
+					$recurrence_event_ids_sql = implode(', ', $recurrence_event_ids);
+					//we don't have the exact ID reference for each ticket, and we can't assume changes to EM save_events will reschedule previously created events in earlier versions, we need to do it this way
+					$sql_vars = array($this->ticket_name, $this->ticket_spaces);
+					$sql_prepare = 'SELECT ticket_id FROM '.EM_TICKETS_TABLE." WHERE ticket_name=%s AND ticket_spaces=%s AND event_id IN ($recurrence_event_ids_sql)";
+					if( $this->ticket_description ){
+						$sql_prepare .= ' AND ticket_description=%s';
+						$sql_vars[] = $this->ticket_description;
+					}else{
+						$sql_prepare .= ' AND ticket_description IS NULL';
+					}
+					if( $this->ticket_price ){
+						$sql_prepare .= ' AND ticket_price=%s';
+						$sql_vars[] = $this->ticket_price;
+					}else{
+						$sql_prepare .= ' AND ticket_price IS NULL';
+					}
+					$sql = $wpdb->prepare($sql_prepare, $sql_vars);
+					$ticket_ids = $wpdb->get_col($sql);
+				}
+			}
+		}
+		$ticket_ids = is_array($ticket_ids) ? $ticket_ids : array();
+		foreach( $ticket_ids as $k => $v ) $ticket_ids[$k] = absint($v); //clean for SQL usage
+		return apply_filters('em_ticket_get_recurrence_ticket_ids', $ticket_ids, $this);
+	}
+	
+	/**
 	 * I wonder what this does....
 	 * @return boolean
 	 */
@@ -524,7 +594,7 @@ class EM_Ticket extends EM_Object{
 				return false;
 			}
 		}
-		return ( $result !== false );
+		return apply_filters('em_ticket_delete', $result !== false, $this);
 	}
 
 	/**

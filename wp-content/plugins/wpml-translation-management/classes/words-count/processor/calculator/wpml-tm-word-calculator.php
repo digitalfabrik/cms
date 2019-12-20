@@ -52,6 +52,7 @@ class WPML_TM_Word_Calculator {
 		$result = html_entity_decode( $result );
 		$result = strip_tags( $result );
 		$result = trim( $result );
+		$result = $this->strip_urls( $result );
 
 		if ( $this->exclude_shortcodes_in_words_count() ) {
 			$result = strip_shortcodes( $result );
@@ -69,6 +70,15 @@ class WPML_TM_Word_Calculator {
 	 */
 	private function extract_content_in_shortcodes( $string ) {
 		return preg_replace( '#(?:\[/?)[^/\]]+/?\]#s', '', $string );
+	}
+
+	/**
+	 * @param string $string
+	 *
+	 * @return string
+	 */
+	private function strip_urls( $string ) {
+		return preg_replace( '/\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[A-Z0-9+&@#\/%=~_|$]/i', '', $string );
 	}
 
 	public static function get_asian_languages() {

@@ -16,7 +16,7 @@ add_action('admin_menu', 'example_admin_menu');
 function example_admin_menu() {
     load_plugin_textdomain( 'integreat-help', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
     global $submenu;
-    $url = 'https://wiki.integreat-app.de/';
+    $url = 'https://wiki.integreat-app.de/knowledgebase';
     $submenu['tools.php'][] = array('<div id="wikiblank">'.__('Integreat Wiki').'</div>', 'edit_pages', $url);
 }
 

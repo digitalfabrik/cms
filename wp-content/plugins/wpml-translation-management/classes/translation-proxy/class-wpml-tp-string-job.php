@@ -38,50 +38,77 @@ class WPML_TP_String_Job extends WPML_WPDB_User {
 				$strings[] = $string_data;
 			}
 			$xliff = new WPML_TM_Xliff_Writer( $this->job_factory );
-			$res   = $project->send_to_translation_batch_mode(
-				$xliff->get_strings_xliff_file( $strings, $source_language, $target_language ),
-				'String Translations',
-				'',
-				'',
-				$source_language,
-				$target_language,
-				$word_count );
+			try {
+				$tp_job_id = $project->send_to_translation_batch_mode(
+					$xliff->get_strings_xliff_file(
+						$strings,
+						$source_language,
+						$target_language
+					),
+					'String Translations',
+					'',
+					'',
+					$source_language,
+					$target_language,
+					$word_count
+				);
+			} catch ( Exception $e ) {
+				$tp_job_id = null;
+			}
 
-			if ( $res ) {
+			if ( $tp_job_id ) {
 				foreach ( $strings as $string_data ) {
 					$translation_service = TranslationProxy_Service::get_translator_data_from_wpml( $translator_id );
-					$added               = icl_add_string_translation( $string_data->id,
+					$string_translation_id               = icl_add_string_translation( $string_data->id,
 						$target_language,
 						null,
-						ICL_TM_WAITING_FOR_TRANSLATOR,
+						ICL_TM_IN_PROGRESS,
 						$translation_service['translator_id'],
 						$translation_service['translation_service'],
 						TranslationProxy_Batch::update_translation_batch(
 							$this->basket->get_name() ) );
-					if ( $added ) {
+					if ( $string_translation_id ) {
 						$data = array(
-							'rid'                   => $res,
-							'string_translation_id' => $added,
+							'rid'                   => $tp_job_id,
+							'string_translation_id' => $string_translation_id,
 							'timestamp'             => date( 'Y-m-d H:i:s' ),
 							'md5'                   => md5( $string_data->value ),
 						);
-						$this->wpdb->insert( $this->wpdb->prefix . 'icl_string_status', $data ); //insert rid
+
+						$current_rid = $this->wpdb->get_var(
+							$this->wpdb->prepare(
+								"SELECT rid FROM {$this->wpdb->prefix}icl_string_status WHERE string_translation_id=%d",
+								$string_translation_id
+							)
+						);
+						if ( $current_rid ) {
+							$this->wpdb->update( $this->wpdb->prefix . 'icl_string_status', $data, array( 'rid' => $current_rid ) );
+						} else {
+							$this->wpdb->insert( $this->wpdb->prefix . 'icl_string_status', $data ); //insert rid
+						}
+
 					}
 				}
-				$this->wpdb->insert( $this->wpdb->prefix . 'icl_core_status',
-					array(
-						'rid'    => $res,
-						'module' => '',
-						'origin' => $source_language,
-						'target' => $target_language,
-						'status' => ICL_TM_WAITING_FOR_TRANSLATOR
-					) );
 
-				if ( $project->errors && count( $project->errors ) ) {
-					$res['errors'] = $project->errors;
+				$data   = array(
+					'rid'    => $tp_job_id,
+					'module' => '',
+					'origin' => $source_language,
+					'target' => $target_language,
+					'status' => ICL_TM_IN_PROGRESS
+				);
+				if ( ! empty ( $current_rid ) ) {
+					$data['ts_status'] = null;
+					$this->wpdb->update( $this->wpdb->prefix . 'icl_core_status', $data, array( 'rid' => $current_rid ) );
+				} else {
+					$this->wpdb->insert( $this->wpdb->prefix . 'icl_core_status', $data );
 				}
 
-				return $res;
+				if ( $project->errors && count( $project->errors ) ) {
+					$tp_job_id['errors'] = $project->errors;
+				}
+
+				return $tp_job_id;
 			}
 		}
 

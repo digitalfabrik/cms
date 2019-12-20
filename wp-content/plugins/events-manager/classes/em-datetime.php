@@ -30,18 +30,23 @@ class EM_DateTime extends DateTime {
 	 * @see DateTime::__construct()
 	 * @param string $time
 	 * @param string|EM_DateTimeZone $timezone Unlike DateTime this also accepts string representation of a valid timezone, as well as UTC offsets in form of 'UTC -3' or just '-3'
+	 * @throws Exception
 	 */
-	public function __construct( $time = null, $timezone = null ){
+	public function __construct( $time = 'now', $timezone = null ){
 		//get our EM_DateTimeZone
 		$timezone = EM_DateTimeZone::create($timezone);
 		//save timezone name for use in getTimezone()
 		$this->timezone_name = $timezone->getName();
 		$this->timezone_manual_offset = $timezone->manual_offset;
 		//fix DateTime error if a regular timestamp is supplied without prepended @ symbol
-		if( is_numeric($time) ) $time = '@'.$time;
+		if( is_numeric($time) ){
+			$time = '@'.$time;
+		}elseif( is_null($time) ){
+			$time = 'now';
+		}
 		//finally, run parent function with our custom timezone
 		try{
-			@parent::__construct($time, $timezone);
+			@parent::__construct( (string) $time, $timezone);
 			if( substr($time,0,1) == '@' || $time == 'now' ) $this->setTimezone($timezone);
 			$this->valid = true; //if we get this far, supplied time is valid
 		}catch( Exception $e ){
@@ -150,7 +155,7 @@ class EM_DateTime extends DateTime {
 	
 	/**
 	 * Returns a date and time representation in the format stored in Events Manager settings.
-	 * @param string $include_hour
+	 * @param bool $include_hour
 	 * @return string
 	 */
 	public function formatDefault( $include_hour = true ){
@@ -207,7 +212,9 @@ class EM_DateTime extends DateTime {
 	/**
 	 * Sets timestamp with PHP 5.2.x fallback.
 	 * Returns EM_DateTime object in all cases, but $this->valid will be set to false if unsuccessful
+	 * @param int $timestamp
 	 * @see DateTime::setTimestamp()
+	 * @return EM_DateTime
 	 */
 	public function setTimestamp( $timestamp ){
 		if( function_exists('date_timestamp_set') ){
@@ -226,6 +233,7 @@ class EM_DateTime extends DateTime {
 	/**
 	 * Extends DateTime functionality by accepting a false or string value for a timezone. 
 	 * Returns EM_DateTime object in all cases, but $this->valid will be set to false if unsuccessful
+	 * @param string $timezone
 	 * @see DateTime::setTimezone()
 	 * @return EM_DateTime Returns object for chaining.
 	 */
@@ -258,7 +266,7 @@ class EM_DateTime extends DateTime {
 		if( $this->timezone_manual_offset !== false ){
 			$date_array = explode('-', $this->format('Y-m-d')); 
 		}
-		$return = parent::setTime( $hour, $minute, $second );
+		$return = parent::setTime( (int) $hour, (int) $minute, (int) $second );
 		$this->handleOffsets();
 		//post-handle offsets for time changes where dates change as stated above
 		if( $this->timezone_manual_offset !== false ){
@@ -278,7 +286,7 @@ class EM_DateTime extends DateTime {
 		if( $this->timezone_manual_offset !== false ){
 			//we run into issues if we're dealing with timezones on the fringe of date changes e.g. 2018-01-01 01:00:00 UTC+2
 			$DateTime = new DateTime( $this->getDateTime(), new DateTimeZone('UTC'));
-			$DateTime->setDate( $year, $month, $day ); //$this->valid is determined here
+			$DateTime->setDate( (int) $year, (int) $month, (int) $day ); //$this->valid is determined here
 			//create a new timestamp based on UTC DateTime and offset it to current timezone
 			if( function_exists('date_timestamp_get') ){
 				$timestamp = $DateTime->getTimestamp();
@@ -382,8 +390,8 @@ class EM_DateTime extends DateTime {
 	
 	/**
 	 * Fallback function for PHP versions prior to 5.3, as sub() and add() methods aren't available and therefore we need to generate a valid string we can pass onto modify()
-	 * @param unknown $dateinteval_string
-	 * @param unknown $add_or_subtract
+	 * @param string $dateinteval_string
+	 * @param string $add_or_subtract
 	 * @return string
 	 */
 	private function dateinterval_fallback( $dateinteval_string, $add_or_subtract ){
@@ -441,6 +449,7 @@ class EM_DateTime extends DateTime {
 	 * If using this to supply to a date() function, set $server_localized to true which will account for any rogue code
 	 * that sets the server default timezone to something other than UTC (which is WP sets it to at the start)
 	 * @param boolean $server_localized
+	 * @return int
 	 */
 	public function getTimestampWithOffset( $server_localized = false ){
 		//aside from the actual offset from the timezone, we also have a local server offset we need to deal with here...
@@ -491,6 +500,7 @@ class EM_DateTime extends DateTime {
 	
 	/**
 	 * Returns a MySQL DATE formatted string.
+	 * @param bool $utc
 	 * @return string
 	 */
 	public function getDate( $utc = false ){

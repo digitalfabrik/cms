@@ -1,9 +1,9 @@
 === Disable New User Notification Emails ===
-Contributors: griffinjt
+Contributors: griffinjt, smub, deb255
 Tags: email, disable user notification emails, disable notification, disable admin notifications, disable user emails, disable notifications, user emails, new user emails
 Requires at least: 3.3.1
-Tested up to: 4.4
-Stable tag: trunk
+Tested up to: 5.1.1
+Stable tag: 1.0.3
 License: GNU General Public License v2.0 or later
 
 This plugin does one thing - disables new user notification emails.
@@ -12,7 +12,19 @@ This plugin does one thing - disables new user notification emails.
 
 This plugin disables new user notification emails in WordPress. That is all.
 
-This plugin was created by <a href="http://thomasgriffin.io" rel="me" title="WordPress Developer - Thomas Griffin">Thomas Griffin</a>. Check out some of my other products, including <a href="http://soliloquywp.com/" rel="friend" title="Soliloquy - the best responsive WordPress slider plugin">Soliloquy - the best responsive WordPress slider plugin</a>, <a href="http://enviragallery.com/" rel="friend" title="Envira Gallery - the best responsive WordPress gallery plugin">Envira Gallery - the best responsive WordPress gallery plugin</a> and <a href="http://optinmonster.com/" rel="friend" title="OptinMonster">OptinMonster</a>.
+Simple and Easy like it should be :)
+
+= What's Next =
+
+If you like this plugin, then consider checking out our other projects:
+
+* <a href="https://optinmonster.com/" rel="friend" title="OptinMonster">OptinMonster</a> - Get More Email Subscribers with the most popular conversion optimization plugin for WordPress.
+* <a href="https://wpforms.com/" rel="friend" title="WPForms">WPForms</a> - Best Drag & Drop WordPress Form plugin (over 1 million active installs).
+* <a href="https://www.monsterinsights.com/" rel="friend" title="MonsterInsights">MonsterInsights</a> - See the Stats that Matter and Grow Your Business with Confidence. Best Google Analytics Plugin for WordPress.
+* <a href="https://www.seedprod.com/" rel="friend" title="SeedProd">SeedProd</a> - Jumpstart your website with the #1 Coming Soon & Maintenance Mode Plugin for WordPress.
+* <a href="https://wordpress.org/plugins/wp-mail-smtp/">WP Mail SMTP</a> - Improve email deliverability for your contact form with the most popular SMTP plugin for WordPress.
+
+Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeginner</a> to learn from our <a href="http://www.wpbeginner.com/category/wp-tutorials/" rel="friend" title="WordPress Tutorials">WordPress Tutorials</a> and find out about other <a href="http://www.wpbeginner.com/category/plugins/" rel="friend" title="Best WordPress Plugins">best WordPress plugins</a>.
 
 == Installation ==
 
@@ -20,6 +32,11 @@ This plugin was created by <a href="http://thomasgriffin.io" rel="me" title="Wor
 2. Activate Disable New User Notification Emails.
 
 == Changelog ==
+
+= 1.0.3 =
+* Updated Readme.txt.
+* Checked compatibility with WordPress 5.1.1.
+* Miscellaneous updates.
 
 = 1.0.2 =
 * Compatibility updates for WordPress 4.4.

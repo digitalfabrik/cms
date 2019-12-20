@@ -13,6 +13,11 @@ class EM_Ticket_Booking extends EM_Object{
 		'ticket_booking_price' => array('name'=>'price','type'=>'%f'),
 		'ticket_booking_spaces' => array('name'=>'spaces','type'=>'%d')
 	);
+	var $shortnames = array(
+		'id' => 'ticket_booking_id',
+		'price' => 'ticket_booking_price',
+		'spaces' => 'ticket_booking_spaces',
+	);
 	//Other Vars
 	/**
 	 * Contains ticket object
@@ -201,7 +206,7 @@ class EM_Ticket_Booking extends EM_Object{
 		}else{
 			$this->ticket = new EM_Ticket($this->ticket_id);
 		}
-		return $this->ticket;
+		return apply_filters('em_ticket_booking_get_ticket', $this->ticket, $this);
 	}
 	
 	/**

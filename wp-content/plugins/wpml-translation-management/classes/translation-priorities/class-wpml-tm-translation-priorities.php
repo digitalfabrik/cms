@@ -16,16 +16,23 @@ class WPML_TM_Translation_Priorities{
 		) );
 	}
 
+	/**
+	 * @return int
+	 */
 	public function get_default_value_id() {
-
-		$default_term = get_term_by( 'slug', self::DEFAULT_TRANSLATION_PRIORITY_VALUE_SLUG, self::TAXONOMY );
-
-		return (int)$default_term->term_id;
+		return (int) self::get_default_term()->term_id;
 	}
 
+	/**
+	 * @return WP_Term
+	 */
 	public static function get_default_term() {
+		$term = get_term_by( 'slug', self::DEFAULT_TRANSLATION_PRIORITY_VALUE_SLUG, self::TAXONOMY );
+		if ( ! $term ) {
+			$term = new WP_Term( (object) [ 'term_id' => 0 ] );
+		}
 
-		return get_term_by( 'slug', self::DEFAULT_TRANSLATION_PRIORITY_VALUE_SLUG, self::TAXONOMY );
+		return $term;
 	}
 
 

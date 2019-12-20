@@ -124,15 +124,15 @@ if ( ! function_exists( 'add_action' ) ) {
 				$metaboxes       = array_merge( $metaboxes, $quickedit_areas );
 
 				$metaboxes_names = array(
-					esc_attr__( 'Help' ),
-					esc_attr__( 'Screen Options' ),
-					esc_attr__( 'Add New' ),
+					esc_attr__( 'Help', 'adminimize' ),
+					esc_attr__( 'Screen Options', 'adminimize' ),
+					esc_attr__( 'Add New', 'adminimize' ),
 					esc_attr__( 'Title', 'adminimize' ),
 					esc_attr__( 'Permalink', 'adminimize' ),
 					esc_attr__( 'Tags', 'adminimize' ),
 					esc_attr__( 'Categories', 'adminimize' ),
 					esc_attr__( 'Add New Category', 'adminimize' ),
-					esc_attr__( 'Date' ),
+					esc_attr__( 'Date', 'adminimize' ),
 					esc_attr__( 'Password Protect This Post', 'adminimize' ),
 					esc_attr__( 'Related, Shortcuts', 'adminimize' ),
 					esc_attr__( 'Messages', 'adminimize' ),
@@ -141,8 +141,8 @@ if ( ! function_exists( 'add_action' ) ) {
 					esc_attr__( 'Word count', 'adminimize' ),
 					esc_attr__( 'Post Slug', 'adminimize' ),
 					esc_attr__( 'Publish Actions', 'adminimize' ),
-					esc_attr__( 'Discussion' ),
-					esc_attr__( 'HTML Editor Button' )
+					esc_attr__( 'Discussion', 'adminimize' ),
+					esc_attr__( 'HTML Editor Button', 'adminimize' )
 				);
 
 				foreach ( $GLOBALS[ '_wp_post_type_features' ][ $post_type ] as $post_type_support => $key ) {
@@ -273,7 +273,7 @@ if ( ! function_exists( 'add_action' ) ) {
 			</p>
 
 			<p>
-				<a class="alignright button" href="javascript:void(0);" onclick="window.scrollTo(0,0);" style="margin:3px 0 0 30px;"><?php esc_attr_e(
+                <a class="alignright button adminimize-scroltop" href="#" style="margin:3px 0 0 30px;"><?php esc_attr_e(
 						'scroll to top', 'adminimize'
 					); ?></a><br class="clear" /></p>
 

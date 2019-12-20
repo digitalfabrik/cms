@@ -30,7 +30,7 @@ class WPML_TM_ATE_Translator_Message_Classic_Editor implements IWPML_Action {
 	}
 
 	public function classic_editor_message() {
-		$main_message       = esc_html__( "This site can use WPML's Advanced Translation Editor, but you did not receive permission to use it. You are still translating with WPML's classic translation editor. Please ask your site's Translation Manager to enable the Advanced Translation Editor for you.", 'wpml-translation-management' );
+	    $main_message       = esc_html__( "This site can use WPML's Advanced Translation Editor, but you did not receive permission to use it. You are still translating with WPML's classic translation editor. Please ask your site's Translation Manager to enable the Advanced Translation Editor for you.", 'wpml-translation-management' );
 		$learn_more         = esc_html__( "Learn more about WPML's Advanced Translation Editor", 'wpml-translation-management' );
 		$short_message      = esc_html__( "Advanced Translation Editor is disabled.", 'wpml-translation-management' );
 		$more               = esc_html__( "More", 'wpml-translation-management' );

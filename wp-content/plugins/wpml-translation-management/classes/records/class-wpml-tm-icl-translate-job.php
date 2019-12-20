@@ -1,18 +1,20 @@
 <?php
 
-class WPML_TM_ICL_Translate_Job extends WPML_TM_Record_User {
+class WPML_TM_ICL_Translate_Job {
 
 	private $table = 'icl_translate_job';
 	private $job_id = 0;
-
+	/** @var WPML_TM_Records $tm_records */
+	private $tm_records;
 	/**
 	 * WPML_TM_ICL_Translation_Status constructor.
 	 *
 	 * @param WPML_TM_Records $tm_records
 	 * @param int             $job_id
 	 */
-	public function __construct( &$tm_records, $job_id ) {
-		parent::__construct( $tm_records );
+	public function __construct( $tm_records, $job_id ) {
+		$this->tm_records = $tm_records;
+
 		$job_id           = (int) $job_id;
 		if ( $job_id > 0 ) {
 			$this->job_id = $job_id;
@@ -68,12 +70,23 @@ class WPML_TM_ICL_Translate_Job extends WPML_TM_Record_User {
 	}
 
 	public function rid() {
+		return $this->get_job_column( 'rid' );
+	}
+
+	public function editor() {
+		return $this->get_job_column( 'editor' );
+	}
+
+	private function get_job_column( $column ) {
+		if ( ! trim( $column ) ) {
+			return null;
+		}
+
 		$wpdb = $this->tm_records->wpdb();
 
-		return $wpdb->get_var(
-			$wpdb->prepare( " SELECT rid
-									FROM {$wpdb->prefix}{$this->table}
-									WHERE job_id = %d LIMIT 1",
-				$this->job_id ) );
+		$query   = ' SELECT ' . $column . " FROM {$wpdb->prefix}{$this->table} WHERE job_id = %d LIMIT 1";
+		$prepare = $wpdb->prepare( $query, $this->job_id );
+
+		return $wpdb->get_var( $prepare );
 	}
 }

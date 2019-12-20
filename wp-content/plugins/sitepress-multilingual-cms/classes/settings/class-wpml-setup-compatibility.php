@@ -14,7 +14,7 @@ class WPML_Setup_Compatibility {
 			</div>
 			<div class="wpml-section-content">
 					<p class="wpml-wizard-instruction">
-						<?php esc_html_e( 'WPML plugin can send to wpml.org the list of active plugins and theme in your site. This allows our support to help you much faster and to contact you in advance about potential compatibility problems and their solutions.',
+						<?php esc_html_e( 'The WPML plugin can send a list of active plugins and theme used in your site to wpml.org. This allows our support team to help you much faster and to contact you in advance about potential compatibility problems and their solutions.',
 						                  'sitepress' ); ?>
 					</p>
 					<?php

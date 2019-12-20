@@ -55,6 +55,8 @@ class WPML_Translation_Editor extends WPML_WPDB_And_SP_User {
 				'wpml-translation-management' ),
 			'save'                 => __( 'Save',
 				'wpml-translation-management' ),
+			'hide_translated'      => __( 'Hide completed',
+				'wpml-translation-management' ),
 			'save_and_close'       => __( 'Save & Close',
 				'wpml-translation-management' ),
 			'loading_url'          => ICL_PLUGIN_URL . '/res/img/ajax-loader.gif',

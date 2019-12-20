@@ -63,7 +63,9 @@
 						*/ ?>
 						<th><?php _e ( 'Name', 'events-manager'); ?></th>
 						<th>&nbsp;</th>
+						<?php if( get_option('dbem_locations_enabled') ): ?>
 						<th><?php _e ( 'Location', 'events-manager'); ?></th>
+						<?php endif; ?>
 						<th colspan="2"><?php _e ( 'Date and time', 'events-manager'); ?></th>
 					</tr>
 				</thead>
@@ -74,7 +76,6 @@
 						/* @var $EM_Event EM_Event */
 						$rowno++;
 						$class = ($rowno % 2) ? 'alternate' : '';
-						$location_summary = "<b>" . esc_html($EM_Event->get_location()->location_name) . "</b><br/>" . esc_html($EM_Event->get_location()->location_address) . " - " . esc_html($EM_Event->get_location()->location_town);
 						
 						if( $EM_Event->start()->getTimestamp() < time() && $EM_Event->end()->getTimestamp() < time() ){
 							$class .= " past";
@@ -116,9 +117,11 @@
 									<strong>+</strong>
 								</a>
 							</td>
+							<?php if( get_option('dbem_locations_enabled') ): ?>
 							<td>
-								<?php echo $location_summary; ?>
+								<?php echo "<b>" . esc_html($EM_Event->get_location()->location_name) . "</b><br/>" . esc_html($EM_Event->get_location()->location_address) . " - " . esc_html($EM_Event->get_location()->location_town); ?>
 							</td>
+							<?php endif; ?>
 							<td>
 								<?php echo $EM_Event->output_dates(); ?>
 								<br />

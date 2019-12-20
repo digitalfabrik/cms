@@ -129,30 +129,35 @@ class EM_Taxonomy_Admin {
 	public static function save( $term_id, $tt_id ){
 		global $wpdb;
 	    if (!$term_id) return;
-		if( !empty($_POST['term_color']) && preg_match('/^#[a-zA-Z0-9]{6}$/', $_POST['term_color']) ){
+		if( !empty($_POST['term_color']) ){
 			//get results and save/update
-			$prev_settings = $wpdb->get_results('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$term_id}' AND meta_key='". self::$option_name ."-bgcolor'");
-			if( count($prev_settings) > 0 ){
-				$wpdb->update(EM_META_TABLE, array('object_id' => $term_id, 'meta_value' => $_POST['term_color']), array('object_id' => $term_id, 'meta_key' => self::$option_name .'-bgcolor'));
-			}else{
-				$wpdb->insert(EM_META_TABLE, array('object_id' => $term_id, 'meta_key' => self::$option_name .'-bgcolor', 'meta_value' => $_POST['term_color']));
+			$color = sanitize_hex_color($_POST['term_color']);
+			if( $color ){
+				$prev_settings = $wpdb->get_results('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$term_id}' AND meta_key='". self::$option_name ."-bgcolor'");
+				if( count($prev_settings) > 0 ){
+					$wpdb->update(EM_META_TABLE, array('object_id' => $term_id, 'meta_value' => $color), array('object_id' => $term_id, 'meta_key' => self::$option_name .'-bgcolor'));
+				}else{
+					$wpdb->insert(EM_META_TABLE, array('object_id' => $term_id, 'meta_key' => self::$option_name .'-bgcolor', 'meta_value' => $color));
+				}
 			}
 		}
 		if( !empty($_POST['term_image']) ){
 			//get results and save/update
+			$term_image = esc_url_raw($_POST['term_image']);
 			$prev_settings = $wpdb->get_results('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$term_id}' AND meta_key='". self::$option_name ."-image'");
 			if( count($prev_settings) > 0 ){
-				$wpdb->update(EM_META_TABLE, array('object_id' => $term_id, 'meta_value' => $_POST['term_image']), array('object_id' => $term_id, 'meta_key' => self::$option_name .'-image'));
+				$wpdb->update(EM_META_TABLE, array('object_id' => $term_id, 'meta_value' => $term_image), array('object_id' => $term_id, 'meta_key' => self::$option_name .'-image'));
 			}else{
-				$wpdb->insert(EM_META_TABLE, array('object_id' => $term_id, 'meta_key' => self::$option_name .'-image', 'meta_value' => $_POST['term_image']));
+				$wpdb->insert(EM_META_TABLE, array('object_id' => $term_id, 'meta_key' => self::$option_name .'-image', 'meta_value' => $term_image));
 			}
 			if( !empty($_POST['term_image_id']) && is_numeric($_POST['term_image_id']) ){
 				//get results and save/update
+				$term_image_id = absint($_POST['term_image_id']);
 				$prev_settings = $wpdb->get_results('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$term_id}' AND meta_key='". self::$option_name ."-image-id'");
 				if( count($prev_settings) > 0 ){
-					$wpdb->update(EM_META_TABLE, array('object_id' => $term_id, 'meta_value' => $_POST['term_image_id']), array('object_id' => $term_id, 'meta_key'=> self::$option_name .'-image-id'));
+					$wpdb->update(EM_META_TABLE, array('object_id' => $term_id, 'meta_value' => $term_image_id), array('object_id' => $term_id, 'meta_key'=> self::$option_name .'-image-id'));
 				}else{
-					$wpdb->insert(EM_META_TABLE, array('object_id' => $term_id, 'meta_key'=> self::$option_name .'-image-id', 'meta_value' => $_POST['term_image_id']));
+					$wpdb->insert(EM_META_TABLE, array('object_id' => $term_id, 'meta_key'=> self::$option_name .'-image-id', 'meta_value' => $term_image_id));
 				}
 			}
 		}else{

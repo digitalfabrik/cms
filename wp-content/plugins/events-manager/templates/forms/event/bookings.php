@@ -96,7 +96,7 @@ $reschedule_warnings = !empty($EM_Event->event_id) && $EM_Event->is_recurring() 
 									</div>
 								</td>
 								<td class="ticket-price">
-									<span class="ticket_price"><?php echo ($EM_Ticket->ticket_price) ? esc_html($EM_Ticket->get_price_precise()) : esc_html__('Free','events-manager'); ?></span>
+									<span class="ticket_price"><?php echo ($EM_Ticket->ticket_price) ? esc_html($EM_Ticket->get_price_precise(true)) : esc_html__('Free','events-manager'); ?></span>
 								</td>
 								<td class="ticket-limit">
 									<span class="ticket_min">

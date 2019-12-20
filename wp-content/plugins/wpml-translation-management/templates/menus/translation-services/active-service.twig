@@ -38,7 +38,10 @@
 
                     {% if active_service.get_custom_fields_data %}
                         <p>{{ strings.authentication.is_authorized }}</p>
-                        <p class="notice-action-link"><button data-id="{{ active_service.get_id }}" data-custom-fields="{{ active_service.get_custom_fields | json_encode }}" class="js-invalidate-service button-primary">{{ strings.authentication.de_authorize_button }}</button></p>
+                        <p class="notice-action-link">
+                            <button data-id="{{ active_service.get_id }}" data-custom-fields="{{ active_service.get_custom_fields | json_encode }}" class="js-invalidate-service button-primary">{{ strings.authentication.de_authorize_button }}</button>
+                            <button data-id="{{ active_service.get_id }}" data-custom-fields="{{ active_service.get_custom_fields | json_encode }}" class="js-update-service-credentials button-primary">{{ strings.authentication.update_credentials_button }}</button>
+                        </p>
                     {% else %}
                         <p>{{ strings.authentication.description|format( active_service.get_name, '<a target="_blank" href="' ~ active_service.get_doc_url ~ '">' ~ strings.documentation_lower ~ '</a>' )|raw }}</p>
                         <p class="notice-action-link"><button class="js-authenticate-service button-primary" data-id="{{ active_service.get_id }}" data-custom-fields="{{ active_service.get_custom_fields | json_encode }}">{{ strings.authentication.authenticate_button }}</button></p>

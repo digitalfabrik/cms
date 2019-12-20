@@ -17,9 +17,9 @@ class WPML_TM_ICL20_Migration_Factory {
 	 */
 	private $status;
 	/**
-	 * @var WPML_TP_API
+	 * @var WPML_TP_Services
 	 */
-	private $tp_api;
+	private $tp_services;
 	/**
 	 * @var WP_Http
 	 */
@@ -54,11 +54,13 @@ class WPML_TM_ICL20_Migration_Factory {
 	 * @return WPML_TM_ICL20_Migrate
 	 */
 	public function create_migration() {
-		return new WPML_TM_ICL20_Migrate( $this->create_progress(),
-		                                  $this->create_status(),
-		                                  $this->get_remote_migration(),
-		                                  $this->get_local_migration(),
-		                                  $this->get_tp_api() );
+		return new WPML_TM_ICL20_Migrate(
+			$this->create_progress(),
+			$this->create_status(),
+			$this->get_remote_migration(),
+			$this->get_local_migration(),
+			$this->get_tp_services()
+		);
 	}
 
 	/**
@@ -66,7 +68,7 @@ class WPML_TM_ICL20_Migration_Factory {
 	 */
 	public function create_status() {
 		if ( null === $this->status ) {
-			$current_service = $this->get_tp_api()->get_current_service();
+			$current_service = $this->get_tp_services()->get_current_service();
 			$this->status    = new WPML_TM_ICL20_Migration_Status( $current_service );
 		}
 
@@ -91,22 +93,21 @@ class WPML_TM_ICL20_Migration_Factory {
 	 * @return WPML_TM_ICL20_Migrate_Local
 	 */
 	private function get_local_migration() {
-		return new WPML_TM_ICL20_Migrate_Local( $this->get_tp_api(),
+		return new WPML_TM_ICL20_Migrate_Local( $this->get_tp_services(),
 		                                        $this->create_status(),
 		                                        $this->create_progress(),
 		                                        $this->get_sitepress() );
 	}
 
 	/**
-	 * @return WPML_TP_API
+	 * @return WPML_TP_Services
 	 */
-	private function get_tp_api() {
-		if ( null === $this->tp_api ) {
-			$wpml_tp_communication = new WPML_TP_Communication( OTG_TRANSLATION_PROXY_URL, $this->get_wp_http() );
-			$this->tp_api          = new WPML_TP_API( $wpml_tp_communication, '1.1', new WPML_TM_Log() );
+	private function get_tp_services() {
+		if ( null === $this->tp_services ) {
+			$this->tp_services = new WPML_TP_Services();
 		}
 
-		return $this->tp_api;
+		return $this->tp_services;
 	}
 
 	/**
