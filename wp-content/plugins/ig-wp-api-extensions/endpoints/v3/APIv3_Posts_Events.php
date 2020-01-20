@@ -61,7 +61,6 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 				$recurring_events[] = $this->prepare($recurring_event);
 			}
 		}
-		$events = array_merge($events, $recurring_events);
 
 		/*
 		 * Events can be duplicated as normal events and recurring events.
@@ -76,6 +75,10 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 				$unique_events[] = $event;
 			}
 		}
+
+		$events = array_merge($events, $recurring_events);
+		$events = $this->limit_events($events, 50);
+
 		/*
 		 * Remove all filters so they don't affect other queries
 		 */
@@ -190,6 +193,15 @@ class APIv3_Posts_Events extends APIv3_Posts_Abstract {
 		} else {
 			return null;
 		}
+	}
+
+	public function event_compare($a, $b) {
+		return strcmp($a["event"]["start_date"], $b["event"]["start_date"]);
+	}
+
+	private function limit_events($events, $limit = 50) {
+		usort($events, array($this, "event_compare"));
+		return array_slice($events, 0, $limit, true);
 	}
 
 	private function prepare_event(WP_Post $event) {
