@@ -68,7 +68,6 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		$GLOBALS['post'] = $post; // define global $post to prevent wordpress notices caused by events-manager
 		$post = apply_filters('wp_api_extensions_pre_post', $post);
 		setup_postdata($post);
-		$content = $this->prepare_content($post);
 		$output_post = [
 			'id' => $post->ID,
 			'url' => get_permalink($post),
@@ -76,7 +75,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'title' => $post->post_title,
 			'modified_gmt' => $post->post_modified_gmt,
 			'excerpt' => $this->prepare_excerpt($post),
-			'content' => $content,
+			'content' => wpautop($post->post_content),
 			'parent' => [
 				'id' => $post->post_parent,
 				'url' => ($post->post_parent !== 0 ? get_permalink($post->post_parent) : null),
@@ -89,14 +88,6 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		$output_post = apply_filters('wp_api_extensions_output_post', $output_post);
 		$output_post['hash'] = md5(json_encode($output_post));
 		return $output_post;
-	}
-
-	private function prepare_content(WP_Post $post) {
-		$children = get_pages( [ 'child_of' => $post->ID ] );
-		if ($post->post_content === '' && count( $children ) === 0) {
-			$post->post_content = 'empty';
-		}
-		return wpautop($post->post_content);
 	}
 
 	private function prepare_excerpt(WP_Post $post) {
