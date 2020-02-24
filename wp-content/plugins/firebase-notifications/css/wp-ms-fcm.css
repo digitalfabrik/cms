@@ -34,6 +34,7 @@
 
 .pn-content {
 	position: absolute;
+	z-index: 1000;
 	top: 28px;
 	left: 0;
 	background: white;
