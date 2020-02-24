@@ -44,6 +44,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'delete_published_pages' => true,
 			'publish_pages' => true,
 			'upload_files' => true,
+			'edit_files' => true,
+			'delete_others_posts' => true,
 			/* Profile */
 			'read' => true,
 			/* WPML */
