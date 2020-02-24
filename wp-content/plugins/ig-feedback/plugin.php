@@ -47,7 +47,7 @@ add_action('manage_comments_custom_column', function ($column, $comment_id) {
 						<a href="' . get_edit_post_link($post->ID) . '">Diese Seite bearbeiten</a>';
 					break;
 				case 'categories':
-					echo 'Verfügbare Kategorien';
+					echo 'Hauptmenü / Integreat Allgemein';
 					break;
 				case 'cities':
 					echo 'Verfügbare Städte';
