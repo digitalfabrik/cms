@@ -117,8 +117,11 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
 	<select style="width: 100%;" id="ig-attach-content-blog" name="ig-attach-content-blog">
 		<option value="-1">'.__('Please select', 'ig-attach-content').'</option>';
 		foreach( $all_blogs as $blog ){
-			$blog_name = get_blog_details( $blog->blog_id )->blogname;
-			$output .= "<option value='".$blog->blog_id."' ".selected( $blog->blog_id, $blog_id, false ).">$blog_name</option>";
+			$blog_disabled = apply_filters('ig-site-disabled', $blog);
+			if( $blog_disabled == false ) {
+				$blog_name = get_blog_details( $blog->blog_id )->blogname;
+				$output .= "<option value='".$blog->blog_id."' ".selected( $blog->blog_id, $blog_id, false ).">$blog_name</option>";
+			}
 		}
 	$output .= '</select>
 	<p id="ig_ac_metabox_pages">'.( $blog_id > 0 ? ig_ac_pages_dropdown( $blog_id = $blog_id, $ajax = false ) : '').'</p>
