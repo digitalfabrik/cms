@@ -306,7 +306,8 @@ add_action( 'add_meta_boxes', 'ig_ac_preview_metabox' );
  */
 function ig_attach_content_preview ( ) {
 	global $post;
-	echo "<div id='attach_content_preview'>";
+	echo "<style>.ig-ac-img img {max-width:100%;height:auto;}</style>";
+	echo "<div id='attach_content_preview' class='ig-ac-img'>";
 	$ac_position = get_post_meta( $post->ID, 'ig-attach-content-position', true );
 	if(strlen($ac_position) > 0 ) {
 		$ac_blog = get_post_meta( $post->ID, 'ig-attach-content-blog', true );
