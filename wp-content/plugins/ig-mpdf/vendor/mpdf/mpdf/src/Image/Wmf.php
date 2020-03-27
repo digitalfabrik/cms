@@ -122,7 +122,7 @@ class Wmf
 							if ($obj['style'] == 1) {
 								$nullBrush = true;
 							} else {
-								$wmfdata .= $this->mpdf->SetFColor($this->colorConverter->convert('rgb(' . $obj['r'] . ',' . $obj['g'] . ',' . $obj['b'] . ', $this->mpdf->PDFAXwarnings)'), true) . "\n";
+								$wmfdata .= $this->mpdf->SetFColor($this->colorConverter->convert('rgb(' . $obj['r'] . ',' . $obj['g'] . ',' . $obj['b'] . ')', $this->mpdf->PDFAXwarnings), true) . "\n";
 							}
 							break;
 						case 'P':
@@ -149,7 +149,7 @@ class Wmf
 									break;
 							}
 							if (!$nullPen) {
-								$wmfdata .= $this->mpdf->SetDColor($this->colorConverter->convert('rgb(' . $obj['r'] . ',' . $obj['g'] . ',' . $obj['b'] . ', $this->mpdf->PDFAXwarnings)'), true) . "\n";
+								$wmfdata .= $this->mpdf->SetDColor($this->colorConverter->convert('rgb(' . $obj['r'] . ',' . $obj['g'] . ',' . $obj['b'] . ')', $this->mpdf->PDFAXwarnings), true) . "\n";
 								$wmfdata .= sprintf("%.3F w\n", $obj['width'] * $k);
 							}
 							if (!empty($dashArray)) {
@@ -182,7 +182,7 @@ class Wmf
 					}
 					if ($func == 0x0325) {
 						$op = 's';
-					} else if ($func == 0x0324) {
+					} elseif ($func == 0x0324) {
 						if ($nullPen) {
 							if ($nullBrush) {
 								$op = 'n';

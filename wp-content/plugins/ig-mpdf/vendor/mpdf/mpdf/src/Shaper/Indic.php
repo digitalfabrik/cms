@@ -23,35 +23,11 @@ class Indic
 	const OT_NBSP = 11;
 	const OT_DOTTEDCIRCLE = 12; /* Not in the spec, but special in Uniscribe. /Very very/ special! */
 	const OT_RS = 13; /* Register Shifter, used in Khmer OT spec */
-	const OT_Coeng = 14;
-	const OT_Repha = 15;
+	const OT_COENG = 14;
+	const OT_REPHA = 15;
 
-	const OT_Ra = 16; /* Not explicitly listed in the OT spec, but used in the grammar. */
+	const OT_RA = 16; /* Not explicitly listed in the OT spec, but used in the grammar. */
 	const OT_CM = 17;
-
-	// Based on indic_category used to make string to find syllables
-	// OT_ to string character (using e.g. OT_C from INDIC) hb-ot-shape-complex-indic-private.hh
-	public static $indic_category_char = [
-		'x',
-		'C',
-		'V',
-		'N',
-		'H',
-		'Z',
-		'J',
-		'M',
-		'S',
-		'v',
-		'A', /* Spec gives Andutta U+0952 as OT_A. However, testing shows that Uniscribe
-		 * treats U+0951..U+0952 all as OT_VD - see set_indic_properties */
-		's',
-		'D',
-		'F', /* Register shift Khmer only */
-		'G', /* Khmer only */
-		'r', /* 0D4E (dot reph) only one in Malayalam */
-		'R',
-		'm', /* Consonant medial only used in Indic 0A75 in Gurmukhi  (0A00..0A7F)  : also in Lao, Myanmar, Tai Tham, Javanese & Cham  */
-	];
 
 	/* Visual positions in a syllable from left to right. */
 	/* FROM hb-ot-shape-complex-indic-private.hh */
@@ -85,6 +61,7 @@ class Indic
 	 * Basic features.
 	 * These features are applied in order, one at a time, after initial_reordering.
 	 */
+
 	/*
 	 * Must be in the same order as the indic_features array. Ones starting with _ are F_GLOBAL
 	 * Ones without the _ are only applied where the mask says!
@@ -103,6 +80,30 @@ class Indic
 	const _VATU = 10;
 	const _CJCT = 11;
 	const INIT = 12;
+
+	// Based on indic_category used to make string to find syllables
+	// OT_ to string character (using e.g. OT_C from INDIC) hb-ot-shape-complex-indic-private.hh
+	public static $indic_category_char = [
+		'x',
+		'C',
+		'V',
+		'N',
+		'H',
+		'Z',
+		'J',
+		'M',
+		'S',
+		'v',
+		'A', /* Spec gives Andutta U+0952 as OT_A. However, testing shows that Uniscribe
+		 * treats U+0951..U+0952 all as OT_VD - see set_indic_properties */
+		's',
+		'D',
+		'F', /* Register shift Khmer only */
+		'G', /* Khmer only */
+		'r', /* 0D4E (dot reph) only one in Malayalam */
+		'R',
+		'm', /* Consonant medial only used in Indic 0A75 in Gurmukhi  (0A00..0A7F)  : also in Lao, Myanmar, Tai Tham, Javanese & Cham  */
+	];
 
 	public static function set_indic_properties(&$info, $scriptblock)
 	{
@@ -130,7 +131,7 @@ class Indic
 		} /* Khmer Bindu doesn't like to be repositioned. */
 
 		if ($u == 0x17D2) {
-			$cat = self::OT_Coeng;
+			$cat = self::OT_COENG;
 		} /* Khmer coeng */
 
 		/* The spec says U+0952 is OT_A.	However, testing shows that Uniscribe
@@ -148,15 +149,15 @@ class Indic
 
 		if ($u == 0x200C) {
 			$cat = self::OT_ZWNJ;
-		} else if ($u == 0x200D) {
+		} elseif ($u == 0x200D) {
 			$cat = self::OT_ZWJ;
-		} else if ($u == 0x25CC) {
+		} elseif ($u == 0x25CC) {
 			$cat = self::OT_DOTTEDCIRCLE;
-		} else if ($u == 0x0A71) {
+		} elseif ($u == 0x0A71) {
 			$cat = self::OT_SM;
 		} /* GURMUKHI ADDAK.	More like consonant medial. like 0A75. */
 
-		if ($cat == self::OT_Repha) {
+		if ($cat == self::OT_REPHA) {
 			/* There are two kinds of characters marked as Repha:
 			 * - The ones that are GenCat=Mn are already positioned visually, ie. after base. (eg. Khmer)
 			 * - The ones that are GenCat=Lo is encoded logically, ie. beginning of syllable. (eg. Malayalam)
@@ -172,7 +173,7 @@ class Indic
 		 * Re-assign position.
 		 */
 
-		if ((self::FLAG($cat) & (self::FLAG(self::OT_C) | self::FLAG(self::OT_CM) | self::FLAG(self::OT_Ra) | self::FLAG(self::OT_V) | self::FLAG(self::OT_NBSP) | self::FLAG(self::OT_DOTTEDCIRCLE)))) { // = CONSONANT_FLAGS like is_consonant
+		if ((self::FLAG($cat) & (self::FLAG(self::OT_C) | self::FLAG(self::OT_CM) | self::FLAG(self::OT_RA) | self::FLAG(self::OT_V) | self::FLAG(self::OT_NBSP) | self::FLAG(self::OT_DOTTEDCIRCLE)))) { // = CONSONANT_FLAGS like is_consonant
 			if ($scriptblock == Ucdn::SCRIPT_KHMER) {
 				$pos = self::POS_BELOW_C;
 			} /* Khmer differs from Indic here. */
@@ -181,11 +182,11 @@ class Indic
 			} /* Will recategorize later based on font lookups. */
 
 			if (self::is_ra($u)) {
-				$cat = self::OT_Ra;
+				$cat = self::OT_RA;
 			}
-		} else if ($cat == self::OT_M) {
+		} elseif ($cat == self::OT_M) {
 			$pos = self::matra_position($u, $pos);
-		} else if ($cat == self::OT_SM || $cat == self::OT_VD) {
+		} elseif ($cat == self::OT_SM || $cat == self::OT_VD) {
 			$pos = self::POS_SMVD;
 		}
 
@@ -223,7 +224,7 @@ class Indic
 				$syllable_type = self::CONSONANT_SYLLABLE;
 			} // VOWEL_SYLLABLE Vowel-based syllable
 			// From OT spec:
-			else if (preg_match('/^(RH|r)?V[N]?([ZJ]?H[CR]m*|J[CR]m*)?([M]*[N]?[H]?)?[S]?[v]{0,2}/', substr($s, $ptr), $ma)) {
+			elseif (preg_match('/^(RH|r)?V[N]?([ZJ]?H[CR]m*|J[CR]m*)?([M]*[N]?[H]?)?[S]?[v]{0,2}/', substr($s, $ptr), $ma)) {
 				// From HarfBuzz:
 				//else if (preg_match('/^(RH|r)?V(Z?[N]{0,2})?(J|([ZJ]?H(J[N]?)?[CR]J?(Z?[N]{0,2})?){0,4}((([ZJ]?H(J[N]?)?)|HZ)|(HJ)?([ZJ]{0,3}M[N]?(H|JHJR)?){0,4})?(S[Z]?)?[v]{0,2})/', substr($s,$ptr), $ma)) {
 				$syllable_length = strlen($ma[0]);
@@ -231,7 +232,7 @@ class Indic
 			} /* Apply only if it's a word start. */
 			// STANDALONE_CLUSTER Stand Alone syllable at start of word
 			// From OT spec:
-			else if (($ptr == 0 ||
+			elseif (($ptr == 0 ||
 				$o[$ptr - 1]['general_category'] < Ucdn::UNICODE_GENERAL_CATEGORY_LOWERCASE_LETTER ||
 				$o[$ptr - 1]['general_category'] > Ucdn::UNICODE_GENERAL_CATEGORY_NON_SPACING_MARK
 				) && (preg_match('/^(RH|r)?[sD][N]?([ZJ]?H[CR]m*)?([M]*[N]?[H]?)?[S]?[v]{0,2}/', substr($s, $ptr), $ma))) {
@@ -240,7 +241,7 @@ class Indic
 				$syllable_length = strlen($ma[0]);
 				$syllable_type = self::STANDALONE_CLUSTER;
 			} // BROKEN_CLUSTER syllable
-			else if (preg_match('/^(RH|r)?[N]?([ZJ]?H[CR])?([M]*[N]?[H]?)?[S]?[v]{0,2}/', substr($s, $ptr), $ma)) {
+			elseif (preg_match('/^(RH|r)?[N]?([ZJ]?H[CR])?([M]*[N]?[H]?)?[S]?[v]{0,2}/', substr($s, $ptr), $ma)) {
 				// From HarfBuzz:
 				//else if (preg_match('/^(RH|r)?(Z?[N]{0,2})?(([ZJ]?H(J[N]?)?)[CR]J?(Z?[N]{0,2})?){0,4}((([ZJ]?H(J[N]?)?)|HZ)|(HJ)?([ZJ]{0,3}M[N]?(H|JHJR)?){0,4})(S[Z]?)?[v]{0,2}/', substr($s,$ptr), $ma)) {
 				if (strlen($ma[0])) { // May match blank
@@ -278,7 +279,7 @@ class Indic
 				$syllable_type = self::CONSONANT_SYLLABLE;
 			} // VOWEL_SYLLABLE Vowel-based syllable
 			// From OT spec:
-			else if (preg_match('/^V[S]{0,1}/', substr($s, $ptr), $ma)) {
+			elseif (preg_match('/^V[S]{0,1}/', substr($s, $ptr), $ma)) {
 				$syllable_length = strlen($ma[0]);
 				$syllable_type = self::VOWEL_SYLLABLE;
 			}
@@ -309,11 +310,11 @@ class Indic
 				$syllable_length = strlen($ma[0]);
 				$syllable_type = self::CONSONANT_SYLLABLE;
 			} // VOWEL_SYLLABLE Vowel-based syllable
-			else if (preg_match('/^(RH|r)?V((Z?F)?[N]{0,2})?(J|([ZJ]?G(JN?)?[CR]J?((Z?F)?[N]{0,2})?){0,4}((([ZJ]?G(JN?)?)|GZ)|(GJ)?([ZJ]{0,3}MN?(H|JHJR)?){0,4})?(G([CR]J?((Z?F)?[N]{0,2})?|V))?(SZ?)?[v]{0,2})/', substr($s, $ptr), $ma)) {
+			elseif (preg_match('/^(RH|r)?V((Z?F)?[N]{0,2})?(J|([ZJ]?G(JN?)?[CR]J?((Z?F)?[N]{0,2})?){0,4}((([ZJ]?G(JN?)?)|GZ)|(GJ)?([ZJ]{0,3}MN?(H|JHJR)?){0,4})?(G([CR]J?((Z?F)?[N]{0,2})?|V))?(SZ?)?[v]{0,2})/', substr($s, $ptr), $ma)) {
 				$syllable_length = strlen($ma[0]);
 				$syllable_type = self::VOWEL_SYLLABLE;
 			} // BROKEN_CLUSTER syllable
-			else if (preg_match('/^(RH|r)?((Z?F)?[N]{0,2})?(([ZJ]?G(JN?)?)[CR]J?((Z?F)?[N]{0,2})?){0,4}((([ZJ]?G(JN?)?)|GZ)|(GJ)?([ZJ]{0,3}MN?(H|JHJR)?){0,4})(G([CR]J?((Z?F)?[N]{0,2})?|V))?(SZ?)?[v]{0,2}/', substr($s, $ptr), $ma)) {
+			elseif (preg_match('/^(RH|r)?((Z?F)?[N]{0,2})?(([ZJ]?G(JN?)?)[CR]J?((Z?F)?[N]{0,2})?){0,4}((([ZJ]?G(JN?)?)|GZ)|(GJ)?([ZJ]{0,3}MN?(H|JHJR)?){0,4})(G([CR]J?((Z?F)?[N]{0,2})?|V))?(SZ?)?[v]{0,2}/', substr($s, $ptr), $ma)) {
 				if (strlen($ma[0])) { // May match blank
 					$syllable_length = strlen($ma[0]);
 					$syllable_type = self::BROKEN_CLUSTER;
@@ -366,9 +367,9 @@ class Indic
 				// If would substitute...
 				if (isset($GSUBdata['pref'][$c])) {
 					$info[$i]['indic_position'] = self::POS_POST_C;
-				} else if (isset($GSUBdata['blwf'][$c])) {
+				} elseif (isset($GSUBdata['blwf'][$c])) {
 					$info[$i]['indic_position'] = self::POS_BELOW_C;
-				} else if (isset($GSUBdata['pstf'][$c])) {
+				} elseif (isset($GSUBdata['pstf'][$c])) {
 					$info[$i]['indic_position'] = self::POS_POST_C;
 				}
 			}
@@ -388,7 +389,7 @@ class Indic
 				$dottedcircle[0]['syllable'] = $info[$idx]['syllable'];
 
 				/* Insert dottedcircle after possible Repha. */
-				while ($idx < count($info) && $last_syllable == $info[$idx]['syllable'] && $info[$idx]['indic_category'] == self::OT_Repha) {
+				while ($idx < count($info) && $last_syllable == $info[$idx]['syllable'] && $info[$idx]['indic_category'] == self::OT_REPHA) {
 					$idx++;
 				}
 				array_splice($info, $idx, 0, $dottedcircle);
@@ -472,7 +473,7 @@ class Indic
 					$base = $start;
 					$has_reph = true;
 				}
-			} else if ($indic_config[4] == self::REPH_MODE_LOG_REPHA && $info[$start]['indic_category'] == self::OT_Repha) {
+			} elseif ($indic_config[4] == self::REPH_MODE_LOG_REPHA && $info[$start]['indic_category'] == self::OT_REPHA) {
 				$limit += 1;
 				while ($limit < $end && self::is_joiner($info[$limit])) {
 					$limit++;
@@ -661,7 +662,7 @@ class Indic
 		/* Attach misc marks to previous char to move with them. */
 		$last_pos = self::POS_START;
 		for ($i = $start; $i < $end; $i++) {
-			if ((self::FLAG($info[$i]['indic_category']) & (self::FLAG(self::OT_ZWJ) | self::FLAG(self::OT_ZWNJ) | self::FLAG(self::OT_N) | self::FLAG(self::OT_RS) | self::FLAG(self::OT_H) | self::FLAG(self::OT_Coeng) ))) {
+			if ((self::FLAG($info[$i]['indic_category']) & (self::FLAG(self::OT_ZWJ) | self::FLAG(self::OT_ZWNJ) | self::FLAG(self::OT_N) | self::FLAG(self::OT_RS) | self::FLAG(self::OT_H) | self::FLAG(self::OT_COENG) ))) {
 				$info[$i]['indic_position'] = $last_pos;
 				if ($info[$i]['indic_category'] == self::OT_H && $info[$i]['indic_position'] == self::POS_PRE_M) {
 					/*
@@ -680,7 +681,7 @@ class Indic
 						}
 					}
 				}
-			} else if ($info[$i]['indic_position'] != self::POS_SMVD) {
+			} elseif ($info[$i]['indic_position'] != self::POS_SMVD) {
 				$last_pos = $info[$i]['indic_position'];
 			}
 		}
@@ -690,7 +691,7 @@ class Indic
 		for ($i = $base + 1; $i < $end; $i++) {
 			if (self::is_halant_or_coeng($info[$i])) {
 				$last_halant = $i;
-			} else if (self::is_consonant($info[$i])) {
+			} elseif (self::is_consonant($info[$i])) {
 				for ($j = $last_halant; $j < $i; $j++) {
 					if ($info[$j]['indic_position'] != self::POS_SMVD) {
 						$info[$j]['indic_position'] = $info[$i]['indic_position'];
@@ -804,7 +805,7 @@ class Indic
 								if (isset($GSUBdata['blwf'][$info[$i + 2]['uni']])) {
 									$info[$i + 1]['mask'] |= self::FLAG(self::BLWF);
 									$info[$i + 2]['mask'] |= self::FLAG(self::BLWF);
-								} /* If would not substitute as blwf, mark Ra+Halant for RPHF using following Halant (if present) */ else if (self::is_halant_or_coeng($info[$i + 3])) {
+								} /* If would not substitute as blwf, mark Ra+Halant for RPHF using following Halant (if present) */ elseif (self::is_halant_or_coeng($info[$i + 3])) {
 									$info[$i + 2]['mask'] |= self::FLAG(self::RPHF);
 									$info[$i + 3]['mask'] |= self::FLAG(self::RPHF);
 								}
@@ -836,7 +837,7 @@ class Indic
 			 * Test case: U+0924,U+094D,U+0930,U+094d,U+200D,U+0915
 			 */
 			for ($i = $start; ($i + 1) < $base; $i++) {
-				if ($info[$i]['indic_category'] == self::OT_Ra && $info[$i + 1]['indic_category'] == self::OT_H &&
+				if ($info[$i]['indic_category'] == self::OT_RA && $info[$i + 1]['indic_category'] == self::OT_H &&
 					($i + 2 == $base || $info[$i + 2]['indic_category'] != self::OT_ZWJ)) {
 					$info[$i]['mask'] |= self::FLAG(self::BLWF);
 					$info[$i + 1]['mask'] |= self::FLAG(self::BLWF);
@@ -955,7 +956,7 @@ class Indic
 			 * We want to position matra after them.
 			 */
 			if ($scriptblock != Ucdn::SCRIPT_MALAYALAM && $scriptblock != Ucdn::SCRIPT_TAMIL) {
-				while ($new_pos > $start && !(self::is_one_of($info[$new_pos], (self::FLAG(self::OT_M) | self::FLAG(self::OT_H) | self::FLAG(self::OT_Coeng))))) {
+				while ($new_pos > $start && !(self::is_one_of($info[$new_pos], (self::FLAG(self::OT_M) | self::FLAG(self::OT_H) | self::FLAG(self::OT_COENG))))) {
 					$new_pos--;
 				}
 
@@ -1165,7 +1166,7 @@ class Indic
 						 */
 						if ($scriptblock != Ucdn::SCRIPT_MALAYALAM && $scriptblock != Ucdn::SCRIPT_TAMIL) {
 							while ($new_pos > $start &&
-							!(self::is_one_of($info[$new_pos - 1], self::FLAG(self::OT_M) | self::FLAG(self::OT_H) | self::FLAG(self::OT_Coeng)))) {
+							!(self::is_one_of($info[$new_pos - 1], self::FLAG(self::OT_M) | self::FLAG(self::OT_H) | self::FLAG(self::OT_COENG)))) {
 								$new_pos--;
 							}
 
@@ -1247,10 +1248,7 @@ class Indic
 
 	public static function is_ra($u)
 	{
-		if (isset(self::$ra_chars[$u])) {
-			return true;
-		}
-		return false;
+		return isset(self::$ra_chars[$u]);
 	}
 
 	public static function is_one_of($info, $flags)
@@ -1270,12 +1268,12 @@ class Indic
 
 	public static function is_consonant($info)
 	{
-		return self::is_one_of($info, (self::FLAG(self::OT_C) | self::FLAG(self::OT_CM) | self::FLAG(self::OT_Ra) | self::FLAG(self::OT_V) | self::FLAG(self::OT_NBSP) | self::FLAG(self::OT_DOTTEDCIRCLE)));
+		return self::is_one_of($info, (self::FLAG(self::OT_C) | self::FLAG(self::OT_CM) | self::FLAG(self::OT_RA) | self::FLAG(self::OT_V) | self::FLAG(self::OT_NBSP) | self::FLAG(self::OT_DOTTEDCIRCLE)));
 	}
 
 	public static function is_halant_or_coeng($info)
 	{
-		return self::is_one_of($info, (self::FLAG(self::OT_H) | self::FLAG(self::OT_Coeng)));
+		return self::is_one_of($info, (self::FLAG(self::OT_H) | self::FLAG(self::OT_COENG)));
 	}
 
 	// From hb-private.hh
