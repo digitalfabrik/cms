@@ -21,7 +21,7 @@ class IntegreatSetting {
 		$this->id = isset($setting->id) ? (int) $setting->id : null;
 		$this->name = isset($setting->name) && $setting->name !== '' ? $setting->name : null;
 		$this->alias = isset($setting->alias) && $setting->alias !== '' ? $setting->alias : null;
-		$this->type = isset($setting->type) && in_array($setting->type, ['string', 'bool', 'json', 'float']) ? $setting->type : null;
+		$this->type = isset($setting->type) && in_array($setting->type, ['string', 'bool', 'json', 'float', 'media']) ? $setting->type : null;
 	}
 
 	private function validate() {
@@ -49,10 +49,10 @@ class IntegreatSetting {
 			];
 			self::$current_error[] = 'alias';
 		}
-		if (!in_array($this->type, ['string', 'bool', 'json', 'float'])) {
+		if (!in_array($this->type, ['string', 'bool', 'json', 'float', 'media'])) {
 			IntegreatSettingsPlugin::$admin_notices[] = [
 				'type' => 'error',
-				'message' => 'The given type "' . htmlspecialchars($this->type) . '" is not valid (must be "string", "bool", "json", or "float")'
+				'message' => 'The given type "' . htmlspecialchars($this->type) . '" is not valid (must be "string", "bool", "json", "float", or "media")'
 			];
 			self::$current_error[] = 'type';
 		}
@@ -149,11 +149,16 @@ class IntegreatSetting {
 				'alias' => 'events',
 				'type' => 'bool'
 			]),
-			new IntegreatSetting([
-				'name' => 'Pushnachrichten',
-				'alias' => 'push-notifications',
-				'type' => 'bool'
-			]),
+            new IntegreatSetting([
+                'name' => 'Pushnachrichten',
+                'alias' => 'push-notifications',
+                'type' => 'bool'
+            ]),
+            new IntegreatSetting([
+                'name' => 'Logo',
+                'alias' => 'logo',
+                'type' => 'media'
+            ]),
 		];
 	}
 

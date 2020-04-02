@@ -20,12 +20,12 @@ class DecToRoman
 		}
 	}
 
-	public function convert($number)
+	public function convert($number, $toUpper = true)
 	{
 		$this->ensureNumberIsAnInteger($number);
 		$this->ensureNumberIsWithinBounds($number);
 
-		return $this->constructRomanString($number);
+		return $this->constructRomanString($number, $toUpper);
 	}
 
 	private function ensureNumberIsAnInteger($number)
@@ -49,21 +49,22 @@ class DecToRoman
 	public function getUpperBound()
 	{
 		$symbolGroupCount = count($this->symbolMap);
-		$valueOfOne = pow(10, $symbolGroupCount - 1);
+		$valueOfOne = 10 ** ($symbolGroupCount - 1);
 
 		$hasFiveSymbol = array_key_exists(1, $this->symbolMap[$symbolGroupCount - 1]);
 
 		return $valueOfOne * ($hasFiveSymbol ? 9 : 4) - 1;
 	}
 
-	private function constructRomanString($number)
+	private function constructRomanString($number, $toUpper)
 	{
 		$romanNumber = '';
 
-		for ($i = 0; $i < count($this->symbolMap); $i++) {
-			$divisor = pow(10, $i + 1);
+		$symbolMapCount = count($this->symbolMap);
+		for ($i = 0; $i < $symbolMapCount; $i++) {
+			$divisor = 10 ** ($i + 1);
 			$remainder = $number % $divisor;
-			$digit = $remainder / pow(10, $i);
+			$digit = $remainder / (10 ** $i);
 
 			$number -= $remainder;
 			$romanNumber = $this->formatDigit($digit, $i) . $romanNumber;
@@ -71,6 +72,10 @@ class DecToRoman
 			if ($number === 0) {
 				break;
 			}
+		}
+
+		if (!$toUpper) {
+			$romanNumber = strtolower($romanNumber);
 		}
 
 		return $romanNumber;
