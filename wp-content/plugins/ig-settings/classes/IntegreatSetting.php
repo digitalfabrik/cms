@@ -230,6 +230,7 @@ class IntegreatSetting {
 						<option value="bool" ' . ($setting && $setting->type === 'bool' ? 'selected' : '') . '>Boolean</option>
 						<option value="json" ' . ($setting && $setting->type === 'json' ? 'selected' : '') . '>JSON</option>
 						<option value="float" ' . ($setting && $setting->type === 'float' ? 'selected' : '') . '>Float</option>
+						<option value="float" ' . ($setting && $setting->type === 'media' ? 'selected' : '') . '>Media</option>
 					</select>
 				</div>
 				<br>
