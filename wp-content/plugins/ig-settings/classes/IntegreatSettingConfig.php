@@ -276,7 +276,7 @@ class IntegreatSettingConfig {
         wp_enqueue_media();
         wp_enqueue_script(
             'media-field',
-            __DIR__ . '/../js/media-field.js',
+            plugins_url('../js/media-field.js', __FILE__),
             ['jquery']
         );
 		$form = '
