@@ -153,8 +153,31 @@ class IntegreatMpdf {
 				'line' => 1
 			];
 			$this->mpdf->DefFooterByName('toc_footer', $toc_footer);
-			$this->mpdf->TOCpagebreakByArray(['toc-preHTML' => '<h2>' . $toc_title . '</h2>', 'toc-odd-footer-name' => 'toc_footer', 'toc-odd-footer-value' => 1, 'links' => true]);
+			$this->mpdf->TOCpagebreakByArray([
+			    'toc-preHTML' => '<h2>' . $toc_title . '</h2>',
+                'toc-odd-footer-name' => 'toc_footer',
+                'toc-odd-footer-value' => 1,
+                'links' => true
+            ]);
 		}
+
+		// header
+        if (method_exists('IntegreatSetting', 'get_setting_by_alias')
+            && method_exists('IntegreatSettingConfig', 'get_setting_config_by_id')
+        ) {
+            $setting_config = IntegreatSettingConfig::get_setting_config_by_id(IntegreatSetting::get_setting_by_alias('logo')->id);
+            if(isset($setting_config->value)) {
+                $image_src = wp_get_attachment_image_url($setting_config->value, 'medium');
+                $this->mpdf->SetHeader([
+                    'odd' => [
+                        'R' => [
+                            'content' => '<img src="' . $image_src . '" width="auto" height="30px" />',
+                        ],
+                        'line' => 1
+                    ]
+                ], '', true);
+            }
+        }
 
 		// footer
 		$this->mpdf->SetFooter([
@@ -168,7 +191,7 @@ class IntegreatMpdf {
 					'color'=>'#666666'
 				],
 				'R' => [
-					'content' => '<img src="' . __DIR__ . '/logo.png" width="auto" height="25px" />',
+					'content' => '<img src="' . __DIR__ . '/logo.png" width="auto" height="30px" />',
 				],
 				'line' => 1
 			]

@@ -264,6 +264,7 @@ class IntegreatSettingsPlugin {
 						alias = 'plz' OR
 						alias = 'events' OR
 						alias = 'push-notifications' OR
+						alias = 'logo'
 						alias = 'aliases' OR
 						alias = 'longitude' OR
 						alias = 'latitude'

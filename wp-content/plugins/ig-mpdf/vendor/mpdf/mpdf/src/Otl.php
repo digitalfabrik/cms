@@ -2,21 +2,21 @@
 
 namespace Mpdf;
 
+use Mpdf\Strict;
+
 use Mpdf\Css\TextVars;
 use Mpdf\Fonts\FontCache;
+
 use Mpdf\Shaper\Indic;
 use Mpdf\Shaper\Myanmar;
 use Mpdf\Shaper\Sea;
 
-define("_OTL_OLD_SPEC_COMPAT_1", true);
-
-define("_DICT_NODE_TYPE_SPLIT", 0x01);
-define("_DICT_NODE_TYPE_LINEAR", 0x02);
-define("_DICT_INTERMEDIATE_MATCH", 0x03);
-define("_DICT_FINAL_MATCH", 0x04);
+use Mpdf\Utils\UtfString;
 
 class Otl
 {
+
+	use Strict;
 
 	const _OTL_OLD_SPEC_COMPAT_1 = true;
 	const _DICT_NODE_TYPE_SPLIT = 0x01;
@@ -104,6 +104,8 @@ class Otl
 
 	var $schOTLdata;
 
+	var $lastBidiStrongType;
+
 	var $debugOTL = false;
 
 	public function __construct(Mpdf $mpdf, FontCache $fontCache)
@@ -135,17 +137,19 @@ class Otl
 		//==============================
 		$this->fontkey = $this->mpdf->CurrentFont['fontkey'];
 		$this->glyphIDtoUni = $this->mpdf->CurrentFont['glyphIDtoUni'];
-		if (!isset($this->GDEFdata[$this->fontkey])) {
-			include $this->fontCache->tempFilename($this->fontkey . '.GDEFdata.php');
-			$this->GSUB_offset = $this->GDEFdata[$this->fontkey]['GSUB_offset'] = $GSUB_offset;
-			$this->GPOS_offset = $this->GDEFdata[$this->fontkey]['GPOS_offset'] = $GPOS_offset;
-			$this->GSUB_length = $this->GDEFdata[$this->fontkey]['GSUB_length'] = $GSUB_length;
-			$this->MarkAttachmentType = $this->GDEFdata[$this->fontkey]['MarkAttachmentType'] = $MarkAttachmentType;
-			$this->MarkGlyphSets = $this->GDEFdata[$this->fontkey]['MarkGlyphSets'] = $MarkGlyphSets;
-			$this->GlyphClassMarks = $this->GDEFdata[$this->fontkey]['GlyphClassMarks'] = $GlyphClassMarks;
-			$this->GlyphClassLigatures = $this->GDEFdata[$this->fontkey]['GlyphClassLigatures'] = $GlyphClassLigatures;
-			$this->GlyphClassComponents = $this->GDEFdata[$this->fontkey]['GlyphClassComponents'] = $GlyphClassComponents;
-			$this->GlyphClassBases = $this->GDEFdata[$this->fontkey]['GlyphClassBases'] = $GlyphClassBases;
+		$fontCacheFilename = $this->fontkey . '.GDEFdata.json';
+		if (!isset($this->GDEFdata[$this->fontkey]) && $this->fontCache->jsonHas($fontCacheFilename)) {
+			$font = $this->fontCache->jsonLoad($fontCacheFilename);
+
+			$this->GSUB_offset = $this->GDEFdata[$this->fontkey]['GSUB_offset'] = $font['GSUB_offset'];
+			$this->GPOS_offset = $this->GDEFdata[$this->fontkey]['GPOS_offset'] = $font['GPOS_offset'];
+			$this->GSUB_length = $this->GDEFdata[$this->fontkey]['GSUB_length'] = $font['GSUB_length'];
+			$this->MarkAttachmentType = $this->GDEFdata[$this->fontkey]['MarkAttachmentType'] = $font['MarkAttachmentType'];
+			$this->MarkGlyphSets = $this->GDEFdata[$this->fontkey]['MarkGlyphSets'] = $font['MarkGlyphSets'];
+			$this->GlyphClassMarks = $this->GDEFdata[$this->fontkey]['GlyphClassMarks'] = $font['GlyphClassMarks'];
+			$this->GlyphClassLigatures = $this->GDEFdata[$this->fontkey]['GlyphClassLigatures'] = $font['GlyphClassLigatures'];
+			$this->GlyphClassComponents = $this->GDEFdata[$this->fontkey]['GlyphClassComponents'] = $font['GlyphClassComponents'];
+			$this->GlyphClassBases = $this->GDEFdata[$this->fontkey]['GlyphClassBases'] = $font['GlyphClassBases'];
 		} else {
 			$this->GSUB_offset = $this->GDEFdata[$this->fontkey]['GSUB_offset'];
 			$this->GPOS_offset = $this->GDEFdata[$this->fontkey]['GPOS_offset'];
@@ -297,13 +301,12 @@ class Otl
 				}
 			}
 
-			////////////////////////////////////////////////////////////////
 			// This is just for the font_dump_OTL utility to set script and langsys override
-			if (isset($this->mpdf->overrideOTLsettings) && isset($this->mpdf->overrideOTLsettings[$this->fontkey])) {
+			// $mpdf->overrideOTLsettings does not exist, this is never called
+			/*if (isset($this->mpdf->overrideOTLsettings) && isset($this->mpdf->overrideOTLsettings[$this->fontkey])) {
 				$GSUBscriptTag = $GPOSscriptTag = $this->mpdf->overrideOTLsettings[$this->fontkey]['script'];
 				$GSUBlangsys = $GPOSlangsys = $this->mpdf->overrideOTLsettings[$this->fontkey]['lang'];
-			}
-			////////////////////////////////////////////////////////////////
+			}*/
 
 			if (!$GSUBscriptTag && !$GSUBlangsys && !$GPOSscriptTag && !$GPOSlangsys) {
 				// Remove ZWJ and ZWNJ
@@ -365,16 +368,18 @@ class Otl
 				$this->GSUBfont = $this->fontkey . '.GSUB.' . $GSUBscriptTag . '.' . $GSUBlangsys;
 
 				if (!isset($this->GSUBdata[$this->GSUBfont])) {
-					if ($this->fontCache->has($this->mpdf->CurrentFont['fontkey'] . '.GSUB.' . $GSUBscriptTag . '.' . $GSUBlangsys . '.php')) {
-						include $this->fontCache->tempFilename($this->mpdf->CurrentFont['fontkey'] . '.GSUB.' . $GSUBscriptTag . '.' . $GSUBlangsys . '.php');
-						$this->GSUBdata[$this->GSUBfont]['rtlSUB'] = $rtlSUB;
-						$this->GSUBdata[$this->GSUBfont]['finals'] = $finals;
+					$fontCacheFilename = $this->GSUBfont . '.json';
+					if ($this->fontCache->jsonHas($fontCacheFilename)) {
+						$font = $this->fontCache->jsonLoad($fontCacheFilename);
+
+						$this->GSUBdata[$this->GSUBfont]['rtlSUB'] = $font['rtlSUB'];
+						$this->GSUBdata[$this->GSUBfont]['finals'] = $font['finals'];
 						if ($this->shaper == 'I') {
-							$this->GSUBdata[$this->GSUBfont]['rphf'] = $rphf;
-							$this->GSUBdata[$this->GSUBfont]['half'] = $half;
-							$this->GSUBdata[$this->GSUBfont]['pref'] = $pref;
-							$this->GSUBdata[$this->GSUBfont]['blwf'] = $blwf;
-							$this->GSUBdata[$this->GSUBfont]['pstf'] = $pstf;
+							$this->GSUBdata[$this->GSUBfont]['rphf'] = $font['rphf'];
+							$this->GSUBdata[$this->GSUBfont]['half'] = $font['half'];
+							$this->GSUBdata[$this->GSUBfont]['pref'] = $font['pref'];
+							$this->GSUBdata[$this->GSUBfont]['blwf'] = $font['blwf'];
+							$this->GSUBdata[$this->GSUBfont]['pstf'] = $font['pstf'];
 						}
 					} else {
 						$this->GSUBdata[$this->GSUBfont] = ['rtlSUB' => [], 'rphf' => [], 'rphf' => [],
@@ -383,9 +388,9 @@ class Otl
 					}
 				}
 
-				if (!isset($this->GSUBdata[$this->fontkey])) {
-					include $this->fontCache->tempFilename($this->fontkey . '.GSUBdata.php');
-					$this->GSLuCoverage = $this->GSUBdata[$this->fontkey]['GSLuCoverage'] = $GSLuCoverage;
+				$fontCacheFilename = $this->fontkey . '.GSUBdata.json';
+				if (!isset($this->GSUBdata[$this->fontkey]) && $this->fontCache->jsonHas($fontCacheFilename)) {
+					$this->GSLuCoverage = $this->GSUBdata[$this->fontkey]['GSLuCoverage'] = $this->fontCache->jsonLoad($fontCacheFilename);
 				} else {
 					$this->GSLuCoverage = $this->GSUBdata[$this->fontkey]['GSLuCoverage'];
 				}
@@ -1021,9 +1026,9 @@ class Otl
 
 				// 6. Load GPOS data, Coverage & Lookups
 				//=================================================================
-				if (!isset($this->GPOSdata[$this->fontkey])) {
-					include $this->fontCache->tempFilename($this->mpdf->CurrentFont['fontkey'] . '.GPOSdata.php');
-					$this->LuCoverage = $this->GPOSdata[$this->fontkey]['LuCoverage'] = $LuCoverage;
+				$fontCacheFilename = $this->mpdf->CurrentFont['fontkey'] . '.GPOSdata.json';
+				if (!isset($this->GPOSdata[$this->fontkey]) && $this->fontCache->jsonHas($fontCacheFilename)) {
+					$this->LuCoverage = $this->GPOSdata[$this->fontkey]['LuCoverage'] = $this->fontCache->jsonLoad($fontCacheFilename);
 				} else {
 					$this->LuCoverage = $this->GPOSdata[$this->fontkey]['LuCoverage'];
 				}
@@ -1188,7 +1193,7 @@ class Otl
 				}
 				$newchar_data[$ectr] = ['bidi_class' => $this->schOTLdata[$sch][$i]['bidi_type'], 'uni' => $this->schOTLdata[$sch][$i]['uni']];
 				$newgroup .= $this->schOTLdata[$sch][$i]['group'];
-				$e.=code2utf($this->schOTLdata[$sch][$i]['uni']);
+				$e .= UtfString::code2utf($this->schOTLdata[$sch][$i]['uni']);
 				if (isset($this->mpdf->CurrentFont['subset'])) {
 					$this->mpdf->CurrentFont['subset'][$this->schOTLdata[$sch][$i]['uni']] = $this->schOTLdata[$sch][$i]['uni'];
 				}
@@ -1198,7 +1203,6 @@ class Otl
 		$this->OTLdata['GPOSinfo'] = $newGPOSinfo;
 		$this->OTLdata['char_data'] = $newchar_data;
 		$this->OTLdata['group'] = $newgroup;
-
 
 		// This leaves OTLdata::GPOSinfo, ::bidi_type, & ::group
 
@@ -1626,7 +1630,7 @@ class Otl
 		return 0;
 	}
 
-	function _applyGSUBsubtable($lookupID, $subtable, $ptr, $currGlyph, $currGID, $subtable_offset, $Type, $Flag, $MarkFilteringSet, $LuCoverage, $level = 0, $currentTag, $is_old_spec, $tagInt)
+	function _applyGSUBsubtable($lookupID, $subtable, $ptr, $currGlyph, $currGID, $subtable_offset, $Type, $Flag, $MarkFilteringSet, $LuCoverage, $level, $currentTag, $is_old_spec, $tagInt)
 	{
 		$ignore = $this->_getGCOMignoreString($Flag, $MarkFilteringSet);
 
@@ -2910,10 +2914,10 @@ class Otl
 			// not in $this->arabLeftJoining i.e. not a char which can join to the next one
 			if (isset($chars[$n]) && isset($this->arabLeftJoining[hexdec($chars[$n])])) {
 				// if in the middle of Syriac words
-				if (isset($chars[$i + 1]) && preg_match('/[\x{0700}-\x{0745}]/u', code2utf(hexdec($chars[$n]))) && preg_match('/[\x{0700}-\x{0745}]/u', code2utf(hexdec($chars[$i + 1]))) && isset($this->arabGlyphs[$char][4])) {
+				if (isset($chars[$i + 1]) && preg_match('/[\x{0700}-\x{0745}]/u', UtfString::code2utf(hexdec($chars[$n]))) && preg_match('/[\x{0700}-\x{0745}]/u', UtfString::code2utf(hexdec($chars[$i + 1]))) && isset($this->arabGlyphs[$char][4])) {
 					$retk = 4;
 				} // if at the end of Syriac words
-				elseif (!isset($chars[$i + 1]) || !preg_match('/[\x{0700}-\x{0745}]/u', code2utf(hexdec($chars[$i + 1])))) {
+				elseif (!isset($chars[$i + 1]) || !preg_match('/[\x{0700}-\x{0745}]/u', UtfString::code2utf(hexdec($chars[$i + 1])))) {
 					// if preceding base character IS (00715|00716|0072A)
 					if (strpos('0715|0716|072A', $chars[$n]) !== false && isset($this->arabGlyphs[$char][6])) {
 						$retk = 6;
@@ -3081,11 +3085,6 @@ class Otl
 	private function checkwordmatch(&$dict, $ptr)
 	{
 		/*
-		  define("_DICT_NODE_TYPE_SPLIT", 0x01);
-		  define("_DICT_NODE_TYPE_LINEAR", 0x02);
-		  define("_DICT_INTERMEDIATE_MATCH", 0x03);
-		  define("_DICT_FINAL_MATCH", 0x04);
-
 		  Node type: Split.
 		  Divide at < 98 >= 98
 		  Offset for >= 98 == 79    (long 4-byte unsigned)
@@ -3102,7 +3101,7 @@ class Otl
 		$ok = true;
 		$matches = [];
 		while ($ok) {
-			$x = ord($dict{$dictptr});
+			$x = ord($dict[$dictptr]);
 			$c = $this->OTLdata[$ptr]['uni'] & 0xFF;
 			if ($x == static::_DICT_INTERMEDIATE_MATCH) {
 //echo "DICT_INTERMEDIATE_MATCH: ".dechex($c).'<br />';
@@ -3121,11 +3120,11 @@ class Otl
 			} elseif ($x == static::_DICT_NODE_TYPE_LINEAR) {
 //echo "DICT_NODE_TYPE_LINEAR: ".dechex($c).'<br />';
 				$dictptr++;
-				$m = ord($dict{$dictptr});
+				$m = ord($dict[$dictptr]);
 				if ($c == $m) {
 					$ptr++;
 					if ($ptr > count($this->OTLdata) - 1) {
-						$next = ord($dict{$dictptr + 1});
+						$next = ord($dict[$dictptr + 1]);
 						if ($next == static::_DICT_INTERMEDIATE_MATCH || $next == static::_DICT_FINAL_MATCH) {
 							// Do not match if next character in text is a Mark
 							if (isset($this->OTLdata[$ptr]['uni']) && strpos($this->GlyphClassMarks, $this->OTLdata[$ptr]['hex']) === false) {
@@ -3143,13 +3142,13 @@ class Otl
 			} elseif ($x == static::_DICT_NODE_TYPE_SPLIT) {
 //echo "DICT_NODE_TYPE_SPLIT ON ".dechex($d).": ".dechex($c).'<br />';
 				$dictptr++;
-				$d = ord($dict{$dictptr});
+				$d = ord($dict[$dictptr]);
 				if ($c < $d) {
 					$dictptr += 5;
 				} else {
 					$dictptr++;
 					// Unsigned long 32-bit offset
-					$offset = (ord($dict{$dictptr}) * 16777216) + (ord($dict{$dictptr + 1}) << 16) + (ord($dict{$dictptr + 2}) << 8) + ord($dict{$dictptr + 3});
+					$offset = (ord($dict[$dictptr]) * 16777216) + (ord($dict[$dictptr + 1]) << 16) + (ord($dict[$dictptr + 2]) << 8) + ord($dict[$dictptr + 3]);
 					$dictptr = $offset;
 				}
 			} else {
@@ -3280,14 +3279,14 @@ class Otl
 		return $pos;
 	}
 
-	private function _applyGPOSsubtable($lookupID, $subtable, $ptr, $currGlyph, $currGID, $subtable_offset, $Type, $Flag, $MarkFilteringSet, $LuCoverage, $tag, $level = 0, $is_old_spec)
+	private function _applyGPOSsubtable($lookupID, $subtable, $ptr, $currGlyph, $currGID, $subtable_offset, $Type, $Flag, $MarkFilteringSet, $LuCoverage, $tag, $level, $is_old_spec)
 	{
 		if (($Flag & 0x0001) == 1) {
 			$dir = 'RTL';
-		} // only used for Type 3
-		else {
+		} else { // only used for Type 3
 			$dir = 'LTR';
 		}
+
 		$ignore = $this->_getGCOMignoreString($Flag, $MarkFilteringSet);
 
 		// Lets start
@@ -4583,7 +4582,7 @@ class Otl
 	 * WS    Whitespace          Space, figure space, line separator, form feed, General Punctuation spaces, ...
 	 * ON    Other Neutrals      All other characters, including OBJECT REPLACEMENT CHARACTER
 	 */
-	public function bidiSort($ta, $str = '', $dir, &$chunkOTLdata, $useGPOS)
+	public function bidiSort($ta, $str, $dir, &$chunkOTLdata, $useGPOS)
 	{
 
 		$pel = 0; // paragraph embedding level
@@ -4596,7 +4595,6 @@ class Otl
 		} else {
 			$pel = 0;
 		}
-
 
 		// X1. Begin by setting the current embedding level to the paragraph embedding level. Set the directional override status to neutral.
 		// Current Embedding Level
@@ -4682,7 +4680,7 @@ class Otl
 				} else {
 					$gpos = '';
 				}
-				$chardata[] = ['char' => $chunkOTLdata['char_data'][$i]['uni'], 'level' => $cel, 'type' => $chardir, 'group' => $chunkOTLdata['group']{$i}, 'GPOSinfo' => $gpos];
+				$chardata[] = ['char' => $chunkOTLdata['char_data'][$i]['uni'], 'level' => $cel, 'type' => $chardir, 'group' => $chunkOTLdata['group'][$i], 'GPOSinfo' => $gpos];
 			}
 		}
 
@@ -4954,7 +4952,7 @@ class Otl
 		$cctr = 0;
 		$rtl_content = 0x0;
 		foreach ($chardata as $cd) {
-			$e.=code2utf($cd['char']);
+			$e .= UtfString::code2utf($cd['char']);
 			$group .= $cd['group'];
 			if ($useGPOS && is_array($cd['GPOSinfo'])) {
 				$GPOS[$cctr] = $cd['GPOSinfo'];
@@ -5390,7 +5388,7 @@ class Otl
 									$nc2++;
 									$i2 = 0;
 								}
-								if ($para[$nc2][18]['char_data'][$i2]['diid'] != $ir) {
+								if (!isset($para[$nc2][18]['char_data'][$i2]['diid']) || $para[$nc2][18]['char_data'][$i2]['diid'] != $ir) {
 									continue;
 								}
 								$nexttype = $para[$nc2][18]['char_data'][$i2]['type'];
@@ -5576,7 +5574,7 @@ class Otl
 		$numchunks = count($content);
 		$maxlevel = 0;
 		for ($nc = 0; $nc < $numchunks; $nc++) {
-			$numchars = count($cOTLdata[$nc]['char_data']);
+			$numchars = isset($cOTLdata[$nc]['char_data']) ? count($cOTLdata[$nc]['char_data']) : 0;
 			for ($i = 0; $i < $numchars; ++$i) {
 				$carac = [];
 				if (isset($cOTLdata[$nc]['GPOSinfo'][$i])) {
@@ -5592,7 +5590,7 @@ class Otl
 				if (isset($cOTLdata[$nc]['char_data'][$i]['orig_type'])) {
 					$carac['orig_type'] = $cOTLdata[$nc]['char_data'][$i]['orig_type'];
 				}
-				$carac['group'] = $cOTLdata[$nc]['group']{$i};
+				$carac['group'] = $cOTLdata[$nc]['group'][$i];
 				$carac['chunkid'] = $chunkorder[$nc]; // gives font id and/or object ID
 
 				$maxlevel = max((isset($carac['level']) ? $carac['level'] : 0), $maxlevel);
@@ -5626,7 +5624,6 @@ class Otl
 				break;
 			}
 		}
-
 
 		// L2. From the highest level found in the text to the lowest odd level on each line, including intermediate levels not actually present in the text, reverse any contiguous sequence of characters that are at that level or higher.
 		for ($j = $maxlevel; $j > 0; $j--) {
@@ -5663,8 +5660,6 @@ class Otl
 		$cOTLdata = [];
 		$chunkorder = [];
 
-
-
 		$nc = -1; // New chunk order ID
 		$chunkid = -1;
 
@@ -5677,7 +5672,7 @@ class Otl
 				$cOTLdata[$nc]['group'] = '';
 			}
 			if ($carac['uni'] != 0xFFFC) {   // Object replacement character (65532)
-				$content[$nc] .= code2utf($carac['uni']);
+				$content[$nc] .= UtfString::code2utf($carac['uni']);
 				$cOTLdata[$nc]['group'] .= $carac['group'];
 				if (!empty($carac['GPOSinfo'])) {
 					if (isset($carac['GPOSinfo'])) {
@@ -5796,7 +5791,7 @@ class Otl
 
 	public function trimOTLdata(&$cOTLdata, $Left = true, $Right = true)
 	{
-		$len = count($cOTLdata['char_data']);
+		$len = (!is_array($cOTLdata) || $cOTLdata['char_data'] === null) ? 0 : count($cOTLdata['char_data']);
 		$nLeft = 0;
 		$nRight = 0;
 		for ($i = 0; $i < $len; $i++) {
@@ -6067,38 +6062,47 @@ class Otl
 					if (isset($ScriptLang['beng'])) {
 						return ['beng', true];
 					}
+					// fallthrough
 				case 'dev2':
 					if (isset($ScriptLang['deva'])) {
 						return ['deva', true];
 					}
+					// fallthrough
 				case 'gjr2':
 					if (isset($ScriptLang['gujr'])) {
 						return ['gujr', true];
 					}
+					// fallthrough
 				case 'gur2':
 					if (isset($ScriptLang['guru'])) {
 						return ['guru', true];
 					}
+					// fallthrough
 				case 'knd2':
 					if (isset($ScriptLang['knda'])) {
 						return ['knda', true];
 					}
+					// fallthrough
 				case 'mlm2':
 					if (isset($ScriptLang['mlym'])) {
 						return ['mlym', true];
 					}
+					// fallthrough
 				case 'ory2':
 					if (isset($ScriptLang['orya'])) {
 						return ['orya', true];
 					}
+					// fallthrough
 				case 'tml2':
 					if (isset($ScriptLang['taml'])) {
 						return ['taml', true];
 					}
+					// fallthrough
 				case 'tel2':
 					if (isset($ScriptLang['telu'])) {
 						return ['telu', true];
 					}
+					// fallthrough
 				case 'mym2':
 					if (isset($ScriptLang['mymr'])) {
 						return ['mymr', true];

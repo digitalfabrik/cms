@@ -166,6 +166,7 @@ class IntegreatSettingConfig {
 		$site = get_blog_details(get_current_blog_id());
 		$location_prefix = null;
 		$location_name = $site->blogname;
+		$logo = null;
 		foreach (self::PREFIXES as $prefix) {
 			if (strpos($site->blogname, $prefix) === 0) {
 				$location_prefix = $prefix;
@@ -235,6 +236,10 @@ class IntegreatSettingConfig {
 				'setting_id' => IntegreatSetting::get_setting_by_alias('push-notifications')->id,
 				'value' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-pn'")
 			]),
+            new IntegreatSettingConfig([
+                'setting_id' => IntegreatSetting::get_setting_by_alias('logo')->id,
+                'value' => $logo
+            ]),
 			new IntegreatSettingConfig([
 				'setting_id' => IntegreatSetting::get_setting_by_alias('hidden')->id,
 				'value' => (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature)
@@ -268,6 +273,12 @@ class IntegreatSettingConfig {
 	}
 
 	public static function form() {
+        wp_enqueue_media();
+        wp_enqueue_script(
+            'media-field',
+            plugins_url('../js/media-field.js', __FILE__),
+            ['jquery']
+        );
 		$form = '
 			<form action="' . $_SERVER['REQUEST_URI'] . '" method="post">
 		';
@@ -302,10 +313,50 @@ class IntegreatSettingConfig {
 					</div>
 					<br><br><br>
 				';
-			}
-		}
+			} elseif ($setting->type === 'media') {
+			    $image_src = isset($setting_config->value) ? wp_get_attachment_image_url($setting_config->value, 'full') : '';
+			    $wrapper_display = isset($setting_config->value) ? 'block' : 'none';
+                $function_call = isset($setting_config->value)
+                    ? 'ig_media_field("' . $setting->id . '", ' . $setting_config->value . '); ig_media_field_delete("' . $setting->id . '");'
+                    : 'ig_media_field("' . $setting->id . '");';
+                $delete = isset($setting_config->value) ? '
+                    <button id="image_delete-' . $setting->id . '"
+                            style="color: #ff0000;">
+                                ' . __("Delete") . '
+                     </button>
+                ' : '';
+                $form .= '
+			        <div style="display: flex; padding-bottom: 20px;">
+			            <label for="' . $setting->id . '"
+			                   style="display: flex; flex-direction: column; justify-content: center;">
+			                ' . htmlspecialchars($setting->name) . '
+			            </label>
+			            <div>
+                            <div id="image-preview-wrapper-' . $setting->id . '"
+                                 style="display: ' . $wrapper_display . ';">
+                                <img id="image-preview-' . $setting->id . '"
+                                     src="' . $image_src . '"
+                                     style="max-width: 150px; max-height: 150px;"/>
+                            </div>
+                            <input id="upload_image_button-' . $setting->id . '"
+                                   type="button"
+                                   class="button"
+                                   value="' . __("Select Image") . '" />
+                            <input type="hidden"
+                                   name="' . $setting->id . '"
+                                   id="image_attachment_id-' . $setting->id . '"
+                                   value="' . $setting_config->value . '" />
+                            ' . $delete . '
+                        </div>
+			        </div>
+			        <script type="text/javascript">
+			            document.addEventListener("DOMContentLoaded", function(event) { ' . $function_call . ' }); 
+			        </script>
+			    ';
+            }
+ 		}
 		$form .= '
-				<input class="button button-primary" type="submit" name="submit" value=" Save ">
+				<input class="button button-primary" type="submit" name="submit" value="' . __('Save') . '">
 			</form>
 		';
 		return $form;
@@ -340,7 +391,11 @@ class IntegreatSettingConfig {
 					}
 				} elseif ($setting->type === 'float') {
 					$setting_config->value = floatval($_POST[$setting_config->setting_id]);
-				}
+				} elseif ($setting->type === 'media') {
+				    $setting_config->value = isset($_POST[$setting_config->setting_id])
+                        ? $_POST[$setting_config->setting_id]
+                        : null;
+                }
 				if (!$setting_config->validate()) {
 					$error_occurred = true;
 					continue;
