@@ -14,7 +14,7 @@ function fcm_rest_api_messages ( $language, $to = Null ) {
     $n = 0;
     foreach ( $messages as $message ) {
         if ( $message['answer'] != Null && ( $to === Null || $message['request']['to'] == "/topics/" . $to ) ) {
-            $return[$n]['timestap'] = $message['timestamp'];
+            $return[$n]['timestamp'] = $message['timestamp'];
             $return[$n]['title'] = $message['request']['notification']['title'];
             $return[$n]['message'] = $message['request']['notification']['body'];
             $n++;
