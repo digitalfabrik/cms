@@ -1,4 +1,5 @@
 Header set Access-Control-Allow-Origin "*"
+Header add Access-Control-Allow-Headers "accept, authorization, content-type, origin, x-requested-with, x-integreat-development"
 
 RewriteEngine On
 RewriteBase /wordpress
