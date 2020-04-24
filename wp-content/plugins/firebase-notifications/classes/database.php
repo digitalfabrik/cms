@@ -126,6 +126,9 @@ class FirebaseNotificationsDatabase {
 
     /**
      * Retrieve FCM messages from database for current blog.
+     * If id is set, only the message with the corresponding id
+     * will be retrieved. If timestamp is set, only messages newer
+     * than the timestamp will be retrieved.
      *
      * @param array $args contains filters for query
      * @return array
@@ -133,6 +136,7 @@ class FirebaseNotificationsDatabase {
     public function get_messages( $args = array() ) {
         global $wpdb;
         $defaults = array(
+            'id' => Null,
             'order' => 'DESC',
             'orderby' => 'timestamp',
             'limit' => False,
@@ -140,8 +144,11 @@ class FirebaseNotificationsDatabase {
         );
         $args = wp_parse_args( $args, $defaults );
         $query = "SELECT * FROM " . $wpdb->prefix . "fcm_messages ";
-        if ( $args['timestamp'] != 0 ) {
-            $query .= "WHERE timestamp >= '" . $args['timestamp'] . "' ";
+        if ( $args['id'] !== Null ) {
+            $id = (int)$args['id'];
+            $query .= "WHERE id=$id ";
+        } elseif ( $args['timestamp'] != 0 ) {
+           $query .= "WHERE timestamp >= '" . $args['timestamp'] . "' ";
         }
         $query .= "ORDER BY " . $args['orderby'] . " " . $args['order'] . ( $args['limit'] != False ? " Limit " . $args['limit'] : "");
         if($results = $wpdb->get_results( $query )) {
@@ -185,11 +192,13 @@ class FirebaseNotificationsDatabase {
      * @param string $lang language code
      * @param integer $amount number of messages that are returned, 0 = all
      * @param integer $timestamp only get messages after this time
+     * @param integer $id get one specific item
      * @return array of messages as assoc arrays
      */
-    public function messages_by_language( $lang = ICL_LANGUAGE_CODE, $amount = 10, $timestamp = 0 ) {
+    public function messages_by_language( $lang = ICL_LANGUAGE_CODE, $amount = 10, $timestamp = 0, $id = Null ) {
         $fcmdb = New FirebaseNotificationsDatabase();
         $args = array(
+            'id' => ( $id === Null ? Null : $id ),
             'order' => 'DESC',
             'orderby' => 'timestamp',
             'limit' => False,
