@@ -107,8 +107,9 @@ function ig_ds_parse_pages( $language ) {
 }
 
 function ig_ds_filter_resources ( $resource, $filters ) {
+    $domain = get_bloginfo("wpurl");
     foreach ( $filters as $filter ) {
-        if ( substr( $resource, -(strlen($filter))) == $filter )
+        if ( substr( $resource, (strlen($domain))) == $domain && substr( $resource, -(strlen($filter))) == $filter )
             return true;
     }
     return false;
