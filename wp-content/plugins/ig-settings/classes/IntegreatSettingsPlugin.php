@@ -263,7 +263,7 @@ class IntegreatSettingsPlugin {
 						alias = 'name_without_prefix' OR
 						alias = 'plz' OR
 						alias = 'events' OR
-						alias = 'push-notifications' OR
+						alias = 'push_notifications' OR
 						alias = 'tunews' OR
 						alias = 'logo' OR
 						alias = 'aliases' OR
