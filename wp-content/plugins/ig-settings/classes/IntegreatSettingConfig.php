@@ -233,7 +233,7 @@ class IntegreatSettingConfig {
 				'value' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-evts'")
 			]),
 			new IntegreatSettingConfig([
-				'setting_id' => IntegreatSetting::get_setting_by_alias('push-notifications')->id,
+				'setting_id' => IntegreatSetting::get_setting_by_alias('push_notifications')->id,
 				'value' => $wpdb->get_var("SELECT option_value FROM $wpdb->options WHERE option_name = 'ige-pn'")
 			]),
             new IntegreatSettingConfig([

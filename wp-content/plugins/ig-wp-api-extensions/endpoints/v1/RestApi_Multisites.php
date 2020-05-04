@@ -36,7 +36,7 @@ class RestApi_MultisitesV1 extends RestApi_ExtensionBase {
 			$result = array_merge($result, [
 				'ige-zip' => apply_filters('ig-settings-legacy', $settings, 'plz'),
 				'ige-evts' => apply_filters('ig-settings-legacy', $settings, 'events'),
-				'ige-pn' => apply_filters('ig-settings-legacy', $settings, 'push-notifications'),
+				'ige-pn' => apply_filters('ig-settings-legacy', $settings, 'push_notifications'),
 				'ige-srl' => apply_filters('ig-extras-legacy', $extras, 'serlo-abc'),
 				'ige-sbt' => apply_filters('ig-extras-legacy', $extras, 'sprungbrett', true),
 				'ige-lr' => apply_filters('ig-extras-legacy', $extras, 'lehrstellen-radar'),

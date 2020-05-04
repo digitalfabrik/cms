@@ -151,7 +151,7 @@ class IntegreatSetting {
 			]),
             new IntegreatSetting([
                 'name' => 'Pushnachrichten',
-                'alias' => 'push-notifications',
+                'alias' => 'push_notifications',
                 'type' => 'bool'
             ]),
             new IntegreatSetting([
