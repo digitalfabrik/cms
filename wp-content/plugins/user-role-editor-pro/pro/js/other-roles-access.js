@@ -1,6 +1,6 @@
-jQuery(function() {
-
-    jQuery("#ure_other_roles_access_button").button({
+jQuery(function($) {
+    
+    $('#ure_other_roles_access_button').button({
         label: ure_data_other_roles_access.other_roles
     }).click(function(event) {
         event.preventDefault();
@@ -10,43 +10,48 @@ jQuery(function() {
 });
 
 
-
 function ure_other_roles_access_dialog_prepare() {
-    if (!jQuery('#edit_users').is(':checked')) {
-        alert(ure_data_other_roles_access.edit_users_required);
-        return;
-    }
-    jQuery.ajax({
-        url: ajaxurl,
-        type: 'POST',
-        dataType: 'html',
-        data: {
-            action: 'ure_ajax',
-            sub_action: 'get_roles_list',
-            current_role: ure_current_role,
-            network_admin: ure_data.network_admin,
-            wp_nonce: ure_data.wp_nonce
-        },
-        success: function(response) {
-            var data = jQuery.parseJSON(response);
-            if (typeof data.result !== 'undefined') {
-                if (data.result === 'success') {                    
-                    ure_other_roles_access_dialog(data);
-                } else if (data.result === 'failure') {
-                    alert(data.message);
+
+    jQuery(function($) {
+        if ( ure_data_other_roles_access.not_block_local_admin==1 && $('#user_role').val()==='administrator' ) {
+            alert( ure_data_other_roles_access.not_applicable_to_admin );
+            return;
+        }
+        if (!$('#edit_users').is(':checked')) {
+            alert(ure_data_other_roles_access.edit_users_required);
+            return;
+        }
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            dataType: 'html',
+            data: {
+                action: 'ure_ajax',
+                sub_action: 'get_roles_list',
+                current_role: ure_current_role,
+                network_admin: ure_data.network_admin,
+                wp_nonce: ure_data.wp_nonce
+            },
+            success: function(response) {
+                var data = $.parseJSON(response);
+                if (typeof data.result !== 'undefined') {
+                    if (data.result === 'success') {                    
+                        ure_other_roles_access_dialog(data);
+                    } else if (data.result === 'failure') {
+                        alert(data.message);
+                    } else {
+                        alert('Wrong response: ' + response)
+                    }
                 } else {
                     alert('Wrong response: ' + response)
                 }
-            } else {
-                alert('Wrong response: ' + response)
-            }
-        },
-        error: function(XMLHttpRequest, textStatus, exception) {
-            alert("Ajax failure\n" + exception);
-        },
-        async: true
-    });    
-    
+            },
+            error: function(XMLHttpRequest, textStatus, exception) {
+                alert("Ajax failure\n" + exception);
+            },
+            async: true
+        });    
+    });
 }
 
 

@@ -68,7 +68,7 @@ input.warning:hover, a.warning:hover {
   padding-left: 20px;
 }
 
-.hidden {
+.filtered, .hidden {
 	display: none;
 }
 

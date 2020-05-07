@@ -163,7 +163,7 @@ class Two_Factor_Backup_Codes extends Two_Factor_Provider {
 							// Update counter.
 							$( '.two-factor-backup-codes-count' ).html( response.data.i18n.count );
 
-							// Build the download link
+							// Build the download link.
 							var txt_data = 'data:application/text;charset=utf-8,' + '\n';
 							txt_data += response.data.i18n.title.replace( /%s/g, document.domain ) + '\n\n';
 
@@ -186,7 +186,7 @@ class Two_Factor_Backup_Codes extends Two_Factor_Provider {
 	 * @since 0.1-dev
 	 *
 	 * @param WP_User $user WP_User object of the logged-in user.
-	 * @param array   $args Optional arguments for assinging new codes.
+	 * @param array   $args Optional arguments for assigning new codes.
 	 * @return array
 	 */
 	public function generate_codes( $user, $args = '' ) {

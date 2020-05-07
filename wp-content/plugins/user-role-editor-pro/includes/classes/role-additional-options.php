@@ -62,11 +62,7 @@ class URE_Role_Additional_Options {
 
     
     public function set_active_items_hooks() {
-        
-        if (current_user_can('ure_edit_roles')) {
-            return;
-        }
-                
+                        
         $current_user = wp_get_current_user();
         foreach($current_user->roles as $role) {
             if (!isset($this->active_items[$role])) {

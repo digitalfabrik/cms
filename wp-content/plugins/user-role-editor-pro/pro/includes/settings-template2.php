@@ -33,7 +33,15 @@ $admin_menu_access_url_args_link_display = $activate_admin_menu_access_module==1
         <td>
         </td>
       </tr>
-      
+      <tr>
+        <td>
+            <input type="checkbox" name="activate_nav_menus_access_module" id="activate_nav_menus_access_module" value="1" 
+            <?php checked( $activate_nav_menus_access_module, 1 ); ?> /> 
+            <label for="activate_nav_menus_access_module"><?php esc_html_e( 'Activate Navigation Menus Access module', 'user-role-editor' ); ?></label>
+        </td>
+        <td>
+        </td>
+      </tr>
       <tr>
         <td>
             <input type="checkbox" name="activate_widgets_access_module" id="activate_widgets_access_module" value="1" 
@@ -83,7 +91,16 @@ $admin_menu_access_url_args_link_display = $activate_admin_menu_access_module==1
         <td>
             <input type="checkbox" name="activate_page_permissions_viewer" id="activate_page_permissions_viewer" value="1" 
                 <?php checked($activate_page_permissions_viewer, 1); ?> /> 
-            <label for="activate_page_permissions_viewer"><?php esc_html_e('Activate wp-admin pages pemissions viewer', 'user-role-editor'); ?></label>
+            <label for="activate_page_permissions_viewer"><?php esc_html_e('Activate wp-admin pages permissions viewer', 'user-role-editor'); ?></label>
+        </td>
+        <td>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <input type="checkbox" name="activate_export_roles_csv" id="activate_export_roles_csv" value="1" 
+                <?php checked($activate_export_roles_csv, 1); ?> /> 
+            <label for="activate_export_roles_csv"><?php esc_html_e('Activate export user roles to CSV', 'user-role-editor'); ?></label>
         </td>
         <td>
         </td>

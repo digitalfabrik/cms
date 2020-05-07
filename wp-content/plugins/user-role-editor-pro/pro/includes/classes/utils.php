@@ -116,34 +116,34 @@ class URE_Utils {
      * Return 1st integer from the string, if it follows just after the key. Spaces are ignored;
      * $key - key substring after which we should extract the integer     
      * @param string $key - key substring after which we should extract the integer
-     * @param type $heystack - string from which we should extract the integer
+     * @param type $haystack - string from which we should extract the integer
      * @return integer 
      */     
-    public static function get_int_after_key($key, $heystack) {
+    public static function get_int_after_key( $key, $haystack ) {
        
-        $key_pos = strpos($heystack, $key);
-        if ($key_pos===false) {
+        $key_pos = strpos( $haystack, $key );
+        if ( $key_pos===false ) {
             return 0;
         }
         
-        $key_pos += strlen($key);        
-        $length = strlen($heystack);
+        $key_pos += strlen( $key );
+        $length = strlen( $haystack );
         $str = '';
-        while($key_pos<$length) {
-            $alpha = substr($heystack, $key_pos, 1);
-            if ($alpha==' ') {
+        while( $key_pos < $length ) {
+            $alpha = substr( $haystack, $key_pos, 1 );
+            $key_pos++;
+            if ( $alpha==' ' ) {
                 continue;
             }
-            if (!ctype_digit($alpha)) {
+            if ( !ctype_digit($alpha) ) {
                 break;
             }
-            $str .= $alpha;
-            $key_pos++;
+            $str .= $alpha;            
         }
         
-        $post_id = (int) $str;
+        $value = (int) $str;
         
-        return $post_id;
+        return $value;
     }
     // end of get_int_after_key()
     

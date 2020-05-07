@@ -96,28 +96,28 @@ class URE_User_Other_Roles {
      * @param type $user WP_User from wp-includes/capabilities.php
      * @return array
      */
-    public function get_roles_array($user) {
+    public function get_roles_array( $user ) {
 
-        if (!is_array($user->roles) || count($user->roles) <= 1) {
+        if ( !is_array( $user->roles ) || count( $user->roles )<=1 ) {
             return array();
         }
 
         // get bbPress assigned user role
-        if (function_exists('bbp_filter_blog_editable_roles')) {
-            $bb_press_role = bbp_get_user_role($user->ID);
+        if ( function_exists( 'bbp_filter_blog_editable_roles' ) ) {
+            $bb_press_role = bbp_get_user_role( $user->ID );
         } else {
             $bb_press_role = '';
         }
 
         $roles = array();
-        foreach ($user->roles as $key => $value) {
-            if (!empty($bb_press_role) && $bb_press_role === $value) {
+        foreach ( $user->roles as $role) {
+            if (!empty($bb_press_role) && $bb_press_role === $role) {
                 // exclude bbPress assigned role
                 continue;
             }
-            $roles[] = $value;
+            $roles[] = $role;
         }
-        array_shift($roles); // exclude primary role which is shown by WordPress itself
+        array_shift( $roles ); // exclude primary role which is shown by WordPress itself
 
         return $roles;
     }
@@ -129,7 +129,8 @@ class URE_User_Other_Roles {
                 
         $user_roles = $user->roles;
         $primary_role = array_shift($user_roles);
-        $roles = apply_filters('editable_roles', $wp_roles->roles);    // exclude restricted roles if any        
+        $roles = apply_filters('editable_roles', $wp_roles->roles);    // exclude restricted roles if any   
+        $roles = array_reverse( $roles  );
         if (isset($roles[$primary_role])) { // exclude role assigned to the user as a primary role
             unset($roles[$primary_role]);
         }
@@ -163,10 +164,36 @@ class URE_User_Other_Roles {
     // end of roles_select()    
     
     
+    /**
+     * Returns comma separated string of capabilities directly (not through the roles) assigned to the user
+     * 
+     * @global WP_Roles $wp_roles
+     * @param object $user
+     * @return string
+     */
+    private function get_user_caps_str( $user ) {
+        global $wp_roles;
+        
+        $output = '';
+        foreach ($user->caps as $cap => $value) {
+            if (!$wp_roles->is_role($cap)) {
+                if ('' != $output) {
+                    $output .= ', ';
+                }
+                $output .= $value ? $cap : sprintf(__('Denied: %s'), $cap);
+            }
+        }
+        
+        return $output;
+    }
+    // end of get_user_caps_str()
+    
+    
+    
     private function user_profile_capabilities($user) {
         
         $current_user_id = get_current_user_id();        
-        $user_caps = $this->lib->get_edited_user_caps($user);
+        $user_caps = $this->get_user_caps_str($user);
 ?>
           <tr>
               <th>
@@ -210,6 +237,15 @@ class URE_User_Other_Roles {
     // end of display()
     
     
+    private function is_user_profile_extention_allowed() {
+        // Check if we are not at the network admin center
+        $result = stripos($_SERVER['REQUEST_URI'], 'network/user-edit.php') == false;
+        
+        return $result;
+    }
+    // end of is_user_profile_extention_allowed()
+    
+        
     /**
      * Add URE stuff to the edit user profile page
      * 
@@ -218,7 +254,7 @@ class URE_User_Other_Roles {
      */
     public function edit_user_profile_html($user) {
                 
-        if (!$this->lib->is_user_profile_extention_allowed()) {  
+        if (!$this->is_user_profile_extention_allowed()) {  
             return;
         }
         $show = apply_filters('ure_show_additional_capabilities_section', true);

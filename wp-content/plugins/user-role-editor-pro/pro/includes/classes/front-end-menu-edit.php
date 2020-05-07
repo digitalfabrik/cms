@@ -70,7 +70,7 @@ class URE_Front_End_Menu_Edit extends Walker_Nav_Menu_Edit {
      */
     private function get_custom_fields( $item, $depth, $args = array(), $id = 0 ) {
         ob_start();
-        $item_id = intval( $item->ID );
+
         /**
          * Get menu item custom fields from plugins/themes
          *
@@ -81,7 +81,7 @@ class URE_Front_End_Menu_Edit extends Walker_Nav_Menu_Edit {
          *
          * @return string Custom fields
          */
-        do_action( 'wp_nav_menu_item_custom_fields', $item_id, $item, $depth, $args );
+        do_action( 'wp_nav_menu_item_custom_fields', $id, $item, $depth, $args );
         $output = ob_get_clean();
         
         return $output;

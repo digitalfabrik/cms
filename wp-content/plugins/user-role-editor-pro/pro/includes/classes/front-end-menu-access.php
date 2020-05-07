@@ -18,10 +18,13 @@ class URE_Front_End_Menu_Access {
         
         $this->lib = URE_Lib_Pro::get_instance();
         
-        // switch the admin walker
-        add_filter('wp_edit_nav_menu_walker', array($this, 'get_walker'), 10, 1);
+        $wp_ver = get_bloginfo( 'version' );
+        if ( version_compare( $wp_ver, '5.4', '<' ) ) {
+            // switch the admin walker for WordPress versions earlier than 5.4
+            add_filter('wp_edit_nav_menu_walker', array($this, 'get_walker'), 10, 1);
+        }
         
-        add_action('wp_nav_menu_item_custom_fields', 'URE_Front_End_Menu_View::show');        
+        add_action('wp_nav_menu_item_custom_fields', 'URE_Front_End_Menu_View::show', 10, 2);        
         add_action('admin_enqueue_scripts' , array($this, 'add_js'));
         add_action('wp_update_nav_menu_item', array('URE_Front_End_Menu_Controller', 'update'), 10, 2 );
         
@@ -102,45 +105,70 @@ class URE_Front_End_Menu_Access {
     // end of check_access_to_menu_link()
     
     
-    private function check_menu_item($nav_menu_item) {
+    private function can_user_view( $nav_menu_item ) {
         
-        $available_to = URE_Front_End_Menu_Controller::get($nav_menu_item->ID); 
-        if (empty($available_to) || !is_array($available_to) || empty($available_to['whom'])) {
+        $is_available = true; 
+        // Look if we should hide front-end menu item, if linked page is not visible to a current user
+        $hide_fe_menu = apply_filters( 'ure_hide_fe_menu_if_content_view_prohibited', true );
+        if ( $hide_fe_menu ) {
+            // Check if "Content view restrictions" add-on is active
+            $active = $this->lib->get_option( 'activate_content_for_roles', false );
+            if ( $active ) {                
+                $is_available = $this->check_access_to_menu_link( $nav_menu_item );
+            }
+        }
+        
+        return $is_available;
+    }
+    // end of can_user_view()
+    
+    
+    private function check_menu_item( $nav_menu_item ) {
+        
+        $available_to = URE_Front_End_Menu_Controller::get( $nav_menu_item->ID ); 
+        // TRUE by default
+        $is_available = apply_filters( 'ure_show_front_end_menu_item', true, $nav_menu_item, $available_to );
+        if ( !$is_available ) {
+            return false;
+        }
+                
+        if ( empty( $available_to ) || !is_array( $available_to ) || empty( $available_to['whom'] ) ) {
+            // There are no restrictions from "Front end menu access" add-on
             return true;
         }
         
-        if ($available_to['whom']==1) { // Everyone
+        if ( $available_to['whom']==1 ) { // Everyone
             $is_available = true;
-        } elseif ($available_to['whom']==2 && is_user_logged_in()) {    // Any logged-in user
+        } elseif ( $available_to['whom']==2 && is_user_logged_in() ) {    // Any logged-in user
             $is_available = true;
-        } elseif ($available_to['whom']==3 && is_user_logged_in()) {    // Logged-in user with role(s)            
-            if (empty($available_to['roles'])) {
+        } elseif ( $available_to['whom']==3 && is_user_logged_in() ) {    // Logged-in user with role(s)            
+            if ( empty( $available_to['roles'] ) ) {
                 $is_available = true;
             } else {
-                $is_available = $this->current_user_can_role_from($available_to['roles']);
+                $is_available = $this->current_user_can_role_from( $available_to['roles'] );
             }
-        } elseif ($available_to['whom']==4 && !is_user_logged_in()) {   // Not logged-in only
+        } elseif ( $available_to['whom']==4 && !is_user_logged_in() ) {   // Not logged-in only
             $is_available = true;
-        } elseif ($available_to['whom']==5) { // Not logged-in or logged-in user with selected role
-            if (!is_user_logged_in()) {
+        } elseif ( $available_to['whom']==5 ) { // Not logged-in or logged-in user with selected role
+            if ( !is_user_logged_in() ) {
                 $is_available = true;
             } else {  // check current user roles  
-                if (empty($available_to['roles'])) {
+                if ( empty($available_to['roles'] ) ) {
                     $is_available = true;
                 } else {
-                    $is_available = $this->current_user_can_role_from($available_to['roles']);
+                    $is_available = $this->current_user_can_role_from( $available_to['roles'] );
                 }   
             }
         } else {
             $is_available = false;
         }  
         
-        if ($is_available) {    // Check if current user has access to this menu item link
-            $active = $this->lib->get_option('activate_content_for_roles', false);
-            if ($active) {
-                $is_available = $this->check_access_to_menu_link($nav_menu_item);
-            }
+        if ( $is_available) {   
+            // Check if current user has access to this menu item link
+            $is_available = $this->can_user_view( $nav_menu_item );
         }
+                
+
         
         return $is_available;
     }

@@ -92,8 +92,8 @@ while ( count($EM_Events) > 0 ){
 				$geo = 'GEO:'.$EM_Event->get_location()->location_latitude.";".$EM_Event->get_location()->location_longitude;
 			}
 			if( !defined('EM_ICAL_APPLE_STRUCT') || !EM_ICAL_APPLE_STRUCT ){
-				$apple_location = $EM_Event->output('#_LOCATIONFULLLINE, #_LOCATIONCOUNTRY', 'ical');
-				$apple_location_title = $EM_Event->output('#_LOCATIONNAME', 'ical');
+				$apple_location = str_replace(';', '', html_entity_decode(str_replace('\;', ';', $EM_Event->output('#_LOCATIONFULLLINE, #_LOCATIONCOUNTRY', 'ical'))));
+				$apple_location_title = str_replace('\;', '', html_entity_decode(str_replace('\;', ';', $EM_Event->output('#_LOCATIONNAME', 'ical'))));
 				$apple_geo = !empty($geo) ? $EM_Event->get_location()->location_latitude.",".$EM_Event->get_location()->location_longitude:'0,0';
 				$apple_structured_location = "X-APPLE-STRUCTURED-LOCATION;VALUE=URI;X-ADDRESS={$apple_location};X-APPLE-RADIUS=100;X-TITLE={$apple_location_title}:geo:{$apple_geo}";
 				$apple_structured_location = str_replace('"', '\"', $apple_structured_location); //google chucks a wobbly with these on this line

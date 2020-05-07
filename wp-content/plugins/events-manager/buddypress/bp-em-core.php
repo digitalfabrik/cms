@@ -78,8 +78,9 @@ class BP_EM_Component extends BP_Component {
 		/* Add 'Events' to the main user profile navigation */
 		$event_count = EM_Events::count( array( 'scope'=>'future',  'owner'=> bp_displayed_user_id() ));
 		if( empty($event_count) ) $event_count = 0;
+		$event_count_span = $event_count > 0 ? ' <span class="count">'.esc_html($event_count).'</span>':'';
 		$main_nav = array(
-			'name' => __( 'Events', 'events-manager'). '<span>'.esc_html($event_count).'</span>',
+			'name' => __( 'Events', 'events-manager'). $event_count_span,
 			'slug' => em_bp_get_slug(),
 			'position' => 80,
 			'screen_function' => 'bp_em_events',

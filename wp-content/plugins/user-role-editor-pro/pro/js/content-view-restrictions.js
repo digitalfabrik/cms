@@ -8,44 +8,8 @@
 
 jQuery(document).ready(function(){
     ure_post_view_roles_button();
-    
-    ure_selected_roles_refresh();
-    jQuery('input[name="ure_content_view_whom"]').click(function() {
-        ure_selected_roles_refresh();
-    });
-    
-    ure_post_access_error_action_select();
-    jQuery('input[name="ure_post_access_error_action"]').click(function(){
-        ure_post_access_error_action_select();
-    });
-    
+            
 });    
-
-
-function ure_selected_roles_refresh() {
-    var selected = jQuery('input[name="ure_content_view_whom"]:checked', '#post').val();
-    if (selected==1 || selected==2) { // All users or Any user with role (logged in only)
-        jQuery('#ure_selected_roles_container').hide();
-    } else {    // show custom error message
-        jQuery('#ure_selected_roles_container').show();
-    }
-}
-
-function ure_post_access_error_action_select() {
-    
-    if (jQuery('input[name=ure_post_access_error_action]:checked', '#post').val()!=3) { // return 404 HTTP error or show global access error message
-        jQuery('#ure_post_access_error_message_container').hide();
-    } else {    // show custom error message
-        jQuery('#ure_post_access_error_message_container').show();
-    }
-
-    if (jQuery('input[name=ure_post_access_error_action]:checked', '#post').val()!=4) { // return 404 HTTP error or show global access error message
-        jQuery('#ure_view_access_error_url_container').hide();
-    } else {    // show input field for access error URL
-        jQuery('#ure_view_access_error_url_container').show();
-    }
-
-}
 
 
 //----------------------------
@@ -105,7 +69,8 @@ function ure_post_view_save_roles_list() {
         }
         to_save = to_save + selected_roles[i];
     }
-    jQuery('#ure_content_for_roles').html(to_save);
+
+    jQuery('#ure_content_for_roles').val(to_save);          // to send with POST request
         
 }
 

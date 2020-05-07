@@ -36,13 +36,24 @@ class URE_Widgets_Admin_Controller {
         if (is_array($access_data) && array_key_exists($role_id, $access_data)) {
             $result = $access_data[$role_id];
             // update data structure to make it compatible with version 4.35+
-            if (!isset($result['widgets'])) {
+            if ( !isset( $result['widgets'] ) ) {
                 $result = array(
+                    'access_model'=>1,
                     'widgets' => $result,
-                    'sidebars' => array());
+                    'sidebars' => array()
+                    );
+            }
+            // update data structure to make it compatible with version 4.56+
+            if ( !isset( $result['access_model'] ) ) {
+                $result = array(
+                    'access_model'=>1,
+                    'widgets' => $result['widgets'],
+                    'sidebars' => $result['sidebars'] 
+                    );
             }
         } else {
             $result = array(
+                'access_model'=>1,
                 'widgets' => array(),
                 'sidebars' => array()
                 );
@@ -90,18 +101,32 @@ class URE_Widgets_Admin_Controller {
                 );
         }
         
+        $blocked = apply_filters('ure_widgets_edit_access_user', $blocked, $user);
+        
         return $blocked;
     }
     // end of load_data_for_user()
 
     
+    private function get_access_model_from_post() {
+        
+        $access_model = filter_input( INPUT_POST, 'ure_widgets_admin_access_model', FILTER_VALIDATE_INT );
+        if ( $access_model!=1 && $access_model!=2 ) {
+            $access_model = 1;
+        }
+        
+        return $access_model;
+    }
+    
     private function get_access_data_from_post() {
         
-        $keys_to_skip = array('action', 'ure_nonce', '_wp_http_referer', 'ure_object_type', 'ure_object_name', 'user_role');
+        $access_model = $this->get_access_model_from_post();
         $access_data = array(
+            'access_model' => $access_model,
             'widgets' => array(),
             'sidebars' => array()
             );
+        $keys_to_skip = array('action', 'ure_nonce', '_wp_http_referer', 'ure_object_type', 'ure_object_name', 'user_role');        
         foreach ($_POST as $key=>$value) {
             if (in_array($key, $keys_to_skip)) {
                 continue;
@@ -171,15 +196,58 @@ class URE_Widgets_Admin_Controller {
     }
     // end of get_all_widgets()
     
+
+    /**
+     * Returns the list of globally registerd sidebars
+     * @global array $wp_registered_sidebars
+     * @return array
+     */
+    private function get_registered_sidebars() {
+        global $wp_registered_sidebars;
+        
+        $rsb = array();
+        if (is_array($wp_registered_sidebars)) {
+            foreach($wp_registered_sidebars as $id=>$sidebar) {
+                $rsb[$id] = array(
+                    'id'=>$id,
+                    'name'=>$sidebar['name'],
+                    'description'=>$sidebar['description']
+                    );
+            }            
+        }
+        
+        return $rsb;
+    }
+    // end of get_registered_sidebars()
+
+
+    private function get_divi_sidebars() {
+        $dsb = array();
+        // Add widgets area (sidebars) created by users via Divi theme interface (not loaded globally)
+        // code was written according to Divi/includes/builder/functions.php, et_builder_widgets_init()
+        $et_pb_widgets = get_theme_mod( 'et_pb_widgets' );
+        if (!empty($et_pb_widgets['areas'])) {
+            foreach($et_pb_widgets['areas'] as $id => $name) {
+                $dsb[$id] = array(
+                    'id'=>$id,
+                    'name'=>$name,
+                    'description'=>''
+                    );
+            }
+        }
+        
+        return $dsb;
+    }
+    
     
     public function get_all_sidebars() {
-        global $wp_registered_sidebars;
-	
-        if (is_array($wp_registered_sidebars)) {
-            return $wp_registered_sidebars;
-        } else {
-            return array();
-        }
+        
+        $rsb = $this->get_registered_sidebars();        
+        $dsb = $this->get_divi_sidebars();
+        
+        $all_sb = array_merge($rsb, $dsb);
+        
+        return $all_sb;
     }
     // end of get_all_sidebars()
     
@@ -190,19 +258,20 @@ class URE_Widgets_Admin_Controller {
             return;
         }
         
+        $editor = URE_Editor::get_instance();
         if (!current_user_can('ure_widgets_access')) {
-            $this->lib->set_notification( esc_html__('URE: you do not have enough permissions to access this module.', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: you do not have enough permissions to access this module.', 'user-role-editor') );
             return;
         }
         
         $ure_object_type = filter_input(INPUT_POST, 'ure_object_type', FILTER_SANITIZE_STRING);
         if ($ure_object_type!=='role' && $ure_object_type!=='user') {
-            $this->lib->set_notification( esc_html__('URE: widgets access: Wrong object type. Data was not updated.', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: widgets access: Wrong object type. Data was not updated.', 'user-role-editor') );
             return;
         }
         $ure_object_name = filter_input(INPUT_POST, 'ure_object_name', FILTER_SANITIZE_STRING);
         if (empty($ure_object_name)) {
-            $this->lib->set_notification( esc_html__('URE: widgets access: Empty object name. Data was not updated', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: widgets access: Empty object name. Data was not updated', 'user-role-editor') );
             return;
         }
                         
@@ -212,10 +281,10 @@ class URE_Widgets_Admin_Controller {
             $this->save_access_data_for_user($ure_object_name);
         }
         
-        $this->lib->set_notification( esc_html__('Widgets access: data was updated successfully', 'user-role-editor') );
+        $editor->set_notification( esc_html__('Widgets access: data was updated successfully', 'user-role-editor') );
     }
     // end of update_data()
 
         
 }
-// end of URE_Widgets_Admin class
+// end of URE_Widgets_Admin_Controller class

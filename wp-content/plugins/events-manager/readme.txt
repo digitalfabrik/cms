@@ -4,8 +4,8 @@ Donate link: http://wp-events-plugin.com
 Tags: bookings, calendar, tickets, events, buddypress, event management, google maps, maps, locations, registration
 Text Domain: events-manager
 Requires at least: 4.8
-Tested up to: 5.3
-Stable tag: 5.9.7.1
+Tested up to: 5.4
+Stable tag: 5.9.7.3
 Requires PHP: 5.3
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -111,6 +111,26 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.9.7.3 =
+* minor JS conflict fix for those overriding the tickets admin template (or those incorrectly overriding ALL EM templates) in their theme with older HTML structure
+
+= 5.9.7.2 =
+* fixed CSV injection vulnerability which can allow malicious text to be exported to CSV files and parsed by Spreadsheet
+* fixed #_BOOKINGCUTOFF text date formats not getting translated correctly
+* added ability to programatically add attachments to booking emails for future features
+* fixed/updated casing of functions in phpMailer function calls (prefiously backward compatible),
+* added reply-to headers for wp_mail emails circumventing some plugins forcing from email address fields,
+* fixed email testing function ignoring sender name, encryption and autotls options
+* fixed ical apple structure breaking parsing in google (and possible others)
+* updated events-manager.js to replace deprecated use of delegate/bind with on/off equivalents
+* added ticket ordering
+* fixed editing booking tickets in admin causing validation errors on 0 values
+* fixed PHP Warning generated when adding Booking Notes which prevent a redirect with WP_DEBUG enabled
+* fixed Events tab on profile pages stripping last character with the BuddyPress Nouveau theme
+* changed blank value to 'no location' when viewing the event bookings admin page for locationless events
+* changed EM_Notices by making them JsonSerializable
+* fixed (hopefully!) the elusive and hard to reproduce "variable mismatch" error when submitting new form in some rare circumstances
+
 = 5.9.7.1 =
 * fixed minor typo in new email setting description
 * fixed CSV booking export files turning out blank due to change in EM_Bookings::__isset() in 5.9.7

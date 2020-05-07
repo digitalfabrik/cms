@@ -95,6 +95,7 @@ class URE_Admin_Menu_View {
             'gf_export'=>'gravityforms_export_entries',
             'gf_update'=>'gravityforms_view_updates',
             'gf_addons'=>'gravityforms_view_addons',
+            'gf_system_status'=>'graviryforms_system_status',
             'gf_help'=>$min_cap            
         );
         $addon_menus = apply_filters("gform_addon_navigation", array());
@@ -296,7 +297,7 @@ class URE_Admin_Menu_View {
             $current_object = $allowed_roles[0];
         }
      
-        return array('result'=>'success', 'message'=>'Admin menu permissions for '+ $current_object, 'html'=>$html);
+        return array('result'=>'success', 'message'=>'Admin menu permissions for '. $current_object, 'html'=>$html);
     }
     // end of get_html()
     
@@ -336,8 +337,7 @@ class URE_Admin_Menu_View {
                 <button id="update_allowed_args_button" name="update_allowed_args_button">Update</button>
             </div>
         </div>    
-  <?php      
-  
+  <?php        
     }
     // end of item_allowed_args_html()
     

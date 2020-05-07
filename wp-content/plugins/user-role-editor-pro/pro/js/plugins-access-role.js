@@ -35,6 +35,7 @@ var ure_plugins_access = {
                 action: 'ure_ajax',
                 sub_action: 'get_plugins_access_data_for_role',
                 current_role: ure_current_role,
+                network_admin: ure_data.network_admin,
                 wp_nonce: ure_data.wp_nonce
             },
             success: function(response) {

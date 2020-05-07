@@ -490,7 +490,11 @@ class EM_Bookings_Table{
 					$headers[] = '<a class="em-bookings-orderby" href="#'.$col.'">'.$this->cols_template[$col].'</a>';
 				}
 				*/
-				$headers[$col] = $this->cols_template[$col];
+				$v = $this->cols_template[$col];
+				if( $csv ){
+					$v = self::sanitize_spreadsheet_cell($v);
+				}
+				$headers[$col] = $v;
 			}
 		}
 		return apply_filters('em_bookings_table_get_headers', $headers, $csv, $this);
@@ -588,17 +592,29 @@ class EM_Bookings_Table{
 			if( $format == 'html' || empty($format) ){
 				if( !in_array($col, array('user_login', 'user_name', 'event_name', 'actions')) ) $val = esc_html($val);
 			}
-			//use this 
+			//use this
 			$val = apply_filters('em_bookings_table_rows_col_'.$col, $val, $EM_Booking, $this, $format, $object);
-			$cols[] = apply_filters('em_bookings_table_rows_col', $val, $col, $EM_Booking, $this, $format, $object); //use the above filter instead for better performance
+			$val = apply_filters('em_bookings_table_rows_col', $val, $col, $EM_Booking, $this, $format, $object); //use the above filter instead for better performance
+			//csv/excel escaping
+			if( $format == 'csv' || $format == 'xls' || $format == 'xlsx' ){
+				$val = self::sanitize_spreadsheet_cell($val);
+			}
+			//add to cols
+			$cols[] = $val;
 		}
 		return $cols;
 	}
 	
 	function get_row_csv($EM_Booking){
 	    $row = $this->get_row($EM_Booking, 'csv');
-	    foreach($row as $k=>$v) $row[$k] = html_entity_decode($v); //remove things like &amp; which may have been saved to the DB directly
+	    foreach($row as $k=>$v){
+	    	$row[$k] = html_entity_decode($v);
+	    } //remove things like &amp; which may have been saved to the DB directly
 	    return $row;
+	}
+	
+	public static function sanitize_spreadsheet_cell( $cell ){
+		return preg_replace('/^([;=@\+\-])/', "'$1", $cell);
 	}
 	
 	/**

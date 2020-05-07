@@ -21,8 +21,9 @@ class URE_Posts_Edit_Access {
         new URE_Posts_Edit_Access_Bulk_Action();
         $this->user = new URE_Posts_Edit_Access_User($this);                        
         
-        add_action('admin_init', array($this, 'set_final_hooks'));
-        add_filter('map_meta_cap', array($this, 'block_edit_post'), 10, 4);
+        add_action( 'init', array($this, 'set_hooks_general') );
+        add_action( 'admin_init', array($this, 'set_hooks_admin') );
+        add_filter( 'map_meta_cap', array($this, 'block_edit_post'), 10, 4 );
                 
     }
     // end of __construct()                
@@ -36,7 +37,7 @@ class URE_Posts_Edit_Access {
     // end pre_get_posts_hooks()
     
     
-    public function set_final_hooks() {
+    public function set_hooks_admin() {
                 
         $wc_bookings_active = URE_Plugin_Presence::is_active('woocommerce-bookings');   // Woocommerce Bookings plugin 
         if ($wc_bookings_active) {
@@ -52,9 +53,7 @@ class URE_Posts_Edit_Access {
         // Refresh counters at the Views by post statuses
         add_filter('wp_count_posts', array($this, 'recount_wp_posts'), 10, 3);        
         add_action('current_screen', array($this, 'add_views_filter'));                
-        
-        // restrict categories available for selection at the post editor
-        add_filter('list_terms_exclusions', array($this, 'exclude_terms'));        
+                        
         // Auto assign to a new created post the 1st from the allowed terms
         add_filter('wp_insert_post', array($this, 'auto_assign_term'), 10, 3);
         
@@ -67,8 +66,17 @@ class URE_Posts_Edit_Access {
             add_action('dp_duplicate_page', 'URE_Duplicate_Post::prevent_term_remove', 45, 2);
         }
     }
-    // end of set_final_hooks()
-            
+    // end of set_hooks_admin()
+        
+
+    public function set_hooks_general() {
+        
+        // restrict categories available for selection at the post editor
+        add_filter('list_terms_exclusions', array($this, 'exclude_terms'));        
+        
+    }
+    // end of set_hooks_front_end()
+    
             
     public function recount_wp_posts($counts, $type, $perm) {
         global $wpdb;
@@ -251,6 +259,8 @@ class URE_Posts_Edit_Access {
             
     
     public function block_edit_post($caps, $cap='', $user_id=0, $args=array()) {
+        
+        // return $caps;   // Debugging!!!
         
         $current_user_id = get_current_user_id();
         if ($current_user_id==0) {
@@ -494,38 +504,105 @@ class URE_Posts_Edit_Access {
     }
     // end of restrict pages_list()
         
-
-    public function exclude_terms($exclusions) {
+    
+    private function calc_post_type( $current_page, $http_ref ) {
         
-        global $pagenow;
-        
-        if (!in_array($pagenow, array('edit.php', 'post.php', 'post-new.php'))) {
-            return $exclusions;
+        if ( $current_page=='post-new.php') {
+            $key_pos = strpos( $http_ref, 'post_type=');
+            if ( $key_pos===false ) {
+                $post_type = 'post';
+            } else {
+                $str = substr( $http_ref, $key_pos + 10 );
+                $parts = explode( '&', $str );
+                $post_type = $parts[0];
+            }
+        } else {
+            $matches = array();
+            preg_match( '/post=([0-9]+)\&/', $http_ref, $matches);
+            $post_id = !empty( $matches[1] ) ? (int) $matches[1] : 0;
+            if ( empty( $post_id ) ) {
+                return false;
+            }
+            $post = get_post( $post_id );
+            if ( empty( $post ) ) {
+                return false;
+            }
+            $post_type = $post->post_type;
         }
         
-        if (!$this->user->is_restriction_applicable()) {
-            return $exclusions;
-        }
-        
-        $terms_list_str = $this->user->get_post_categories_list();
-        if (empty($terms_list_str)) {
-            return $exclusions;
-        }
+        return $post_type;
+    }
+    // end of calc_post_type()
+    
+    
+    private function calc_terms_to_exclude( $terms_list_str ) {
         
         $restriction_type = $this->user->get_restriction_type();
         if ($restriction_type == 1) {   // allow
             // exclude all except included to the list
             remove_filter('list_terms_exclusions', array($this, 'exclude_terms'));  // delete our filter in order to avoid recursion when we call get_all_category_ids() function            
-            $taxonomies = array_keys(get_taxonomies(array(), 'names')); // get array of registered taxonomies names
+            $taxonomies = array_keys(get_taxonomies(array('public'=>true, 'show_ui'=>true), 'names')); // get array of registered taxonomies names (public only)
             $all_terms = get_terms($taxonomies, array('fields'=>'ids', 'hide_empty'=>0)); // take full categories list from WordPress
             add_filter('list_terms_exclusions', array($this, 'exclude_terms'));  // restore our filter back            
-            $terms_list = explode(',', str_replace(' ', '', $terms_list_str));
+            $terms_list = explode(',', str_replace(' ', '', $terms_list_str));                        
             $terms_to_exclude = array_diff($all_terms, $terms_list); // delete terms ID, to which we allow access, from the full terms list                        
         } else {    // prohibit
             $terms_to_exclude = explode(',', str_replace(' ', '', $terms_list_str));
         }
         $terms_to_exclude_str = URE_Base_Lib::esc_sql_in_list('int', $terms_to_exclude);
-        $exclusions .= " AND (t.term_id not IN ($terms_to_exclude_str))";   // build WHERE expression for SQL-select command
+        
+        return $terms_to_exclude_str;
+    }
+    // end of calc_terms_to_exclude()
+    
+
+    public function exclude_terms( $exclusions ) {
+        
+        global $pagenow, $post_type;
+        
+        $restricted_pages = array('edit.php', 'post.php', 'post-new.php');
+        if ( !in_array( $pagenow, $restricted_pages ) ) {
+            if ( !isset( $_SERVER['HTTP_REFERER'] ) ) {
+                return $exclusions;
+            }
+            $http_referer_page = $this->lib->extract_command_from_url( $_SERVER['HTTP_REFERER'], false );
+            if ( !in_array( $http_referer_page, $restricted_pages ) ) {
+                return $exclusions;
+            }
+            $current_page = $http_referer_page;
+        } else {
+            $current_page = $pagenow;
+        }
+        
+        if ( !$this->user->is_restriction_applicable() ) {
+            return $exclusions;
+        }
+        
+        if ( empty( $post_type ) ) {
+            if ( empty( $_SERVER['HTTP_REFERER'] ) ) {
+                return $exclusions;
+            }
+            $post_type = $this->calc_post_type( $current_page, $_SERVER['HTTP_REFERER'] );
+            if ( empty( $post_type ) ) {
+                return $exclusions;
+            }
+        }
+        
+        $restrict_it = apply_filters('ure_restrict_edit_post_type', $post_type);
+        if ( empty( $restrict_it ) ) {
+            return $exclusions;
+        }
+        
+        $terms_list_str = $this->user->get_post_categories_list();
+        if ( empty( $terms_list_str ) ) {
+            return $exclusions;
+        }
+    
+        $terms_to_exclude_str = $this->calc_terms_to_exclude( $terms_list_str );
+        if ( !empty( $exclusions ) ) {
+            $exclusions .= ' AND ';
+        }
+        $exclusions .= "(t.term_id not IN ($terms_to_exclude_str))";   // build WHERE expression for SQL-select command
         
         return $exclusions;
     }
@@ -603,6 +680,10 @@ class URE_Posts_Edit_Access {
         if (!$this->user->is_restriction_applicable()) {
             return;
         }
+        
+        // Exclude cache conflicts with a new created post
+        // Example of a fixed issue - empty list of custom fields, due to post list taken from transient did not include ID of a new created post
+        $this->user->delete_transient();    
         
         $terms_list_str = $this->user->get_post_categories_list();
         if (empty($terms_list_str)) {   // There is no restriction by terms - there is no need to auto assign the 1st allowed term

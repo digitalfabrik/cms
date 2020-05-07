@@ -1,6 +1,6 @@
 User Role Editor Pro WordPress plugin
 
-Copyright 2009-2017 by Vladimir Garagulya - support@role-editor.com
+Copyright 2009-2020 by Vladimir Garagulya - support@role-editor.com
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ permission notices:
 
   WordPress - Web publishing software
 
-  Copyright 2003-2017 by the contributors
+  Copyright 2003-2020 by the contributors
 
   WordPress is released under the GPL
 

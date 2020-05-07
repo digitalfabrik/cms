@@ -333,6 +333,7 @@ function em_create_tickets_table() {
 		ticket_guests INT( 1 ) NULL ,
 		ticket_required INT( 1 ) NULL ,
 		ticket_parent BIGINT( 20 ) UNSIGNED NULL,
+		ticket_order INT( 2 ) UNSIGNED NULL,
 		ticket_meta LONGTEXT NULL,
 		PRIMARY KEY  (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -759,6 +760,7 @@ function em_add_options() {
 			'dbem_bookings_email_registration_subject' => $booking_registration_email_subject,
 			'dbem_bookings_email_registration_body' => str_replace("<br/>", "\n\r", $booking_registration_email_body),
 			//Ticket Specific Options
+			'dbem_bookings_tickets_ordering' => 1,
 			'dbem_bookings_tickets_orderby' => 'ticket_price DESC, ticket_name ASC',
 			'dbem_bookings_tickets_priority' => 0,
 			'dbem_bookings_tickets_show_unavailable' => 0,

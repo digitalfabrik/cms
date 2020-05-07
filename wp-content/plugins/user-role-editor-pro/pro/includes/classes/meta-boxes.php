@@ -33,6 +33,8 @@ class URE_Meta_Boxes {
         add_action('add_meta_boxes', array($this, 'hook_to_add_meta_boxes_post_type'), 99, 1);
         add_action('wp_dashboard_setup', array($this, 'remove_blocked_metaboxes'), 99);
         add_action('wp_user_dashboard_setup', array($this, 'remove_blocked_metaboxes'), 99);
+        add_action( 'admin_enqueue_scripts', array($this, 'block_gutenberg_components'), 99 );
+        
     }
     // end of __construct()
 
@@ -249,7 +251,7 @@ class URE_Meta_Boxes {
         if (empty($this->blocked)) {
             return;
         }
-        
+                        
         $all_meta_boxes = $this->get_all_meta_boxes();
         foreach($this->blocked as $mb_hash) {
             if (!isset($all_meta_boxes[$mb_hash])) {
@@ -262,6 +264,94 @@ class URE_Meta_Boxes {
     }
     // end of remove_blocked_metaboxes()
 
+    
+    private function is_gutenberg_page( $hook ) {
+        if ( $hook!=='post.php' ) {
+            // It's not a post editor page
+            return false;
+        }                                
+        if ( !method_exists( 'WP_Screen', 'is_block_editor' ) ) { 
+            // Gutenberg is not available
+            return false;
+        }
+        $screen = get_current_screen();
+        if ( !$screen->is_block_editor() ) {
+            // Gutenberg is not active
+            return false;
+        }
+        
+        return true;
+    }
+    // end of is_gutenberg_page()
+    
+    
+    private function get_gutenberg_components_former_meta_boxes() {
+    
+        $data = array(
+            'categorydiv'=>'taxonomy-panel-category',
+            'commentstatusdiv'=>'discussion-panel',
+            'postexcerpt'=>'post-excerpt',  
+            'postimagediv'=>'featured-image',
+            'tagsdiv-post_tag'=>'taxonomy-panel-post_tag',  
+            'slugdiv'=>'post-link',
+            'pageparentdiv'=>'page-attributes'
+        );
+        
+        return $data;        
+    }
+    // end of get_gutenberg_components_former_meta_boxes()
+
+
+    private function get_blocked_gutenberg_components() {
+        
+        $screen = get_current_screen();
+        $mbs_2_gbc = $this->get_gutenberg_components_former_meta_boxes();        
+        $all_meta_boxes = $this->get_all_meta_boxes();
+        $blocked_gbc = array();
+        foreach( $this->blocked as $mb_hash ) {
+            if ( !isset( $all_meta_boxes[$mb_hash] ) ) {
+                continue;
+            }
+            $mb = $all_meta_boxes[$mb_hash];
+            if ($mb->screen!==$screen->id) {
+                continue;
+            }
+            if ( isset( $mbs_2_gbc[$mb->id] ) ) {
+                $blocked_gbc[] = $mbs_2_gbc[$mb->id];
+            }
+        }        
+        
+        return $blocked_gbc;
+    }
+    // end of get_blocked_gutenberg_components()
+    
+    public function block_gutenberg_components( $hook ) {
+        
+        if ( !$this->is_gutenberg_page( $hook ) ) {
+            return;
+        }        
+        if (!$this->is_restriction_aplicable()) {
+            return;
+        }                                
+        $this->get_blocked_items();
+        if (empty($this->blocked)) {
+            return;
+        }
+        
+        $blocked_gbc = $this->get_blocked_gutenberg_components();        
+        if ( empty( $blocked_gbc ) ) {
+            return;
+        }
+        
+        wp_register_script( 'ure-gutenberg', plugins_url( '/pro/js/gutenberg.js', URE_PLUGIN_FULL_PATH ), array(), true, true );
+        wp_enqueue_script ( 'ure-gutenberg' );
+        wp_localize_script( 'ure-gutenberg', 'ure_pro_data', 
+                array(
+                    'blocked_gb_components' => $blocked_gbc
+                ));
+    }
+    // end of block_gutenberg_components()
+    
 
     /**
      * Remove registered ACF field groups which corresponds to the blocked meta boxes. 
@@ -374,11 +464,11 @@ class URE_Meta_Boxes {
 ?>
 <form name="ure_meta_boxes_access_form" id="ure_meta_boxes_access_form" method="POST"
       action="<?php echo URE_WP_ADMIN_URL . ($network_admin ? 'network/':'')  . URE_PARENT.'?page=users-'.URE_PLUGIN_FILE;?>" >
-<table id="ure_meta_boxes_access_table">
-    <th style="color:red;"><?php esc_html_e('Block', 'user-role-editor');?></th>
-    <th class="ure-cell"><?php esc_html_e('Title', 'user-role-editor');?></th>        
-    <th class="ure-cell"><?php esc_html_e('Id','user-role-editor');?></th>
-    <th style="width: 50px;">&nbsp;</th>
+<table id="ure_meta_boxes_access_table" style="width:100%; table-layout:fixed;">
+    <th style="color:red;width:7%;"><?php esc_html_e('Block', 'user-role-editor');?></th>
+    <th class="ure-cell" style="width:44%;"><?php esc_html_e('Title', 'user-role-editor');?></th>        
+    <th class="ure-cell" style="width:44%;"><?php esc_html_e('Id','user-role-editor');?></th>
+    <th style="width: 5%;">&nbsp;</th>
 <?php
         $current_screen = '-';
         foreach($meta_boxes_list as $key=>$item) {            
@@ -402,8 +492,8 @@ class URE_Meta_Boxes {
     }
 ?>
         </td>
-        <td class="ure-cell"><?php echo $item->title;?></td>
-        <td class="ure-cell"><?php echo $item->id;?></td>    
+        <td class="ure-cell" style="width:45%;word-wrap:break-word;"><?php echo $item->title;?></td>
+        <td class="ure-cell" style="width:40%;word-wrap:break-word;"><?php echo $item->id;?></td>    
         <td style="text-align: center;">
             <a href="#" onclick="ure_meta_boxes_remove_from_list('<?php echo $key; ?>');" title="<?php esc_html_e('Delete from the list of available meta boxes', 'user-role-editor');?>">
                 <img id="remove_<?php echo $key; ?>" src="<?php echo URE_PLUGIN_URL .'images/remove-16.png'?>"/>
@@ -431,7 +521,7 @@ class URE_Meta_Boxes {
         $html = ob_get_contents();
         ob_end_clean();        
                         
-        return array('result'=>'success', 'message'=>'Widgets permissions for '+ $ure_object_name, 'html'=>$html);        
+        return array('result'=>'success', 'message'=>'Meta boxes permissions for '.$ure_object_name, 'html'=>$html);        
     }
     // end of get_html()
 }

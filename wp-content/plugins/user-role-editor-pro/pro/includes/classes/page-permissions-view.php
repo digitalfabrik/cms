@@ -83,12 +83,12 @@ class URE_Page_Permissions_View {
         if ($cap=='manage_woocommerce') {
             $pages = array('woocommerce', 'wc-settings', 'wc-status', 'wc-addons');
             if (isset($_GET['page']) && in_array($_GET['page'], $pages)) {
-                $this->caps[$cap] = debug_backtrace();                
+                $this->caps[$cap] = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
             }
             return $caps;
         }
                 
-        $details = debug_backtrace();
+        $details = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
         if ($this->from_admin_menu($details)) {
             return $caps;
         }
@@ -113,7 +113,19 @@ class URE_Page_Permissions_View {
     
     private function show_quote_from_source($file_path, $line, $file_id) {
         $full_path = ABSPATH . $file_path;
-        $code = file($full_path, FILE_IGNORE_NEW_LINES);
+        try {
+            if (file_exists($full_path)) {
+                $code = file($full_path, FILE_IGNORE_NEW_LINES);
+            } else {
+                $code = false;
+            }
+        } catch (Exception $ex) {
+            $code = false;
+            syslog(LOG_WARNING, $ex->getMessage());
+        }    
+        if (empty($code)) {
+            return;
+        }
 ?>
     <div id="source_<?php echo $file_id;?>" style="display:none; margin: 10px; padding: 5px 40px 5px 5px; border: 1px solid #CCCCCC;">
 <?php
