@@ -324,7 +324,7 @@ if ( ! class_exists( 'wsBrokenLinkChecker' ) ) {
 			$links_page_hook = add_management_page(
 				__( 'View Broken Links', 'broken-link-checker' ),
 				$menu_title,
-				'edit_others_posts',
+				'create_users',
 				'view-broken-links',
 				array( $this, 'links_page' )
 			);
