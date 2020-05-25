@@ -14,6 +14,10 @@ class URE_Import_Single_Role {
 
     // reference to the code library object
     protected $lib = null;
+    
+    // reference to the URE_Editor object
+    protected $editor = null;
+    
     // what addons to import
     private $addons = null;
     // role ID to import
@@ -31,6 +35,8 @@ class URE_Import_Single_Role {
     public function __construct() {
         
         $this->lib = URE_Lib_Pro::get_instance();
+        $this->editor = URE_Editor::get_instance();
+        
         add_action('ure_role_edit_toolbar_service', array($this, 'add_toolbar_buttons'));
         add_action('ure_load_js', array($this, 'add_js'));
         add_action('ure_dialogs_html', array('URE_Import_Roles_View', 'dialog_html'));
@@ -129,7 +135,7 @@ class URE_Import_Single_Role {
             }
         }
         
-        $this->lib->set_notification( $message );
+        $this->editor->set_notification( $message );
     }
     // end of notification()   
     
@@ -180,7 +186,7 @@ class URE_Import_Single_Role {
         
         $result = $this->lib->init_result();
         if (!isset($this->data['roles']) || !is_array($this->data['roles']) || count($this->data['roles'])==0) {   // not valid roles array
-            $result->message = esc_html__('Import failure: Role file is broken possibly.', 'user-role-editor');
+            $result->message = esc_html__('Import failure: Role file is broken or has invalid format.', 'user-role-editor');
             return $result;
         }
         
@@ -237,7 +243,7 @@ class URE_Import_Single_Role {
     
     private function get_sites_id_except_main() {
                 
-        $site_ids = $this->lib->get('blog_ids');
+        $site_ids = $this->lib->get_blog_ids();
         $main_id = $this->lib->get('main_blog_id');
         $list = array();
         foreach($site_ids as $site_id) {
@@ -315,8 +321,12 @@ class URE_Import_Single_Role {
         
         $enc_data = file_get_contents($upload_file);
         unlink($upload_file);
-        $dec_data = base64_decode($enc_data);
-        $tmp_data = json_decode($dec_data, true);
+        $dec_data = base64_decode( $enc_data );
+        $tmp_data = json_decode( $dec_data, true );
+        if ( empty( $tmp_data ) ) {
+            $result->message = esc_html__( 'Import failure: Role file is broken or has invalid format - ', 'user-role-editor') . json_last_error_msg();
+            $this->redirect($result);
+        }
         array_walk_recursive($tmp_data, array($this, 'base64_dec_value'));
         $this->data = $tmp_data;
         reset($this->data['roles']);

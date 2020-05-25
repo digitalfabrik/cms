@@ -174,22 +174,22 @@ class URE_Admin_Menu {
             return;
         }
         
-        $lib = URE_Lib_Pro::get_instance();
+        $editor = URE_Editor::get_instance();
         
         if (!current_user_can('ure_admin_menu_access')) {
-            $lib->set_notification( esc_html__('URE: Insufficient permissions to use this add-on','user-role-editor') );
+            $editor->set_notification( esc_html__('URE: Insufficient permissions to use this add-on','user-role-editor') );
             return;
         }
         
         $ure_object_type = filter_input(INPUT_POST, 'ure_object_type', FILTER_SANITIZE_STRING);
         if ($ure_object_type!=='role' && $ure_object_type!=='user') {
-            $lib->set_notification( esc_html__('URE: administrator menu access: Wrong object type. Data was not updated.', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: administrator menu access: Wrong object type. Data was not updated.', 'user-role-editor') );
             return;
         }
         
         $ure_object_name = filter_input(INPUT_POST, 'ure_object_name', FILTER_SANITIZE_STRING);
         if (empty($ure_object_name)) {
-            $lib->set_notification( esc_html__('URE: administrator menu access: Empty object name. Data was not updated', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: administrator menu access: Empty object name. Data was not updated', 'user-role-editor') );
             return;
         }
                         
@@ -198,8 +198,8 @@ class URE_Admin_Menu {
         } else {
             URE_Admin_Menu::save_menu_access_data_for_user($ure_object_name);
         }
-        
-        $lib->set_notification( esc_html__('Administrator menu access data was updated successfully', 'user-role-editor') );
+                
+        $editor->set_notification( esc_html__('Administrator menu access data was updated successfully', 'user-role-editor') );
     }
     // end of update_data()
     
@@ -325,15 +325,29 @@ class URE_Admin_Menu {
     }
     // end of min_cap()
 
-    
-    private static function remove_param_from_url($url, $param_name) {
+    /**
+     * Remove $param_name parameter from URL
+     * 
+     * @param string $url       - full URL
+     * @param string $command   - command to start URL with
+     * @param string $param_name    - parameter name to remove from URL
+     * @return string   - resulting URL without removed parameter
+     */
+    private static function remove_param_from_url($url, $command, $param_name) {
+        
         $key_pos = strpos($url, '?');
         if ($key_pos===false) {
             return $url;
         }
+                
         $param_str = substr($url, $key_pos + 1);
         if (empty($param_str)) {
             return $url;
+        }
+        
+        if ( strpos( $param_str, '&#038;' )!==false || strpos( $param_str, '&amp;' )!==false ) {
+            // decode URL query parameters separator back to the single ampersand character '&'
+            $param_str = str_replace(array('&#038;', '&amp;'), '&', $param_str);
         }
         $new_params = array();
         $params = explode('&', $param_str);
@@ -342,7 +356,7 @@ class URE_Admin_Menu {
                 $new_params[] = $param;
             }
         }
-        $link = 'customize.php';
+        $link = $command;
         if (count($new_params)>0) {
             $new_param_str = implode('&', $new_params);
             $link .= '?'. $new_param_str;
@@ -355,14 +369,15 @@ class URE_Admin_Menu {
     
     
     /**
-     * Remove dynamic part from the menu command as the 'return' parameter included into the links with customize.php
+     * Remove dynamic part from the menu command, e.g. the 'return' parameter included into the links with customize.php
      * @param string $link
      * @return string
      */
     public static function normalize_link($link) {
         
-        if (strpos($link, 'customize.php')!==false) {
-            $link = self::remove_param_from_url($link, 'return');
+        $command = 'customize.php';
+        if (strpos($link, $command)!==false) {
+            $link = self::remove_param_from_url($link, $command, 'return');
         }
         
         return $link;

@@ -497,3 +497,9 @@ div.search-box{
 {
 	color: white;
 }
+
+@media screen and (max-width: 768px) {
+	table#blc-links {
+		table-layout: auto;
+	}
+}

@@ -44,6 +44,10 @@ require_once( URE_PLUGIN_DIR .'pro/includes/classes/front-end-menu-controller.ph
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/front-end-menu-view.php');
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/front-end-menu-access.php');
 
+// Navigation Menus access
+require_once( URE_PLUGIN_DIR .'pro/includes/classes/nav-menus-admin-controller.php');
+require_once( URE_PLUGIN_DIR .'pro/includes/classes/nav-menus-admin-view.php');
+require_once( URE_PLUGIN_DIR .'pro/includes/classes/nav-menus-admin-access.php');
 
 // Widgets Admin access
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/widgets-admin-controller.php');
@@ -96,6 +100,7 @@ require_once(URE_PLUGIN_DIR .'pro/includes/classes/gf-access.php');
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/content-view-restrictions-controller.php');
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/posts-view.php');
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/posts-view-access.php');
+require_once( URE_PLUGIN_DIR .'pro/includes/classes/content-view-restrictions-editor.php');
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/content-view-restrictions-posts-list.php');
 require_once( URE_PLUGIN_DIR .'pro/includes/classes/content-view-restrictions.php');
 
@@ -106,6 +111,14 @@ require_once(URE_PLUGIN_DIR .'pro/includes/classes/content-view-shortcode.php');
 
 // Additional Capabilities
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/additional-caps.php');
+
+// role/user capabilities editor Extended - for Pro version
+require_once(URE_PLUGIN_DIR .'pro/includes/classes/editor-ext.php');
+
+
+// User Role Editor Pro Settings - Tools
+require_once(URE_PLUGIN_DIR .'pro/includes/classes/export-roles-csv.php');
+require_once(URE_PLUGIN_DIR .'pro/includes/classes/tools-ext.php');
 
 // User Role Editor Pro Settings
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/settings-pro.php');

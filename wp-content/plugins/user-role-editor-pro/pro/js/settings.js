@@ -346,3 +346,16 @@ ure_admin_menu_access_url_args = {
 
 };
 // end of ure_admin_menu_access_url_args()
+
+
+// Tools: Export roles to CSV
+jQuery(document).ready(function() {   
+        
+    jQuery('#ure_export_roles_csv_button').button({
+        label: ure_settings_data_pro.export_button
+    }).click(function (event) {
+        event.preventDefault();        
+        jQuery('#ure_export_roles_csv_form').submit();
+    });    
+        
+});

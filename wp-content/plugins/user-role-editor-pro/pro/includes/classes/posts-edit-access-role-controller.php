@@ -126,24 +126,25 @@ class URE_Posts_Edit_Access_Role_Controller {
         }
         
         $lib = URE_Lib_Pro::get_instance();
+        $editor = URE_Editor::get_instance();
         
         if (!current_user_can(URE_Posts_Edit_Access_Role::EDIT_POSTS_ACCESS_CAP)) {
-            $lib->set_notification( esc_html__('URE: you have not enough permissions to use this add-on.', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: you have not enough permissions to use this add-on.', 'user-role-editor') );
             return false;
         }
         $object_type = $lib->get_request_var('ure_object_type', 'post');
         if ($object_type!=='role') {
-            $lib->set_notification( esc_html__('URE: posts edit access: Wrong object type. Data was not updated.', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: posts edit access: Wrong object type. Data was not updated.', 'user-role-editor') );
             return false;
         }
         $object_name = $lib->get_request_var('ure_object_name', 'post');
         if (empty($object_name)) {
-            $lib->set_notification( esc_html__('URE: posts edit access: Empty object name. Data was not updated', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: posts edit access: Empty object name. Data was not updated', 'user-role-editor') );
             return false;
         }
                         
         self::save_data($object_name);        
-        $lib->set_notification( esc_html__('Posts edit access data was updated successfully', 'user-role-editor') );
+        $editor->set_notification( esc_html__('Posts edit access data was updated successfully', 'user-role-editor') );
         
         return true;
     }

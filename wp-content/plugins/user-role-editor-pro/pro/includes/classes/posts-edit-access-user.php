@@ -250,18 +250,32 @@ class URE_Posts_Edit_Access_User {
     // end of get_data_from_user_roles()
 
     
-    private function get_transient($item_id) {
+    public function delete_transient() {
         
-        $current_user_id = get_current_user_id();
-        if ($current_user_id===0) {
-            return false;
+        $user_id = get_current_user_id();        
+        if ( $user_id===0 ) {
+            return;
         }
         
-        $data = get_transient(self::CONTENT_EDIT_ACCESS);         
-        if (!empty($data) && isset($data[$current_user_id]) && isset($data[$current_user_id][$item_id])) {
-            $value = $data[$current_user_id][$item_id];
+        $key = self::CONTENT_EDIT_ACCESS .'-'. $user_id;
+        delete_transient( $key );
+    }
+    // end of delete_transient()
+    
+    
+    private function get_transient($item_id) {
+        
+        $user_id = get_current_user_id();
+        if ( $user_id===0 ) {
+            return null;
+        }
+        
+        $key = self::CONTENT_EDIT_ACCESS .'-'. $user_id;
+        $data = get_transient( $key );
+        if (!empty($data) && is_array($data) && isset($data[$item_id])) {
+            $value = $data[$item_id];
         } else {
-            $value = false;
+            $value = null;
         }
         
         return $value;
@@ -271,21 +285,22 @@ class URE_Posts_Edit_Access_User {
     
     private function set_transient($item_id, $item_value) {
         
-        $current_user_id = get_current_user_id();
-        if ($current_user_id===0) {
+        $user_id = get_current_user_id();
+        if ( $user_id===0 ) {
             return;
         }
         
-        $data = get_transient(self::CONTENT_EDIT_ACCESS);
-        if (!is_array($data)) {
+        $key = self::CONTENT_EDIT_ACCESS .'-'. $user_id;
+        $data = get_transient( $key );
+        if ( !is_array($data) ) {
             $data = array();
         }
-        if (!isset($data[$current_user_id]) || !is_array($data[$current_user_id])) {
-            $data[$current_user_id] = array();
+        if ( !is_array( $data ) ) {
+            $data = array();
         }
         
-        $data[$current_user_id][$item_id] = $item_value;
-        set_transient(self::CONTENT_EDIT_ACCESS, $data, self::TRANSIENT_EXPIRE);
+        $data[$item_id] = $item_value;
+        set_transient($key, $data, self::TRANSIENT_EXPIRE);
         
     }
     // end of set_transient()
@@ -293,12 +308,12 @@ class URE_Posts_Edit_Access_User {
 
     private function get_restriction_type_from_roles() {
         
-        $current_user = wp_get_current_user();
-        if (empty($current_user->roles)) {
+        $user = wp_get_current_user();
+        if (empty($user->roles)) {
             return false;   
         }
         
-        $data = $this->get_data_from_user_roles($current_user->ID);
+        $data = $this->get_data_from_user_roles($user->ID);
         if (empty($data)) {
             return false;
         }
@@ -312,26 +327,26 @@ class URE_Posts_Edit_Access_User {
     
     public function get_restriction_type() {        
         
-        $current_user_id = get_current_user_id();        
-        if ($current_user_id===0) {
+        $user_id = get_current_user_id();
+        if ( $user_id===0 ) {
             return false;
         }        
-        $value = $this->get_transient('restriction_type');        
-        if ($value!==false) {            
+        $value = $this->get_transient( 'restriction_type' );
+        if ( $value!==null ) {        
             return $value;
         }        
         
         // get from user meta
-        $value = $this->user_meta->get_restriction_type($current_user_id);
+        $value = $this->user_meta->get_restriction_type( $user_id );
         if (empty($value)) {
             $value = $this->get_restriction_type_from_roles();            
-            if (empty($value)) {
+            if ( empty($value) ) {
                $value = 1; // Allow by default
             }
         }    
-        $value = apply_filters('ure_edit_posts_access_restriction_type', $value);
+        $value = apply_filters( 'ure_edit_posts_access_restriction_type', $value );
         
-        $this->set_transient('restriction_type', $value);
+        $this->set_transient( 'restriction_type', $value );
         
         return $value;
     }
@@ -404,19 +419,19 @@ class URE_Posts_Edit_Access_User {
 
     public function get_post_categories_list() {
                         
-        $value = $this->get_transient('terms');
-        if ($value!==false) {
+        $value = $this->get_transient( 'terms' );
+        if ( $value!==null ) {
             return $value;
         }
         
-        $current_user_id = get_current_user_id();
-        $value = $this->user_meta->get_post_categories_list($current_user_id);
-        $value1 = $this->get_restricted_items_from_roles('terms');        
-        $value = URE_Utils::concat_with_comma($value, $value1);  
+        $user_id = get_current_user_id();
+        $value = $this->user_meta->get_post_categories_list( $user_id );
+        $value1 = $this->get_restricted_items_from_roles( 'terms' );
+        $value = URE_Utils::concat_with_comma( $value, $value1 );  
         
-        $value = URE_Utils::validate_int_values_unique($value);
-        $value = apply_filters('ure_post_edit_access_terms_list', $value);
-        $this->set_transient('terms', $value);
+        $value = URE_Utils::validate_int_values_unique( $value );
+        $value = apply_filters( 'ure_post_edit_access_terms_list', $value );
+        $this->set_transient( 'terms', $value );
                 
         return $value;
     }
@@ -425,31 +440,31 @@ class URE_Posts_Edit_Access_User {
     
     public function get_post_authors_list() {
                 
-        $value = $this->get_transient('authors');        
-        if ($value!==false) {
+        $value = $this->get_transient( 'authors' );
+        if ( $value!==null ) {
             return $value;
         }
         
-        $current_user_id = get_current_user_id();
-        $value = $this->user_meta->get_post_authors_list($current_user_id);
-        $value1 = $this->get_restricted_items_from_roles('authors');
-        $value = URE_Utils::concat_with_comma($value, $value1);
+        $user_id = get_current_user_id();
+        $value = $this->user_meta->get_post_authors_list( $user_id );
+        $value1 = $this->get_restricted_items_from_roles( 'authors' );
+        $value = URE_Utils::concat_with_comma( $value, $value1 );
         
-        $own_data_only = $this->user_meta->get_own_data_only($current_user_id);
+        $own_data_only = $this->user_meta->get_own_data_only( $user_id );
         $value2 = null;
         if ($own_data_only) {
-            $value2 = $current_user_id;
+            $value2 = $user_id;
         } else {
             $own_data_only = $this->get_own_data_only_from_roles();
             if ($own_data_only) {
-                $value2 = $current_user_id;
+                $value2 = $user_id;
             }
         }        
-        $value = URE_Utils::concat_with_comma($value, $value2);
-        $value = apply_filters('ure_post_edit_access_authors_list', $value);
-        $value = URE_Utils::validate_int_values_unique($value);
+        $value = URE_Utils::concat_with_comma( $value, $value2 );
+        $value = apply_filters( 'ure_post_edit_access_authors_list', $value );
+        $value = URE_Utils::validate_int_values_unique( $value );
         
-        $this->set_transient('authors', $value);
+        $this->set_transient( 'authors', $value );
         
         return $value;
     }
@@ -457,31 +472,30 @@ class URE_Posts_Edit_Access_User {
     
     
     private function get_posts_list_by_ids() {
-        
-        
-        $value = $this->get_transient('posts');        
-        if ($value!==false) {
+                
+        $value = $this->get_transient( 'posts' );
+        if ( $value!==null ) {
             return $value;
         }                
         
-        $current_user_id = get_current_user_id();
-        $value = $this->user_meta->get_posts_list($current_user_id);
-        if (!is_string($value)) {
+        $user_id = get_current_user_id();
+        $value = $this->user_meta->get_posts_list( $user_id );
+        if ( !is_string( $value ) ) {
             $value = '';
         }
-        $value1 = $this->get_restricted_items_from_roles('posts');
-        $value = URE_Utils::concat_with_comma($value, $value1);
-        $value = URE_Utils::validate_int_values_unique($value);
-        $value = apply_filters('ure_edit_posts_access_id_list', $value);
+        $value1 = $this->get_restricted_items_from_roles( 'posts' );
+        $value = URE_Utils::concat_with_comma( $value, $value1 );
+        $value = URE_Utils::validate_int_values_unique( $value );
+        $value = apply_filters( 'ure_edit_posts_access_id_list', $value );
         
-        $this->set_transient('posts', $value);
+        $this->set_transient( 'posts', $value );
         
         return $value;
     }
     // end of get_posts_list_by_ids()
 
     
-    private function add_related_wc_orders($posts) {
+    private function add_wc_orders_by_product_owner($posts) {
         global $wpdb;
         
         $order_items = $wpdb->prefix .'woocommerce_order_items';
@@ -509,7 +523,34 @@ class URE_Posts_Edit_Access_User {
         
         return $posts;
     }
-    // end of add_related_wc_orders()
+    // end of add_wc_orders_by_product_owner()
+    
+    
+    private function add_wc_orders_by_customer( $posts ) {
+        global $wpdb;
+        
+        $postmeta_table = $wpdb->prefix .'postmeta';        
+        $orders = array();
+        $current_user = wp_get_current_user();
+        
+        $query = $wpdb->prepare(
+                    "SELECT post_id FROM {$postmeta_table} 
+                                WHERE meta_key='_customer_user' and meta_value=%d",
+                    array($current_user->ID)
+                                );
+        $list = $wpdb->get_col($query);
+        foreach($list as $order_id) {
+            $item = new stdClass();
+            $item->ID = $order_id;
+            $item->post_type = 'shop_order';
+            $orders[] = $item;
+        }
+                
+        $posts = array_merge($posts, $orders);
+        
+        return $posts;
+    }
+    // end of add_wc_orders_by_customer()
     
     
     private function get_posts_list_by_authors() {        
@@ -533,19 +574,28 @@ class URE_Posts_Edit_Access_User {
                     where post_author in ($post_authors_list) and post_type!='revision'";
         $posts = $wpdb->get_results($query);
         if (!is_array($posts)) {
-            return array();
+            $posts = array();
         }
         
         if (URE_Plugin_Presence::is_active('woocommerce')) {
             // Add WooCommerce orders linked to the products by theirs authors/owners
-            $add_orders = apply_filters('ure_edit_posts_access_add_orders_by_product_owner', true);
-            if ($add_orders) {
-                $posts = $this->add_related_wc_orders($posts);
+            if ( !empty( $posts ) ) {
+                $add_orders_by_product_owner = apply_filters( 'ure_edit_posts_access_add_orders_by_product_owner', true );
+                if ($add_orders_by_product_owner) {
+                    $posts = $this->add_wc_orders_by_product_owner( $posts );
+                }
+            }
+            
+            // Add orders where current user is a customer
+            // Useful for case when logged in user (not admin) is allowed to edit his own orders
+            $add_orders_by_customer = apply_filters( 'ure_edit_posts_access_add_orders_by_customer', false );
+            if ( $add_orders_by_customer ) {
+                $posts = $this->add_wc_orders_by_customer( $posts );
             }
         }
         
         
-        $posts = URE_WC_Bookings::add_related_wc_bookings($posts);
+        $posts = URE_WC_Bookings::add_related_wc_bookings( $posts );
         
         
         $post_ids = array();
@@ -672,37 +722,40 @@ class URE_Posts_Edit_Access_User {
     
     public function get_posts_list() {
 
-        $current_user_id = get_current_user_id();
-        if ($current_user_id===0) {
+        $user_id = get_current_user_id();
+        if ($user_id===0) {
             return array();
         }
         
-        $value = $this->get_transient('posts_list');        
-        if ($value!==false) {
+        $value = $this->get_transient( 'posts_list' );        
+        if ( $value!==null ) {
             return $value;
         }
-                             
+                           
         $posts_list_str = $this->get_posts_list_by_ids();        
-        $posts_list1 = URE_Utils::filter_int_array_from_str($posts_list_str);        
+        $posts_list1 = URE_Utils::filter_int_array_from_str( $posts_list_str );
         $posts_list2 = $this->get_posts_list_by_categories();
         $posts_list3 = $this->get_posts_list_by_authors();
-        $posts_list = array_values(array_unique(array_merge($posts_list1, $posts_list2, $posts_list3)));
-        if (count($posts_list)==0) {
-            $this->set_transient('posts_list', $posts_list);
+        $posts_list = array_values( array_unique( array_merge( $posts_list1, $posts_list2, $posts_list3 ) ) );
+        if ( count( $posts_list )===0 ) {
+            $this->set_transient( 'posts_list', $posts_list );
             return $posts_list;
         }                
         
-        $posts_list = URE_Utils::filter_int_array($posts_list);        
-        $posts_list = $this->add_child_pages($posts_list);        
+        $posts_list = URE_Utils::filter_int_array( $posts_list );        
+        $posts_list = $this->add_child_pages( $posts_list );
+        
+        // apply custom filter for resulting posts ID list
+        $posts_list = apply_filters( 'ure_edit_access_posts_list', $posts_list );
                 
         $restriction_type = $this->get_restriction_type();
-        if ($restriction_type==1) { // for 'Allow' only, do not exclude anything if it's a blocked/prohibited list
-            $show_posts_which_can_edit_only = apply_filters('ure_show_posts_which_can_edit_only_backend',  true);
-            if ($show_posts_which_can_edit_only) {
-                $posts_list = $this->exclude_posts_which_can_not_edit($posts_list);
+        if ( $restriction_type==1 ) { // for 'Allow' only, do not exclude anything if it's a blocked/prohibited list
+            $show_posts_which_can_edit_only = apply_filters( 'ure_show_posts_which_can_edit_only_backend',  true );
+            if ( $show_posts_which_can_edit_only ) {
+                $posts_list = $this->exclude_posts_which_can_not_edit( $posts_list );
             }
         }
-        $this->set_transient('posts_list', $posts_list);
+        $this->set_transient( 'posts_list', $posts_list );
         
         return $posts_list;
     }
@@ -716,16 +769,9 @@ class URE_Posts_Edit_Access_User {
      */
     public function is_restricted() {
                 
-        $current_user_id = get_current_user_id();        
-        $data = get_transient(self::CONTENT_EDIT_ACCESS);
-        if (!empty($data) && isset($data[$current_user_id]) && isset($data[$current_user_id]['restricted'])) {
-            return $data[$current_user_id]['restricted'];
-        }        
-        if (empty($data)) {
-            $data = array();
-        }
-        if (!isset($data[$current_user_id])) {
-            $data[$current_user_id] = array();
+        $restricted = $this->get_transient( 'restricted' );
+        if ( $restricted!==null ) {
+            return $restricted;
         }        
         
         $posts_list_str = $this->get_posts_list_by_ids();
@@ -733,8 +779,7 @@ class URE_Posts_Edit_Access_User {
         $post_authors_list_str = $this->get_post_authors_list();
         $restrictions = trim($posts_list_str . $categories_list_str . $post_authors_list_str);
         $restricted = empty($restrictions) ? false : true;
-        $data[$current_user_id]['restricted'] = $restricted;
-        set_transient(self::CONTENT_EDIT_ACCESS, $data, self::TRANSIENT_EXPIRE);
+        $this->set_transient('restricted', $restricted);
         
         return $restricted;
     }

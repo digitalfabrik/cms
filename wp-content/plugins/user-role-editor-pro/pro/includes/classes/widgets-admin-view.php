@@ -66,7 +66,7 @@ class URE_Widgets_Admin_View {
 ?>
 <h3><?php esc_html_e('Widgets', 'user_role-editor');?></h3>
 <table id="ure_widgets_access_table">
-    <th style="color:red;"><?php esc_html_e('Block', 'user-role-editor');?></th>
+    <th>&nbsp;</th>
     <th><?php esc_html_e('Name', 'user-role-editor');?></th>
     <th><?php esc_html_e('Description','user-role-editor');?></th>
 <?php
@@ -76,7 +76,7 @@ class URE_Widgets_Admin_View {
         <td>   
 <?php 
     if (!$readonly_mode) {
-        $checked = in_array($widget_class, $blocked_items) ? 'checked' : '';
+        $checked = in_array( $widget_class, $blocked_items ) ? 'checked' : '';
 ?>
             <input type="checkbox" name="<?php echo $widget_class;?>" id="<?php echo $widget_class;?>" <?php echo $checked;?> />
 <?php
@@ -101,7 +101,7 @@ class URE_Widgets_Admin_View {
 ?>    
 <h3><?php esc_html_e('Sidebars', 'user_role-editor');?></h3>
 <table id="ure_widgets_access_table">
-    <th style="color:red;"><?php esc_html_e('Block', 'user-role-editor');?></th>
+    <th>&nbsp;</th>
     <th><?php esc_html_e('Name', 'user-role-editor');?></th>
     <th><?php esc_html_e('Description','user-role-editor');?></th>
 <?php
@@ -152,6 +152,12 @@ class URE_Widgets_Admin_View {
 ?>
 <form name="ure_widgets_access_form" id="ure_widgets_access_form" method="POST"
       action="<?php echo URE_WP_ADMIN_URL . ($network_admin ? 'network/':'') . URE_PARENT.'?page=users-'.URE_PLUGIN_FILE;?>" >
+<span style="font-weight: bold;"><?php echo esc_html_e('Block items:', 'user-role-editor');?></span>&nbsp;&nbsp;
+<input type="radio" name="ure_widgets_admin_access_model" id="ure_widgets_admin_access_model_selected" value="1" 
+        <?php echo ($blocked_items['access_model']==1) ? 'checked="checked"' : '';?> > <label for="ure_widgets_admin_access_model_selected"><?php esc_html_e('Selected', 'user-role-editor');?></label>&nbsp; 
+<input type="radio" name="ure_widgets_admin_access_model" id="ure_widgets_admin_access_model_not_selected" value="2" 
+        <?php echo ($blocked_items['access_model']==2) ? 'checked="checked"' : '';?> > <label for="ure_widgets_admin_access_model_not_selected"><?php esc_html_e('Not Selected', 'user-role-editor');?></label>
+<hr/>    
 <?php 
     $this->list_widgets($readonly_mode, $blocked_items['widgets']); 
 ?>

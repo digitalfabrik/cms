@@ -170,8 +170,30 @@ class URE_Admin_Menu_URL_Allowed_Args {
         return $args;
     }
     
+				
+    static	private	function	get_for_tools()	{
+
+								$args	=	array(''	=>	array());
+
+								return	$args;
+				}
+				// end of get_for_tools()
     
-    static private function get_for_admin() {
+    
+    static	private	function	get_for_settings()	{
+
+        $plugins = array(
+            'wp-mail-smtp'
+        );
+								$args	=	array();
+        self::get_for_supported_plugins($args, $plugins, 'settings');
+
+								return	$args;
+				}
+				// end of get_for_settings()
+
+
+				static private function get_for_admin() {
                 
         $plugins = array(
             'contact-form-7',
@@ -282,7 +304,7 @@ class URE_Admin_Menu_URL_Allowed_Args {
                 }
                 $wl_args_list = self::extract_csv($wl_args_str);
                 $page = self::extract_page_from_command($wl_base_url);
-                if (is_array($args[$command][$page])) {
+                if (isset($args[$command][$page]) && is_array($args[$command][$page])) {
                     $args[$command][$page] = array_merge($args[$command][$page], $wl_args_list);
                 } else {
                     $args[$command][$page] = $wl_args_list;
@@ -305,6 +327,8 @@ class URE_Admin_Menu_URL_Allowed_Args {
         $upload = self::get_for_upload();
         $nav_menus = self::get_for_nav_menus();
         $users = self::get_for_users();
+								$tools = self::get_for_tools();
+        $settings = self::get_for_settings();
         $admin = self::get_for_admin();
         
         $args0 = array(
@@ -315,6 +339,8 @@ class URE_Admin_Menu_URL_Allowed_Args {
             'upload.php'=>$upload,
             'nav-menus.php'=>$nav_menus,
             'users.php'=>$users,
+												'tools.php'=>$tools,
+            'options-general.php'=>$settings,
             'admin.php'=>$admin
         );
         $args1 = self::add_args_from_white_list($args0);

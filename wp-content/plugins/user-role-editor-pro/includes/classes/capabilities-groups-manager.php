@@ -72,7 +72,7 @@ class URE_Capabilities_Groups_Manager {
     
     private function add_ure_group() {
         
-        $this->groups['user_role_editor'] = array('caption'=>esc_html__('User Role Editor', 'user-role-editor'), 'parent'=>'custom', 'level'=>3);
+        $this->groups['user_role_editor'] = array('caption'=>esc_html__('User Role Editor', 'user-role-editor'), 'parent'=>'custom', 'level'=>2);
         
     }
     // end of get_ure_group()
@@ -80,20 +80,20 @@ class URE_Capabilities_Groups_Manager {
     
     private function add_woocommerce_groups() {
         
-        $full_caps = $this->lib->get('full_capabilities');
-        if (!isset($full_caps['manage_woocommerce'])) {
+        $full_caps = $this->lib->init_full_capabilities( 'role' );
+        if ( !isset( $full_caps['manage_woocommerce'] ) ) {
             return;
         }
         
         $post_types = get_post_types(array(), 'objects');
         
-        $this->groups['woocommerce'] = array('caption'=>esc_html__('WooCommerce', 'user-role-editor'), 'parent'=>'custom', 'level'=>3);
-        $this->groups['woocommerce_core'] = array('caption'=>esc_html__('Core', 'user-role-editor'), 'parent'=>'woocommerce', 'level'=>4);
+        $this->groups['woocommerce'] = array('caption'=>esc_html__('WooCommerce', 'user-role-editor'), 'parent'=>'custom', 'level'=>2);
+        $this->groups['woocommerce_core'] = array('caption'=>esc_html__('Core', 'user-role-editor'), 'parent'=>'woocommerce', 'level'=>3);
         foreach(URE_Woocommerce_Capabilities::$post_types as $post_type) {
             if (!isset($post_types[$post_type])) {
                 continue;                
             }    
-            $this->groups['woocommerce_'. $post_type] = array('caption'=>$post_types[$post_type]->labels->name, 'parent'=>'woocommerce', 'level'=>4);
+            $this->groups['woocommerce_'. $post_type] = array('caption'=>$post_types[$post_type]->labels->name, 'parent'=>'woocommerce', 'level'=>3);
         }
         
     }
@@ -260,22 +260,28 @@ class URE_Capabilities_Groups_Manager {
      * @param array $post_edit_caps
      */
     private function get_registered_cpt_caps($post_type, $post_edit_caps) {
+        
         foreach ($post_edit_caps as $capability) {
             if (isset($post_type->cap->$capability)) {
                 $cap = $post_type->cap->$capability;
             } else {
                 continue;
             }
-            if (isset($this->cpt_caps[$cap])) {
+            if ( !isset( $this->cpt_caps[$cap] ) ) {
+                $this->cpt_caps[$cap] = array();
+            } else if ( in_array( $post_type->name, $this->cpt_caps[$cap] ) ) {
                 continue;
+            }            
+            if ( !isset($this->built_in_wp_caps[$cap]) && 
+                 !in_array( 'custom', $this->cpt_caps[$cap] ) ) {
+                    $this->cpt_caps[$cap][] = 'custom';                
             }
-            $this->cpt_caps[$cap] = array();
-            if (!isset($this->built_in_wp_caps[$cap])) {
-                $this->cpt_caps[$cap][] = 'custom';
-            }
-            $this->cpt_caps[$cap][] = 'custom_post_types';
-            $this->cpt_caps[$cap][] = $post_type->name;                        
+            if ( !in_array( 'custom_post_types', $this->cpt_caps[$cap] ) ) {
+                $this->cpt_caps[$cap][] = 'custom_post_types';
+            }            
+            $this->cpt_caps[$cap][] = $post_type->name;            
         }
+        
     }
     // end of get_registered_cpt_caps()
 
@@ -387,6 +393,30 @@ class URE_Capabilities_Groups_Manager {
         return $groups;
     }
     // end of get_cap_groups()
+    
+    
+    /**
+     * Private clone method to prevent cloning of the instance of the
+     * *Singleton* instance.
+     *
+     * @return void
+     */
+    private function __clone() {
+        
+    }
+    // end of __clone()
+    
+    /**
+     * Private unserialize method to prevent unserializing of the *Singleton*
+     * instance.
+     *
+     * @return void
+     */
+    private function __wakeup() {
+        
+    }
+    // end of __wakeup()
+    
         
 }
 // end of class URE_Capabilities_Groups_Manager

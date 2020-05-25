@@ -90,18 +90,18 @@ class URE_Other_Roles {
     // end of get_access_data_for_user_roles()
     
     
-    public function load_data_for_user($user) {
+    public function load_data_for_user( $user ) {
     
-        $user = $this->lib->get_user($user);
-        $blocked = get_user_meta($user->ID, self::ACCESS_DATA_KEY, true);
-        if (!is_array($blocked)) {
-            $blocked = array('access_model'=>0, 'data'=>array());
+        $user = $this->lib->get_user( $user );
+        $blocked0 = get_user_meta( $user->ID, self::ACCESS_DATA_KEY, true );
+        if ( !is_array( $blocked0 ) ) {
+            $blocked0 = array('access_model'=>0, 'data'=>array());
         }                            
-        $blocked = $this->get_access_data_for_user_roles($user, $blocked);        
-        if (empty($blocked['access_model'])) {
+        $blocked = $this->get_access_data_for_user_roles( $user, $blocked0 );
+        if ( empty( $blocked['access_model'] ) ) {
             $blocked['access_model'] = 1; // use default value
         }
-        $blocked['data'] = array_unique($blocked['data']); //!!! Test
+        $blocked['data'] = array_unique( $blocked['data'] ); //!!! Test
         
         return $blocked;
     }
@@ -213,9 +213,9 @@ class URE_Other_Roles {
 <?php     
             $checked = in_array($role_id, $blocked_items['data']) ? 'checked' : '';
             $cb_class = 'ure-cb-column';
-            $disabled = '';
+            $readonly = '';
             if ($role_id=='administrator') {
-                $disabled = 'disabled';
+                $readonly = 'onclick="return false;"';
                 if ($blocked_items['access_model']==1) {
                     $checked = 'checked';
                 } else {
@@ -224,7 +224,7 @@ class URE_Other_Roles {
                 $cb_class = '';
             }
 ?>
-            <input type="checkbox" name="<?php echo $role_id;?>" id="<?php echo $role_id;?>" class="<?php echo $cb_class;?>" <?php echo $checked .' '. $disabled;?> />
+            <input type="checkbox" name="<?php echo $role_id;?>" id="<?php echo $role_id;?>" class="<?php echo $cb_class;?>" <?php echo $checked .' '. $readonly;?> />
         </td>
         <td><?php echo $role['name'];?></td>
         <td><?php echo $role_id;?></td>

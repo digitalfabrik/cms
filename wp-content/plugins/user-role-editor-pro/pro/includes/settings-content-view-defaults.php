@@ -42,8 +42,12 @@
         <label for="content_view_return_http_error_404"><?php echo esc_html_e('Return HTTP 404 error', 'user-role-editor'); ?></label><br>
         <div id="content_view_access_error_message_container" style="display:none;">
             <?php esc_html_e('Message for post access error:', 'user-role-editor'); ?><br/>
-            <textarea id="content_view_access_error_message" name="content_view_access_error_message" rows="5" cols="70"><?php echo $content_view_access_error_message; ?></textarea>
+            <textarea id="content_view_access_error_message" name="content_view_access_error_message" rows="3" cols="70"><?php echo $content_view_access_error_message; ?></textarea>
         </div>
+								<input type="radio" id="ure_redirect_to_url" name="content_view_access_error_action" value="4"  
+            <?php checked($content_view_access_error_action, 4);?> > 
+        <label for="ure_redirect_to_url"><?php esc_html_e('Redirect to URL', 'user-role-editor');?></label>&nbsp;
+        <input type="text" id="content_view_access_error_url" name="content_view_access_error_url" style="width: 70%;" value="<?php echo $content_view_access_error_url;?>" /> 
     </div>
 </div>
 <input type="hidden" id="cvr_defaults_visible" name="cvr_defaults_visible" value="<?php echo $cvr_defaults_visible; ?>" />

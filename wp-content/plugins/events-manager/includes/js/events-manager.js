@@ -8,9 +8,8 @@ jQuery(document).ready( function($){
 		em_setup_timepicker('body');
 	}
 	/* Calendar AJAX */
-	$('.em-calendar-wrapper a').unbind("click");
-	$('.em-calendar-wrapper a').undelegate("click");
-	$('.em-calendar-wrapper').delegate('a.em-calnav, a.em-calnav', 'click', function(e){
+	$('.em-calendar-wrapper a').off("click");
+	$('.em-calendar-wrapper').on('click', 'a.em-calnav, a.em-calnav', function(e){
 		e.preventDefault();
 		$(this).closest('.em-calendar-wrapper').prepend('<div class="loading" id="em-loading"></div>');
 		var url = em_ajaxify($(this).attr('href'));
@@ -18,7 +17,7 @@ jQuery(document).ready( function($){
 	} );
 
 	//Events Search
-	$(document).delegate('.em-toggle', 'click change', function(e){
+	$(document).on('click change', '.em-toggle', function(e){
 		e.preventDefault();
 		//show or hide advanced tickets, hidden by default
 		var el = $(this);
@@ -98,7 +97,7 @@ jQuery(document).ready( function($){
 	});
 	
 	//in order for this to work, you need the above classes to be present in your templates
-	$(document).delegate('.em-search-form, .em-events-search-form', 'submit', function(e){
+	$(document).on('submit', '.em-search-form, .em-events-search-form', function(e){
 		var form = $(this);
     	if( this.em_search && this.em_search.value == EM.txt_search){ this.em_search.value = ''; }
     	var results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
@@ -130,7 +129,7 @@ jQuery(document).ready( function($){
     	}
 	});
 	if( $('.em-search-ajax').length > 0 ){
-		$(document).delegate('.em-search-ajax a.page-numbers', 'click', function(e){
+		$(document).on('click', '.em-search-ajax a.page-numbers', function(e){
 			var a = $(this);
 			var data = a.closest('.em-pagination').attr('data-em-ajax');
 			var wrapper = a.closest('.em-search-ajax');
@@ -255,7 +254,7 @@ jQuery(document).ready( function($){
 			//create copy of template slot, insert so ready for population
 			var tickets = $('#em-tickets-form table tbody');
 			var rowNo = tickets.length+1;
-			var slot = tickets.first().clone(true).attr('id','em-ticket-'+ rowNo).appendTo($('#em-tickets-form table'));
+			var slot = tickets.first('.em-ticket-template').clone(true).attr('id','em-ticket-'+ rowNo).removeClass('em-ticket-template').addClass('em-ticket').appendTo($('#em-tickets-form table'));
 			//change the index of the form element names
 			slot.find('*[name]').each( function(index,el){
 				el = $(el);
@@ -269,9 +268,10 @@ jQuery(document).ready( function($){
 			em_setup_datepicker(slot);
 			em_setup_timepicker(slot);
 		    $('html, body').animate({ scrollTop: slot.offset().top - 30 }); //sends user to form
+			check_ticket_sortability();
 		});
 		//Edit a Ticket
-		$(document).delegate('.ticket-actions-edit', 'click', function(e){
+		$(document).on('click', '.ticket-actions-edit', function(e){
 			e.preventDefault();
 			reset_ticket_forms();
 			var tbody = $(this).closest('tbody');
@@ -279,7 +279,7 @@ jQuery(document).ready( function($){
 			tbody.find('tr.em-tickets-row-form').fadeIn();
 			return false;
 		});
-		$(document).delegate('.ticket-actions-edited', 'click', function(e){
+		$(document).on('click', '.ticket-actions-edited', function(e){
 			e.preventDefault();
 			var tbody = $(this).closest('tbody');
 			var rowNo = tbody.attr('id').replace('em-ticket-','');
@@ -322,7 +322,7 @@ jQuery(document).ready( function($){
 		    $('html, body').animate({ scrollTop: tbody.parent().offset().top - 30 }); //sends user back to top of form
 			return false;
 		});
-		$(document).delegate('.em-ticket-form select.ticket_type','change', function(e){
+		$(document).on('change', '.em-ticket-form select.ticket_type', function(e){
 			//check if ticket is for all users or members, if members, show roles to limit the ticket to
 			var el = $(this);
 			if( el.find('option:selected').val() == 'members' ){
@@ -331,7 +331,7 @@ jQuery(document).ready( function($){
 				el.closest('.em-ticket-form').find('.ticket-roles').hide();
 			}
 		});
-		$(document).delegate('.em-ticket-form .ticket-options-advanced','click', function(e){
+		$(document).on('click', '.em-ticket-form .ticket-options-advanced', function(e){
 			//show or hide advanced tickets, hidden by default
 			e.preventDefault();
 			var el = $(this);
@@ -356,7 +356,7 @@ jQuery(document).ready( function($){
 			if( show_advanced ) el.find('.ticket-options-advanced').trigger('click');
 		});
 		//Delete a ticket
-		$(document).delegate('.ticket-actions-delete', 'click', function(e){
+		$(document).on('click', '.ticket-actions-delete', function(e){
 			e.preventDefault();
 			var el = $(this);
 			var tbody = el.closest('tbody');
@@ -375,13 +375,38 @@ jQuery(document).ready( function($){
 				//not saved to db yet, so just remove
 				tbody.remove();
 			}
+			check_ticket_sortability();
 			return false;
 		});
+		//Sort Tickets
+		$('#em-tickets-form.em-tickets-sortable table').sortable({
+			items: '> tbody',
+			placeholder: "em-ticket-sortable-placeholder",
+			handle:'.ticket-status',
+			helper: function( event, el ){
+				var helper = $(el).clone().addClass('em-ticket-sortable-helper');
+				var tds = helper.find('.em-tickets-row td').length;
+				helper.children().remove();
+				helper.append('<tr class="em-tickets-row"><td colspan="'+tds+'" style="text-align:left; padding-left:15px;"><span class="dashicons dashicons-tickets-alt"></span></td></tr>');
+				return helper;
+			},
+		});
+		var check_ticket_sortability = function(){
+			var em_tickets = $('#em-tickets-form table tbody.em-ticket');
+			if( em_tickets.length == 1 ){
+				em_tickets.find('.ticket-status').addClass('single');
+				$('#em-tickets-form.em-tickets-sortable table').sortable( "option", "disabled", true );
+			}else{
+				em_tickets.find('.ticket-status').removeClass('single');
+				$('#em-tickets-form.em-tickets-sortable table').sortable( "option", "disabled", false );
+			}
+		};
+		check_ticket_sortability();
 	}
 	//Manageing Bookings
 	if( $('#em-bookings-table').length > 0 ){
 		//Pagination link clicks
-		$(document).delegate('#em-bookings-table .tablenav-pages a', 'click', function(){
+		$(document).on('click', '#em-bookings-table .tablenav-pages a', function(){
 			var el = $(this);
 			var form = el.parents('#em-bookings-table form.bookings-filter');
 			//get page no from url, change page, submit form
@@ -441,10 +466,10 @@ jQuery(document).ready( function($){
 		if( $("#em-bookings-table-settings").length > 0 ){
 			//Settings Overlay
 			$("#em-bookings-table-settings").dialog(em_bookings_settings_dialog);
-			$(document).delegate('#em-bookings-table-settings-trigger','click', function(e){ e.preventDefault(); $("#em-bookings-table-settings").dialog('open'); });
+			$(document).on('click', '#em-bookings-table-settings-trigger', function(e){ e.preventDefault(); $("#em-bookings-table-settings").dialog('open'); });
 			//Export Overlay
 			$("#em-bookings-table-export").dialog(em_bookings_export_dialog);
-			$(document).delegate('#em-bookings-table-export-trigger','click', function(e){ e.preventDefault(); $("#em-bookings-table-export").dialog('open'); });
+			$(document).on('click', '#em-bookings-table-export-trigger', function(e){ e.preventDefault(); $("#em-bookings-table-export").dialog('open'); });
 			var export_overlay_show_tickets = function(){
 				if( $('#em-bookings-table-export-form input[name=show_tickets]').is(':checked') ){
 					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').show();
@@ -479,7 +504,7 @@ jQuery(document).ready( function($){
 			load_ui_css = true;
 		}
 		//Widgets and filter submissions
-		$(document).delegate('#em-bookings-table form.bookings-filter', 'submit', function(e){
+		$(document).on('submit', '#em-bookings-table form.bookings-filter', function(e){
 			var el = $(this);			
 			//append loading spinner
 			el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
@@ -495,7 +520,7 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		//Approve/Reject Links
-		$(document).delegate('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete', 'click', function(){
+		$(document).on('click', '.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete', function(){
 			var el = $(this); 
 			if( el.hasClass('em-bookings-delete') ){
 				if( !confirm(EM.booking_delete) ){ return false; }
@@ -510,7 +535,7 @@ jQuery(document).ready( function($){
 	//Old Bookings Table - depreciating soon
 	if( $('.em_bookings_events_table').length > 0 ){
 		//Widgets and filter submissions
-		$(document).delegate('.em_bookings_events_table form', 'submit', function(e){
+		$(document).on('submit', '.em_bookings_events_table form', function(e){
 			var el = $(this);
 			var url = em_ajaxify( el.attr('action') );		
 			el.parents('.em_bookings_events_table').find('.table-wrap').first().append('<div id="em-loading" />');
@@ -520,7 +545,7 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		//Pagination link clicks
-		$(document).delegate('.em_bookings_events_table .tablenav-pages a', 'click', function(){		
+		$(document).on('click', '.em_bookings_events_table .tablenav-pages a', function(){
 			var el = $(this);
 			var url = em_ajaxify( el.attr('href') );	
 			el.parents('.em_bookings_events_table').find('.table-wrap').first().append('<div id="em-loading" />');

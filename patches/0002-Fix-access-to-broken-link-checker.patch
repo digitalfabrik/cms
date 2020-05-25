@@ -1,25 +1,25 @@
-From c816376cff7a1640ab19ffc4d1c2ba3b54e679cb Mon Sep 17 00:00:00 2001
+From 793b4924ac03ad2bff5e72adf64c1f093b69663b Mon Sep 17 00:00:00 2001
 From: Sven Seeberg <mail@sven-seeberg.de>
-Date: Mon, 9 Dec 2019 15:16:12 +0100
-Subject: [PATCH] Apply Integreat Patch to Broken Link Checker
+Date: Thu, 7 May 2020 13:30:11 +0200
+Subject: [PATCH] Fix Broken Link checker permissions
 
 ---
  wp-content/plugins/broken-link-checker/core/core.php | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/wp-content/plugins/broken-link-checker/core/core.php b/wp-content/plugins/broken-link-checker/core/core.php
-index f5235945..b4dbb645 100644
+index d5bf1e26..7566e008 100644
 --- a/wp-content/plugins/broken-link-checker/core/core.php
 +++ b/wp-content/plugins/broken-link-checker/core/core.php
-@@ -335,7 +335,7 @@ class wsBrokenLinkChecker {
-         $links_page_hook = add_management_page(
- 			__('View Broken Links', 'broken-link-checker'),
- 			$menu_title,
--			'edit_others_posts',
-+			'create_users',
-             'view-broken-links',array($this, 'links_page')
- 		);
- 
+@@ -324,7 +324,7 @@ if ( ! class_exists( 'wsBrokenLinkChecker' ) ) {
+ 			$links_page_hook = add_management_page(
+ 				__( 'View Broken Links', 'broken-link-checker' ),
+ 				$menu_title,
+-				'edit_others_posts',
++				'create_users',
+ 				'view-broken-links',
+ 				array( $this, 'links_page' )
+ 			);
 -- 
-2.16.4
+2.26.1
 

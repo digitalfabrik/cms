@@ -17,6 +17,7 @@ class EM_Ticket extends EM_Object{
 	var $ticket_required = false;
 	var $ticket_parent;
 	var $ticket_meta = array();
+	var $ticket_order;
 	var $fields = array(
 		'ticket_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
@@ -33,7 +34,8 @@ class EM_Ticket extends EM_Object{
 		'ticket_guests' => array('name'=>'guests','type'=>'%d','null'=>1),
 		'ticket_required' => array('name'=>'required','type'=>'%d','null'=>1),
 		'ticket_parent' => array('type'=>'%d','null'=>1),
-		'ticket_meta' => array('name'=>'ticket_meta','type'=>'%s','null'=>1)			
+		'ticket_meta' => array('name'=>'ticket_meta','type'=>'%s','null'=>1),
+		'ticket_order' => array('type'=>'%d','null'=>1),
 	);
 	//Other Vars
 	/**

@@ -13,18 +13,18 @@ class URE_Export_Single_Role {
 
     // reference to the code library object
     protected $lib = null;
-    // array with roles to import
+    // array with roles to export
     private $roles = null;
-    // role ID to import
-    private $role_id = null;
     
     
     public function __construct() {
         
         $this->lib = URE_Lib_Pro::get_instance();        
+        $this->editor = URE_Editor::get_instance();
+        
         add_action('ure_role_edit_toolbar_service', array($this, 'add_toolbar_buttons'));
         add_action('ure_load_js', array($this, 'add_js'));
-        add_action('init', array($this, 'export'));        
+        add_action('admin_init', array($this, 'export'));        
         
     }
     // end of __construct()
@@ -100,8 +100,8 @@ class URE_Export_Single_Role {
             echo esc_html__('You do not have sufficient permissions to export roles.', 'user-role-editor');
             return false;
         }
-        $roles_tmp = $this->lib->get_user_roles();
-        if (!isset($roles_tmp[$current_role])) {
+        $this->roles = $this->lib->get_user_roles();
+        if (!isset($this->roles[$current_role])) {
             echo esc_html__('Role requested for export does not exist', 'user-role-editor') .' - '. esc_html($current_role);
             return false;
         }
@@ -173,14 +173,14 @@ class URE_Export_Single_Role {
     
     private function load_data($current_role) {
         
-        $roles_tmp = $this->lib->get('roles');  // having in mind that $this->lib->roles was initialized by $this->is_request_valid() call
-        if (empty($roles_tmp)) {
-            $roles_tmp = $this->lib->get_user_roles();
+        // having in mind that $this->lib->roles was initialized by $this->is_request_valid() call
+        if ( empty( $this->roles ) ) {
+            $this->roles = $this->lib->get_user_roles();
         }
-        if (!isset($roles_tmp[$current_role])) {
+        if ( !isset( $this->roles[$current_role] ) ) {
             return false;
         }
-        $role_tmp = self::validate_caps($roles_tmp[$current_role]);
+        $role_tmp = self::validate_caps( $this->roles[$current_role] );
         $role = array($current_role => $role_tmp);
         $data = array('roles'=>$role); 
         
@@ -204,6 +204,9 @@ class URE_Export_Single_Role {
         
         array_walk_recursive($data, array($this, 'base64_enc_value'));
         $json_data = json_encode($data);
+        // Safari trancates 2 last charatcters of downloaded file - closing '}', which leads to JSON syntax error. 
+        // Let's add 2 trailing spaces to the end of data string in hope to fix this issue.
+        $json_data .= '  '; 
         $enc_data = base64_encode($json_data);
         
         return $enc_data;
@@ -220,7 +223,7 @@ class URE_Export_Single_Role {
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Cache-Control: private', false); // required for certain browsers 
-        header('Content-Type: application/pdf');
+        header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="'. $file_name .'"');
         header('Content-Transfer-Encoding: binary');
         header('Content-Length: ' . strlen($data));
@@ -236,13 +239,13 @@ class URE_Export_Single_Role {
             return;
         }                
                                 
-        $current_role = $this->lib->get_request_var('current_role', 'post');
-        if (!$this->is_request_valid($current_role)) {
+        $current_role = $this->lib->get_request_var( 'current_role', 'post' );
+        if ( !$this->is_request_valid( $current_role ) ) {
             exit;
         }                
         
-        $data = $this->load_data($current_role);
-        if ($data===false) {
+        $data = $this->load_data( $current_role );
+        if ( $data===false ) {
             echo esc_html__('Export data error.', 'user-role-editor');
             exit;
         }

@@ -62,18 +62,25 @@ class User_Role_Editor_Pro extends User_Role_Editor {
     public function plugin_init() {
         parent::plugin_init();
 
-        add_action('ure_settings_update1', array('URE_Settings_Pro', 'update1'));
-        add_action('ure_settings_show1', array('URE_Settings_Pro', 'show1'));
-        add_action('ure_settings_update2', array('URE_Settings_Pro', 'update2'));        
-        add_action('ure_settings_show2', array('URE_Settings_Pro', 'show2'));
+        // URE Setting page
+        add_action( 'ure_settings_update1', array('URE_Settings_Pro', 'update1') );
+        add_action( 'ure_settings_show1', array('URE_Settings_Pro', 'show1') );
+        add_action( 'ure_settings_update2', array('URE_Settings_Pro', 'update2') );        
+        add_action( 'ure_settings_show2', array('URE_Settings_Pro', 'show2') );
+        add_action( 'ure_settings_tools_show', array( 'URE_Tools_Ext', 'show' ) );
+        add_action( 'ure_settings_tools_exec', array( 'URE_Tools_Ext', 'exec' ) );
         
         $multisite = $this->lib->get('multisite');
         if ($multisite) {
             add_action('ure_settings_ms_update', array('URE_Settings_Pro', 'ms_update'));
             add_action('ure_settings_ms_show', array('URE_Settings_Pro', 'ms_show'));
-            // Copy addons data for new created blog
-            add_action('ure_get_addons_data_for_new_blog', array('URE_Network_Addons_Data_Replicator', 'get_for_new_blog'), 10, 1);
-            add_action('ure_set_addons_data_for_new_blog', array('URE_Network_Addons_Data_Replicator', 'set_for_new_blog'), 10, 2);
+            
+            // Replicate add-ons data for all network
+            add_action( 'ure_direct_network_roles_update', array( 'URE_Editor_Ext', 'network_replicate_addons_data' ) );
+            
+            // User permissions update - multisite extenstion
+            add_action('ure_before_user_permissions_update', array('URE_Editor_Ext', 'add_user_to_current_blog'), 10, 1 );
+            add_action('ure_user_permissions_update', array('URE_Editor_Ext', 'network_update_user'), 10, 1 );
         }
         
         add_action('ure_load_js', array($this, 'add_js'));        
@@ -160,7 +167,16 @@ class User_Role_Editor_Pro extends User_Role_Editor {
                 new URE_Import_Single_Role();
             }
         }
-                
+
+        
+        $multisite = $this->lib->get('multisite');
+        if ( $multisite ) {
+            // Copy addons data for new created blog
+            // This actions should be linked to front-end too. As new site (PmPro for example) can be registered directly from front-end
+            add_filter('ure_get_addons_data_for_new_blog', array('URE_Network_Addons_Data_Replicator', 'get_for_new_blog'), 10, 1);
+            add_action('ure_set_addons_data_for_new_blog', array('URE_Network_Addons_Data_Replicator', 'set_for_new_blog'), 10, 2);
+        }
+
     }
     // end of load_addons()
     
@@ -224,6 +240,7 @@ class User_Role_Editor_Pro extends User_Role_Editor {
                     'extract_button' => esc_html__('Extract', 'user-role-editor'),
                     'update_button' => esc_html__('Update', 'user-role-editor'),
                     'close_button' => esc_html__('Close', 'user-role-editor'),
+                    'export_button' => esc_html__('Export', 'user-role-editor'),
                     'no_allowed_args_to_send' => esc_html__('Input allowed aguments before try to save it.', 'user-role-editor')
                 ));
         
@@ -276,7 +293,7 @@ class User_Role_Editor_Pro extends User_Role_Editor {
     
     public function ure_ajax() {
                 
-        $ajax_processor = new URE_Pro_Ajax_Processor($this->lib);
+        $ajax_processor = new URE_Pro_Ajax_Processor( );
         $ajax_processor->dispatch();
         
     }

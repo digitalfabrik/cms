@@ -75,8 +75,8 @@ class URE_Pro_View {
     
     
     public static function network_update_dialog_html() {
-        $lib = URE_Lib_Pro::get_instance();
-        $ure_object = $lib->get('ure_object');
+        $editor = URE_Editor::get_instance();
+        $ure_object = $editor->get('ure_object');
         if ($ure_object=='role') {
             self::network_update_dialog_html_role();
         } else {

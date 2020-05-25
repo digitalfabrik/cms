@@ -1007,8 +1007,8 @@ class EM_Booking extends EM_Object{
 		global $wpdb;
 		if( $this->can_manage() ){
 			$this->get_notes();
-			$note = array('author'=>get_current_user_id(),'note'=>$note_text,'timestamp'=>time());
-			$this->notes[] = wp_kses_data($note);
+			$note = array('author'=>get_current_user_id(),'note'=>wp_kses_data($note_text),'timestamp'=>time());
+			$this->notes[] = $note;
 			$this->feedback_message = __('Booking note successfully added.','events-manager');
 			return $wpdb->insert(EM_META_TABLE, array('object_id'=>$this->booking_id, 'meta_key'=>'booking-note', 'meta_value'=> serialize($note)),array('%d','%s','%s'));
 		}
@@ -1152,8 +1152,12 @@ class EM_Booking extends EM_Object{
 			if( !empty($msg['user']['subject']) && $email_attendee ){
 				$msg['user']['subject'] = $this->output($msg['user']['subject'], 'raw');
 				$msg['user']['body'] = $this->output($msg['user']['body'], 'email');
+				$attachments = array();
+				if( !empty($msg['user']['attachments']) && is_array($msg['user']['attachments']) ){
+					$attachments = $msg['user']['attachments'];
+				}
 				//Send to the person booking
-				if( !$this->email_send( $msg['user']['subject'], $msg['user']['body'], $this->get_person()->user_email) ){
+				if( !$this->email_send( $msg['user']['subject'], $msg['user']['body'], $this->get_person()->user_email, $attachments) ){
 					$result = false;
 				}else{
 					$this->mails_sent++;
@@ -1175,8 +1179,12 @@ class EM_Booking extends EM_Object{
 					//Only gets sent if this is a pending booking, unless approvals are disabled.
 					$msg['admin']['subject'] = $this->output($msg['admin']['subject'],'raw');
 					$msg['admin']['body'] = $this->output($msg['admin']['body'], 'email');
+					$attachments = array();
+					if( !empty($msg['admin']['attachments']) && is_array($msg['admin']['attachments']) ){
+						$attachments = $msg['admin']['attachments'];
+					}
 					//email admins
-						if( !$this->email_send( $msg['admin']['subject'], $msg['admin']['body'], $admin_emails) && current_user_can('manage_options') ){
+						if( !$this->email_send( $msg['admin']['subject'], $msg['admin']['body'], $admin_emails, $attachments) && current_user_can('manage_options') ){
 							$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','events-manager');
 							$result = false;
 						}else{

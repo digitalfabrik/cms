@@ -116,25 +116,26 @@ class URE_Plugins_Access_Role_Controller {
         }
         
         $lib = URE_Lib_Pro::get_instance();
+        $editor = URE_Editor::get_instance();
         
         if (!current_user_can(URE_Plugins_Access::CAPABILITY)) {
-            $lib->set_notification( esc_html__('URE: you do not have enough permissions to use this add-on.', 'user-role-editor'));
+            $editor->set_notification( esc_html__('URE: you do not have enough permissions to use this add-on.', 'user-role-editor') );
             return false;
         }
         $object_type = $lib->get_request_var('ure_object_type', 'post');
         if ($object_type!=='role') {
-            $lib->set_notification( esc_html__('URE: plugins access: Wrong object type. Data was not updated.', 'user-role-editor'));
+            $editor->set_notification( esc_html__('URE: plugins access: Wrong object type. Data was not updated.', 'user-role-editor') );
             return false;
         }
         $object_name = $lib->get_request_var('ure_object_name', 'post');
         if (empty($object_name)) {
-            $lib->set_notification( esc_html__('URE: plugins: Empty object name. Data was not updated', 'user-role-editor'));
+            $editor->set_notification( esc_html__('URE: plugins: Empty object name. Data was not updated', 'user-role-editor') );
             return false;
         }
                         
         $this->save_data($object_name);
         
-        $lib->set_notification(esc_html__('Plugins access data was updated successfully', 'user-role-editor'));
+        $editor->set_notification( esc_html__('Plugins access data was updated successfully', 'user-role-editor') );
         
         return true;
     }

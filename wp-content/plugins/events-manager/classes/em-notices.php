@@ -4,7 +4,7 @@
      * @author marcus
      *
      */
-    class EM_Notices implements Iterator {
+    class EM_Notices implements Iterator, JsonSerializable {
     	/**
     	 * If object has been displayed, this gets set to true, can be checked to avoid duplicates.
     	 * @var boolean
@@ -222,7 +222,18 @@
         }  
         function count_confirms(){
             return $this->count('confirms');
-        }  
+        }
+        
+        // Encoiding in JsonSerializable
+	    function jsonSerialize(){
+        	$notices = array();
+	        foreach( $notices as $k => $v ){
+	        	if( !empty($v) ){
+	        		$notices[$k] = $v;
+		        }
+	        }
+        	return $notices;
+	    }
 
 		//Iterator Implementation
 	    function rewind(){
@@ -244,8 +255,8 @@
 	        $key = key($this->bookings);
 	        $var = ($key !== NULL && $key !== FALSE);
 	        return $var;
-	    }        
-        
+	    }
+     
     }
     function em_notices_init(){
 	    global $EM_Notices;

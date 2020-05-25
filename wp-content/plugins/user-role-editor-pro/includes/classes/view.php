@@ -9,12 +9,14 @@
  **/
 class URE_View {
  
-    private $lib = null;
+    protected $lib = null;
+    protected $editor = null;
     
     
     public function __construct() {
         
         $this->lib = URE_Lib::get_instance();
+        $this->editor = URE_Editor::get_instance();
         
     }
     // end of __construct()
@@ -77,7 +79,7 @@ class URE_View {
         
         if (isset($builtin_wp_caps[$cap_id])) {
             if (in_array('deprecated', $builtin_wp_caps[$cap_id])) {
-                $show_deprecated_caps = $this->lib->get('show_deprecated_caps');
+                $show_deprecated_caps = $this->editor->get('show_deprecated_caps');
                 if (!$show_deprecated_caps) {
                     $hidden_class = 'hidden';
                 }
@@ -93,7 +95,7 @@ class URE_View {
     
         $blocked = false;
         $multisite = $this->lib->get('multisite');
-        if ($multisite && $this->lib->block_cap_for_single_admin($cap_id, true)) {
+        if ($multisite && $this->editor->block_cap_for_single_admin($cap_id, true)) {
             if ($this->lib->is_super_admin()) {
                 if (!is_network_admin()) {
                     $label_style = 'style="color: red;"';
@@ -111,7 +113,7 @@ class URE_View {
     // Get full capabilities list and exclude Visual Composer capabilities from it
     // Do not take VC capabilities into account as VC stores not boolean values with them
     protected function get_full_capabilities() {
-        $full_caps = $this->lib->get('full_capabilities');
+        $full_caps = $this->editor->get('full_capabilities');
         foreach($full_caps as $key=>$capability) {
             if (strpos($key, 'vc_access_rules_')!==false) {
                 unset($full_caps[$key]);
@@ -123,34 +125,29 @@ class URE_View {
     // end of get_full_capabilities()
     
     
-    /**
-     * output HTML-code for capabilities list
+    /*
+     * Output HTML-code for capabilities list
+     * Used build output for response to AJAX request
      * @param boolean $for_role - if true, it is role capabilities list, else - user specific capabilities list
      * @param boolean $edit_mode - if false, capabilities checkboxes are shown as disable - readonly mode
      */
-    public function show_capabilities($for_role = true, $edit_mode=true) {
-        
+    public function _show_capabilities( $for_role = true, $edit_mode=true ) {
         $onclick_for_admin = '';
-        $multisite = $this->lib->get('multisite');
-        $current_role = $this->lib->get('current_role');
-        if (!($multisite && $this->lib->is_super_admin())) {  // do not limit SuperAdmin for multi-site
-            if ('administrator'==$current_role) {
-                $onclick_for_admin = 'onclick="ure_turn_it_back(this)"';
-            }
-        }
-        $user_to_edit = $this->lib->get('user_to_edit');
-        $roles = $this->lib->get('roles');
+        $multisite = $this->lib->get( 'multisite' );
+        $current_role = $this->editor->get( 'current_role' );
+        $user_to_edit = $this->editor->get( 'user_to_edit' );
+        $roles = $this->editor->get( 'roles' );
         $full_capabilities = $this->get_full_capabilities();
         $built_in_wp_caps = $this->lib->get_built_in_wp_caps();        
-        $caps_readable = $this->lib->get('caps_readable');
+        $caps_readable = $this->editor->get( 'caps_readable' );
         $caps_groups_manager = URE_Capabilities_Groups_Manager::get_instance();
         
         $key_capability = URE_Own_Capabilities::get_key_capability();
-        $user_is_ure_admin = current_user_can($key_capability);
+        $user_is_ure_admin = current_user_can( $key_capability );
         $ure_caps = URE_Own_Capabilities::get_caps();
         
-        $output = '<div id="ure_caps_list_container">'
-                . '<div id="ure_caps_list">';
+        $output = '';
+        
         foreach ($full_capabilities as $capability) {    
             $cap_id = $capability['inner'];
             if (!$user_is_ure_admin) { 
@@ -190,7 +187,7 @@ class URE_View {
                 } else {
                     $disabled = '';
                 }
-                if ($this->lib->user_can($cap_id)) {
+                if ($this->editor->user_can($cap_id)) {
                     $checked = 'checked="checked"';
                     if (!isset($user_to_edit->caps[$cap_id])) {
                         $disabled = 'disabled="disabled"';
@@ -201,8 +198,7 @@ class URE_View {
 
             $cap_id_esc = URE_Capability::escape($cap_id);
             $cap_html = '<div id="ure_cap_div_'. $cap_id_esc .'" '. $class .'><input type="checkbox" name="' . $cap_id_esc . '" id="' . 
-                    $cap_id_esc . '" value="' . $cap_id .'" '. $checked . ' ' . $disabled . ' ' . $onclick_for_admin . 
-                    'class="ure-cap-cb">';
+                    $cap_id_esc . '" value="' . $cap_id .'" '. $checked . ' ' . $disabled . ' class="ure-cap-cb">';
             
             if ($caps_readable) {
                 $cap_ind = 'human';
@@ -216,6 +212,23 @@ class URE_View {
             
             $output .= $cap_html;
         }
+        
+        return $output;
+    }
+    // end of _show_capabilities()
+    
+    
+    /**
+     * Output HTML-code for capabilities list
+     * Used to built full page output for usual HTTP request
+     * @param boolean $for_role - if true, it is role capabilities list, else - user specific capabilities list
+     * @param boolean $edit_mode - if false, capabilities checkboxes are shown as disable - readonly mode
+     */
+    public function show_capabilities( $for_role = true, $edit_mode=true ) {                
+        
+        $output = '<div id="ure_caps_list_container">'
+                . '<div id="ure_caps_list">';
+        $output .= $this->_show_capabilities( $for_role, $edit_mode );        
         $output .= '</div></div>' ;
 
         echo $output;
@@ -226,24 +239,24 @@ class URE_View {
     // content of User Role Editor Pro advertisement slot - for direct call
     public function advertise_pro() {        
         ?>		
-        			<div id="ure_pro_advertisement" style="clear:left;display:block; float: left;">
-        				<a href="https://www.role-editor.com?utm_source=UserRoleEditor&utm_medium=banner&utm_campaign=Plugins " target="_new" >
+        <div id="ure_pro_advertisement" style="clear:left;display:block; float: left;">
+            <a href="https://www.role-editor.com?utm_source=UserRoleEditor&utm_medium=banner&utm_campaign=Plugins " target="_new" >
         <?php
         $hide_pro_banner = $this->lib->get_option('ure_hide_pro_banner', 0);
         if ($hide_pro_banner) {
             echo 'User Role Editor Pro: extended functionality, no advertisement - from $29.</a>';
         } else {
         ?>
-            					<img src="<?php echo URE_PLUGIN_URL; ?>images/user-role-editor-pro-728x90.jpg" alt="User Role Editor Pro" 
-            						 title="More functionality and premium support with Pro version of User Role Editor."/>
-            				</a><br />
-            				<label for="ure_hide_pro_banner">
-            					<input type="checkbox" name="ure_hide_pro_banner" id="ure_hide_pro_banner" onclick="ure_hide_pro_banner();"/>&nbsp;Thanks, hide this banner.
-            				</label>
+            <img src="<?php echo URE_PLUGIN_URL; ?>images/user-role-editor-pro-728x90.jpg" alt="User Role Editor Pro" 
+            	 title="More functionality and premium support with Pro version of User Role Editor."/>
+           </a><br />
+            <label for="ure_hide_pro_banner">
+            	<input type="checkbox" name="ure_hide_pro_banner" id="ure_hide_pro_banner" onclick="ure_main.hide_pro_banner();"/>&nbsp;Thanks, hide this banner.
+            </label>
             <?php
         }
             ?>
-        			</div>  			
+        </div>  			
         <?php
     }
     // end of advertise_pro_version()
@@ -251,8 +264,11 @@ class URE_View {
     
     public function advertise_commercials() {
 
+        require_once(URE_PLUGIN_DIR . 'includes/classes/advertisement.php');
+
         $this->advert = new URE_Advertisement();
         $this->advert->display();
+        
     }
     // end of advertisement()
 
@@ -279,7 +295,7 @@ class URE_View {
     
     private function show_select_all() {
         $multisite = $this->lib->get('multisite');
-        $current_role = $this->lib->get('current_role');
+        $current_role = $this->editor->get('current_role');
         $show = true;
         if ($multisite) { 
             if ($current_role=='administrator' && !$this->lib->is_super_admin()) {
@@ -295,7 +311,8 @@ class URE_View {
     
     
     public function display_caps($for_role = true, $edit_mode=true) {
-        $caps_columns_quant = $this->lib->get('caps_columns_quant');                                    
+        
+        $caps_columns_quant = $this->editor->get('caps_columns_quant');                                    
 
 ?>        
     <table id="ure_caps_container" cellpadding="0" cellspacing="0">
@@ -314,13 +331,13 @@ class URE_View {
 ?>
                     <div class="ure-table-cell ure-caps-option nowrap">
                         <?php esc_html_e('Quick filter:', 'user-role-editor'); ?>&nbsp;
-                        <input type="text" id="quick_filter" name="quick_filter" value="" size="10" onkeyup="ure_filter_capabilities(this.value);" />&nbsp;&nbsp;&nbsp;
+                        <input type="text" id="quick_filter" name="quick_filter" value="" size="10" onkeyup="ure_main.filter_capabilities(this.value);" />&nbsp;&nbsp;&nbsp;
                         <input type="checkbox" id="granted_only" name="granted_only" />
                         <label for="granted_only"><?php esc_html_e('Granted Only', 'user-role-editor'); ?></label>&nbsp;
                     </div>                    
                     <div class="ure-table-cell ure-caps-option nowrap">
                         <?php esc_html_e('Columns:', 'user-role-editor');?>
-                        <select id="caps_columns_quant" name="caps_columns_quant" onchange="ure_change_caps_columns_quant();">
+                        <select id="caps_columns_quant" name="caps_columns_quant" onchange="ure_main.change_caps_columns_quant();">
                             <option value="1" <?php selected(1, $caps_columns_quant);?> >1</option>
                             <option value="2" <?php selected(2, $caps_columns_quant);?> >2</option>
                             <option value="3" <?php selected(3, $caps_columns_quant);?> >3</option>
