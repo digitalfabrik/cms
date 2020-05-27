@@ -1,7 +1,7 @@
 (function() {
     tinymce.PluginManager.add( 'no_translate_attribute', function( editor, url ) {
         editor.addButton('notranslatebtn', {
-            title: 'Do not translate selected text.',
+            text: 'Text für Übersetzungen sperren',
             image: url + '/icon.png',
             onclick: function() {
                 editor.focus();

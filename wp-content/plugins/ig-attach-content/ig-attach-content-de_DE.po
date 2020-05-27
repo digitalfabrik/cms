@@ -1,3 +1,6 @@
+msgid "Live-Content Preview"
+msgstr "Vorschau der Live-Inhalte"
+
 msgid "Live-Content"
 msgstr "Live-Inhalte"
 
