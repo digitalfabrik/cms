@@ -201,7 +201,9 @@ function em_event_form($args = array()){
 		em_locate_template('forms/event-editor.php',true, array('args'=>$args));
 	}
 	if( get_option('dbem_css_editors') ) echo '</div>';
+	wp_enqueue_style('dashicons');
 }
+
 /**
  * Retreives the event submission form for guests and members.
  * @param array $args

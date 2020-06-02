@@ -345,7 +345,7 @@ function em_admin_email_test_ajax(){
         $current_user = get_user_by('id', get_current_user_id());
         //add filters for options used in EM_Mailer so the current supplied ones are used
         ob_start();
-        function pre_option_dbem_mail_sender_name(){ return sanitize_email($_REQUEST['dbem_mail_sender_name']); }
+        function pre_option_dbem_mail_sender_name(){ return sanitize_text_field($_REQUEST['dbem_mail_sender_name']); }
         add_filter('pre_option_dbem_mail_sender_name', 'pre_option_dbem_mail_sender_name');
         function pre_option_dbem_mail_sender_address(){ return sanitize_text_field($_REQUEST['dbem_mail_sender_address']); }
         add_filter('pre_option_dbem_mail_sender_address', 'pre_option_dbem_mail_sender_address');
@@ -353,6 +353,10 @@ function em_admin_email_test_ajax(){
         add_filter('pre_option_dbem_rsvp_mail_send_method', 'pre_option_dbem_rsvp_mail_send_method');
         function pre_option_dbem_rsvp_mail_port(){ return sanitize_text_field($_REQUEST['dbem_rsvp_mail_port']); }
         add_filter('pre_option_dbem_rsvp_mail_port', 'pre_option_dbem_rsvp_mail_port');
+	    function pre_option_dbem_smtp_encryption(){ return sanitize_text_field($_REQUEST['dbem_smtp_encryption']); }
+	    add_filter('pre_option_dbem_smtp_encryption', 'pre_option_dbem_smtp_encryption');
+	    function pre_option_dbem_smtp_autotls(){ return sanitize_text_field($_REQUEST['dbem_smtp_autotls']); }
+	    add_filter('pre_option_dbem_smtp_autotls', 'pre_option_dbem_smtp_autotls');
         function pre_option_dbem_rsvp_mail_SMTPAuth(){ return sanitize_text_field($_REQUEST['dbem_rsvp_mail_SMTPAuth']); }
         add_filter('pre_option_dbem_rsvp_mail_SMTPAuth', 'pre_option_dbem_rsvp_mail_SMTPAuth');
         function pre_option_dbem_smtp_host(){ return sanitize_text_field($_REQUEST['dbem_smtp_host']); }

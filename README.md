@@ -1,13 +1,7 @@
 [![Build Status](https://travis-ci.org/Integreat/cms.svg?branch=develop)](https://travis-ci.org/Integreat/cms)
 
 # Integreat
-###### ehemals Refguide+ 
-
-Der mobile Alltagsguide für Flüchtlinge. 
-Einfach. Digital. Kostenlos.
-
-www.integreat-app.de
-
+This is the legacy back end for Integreat. Issues are tracked in https://issues.integreat-app.de/projects/WP/.
 
 ## WordPress CMS
 We use WordPress to manage and deliver our content.

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: User Role Editor v.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-06 11:17+0700\n"
+"POT-Creation-Date: 2020-03-20 14:43+0700\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Vladimir Garagulya <support@role-editor.com>\n"
 "Language-Team: ShinePHP.com <vladimir@shinephp.com>\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: ..\n"
 
 #: ../includes/classes/capabilities-groups-manager.php:44
@@ -21,16 +21,16 @@ msgid "Custom Post Types"
 msgstr "Пользовательские Типы Статей"
 
 #: ../includes/classes/capabilities-groups-manager.php:75
-#: ../includes/classes/ure-lib.php:230
-#: ../includes/classes/user-role-editor.php:553
-#: ../includes/classes/user-role-editor.php:584
-#: ../pro/includes/classes/user-role-editor-pro.php:171
+#: ../includes/classes/editor.php:1226
+#: ../includes/classes/user-role-editor.php:566
+#: ../includes/classes/user-role-editor.php:597
+#: ../pro/includes/classes/user-role-editor-pro.php:190
 msgid "User Role Editor"
 msgstr "Редактор ролей пользователей"
 
 #: ../includes/classes/capabilities-groups-manager.php:90
 msgid "WooCommerce"
-msgstr ""
+msgstr "WooCommerce"
 
 #: ../includes/classes/capabilities-groups-manager.php:91
 #: ../includes/classes/capabilities-groups-manager.php:111
@@ -42,13 +42,13 @@ msgid "All"
 msgstr "Все"
 
 #: ../includes/classes/capabilities-groups-manager.php:112
-#: ../includes/classes/user-role-editor.php:525
-#: ../includes/settings-template.php:21
+#: ../includes/classes/user-role-editor.php:538
+#: ../includes/settings-template.php:20
 msgid "General"
 msgstr "Общие"
 
 #: ../includes/classes/capabilities-groups-manager.php:113
-#: ../pro/includes/classes/admin-menu-access.php:1048
+#: ../pro/includes/classes/admin-menu-access.php:1063
 msgid "Themes"
 msgstr "Темы"
 
@@ -61,20 +61,20 @@ msgid "Pages"
 msgstr "Страницы"
 
 #: ../includes/classes/capabilities-groups-manager.php:116
-#: ../pro/includes/classes/admin-menu-access.php:1054
+#: ../pro/includes/classes/admin-menu-access.php:1069
 #: ../pro/includes/classes/plugins-access-role-view.php:32
 #: ../pro/includes/classes/plugins-access-role.php:50
 msgid "Plugins"
 msgstr "Плагины"
 
 #: ../includes/classes/capabilities-groups-manager.php:117
-#: ../pro/includes/classes/admin-menu-access.php:1042
+#: ../pro/includes/classes/admin-menu-access.php:1057
 msgid "Users"
 msgstr "Пользователи"
 
 #: ../includes/classes/capabilities-groups-manager.php:121
-#: ../includes/classes/user-role-editor.php:543
-#: ../includes/settings-template.php:37
+#: ../includes/classes/user-role-editor.php:556
+#: ../includes/settings-template.php:36
 msgid "Multisite"
 msgstr "Многосайтовый"
 
@@ -94,154 +94,623 @@ msgstr "Ошибка: Имя должно содержать только лат
 msgid "Error: this capability is used internally by WordPress"
 msgstr ""
 
-#: ../includes/classes/capability.php:72 ../includes/classes/capability.php:179
-#: ../includes/classes/ure-lib.php:1111 ../includes/classes/ure-lib.php:1355
-#: ../includes/classes/ure-lib.php:1470 ../includes/classes/ure-lib.php:1517
-#: ../includes/classes/user-role-editor.php:637
+#: ../includes/classes/capability.php:54
+msgid "Error: this word is used by WordPress as a role ID"
+msgstr ""
+
+#: ../includes/classes/capability.php:79 ../includes/classes/capability.php:190
+#: ../includes/classes/editor.php:742 ../includes/classes/editor.php:811
+#: ../includes/classes/editor.php:871 ../includes/classes/editor.php:1017
+#: ../includes/classes/editor.php:1059
+#: ../includes/classes/user-role-editor.php:650
 msgid "Insufficient permissions to work with User Role Editor"
 msgstr "Недостаточно полномочий для работы с User Role Editor"
 
-#: ../includes/classes/capability.php:94
+#: ../includes/classes/capability.php:84
+msgid "Wrong Request"
+msgstr "Ошибка: неверный запрос"
+
+#: ../includes/classes/capability.php:99
 #, php-format
 msgid "Capability %s was added successfully"
 msgstr "Право %s добавлено успешно"
 
-#: ../includes/classes/capability.php:96
+#: ../includes/classes/capability.php:101
 #, php-format
 msgid "Capability %s exists already"
 msgstr "Возможность %s уже существует"
 
-#: ../includes/classes/capability.php:186
-#: ../includes/classes/capability.php:191
+#: ../includes/classes/capability.php:197
+#: ../includes/classes/capability.php:202
 msgid "There are no capabilities available for deletion!"
 msgstr "Нет доступных к удалению прав"
 
-#: ../includes/classes/capability.php:197
+#: ../includes/classes/capability.php:208
 #, php-format
 msgid "Capability %s was removed successfully"
 msgstr "Разрешение %s удалено успешно"
 
-#: ../includes/classes/capability.php:200
+#: ../includes/classes/capability.php:212
 msgid "capabilities were removed successfully"
 msgstr "Права удалены успешно"
 
-#: ../includes/classes/grant-roles.php:153
-#: ../includes/classes/grant-roles.php:199
+#: ../includes/classes/editor.php:192 ../includes/classes/editor.php:194
+msgid "Error: "
+msgstr "Ошибка:"
+
+#: ../includes/classes/editor.php:192
+#, fuzzy
+#| msgid "Error: wrong request"
+msgid "Wrong request!"
+msgstr "Ошибка: неверный запрос"
+
+#: ../includes/classes/editor.php:194
+#: ../pro/includes/classes/widgets-show-view.php:146
+msgid "Role"
+msgstr "Роль"
+
+#: ../includes/classes/editor.php:195
+msgid "does not exist"
+msgstr "не существует"
+
+#: ../includes/classes/editor.php:680
+msgid "Role is updated successfully"
+msgstr "Роль изменена успешно"
+
+#: ../includes/classes/editor.php:682
+msgid "Roles are updated for all network"
+msgstr "Роли изменены для всей сети"
+
+#: ../includes/classes/editor.php:685
+#, fuzzy
+#| msgid "Error occured during role(s) update"
+msgid "Error occurred during role(s) update"
+msgstr "При изменении роли произошла ошибка"
+
+#: ../includes/classes/editor.php:689
+msgid "User capabilities are updated successfully"
+msgstr "Права изменены успешно"
+
+#: ../includes/classes/editor.php:691
+#, fuzzy
+#| msgid "Error occured during user update"
+msgid "Error occurred during user update"
+msgstr "При изменении прав пользователя произошла ошибка "
+
+#: ../includes/classes/editor.php:775
+msgid "Error: Role ID is empty!"
+msgstr "Ошибка: пустой идентификатор роли!"
+
+#: ../includes/classes/editor.php:784
+msgid ""
+"Error: Role ID must contain latin characters, digits, hyphens or underscore "
+"only!"
+msgstr ""
+"Ошибка: идентификатор роли (ID) должен содержать только латинские буквы, "
+"цифры, знак подчеркивания и дефис."
+
+#: ../includes/classes/editor.php:790
+msgid ""
+"Error: WordPress does not support numeric Role name (ID). Add latin "
+"characters to it."
+msgstr ""
+"Ошибка: WordPress не поддерживает цифровые идентификаторы ролей. Добавьте "
+"латинские буквы."
+
+#: ../includes/classes/editor.php:824
+#, php-format
+msgid "Role %s exists already"
+msgstr "Роль %s уже существует"
+
+#: ../includes/classes/editor.php:843
+msgid "Error is encountered during new role create operation"
+msgstr "Произошла ошибка при создании новой роли"
+
+#: ../includes/classes/editor.php:850
+#, php-format
+msgid "Role %s is created successfully"
+msgstr "Роль %s создана успешно"
+
+#: ../includes/classes/editor.php:883
+msgid "Error: Empty role display name is not allowed."
+msgstr "Ошибка: Пустое имя роли не допускаетя"
+
+#: ../includes/classes/editor.php:890
+#, php-format
+msgid "Role %s does not exists"
+msgstr "Роль %s не существует"
+
+#: ../includes/classes/editor.php:903
+#, php-format
+msgid "Role %s is renamed to %s successfully"
+msgstr "Роль успешно %s переименована в %s"
+
+#: ../includes/classes/editor.php:968
+#, fuzzy
+#| msgid "Role %s does not exists"
+msgid "Role does not exist"
+msgstr "Роль %s не существует"
+
+#: ../includes/classes/editor.php:972
+msgid "You can not delete role"
+msgstr "Вы не можете удалить роль"
+
+#: ../includes/classes/editor.php:998
+msgid "There are no roles for deletion"
+msgstr "Нет доступных к удалению ролей"
+
+#: ../includes/classes/editor.php:1026
+#: ../pro/includes/classes/import-single-role.php:389
+msgid "Wrong role ID"
+msgstr "Неверный ID роли"
+
+#: ../includes/classes/editor.php:1035
+msgid "Unused roles are deleted successfully"
+msgstr "Неиспользуемые роли успешно удалены"
+
+#: ../includes/classes/editor.php:1037
+#, php-format
+msgid "Role %s is deleted successfully"
+msgstr "Роль %s удалена успешно"
+
+#: ../includes/classes/editor.php:1065
+msgid ""
+"This method is only for a single site of WordPress multisite installation."
+msgstr ""
+
+#: ../includes/classes/editor.php:1069
+msgid "Wrong request. Default role can not be empty"
+msgstr "Неверный запрос. Роль по-умолчанию не может быть пустой."
+
+#: ../includes/classes/editor.php:1081
+#, php-format
+msgid "Default role for new users is set to %s successfully"
+msgstr "Роль по-умолчанию для новых пользователй изменена на %s успешно."
+
+#: ../includes/classes/editor.php:1083
+msgid "Error encountered during default role change operation"
+msgstr "Произошла ошибка при изменении роли по-умолчанию"
+
+#: ../includes/classes/editor.php:1086
+msgid "Can not set Administrator role as a default one"
+msgstr ""
+"Использование роли Administrator в качестве роли по-умолчанию не допускается"
+
+#: ../includes/classes/editor.php:1088
+msgid "This role does not exist - "
+msgstr "Эта роль не существует -"
+
+#: ../includes/classes/editor.php:1133
+msgid "User Roles are restored to WordPress default values. "
+msgstr "Роли возвращены к начальному состоянию"
+
+#: ../includes/classes/editor.php:1265
+msgid "Error: wrong request"
+msgstr "Ошибка: неверный запрос"
+
+#: ../includes/classes/editor.php:1294
+msgid "Editor"
+msgstr "Редактор"
+
+#: ../includes/classes/editor.php:1295
+msgid "Author"
+msgstr "Автор"
+
+#: ../includes/classes/editor.php:1296
+msgid "Contributor"
+msgstr "Участник"
+
+#: ../includes/classes/editor.php:1297
+msgid "Subscriber"
+msgstr "Подписчик"
+
+#: ../includes/classes/editor.php:1299
+msgid "Switch themes"
+msgstr "Менять темы"
+
+#: ../includes/classes/editor.php:1300
+msgid "Edit themes"
+msgstr "Изменять темы"
+
+#: ../includes/classes/editor.php:1301
+msgid "Activate plugins"
+msgstr "Активировать плагины"
+
+#: ../includes/classes/editor.php:1302
+msgid "Edit plugins"
+msgstr "Редактировать плагины"
+
+#: ../includes/classes/editor.php:1303
+msgid "Edit users"
+msgstr "Изменять пользователей"
+
+#: ../includes/classes/editor.php:1304
+msgid "Edit files"
+msgstr "Изменять файлы"
+
+#: ../includes/classes/editor.php:1305
+msgid "Manage options"
+msgstr "Управлять установками"
+
+#: ../includes/classes/editor.php:1306
+msgid "Moderate comments"
+msgstr "Модерировать комментарии"
+
+#: ../includes/classes/editor.php:1307
+msgid "Manage categories"
+msgstr "Управлять категориями"
+
+#: ../includes/classes/editor.php:1308
+msgid "Manage links"
+msgstr "Управлять ссылками"
+
+#: ../includes/classes/editor.php:1309
+msgid "Upload files"
+msgstr "Загружать файлы"
+
+#: ../includes/classes/editor.php:1310
+#: ../pro/includes/classes/import-single-role.php:98
+msgid "Import"
+msgstr "Импорт"
+
+#: ../includes/classes/editor.php:1311
+msgid "Unfiltered html"
+msgstr "html без фильтра"
+
+#: ../includes/classes/editor.php:1312
+msgid "Edit posts"
+msgstr "Изменять статьи"
+
+#: ../includes/classes/editor.php:1313
+msgid "Edit others posts"
+msgstr "Изменять чужие статьи"
+
+#: ../includes/classes/editor.php:1314
+msgid "Edit published posts"
+msgstr "Редактировать опубликованные статьи"
+
+#: ../includes/classes/editor.php:1315
+msgid "Publish posts"
+msgstr "Публиковать статьи"
+
+#: ../includes/classes/editor.php:1316
+msgid "Edit pages"
+msgstr "Изменять страницы"
+
+#: ../includes/classes/editor.php:1317
+msgid "Read"
+msgstr "Чтение"
+
+#: ../includes/classes/editor.php:1318
+msgid "Level 10"
+msgstr "Уровень 10"
+
+#: ../includes/classes/editor.php:1319
+msgid "Level 9"
+msgstr "Уровень 9"
+
+#: ../includes/classes/editor.php:1320
+msgid "Level 8"
+msgstr "Уровень 9"
+
+#: ../includes/classes/editor.php:1321
+msgid "Level 7"
+msgstr "Уровень 7"
+
+#: ../includes/classes/editor.php:1322
+msgid "Level 6"
+msgstr "Уровень 6"
+
+#: ../includes/classes/editor.php:1323
+msgid "Level 5"
+msgstr "Уровень 5"
+
+#: ../includes/classes/editor.php:1324
+msgid "Level 4"
+msgstr "Уровень 4"
+
+#: ../includes/classes/editor.php:1325
+msgid "Level 3"
+msgstr "Уровень 3"
+
+#: ../includes/classes/editor.php:1326
+msgid "Level 2"
+msgstr "Уровень 2"
+
+#: ../includes/classes/editor.php:1327
+msgid "Level 1"
+msgstr "Уровень 1"
+
+#: ../includes/classes/editor.php:1328
+msgid "Level 0"
+msgstr "Уровень 0"
+
+#: ../includes/classes/editor.php:1329
+msgid "Edit others pages"
+msgstr "Редактировать чужие страницы"
+
+#: ../includes/classes/editor.php:1330
+msgid "Edit published pages"
+msgstr "Редактировать опубликованные страницы"
+
+#: ../includes/classes/editor.php:1331
+msgid "Publish pages"
+msgstr "Публиковать страницы"
+
+#: ../includes/classes/editor.php:1332
+msgid "Delete pages"
+msgstr "Удалять страницы"
+
+#: ../includes/classes/editor.php:1333
+msgid "Delete others pages"
+msgstr "Удалить чужие страницы"
+
+#: ../includes/classes/editor.php:1334
+msgid "Delete published pages"
+msgstr "Удалять опубликованные страницы"
+
+#: ../includes/classes/editor.php:1335
+msgid "Delete posts"
+msgstr "Удалять статьи"
+
+#: ../includes/classes/editor.php:1336
+msgid "Delete others posts"
+msgstr "Удалять чужие статьи"
+
+#: ../includes/classes/editor.php:1337
+msgid "Delete published posts"
+msgstr "Удалять опубликованные статьи"
+
+#: ../includes/classes/editor.php:1338
+msgid "Delete private posts"
+msgstr "Удалять частные статьи"
+
+#: ../includes/classes/editor.php:1339
+msgid "Edit private posts"
+msgstr "Редактировать частные статьи"
+
+#: ../includes/classes/editor.php:1340
+msgid "Read private posts"
+msgstr "Читать частные статьи"
+
+#: ../includes/classes/editor.php:1341
+msgid "Delete private pages"
+msgstr "Удалять частные страницы"
+
+#: ../includes/classes/editor.php:1342
+msgid "Edit private pages"
+msgstr "Редактировать частные страницы"
+
+#: ../includes/classes/editor.php:1343
+msgid "Read private pages"
+msgstr "Читать частные страницы"
+
+#: ../includes/classes/editor.php:1344
+msgid "Delete users"
+msgstr "Удалять пользователей"
+
+#: ../includes/classes/editor.php:1345
+msgid "Create users"
+msgstr "Создавать пользователей"
+
+#: ../includes/classes/editor.php:1346
+msgid "Unfiltered upload"
+msgstr "Загрузка без фильтра"
+
+#: ../includes/classes/editor.php:1347
+msgid "Edit dashboard"
+msgstr "Изменять панель администратора"
+
+#: ../includes/classes/editor.php:1348
+msgid "Update plugins"
+msgstr "Обновлять плагины"
+
+#: ../includes/classes/editor.php:1349
+msgid "Delete plugins"
+msgstr "Удалять плагины"
+
+#: ../includes/classes/editor.php:1350
+msgid "Install plugins"
+msgstr "Устанавливать плагины"
+
+#: ../includes/classes/editor.php:1351
+msgid "Update themes"
+msgstr "Обновлять темы"
+
+#: ../includes/classes/editor.php:1352
+msgid "Install themes"
+msgstr "Устанавливать темы"
+
+#: ../includes/classes/editor.php:1353
+msgid "Update core"
+msgstr "Обновлять ядро"
+
+#: ../includes/classes/editor.php:1354
+msgid "List users"
+msgstr "Список пользователей"
+
+#: ../includes/classes/editor.php:1355
+msgid "Remove users"
+msgstr "Удалять пользователей"
+
+#: ../includes/classes/editor.php:1356
+msgid "Add users"
+msgstr "Добавлять пользователей"
+
+#: ../includes/classes/editor.php:1357
+msgid "Promote users"
+msgstr "Продвигать пользователей"
+
+#: ../includes/classes/editor.php:1358
+msgid "Edit theme options"
+msgstr "Изменять настройки темы"
+
+#: ../includes/classes/editor.php:1359
+msgid "Delete themes"
+msgstr "Удалять темы"
+
+#: ../includes/classes/editor.php:1360
+#: ../pro/includes/classes/export-roles-csv.php:40
+#: ../pro/includes/classes/export-single-role.php:55
+#: ../pro/includes/classes/user-role-editor-pro.php:243
+msgid "Export"
+msgstr "Экспорт"
+
+#: ../includes/classes/grant-roles.php:296
+#: ../includes/classes/grant-roles.php:342
 msgid "Not enough permissions"
 msgstr "Недостаточно прав для доступа"
 
-#: ../includes/classes/grant-roles.php:159
+#: ../includes/classes/grant-roles.php:302
 msgid "Can not edit user or invalid data at the users list"
 msgstr ""
 
-#: ../includes/classes/grant-roles.php:167
+#: ../includes/classes/grant-roles.php:310
 msgid "Invalid primary role"
 msgstr "Неверные данные о главной роли"
 
-#: ../includes/classes/grant-roles.php:180
+#: ../includes/classes/grant-roles.php:323
 msgid "Invalid data at the other roles list"
 msgstr ""
 
-#: ../includes/classes/grant-roles.php:189
+#: ../includes/classes/grant-roles.php:332
 msgid "Roles were granted to users successfully"
 msgstr "Роли успешно присвоены пользователям"
 
-#: ../includes/classes/grant-roles.php:206
+#: ../includes/classes/grant-roles.php:349
 msgid "Wrong request, valid user ID was missed"
-msgstr ""
+msgstr "Неверный запрос, отсутствует ID пользователя"
 
-#: ../includes/classes/grant-roles.php:212
+#: ../includes/classes/grant-roles.php:355
 msgid "Requested user does not exist"
 msgstr "Пользователь не существует"
 
-#: ../includes/classes/grant-roles.php:235
+#: ../includes/classes/grant-roles.php:378
 msgid "Primary Role: "
 msgstr "Главная роль:"
 
-#: ../includes/classes/grant-roles.php:241 ../includes/classes/user-view.php:98
+#: ../includes/classes/grant-roles.php:384 ../includes/classes/user-view.php:96
 msgid "&mdash; No role for this site &mdash;"
 msgstr "&mdash; Нет роли для этого сайта &mdash; "
 
-#: ../includes/classes/grant-roles.php:255
+#: ../includes/classes/grant-roles.php:398
 msgid "Other Roles: "
 msgstr "Другие Роли:"
 
-#: ../includes/classes/grant-roles.php:286
+#: ../includes/classes/grant-roles.php:441
 msgid "Grant Roles"
 msgstr "Присвоить Роли"
 
-#: ../includes/classes/grant-roles.php:299
-msgid "Working..."
+#: ../includes/classes/grant-roles.php:443
+#: ../includes/classes/grant-roles.php:445
+msgid "Add role&hellip;"
 msgstr ""
 
-#: ../includes/classes/grant-roles.php:324
+#: ../includes/classes/grant-roles.php:448
+msgid "Add"
+msgstr "Добавить"
+
+#: ../includes/classes/grant-roles.php:450
+#: ../includes/classes/grant-roles.php:452
+msgid "Revoke role&hellip;"
+msgstr ""
+
+#: ../includes/classes/grant-roles.php:455
+msgid "Revoke"
+msgstr ""
+
+#: ../includes/classes/grant-roles.php:487
 msgid "Grant roles to selected users"
 msgstr "Присвоить роли выбранным пользователям"
 
-#: ../includes/classes/grant-roles.php:325
+#: ../includes/classes/grant-roles.php:488
 msgid "Select users to which you wish to grant roles!"
 msgstr ""
 
-#: ../includes/classes/grant-roles.php:326
+#: ../includes/classes/grant-roles.php:489
 msgid "Select role(s) which you wish to grant!"
 msgstr ""
 
-#: ../includes/classes/role-additional-options.php:69
+#: ../includes/classes/lib.php:380
+msgid "Version:"
+msgstr "Версия:"
+
+#: ../includes/classes/lib.php:381
+msgid "Author's website"
+msgstr "Вебсайт автора"
+
+#: ../includes/classes/lib.php:382
+msgid "Plugin webpage"
+msgstr "Страница плагина"
+
+#: ../includes/classes/lib.php:383
+msgid "Plugin download"
+msgstr "Загрузить плагин"
+
+#: ../includes/classes/lib.php:384 ../includes/classes/user-role-editor.php:515
+msgid "Changelog"
+msgstr "Журнал изменений"
+
+#: ../includes/classes/lib.php:385
+msgid "FAQ"
+msgstr "Часто задаваемые вопросы"
+
+#: ../includes/classes/role-additional-options.php:53
 msgid "Hide admin bar"
 msgstr "Скрыть меню администратора"
 
-#: ../includes/classes/role-additional-options.php:121
+#: ../includes/classes/role-additional-options.php:113
 msgid "Additional Options"
 msgstr "Дополнительные возможности"
 
-#: ../includes/classes/role-view.php:74
+#: ../includes/classes/role-view.php:75
 msgid "None"
 msgstr "Нет"
 
-#: ../includes/classes/role-view.php:107
+#: ../includes/classes/role-view.php:112
 msgid "Delete All Unused Roles"
 msgstr "Удалить все неиспользуемые роли"
 
-#: ../includes/classes/role-view.php:207 ../includes/classes/role-view.php:218
+#: ../includes/classes/role-view.php:212 ../includes/classes/role-view.php:223
 msgid "Role name (ID): "
 msgstr "Идентификатор роли (ID):"
 
-#: ../includes/classes/role-view.php:209 ../includes/classes/role-view.php:220
+#: ../includes/classes/role-view.php:214 ../includes/classes/role-view.php:225
 msgid "Display Role Name: "
 msgstr "Наименование роли:"
 
-#: ../includes/classes/role-view.php:211
+#: ../includes/classes/role-view.php:216
 msgid "Make copy of: "
 msgstr "Создать копию из:"
 
-#: ../includes/classes/role-view.php:227
+#: ../includes/classes/role-view.php:232
 msgid "Select Role:"
 msgstr "Выбери Роль:"
 
-#: ../includes/classes/role-view.php:252
+#: ../includes/classes/role-view.php:257
 msgid "Capability name (ID): "
 msgstr "Идентификатор возможности (ID):"
 
-#: ../includes/classes/role-view.php:364 ../includes/classes/user-view.php:155
+#: ../includes/classes/role-view.php:369 ../includes/classes/user-view.php:154
 msgid "Show capabilities in human readable form"
 msgstr "Показ возможностей в читабельной форме"
 
-#: ../includes/classes/role-view.php:374 ../includes/classes/screen-help.php:21
-#: ../includes/classes/user-view.php:165 ../includes/settings-template.php:79
+#: ../includes/classes/role-view.php:379 ../includes/classes/screen-help.php:21
+#: ../includes/classes/user-view.php:164 ../includes/settings-template.php:78
 msgid "Show deprecated capabilities"
 msgstr "Показать устаревшие разрешения"
 
-#: ../includes/classes/role-view.php:378
+#: ../includes/classes/role-view.php:383
 #: ../pro/includes/classes/import-roles-view.php:26
 msgid "If checked, then apply action to ALL sites of this Network"
 msgstr "Если включено, применить ко всем сайтам этой Сети"
 
-#: ../includes/classes/role-view.php:391 ../includes/classes/tools.php:44
+#: ../includes/classes/role-view.php:396 ../includes/classes/tools.php:30
 #: ../pro/includes/classes/import-roles-view.php:31
 msgid "Apply to All Sites"
 msgstr "Применить ко всем сайтам"
 
-#: ../includes/classes/role-view.php:408
+#: ../includes/classes/role-view.php:413
 msgid "Select Role and change its capabilities:"
 msgstr "Выбери Роль и измени список разрешённых операций"
 
@@ -252,7 +721,7 @@ msgstr "Выбери Роль и измени список разрешённы�
 msgid "User Role Editor Options page help"
 msgstr "Редактор ролей пользователей - Опции - Справка"
 
-#: ../includes/classes/screen-help.php:15 ../includes/settings-template.php:63
+#: ../includes/classes/screen-help.php:15 ../includes/settings-template.php:61
 msgid "Show Administrator role at User Role Editor"
 msgstr "Отображать роль Администратор в User Role Editor"
 
@@ -266,7 +735,7 @@ msgstr ""
 "выпадающем меню User Role Editor. По-умолчанию роль администратора скрыта в "
 "целях безопасности."
 
-#: ../includes/classes/screen-help.php:18 ../includes/settings-template.php:71
+#: ../includes/classes/screen-help.php:18 ../includes/settings-template.php:70
 msgid "Show capabilities in the human readable form"
 msgstr "Показ прав в читабельной форме"
 
@@ -281,17 +750,23 @@ msgstr ""
 "читабельную, например, \"Edit others posts\"."
 
 #: ../includes/classes/screen-help.php:22
+#, fuzzy
+#| msgid ""
+#| "Capabilities like \"level_0\", \"level_1\" are deprecated and are not "
+#| "used by WordPress. They are left at the user roles for the compatibility "
+#| "purpose with the old themes and plugins code. Turning on this option will "
+#| "show those deprecated capabilities."
 msgid ""
 "Capabilities like \"level_0\", \"level_1\" are deprecated and are not used "
 "by WordPress. They are left at the user roles for the compatibility purpose "
-"with the old themes and plugins code. Turning on this option will show those "
+"with old themes and plugins code. Turning on this option will show those "
 "deprecated capabilities."
 msgstr ""
 "Такие права, как \"level_0\", \"level_1\" устарели и не используются "
 "WordPress. Они оставлены в ролях пользователя в целях обеспечения "
 "совместимости с плагинами и темами, которые продолжают их использовать."
 
-#: ../includes/classes/screen-help.php:25 ../includes/settings-template.php:87
+#: ../includes/classes/screen-help.php:25 ../includes/settings-template.php:86
 msgid "Confirm role update"
 msgstr "Подтвердите изменение роли"
 
@@ -299,22 +774,27 @@ msgstr "Подтвердите изменение роли"
 msgid "Show confirmation dialog before save changes made to a current role."
 msgstr ""
 
-#: ../includes/classes/screen-help.php:27 ../includes/settings-template.php:95
+#: ../includes/classes/screen-help.php:27 ../includes/settings-template.php:94
 msgid "Edit user capabilities"
 msgstr "Именить права пользователя"
 
 #: ../includes/classes/screen-help.php:28
+#, fuzzy
+#| msgid ""
+#| "If turned off - capabilities section of selected user is shown in "
+#| "readonly mode. Administrator can not assign capabilities to the user "
+#| "directly. He should make it using roles only."
 msgid ""
 "If turned off - capabilities section of selected user is shown in readonly "
 "mode. Administrator can not assign capabilities to the user directly. He "
-"should make it using roles only."
+"should do it using roles only."
 msgstr ""
 "Если \"выключено\" - секция прав пользователя выбранного пользователя "
 "отображается в режиме \"только чтение\". Администратор не сможет присваивать "
 "права напрямую пользователю. В этом случае он должен использовать только "
 "роли."
 
-#: ../includes/classes/screen-help.php:47 ../includes/settings-template.php:142
+#: ../includes/classes/screen-help.php:47 ../includes/settings-template.php:141
 msgid "Count users without role"
 msgstr "Подсчет пользователей без роли"
 
@@ -346,10 +826,12 @@ msgstr ""
 "невозможно присвоить вновь зарегистрированному пользователю."
 
 #: ../includes/classes/screen-help.php:84
-msgid "Allow non super-admininstrators to create, edit and delete users"
+#, fuzzy
+#| msgid "Allow non super-admininstrators to create, edit and delete users"
+msgid "Allow non super-administrators to create, edit and delete users"
 msgstr ""
-"Разрешить не только суперадминистратору создавать, изменять и удалять "
-"пользователей"
+"Разрешить локальным администраторам (не суперадминистратор) создавать, "
+"изменять, удалять пользователей на своих сайтах"
 
 #: ../includes/classes/screen-help.php:85
 msgid ""
@@ -370,28 +852,24 @@ msgstr "Опции Редактора ролей пользователей со
 msgid "Default Roles are updated"
 msgstr "Роли по-умолчанию сохранены"
 
-#: ../includes/classes/settings.php:151
-msgid "Tools: Reset: User Roles were initialized"
-msgstr ""
-
-#: ../includes/classes/tools.php:32
+#: ../includes/classes/tools.php:19
 msgid "WARNING!"
-msgstr ""
+msgstr "ВНИМАНИЕ!"
 
-#: ../includes/classes/tools.php:34
+#: ../includes/classes/tools.php:21
 msgid ""
 "Resetting will setup default user roles and capabilities from WordPress core."
 msgstr ""
 "Внимание! Операция сброса вернёт роли к начальному состоянию, как сразу "
 "после установки WordPress."
 
-#: ../includes/classes/tools.php:35
+#: ../includes/classes/tools.php:22
 msgid ""
 "If any plugins (such as WooCommerce, S2Member and many others) have changed "
 "user roles and capabilities during installation, those changes will be LOST!"
 msgstr ""
 
-#: ../includes/classes/tools.php:36
+#: ../includes/classes/tools.php:23
 msgid ""
 "For more information on how to undo undesired changes and restore plugins "
 "capabilities in case you lost them by mistake go to: "
@@ -399,7 +877,7 @@ msgstr ""
 "Чтобы получить подробную информацию, как восстановить роли и права "
 "пользователей, удалённые по ошибке, перейдите по ссылке"
 
-#: ../includes/classes/tools.php:45
+#: ../includes/classes/tools.php:31
 msgid ""
 "If checked, then apply action to ALL sites. Main site only is affected in "
 "other case."
@@ -407,434 +885,22 @@ msgstr ""
 "Если включено, применить ко всем сайтам этой Сети. В обратном случае "
 "изменения сохранятся только для главного сайта."
 
-#: ../includes/classes/tools.php:50
+#: ../includes/classes/tools.php:36
 msgid "Reset Roles to its original state"
 msgstr ""
 
-#: ../includes/classes/tools.php:50
-#: ../includes/classes/user-role-editor.php:725
+#: ../includes/classes/tools.php:36
+#: ../includes/classes/user-role-editor.php:787
 msgid "Reset"
 msgstr "Сброс"
 
-#: ../includes/classes/ure-lib.php:207
-msgid "Error: wrong request"
-msgstr "Ошибка: неверный запрос"
-
-#: ../includes/classes/ure-lib.php:291
-msgid "Error: "
-msgstr "Ошибка:"
-
-#: ../includes/classes/ure-lib.php:291
-#: ../pro/includes/classes/widgets-show-view.php:146
-msgid "Role"
-msgstr "Роль"
-
-#: ../includes/classes/ure-lib.php:292
-msgid "does not exist"
-msgstr "не существует"
-
-#: ../includes/classes/ure-lib.php:335
-msgid "Role is updated successfully"
-msgstr "Роль изменена успешно"
-
-#: ../includes/classes/ure-lib.php:337
-msgid "Roles are updated for all network"
-msgstr "Роли изменены для всей сети"
-
-#: ../includes/classes/ure-lib.php:343
-msgid "Error occured during role(s) update"
-msgstr "При изменении роли произошла ошибка"
-
-#: ../includes/classes/ure-lib.php:350
-msgid "User capabilities are updated successfully"
-msgstr "Права изменены успешно"
-
-#: ../includes/classes/ure-lib.php:355
-msgid "Error occured during user update"
-msgstr "При изменении прав пользователя произошла ошибка "
-
-#: ../includes/classes/ure-lib.php:413
-msgid "User Roles are restored to WordPress default values. "
-msgstr "Роли возвращены к начальному состоянию"
-
-#: ../includes/classes/ure-lib.php:1364 ../includes/classes/ure-lib.php:1430
-msgid ""
-"Error: Role ID must contain latin characters, digits, hyphens or underscore "
-"only!"
+#: ../includes/classes/tools.php:60
+msgid "Tools: Reset: User Roles were initialized"
 msgstr ""
-"Ошибка: идентификатор роли (ID) должен содержать только латинские буквы, "
-"цифры, знак подчеркивания и дефис."
-
-#: ../includes/classes/ure-lib.php:1368 ../includes/classes/ure-lib.php:1434
-msgid ""
-"Error: WordPress does not support numeric Role name (ID). Add latin "
-"characters to it."
-msgstr ""
-"Ошибка: WordPress не поддерживает цифровые идентификаторы ролей. Добавьте "
-"латинские буквы."
-
-#: ../includes/classes/ure-lib.php:1383
-#, php-format
-msgid "Role %s exists already"
-msgstr "Роль %s уже существует"
-
-#: ../includes/classes/ure-lib.php:1398
-msgid "Error is encountered during new role create operation"
-msgstr "Произошла ошибка при создании новой роли"
-
-#: ../includes/classes/ure-lib.php:1400
-#, php-format
-msgid "Role %s is created successfully"
-msgstr "Роль %s создана успешно"
-
-#: ../includes/classes/ure-lib.php:1423
-msgid "Error: Role ID is empty!"
-msgstr "Ошибка: пустой идентификатор роли!"
-
-#: ../includes/classes/ure-lib.php:1441
-msgid "Error: Empty role display name is not allowed."
-msgstr "Ошибка: Пустое имя роли не допускаетя"
-
-#: ../includes/classes/ure-lib.php:1448
-#, php-format
-msgid "Role %s does not exists"
-msgstr "Роль %s не существует"
-
-#: ../includes/classes/ure-lib.php:1456
-#, php-format
-msgid "Role %s is renamed to %s successfully"
-msgstr "Роль успешно %s переименована в %s"
-
-#: ../includes/classes/ure-lib.php:1528
-msgid "Error encountered during role delete operation"
-msgstr "Произошла ошибка при удалении роли"
-
-#: ../includes/classes/ure-lib.php:1530
-msgid "Unused roles are deleted successfully"
-msgstr "Неиспользуемые роли успешно удалены"
-
-#: ../includes/classes/ure-lib.php:1532
-#, php-format
-msgid "Role %s is deleted successfully"
-msgstr "Роль %s удалена успешно"
-
-#: ../includes/classes/ure-lib.php:1563
-msgid "Error encountered during default role change operation"
-msgstr "Произошла ошибка при изменении роли по-умолчанию"
-
-#: ../includes/classes/ure-lib.php:1566
-#, php-format
-msgid "Default role for new users is set to %s successfully"
-msgstr "Роль по-умолчанию для новых пользователй изменена на %s успешно."
-
-#: ../includes/classes/ure-lib.php:1569
-msgid "Can not set Administrator role as a default one"
-msgstr ""
-"Использование роли Administrator в качестве роли по-умолчанию не допускается"
-
-#: ../includes/classes/ure-lib.php:1571
-msgid "This role does not exist - "
-msgstr "Эта роль не существует -"
-
-#: ../includes/classes/ure-lib.php:1587
-msgid "Editor"
-msgstr "Редактор"
-
-#: ../includes/classes/ure-lib.php:1588
-msgid "Author"
-msgstr "Автор"
-
-#: ../includes/classes/ure-lib.php:1589
-msgid "Contributor"
-msgstr "Участник"
-
-#: ../includes/classes/ure-lib.php:1590
-msgid "Subscriber"
-msgstr "Подписчик"
-
-#: ../includes/classes/ure-lib.php:1592
-msgid "Switch themes"
-msgstr "Менять темы"
-
-#: ../includes/classes/ure-lib.php:1593
-msgid "Edit themes"
-msgstr "Изменять темы"
-
-#: ../includes/classes/ure-lib.php:1594
-msgid "Activate plugins"
-msgstr "Активировать плагины"
-
-#: ../includes/classes/ure-lib.php:1595
-msgid "Edit plugins"
-msgstr "Редактировать плагины"
-
-#: ../includes/classes/ure-lib.php:1596
-msgid "Edit users"
-msgstr "Изменять пользователей"
-
-#: ../includes/classes/ure-lib.php:1597
-msgid "Edit files"
-msgstr "Изменять файлы"
-
-#: ../includes/classes/ure-lib.php:1598
-msgid "Manage options"
-msgstr "Управлять установками"
-
-#: ../includes/classes/ure-lib.php:1599
-msgid "Moderate comments"
-msgstr "Модерировать комментарии"
-
-#: ../includes/classes/ure-lib.php:1600
-msgid "Manage categories"
-msgstr "Управлять категориями"
-
-#: ../includes/classes/ure-lib.php:1601
-msgid "Manage links"
-msgstr "Управлять ссылками"
-
-#: ../includes/classes/ure-lib.php:1602
-msgid "Upload files"
-msgstr "Загружать файлы"
-
-#: ../includes/classes/ure-lib.php:1603
-#: ../pro/includes/classes/import-single-role.php:92
-msgid "Import"
-msgstr "Импорт"
-
-#: ../includes/classes/ure-lib.php:1604
-msgid "Unfiltered html"
-msgstr "html без фильтра"
-
-#: ../includes/classes/ure-lib.php:1605
-msgid "Edit posts"
-msgstr "Изменять статьи"
-
-#: ../includes/classes/ure-lib.php:1606
-msgid "Edit others posts"
-msgstr "Изменять чужие статьи"
-
-#: ../includes/classes/ure-lib.php:1607
-msgid "Edit published posts"
-msgstr "Редактировать опубликованные статьи"
-
-#: ../includes/classes/ure-lib.php:1608
-msgid "Publish posts"
-msgstr "Публиковать статьи"
-
-#: ../includes/classes/ure-lib.php:1609
-msgid "Edit pages"
-msgstr "Изменять страницы"
-
-#: ../includes/classes/ure-lib.php:1610
-msgid "Read"
-msgstr "Чтение"
-
-#: ../includes/classes/ure-lib.php:1611
-msgid "Level 10"
-msgstr "Уровень 10"
-
-#: ../includes/classes/ure-lib.php:1612
-msgid "Level 9"
-msgstr "Уровень 9"
-
-#: ../includes/classes/ure-lib.php:1613
-msgid "Level 8"
-msgstr "Уровень 9"
-
-#: ../includes/classes/ure-lib.php:1614
-msgid "Level 7"
-msgstr "Уровень 7"
-
-#: ../includes/classes/ure-lib.php:1615
-msgid "Level 6"
-msgstr "Уровень 6"
-
-#: ../includes/classes/ure-lib.php:1616
-msgid "Level 5"
-msgstr "Уровень 5"
-
-#: ../includes/classes/ure-lib.php:1617
-msgid "Level 4"
-msgstr "Уровень 4"
-
-#: ../includes/classes/ure-lib.php:1618
-msgid "Level 3"
-msgstr "Уровень 3"
-
-#: ../includes/classes/ure-lib.php:1619
-msgid "Level 2"
-msgstr "Уровень 2"
-
-#: ../includes/classes/ure-lib.php:1620
-msgid "Level 1"
-msgstr "Уровень 1"
-
-#: ../includes/classes/ure-lib.php:1621
-msgid "Level 0"
-msgstr "Уровень 0"
-
-#: ../includes/classes/ure-lib.php:1622
-msgid "Edit others pages"
-msgstr "Редактировать чужие страницы"
-
-#: ../includes/classes/ure-lib.php:1623
-msgid "Edit published pages"
-msgstr "Редактировать опубликованные страницы"
-
-#: ../includes/classes/ure-lib.php:1624
-msgid "Publish pages"
-msgstr "Публиковать страницы"
-
-#: ../includes/classes/ure-lib.php:1625
-msgid "Delete pages"
-msgstr "Удалять страницы"
-
-#: ../includes/classes/ure-lib.php:1626
-msgid "Delete others pages"
-msgstr "Удалить чужие страницы"
-
-#: ../includes/classes/ure-lib.php:1627
-msgid "Delete published pages"
-msgstr "Удалять опубликованные страницы"
-
-#: ../includes/classes/ure-lib.php:1628
-msgid "Delete posts"
-msgstr "Удалять статьи"
-
-#: ../includes/classes/ure-lib.php:1629
-msgid "Delete others posts"
-msgstr "Удалять чужие статьи"
-
-#: ../includes/classes/ure-lib.php:1630
-msgid "Delete published posts"
-msgstr "Удалять опубликованные статьи"
-
-#: ../includes/classes/ure-lib.php:1631
-msgid "Delete private posts"
-msgstr "Удалять частные статьи"
-
-#: ../includes/classes/ure-lib.php:1632
-msgid "Edit private posts"
-msgstr "Редактировать частные статьи"
-
-#: ../includes/classes/ure-lib.php:1633
-msgid "Read private posts"
-msgstr "Читать частные статьи"
-
-#: ../includes/classes/ure-lib.php:1634
-msgid "Delete private pages"
-msgstr "Удалять частные страницы"
-
-#: ../includes/classes/ure-lib.php:1635
-msgid "Edit private pages"
-msgstr "Редактировать частные страницы"
-
-#: ../includes/classes/ure-lib.php:1636
-msgid "Read private pages"
-msgstr "Читать частные страницы"
-
-#: ../includes/classes/ure-lib.php:1637
-msgid "Delete users"
-msgstr "Удалять пользователей"
-
-#: ../includes/classes/ure-lib.php:1638
-msgid "Create users"
-msgstr "Создавать пользователей"
-
-#: ../includes/classes/ure-lib.php:1639
-msgid "Unfiltered upload"
-msgstr "Загрузка без фильтра"
-
-#: ../includes/classes/ure-lib.php:1640
-msgid "Edit dashboard"
-msgstr "Изменять панель администратора"
-
-#: ../includes/classes/ure-lib.php:1641
-msgid "Update plugins"
-msgstr "Обновлять плагины"
-
-#: ../includes/classes/ure-lib.php:1642
-msgid "Delete plugins"
-msgstr "Удалять плагины"
-
-#: ../includes/classes/ure-lib.php:1643
-msgid "Install plugins"
-msgstr "Устанавливать плагины"
-
-#: ../includes/classes/ure-lib.php:1644
-msgid "Update themes"
-msgstr "Обновлять темы"
-
-#: ../includes/classes/ure-lib.php:1645
-msgid "Install themes"
-msgstr "Устанавливать темы"
-
-#: ../includes/classes/ure-lib.php:1646
-msgid "Update core"
-msgstr "Обновлять ядро"
-
-#: ../includes/classes/ure-lib.php:1647
-msgid "List users"
-msgstr "Список пользователей"
-
-#: ../includes/classes/ure-lib.php:1648
-msgid "Remove users"
-msgstr "Удалять пользователей"
-
-#: ../includes/classes/ure-lib.php:1649
-msgid "Add users"
-msgstr "Добавлять пользователей"
-
-#: ../includes/classes/ure-lib.php:1650
-msgid "Promote users"
-msgstr "Продвигать пользователей"
-
-#: ../includes/classes/ure-lib.php:1651
-msgid "Edit theme options"
-msgstr "Изменять настройки темы"
-
-#: ../includes/classes/ure-lib.php:1652
-msgid "Delete themes"
-msgstr "Удалять темы"
-
-#: ../includes/classes/ure-lib.php:1653
-#: ../pro/includes/classes/export-single-role.php:55
-msgid "Export"
-msgstr "Экспорт"
-
-#: ../includes/classes/ure-lib.php:1828
-msgid "Version:"
-msgstr "Версия:"
-
-#: ../includes/classes/ure-lib.php:1829
-msgid "Author's website"
-msgstr "Вебсайт автора"
-
-#: ../includes/classes/ure-lib.php:1830
-msgid "Plugin webpage"
-msgstr "Страница плагина"
-
-#: ../includes/classes/ure-lib.php:1831
-msgid "Plugin download"
-msgstr "Загрузить плагин"
-
-#: ../includes/classes/ure-lib.php:1832
-#: ../includes/classes/user-role-editor.php:502
-msgid "Changelog"
-msgstr "Журнал изменений"
-
-#: ../includes/classes/ure-lib.php:1833
-msgid "FAQ"
-msgstr "Часто задаваемые вопросы"
-
-#: ../includes/classes/ure-lib.php:2013
-#, php-format
-msgid "Denied: %s"
-msgstr "Отказано: %s"
 
 #: ../includes/classes/user-other-roles.php:85
-#: ../includes/classes/user-other-roles.php:194
-#: ../pro/includes/classes/other-roles-access.php:59
+#: ../includes/classes/user-other-roles.php:221
+#: ../pro/includes/classes/other-roles-access.php:79
 msgid "Other Roles"
 msgstr "Другие Роли"
 
@@ -842,110 +908,116 @@ msgstr "Другие Роли"
 msgid "Select additional roles for this user"
 msgstr "Выберите дополнительные роли для этого пользователя"
 
-#: ../includes/classes/user-other-roles.php:173
-#: ../includes/classes/user-role-editor.php:387
+#: ../includes/classes/user-other-roles.php:183
+#, php-format
+msgid "Denied: %s"
+msgstr "Отказано: %s"
+
+#: ../includes/classes/user-other-roles.php:200
+#: ../includes/classes/user-role-editor.php:391
 msgid "Capabilities"
 msgstr "Возможности"
 
-#: ../includes/classes/user-other-roles.php:180
+#: ../includes/classes/user-other-roles.php:207
 msgid "Edit"
 msgstr "Редактор"
 
-#: ../includes/classes/user-other-roles.php:229
+#: ../includes/classes/user-other-roles.php:265
 msgid "Additional Capabilities"
 msgstr "Дополнительные права"
 
-#: ../includes/classes/user-role-editor.php:284
+#: ../includes/classes/user-role-editor.php:288
 msgid "Change role for users without role"
 msgstr "Изменить роль для пользователей без роли"
 
-#: ../includes/classes/user-role-editor.php:285
+#: ../includes/classes/user-role-editor.php:289
 msgid "To:"
 msgstr "На:"
 
-#: ../includes/classes/user-role-editor.php:286
+#: ../includes/classes/user-role-editor.php:290
 msgid "No rights"
 msgstr "Нет прав"
 
-#: ../includes/classes/user-role-editor.php:287
+#: ../includes/classes/user-role-editor.php:291
 msgid "Provide new role"
 msgstr "Укажите новую роль"
 
-#: ../includes/classes/user-role-editor.php:359
-#: ../includes/classes/user-role-editor.php:361
+#: ../includes/classes/user-role-editor.php:363
+#: ../includes/classes/user-role-editor.php:365
 msgid "You do not have permission to edit this user."
 msgstr "Ошибка! Вам запрещено редактировать эту учетную запись"
 
-#: ../includes/classes/user-role-editor.php:476
 #: ../includes/classes/user-role-editor.php:489
-#: ../pro/includes/classes/admin-menu-access.php:1060
+#: ../includes/classes/user-role-editor.php:502
+#: ../pro/includes/classes/admin-menu-access.php:1075
 msgid "Settings"
 msgstr "Установки"
 
-#: ../includes/classes/user-role-editor.php:531
-#: ../includes/settings-template.php:27
+#: ../includes/classes/user-role-editor.php:544
+#: ../includes/settings-template.php:26
 msgid "Additional Modules"
 msgstr "Дополнительные модули"
 
-#: ../includes/classes/user-role-editor.php:537
-#: ../includes/settings-template.php:32
+#: ../includes/classes/user-role-editor.php:550
+#: ../includes/settings-template.php:31
 msgid "Default Roles"
 msgstr "Роли по-умолчанию"
 
-#: ../includes/classes/user-role-editor.php:604
+#: ../includes/classes/user-role-editor.php:617
 msgid ""
 "You do not have sufficient permissions to manage options for User Role "
 "Editor."
 msgstr ""
 "У вас не достаточно полномочий для изменения настроек User Role Editor."
 
-#: ../includes/classes/user-role-editor.php:675
-#: ../includes/classes/user-role-editor.php:722
+#: ../includes/classes/user-role-editor.php:737
+#: ../includes/classes/user-role-editor.php:784
 msgid "Confirm"
 msgstr "Подтвердите"
 
-#: ../includes/classes/user-role-editor.php:676
-#: ../includes/classes/user-role-editor.php:723
+#: ../includes/classes/user-role-editor.php:738
+#: ../includes/classes/user-role-editor.php:785
 msgid "Yes"
 msgstr "Да"
 
-#: ../includes/classes/user-role-editor.php:677
-#: ../includes/classes/user-role-editor.php:724
+#: ../includes/classes/user-role-editor.php:739
+#: ../includes/classes/user-role-editor.php:786
 msgid "No"
 msgstr "Нет"
 
-#: ../includes/classes/user-role-editor.php:678
+#: ../includes/classes/user-role-editor.php:740
 #: ../pro/includes/classes/admin-menu-view.php:41
 #: ../pro/includes/classes/meta-boxes-access.php:57
-#: ../pro/includes/classes/other-roles-access.php:61
+#: ../pro/includes/classes/nav-menus-admin-view.php:45
+#: ../pro/includes/classes/other-roles-access.php:81
 #: ../pro/includes/classes/plugins-access-role.php:52
 #: ../pro/includes/classes/plugins-access-user.php:134
 #: ../pro/includes/classes/posts-edit-access-role.php:52
 #: ../pro/includes/classes/posts-view-access.php:66
-#: ../pro/includes/classes/user-role-editor-pro.php:222
+#: ../pro/includes/classes/user-role-editor-pro.php:241
 #: ../pro/includes/classes/widgets-admin-view.php:43
 #: ../pro/includes/classes/widgets-show-view.php:103
 msgid "Update"
 msgstr "Сохранить"
 
-#: ../includes/classes/user-role-editor.php:679
+#: ../includes/classes/user-role-editor.php:741
 msgid "Please confirm permissions update"
 msgstr "Пожалуйста, подтвердите продолжение "
 
-#: ../includes/classes/user-role-editor.php:680
+#: ../includes/classes/user-role-editor.php:742
 msgid "Add New Role"
 msgstr "Добавить новую Роль"
 
-#: ../includes/classes/user-role-editor.php:681
-#: ../includes/classes/user-role-editor.php:686
+#: ../includes/classes/user-role-editor.php:743
+#: ../includes/classes/user-role-editor.php:748
 msgid "Rename Role"
 msgstr "Переименовать Роль"
 
-#: ../includes/classes/user-role-editor.php:682
+#: ../includes/classes/user-role-editor.php:744
 msgid " Role name (ID) can not be empty!"
 msgstr "Идентификатор роли (ID) не может быть пустым!"
 
-#: ../includes/classes/user-role-editor.php:683
+#: ../includes/classes/user-role-editor.php:745
 msgid ""
 " Role name (ID) must contain latin characters, digits, hyphens or underscore "
 "only!"
@@ -953,7 +1025,7 @@ msgstr ""
 "Ошибка: идентификатор роли может содержать только латинские буквы, цифры, "
 "тире и знак подчеркивания"
 
-#: ../includes/classes/user-role-editor.php:684
+#: ../includes/classes/user-role-editor.php:746
 msgid ""
 " WordPress does not support numeric Role name (ID). Add latin characters to "
 "it."
@@ -961,43 +1033,43 @@ msgstr ""
 "WordPress не поддерживает полностью цифровые идентификаторы (ID) ролей. "
 "Начните идентификатор с латинских символов."
 
-#: ../includes/classes/user-role-editor.php:685
+#: ../includes/classes/user-role-editor.php:747
 msgid "Add Role"
 msgstr "Добавить новую Роль"
 
-#: ../includes/classes/user-role-editor.php:687
+#: ../includes/classes/user-role-editor.php:749
 msgid "Delete Role"
 msgstr "Удалить Роль"
 
-#: ../includes/classes/user-role-editor.php:688
+#: ../includes/classes/user-role-editor.php:750
 #: ../pro/includes/classes/plugins-access-user.php:135
 #: ../pro/includes/classes/widgets-show-view.php:101
 msgid "Cancel"
 msgstr "Отмена"
 
-#: ../includes/classes/user-role-editor.php:689
+#: ../includes/classes/user-role-editor.php:751
 msgid "Add Capability"
 msgstr "Добавить новую Возможность"
 
-#: ../includes/classes/user-role-editor.php:690
-#: ../includes/classes/user-role-editor.php:694
+#: ../includes/classes/user-role-editor.php:752
+#: ../includes/classes/user-role-editor.php:756
 msgid "Delete Capability"
 msgstr "Удалить Возможность"
 
-#: ../includes/classes/user-role-editor.php:691
-#: ../includes/classes/user-role-editor.php:731
+#: ../includes/classes/user-role-editor.php:753
+#: ../includes/classes/user-role-editor.php:793
 msgid "Continue?"
 msgstr "Продолжить?"
 
-#: ../includes/classes/user-role-editor.php:692
+#: ../includes/classes/user-role-editor.php:754
 msgid "Default Role"
 msgstr "Роль по-умолчанию"
 
-#: ../includes/classes/user-role-editor.php:693
+#: ../includes/classes/user-role-editor.php:755
 msgid "Set New Default Role"
 msgstr "Установить новую роль по-умолчанию"
 
-#: ../includes/classes/user-role-editor.php:695
+#: ../includes/classes/user-role-editor.php:757
 msgid ""
 "Warning! Be careful - removing critical capability could crash some plugin "
 "or other custom code"
@@ -1005,11 +1077,11 @@ msgstr ""
 "Внимание! Будьте осторожны - удаление критичной возможности может привести к "
 "прекращеню работы одного из плагинов или другого кода."
 
-#: ../includes/classes/user-role-editor.php:696
+#: ../includes/classes/user-role-editor.php:758
 msgid " Capability name (ID) can not be empty!"
 msgstr "Идентификатор возможности (ID) не может быть пустым!"
 
-#: ../includes/classes/user-role-editor.php:697
+#: ../includes/classes/user-role-editor.php:759
 msgid ""
 " Capability name (ID) must contain latin characters, digits, hyphens or "
 "underscore only!"
@@ -1017,11 +1089,11 @@ msgstr ""
 "Ошибка: идентификатор роли может содержать только латинские буквы, цифры, "
 "тире и знак подчеркивания"
 
-#: ../includes/classes/user-role-editor.php:726
+#: ../includes/classes/user-role-editor.php:788
 msgid "DANGER!"
 msgstr ""
 
-#: ../includes/classes/user-role-editor.php:727
+#: ../includes/classes/user-role-editor.php:789
 msgid ""
 " Resetting will restore default user roles and capabilities from WordPress "
 "core."
@@ -1029,14 +1101,14 @@ msgstr ""
 "Внимание! Операция сброса вернёт роли к начальному состоянию, как сразу "
 "после установки WordPress."
 
-#: ../includes/classes/user-role-editor.php:728
+#: ../includes/classes/user-role-editor.php:790
 msgid ""
 "If any plugins (such as WooCommerce, S2Member and many others) have changed "
 "user roles and capabilities during installation, all those changes will be "
 "LOST!"
 msgstr ""
 
-#: ../includes/classes/user-role-editor.php:729
+#: ../includes/classes/user-role-editor.php:791
 msgid ""
 "For more information on how to undo undesired changes and restore plugin "
 "capabilities go to"
@@ -1045,63 +1117,67 @@ msgstr ""
 "восстановить роли и права пользователей, созданные плагинами, перейдите по "
 "ссылке"
 
-#: ../includes/classes/user-view.php:61
+#: ../includes/classes/user-view.php:59
 msgid "Switch&nbsp;To"
 msgstr "Переключиться"
 
-#: ../includes/classes/user-view.php:73
+#: ../includes/classes/user-view.php:71
 msgid "Network Super Admin"
 msgstr "Супер-админ Сети"
 
-#: ../includes/classes/user-view.php:138
+#: ../includes/classes/user-view.php:137
 msgid "Change capabilities for user"
 msgstr "Изменить возможности для пользователя"
 
-#: ../includes/classes/user-view.php:176
+#: ../includes/classes/user-view.php:175
 msgid "Primary Role:"
 msgstr "Первичная роль:"
 
-#: ../includes/classes/user-view.php:182
+#: ../includes/classes/user-view.php:181
 msgid "bbPress Role:"
 msgstr "Роль bbPress:"
 
-#: ../includes/classes/user-view.php:191
+#: ../includes/classes/user-view.php:190
 msgid "Other Roles:"
 msgstr "Другие Роли:"
 
-#: ../includes/classes/view.php:278
+#: ../includes/classes/view.php:289
+msgid "Working..."
+msgstr "Обработка..."
+
+#: ../includes/classes/view.php:320
 msgid "Group"
 msgstr "Группа"
 
-#: ../includes/classes/view.php:278
+#: ../includes/classes/view.php:320
 msgid "Total"
 msgstr "Всего"
 
-#: ../includes/classes/view.php:278
+#: ../includes/classes/view.php:320
 msgid "Granted"
 msgstr "Разрешено"
 
-#: ../includes/classes/view.php:291
+#: ../includes/classes/view.php:333
 msgid "Quick filter:"
 msgstr "Быстрый фильтр:"
 
-#: ../includes/classes/view.php:294
+#: ../includes/classes/view.php:336
 msgid "Granted Only"
 msgstr "Только разрешенные"
 
-#: ../includes/classes/view.php:297
+#: ../includes/classes/view.php:339
 msgid "Columns:"
 msgstr "Столбцы:"
 
-#: ../includes/settings-template.php:17
+#: ../includes/settings-template.php:16
 msgid "User Role Editor - Options"
 msgstr "Редактор ролей пользователей - Опции"
 
-#: ../includes/settings-template.php:43
+#: ../includes/settings-template.php:42
 msgid "Tools"
 msgstr ""
 
-#: ../includes/settings-template.php:47
+#: ../includes/settings-template.php:46
 msgid "About"
 msgstr "О программе"
 
@@ -1113,22 +1189,22 @@ msgstr "Показать права в:"
 msgid "columns"
 msgstr "столбцы"
 
-#: ../includes/settings-template.php:121 ../includes/settings-template.php:157
-#: ../includes/settings-template.php:189 ../includes/settings-template.php:221
-#: ../pro/includes/classes/content-view-restrictions.php:262
+#: ../includes/settings-template.php:121 ../includes/settings-template.php:156
+#: ../includes/settings-template.php:188 ../includes/settings-template.php:220
+#: ../pro/includes/classes/content-view-restrictions.php:175
 #: ../pro/includes/classes/themes-access.php:150
 msgid "Save"
 msgstr "Сохранить"
 
-#: ../includes/settings-template.php:169
+#: ../includes/settings-template.php:168
 msgid "Primary default role: "
 msgstr "Первичная роль по-умолчанию:"
 
-#: ../includes/settings-template.php:176
+#: ../includes/settings-template.php:175
 msgid "Other default roles for new registered user: "
 msgstr "Другие роли по-умолчанию:"
 
-#: ../includes/settings-template.php:182
+#: ../includes/settings-template.php:181
 msgid ""
 "Note for multisite environment: take into account that other default roles "
 "should exist at the site, in order to be assigned to the new registered "
@@ -1138,73 +1214,73 @@ msgstr ""
 "должны существовать на сайте, чтобы WordPress мог присвоить их новому "
 "пользователю."
 
-#: ../includes/settings-template.php:208
+#: ../includes/settings-template.php:207
 msgid "Allow non super administrators to create, edit, and delete users"
 msgstr ""
 "Разрешить локальным администраторам (не суперадминистратор) создавать, "
 "изменять, удалять пользователей на своих сайтах"
 
-#: ../pro/includes/classes/addons-manager.php:70
+#: ../pro/includes/classes/addons-manager.php:71
 msgid "Admin menu access restrictions"
 msgstr "Ограничение доступа к мени администратора"
 
-#: ../pro/includes/classes/addons-manager.php:77
+#: ../pro/includes/classes/addons-manager.php:81
 msgid "Widgets admin access restrictions"
 msgstr "Доступ к администрированию виджетов"
 
-#: ../pro/includes/classes/addons-manager.php:80
+#: ../pro/includes/classes/addons-manager.php:84
 msgid "Widgets show access restrictions"
 msgstr "Доступ к просмотру виджетов"
 
-#: ../pro/includes/classes/addons-manager.php:84
+#: ../pro/includes/classes/addons-manager.php:88
 msgid "Meta Boxes access restrictions"
 msgstr "Ограничение просмотра мета боксов"
 
-#: ../pro/includes/classes/addons-manager.php:88
+#: ../pro/includes/classes/addons-manager.php:92
 msgid "Other Roles access restrictions"
 msgstr "Ограничение доступа к другим ролям"
 
-#: ../pro/includes/classes/addons-manager.php:92
+#: ../pro/includes/classes/addons-manager.php:96
 #, fuzzy
 msgid "Posts/Pages edit access restrictions"
 msgstr "Доступ к администрированию виджетов"
 
-#: ../pro/includes/classes/addons-manager.php:96
+#: ../pro/includes/classes/addons-manager.php:100
 #, fuzzy
 msgid "Plugins activation/deactivation access restrictions"
 msgstr "Плагины доступные для активации/деактивации"
 
-#: ../pro/includes/classes/addons-manager.php:109
+#: ../pro/includes/classes/addons-manager.php:113
 #, fuzzy
 msgid "Posts/Pages view access restrictions"
 msgstr "Доступ к просмотру виджетов"
 
-#: ../pro/includes/classes/admin-menu-access.php:1010
+#: ../pro/includes/classes/admin-menu-access.php:1025
 msgid "My Sites"
 msgstr "Мои Сайты"
 
-#: ../pro/includes/classes/admin-menu-access.php:1023
+#: ../pro/includes/classes/admin-menu-access.php:1038
 msgid "Network Admin"
 msgstr "Супер-админ Сети"
 
-#: ../pro/includes/classes/admin-menu-access.php:1030
-#: ../pro/includes/classes/admin-menu-access.php:1101
+#: ../pro/includes/classes/admin-menu-access.php:1045
+#: ../pro/includes/classes/admin-menu-access.php:1116
 msgid "Dashboard"
 msgstr "Панель администратора"
 
-#: ../pro/includes/classes/admin-menu-access.php:1036
+#: ../pro/includes/classes/admin-menu-access.php:1051
 msgid "Sites"
 msgstr "Сайты"
 
-#: ../pro/includes/classes/admin-menu-access.php:1112
+#: ../pro/includes/classes/admin-menu-access.php:1127
 msgid "New Post"
 msgstr "Новая статья"
 
-#: ../pro/includes/classes/admin-menu-access.php:1122
+#: ../pro/includes/classes/admin-menu-access.php:1137
 msgid "Manage Comments"
 msgstr "Управлять комментариями"
 
-#: ../pro/includes/classes/admin-menu-access.php:1130
+#: ../pro/includes/classes/admin-menu-access.php:1145
 msgid "Visit Site"
 msgstr "Перейти к сайту"
 
@@ -1226,11 +1302,11 @@ msgstr "Ваш Профайл"
 msgid "Add New User"
 msgstr "Добавить нового пользователя"
 
-#: ../pro/includes/classes/admin-menu-url-allowed-args.php:197
+#: ../pro/includes/classes/admin-menu-url-allowed-args.php:219
 msgid "Wrong request: Missed base URL"
-msgstr ""
+msgstr "Неверный запрос: пропущен базовый URL"
 
-#: ../pro/includes/classes/admin-menu-url-allowed-args.php:216
+#: ../pro/includes/classes/admin-menu-url-allowed-args.php:238
 #, fuzzy
 msgid "Allowed arguments list was updated successfully"
 msgstr "Данные по доступу к виджетам изменены успешно"
@@ -1243,73 +1319,72 @@ msgstr "Меню Администратора"
 msgid "Admin menu"
 msgstr "Меню Администратора"
 
-#: ../pro/includes/classes/admin-menu-view.php:153
-#: ../pro/includes/classes/admin-menu-view.php:368
+#: ../pro/includes/classes/admin-menu-view.php:154
+#: ../pro/includes/classes/admin-menu-view.php:371
 #: ../pro/includes/classes/admin-menu.php:180
 msgid "URE: Insufficient permissions to use this add-on"
 msgstr "Недостаточно полномочий для работы с этим дополнением"
 
-#: ../pro/includes/classes/admin-menu-view.php:188
+#: ../pro/includes/classes/admin-menu-view.php:189
 msgid "Block menu items:"
 msgstr "Блокировать пункты меню:"
 
-#: ../pro/includes/classes/admin-menu-view.php:190
+#: ../pro/includes/classes/admin-menu-view.php:191
 #: ../pro/includes/classes/other-roles.php:200
 #: ../pro/includes/classes/plugins-access-view.php:47
-#: ../pro/includes/classes/posts-view.php:81
+#: ../pro/includes/classes/posts-view.php:178
 #: ../pro/includes/classes/widgets-show-view.php:138
 msgid "Selected"
 msgstr "Отмеченные"
 
-#: ../pro/includes/classes/admin-menu-view.php:192
+#: ../pro/includes/classes/admin-menu-view.php:193
 #: ../pro/includes/classes/other-roles.php:202
 #: ../pro/includes/classes/plugins-access-view.php:49
-#: ../pro/includes/classes/posts-view.php:83
+#: ../pro/includes/classes/posts-view.php:180
 #: ../pro/includes/classes/widgets-show-view.php:140
 msgid "Not Selected"
 msgstr "Не отмеченные"
 
-#: ../pro/includes/classes/admin-menu-view.php:205
+#: ../pro/includes/classes/admin-menu-view.php:206
 msgid "Menu"
 msgstr "Меню"
 
-#: ../pro/includes/classes/admin-menu-view.php:206
+#: ../pro/includes/classes/admin-menu-view.php:207
 msgid "Submenu"
 msgstr "Подменю"
 
-#: ../pro/includes/classes/admin-menu-view.php:207
+#: ../pro/includes/classes/admin-menu-view.php:208
 msgid "User capability"
 msgstr "Право пользователя"
 
-#: ../pro/includes/classes/admin-menu-view.php:208
-#: ../pro/includes/classes/admin-menu-view.php:387
+#: ../pro/includes/classes/admin-menu-view.php:209
+#: ../pro/includes/classes/admin-menu-view.php:390
 msgid "URL"
 msgstr "URL"
 
-#: ../pro/includes/classes/admin-menu-view.php:307
+#: ../pro/includes/classes/admin-menu-view.php:311
 msgid "Base URL"
 msgstr ""
 
-#: ../pro/includes/classes/admin-menu-view.php:315
+#: ../pro/includes/classes/admin-menu-view.php:319
 #, fuzzy
 msgid "Allowed arguments"
 msgstr "Разрешить управлять"
 
-#: ../pro/includes/classes/admin-menu-view.php:316
-#, fuzzy
+#: ../pro/includes/classes/admin-menu-view.php:320
 msgid "(comma separated)"
-msgstr "по списку ID категорий (через запятую)"
+msgstr "(через запятую)"
 
-#: ../pro/includes/classes/admin-menu-view.php:324
+#: ../pro/includes/classes/admin-menu-view.php:328
 msgid "Extract from URL"
 msgstr ""
 
-#: ../pro/includes/classes/admin-menu-view.php:386
+#: ../pro/includes/classes/admin-menu-view.php:389
 #, fuzzy
 msgid "Menu item"
 msgstr "Блокировать пункты меню:"
 
-#: ../pro/includes/classes/admin-menu-view.php:388
+#: ../pro/includes/classes/admin-menu-view.php:391
 #, fuzzy
 msgid "Allowed args"
 msgstr "Разрешить управлять"
@@ -1329,97 +1404,47 @@ msgstr ""
 msgid "Administrator menu access data was updated successfully"
 msgstr "URE: доступ к меню администратора: Данные изменены успешно."
 
-#: ../pro/includes/classes/bbpress.php:170
+#: ../pro/includes/classes/bbpress.php:184
 msgid "bbPress"
 msgstr "bbPress"
 
-#: ../pro/includes/classes/content-view-restrictions.php:99
+#: ../pro/includes/classes/content-view-restrictions-editor.php:120
+#, fuzzy
+#| msgid "Content View Restrictions"
+msgid "Content View Restricitions"
+msgstr "Ограничения на просмотр"
+
+#: ../pro/includes/classes/content-view-restrictions.php:141
 msgid "Content View Restrictions"
 msgstr "Ограничения на просмотр"
 
-#: ../pro/includes/classes/content-view-restrictions.php:181
-msgid "View Access:"
-msgstr "Доступ к просмотру статей:"
-
-#: ../pro/includes/classes/content-view-restrictions.php:183
-#: ../pro/includes/settings-content-view-defaults.php:15
-msgid "Allow View"
-msgstr "Разрешить Просмотр"
-
-#: ../pro/includes/classes/content-view-restrictions.php:184
-#: ../pro/includes/settings-content-view-defaults.php:18
-msgid "Prohibit View"
-msgstr "Запретить Просмотр"
-
-#: ../pro/includes/classes/content-view-restrictions.php:189
-#: ../pro/includes/settings-content-view-defaults.php:22
-msgid "For Users:"
-msgstr "Для пользователей:"
-
-#: ../pro/includes/classes/content-view-restrictions.php:192
-#: ../pro/includes/settings-content-view-defaults.php:25
-msgid "All visitors (logged in or not)"
-msgstr ""
-
-#: ../pro/includes/classes/content-view-restrictions.php:194
-#: ../pro/includes/settings-content-view-defaults.php:27
-msgid "Any User Role (logged in only)"
-msgstr ""
-
-#: ../pro/includes/classes/content-view-restrictions.php:196
-msgid "Selected User Roles"
-msgstr "Выбраные роли:"
-
-#: ../pro/includes/classes/content-view-restrictions.php:198
-#: ../pro/includes/classes/content-view-restrictions.php:260
-#: ../pro/includes/classes/front-end-menu-view.php:45
+#: ../pro/includes/classes/content-view-restrictions.php:173
+#: ../pro/includes/classes/front-end-menu-view.php:46
+#: ../pro/includes/content-view-restrictions-template.php:28
 msgid "Edit Roles List"
 msgstr "Редактировать список ролей"
 
-#: ../pro/includes/classes/content-view-restrictions.php:206
-#: ../pro/includes/settings-content-view-defaults.php:33
-msgid "Action:"
-msgstr "Действие:"
-
-#: ../pro/includes/classes/content-view-restrictions.php:210
-#: ../pro/includes/settings-content-view-defaults.php:42
-msgid "Return HTTP 404 error"
-msgstr "Вернуть 404 ошибку HTTP"
-
-#: ../pro/includes/classes/content-view-restrictions.php:213
-msgid "Show access error message"
-msgstr "Показать сообщение об ошибке"
-
-#: ../pro/includes/classes/content-view-restrictions.php:216
-msgid "Show custom access error message"
-msgstr "Показать собственное сообщение об ошибке"
-
-#: ../pro/includes/classes/content-view-restrictions.php:219
-msgid "Redirect to URL"
-msgstr ""
-
-#: ../pro/includes/classes/content-view-restrictions.php:221
-#, fuzzy
-msgid "Access error message:"
-msgstr "Показать сообщение об ошибке"
-
-#: ../pro/includes/classes/content-view-restrictions.php:225
-msgid "Access error URL:"
-msgstr ""
-
-#: ../pro/includes/classes/content-view-restrictions.php:230
-msgid "User Role Editor Pro"
-msgstr "Редактор ролей пользователей Pro"
-
-#: ../pro/includes/classes/content-view-restrictions.php:261
+#: ../pro/includes/classes/content-view-restrictions.php:174
 msgid "Roles List restrict/allow content view"
 msgstr "Список ролей для разрешения/запрета просмотра содержимого"
 
-#: ../pro/includes/classes/content-view-restrictions.php:263
+#: ../pro/includes/classes/content-view-restrictions.php:176
 #: ../pro/includes/classes/themes-access.php:151
-#: ../pro/includes/classes/user-role-editor-pro.php:223
+#: ../pro/includes/classes/user-role-editor-pro.php:242
 msgid "Close"
 msgstr "Закрыть"
+
+#: ../pro/includes/classes/export-roles-csv.php:33
+msgid "Export User Roles to CSV file"
+msgstr ""
+
+#: ../pro/includes/classes/export-roles-csv.php:36
+msgid "Roles will be exported only from the main site."
+msgstr ""
+
+#: ../pro/includes/classes/export-roles-csv.php:40
+msgid "Export user roles to CSV"
+msgstr ""
 
 #: ../pro/includes/classes/export-single-role.php:90
 #, fuzzy
@@ -1427,22 +1452,21 @@ msgid "Role ID is empty"
 msgstr "Ошибка: пустой идентификатор роли!"
 
 #: ../pro/includes/classes/export-single-role.php:95
-#: ../pro/includes/classes/import-single-role.php:295
+#: ../pro/includes/classes/import-single-role.php:301
 #, fuzzy
 msgid "Wrong nonce. Action prohibitied."
 msgstr "операция запрещена"
 
 #: ../pro/includes/classes/export-single-role.php:100
-#, fuzzy
 msgid "You do not have sufficient permissions to export roles."
-msgstr "У вас недостаточно полномочий для работы с этим дополнением"
+msgstr "У вас недостаточно полномочий для экспорта ролей."
 
 #: ../pro/includes/classes/export-single-role.php:105
 #, fuzzy
 msgid "Role requested for export does not exist"
 msgstr "Пользователь не существует"
 
-#: ../pro/includes/classes/export-single-role.php:246
+#: ../pro/includes/classes/export-single-role.php:249
 msgid "Export data error."
 msgstr ""
 
@@ -1450,28 +1474,28 @@ msgstr ""
 msgid "Select roles"
 msgstr "Выбрать роли:"
 
-#: ../pro/includes/classes/front-end-menu-view.php:31
+#: ../pro/includes/classes/front-end-menu-view.php:32
 msgid "Show to:"
 msgstr "Показывать:"
 
-#: ../pro/includes/classes/front-end-menu-view.php:33
+#: ../pro/includes/classes/front-end-menu-view.php:34
 msgid "Everyone"
 msgstr ""
 
-#: ../pro/includes/classes/front-end-menu-view.php:35
+#: ../pro/includes/classes/front-end-menu-view.php:36
 msgid "Logged-in users"
 msgstr "Авторизованные пользователи"
 
-#: ../pro/includes/classes/front-end-menu-view.php:37
+#: ../pro/includes/classes/front-end-menu-view.php:38
 msgid "Logged-in users with roles"
 msgstr "Авторизованные пользователи с ролями"
 
-#: ../pro/includes/classes/front-end-menu-view.php:40
+#: ../pro/includes/classes/front-end-menu-view.php:41
 #, fuzzy
 msgid "Not logged-in"
 msgstr "Авторизованные пользователи"
 
-#: ../pro/includes/classes/front-end-menu-view.php:42
+#: ../pro/includes/classes/front-end-menu-view.php:43
 msgid "Not logged-in and logged-in users with roles"
 msgstr "Не авторизованные и авторизованные пользователи с ролями"
 
@@ -1492,86 +1516,84 @@ msgid ""
 "(addon settings are imported in case addon is presented at the imported file)"
 msgstr ""
 
-#: ../pro/includes/classes/import-single-role.php:93
+#: ../pro/includes/classes/import-single-role.php:99
 #, fuzzy
 msgid "Import Role"
 msgstr "Импорт Ролей"
 
-#: ../pro/includes/classes/import-single-role.php:94
+#: ../pro/includes/classes/import-single-role.php:100
 #, fuzzy
 msgid "Importing to"
 msgstr "Импорт"
 
-#: ../pro/includes/classes/import-single-role.php:95
+#: ../pro/includes/classes/import-single-role.php:101
 #, fuzzy
 msgid "Select file with role data"
 msgstr "Выберите файл, с данными роли"
 
-#: ../pro/includes/classes/import-single-role.php:126
+#: ../pro/includes/classes/import-single-role.php:132
 #, fuzzy
 msgid "Role was imported successfully"
 msgstr "Роли импортированы успешно"
 
-#: ../pro/includes/classes/import-single-role.php:128
-#, fuzzy
+#: ../pro/includes/classes/import-single-role.php:134
 msgid "Unknown error: Role import was failed"
 msgstr "Неизвестная ошибка при импорте ролей"
 
-#: ../pro/includes/classes/import-single-role.php:183
+#: ../pro/includes/classes/import-single-role.php:189
 #, fuzzy
-msgid "Import failure: Role file is broken possibly."
+msgid "Import failure: Role file is broken or has invalid format."
 msgstr "Ошибка импорта: файл с данными ролей возможно испорчен."
 
-#: ../pro/includes/classes/import-single-role.php:188
+#: ../pro/includes/classes/import-single-role.php:194
 #, fuzzy
 msgid "Import failure: Role ID was not found"
 msgstr "Ошибка импорта: роль"
 
-#: ../pro/includes/classes/import-single-role.php:300
+#: ../pro/includes/classes/import-single-role.php:306
 #, fuzzy
 msgid "You do not have sufficient permissions to import roles."
 msgstr "У вас недостаточно полномочий для работы с этим дополнением"
 
-#: ../pro/includes/classes/import-single-role.php:306
+#: ../pro/includes/classes/import-single-role.php:312
 msgid "File upload error."
 msgstr "Ошибка загрузки файла"
 
-#: ../pro/includes/classes/import-single-role.php:312
+#: ../pro/includes/classes/import-single-role.php:318
 #, fuzzy
 msgid "File upload error. Can not write to"
 msgstr "Ошибка загрузки файла. Попробуйте ещё раз позже"
 
-#: ../pro/includes/classes/import-single-role.php:331
+#: ../pro/includes/classes/import-single-role.php:327
+#, fuzzy
+msgid "Import failure: Role file is broken or has invalid format - "
+msgstr "Ошибка импорта: файл с данными ролей возможно испорчен."
+
+#: ../pro/includes/classes/import-single-role.php:341
 msgid "There was database error during role import"
 msgstr ""
 
-#: ../pro/includes/classes/import-single-role.php:333
+#: ../pro/includes/classes/import-single-role.php:343
 #, fuzzy
 msgid "Role was imported"
 msgstr "Роли импортированы успешно"
 
-#: ../pro/includes/classes/import-single-role.php:348
+#: ../pro/includes/classes/import-single-role.php:358
 msgid "Missed site ID"
 msgstr ""
 
-#: ../pro/includes/classes/import-single-role.php:352
+#: ../pro/includes/classes/import-single-role.php:362
 msgid "Wrong site ID"
-msgstr ""
+msgstr "Неверный идентификатор сайта"
 
-#: ../pro/includes/classes/import-single-role.php:357
-#: ../pro/includes/classes/import-single-role.php:369
-#, fuzzy
-msgid "Site does not exist"
-msgstr "не существует"
-
-#: ../pro/includes/classes/import-single-role.php:363
-msgid "Wrong next site ID"
-msgstr ""
-
+#: ../pro/includes/classes/import-single-role.php:367
 #: ../pro/includes/classes/import-single-role.php:379
-#, fuzzy
-msgid "Wrong role ID"
-msgstr "ID роли"
+msgid "Site does not exist"
+msgstr "Сайт не существует"
+
+#: ../pro/includes/classes/import-single-role.php:373
+msgid "Wrong next site ID"
+msgstr "Неверный ID следующего сайта"
 
 #: ../pro/includes/classes/import-validator.php:21
 msgid "Import failure: role ID contains invalid characters."
@@ -1617,7 +1639,7 @@ msgstr ""
 "Ошибка импорта: Недопустимые символы в ID права пользователя (capability) - "
 "исправленная версия:"
 
-#: ../pro/includes/classes/import-validator.php:69
+#: ../pro/includes/classes/import-validator.php:72
 #, fuzzy, php-format
 msgid ""
 "Import failure: Role \"%s\", wrong capability value for \"%s\" - only TRUE, "
@@ -1654,24 +1676,25 @@ msgid ""
 "for this role"
 msgstr "Для управление доступом к метабоксам необходимо право \"edit_posts\""
 
-#: ../pro/includes/classes/meta-boxes-access.php:84
-#: ../pro/includes/classes/widgets-admin-controller.php:194
+#: ../pro/includes/classes/meta-boxes-access.php:85
+#: ../pro/includes/classes/nav-menus-admin-controller.php:163
+#: ../pro/includes/classes/widgets-admin-controller.php:240
 msgid "URE: you do not have enough permissions to access this module."
 msgstr "У вас недостаточно полномочий для доступа к этому модулю."
 
-#: ../pro/includes/classes/meta-boxes-access.php:90
+#: ../pro/includes/classes/meta-boxes-access.php:91
 msgid "URE: Meta boxes access: Wrong object type. Data was not updated."
 msgstr "URE: доступ к мета боксам: Неверный тип объекта. Данные не изменены."
 
-#: ../pro/includes/classes/meta-boxes-access.php:95
+#: ../pro/includes/classes/meta-boxes-access.php:96
 msgid "URE: Meta boxes access: Empty object name. Data was not updated"
 msgstr "URE: доступ к мета боксам: Неверное имя объекта. Данные не изменены."
 
-#: ../pro/includes/classes/meta-boxes-access.php:104
+#: ../pro/includes/classes/meta-boxes-access.php:105
 msgid "Meta boxes access data was updated successfully"
 msgstr "Данные по доступу к мета боксам изменены успешно"
 
-#: ../pro/includes/classes/meta-boxes.php:355
+#: ../pro/includes/classes/meta-boxes.php:454
 msgid ""
 "Please open post, page and (custom post type) editor page to initilize the "
 "list of available meta_boxes"
@@ -1679,53 +1702,115 @@ msgstr ""
 "Чтобы инициализировать список доступных мета боксов, пожалуйста, откройте в "
 "редакторе любые статью, страницу, пользовательский тип статьи"
 
-#: ../pro/includes/classes/meta-boxes.php:369
+#: ../pro/includes/classes/meta-boxes.php:468
+#: ../pro/includes/classes/nav-menus-admin-view.php:71
 #: ../pro/includes/classes/widgets-admin-view.php:69
 #: ../pro/includes/classes/widgets-admin-view.php:104
 msgid "Block"
 msgstr "Блокировать"
 
-#: ../pro/includes/classes/meta-boxes.php:370
+#: ../pro/includes/classes/meta-boxes.php:469
 msgid "Title"
 msgstr "Заголовок статьи"
 
-#: ../pro/includes/classes/meta-boxes.php:371
+#: ../pro/includes/classes/meta-boxes.php:470
 msgid "Id"
 msgstr "Id"
 
-#: ../pro/includes/classes/meta-boxes.php:399
+#: ../pro/includes/classes/meta-boxes.php:498
 msgid "Delete from the list of available meta boxes"
 msgstr ""
 
-#: ../pro/includes/classes/other-roles-access.php:46
+#: ../pro/includes/classes/nav-menus-admin-controller.php:169
+#: ../pro/includes/classes/widgets-admin-controller.php:246
+msgid "URE: widgets access: Wrong object type. Data was not updated."
+msgstr "URE: доступ к виджетам: Неверный тип объекта. Данные не изменены."
+
+#: ../pro/includes/classes/nav-menus-admin-controller.php:174
+#: ../pro/includes/classes/widgets-admin-controller.php:251
+msgid "URE: widgets access: Empty object name. Data was not updated"
+msgstr "URE: доступ к виджетам: Не задано имя объекта. Данные не изменены."
+
+#: ../pro/includes/classes/nav-menus-admin-controller.php:184
+#, fuzzy
+#| msgid "Meta boxes access data was updated successfully"
+msgid "Nav. menus access: data was updated successfully"
+msgstr "Данные по доступу к мета боксам изменены успешно"
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:29
+#, fuzzy
+#| msgid "Prohibit access to selected widgets"
+msgid "Prohibit access to selected Navigation Menus"
+msgstr "Запретить доступ к выбранным виджетам"
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:30
+#: ../pro/includes/classes/nav-menus-admin-view.php:43
+msgid "Nav. Menus"
+msgstr ""
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:44
+msgid "Navigation Menus Access"
+msgstr ""
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:46
+#, fuzzy
+#| msgid ""
+#| "Turn ON \"edit_theme_options\" capability to manage widgets permissions"
+msgid ""
+"Turn ON \"edit_theme_options\" capability to manage Nav. Menus permissions"
+msgstr ""
+"Чтобы настроить доступ к виджетам включите право  \"edit_theme_options\""
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:69
+#, fuzzy
+#| msgid "Menu"
+msgid "Menus"
+msgstr "Меню"
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:72
+msgid "Slug"
+msgstr ""
+
+#: ../pro/includes/classes/nav-menus-admin-view.php:73
+#: ../pro/includes/classes/posts-view.php:116
+#: ../pro/includes/classes/widgets-admin-view.php:70
+#: ../pro/includes/classes/widgets-admin-view.php:105
+msgid "Name"
+msgstr "Наименование:"
+
+#: ../pro/includes/classes/other-roles-access.php:48
 msgid "Prohibit access to selected roles"
 msgstr "Запретить доступ к выбранным ролям"
 
-#: ../pro/includes/classes/other-roles-access.php:60
+#: ../pro/includes/classes/other-roles-access.php:80
 msgid "Other Roles Access"
 msgstr "Доступ к другим ролям"
 
-#: ../pro/includes/classes/other-roles-access.php:62
+#: ../pro/includes/classes/other-roles-access.php:82
+msgid "Blocking any role for \"administrator\" is not allowed."
+msgstr ""
+
+#: ../pro/includes/classes/other-roles-access.php:83
 msgid ""
 "Turn ON \"edit_users\" capability to manage access of current role to other "
 "roles"
 msgstr "Для управления доступом к другим ролям добавьте право  \"edit_users\" "
 
-#: ../pro/includes/classes/other-roles-access.php:88
-#: ../pro/includes/classes/posts-edit-access-role-controller.php:131
-#: ../pro/includes/classes/posts-view-access.php:79
+#: ../pro/includes/classes/other-roles-access.php:110
+#: ../pro/includes/classes/posts-edit-access-role-controller.php:132
+#: ../pro/includes/classes/posts-view-access.php:80
 msgid "URE: you have not enough permissions to use this add-on."
 msgstr "URE: у вас недостаточно прав для работы с этим дополнением."
 
-#: ../pro/includes/classes/other-roles-access.php:93
+#: ../pro/includes/classes/other-roles-access.php:115
 msgid "URE: other roles access: Wrong object type. Data was not updated."
 msgstr "URE: доступ к другим ролям: Неверный тип объекта. Данные не изменены."
 
-#: ../pro/includes/classes/other-roles-access.php:98
+#: ../pro/includes/classes/other-roles-access.php:120
 msgid "URE: other roles access: Empty object name. Data was not updated"
 msgstr "URE: доступ к другим ролям: Пустое имя объекта. Данные не изменены."
 
-#: ../pro/includes/classes/other-roles-access.php:108
+#: ../pro/includes/classes/other-roles-access.php:130
 msgid "Other roles access data was updated successfully"
 msgstr "Данные по доступу к другим ролям изменены успешно"
 
@@ -1741,27 +1826,27 @@ msgstr "Наименование роли"
 msgid "Role ID"
 msgstr "ID роли"
 
-#: ../pro/includes/classes/page-permissions-view.php:138
+#: ../pro/includes/classes/page-permissions-view.php:150
 msgid "User capabilities checked for this page:"
 msgstr "Для этой страницы проверено наличие прав пользователя:"
 
-#: ../pro/includes/classes/page-permissions-view.php:168
+#: ../pro/includes/classes/page-permissions-view.php:180
 msgid "View page permissions"
-msgstr ""
+msgstr "Просмотр прав доступа к странице"
 
-#: ../pro/includes/classes/plugins-access-role-controller.php:121
+#: ../pro/includes/classes/plugins-access-role-controller.php:122
 msgid "URE: you do not have enough permissions to use this add-on."
 msgstr "URE: у вас недостаточно прав для работы с этим дополнением."
 
-#: ../pro/includes/classes/plugins-access-role-controller.php:126
+#: ../pro/includes/classes/plugins-access-role-controller.php:127
 msgid "URE: plugins access: Wrong object type. Data was not updated."
 msgstr "URE: доступ к плагинам: Неверный тип объекта. Данные не изменены."
 
-#: ../pro/includes/classes/plugins-access-role-controller.php:131
+#: ../pro/includes/classes/plugins-access-role-controller.php:132
 msgid "URE: plugins: Empty object name. Data was not updated"
 msgstr "URE: плагины: Не задано имя объекта. Данные не изменены."
 
-#: ../pro/includes/classes/plugins-access-role-controller.php:137
+#: ../pro/includes/classes/plugins-access-role-controller.php:138
 msgid "Plugins access data was updated successfully"
 msgstr "Данные по доступу к плагинам изменены успешно"
 
@@ -1837,18 +1922,18 @@ msgstr "Укажите список ID пользователей."
 msgid "Provide valid users ID list (integers separated by commas)."
 msgstr ""
 
-#: ../pro/includes/classes/posts-edit-access-role-controller.php:136
+#: ../pro/includes/classes/posts-edit-access-role-controller.php:137
 msgid "URE: posts edit access: Wrong object type. Data was not updated."
 msgstr ""
 "URE: доступ к редактированию статей: Неверный тип объекта. Данные не "
 "изменены."
 
-#: ../pro/includes/classes/posts-edit-access-role-controller.php:141
+#: ../pro/includes/classes/posts-edit-access-role-controller.php:142
 msgid "URE: posts edit access: Empty object name. Data was not updated"
 msgstr ""
 "URE: доступ к редактированию статей: Пустое имя объекта. Данные не изменены."
 
-#: ../pro/includes/classes/posts-edit-access-role-controller.php:146
+#: ../pro/includes/classes/posts-edit-access-role-controller.php:147
 msgid "Posts edit access data was updated successfully"
 msgstr "Данные по доступу к редактированию статей изменены успешно"
 
@@ -1887,7 +1972,7 @@ msgid "Look at roles"
 msgstr "Брать данные из ролей пользователя"
 
 #: ../pro/includes/classes/posts-edit-access-view.php:83
-#: ../pro/includes/classes/posts-view.php:97
+#: ../pro/includes/classes/posts-view.php:194
 msgid "Own data only"
 msgstr "Только свои данные"
 
@@ -1916,35 +2001,43 @@ msgstr "Просмотр статей"
 msgid "Posts View Access"
 msgstr "Доступ к просмотру статей"
 
-#: ../pro/includes/classes/posts-view-access.php:84
+#: ../pro/includes/classes/posts-view-access.php:85
 msgid "URE: posts view access: Wrong object type. Data was not updated."
 msgstr ""
 "URE: доступ к просмотру статей: Неверный тип объекта. Данные не изменены."
 
-#: ../pro/includes/classes/posts-view-access.php:89
+#: ../pro/includes/classes/posts-view-access.php:90
 msgid "URE: posts view access: Empty object name. Data was not updated"
 msgstr ""
 "URE: доступ к к просмотру статей: Пустое имя объекта. Данные не изменены."
 
-#: ../pro/includes/classes/posts-view-access.php:99
+#: ../pro/includes/classes/posts-view-access.php:100
 msgid "URE: posts view access: Data was updated successfully"
 msgstr "URE: доступ к к просмотру статей: Данные изменены успешно."
 
-#: ../pro/includes/classes/posts-view.php:79
+#: ../pro/includes/classes/posts-view.php:53
+msgid "ID"
+msgstr "ID"
+
+#: ../pro/includes/classes/posts-view.php:112
+msgid "Page templates:"
+msgstr ""
+
+#: ../pro/includes/classes/posts-view.php:117
+msgid "File"
+msgstr ""
+
+#: ../pro/includes/classes/posts-view.php:176
 msgid "Block:"
 msgstr "Блокировать:"
 
-#: ../pro/includes/classes/posts-view.php:90
+#: ../pro/includes/classes/posts-view.php:187
 msgid "Posts ID list (comma separated)"
 msgstr "Список ID статей (через запятую)"
 
-#: ../pro/includes/classes/posts-view.php:94
+#: ../pro/includes/classes/posts-view.php:191
 msgid "Authors ID list (comma separated)"
 msgstr "Список ID авторов (через запятую)"
-
-#: ../pro/includes/classes/posts-view.php:106
-msgid "ID"
-msgstr "ID"
 
 #: ../pro/includes/classes/screen-help-pro.php:23
 #: ../pro/includes/settings-template1.php:17
@@ -2037,7 +2130,7 @@ msgid ""
 msgstr ""
 
 #: ../pro/includes/classes/screen-help-pro.php:57
-#: ../pro/includes/settings-template2.php:77
+#: ../pro/includes/settings-template2.php:85
 msgid "Activate per plugin user access management for plugins activation"
 msgstr ""
 "Активировать управление доступом пользователя к активации выбранных плагинов"
@@ -2082,7 +2175,7 @@ msgid ""
 msgstr ""
 
 #: ../pro/includes/classes/screen-help-pro.php:72
-#: ../pro/includes/settings-template2.php:116
+#: ../pro/includes/settings-template2.php:133
 msgid "Force custom post types to use their own capabilities"
 msgstr ""
 "Заставить пользовательские типы статей использовать свои собственные права "
@@ -2098,7 +2191,7 @@ msgid ""
 msgstr ""
 
 #: ../pro/includes/classes/screen-help-pro.php:78
-#: ../pro/includes/settings-template2.php:127
+#: ../pro/includes/settings-template2.php:144
 msgid "Activate per form user access management for Gravity Forms"
 msgstr ""
 "Активировать управление доступом пользователей к выбранным формам Gravity "
@@ -2139,7 +2232,7 @@ msgid ""
 msgstr ""
 
 #: ../pro/includes/classes/screen-help-pro.php:93
-#: ../pro/includes/settings-template2.php:152
+#: ../pro/includes/settings-template2.php:169
 msgid "Activate content view restrictions"
 msgstr "Активировать ограничения на просмотр статей/страниц"
 
@@ -2253,31 +2346,23 @@ msgstr ""
 "После подтверждения этот пользователь будет добавлен ко всем сайтай сети с  "
 "правами с главного сайта. Продолжить?"
 
-#: ../pro/includes/classes/user-role-editor-pro.php:207
+#: ../pro/includes/classes/user-role-editor-pro.php:226
 msgid "Update Network"
 msgstr "Обновить Сеть"
 
-#: ../pro/includes/classes/user-role-editor-pro.php:220
+#: ../pro/includes/classes/user-role-editor-pro.php:239
 msgid "Admin menu allowed arguments for URLs"
 msgstr ""
 
-#: ../pro/includes/classes/user-role-editor-pro.php:221
+#: ../pro/includes/classes/user-role-editor-pro.php:240
 msgid "Extract"
 msgstr ""
 
-#: ../pro/includes/classes/user-role-editor-pro.php:224
+#: ../pro/includes/classes/user-role-editor-pro.php:244
 msgid "Input allowed aguments before try to save it."
 msgstr ""
 
-#: ../pro/includes/classes/widgets-admin-controller.php:200
-msgid "URE: widgets access: Wrong object type. Data was not updated."
-msgstr "URE: доступ к виджетам: Неверный тип объекта. Данные не изменены."
-
-#: ../pro/includes/classes/widgets-admin-controller.php:205
-msgid "URE: widgets access: Empty object name. Data was not updated"
-msgstr "URE: доступ к виджетам: Не задано имя объекта. Данные не изменены."
-
-#: ../pro/includes/classes/widgets-admin-controller.php:215
+#: ../pro/includes/classes/widgets-admin-controller.php:261
 msgid "Widgets access: data was updated successfully"
 msgstr "Доступ к виджетам: данные изменены успешно"
 
@@ -2299,11 +2384,6 @@ msgstr "Доступ к виджетам"
 msgid "Turn ON \"edit_theme_options\" capability to manage widgets permissions"
 msgstr ""
 "Чтобы настроить доступ к виджетам включите право  \"edit_theme_options\""
-
-#: ../pro/includes/classes/widgets-admin-view.php:70
-#: ../pro/includes/classes/widgets-admin-view.php:105
-msgid "Name"
-msgstr "Наименование:"
 
 #: ../pro/includes/classes/widgets-admin-view.php:71
 #: ../pro/includes/classes/widgets-admin-view.php:106
@@ -2330,6 +2410,66 @@ msgstr "для:"
 #: ../pro/includes/classes/widgets-show-view.php:175
 msgid "No role for this site"
 msgstr "Нет роли для этого сайта"
+
+#: ../pro/includes/content-view-restrictions-template.php:11
+msgid "View Access:"
+msgstr "Доступ к просмотру статей:"
+
+#: ../pro/includes/content-view-restrictions-template.php:13
+#: ../pro/includes/settings-content-view-defaults.php:15
+msgid "Allow View"
+msgstr "Разрешить Просмотр"
+
+#: ../pro/includes/content-view-restrictions-template.php:14
+#: ../pro/includes/settings-content-view-defaults.php:18
+msgid "Prohibit View"
+msgstr "Запретить Просмотр"
+
+#: ../pro/includes/content-view-restrictions-template.php:19
+#: ../pro/includes/settings-content-view-defaults.php:22
+msgid "For Users:"
+msgstr "Для пользователей:"
+
+#: ../pro/includes/content-view-restrictions-template.php:22
+#: ../pro/includes/settings-content-view-defaults.php:25
+msgid "All visitors (logged in or not)"
+msgstr ""
+
+#: ../pro/includes/content-view-restrictions-template.php:24
+#: ../pro/includes/settings-content-view-defaults.php:27
+msgid "Any User Role (logged in only)"
+msgstr ""
+
+#: ../pro/includes/content-view-restrictions-template.php:26
+msgid "Selected User Roles"
+msgstr "Выбраные роли:"
+
+#: ../pro/includes/content-view-restrictions-template.php:34
+#: ../pro/includes/settings-content-view-defaults.php:33
+msgid "Action:"
+msgstr "Действие:"
+
+#: ../pro/includes/content-view-restrictions-template.php:38
+#: ../pro/includes/settings-content-view-defaults.php:42
+msgid "Return HTTP 404 error"
+msgstr "Вернуть 404 ошибку HTTP"
+
+#: ../pro/includes/content-view-restrictions-template.php:41
+msgid "Show access error message"
+msgstr "Показать сообщение об ошибке"
+
+#: ../pro/includes/content-view-restrictions-template.php:44
+msgid "Show custom access error message"
+msgstr "Показать собственное сообщение об ошибке"
+
+#: ../pro/includes/content-view-restrictions-template.php:48
+#: ../pro/includes/settings-content-view-defaults.php:49
+msgid "Redirect to URL"
+msgstr ""
+
+#: ../pro/includes/content-view-restrictions-template.php:52
+msgid "User Role Editor Pro"
+msgstr "Редактор ролей пользователей Pro"
 
 #: ../pro/includes/settings-content-view-defaults.php:9
 #, fuzzy
@@ -2406,37 +2546,47 @@ msgstr "Активировать модуль \"Доступ к меню адм�
 msgid "Activate Front End Menu Access module"
 msgstr "Активировать модуль \"Доступ к меню пользователя\""
 
-#: ../pro/includes/settings-template2.php:41
+#: ../pro/includes/settings-template2.php:40
+#, fuzzy
+#| msgid "Activate Administrator Menu Access module"
+msgid "Activate Navigation Menus Access module"
+msgstr "Активировать модуль \"Доступ к меню администратора\""
+
+#: ../pro/includes/settings-template2.php:49
 msgid "Activate Widgets Admin Access module"
 msgstr "Активировать модуль \"Доступ к администрированию виджетов\""
 
-#: ../pro/includes/settings-template2.php:50
+#: ../pro/includes/settings-template2.php:58
 msgid "Activate Widgets Show Access module"
 msgstr "Активировать модуль \"Доступ к просмотру виджетов\""
 
-#: ../pro/includes/settings-template2.php:59
+#: ../pro/includes/settings-template2.php:67
 msgid "Activate Meta Boxes Access module"
 msgstr "Активировать модуль \"Доступ к метабоксам\""
 
-#: ../pro/includes/settings-template2.php:68
+#: ../pro/includes/settings-template2.php:76
 msgid "Activate Other Roles Access module"
 msgstr "Активировать модуль \"Доступ к другим ролям\""
 
-#: ../pro/includes/settings-template2.php:86
-msgid "Activate wp-admin pages pemissions viewer"
+#: ../pro/includes/settings-template2.php:94
+msgid "Activate wp-admin pages permissions viewer"
 msgstr ""
 
-#: ../pro/includes/settings-template2.php:92
+#: ../pro/includes/settings-template2.php:103
+msgid "Activate export user roles to CSV"
+msgstr ""
+
+#: ../pro/includes/settings-template2.php:109
 msgid "Content editing restrictions"
 msgstr "Ограничения на редактирование статей/страниц"
 
-#: ../pro/includes/settings-template2.php:98
+#: ../pro/includes/settings-template2.php:115
 msgid "Activate \"Create\" capability for posts/pages/custom post types"
 msgstr ""
 "Активировать право \"Create\" для статей/страниц/пользовательских типов "
 "статей"
 
-#: ../pro/includes/settings-template2.php:107
+#: ../pro/includes/settings-template2.php:124
 msgid ""
 "Activate user access management to editing selected posts, pages, custom "
 "post types"
@@ -2444,38 +2594,49 @@ msgstr ""
 "Активировать управление доступом пользователей к редактированию выбранных "
 "статей, страниц, пользовательских типов статей"
 
-#: ../pro/includes/settings-template2.php:137
+#: ../pro/includes/settings-template2.php:154
 msgid "Content view restrictions"
 msgstr "Ограничения на просмотр статей/страниц"
 
-#: ../pro/includes/settings-template2.php:143
+#: ../pro/includes/settings-template2.php:160
 msgid "Activate [user_role_editor roles=\"role1, role2, ...\"] shortcode"
 msgstr ""
 "Активировать использование спец. кода [user_role_editor roles=\"role1, "
 "role2, ...\"]"
 
-#: ../pro/includes/settings-template2.php:159
-#, fuzzy
+#: ../pro/includes/settings-template2.php:176
 msgid "Show Defaults..."
-msgstr "По-умолчанию:"
+msgstr "Показать значения по-умолчанию:"
 
-#: ../pro/includes/settings-template2.php:159
+#: ../pro/includes/settings-template2.php:176
 #, fuzzy
 msgid "Hide Defaults..."
 msgstr "По-умолчанию:"
 
-#: ../pro/includes/settings-template2.php:167
-#, fuzzy
+#: ../pro/includes/settings-template2.php:184
 msgid "Use additional user capabilities"
-msgstr "Именить права пользователя"
+msgstr "Использовать дополнительные права пользователя"
 
-#: ../pro/includes/settings-template2.php:173
-msgid "Plugins related: deactivate_plugins"
+#: ../pro/includes/settings-template2.php:190
+#, fuzzy
+#| msgid "Plugin Name"
+msgid "Plugins related"
+msgstr "Наименование плагина"
+
+#: ../pro/includes/settings-template2.php:199
+msgid "Languages related"
 msgstr ""
 
-#: ../pro/includes/settings-template2.php:182
-msgid "Languages related: install_languages, update_languages"
+#: ../pro/includes/settings-template2.php:208
+msgid "Privacy related"
 msgstr ""
+
+#~ msgid "Error encountered during role delete operation"
+#~ msgstr "Произошла ошибка при удалении роли"
+
+#, fuzzy
+#~ msgid "Access error message:"
+#~ msgstr "Показать сообщение об ошибке"
 
 #~ msgid "Error is occur. Please check the log file."
 #~ msgstr "Произошла ошибка. Проверьте лог-файл."
@@ -2688,9 +2849,6 @@ msgstr ""
 
 #~ msgid "Restore Roles from backup copy"
 #~ msgstr "Восстановить Роли из резервной копии"
-
-#~ msgid "Add"
-#~ msgstr "Добавить"
 
 #~ msgid "Change"
 #~ msgstr "Изменить"

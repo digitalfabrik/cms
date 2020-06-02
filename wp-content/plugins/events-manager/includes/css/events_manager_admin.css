@@ -45,11 +45,17 @@ div.em-location-data .em-location-map-404 { vertical-align:middle; text-align: c
 #event-rsvp-options h4 { font-size:14px; }
 #event-rsvp-options label { font-weight:bold; }
 /*Tickets*/
-.em-tickets-row .ticket-status span.ticket_on { display:block; width:10px; height:10px; background:green; }
-.em-tickets-row .ticket-status span.ticket_off { display:block; width:10px; height:10px; background:red; }
-.em-tickets-row .ticket-status span.ticket_new { display:block; width:10px; height:10px; background:grey; }
+#em-tickets-form tbody.em-ticket-template { display:none; }
 #em-tickets-form th { width:auto; }
-#em-tickets-form th.ticket-status { width:20px; }
+#em-tickets-form th.ticket-status, .em-tickets-row .ticket-status { width:20px; }
+#em-tickets-form .em-tickets-row .ticket-status span.dashicons { display:block; width:16px; height:16px; line-height:16px; font-size:16px; font-weight: bolder; }
+#em-tickets-form .em-tickets-row .ticket-status.single span.dashicons { cursor:auto; }
+#em-tickets-form .em-tickets-row .ticket-status span.ticket-on { color: #008000; }
+#em-tickets-form .em-tickets-row .ticket-status span.ticket-off { color: #ff0000; }
+#em-tickets-form .em-tickets-row .ticket-status span.ticket_new { color: #808080; }
+#em-tickets-form.em-tickets-sortable .em-tickets-row .ticket-status span.dashicons { cursor:grab; }
+#em-tickets-form .em-ticket-sortable-placeholder { border:2px dashed #dedede; background:#efefef; }
+#em-tickets-form .ui-sortable-helper { cursor:grabbing; }
 /* Ticket Forms */
 .em-ticket-form .ticket-options { margin-top:10px; }
 .em-ticket-form > div > div, #em-tickets-form .ticket-dates > div { clear:both; padding-top:4px; }
@@ -115,8 +121,7 @@ table.em-tickets-bookings-table tbody td { text-align:center; }
 #em-bookings-table-export form, #em-bookings-table-settings form { height: 100%; overflow:auto; }
 /* Sorting */
 .em-bookings-table-overlay ul.em-bookings-cols-sortable { list-style-type: none; margin: 0; padding: 0 0 10px; float: left; margin-right: 10px; }
-.em-bookings-table-overlay ul.em-bookings-cols-sortable li { margin: 0 5px 5px 5px; padding: 3px 8px; font-size: 12px; width: 120px; font-weight:none; cursor:move; }
-.em-bookings-table-overlay ul.em-bookings-cols-sortable li.ui-state-highlight {}
+.em-bookings-table-overlay ul.em-bookings-cols-sortable li { margin: 0 5px 5px 5px; padding: 3px 8px; font-size: 12px; width: 120px; font-weight:normal; cursor:move; }
 .em-bookings-table-overlay ul.em-bookings-cols-sortable li.ui-state-default { color:#999; }
 #em-bookings-export-cols-inactive, #em-bookings-cols-inactive { width:300px; }
 #em-bookings-export-cols-inactive li, #em-bookings-cols-inactive li { float:left; }

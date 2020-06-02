@@ -25,6 +25,17 @@ class URE_Pro_Ajax_Processor extends URE_Ajax_Processor {
     // end of get_admin_menu()
     
     
+    protected function get_nav_menus() {
+        require_once( URE_PLUGIN_DIR .'pro/includes/classes/admin-menu-view.php');
+        
+        $view = new URE_Nav_Menus_Admin_View();
+        $answer = $view->get_html();
+        
+        return $answer;
+    }
+    // end of get_nav_menus()
+    
+    
     protected function get_widgets_list() {
         $view = new URE_Widgets_Admin_View();
         $answer = $view->get_html();
@@ -160,7 +171,7 @@ class URE_Pro_Ajax_Processor extends URE_Ajax_Processor {
         
         return $cap;
     }
-    // end of get_permission()
+    // end of get_required_cap()
                 
     
     /**
@@ -169,13 +180,17 @@ class URE_Pro_Ajax_Processor extends URE_Ajax_Processor {
     protected function _dispatch() {
         
         $answer = parent::_dispatch($this->action);
-        if (substr($answer['message'], 0, 14)!='unknown action') {
+        if (substr($answer['message'], 0, 14)!='Unknown action') {
             return $answer;
         }
         
         switch ($this->action) {            
             case 'get_admin_menu': {
                 $answer = $this->get_admin_menu();
+                break;
+            }
+            case 'get_nav_menus': {
+                $answer = $this->get_nav_menus();
                 break;
             }
             case 'get_widgets_list': {

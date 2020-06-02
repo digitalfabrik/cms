@@ -1,3 +1,6 @@
+msgid "Push Notifications"
+msgstr "Push-Benachrichtigungen"
+
 msgid "Please fill in the title and message for the red underlined language. Optionally, translations can be filled in as well."
 msgstr "Bitte f&uuml;llen Sie die Felder Titel und Nachricht f&uuml;r die rot unterstrichene Sprache aus. Optional k&ouml;nnen auch &Uuml;bersetzungen eingegeben werden."
 

@@ -42,6 +42,10 @@ class URE_Plugins_Access {
     
     public function prohibited_links_redirect() {
         
+        if ($this->lib->is_super_admin() || current_user_can(self::CAPABILITY)) {
+            return;
+        }
+        
         $current_user = wp_get_current_user();        
         if (!$this->user->can_activate_plugins($current_user)) {        
             return;   

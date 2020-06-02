@@ -1362,15 +1362,16 @@ class EM_Object {
 	 * @param string $subject
 	 * @param string $body
 	 * @param string $email
+	 * @param array $attachments
 	 * @return string
 	 */
-	function email_send($subject, $body, $email){
+	function email_send($subject, $body, $email, $attachments = array()){
 		global $EM_Mailer;
 		if( !empty($subject) ){
 			if( !is_object($EM_Mailer) ){
 				$EM_Mailer = new EM_Mailer();
 			}
-			if( !$EM_Mailer->send($subject,$body,$email) ){
+			if( !$EM_Mailer->send($subject,$body,$email, $attachments) ){
 				if( is_array($EM_Mailer->errors) ){
 					foreach($EM_Mailer->errors as $error){
 						$this->errors[] = $error;

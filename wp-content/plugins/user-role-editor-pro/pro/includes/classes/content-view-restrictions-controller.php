@@ -19,10 +19,10 @@ class URE_Content_View_Restrictions_Controller {
      * @param string $role_id
      * @return array
      */
-    public static function load_data_for_role($role_id) {
+    public static function load_data_for_role( $role_id ) {
         
-        $access_data = get_option(self::ACCESS_DATA_KEY);
-        if (is_array($access_data) && array_key_exists($role_id, $access_data)) {
+        $access_data = get_option( self::ACCESS_DATA_KEY );
+        if ( is_array( $access_data ) && array_key_exists( $role_id, $access_data ) ) {
             $result =  $access_data[$role_id];
             if (!isset($result['access_model'])) {
                 $result['data'] = $result;
@@ -34,14 +34,15 @@ class URE_Content_View_Restrictions_Controller {
                 'access_model'=>1,
                 'access_error_action'=>1,
                 'data'=>array());
-        }
-        
+        }                
+
         return $result;
     }
     // end of load_access_data_for_role()
     
     
-    private static function init_blocked_data($default=0) {
+    private static function init_blocked_data( $default=0 ) {
+        
         $blocked = array(
                 'access_model'=>$default, 
                 'access_error_action'=>$default, 
@@ -50,6 +51,7 @@ class URE_Content_View_Restrictions_Controller {
         return $blocked;
     }
     // end of init_blocked_data()
+    
     
     private static function data_merge($target, $source, $object_id) {
         
@@ -68,76 +70,92 @@ class URE_Content_View_Restrictions_Controller {
     // end of data_merge()
     
     
-    private static function merge_blocked_with_roles_data($user, $blocked) {
+    private static function merge_blocked_with_roles_data( $user, $blocked ) {
         
-        if (!is_array($blocked)) {
-            $blocked = self::init_blocked_data(0);
+        if ( !is_array($blocked) ) {
+            $blocked = self::init_blocked_data( 0 );
         }
-        if (!is_array($user->roles) || count($user->roles)==0) {
+        if ( !is_a( $user, 'WP_User') || !is_array( $user->roles ) || count( $user->roles )==0) {
             return $blocked;
         }
         
-        $access_data = get_option(self::ACCESS_DATA_KEY);
-        if (empty($access_data)) {
+        $access_data = get_option( self::ACCESS_DATA_KEY );
+        if ( empty( $access_data ) ) {
             $access_data = array();
         }
-        foreach ($user->roles as $role) {
-            if (isset($access_data[$role])) {
-                if (!isset($access_data[$role]['access_model'])) { // for backward compatibility
-                    $access_model = 1;   // Use default (block selected) access model
-                    $data = $access_data[$role];
-                } else {
-                    $access_model = $access_data[$role]['access_model'];
-                    $data = $access_data[$role]['data'];
-                }
-                if (!isset($access_data[$role]['access_error_action'])) {
-                    $access_error_action = 1;
-                } else {
-                    $access_error_action = $access_data[$role]['access_error_action'];
-                }
-                if (empty($blocked['access_model'])) {  
-                    $blocked['access_model'] = $access_model;    // take the 1st found role's access model as the main one                    
-                }
-                if (empty($blocked['access_error_action'])) {  
-                    $blocked['access_error_action'] = $access_error_action;    // take the 1st found role's access error action as the main one                    
-                }
-                // take into account data with the same access model only as the 1st one found
-                if ($access_model==$blocked['access_model']) {                    
-                    $blocked['data'] = self::data_merge($blocked['data'], $data, 'posts');
-                    if (isset($data['authors'])) {
-                        $blocked['data'] = self::data_merge($blocked['data'], $data, 'authors');
-                    }
-                    $blocked['data'] = self::data_merge($blocked['data'], $data, 'terms');
-                    $blocked['data'] = self::data_merge($blocked['data'], $data, 'page_templates');
-                    if (isset($data['own_data_only']) && $data['own_data_only']==1) {
-                            $blocked['data']['own_data_only'] = 1;
-                    }                    
-                }
+        foreach ( $user->roles as $role_id ) {
+            if ( !isset( $access_data[$role_id] ) ) {
+                $role_data = array(
+                'access_model'=>1,
+                'access_error_action'=>1,
+                'data'=>array());                
+            } else {
+                $role_data = $access_data[$role_id];
             }
-        }
-        
+            $role_data = apply_filters( 'ure_content_view_access_data_for_role', $role_data, $role_id );
+            if ( empty( $role_data ) ) {
+                continue;
+            }
+            
+            if ( !isset( $role_data['access_model'] ) ) { // for backward compatibility
+                $access_model = 1;   // Use default (block selected) access model
+                $data = $role_data;
+            } else {
+                $access_model = $role_data['access_model'];
+                $data = $role_data['data'];
+            }                        
+            if ( !isset( $role_data['access_error_action'] ) ) {
+                $access_error_action = 1;
+            } else {
+                $access_error_action = $role_data['access_error_action'];
+            }            
+            if ( empty( $blocked['access_model'] ) ) {  
+                $blocked['access_model'] = $access_model;    // take the 1st found role's access model as the main one                    
+            }
+            if ( empty($blocked['access_error_action'] ) ) {  
+                $blocked['access_error_action'] = $access_error_action;    // take the 1st found role's access error action as the main one
+            }
+            
+            // take into account data with the same access model only as the 1st one found
+            if ( $access_model==$blocked['access_model'] ) {                    
+                $blocked['data'] = self::data_merge( $blocked['data'], $data, 'posts' );
+                if ( isset( $data['authors'] ) ) {
+                    $blocked['data'] = self::data_merge( $blocked['data'], $data, 'authors' );
+                }
+                $blocked['data'] = self::data_merge( $blocked['data'], $data, 'terms' );
+                $blocked['data'] = self::data_merge( $blocked['data'], $data, 'page_templates' );
+                if ( isset($data['own_data_only']) && $data['own_data_only']==1 ) {
+                        $blocked['data']['own_data_only'] = 1;
+                }                    
+            }            
+        }   // foreach()
+
         return $blocked;
     }
     // end of merge_blocked_with_roles_data()
             
     
-    public static function load_access_data_for_user($user) {        
-        $lib = URE_Lib_Pro::get_instance();
-        $user = $lib->get_user($user);
-        if (empty($user)) {
-            $blocked = self::init_blocked_data(1);
-            return $blocked;
-        }    
+    public static function load_access_data_for_user( $user ) {
         
-        $blocked = get_user_meta($user->ID, self::ACCESS_DATA_KEY, true);                                                      
-        $blocked = self::merge_blocked_with_roles_data($user, $blocked);        
+        $lib = URE_Lib_Pro::get_instance();
+        $user = $lib->get_user( $user );
+        if ( empty( $user ) ) {
+            $blocked = self::init_blocked_data( 1 );
+            $blocked = apply_filters( 'ure_content_view_access_data_for_user', $blocked, 0 );
+            return $blocked;
+        } 
+        
+        $blocked = get_user_meta( $user->ID, self::ACCESS_DATA_KEY, true );
+        $blocked = self::merge_blocked_with_roles_data( $user, $blocked );
 
-        if (empty($blocked['access_model'])) {
+        if ( empty( $blocked['access_model'] ) ) {
             $blocked['access_model'] = 1; // use default value
         }
-        if (!isset($blocked['access_error_action']) || empty($blocked['access_error_action'])) {
+        if ( !isset( $blocked['access_error_action'] ) || empty( $blocked['access_error_action'] ) ) {
             $blocked['access_error_action'] = 1; // use default value
-        }        
+        }     
+        
+        $blocked = apply_filters( 'ure_content_view_access_data_for_user', $blocked, $user->ID );
         
         return $blocked;
     }
@@ -318,18 +336,19 @@ class URE_Content_View_Restrictions_Controller {
     // end of get_access_data_from_post()
     
     
-    public static function save_access_data_for_role($role_id) {        
-        $access_data = get_option(self::ACCESS_DATA_KEY);        
-        if (!is_array($access_data)) {
+    public static function save_access_data_for_role( $role_id ) {
+        
+        $access_data = get_option( self::ACCESS_DATA_KEY );
+        if ( !is_array( $access_data ) ) {
             $access_data = array();
         }
         $data = self::get_access_data_from_post();
-        if (count($data)>0) {
+        if (count( $data )>0) {
             $access_data[$role_id] = $data;
         } else {
-            unset($access_data[$role_id]);
+            unset( $access_data[$role_id] );
         }
-        update_option(self::ACCESS_DATA_KEY, $access_data);
+        update_option( self::ACCESS_DATA_KEY, $access_data );
     }
     // end of save_access_data_for_role()
     

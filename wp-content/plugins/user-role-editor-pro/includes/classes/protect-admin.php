@@ -55,10 +55,10 @@ class URE_Protect_Admin {
      * @param string $roles
      * @return array
      */
-    public function exclude_admin_role($roles) {
+    public function exclude_admin_role( $roles ) {
 
-        if ($this->is_protection_applicable() && isset($roles['administrator'])) {
-            unset($roles['administrator']);
+        if ( $this->is_protection_applicable() && isset( $roles['administrator'] ) ) {
+            unset( $roles['administrator'] );
         }
 
         return $roles;
@@ -84,8 +84,8 @@ class URE_Protect_Admin {
         $query = $wpdb->prepare(
                 "SELECT count(*)
                     FROM {$wpdb->usermeta}
-                    WHERE user_id=%d AND meta_key=%s AND meta_value like %s", 
-                array($user_id, $meta_key, '%administrator%'));
+                    WHERE user_id=%d AND meta_key=%s AND meta_value LIKE %s", 
+                array($user_id, $meta_key, '%"administrator"%') );
         $has_admin_role = $wpdb->get_var($query);
         if ($has_admin_role > 0) {
             $result = true;
@@ -116,7 +116,14 @@ class URE_Protect_Admin {
      * @return array
      */
     public function not_edit_admin($allcaps, $caps, $name) {
-        $cap = (is_array($caps) & count($caps)>0) ? $caps[0] : $caps;
+        
+        if (is_array($caps) & count($caps)>0) {
+            // 1st element of this array not always has index 0. Use workaround to extract it.
+            $caps_v = array_values($caps);
+            $cap = $caps_v[0];
+        } else {
+            $cap = $caps;
+        }
         $checked_caps = array('edit_users', 'delete_users', 'remove_users');
         if (!in_array($cap, $checked_caps)) {
             return $allcaps;
@@ -172,7 +179,7 @@ class URE_Protect_Admin {
                     "SELECT user_id
                         FROM {$wpdb->usermeta}
                         WHERE user_id!=%d AND meta_key=%s AND meta_value like %s",
-                      array($current_user_id, $meta_key, '%administrator%'));
+                      array($current_user_id, $meta_key, '%"administrator"%'));
         $ids_arr = $wpdb->get_col($query);
         if (is_array($ids_arr) && count($ids_arr) > 0) {
             $ids = implode(',', $ids_arr);

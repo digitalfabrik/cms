@@ -31,7 +31,7 @@ class URE_Posts_View_Access {
 
     
     public function add_toolbar_buttons() {
-        if (current_user_can(URE_Content_View_Restrictions::view_posts_access_cap)) {
+        if ( current_user_can( URE_Content_View_Restrictions::VIEW_POSTS_ACCESS_CAP ) ) {
             $button_title = esc_html__('Prohibit view selected posts', 'user-role-editor');
             $button_label = esc_html__('Posts View', 'user-role-editor');
 ?>                
@@ -75,18 +75,19 @@ class URE_Posts_View_Access {
             return;
         }
         
-        if (!current_user_can(URE_Content_View_Restrictions::view_posts_access_cap)) {
-            $this->lib->set_notification( esc_html__('URE: you have not enough permissions to use this add-on.', 'user-role-editor') );
+        $editor = URE_Editor::get_instance();
+        if (!current_user_can(URE_Content_View_Restrictions::VIEW_POSTS_ACCESS_CAP)) {
+            $editor->set_notification( esc_html__('URE: you have not enough permissions to use this add-on.', 'user-role-editor') );
             return;
         }
         $ure_object_type = filter_input(INPUT_POST, 'ure_object_type', FILTER_SANITIZE_STRING);
         if ($ure_object_type!=='role' && $ure_object_type!=='user') {
-            $this->lib->set_notification( esc_html__('URE: posts view access: Wrong object type. Data was not updated.', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: posts view access: Wrong object type. Data was not updated.', 'user-role-editor') );
             return;
         }
         $ure_object_name = filter_input(INPUT_POST, 'ure_object_name', FILTER_SANITIZE_STRING);
         if (empty($ure_object_name)) {
-            $this->lib->set_notification( esc_html__('URE: posts view access: Empty object name. Data was not updated', 'user-role-editor') );
+            $editor->set_notification( esc_html__('URE: posts view access: Empty object name. Data was not updated', 'user-role-editor') );
             return;
         }
                         
@@ -96,7 +97,7 @@ class URE_Posts_View_Access {
             URE_Content_View_Restrictions_Controller::save_access_data_for_user($ure_object_name);
         }
         
-        $this->lib->set_notification( esc_html__('URE: posts view access: Data was updated successfully', 'user-role-editor') );
+        $editor->set_notification( esc_html__('URE: posts view access: Data was updated successfully', 'user-role-editor') );
     }
     // end of update_data()                                           
         

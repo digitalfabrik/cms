@@ -75,6 +75,9 @@ class URE_Widgets_Admin_Access {
         $widgets = $this->controller->get_all_widgets();
         $this->unregistered_widgets = array();
         foreach($this->blocked['widgets'] as $widget) {
+            if ( !isset( $widgets[$widget] ) ) {
+                continue;
+            }
             $this->unregistered_widgets[$widget] = $widgets[$widget]->id_base;
             unregister_widget($widget);            
         }        

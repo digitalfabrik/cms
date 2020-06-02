@@ -176,7 +176,7 @@ class URE_Admin_Menu_Hashes {
         $multisite = $lib->get('multisite');
         if ($multisite) {            
             $old_blog = $wpdb->blogid;
-            $blog_ids = $lib->get('blog_ids');
+            $blog_ids = $lib->get_blog_ids();
             foreach ($blog_ids as $blog_id) {
                 switch_to_blog($blog_id);
                 if (self::is_conversion_needed()) {

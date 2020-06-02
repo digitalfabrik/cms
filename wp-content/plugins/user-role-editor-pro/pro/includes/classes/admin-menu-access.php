@@ -35,7 +35,7 @@ class URE_Admin_Menu_Access {
         
         add_action('activated_plugin', 'URE_Admin_Menu_Copy::force_update');
         add_action('admin_menu', array($this, 'menu_glitches_cleanup'), 9998);
-        add_action('admin_menu', 'URE_Admin_Menu_Copy::update', 9999);  // Jetpack uses 998, MetaSlider - 9553. We should execute code later
+        add_action('admin_menu', 'URE_Admin_Menu_Copy::update', 9999999997);  // Jetpack uses 998, MetaSlider - 9553, FooGallery - 999999999. We should execute code as late as possible.
         add_action('admin_head', array($this, 'protect'), 101);
         add_action('customize_controls_init', array($this, 'redirect_blocked_urls'), 10);  // Especially for the customize.php URL        
         add_action('admin_bar_menu', array($this, 'replace_wp_admin_bar_my_sites_menu'), 19);
@@ -94,6 +94,28 @@ class URE_Admin_Menu_Access {
     // end of remove_prohibited_items()
   
     
+    // Remove every separator which is followed by another separator
+    public function remove_duplicated_separators() {
+    
+        global $menu;
+        
+        $count = 0;
+        foreach ($menu as $key=>$item) {            
+            if ( $item[4]=='wp-menu-separator' ) {
+              $count++;  
+            } else {
+                $count = 0;
+            }
+            if ( $count>1 ) {
+                unset( $menu[$key] ); 
+                $count = 0;
+            }
+        }
+        
+    }
+    // end of remove_duplicated_separators()
+    
+    
     /**
      * Some plugins incorrectly modify globals $menu/$submenu and users with changed permissions may get broken $menu/submenu$ structures.
      * This function fixes that, removing broken menu/submenu items.
@@ -117,8 +139,9 @@ class URE_Admin_Menu_Access {
         }
         
         $this->remove_prohibited_items();
+        
     }
-    // end of menu_glitches_cleanup
+    // end of menu_glitches_cleanup()
     
     
     /**
@@ -272,7 +295,7 @@ class URE_Admin_Menu_Access {
     // end relink_submenu
     
     
-    private function update_menu($key, $submenu_key, $submenu_copy) {
+    private function update_menu($key, $submenu_key, $submenu_copy, $blocked_menu_item) {
         global $menu, $submenu;
         
         if (!isset($submenu[$submenu_key])) {
@@ -281,7 +304,7 @@ class URE_Admin_Menu_Access {
             unset($submenu[$submenu_key]);
             unset($menu[$key]);   
         } elseif (count($submenu[$submenu_key])==1) { // submenu has the only item
-            if (isset($submenu[$submenu_key][0][2]) &&  $submenu[$submenu_key][0][2]==$submenu_key) {  // and submenu item has the same link as the blocked menu item
+            if ($blocked_menu_item && isset($submenu[$submenu_key][0][2]) &&  $submenu[$submenu_key][0][2]==$submenu_key) {  // and submenu item has the same link as the blocked menu item
                 // written for and tested with "Email Subscribers & Newsletters" (email-subscribers) plugin and similar, where top level menu item has the same link as the 1st submenu item, but has another user capability.
                 unset($submenu[$submenu_key]);
                 unset($menu[$key]);   
@@ -372,7 +395,7 @@ class URE_Admin_Menu_Access {
             // menus "Yith Plugins" with non-available capabilities (manage_options, install_plugins) stay available to the user.
             // Therefore we duplicate access checking here
             if (!current_user_can($menu_item[1])) {
-                $this->update_menu($key, $menu_item[2], $submenu_copy);
+                $this->update_menu($key, $menu_item[2], $submenu_copy, true);
                 $this->blocked_urls[] = $link;
                 continue;
             }
@@ -392,37 +415,16 @@ class URE_Admin_Menu_Access {
                 }
             }
             if ($blocked_menu_item || isset($this->submenu_modified[$menu_item[2]])) {
-                $this->update_menu($key, $menu_item[2], $submenu_copy);
+                $this->update_menu($key, $menu_item[2], $submenu_copy, $blocked_menu_item);
             }
         }
         
         $this->refresh_blocked_urls_transient();        
+        $this->remove_duplicated_separators();        
+        
     }
     // end of remove_blocked_menu_items()
-    
-        
-    protected function extract_command_from_url($url) {
-        
-        $path = parse_url($url, PHP_URL_PATH);
-        $path_parts = explode('/', $path);
-        $url_script = end($path_parts);
-        $url_query = parse_url($url, PHP_URL_QUERY);
-        
-        $command = $url_script;
-        if (!empty($url_query)) {
-            $command .= '?'. $url_query;
-        }
-        if (!empty($command)) {
-            $command = str_replace('&', '&amp;', $command);
-        } elseif($this->lib->is_right_admin_path()) {
-            $command = 'index.php';
-        }
-        
-        return $command;
-        
-    }
-    // end of extract_command_from_url()
-    
+                
     
     private function get_link_from_submenu_copy($subkey) {
         
@@ -458,6 +460,11 @@ class URE_Admin_Menu_Access {
                 $link = $menu_copy[$key1][3];
             }
             if (empty($link)) {
+                continue;
+            }
+            // in spite of all blocked URLs should be excluded from admin menu
+            // make another check to exclude incidents with endless redirection loop
+            if ( in_array( $link, $this->blocked_urls ) ) {
                 continue;
             }
             if (strpos($link, $site_admin_url)===false) {
@@ -565,6 +572,9 @@ class URE_Admin_Menu_Access {
         }
         
         foreach(array_keys($args_to_check) as $arg) {
+            if ($arg==='page') {
+                continue;
+            }
             if (!in_array($arg, $allowed_args[$page])) {
                 return false;
             }
@@ -889,7 +899,7 @@ class URE_Admin_Menu_Access {
             return;
         }
         
-        $command = $this->extract_command_from_url($_SERVER['REQUEST_URI']);
+        $command = $this->lib->extract_command_from_url( $_SERVER['REQUEST_URI'] );
         $item_id1 = URE_Admin_Menu::calc_menu_item_id('menu', $command);
         $item_id2 = URE_Admin_Menu::calc_menu_item_id('submenu', $command);        
         $command1 = strtolower($command);
@@ -910,7 +920,6 @@ class URE_Admin_Menu_Access {
             }                                    
         }
           
-        $command1 = strtolower($command);
         $url = $this->get_first_available_menu_item($command1!=='index.php');
         if (headers_sent()) {
 ?>
@@ -952,7 +961,7 @@ class URE_Admin_Menu_Access {
             return false;
         }
         
-        $command = $this->extract_command_from_url($menu_item->href);        
+        $command = $this->lib->extract_command_from_url( $menu_item->href );
                 
         return $command;
     }
@@ -963,7 +972,7 @@ class URE_Admin_Menu_Access {
         
         $current_user = wp_get_current_user();        
         $blocked = URE_Admin_Menu::load_data_for_user($current_user);                
-        $command = $this->extract_command_from_url($link);
+        $command = $this->lib->extract_command_from_url( $link );
         $item_id1 = URE_Admin_Menu::calc_menu_item_id('menu', $command);
         $item_id2 = URE_Admin_Menu::calc_menu_item_id('submenu', $command);        
         if ($blocked['access_model']==1) {  // block selected

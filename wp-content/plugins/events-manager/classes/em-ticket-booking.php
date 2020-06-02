@@ -215,8 +215,18 @@ class EM_Ticket_Booking extends EM_Object{
 	 */
 	function delete(){
 		global $wpdb;
-		$sql = $wpdb->prepare("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE . " WHERE ticket_booking_id=%d", $this->ticket_booking_id);
-		$result = $wpdb->query( $sql );
+		if( $this->ticket_booking_id ){
+			$sql = $wpdb->prepare("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE . " WHERE ticket_booking_id=%d LIMIT 1", $this->ticket_booking_id);
+		}elseif( !empty($this->ticket_id) && !empty($this->booking_id) ){
+			//in the event a ticket_booking_id isn't available we can delete via the booking and ticket id
+			$sql = $wpdb->prepare("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE . " WHERE ticket_id=%d AND booking_id=%d LIMIT 1", $this->ticket_id, $this->booking_id);
+		}else{
+			//cannot delete ticket
+			$result = false;
+		}
+		if( !empty($sql) ){
+			$result = $wpdb->query( $sql );
+		}
 		return apply_filters('em_ticket_booking_delete', ($result !== false ), $this);
 	}
 	

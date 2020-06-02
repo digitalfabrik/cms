@@ -108,7 +108,11 @@ function em_bookings_event(){
 			</p>
 			<p>
 				<strong><?php esc_html_e('Location','events-manager'); ?></strong> :
-				<a class="row-title" href="<?php echo admin_url(); ?>post.php?action=edit&amp;post=<?php echo $EM_Event->get_location()->post_id ?>"><?php echo ($EM_Event->get_location()->location_name); ?></a> 
+				<?php if( $EM_Event->location_id == 0 ): ?>
+				<em><?php esc_html_e('No Location', 'events-manager'); ?></em>
+				<?php else: ?>
+				<a class="row-title" href="<?php echo admin_url(); ?>post.php?action=edit&amp;post=<?php echo $EM_Event->get_location()->post_id ?>"><?php echo ($EM_Event->get_location()->location_name); ?></a>
+				<?php endif; ?>
 			</p>
 		</div>
 		<h2><?php esc_html_e('Bookings','events-manager'); ?></h2>

@@ -9,11 +9,22 @@
 **/
 class URE_Front_End_Menu_View {
     
-    public static function show($item_id) {
-        
+    // Markers to check, if output for menu item with is ID was done already, to exclude duplicating output in case 
+    // do_action( 'wp_nav_menu_item_custom_fields'... was called more than 1 time
+    private static $done = array();
+    
+    public static function show($menu_id, $item) {
+                        
         if (!current_user_can('ure_front_end_menu_access')) {
             return;
         }
+        
+        $item_id = $item->ID;   // menu item ID
+        if ( isset( self::$done[$item_id] ) ) {
+            return;
+        }
+        
+        self::$done[$item_id] = true;
         
         $data = URE_Front_End_Menu_Controller::get($item_id);
         $roles = array();

@@ -2243,7 +2243,7 @@ class EM_Event extends EM_Object{
 						$replace_format = em_get_date_format() .' '. em_get_hour_format();
 						if( $result == '#_BOOKINGSCUTOFFDATE' ) $replace_format = em_get_date_format();
 						if( $result == '#_BOOKINGSCUTOFFTIME' ) $replace_format = em_get_hour_format();
-						$replace = $this->rsvp_end()->format($replace_format);
+						$replace = $this->rsvp_end()->i18n($replace_format);
 					}
 					break;
 				//Contact Person

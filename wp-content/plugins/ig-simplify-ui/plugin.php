@@ -20,3 +20,7 @@ add_action('admin_enqueue_scripts', [$igsimplifyui, 'enqueue_styles_and_scripts'
 add_action('admin_menu', function () {
 	remove_menu_page('edit.php');
 });
+
+add_action('admin_menu', function () {
+  remove_submenu_page( "tools.php", "tools.php" );
+});

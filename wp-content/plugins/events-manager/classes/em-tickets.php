@@ -30,10 +30,23 @@ class EM_Tickets extends EM_Object implements Iterator, Countable {
 		global $wpdb;
 		if( is_numeric($object) || (is_object($object) && in_array(get_class($object), array("EM_Event","EM_Booking"))) ){
 			$this->event_id = (is_object($object)) ? $object->event_id:$object;
+			$orderby_option = get_option('dbem_bookings_tickets_orderby');
+			$order_by = get_option('dbem_bookings_tickets_ordering') ? array('ticket_order ASC') : array();
+			$ticket_orderby_options = apply_filters('em_tickets_orderby_options', array(
+				'ticket_price DESC, ticket_name ASC'=>__('Ticket Price (Descending)','events-manager'),
+				'ticket_price ASC, ticket_name ASC'=>__('Ticket Price (Ascending)','events-manager'),
+				'ticket_name ASC, ticket_price DESC'=>__('Ticket Name (Ascending)','events-manager'),
+				'ticket_name DESC, ticket_price DESC'=>__('Ticket Name (Descending)','events-manager')
+			));
+			if( array_key_exists($orderby_option, $ticket_orderby_options) ){
+				$order_by[] = $orderby_option;
+			}else{
+				$order_by[] = 'ticket_price DESC, ticket_name ASC';
+			}
 		    if( is_object($object) && get_class($object) == 'EM_Booking' ){
-				$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE ticket_id IN (SELECT ticket_id FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$object->booking_id}') ORDER BY ".get_option('dbem_bookings_tickets_orderby');
+				$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE ticket_id IN (SELECT ticket_id FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$object->booking_id}') ORDER BY ".implode(',', $order_by);
 		    }else{
-		        $sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE event_id ='{$this->event_id}' ORDER BY ".get_option('dbem_bookings_tickets_orderby');
+		        $sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE event_id ='{$this->event_id}' ORDER BY ".implode(',', $order_by);
 		    }
 			$tickets = $wpdb->get_results($sql, ARRAY_A);
 			foreach ($tickets as $ticket){
@@ -147,6 +160,7 @@ class EM_Tickets extends EM_Object implements Iterator, Countable {
 		if( !empty($_POST['em_tickets']) && is_array($_POST['em_tickets']) ){
 			//get all ticket data and create objects
 			global $allowedposttags;
+			$order = 1;
 			foreach($_POST['em_tickets'] as $row => $ticket_data){
 			    if( $row > 0 ){
 			    	if( !empty($ticket_data['ticket_id']) && !empty($current_tickets[$ticket_data['ticket_id']]) ){
@@ -156,11 +170,13 @@ class EM_Tickets extends EM_Object implements Iterator, Countable {
 			    	}
 					$ticket_data['event_id'] = $this->event_id;
 					$EM_Ticket->get_post($ticket_data);
+					$EM_Ticket->ticket_order = $order;
 					if( $EM_Ticket->ticket_id ){
 						$this->tickets[$EM_Ticket->ticket_id] = $EM_Ticket;
 					}else{
 						$this->tickets[] = $EM_Ticket;
 					}
+				    $order++;
 			    }
 			}
 		}else{

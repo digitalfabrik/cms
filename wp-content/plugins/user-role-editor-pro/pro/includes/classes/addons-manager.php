@@ -49,7 +49,7 @@ class URE_Addons_Manager {
     // end of execute_once()
     
     
-    private function add($addon_id, $access_data_key = null, $replicator_title = '', $exportable=false) {
+    private function add( $addon_id, $access_data_key = null, $replicator_title = '', $exportable=false ) {
         
         $addon = new stdClass();
         $addon->id = $addon_id;
@@ -72,6 +72,9 @@ class URE_Addons_Manager {
         }
         if (class_exists('URE_Front_End_Menu_Access')) {
             $this->add('front_end_menu');
+        }
+        if ( class_exists( 'URE_Nav_Menus_Admin_Access' ) ) {
+            $this->add( 'nav_menus' );
         }
         if (class_exists('URE_Widgets_Admin_Controller')) {
             $exportable = apply_filters('ure_widgets_admin_exportable', true);
@@ -114,6 +117,9 @@ class URE_Addons_Manager {
         }
         if (class_exists('URE_Additional_Caps')) {
             $this->add('additional_caps');
+        }
+        if (class_exists('URE_Export_Roles_CSV')) {
+            $this->add('export_roles_csv');
         }
     }
     // end of init_addons_list()
@@ -175,7 +181,7 @@ class URE_Addons_Manager {
     // end of get_replicatable()
     
     
-    private function load_admin_menu_access_module() {
+    private function load_admin_menu() {
         
         $activate = $this->lib->get_option('activate_admin_menu_access_module', false);
         if (!empty($activate)) {
@@ -184,10 +190,10 @@ class URE_Addons_Manager {
         }
                 
     }
-    // end of load_admin_menu_access_module()
+    // end of load_admin_menu()
     
     
-    private function load_front_end_menu_access_module() {
+    private function load_front_end_menu() {
         
         $activate = $this->lib->get_option('activate_front_end_menu_access_module', false);
         if (!empty($activate)) {
@@ -196,10 +202,22 @@ class URE_Addons_Manager {
         }
                 
     }
-    // end of load_front_end_menu_access_module()
+    // end of load_front_end_menu()
     
     
-    private function load_widgets_admin_access_module() {
+    private function load_nav_menus() {
+        
+        $activate = $this->lib->get_option( 'activate_nav_menus_access_module', false );
+        if ( !empty($activate) ) {
+            new URE_Nav_Menus_Admin_Access();
+            $this->activate( 'nav_menus');
+        }
+                
+    }
+    // end of load_nav_menus()
+    
+    
+    private function load_widgets_admin() {
         
         if (!is_admin()) {
             return;
@@ -211,10 +229,10 @@ class URE_Addons_Manager {
         }
                 
     }
-    // end of load_widgets_admin_access_module()
+    // end of load_widgets_admin()
     
     
-    private function load_widgets_show_access_module() {
+    private function load_widgets_show() {
         
         $activate = $this->lib->get_option('activate_widgets_show_access_module', false);
         if (!empty($activate)) {                        
@@ -223,10 +241,10 @@ class URE_Addons_Manager {
         }
                 
     }
-    // end of load_widgets_admin_access_module()
+    // end of load_widgets_admin()
     
     
-    private function load_meta_boxes_access_module() {
+    private function load_meta_boxes() {
         
         if (!is_admin()) {
             return;
@@ -238,10 +256,10 @@ class URE_Addons_Manager {
         }
                 
     }
-    // end of load_widgets_access_module()    
+    // end of load_widgets()    
     
     
-    private function load_other_roles_access_module() {
+    private function load_other_roles() {
         
         if (!is_admin()) {
             return;
@@ -253,10 +271,10 @@ class URE_Addons_Manager {
         }
                 
     }
-    // end of load_widgets_access_module()
+    // end of load_other_roles()
 
     
-    private function load_posts_edit_access_module() {
+    private function load_posts_edit() {
         if (is_network_admin()) {
             return;
         }
@@ -267,26 +285,25 @@ class URE_Addons_Manager {
             $this->activate('posts_edit');
         }
     }
-    // end of load_posts_edit_access_module()
+    // end of load_posts_edit()
 
     
-    private function load_plugins_access_module() {
-        if (is_network_admin()) {
-            return;
-        }
+    private function load_plugins() {
+        
         if (!is_admin()) {
             return;
         }
         $activate = $this->lib->get_option('manage_plugin_activation_access', false);
-        if (!empty($activate)) {                                    
+        if (!empty($activate)) { 
             new URE_Plugins_Access();
             $this->activate('plugins');
         }
+        
     }
-    // end of load_plugins_access_module()
+    // end of load_plugins()
     
     
-    private function load_page_permissions_view_access_module() {
+    private function load_page_permissions_view() {
         if (!is_admin()) {
             return;
         }
@@ -296,10 +313,10 @@ class URE_Addons_Manager {
             $this->activate('page_permissions_view');
         }
     }
-    // end of load_page_permissions_view_access_module()
+    // end of load_page_permissions_view()
     
     
-    private function load_themes_activation_access_module() {
+    private function load_themes_activation() {
     
         $multisite = $this->lib->get('multisite');
         if (!$multisite) {
@@ -315,14 +332,14 @@ class URE_Addons_Manager {
         }
 
     }
-    // end of load_themes_activation_access_module()
+    // end of load_themes_activation()
     
 
     /**
      * Load Gravity Forms Access Restriction module
      * @return void
      */
-    private function load_gravity_forms_access_module() {
+    private function load_gravity_forms() {
         
         if (!is_admin()) {
             return;
@@ -337,10 +354,10 @@ class URE_Addons_Manager {
         }
         
     }
-    // end of load_gf_access_module()
+    // end of load_gravity_forms()
     
     
-    private function load_content_view_access_module() {
+    private function load_content_view() {
         
         if (is_network_admin()) {
             return;
@@ -353,10 +370,10 @@ class URE_Addons_Manager {
         }
         
     }
-    // end of load_content_view_access_module()
+    // end of load_content_view()
         
     
-    private function load_content_view_shortcode_access_module() {
+    private function load_content_view_shortcode() {
         
         if (is_network_admin()) {
             return;
@@ -369,10 +386,10 @@ class URE_Addons_Manager {
         }
         
     }
-    // end of load_content_view_access_module()
+    // end of load_content_view_shortcode()
     
     
-    private function load_additional_caps_access_module() {
+    private function load_additional_caps() {
         if (version_compare(get_bloginfo('version'), '4.9', '<')) {
             return;
         }
@@ -386,13 +403,25 @@ class URE_Addons_Manager {
         }
         
     }
-    // end of load_additional_caps_access_module()
+    // end of load_additional_caps()
     
     
+    private function load_export_roles_csv() {
+        
+        $activate = $this->lib->get_option('activate_export_roles_csv', false);
+        if ($activate) {            
+            new URE_Export_Roles_CSV();
+            $this->activate('export_roles_csv');
+        }
+        
+    }
+    // end of load_export_roles_csv()
+    
+        
     public function load_addons() {
 
         foreach ($this->addons as $addon) {
-            $method = 'load_'. $addon->id .'_access_module';
+            $method = 'load_'. $addon->id;
             if (method_exists($this, $method)) {
                 $this->$method();
             }

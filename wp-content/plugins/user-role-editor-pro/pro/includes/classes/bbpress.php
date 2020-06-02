@@ -1,6 +1,6 @@
 <?php
 /**
- * Support for bbPress user roles and capabilities editing
+ * Support for bbPress user roles and capabilities editing - Make bbPress roles editable
  * 
  * Project: User Role Editor Pro WordPress plugin
  * Author: Vladimir Garagulya
@@ -14,14 +14,13 @@ class URE_bbPress_Pro extends URE_bbPress {
     private $caps = null;
     
     
-    public function __construct(URE_Lib_Pro $lib) {
+    public function __construct() {
         
-        parent::__construct($lib);
+        parent::__construct();
         
-        add_action('plugins_loaded', array($this, 'detect_bbpress'), 8);                
         add_action('plugins_loaded', array($this, 'do_not_reload_roles'), 9);
         add_filter('bbp_get_caps_for_role', array($this, 'get_caps_for_role'), 10, 2);
-        add_action('wp_roles_init', array($this, 'add_forums_roles'), 10);
+        add_action( 'wp_roles_init', array($this, 'add_forums_roles'), 10 );
         add_filter('ure_capabilities_groups_tree', array($this, 'add_bbpress_caps_group'), 10, 1);
         add_filter('ure_custom_capability_groups', array($this, 'get_capability_group'), 10, 2);
         
@@ -143,7 +142,7 @@ class URE_bbPress_Pro extends URE_bbPress {
     
     public function do_not_reload_roles() {
         remove_action('bbp_loaded', 'bbp_filter_user_roles_option',  16);
-        remove_action('bbp_roles_init', 'bbp_add_forums_roles', 1);
+        remove_action( 'bbp_roles_init', 'bbp_add_forums_roles', 8 );
         remove_action('bbp_deactivation', 'bbp_remove_caps');
         register_uninstall_hook('bbpress/bbpress.php', 'bbp_remove_caps');
     }

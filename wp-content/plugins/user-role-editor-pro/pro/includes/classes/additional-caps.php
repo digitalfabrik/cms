@@ -198,7 +198,7 @@ class URE_Additional_Caps {
         add_filter('map_meta_cap', array($this, 'map_for_privacy'), 10, 2);
         
     }
-    // end of activgate_for_privacy()
+    // end of activate_for_privacy()
     
 }
 // end of URE_Additonal_Caps class

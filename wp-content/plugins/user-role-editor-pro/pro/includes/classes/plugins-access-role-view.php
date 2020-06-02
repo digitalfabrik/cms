@@ -41,10 +41,11 @@ class URE_Plugins_Access_Role_View extends URE_Plugins_Access_View {
     static public function get_html($args) {
         extract($args);
         $plugins_arr = explode(',', $plugins);
+        $network_admin = filter_input(INPUT_POST, 'network_admin', FILTER_SANITIZE_NUMBER_INT);
         ob_start();
 ?>
     <form name="ure_plugins_access_form" id="ure_plugins_access_form" method="POST"
-        action="<?php echo URE_WP_ADMIN_URL . URE_PARENT .'?page=users-'. URE_PLUGIN_FILE;?>" >
+        action="<?php echo URE_WP_ADMIN_URL . ($network_admin ? 'network/':'') . URE_PARENT .'?page=users-'.URE_PLUGIN_FILE;?>" >
 <?php        
         echo URE_Plugins_Access_View::get_model_html($selection_model);
         echo '<hr/>';
