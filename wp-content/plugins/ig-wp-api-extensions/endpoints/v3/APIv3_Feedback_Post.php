@@ -14,7 +14,7 @@ class APIv3_Feedback_Post extends APIv3_Feedback_Abstract {
 		];
 		$this->args['permalink'] = [
 			'validate_callback' => function($permalink) {
-				return $this->is_valid(url_to_postid(ltrim($permalink, '/')));
+				return $this->is_valid(url_to_postid($this::sanitize_permalink($permalink)));
 			}
 		];
 	}
