@@ -107,7 +107,11 @@ function ig_ds_parse_pages( $language ) {
 }
 
 function ig_ds_filter_resources ( $resource, $filters ) {
+    $host = "https://".$_SERVER['SERVER_NAME'];
+    $len_host = strlen( $host );
     foreach ( $filters as $filter ) {
+        if ( substr( $resource, 0, 1 ) != "/" && substr( $resource, 0, $len_host ) != $host )
+            return false;
         if ( substr( $resource, -(strlen($filter))) == $filter )
             return true;
     }
