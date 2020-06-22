@@ -25,6 +25,14 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 		];
 	}
 
+  public function sanitize_permalink($permalink) {
+		$host = "https://".$_SERVER['SERVER_NAME'];
+		if( substr($permalink, 0, strlen($host)) != $host ) {
+			$permalink = $host.$permalink;
+		}
+		return $permalink;
+  }
+
 	public function put_feedback(WP_REST_Request $request) {
 		$text = $request->get_param('comment');
 		$rating = $request->get_param('rating');
@@ -45,7 +53,7 @@ abstract class APIv3_Feedback_Abstract extends APIv3_Base_Abstract {
 		 */
 		if (static::TYPE === 'post') {
 			$id = $request->get_param('id');
-			$permalink = $request->get_param('permalink');
+			$permalink = $this::sanitize_permalink($request->get_param('permalink'));
 			/*
 			 * Throw an error if both id and permalink are missing
 			 */
