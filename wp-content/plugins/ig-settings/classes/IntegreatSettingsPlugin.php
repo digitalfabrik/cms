@@ -265,6 +265,7 @@ class IntegreatSettingsPlugin {
 						alias = 'events' OR
 						alias = 'push_notifications' OR
 						alias = 'tunews' OR
+						alias = 'pois' OR
 						alias = 'logo' OR
 						alias = 'aliases' OR
 						alias = 'longitude' OR
