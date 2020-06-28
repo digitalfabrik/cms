@@ -21,7 +21,7 @@ require_once __DIR__ . '/classes/database.php';
  */
 function fb_pn_menu() {
   if (class_exists('IntegreatSettingsPlugin')) {
-    $result = apply_filters('ig-settings-api', null));
+    $result = apply_filters('ig-settings-api', null);
     var_dump($result);
   }
 
