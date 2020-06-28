@@ -20,9 +20,16 @@ require_once __DIR__ . '/classes/database.php';
  * Add menu entries to single blog
  */
 function fb_pn_menu() {
-	load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
-	add_menu_page( __('Push Notifications', 'firebase-notifications'), __('Push Notifications', 'firebase-notifications'), 'create_users', 'fb-pn', 'write_firebase_notification', 'dashicons-email-alt', $position = 99 );
-	add_submenu_page( 'fb-pn', __('Settings'), __('Settings'), 'manage_options', 'fb-pn-settings', 'firebase_notification_settings' );
+  if (class_exists('IntegreatSettingsPlugin')) {
+    $result = apply_filters('ig-settings-api', null);
+  } else { 
+    return;
+  }
+  if ( $result["push_notifications"] == true ) {
+    load_plugin_textdomain( 'firebase-notifications', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
+    add_menu_page( __('Push Notifications', 'firebase-notifications'), __('Push Notifications', 'firebase-notifications'), 'create_users', 'fb-pn', 'write_firebase_notification', 'dashicons-email-alt', $position = 99 );
+    add_submenu_page( 'fb-pn', __('Settings'), __('Settings'), 'manage_options', 'fb-pn-settings', 'firebase_notification_settings' );
+  }
 }
 add_action( 'admin_menu', 'fb_pn_menu' );
 
