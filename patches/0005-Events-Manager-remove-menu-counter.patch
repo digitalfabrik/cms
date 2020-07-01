@@ -1,0 +1,32 @@
+From d9f8aad338f4f1a09061a2124237a9c9ba43e8ce Mon Sep 17 00:00:00 2001
+From: Sven Seeberg <mail@sven-seeberg.de>
+Date: Tue, 30 Jun 2020 16:06:19 +0200
+Subject: [PATCH] Remove Events Manager menu counter
+
+---
+ wp-content/plugins/events-manager/admin/em-admin.php | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/wp-content/plugins/events-manager/admin/em-admin.php b/wp-content/plugins/events-manager/admin/em-admin.php
+index 25743604..ca7ccada 100644
+--- a/wp-content/plugins/events-manager/admin/em-admin.php
++++ b/wp-content/plugins/events-manager/admin/em-admin.php
+@@ -18,7 +18,7 @@ function em_admin_menu(){
+    	}
+ 	//Count pending events
+ 	$events_num = '';
+-	$events_pending_count = EM_Events::count(array('status'=>0, 'scope'=>'all', 'blog'=>get_current_blog_id()));
++	$events_pending_count = 0;
+ 	//TODO Add flexible permissions
+ 	if($events_pending_count > 0){
+ 		$events_num = '<span class="update-plugins count-'.$events_pending_count.'"><span class="plugin-count">'.$events_pending_count.'</span></span>';
+@@ -303,4 +303,4 @@ function em_user_action_links( $actions, $user ){
+ 	return $actions;
+ }
+ add_filter('user_row_actions','em_user_action_links',10,2);
+-?>
+\ No newline at end of file
++?>
+-- 
+2.26.2
+
