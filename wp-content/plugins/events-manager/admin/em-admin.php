@@ -18,7 +18,7 @@ function em_admin_menu(){
    	}
 	//Count pending events
 	$events_num = '';
-	$events_pending_count = EM_Events::count(array('status'=>0, 'scope'=>'all', 'blog'=>get_current_blog_id()));
+	$events_pending_count = 0;
 	//TODO Add flexible permissions
 	if($events_pending_count > 0){
 		$events_num = '<span class="update-plugins count-'.$events_pending_count.'"><span class="plugin-count">'.$events_pending_count.'</span></span>';
