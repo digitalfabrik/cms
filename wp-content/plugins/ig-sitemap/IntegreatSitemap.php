@@ -21,6 +21,10 @@ class IntegreatSitemap {
 	}
 
 	public function get_sitemap() {
+		$site = get_sites(['ID' => get_current_blog_id()])[0];
+		if (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature || apply_filters('ig-site-disabled', $site)) {
+		    return new WP_Error( 'rest_no_route', __( 'No route was found matching the URL and request method' ), array( 'status' => 404 ) );
+		}
 		header('Content-Type: application/xml');
 		global $wpdb;
 		if (self::XHTML_ENABLED) {
