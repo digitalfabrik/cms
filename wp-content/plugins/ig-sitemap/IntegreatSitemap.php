@@ -68,7 +68,7 @@ class IntegreatSitemap {
 		global $wpdb;
 		echo '<?xml version="1.0" encoding="utf-8"?>'.PHP_EOL.'<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 		foreach (get_sites() as $site) {
-			if (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature) {
+			if (!$site->public || $site->spam || $site->deleted || $site->archived || $site->mature || apply_filters('ig-site-disabled', $site)) {
 				continue;
 			}
 			switch_to_blog($site->blog_id);
