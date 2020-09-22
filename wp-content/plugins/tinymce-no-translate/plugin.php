@@ -24,6 +24,14 @@ if ( is_admin() ) {
     } );
 }
 
+function allow_translate_attribute( $allowedposttags, $context ) {
+    if ( $context == 'post' ) {
+        $allowedposttags['span']['translate'] = true;
+    }
+    return $allowedposttags;
+}
+add_filter( 'wp_kses_allowed_html', 'allow_translate_attribute', 10, 2 );
+
 function add_tinymce_no_translate_plugin( $plugin_array ) {
     $plugin_array['no_translate_attribute'] = plugin_dir_url( __FILE__ ) . 'no-translate.js';
     return $plugin_array;
