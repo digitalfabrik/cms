@@ -1,20 +1,28 @@
-From: Jan-Ulrich Holtgrave <uholtgrave@googlemail.com>
-Date: Wed, 21 Oct 2020 12:50:19 +0200
-Subject: [PATCH] Add Date to RSS entry
+From a7889538f48604ad185f082a8cc432fe9da789e1 Mon Sep 17 00:00:00 2001
+From: Ponitac <uholtgrave@googlemail.com>
+Date: Wed, 21 Oct 2020 16:19:33 +0200
+Subject: [PATCH] Create Patch for Date Entry
 
 ---
+ .../plugins/admin-dashboard-rss-feed/admin-rss-feed.php      | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/wp-content/plugins/admin-dashboard-rss-feed/admin-rss-feed.php b/wp-content/plugins/admin-dashboard-rss-feed/admin-rss-feed.php
-index 01dd3723..bcab90a0 100644
+index 01dd3723..e069b485 100644
 --- a/wp-content/plugins/admin-dashboard-rss-feed/admin-rss-feed.php
 +++ b/wp-content/plugins/admin-dashboard-rss-feed/admin-rss-feed.php
-@@ -247,7 +247,8 @@ function wsx_rss_feed_create_box()
+@@ -246,8 +246,9 @@ function wsx_rss_feed_create_box()
+ 	    
  	    foreach($xml->channel->item as $entry) {
  	    	if($in <= $feed_count) {
- 	        	echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
+-	        	echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
 -	        	echo "<p>" . wp_html_excerpt($entry->description, 120) . "...</p></li>";
-+	        	echo "<p style='color:grey'>" . date_i18n("j. F Y", strtotime($entry->pubDate)) . "</p>";
-+               echo "<p>" . wp_html_excerpt($entry->description, 150) . "...</p></li>";
++				echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
++				echo "<p style='color:grey'>" . date_i18n("j. F Y", strtotime($entry->pubDate)) . "</p>";
++	        	echo "<p>" . wp_html_excerpt($entry->description, 150) . "...</p></li>";
  	        	$in++;
  	        }
  	        
+-- 
+2.25.1
+

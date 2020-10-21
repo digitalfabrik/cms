@@ -246,8 +246,9 @@ function wsx_rss_feed_create_box()
 	    
 	    foreach($xml->channel->item as $entry) {
 	    	if($in <= $feed_count) {
-	        	echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
-	        	echo "<p>" . wp_html_excerpt($entry->description, 120) . "...</p></li>";
+				echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
+				echo "<p style='color:grey'>" . date_i18n("j. F Y", strtotime($entry->pubDate)) . "</p>";
+	        	echo "<p>" . wp_html_excerpt($entry->description, 150) . "...</p></li>";
 	        	$in++;
 	        }
 	        
