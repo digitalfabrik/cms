@@ -200,3 +200,11 @@ function ig_custom_editor_paste( $config ) {
 	return $config;
 }
 add_filter( 'tiny_mce_before_init', 'ig_custom_editor_paste', 1111 );
+
+
+// By default, if a parent page is draft or private, it is not available as a parent. We want all pages to be available as parents.
+function my_attributes_dropdown_pages_args($dropdown_args) {
+    $dropdown_args['post_status'] = array('publish','draft','private');
+    return $dropdown_args;
+}
+add_filter('page_attributes_dropdown_pages_args', 'my_attributes_dropdown_pages_args', 1, 1);
