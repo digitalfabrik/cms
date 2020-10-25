@@ -114,7 +114,7 @@ class FirebaseNotificationsService {
 		if( "" != $this->settings['fbn_title_prefix'] )
 			$title = $this->settings['fbn_title_prefix'].' '.$title;
 		$fields = array (
-			'to' => '/topics/' . ($this->settings['per_blog_topic'] == '1' ? (string)$blog_id . "-" . $language . "-" : "") . $group,
+			'to' => '/topics/' . ($this->settings['per_blog_topic'] == '1' ? str_replace('/','',$GLOBALS['path']) . "-" . $language . "-" : "") . $group,
 			'notification' => array (
 				'title' => $title,
 				'body' => $body
