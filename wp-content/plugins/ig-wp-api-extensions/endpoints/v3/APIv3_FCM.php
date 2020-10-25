@@ -9,7 +9,7 @@ class APIv3_FCM extends APIv3_Base_Abstract {
 			if ( $_GET['channel'] === Null ) {
 				$to = Null;
 			} else {
-				$to = get_current_blog_id() . '-' . ICL_LANGUAGE_CODE . '-' . $_GET['channel'];
+				$to = str_replace('/','',$GLOBALS['path']) . '-' . ICL_LANGUAGE_CODE . '-' . $_GET['channel'];
 			}
 			if ( $_GET['id'] === Null ) {
 				$id = Null;
