@@ -15,9 +15,12 @@ add_action('admin_menu', 'example_admin_menu');
 */
 function example_admin_menu() {
     load_plugin_textdomain( 'integreat-help', false, dirname( plugin_basename( __FILE__ ) ) . '/lang/' );
-    global $submenu;
-    $url = 'https://wiki.integreat-app.de/knowledgebase';
-    $submenu['tools.php'][] = array('<div id="wikiblank">'.__('Integreat Wiki').'</div>', 'edit_pages', $url);
+    add_menu_page( "Integreat Wiki", "Integreat Wiki", 'edit_pages', 'integreat-wiki', 'redirect_integreat_wiki', 'dashicons-lightbulb', $position = 99 );
+}
+
+function redirect_integreat_wiki(){
+    wp_redirect( "https://wiki.integreat-app.de/knowledgebase" );
+    exit;
 }
 
 add_action( 'admin_footer', 'make_wiki_blank' );
