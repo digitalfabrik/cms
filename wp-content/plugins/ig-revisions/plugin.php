@@ -144,7 +144,8 @@ add_filter( 'ig-cms-tree-view-status',  'ig_revisions_tree_view_status', 10, 2 )
  * @return array
  */
 function ig_tree_view_empty_content( $status, $post_id ) {
-	if ( get_post($post_id)->post_content == '' && !get_post_meta( $post_id, 'ig-attach-content-page', true) ){
+	
+	if ( get_post($post_id)->post_content == '' && !get_post_meta( $post_id, 'ig-attach-content-page', true) && count( get_posts( array('post_parent' => $post_id ) ) ) ){
 		$status[] = __('Empty Page', 'ig-empty-pages');
 	}
 	return $status;
