@@ -134,3 +134,23 @@ function ig_revisions_tree_view_status( $status, $post_id ) {
 	return $status;
 }
 add_filter( 'ig-cms-tree-view-status',  'ig_revisions_tree_view_status', 10, 2 );
+
+/**
+ * Appends a custom status in the tree view plugin for posts with an empty content. Hooks into
+ * custom Integreat hook.
+ *
+ * @param array $status array of status labels
+ * @param integer $post_id ID of the post item
+ * @return array
+ */
+function ig_revisions_tree_view_empty_content( $status, $post_id ) {
+
+	$content_post = get_post($post_id);
+
+	if ( empty( get_the_content() ) && !get_post_meta( $post_id, 'ig-attach-content-page', true) ){
+		$status[] = __('Empty', 'ig-revisions');
+	}
+
+	return $status;
+}
+add_filter( 'ig-cms-tree-view-status',  'ig_revisions_tree_view_empty_content', 10, 2 );
