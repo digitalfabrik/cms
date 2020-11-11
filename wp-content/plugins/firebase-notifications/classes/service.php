@@ -139,7 +139,7 @@ class FirebaseNotificationsService {
 			)
 		);
 		$fields = apply_filters( 'fcm_fields', $fields);
-		return json_encode ( $fields );
+		return json_encode ( $fields, JSON_UNESCAPED_UNICODE );
 	}
 
 
