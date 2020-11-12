@@ -10,7 +10,7 @@
 
 
 function ig_text_dir( $lang_code ) {
-	$rtl_languages = array('ar','fa','cbk');
+	$rtl_languages = array('ar','fa','ckb');
 	if(in_array($lang_code, $rtl_languages))
 		return "rtl";
 	else
