@@ -19,7 +19,7 @@ function example_admin_menu() {
 }
 
 function redirect_integreat_wiki(){
-    wp_redirect( "https://wiki.integreat-app.de/knowledgebase" );
+    wp_redirect( "https://wiki.integreat-app.de" );
     exit;
 }
 
