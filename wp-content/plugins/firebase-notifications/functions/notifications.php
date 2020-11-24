@@ -9,7 +9,7 @@ function write_firebase_notification() {
 		$languages = icl_get_languages();
 		$items = array();
 		foreach( $languages as $key => $value ) {
-			$items[$key]  = array( 'title' => $_POST['pn-title_'.$key], 'message' => $_POST['pn-message_'.$key], 'lang' => $key, 'translate' => $_POST['pn-translate'], 'group' => $_POST['fbn_groups'] );
+			$items[$key]  = array( 'title' => stripcslashes($_POST['pn-title_'.$key]), 'message' => stripcslashes($_POST['pn-message_'.$key]), 'lang' => $key, 'translate' => $_POST['pn-translate'], 'group' => $_POST['fbn_groups'] );
 		}
 		$fcm = new FirebaseNotificationsService();
 		$fcm->translate_send_notifications( $items );
