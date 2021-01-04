@@ -37,6 +37,8 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'edit_others_pages' => true,
 			'edit_private_pages' => true,
 			'edit_published_pages' => true,
+			'edit_others_posts' => true,
+			'edit_posts' => true,
 			'read_private_pages' => true,
 			'delete_pages' => true,
 			'delete_posts' => true,
@@ -46,6 +48,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'upload_files' => true,
 			'edit_files' => true,
 			'delete_others_posts' => true,
+			'create_pages' => true,
 			/* Profile */
 			'read' => true,
 			/* WPML */
@@ -53,6 +56,15 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'wpml_manage_languages' => true,
 			'wpml_manage_navigation' => true,
 			'wpml_manage_media_translation' => true,
+			'wpml_manage_sticky_links' => true,
+			'wpml_manage_string_translation' => true,
+			'wpml_manage_taxonomy_translation' => true,
+			'wpml_manage_theme_and_plugin_localization' => true,
+			'wpml_manage_translation_management' => true,
+			'wpml_manage_translation_options' => true,
+			'wpml_manage_troubleshooting' => true,
+			'wpml_manage_wp_menus_sync' => true,
+
 			/* Events */
 			'publish_events' => true,
 			'delete_others_events' => true,
@@ -60,6 +72,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'delete_events' => true,
 			'edit_events' => true,
 			'read_private_events' => true,
+			'create_events' => true,
 
 			'publish_recurring_events' => true,
 			'delete_others_recurring_events' => true,
@@ -87,6 +100,9 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'manage_disclaimer' => true,
 			/* Clickguide */
 			'manage_clickguide' => true,
+
+			'moderate_comments' => true,
+			'wp-piwik_read_stats' => true,
 		],
 		'organizer' => [
 			/* Pages */
@@ -121,6 +137,12 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'create_and_download_pdf' => true,
 		],
 		'trustworthy_organization' => [
+			/* Users */
+			'create_users' => false,
+			'edit_users' => false,
+			'delete_users' => false,
+			'promote_users' => false,
+			'list_users' => false,
 			/* Pages */
 			'edit_pages' => true,
 			'edit_others_pages' => true,
@@ -142,6 +164,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'publish_events' => true,
 			'delete_events' => true,
 			'edit_events' => true,
+			'create_events' => true,
 
 			'delete_recurring_events' => true,
 			'edit_recurring_events' => true,
@@ -182,6 +205,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			'wpml_manage_navigation' => true,
 			'wpml_manage_media_translation' => true,
 			/* Events */
+			'create_events' => true,
 			'publish_events' => true,
 			'delete_others_events' => true,
 			'edit_others_events' => true,
