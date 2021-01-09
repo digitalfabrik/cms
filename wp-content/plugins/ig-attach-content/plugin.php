@@ -110,7 +110,7 @@ function ig_ac_blogs_dropdown( $ajax = false ) {
 	$blog_id = get_post_meta( $_GET['post'], 'ig-attach-content-blog', true );
 	global $wpdb;
 	// get all blogs / instances (augsburg, regensburg, etc)
-	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY domain ASC";
+	$query = "SELECT blog_id FROM wp_blogs where blog_id > 1 ORDER BY path ASC";
 	$all_blogs = $wpdb->get_results($query);
 	$output = '<div id="div_ig_ac_metabox_instance">
 	<p style="font-weight:bold;" id="ig_ac_title">'.__('Select city', 'ig-attach-content').'</p>
