@@ -104,20 +104,20 @@ add_action('edit_post', 'ig_pc_save_meta_box');
 * @param str $data a JSON string containing the new page content
 */
 function ig_pc_save_page( WP_REST_Request $request ) {
-    $post_id = (int)$request->get_param( 'page_id' );
     $content = $request->get_param( 'content' );
     $token = $request->get_param( 'token' );
-
-    // First get the token for the page
-    $page_meta_token = get_post_meta( $post_id, 'ig_push_content_token', true );
-    $page_meta_review = get_post_meta( $post_id, 'ig_push_content_review', true );
-    // If the token does not match, abort
-    $denied = (int)get_post_meta( $post_id, 'ig_push_content_denied', true );
-    if ( $token != $page_meta_token or $denied > 5 ) {
-        update_post_meta( $post_id, 'ig_push_content_denied', $denied + 1 );
+    $args = array(
+        'meta_query' => array(
+            array(
+               'key' => 'ig_push_content_token',
+               'value' => $token,
+               'compare' => '=',
+            )
+        )
+    );
+    $query = new WP_Query($args);
+    if ( count($query->found_posts) != 1 ) {
         return array( "status" => "denied" );
-    } else {
-        update_post_meta( $post_id, 'ig_push_content_denied', 0 );
     }
 
     // allow filtering the data
