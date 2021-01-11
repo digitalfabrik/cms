@@ -104,21 +104,18 @@ add_action('edit_post', 'ig_pc_save_meta_box');
 * @param str $data a JSON string containing the new page content
 */
 function ig_pc_save_page( WP_REST_Request $request ) {
-    $post_id = (int)$request->get_param( 'page_id' );
-    $content = $request->get_param( 'content' );
-    $token = $request->get_param( 'token' );
-
-    // First get the token for the page
-    $page_meta_token = get_post_meta( $post_id, 'ig_push_content_token', true );
-    $page_meta_review = get_post_meta( $post_id, 'ig_push_content_review', true );
-    // If the token does not match, abort
-    $denied = (int)get_post_meta( $post_id, 'ig_push_content_denied', true );
-    if ( $token != $page_meta_token or $denied > 5 ) {
-        update_post_meta( $post_id, 'ig_push_content_denied', $denied + 1 );
-        return array( "status" => "denied" );
-    } else {
-        update_post_meta( $post_id, 'ig_push_content_denied', 0 );
+    foreach ($request->get_params() as $key => $value) {
+        $params = json_decode($key);
+        $content = $params->content;
+        $token = esc_sql($params->token);
     }
+    global $wpdb;
+    $query =  "SELECT post_id FROM " . $wpdb->prefix . "postmeta WHERE meta_value='" . $token . "' AND meta_key='ig_push_content_token'";
+    $results = $wpdb->get_results( $query );
+    if ( count($results) != 1 ) {
+        return array( "status" => "denied" );
+    }
+    $post_id = $results[0]->post_id;
 
     // allow filtering the data
     $data = apply_filters( 'ig_pc_update_page', $data );
