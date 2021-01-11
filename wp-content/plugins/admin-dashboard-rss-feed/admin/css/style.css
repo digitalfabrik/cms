@@ -1,0 +1,86 @@
+/* Plugin styles starts here */
+.wsx-log-wrap.clearfix {
+    clear: both;
+    overflow: hidden;
+}
+
+.wsx-log-wrap.clearfix a {
+    float: left;
+    margin: 5px 30px 0 0;
+}
+
+.wsx-rss-feed-widget1 img {
+    border: 1px solid #ddd;
+    border-radius: 100%;
+    display: inline-block;
+    float: left;
+    margin: 5px 30px 0 0;
+    height: 64px;
+    width: 64px;
+}
+
+.wsx_company_name {
+    display: inline-block;
+    float: left;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.wsx-rss-feed-widget1 li {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.wsx-rss-feed-widget1 li:last-child {
+    border-bottom: 0 none;
+    padding-bottom: 0;
+}
+
+.wsx_comp_name {
+    display: block;
+}
+
+.wsx_company_name > a {
+    font-size: 12px;
+}
+
+small.wsx-small {
+    color: #888;
+    display: inline-block;
+    margin-left: 10px;
+    margin-top: 6px;
+}
+
+.image-preview-wrapper>img {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    height: 64px;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 64px;
+}
+
+.wsx-log-wrap.clearfix > img {
+    float: left;
+    margin: 5px 30px 0 0;
+}
+
+.wsx-admin-notice.updated.notice.is-dismissible {
+    margin: 10px auto;
+    width: 68%;
+}
+
+.wsx-feed-list li {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+.wsx-feed-list li:last-child {
+    border-bottom: 0 none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+/* Plugin styles ends here */
+
