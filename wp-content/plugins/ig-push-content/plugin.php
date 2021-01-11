@@ -104,11 +104,9 @@ add_action('edit_post', 'ig_pc_save_meta_box');
 * @param str $data a JSON string containing the new page content
 */
 function ig_pc_save_page( WP_REST_Request $request ) {
-    foreach ($request->get_params() as $key => $value) {
-        $params = json_decode($key);
-        $content = $params->content;
-        $token = esc_sql($params->token);
-    }
+    $params = json_decode($request->get_body());
+    $content = $params->content;
+    $token = esc_sql($params->token);
     global $wpdb;
     $query =  "SELECT post_id FROM " . $wpdb->prefix . "postmeta WHERE meta_value='" . $token . "' AND meta_key='ig_push_content_token'";
     $results = $wpdb->get_results( $query );
