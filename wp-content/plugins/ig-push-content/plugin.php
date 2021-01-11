@@ -105,7 +105,7 @@ add_action('edit_post', 'ig_pc_save_meta_box');
 */
 function ig_pc_save_page( WP_REST_Request $request ) {
     foreach ($request->get_params() as $key => $value) {
-        $params = json_decode(str_replace("_", "", $key));
+        $params = json_decode($key);
         $content = $params->content;
         $token = esc_sql($params->token);
     }
