@@ -180,7 +180,7 @@ class FirebaseNotificationsDatabase {
         global $wpdb;
         $request = str_replace( '\"', '&quot;', $request );
         $request = str_replace( "'", "&#39;", $request );
-        $request = str_replace( array('\r\n', '\n'), "<br>", $request );
+        $request = addslashes( $request );
         $query = "INSERT INTO " . $wpdb->prefix . "fcm_messages (sent_message, returned_message) VALUES ('" . $request . "', '" . $answer . "')";
         if( $wpdb->query($query) ) {
             return true;
