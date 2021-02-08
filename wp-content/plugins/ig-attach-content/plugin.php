@@ -86,14 +86,16 @@ function ig_ac_save_meta_box( $post_id ) {
 	$key_position = 'ig-attach-content-position';
 	$key_blog = 'ig-attach-content-blog';
 	$key_page = 'ig-attach-content-page';
-	if ( -1 == $_POST[$key_blog] ) {
-		delete_post_meta( $post_id, $key_position);
-		delete_post_meta( $post_id, $key_blog);
-		delete_post_meta( $post_id, $key_page);
-	} else {
-		update_post_meta( $post_id, $key_position, $_POST[$key_position] );
-		update_post_meta( $post_id, $key_blog, $_POST[$key_blog] );
-		update_post_meta( $post_id, $key_page, $_POST[$key_page] );
+	if ( current_user_can( 'publish_pages' ) && $_POST["action"] == "editpost" ) {
+		if ( -1 == $_POST[$key_blog] && $_POST["action"] == "editpost" ) {
+			delete_post_meta( $post_id, $key_position);
+			delete_post_meta( $post_id, $key_blog);
+			delete_post_meta( $post_id, $key_page);
+		} else {
+			update_post_meta( $post_id, $key_position, $_POST[$key_position] );
+			update_post_meta( $post_id, $key_blog, $_POST[$key_blog] );
+			update_post_meta( $post_id, $key_page, $_POST[$key_page] );
+		}
 	}
 }
 add_action('save_post', 'ig_ac_save_meta_box');

@@ -83,7 +83,7 @@ function ig_pc_save_meta_box( $post_id ) {
     $key_token = 'ig_push_content_token';
     $key_require_review = 'ig_push_content_review';
     $key_denied = 'ig_push_content_denied';
-    if ( current_user_can( 'publish_pages' ) ) {
+    if ( current_user_can( 'publish_pages' ) && $_POST["action"] == "editpost" ) {
         if ( Null == $_POST[$key_token] ) {
             delete_post_meta( $post_id, $key_token);
             delete_post_meta( $post_id, $key_require_review);
