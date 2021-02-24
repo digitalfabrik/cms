@@ -32,21 +32,23 @@
 	define('REPL_PATH_NEW', "/");
 	$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
+	function now() {
+		$objDateTime = new DateTime('NOW');
+		return $objDateTime->format('c');
+	}
+
 	abstract class DjangoModel {
 		public $pk;
-		public $fields;
+		public $fields = array();
 		public static $pk_counter = 0;
 
-		function __construct($pk = null) {
+		function __construct( $pk = null ) {
 			if ( $pk == null )
-				$this->pk = self::pk_counter;
+				$this->pk = self::$pk_counter;
 			else
 				$this->pk = $pk;
 			self::$pk_counter ++;
-			$this->init_fields();
 		}
-
-		abstract function init_fields();
 
 		function is_valid() {
 			foreach ( $fields as $item ) {
@@ -60,28 +62,31 @@
 	class Region extends DjangoModel {
 		public $model = "cms.region";
 
-		function init_fields() {
-			$this->fields = array(
-				"name"=>null,
-				"slug"=>null,
-				"status"=>null,
-				"administrative_division"=>null,
-				"alises"=>null,
-				"events_enabled"=>null,
-				"chat_enabled"=>null,
-				"push_notifications_enabled"=>null,
-				"push_notification_channels"=>null,
-				"latitude"=>null,
-				"longitude"=>null,
-				"postal_code"=>null,
-				"admin_mail"=>null,
-				"created_date"=>null,
-				"last_updated"=>null,
-				"statistics_enabled"=>null,
-				"matomo_url"=>null,
-				"matomo_token"=>null,
-				"matomo_ssl_verify"=>null,
-			);
+		function __construct( $blog ) {
+			parent::__construct( $blog->blog_id );
+			$this->init_fields( $blog );
+		}
+
+		function init_fields( $blog ) {
+			$this->fields["name"] = $blog->get_blog_option( "blogname" );
+			$this->fields["slug"] = str_replace( "/", "", $blog->path );
+			$this->fields["aliases"] = $blog->get_integreat_setting( "aliases" );
+			$this->fields["status"] = ( $blog->get_integreat_setting( "hidden" ) == 1 ? "HIDDEN" : ( $blog->get_integreat_setting( "active" ) == 1 ? "ACTIVE" : "ARCHIVED" ) );
+			$this->fields["latitude"] = $blog->get_integreat_setting( "latitude" );
+			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
+			$this->fields["postal_code"] = $blog->get_integreat_setting( "plz" );
+			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : "MUNICIPALITY" );
+			$this->fields["events_enabled"] = true;
+			$this->fields["chat_enabled"] = true;
+			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
+			$this->fields["push_notification_channels"] = array("news");
+			$this->fields["admin_mail"] = "info@integreat-app.de";
+			$this->fields["created_date"] = now();
+			$this->fields["last_updated"] = now();
+			$this->fields["statistics_enabled"] = ( strpos( $blog->get_blog_option( "active_plugins" ), "wp-piwik" ) ? true : false );
+			$this->fields["matomo_url"] = $blog->get_blog_option( "wp-piwik_global-piwik_url" );
+			$this->fields["matomo_token"] = $blog->get_blog_option( "wp-piwik_global-piwik_token" );
+			$this->fields["matomo_ssl_verify"] = true;
 		}
 	}
 
@@ -187,19 +192,53 @@
 		}
 	}
 
-	/* Get all blog IDs */
-	$query = "SELECT blog_id FROM " . $table_prefix . "blogs";
-	$result = $db->query( $query );
-	while ( $row = $result->fetch_object() ) {
-		$blogs[] = $row->blog_id;
+	class WPBlog {
+		function __construct( $db, $blog_id, $path ) {
+			$this->db = $db;
+			$this->blog_id = $blog_id;
+			$this->path = $path;
+			if ( $blog_id == 1 ) {
+				$this->dbprefix = "wp_";
+			} else {
+				$this->dbprefix = "wp_".$blog_id."_";
+			}
+		}
+
+		function get_blog_option( $option_name ) {
+			$query = "SELECT option_value FROM " . $this->dbprefix . "options WHERE option_name='" . $option_name . "'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				return utf8_encode($row->option_value);
+			}
+		}
+
+		function get_integreat_setting( $alias ) {
+			$query = "SELECT value FROM " . $this->dbprefix . "ig_settings_config c LEFT JOIN wp_ig_settings s ON c.setting_id=s.id WHERE alias='$alias'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				return utf8_encode($row->value);
+			}
+		}
+
+		function get_postmeta( $post_id, $meta_key ) {
+			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id=$post_id AND meta_key='" . $meta_key . "'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				return $row->option_value;
+			}
+		}
 	}
 
+	/* Get all blog IDs */
+	$query = "SELECT blog_id, path FROM " . $table_prefix . "blogs";
+	$result = $db->query( $query );
+	while ( $row = $result->fetch_object() ) {
+		$blogs[] = new WPBlog( $db, $row->blog_id, $row->path );
+	}
 	$fixtures = new DjangoFixtures();
 
-	/* First update the wp_options and wp_X_options tables */
-	foreach ( $blogs as $blog_id ) {
-		$region = new Region( $blog_id );
-		$region->fields["name"] = "foo";
+	foreach ( $blogs as $blog ) {
+		$region = new Region( $blog );
 		$fixtures->append( $region );
 	}
 
