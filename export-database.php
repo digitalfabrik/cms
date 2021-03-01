@@ -40,14 +40,16 @@
 	abstract class DjangoModel {
 		public $pk;
 		public $fields = array();
-		public static $pk_counter = 0;
+		public static $pk_counter = array();
 
 		function __construct( $pk = null ) {
+			if ( !array_key_exists( $this->model, self::$pk_counter ) )
+				self::$pk_counter[$this->model] = 0;
 			if ( $pk == null )
-				$this->pk = self::$pk_counter;
+				$this->pk = self::$pk_counter[$this->model];
 			else
 				$this->pk = $pk;
-			self::$pk_counter ++;
+			self::$pk_counter[$this->model] ++;
 		}
 
 		function is_valid() {
@@ -93,15 +95,20 @@
 	class Language extends DjangoModel {
 		public $model = "cms.language";
 
-		function init_fields() {
+		function __construct( $language ) {
+			parent::__construct();
+			$this->init_fields( $language );
+		}
+
+		function init_fields( $language ) {
 			$this->fields = array(
-				"code"=>null,
-				"english_name"=>null,
-				"native_name"=>null,
-				"text_direction"=>null,
+				"code"=>utf8_encode( $language["code"] ),
+				"english_name"=>utf8_encode( $language["english_name"] ),
+				"native_name"=>utf8_encode( $language["native_name"] ),
+				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "rtl" : "ltr"),
 				"table_of_contents"=>null,
-				"created_date"=>null,
-				"last_updated"=>null,
+				"created_date"=>now(),
+				"last_updated"=>now(),
 			);
 		}
 	}
@@ -227,6 +234,26 @@
 				return $row->option_value;
 			}
 		}
+
+		function get_languages() {
+			$query = "SELECT code, english_name, name AS native_name FROM " . $this->dbprefix ."icl_languages l LEFT JOIN " . $this->dbprefix . "icl_languages_translations t ON l.code=t.language_code WHERE t.display_language_code=l.code";
+			$result = $this->db->query( $query );
+
+			while ( $row = $result->fetch_object() ) {
+				$languages[$row->code] = array( "code"=>$row->code, "english_name"=>$row->english_name, "native_name"=>$row->native_name );
+			}
+			return $languages;
+		}
+
+		function get_available_languages() {
+			$query = "SELECT code, active FROM " . $this->dbprefix ."icl_locale_map m LEFT JOIN " . $this->dbprefix . "icl_languages l ON m.code=l.code";
+			$result = $this->db->query( $query );
+			$languages_active = array();
+			while ( $row = $result->fetch_object() ) {
+				$languages_active[$row->code] = $row->active;
+			}
+			return $languages_active;
+		}
 	}
 
 	/* Get all blog IDs */
@@ -236,11 +263,18 @@
 		$blogs[] = new WPBlog( $db, $row->blog_id, $row->path );
 	}
 	$fixtures = new DjangoFixtures();
+	$languages = array();
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
 		$fixtures->append( $region );
+		foreach ( $blog->get_languages() as $blog_language ) {
+			if( !array_key_exists( $blog_language["code"], $languages ) ) {
+				$languages[$blog_language["code"]] = $blog_language;
+				$fixtures->append( new Language( $blog_language ) );
+			}
+		}
 	}
-
+	
 	echo($fixtures->dump());
 ?>
