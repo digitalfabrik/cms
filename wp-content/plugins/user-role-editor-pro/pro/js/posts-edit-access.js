@@ -11,10 +11,10 @@ jQuery(function() {
     // "Posts Edit" button at User Role Editor dialog
     jQuery('#ure_posts_edit_access_button').button({
         label: ure_data_posts_edit_access.posts_edit
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         ure_posts_edit_access_dialog_prepare();
-    });
+    }));
 
 });
 
@@ -83,21 +83,8 @@ function ure_posts_edit_access_dialog(data) {
       $('#dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
       
       $('#ure_posts_edit_access_container').html(data.html);
-      $('#ure_cb_select_all').click(ure_posts_edit_auto_select);
+
     });                                
     
-}
-
-
-function ure_posts_edit_auto_select(event) {
-    jQuery(function($) {
-        if (event.shiftKey) {
-            $('.ure-cb-column').each(function () {   // reverse selection
-                $(this).prop('checked', !$(this).prop('checked'));
-            });
-        } else {    // switch On/Off all checkboxes
-            $('.ure-cb-column').prop('checked', $('#ure_cb_select_all').prop('checked'));
-        }
-    });
 }
 

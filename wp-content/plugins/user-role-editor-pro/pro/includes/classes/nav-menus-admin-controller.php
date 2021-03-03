@@ -12,17 +12,7 @@
 class URE_Nav_Menus_Admin_Controller {
 
     const ACCESS_DATA_KEY = 'ure_nav_menus_access_data';
-    
-    
-    public function __construct() {
-        
-        $this->lib = URE_Lib_Pro::get_instance();
-        
-        add_action( 'ure_process_user_request', array($this, 'update_data') );
-        
-    }
-    // end of __construct()
-    
+            
         
     /**
      * Load Nav. Menus access data for role
@@ -79,11 +69,11 @@ class URE_Nav_Menus_Admin_Controller {
     // end of load_data_for_user()
 
     
-    private function get_access_data_from_post() {
+    private static function get_access_data_from_post() {
         
         $keys_to_skip = array('action', 'ure_nonce', '_wp_http_referer', 'ure_object_type', 'ure_object_name', 'user_role');
         $access_data = array();
-        foreach ( $_POST as $key=>$value ) {
+        foreach ( $_POST['values'] as $key=>$value ) {
             if ( in_array($key, $keys_to_skip) ) {
                 continue;
             }
@@ -95,9 +85,9 @@ class URE_Nav_Menus_Admin_Controller {
     // end of get_access_data_from_post()
         
     
-    private function save_access_data_for_role( $role_id ) {
+    private static function save_access_data_for_role( $role_id ) {
         
-        $access_for_role = $this->get_access_data_from_post();
+        $access_for_role = self::get_access_data_from_post();
         $access_data = get_option( self::ACCESS_DATA_KEY );
         if ( !is_array( $access_data ) ) {
             $access_data = array();
@@ -113,7 +103,7 @@ class URE_Nav_Menus_Admin_Controller {
     // end of save_access_data_for_role()
     
     
-    private function save_access_data_for_user( $user_login ) {
+    private static function save_access_data_for_user( $user_login ) {
         
 //      $access_for_user = $this->get_access_data_from_post();
         // TODO ...
@@ -122,7 +112,7 @@ class URE_Nav_Menus_Admin_Controller {
     // end of save_access_data_for_role()   
                     
     
-    public function get_allowed_roles($user) {
+    public static function get_allowed_roles($user) {
         $allowed_roles = array();
         if ( empty( $user ) ) {   // request for Role Editor - work with currently selected role
             $current_role = filter_input( INPUT_POST, 'current_role', FILTER_SANITIZE_STRING );
@@ -139,7 +129,7 @@ class URE_Nav_Menus_Admin_Controller {
      * Code was built on the base wp-insludes/nav-menu.php: wp_get_nav_menus()
      * @return array
      */
-    public function get_all_nav_menus() {
+    public static function get_all_nav_menus() {
         
         $args = array(
 		'hide_empty' => false,
@@ -152,36 +142,36 @@ class URE_Nav_Menus_Admin_Controller {
     // end of get_all_widgets()
         
     
-    public function update_data() {
+    public static function update_data() {
     
-        if ( !isset( $_POST['action'] ) || $_POST['action']!=='ure_update_nav_menus_access' ) {
-            return;
-        }
+        $answer = array('result'=>'error', 'message'=>'');                
         
-        $editor = URE_Editor::get_instance();
         if ( !current_user_can('ure_nav_menus_access') ) {
-            $editor->set_notification( esc_html__( 'URE: you do not have enough permissions to access this module.', 'user-role-editor' ) );
-            return;
+            $answer['message'] = esc_html__('URE: Insufficient permissions to use this add-on','user-role-editor');
+            return $answer;
         }
         
-        $ure_object_type = filter_input( INPUT_POST, 'ure_object_type', FILTER_SANITIZE_STRING );
+        $ure_object_type = ( isset( $_POST['values']['ure_object_type'] ) ) ? filter_var( $_POST['values']['ure_object_type'], FILTER_SANITIZE_STRING ) : false;
         if ( $ure_object_type!=='role' && $ure_object_type!=='user' ) {
-            $editor->set_notification( esc_html__( 'URE: widgets access: Wrong object type. Data was not updated.', 'user-role-editor' ) );
-            return;
+            $answer['message'] = esc_html__( 'URE: Nav Menus access: Wrong object type. Data was not updated.', 'user-role-editor' );
+            return $answer;
         }
-        $ure_object_name = filter_input( INPUT_POST, 'ure_object_name', FILTER_SANITIZE_STRING );
+        $ure_object_name = isset( $_POST['values']['ure_object_name'] ) ? filter_var( $_POST['values']['ure_object_name'], FILTER_SANITIZE_STRING ) : false;
         if ( empty( $ure_object_name ) ) {
-            $editor->set_notification( esc_html__( 'URE: widgets access: Empty object name. Data was not updated', 'user-role-editor' ) );
-            return;
+            $answer['message'] = esc_html__( 'URE: Nav Menus access: Empty object name. Data was not updated', 'user-role-editor' );
+            return $answer;
         }
                         
         if ( $ure_object_type=='role' ) {
-            $this->save_access_data_for_role( $ure_object_name );
+            self::save_access_data_for_role( $ure_object_name );
         } else {
-            $this->save_access_data_for_user( $ure_object_name );
+            self::save_access_data_for_user( $ure_object_name );
         }
         
-        $editor->set_notification( esc_html__( 'Nav. menus access: data was updated successfully', 'user-role-editor' ) );
+        $answer['result'] = 'success';
+        $answer['message'] = esc_html__( 'Nav. menus access: data was updated successfully', 'user-role-editor' );
+        
+        return $answer;
     }
     // end of update_data()
         

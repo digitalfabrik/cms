@@ -23,7 +23,7 @@ class URE_Import_Roles_View {
         </div>      
 <?php		
 	if (is_multisite() && is_main_site( get_current_blog_id() ) && is_super_admin()) {
-			$hint = esc_html__('If checked, then apply action to ALL sites of this Network');
+            $hint = esc_html__('If checked, then apply action to ALL sites of this Network');
 ?>
         <div style="clear: left; padding:10px;" id="ure_import_to_all_div">
             <input type="checkbox" name="ure_import_to_all" id="ure_import_to_all" value="1" 

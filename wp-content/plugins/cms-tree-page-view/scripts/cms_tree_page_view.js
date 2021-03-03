@@ -279,7 +279,7 @@ jQuery(function($) {
 		// set search url to include post type
 		treeOptionsTmp.search.ajax.url = ajaxurl + CMS_TPV_AJAXURL + CMS_TPV_VIEW  + '&cms-tpv-nonce=' + window.CMS_TPV_NONCE + "&post_type=" + cms_tpv_get_post_type(this);
 
-		$elm.bind("search.jstree", function (event, data) {
+		$elm.on("search.jstree", function (event, data) {
 			if (data.rslt.nodes.length === 0) {
 				// no hits. doh.
 				$(this).closest(".cms_tpv_wrapper").find(".cms_tree_view_search_form_no_hits").fadeIn("fast");
@@ -287,7 +287,7 @@ jQuery(function($) {
 		});
 
 		// whole tre loaded
-		$elm.bind("loaded.jstree", cms_tpv_tree_loaded);
+		$elm.on("loaded.jstree", cms_tpv_tree_loaded);
 
 		$elm.jstree(treeOptionsTmp);
 
@@ -612,7 +612,7 @@ jQuery(document).on("mouseenter", "div.cms_tpv_container", function(e) {
  */
 function cms_tpv_bind_clean_node() {
 
-	cms_tpv_tree.bind("move_node.jstree", function (event, data) {
+	cms_tpv_tree.on("move_node.jstree", function (event, data) {
 		var nodeBeingMoved = data.rslt.o; // noden vi flyttar
 		var nodeNewParent = data.rslt.np;
 		var nodePosition = data.rslt.p;
@@ -669,7 +669,7 @@ function cms_tpv_bind_clean_node() {
 
 	});
 
-	cms_tpv_tree.bind("clean_node.jstree", function(event, data) {
+	cms_tpv_tree.on("clean_node.jstree", function(event, data) {
 		var obj = (data.rslt.obj);
 		if (obj && obj != -1) {
 			obj.each(function(i, elm) {
@@ -720,11 +720,11 @@ function cms_tpv_bind_clean_node() {
 
 // Perform search when submiting form
 jQuery(document).on("submit", "form.cms_tree_view_search_form", function(e) {
+	e.preventDefault();
 
-	var $wrapper = jQuery(this).closest(".cms_tpv_wrapper");
+	var $wrapper = jQuery(this).parents(".cms_tpv_wrapper");
 	$wrapper.find(".cms_tpv_search_no_hits").hide();
-	var s = $wrapper.find(".cms_tree_view_search").attr("value");
-	s = jQuery.trim( s );
+	var s = $wrapper.find(".cms_tree_view_search").val().trim();
 
 	if (s) {
 		$wrapper.find(".cms_tree_view_search_form_no_hits").fadeOut("fast");
@@ -875,7 +875,7 @@ function cms_tvp_set_view(view, elm) {
 	var treeOptionsTmp = jQuery.extend(true, {}, treeOptions);
 	treeOptionsTmp.json_data.ajax.url = ajaxurl + CMS_TPV_AJAXURL + view  + '&cms-tpv-nonce=' + window.CMS_TPV_NONCE + "&post_type=" + cms_tpv_get_post_type(elm) + "&lang=" + cms_tpv_get_wpml_selected_lang(elm);
 
-	$wrapper.find(".cms_tpv_container").bind("loaded.jstree open_node.jstree", cms_tpv_tree_loaded);
+	$wrapper.find(".cms_tpv_container").on("loaded.jstree open_node.jstree", cms_tpv_tree_loaded);
 	$wrapper.find(".cms_tpv_container").jstree(treeOptionsTmp);
 
 }

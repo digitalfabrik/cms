@@ -14,6 +14,8 @@ class URE_Plugin_Presence {
         'duplicate-post'=>'duplicate-post/duplicate-post.php',
         'enable-media-replace'=>'enable-media-replace/enable-media-replace.php',
         'eventon'=>'eventON/eventon.php',
+        'foogallery'=>'foogallery/foogallery.php',
+        'foogallery-premium'=>'foogallery-premium/foogallery.php',
         'global-content-blocks'=>'global-content-blocks/global-content-blocks.php',
         'gravity-forms'=>'gravityforms/gravityforms.php',
         'ninja-forms'=>'ninja-forms/ninja-forms.php',

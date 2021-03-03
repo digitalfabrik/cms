@@ -343,7 +343,7 @@ class URE_Meta_Boxes {
             return;
         }
         
-        wp_register_script( 'ure-gutenberg', plugins_url( '/pro/js/gutenberg.js', URE_PLUGIN_FULL_PATH ), array(), true, true );
+        wp_register_script( 'ure-gutenberg', plugins_url( '/pro/js/gutenberg.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION, true );
         wp_enqueue_script ( 'ure-gutenberg' );
         wp_localize_script( 'ure-gutenberg', 'ure_pro_data', 
                 array(

@@ -1,0 +1,2905 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: User Role Editor Pro v. 4.59.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-01-20 15:08+0100\n"
+"PO-Revision-Date: 2021-01-26 09:04+0700\n"
+"Last-Translator: Thorsten Wollenhöfer <thorsten.wollenhoefer@gmail.com>\n"
+"Language-Team: Thorsten Wollenhöfer <thorsten.wollenhoefer@gmail.com>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-WPHeader: user-role-editor-pro.php\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: includes/classes/capabilities-groups-manager.php:44
+msgid "Custom Post Types"
+msgstr "Benutzerdefinierte Beitragstypen"
+
+#: includes/classes/capabilities-groups-manager.php:75
+#: includes/classes/editor.php:1289 includes/classes/user-role-editor.php:565
+#: includes/classes/user-role-editor.php:596
+#: pro/includes/classes/user-role-editor-pro.php:190
+msgid "User Role Editor"
+msgstr "User Role Editor"
+
+#: includes/classes/capabilities-groups-manager.php:90
+msgid "WooCommerce"
+msgstr "WooCommerce"
+
+#: includes/classes/capabilities-groups-manager.php:91
+#: includes/classes/capabilities-groups-manager.php:111
+msgid "Core"
+msgstr "Kern"
+
+#: includes/classes/capabilities-groups-manager.php:110
+msgid "All"
+msgstr "Alle"
+
+#: includes/classes/capabilities-groups-manager.php:112
+#: includes/classes/user-role-editor.php:537 includes/settings-template.php:20
+msgid "General"
+msgstr "Allgemein"
+
+#: includes/classes/capabilities-groups-manager.php:113
+#: pro/includes/classes/admin-menu-access.php:1094
+msgid "Themes"
+msgstr "Themes"
+
+#: includes/classes/capabilities-groups-manager.php:114
+msgid "Posts"
+msgstr "Beiträge"
+
+#: includes/classes/capabilities-groups-manager.php:115
+msgid "Pages"
+msgstr "Seiten"
+
+#: includes/classes/capabilities-groups-manager.php:116
+#: pro/includes/classes/admin-menu-access.php:1100
+#: pro/includes/classes/plugins-access-role-view.php:32
+#: pro/includes/classes/plugins-access-role.php:50
+msgid "Plugins"
+msgstr "Erweiterungen"
+
+#: includes/classes/capabilities-groups-manager.php:117
+#: pro/includes/classes/admin-menu-access.php:1088
+msgid "Users"
+msgstr "Benutzer"
+
+#: includes/classes/capabilities-groups-manager.php:121
+#: includes/classes/user-role-editor.php:555 includes/settings-template.php:36
+msgid "Multisite"
+msgstr "Multiseite"
+
+#: includes/classes/capabilities-groups-manager.php:123
+msgid "Deprecated"
+msgstr "Veraltet"
+
+#: includes/classes/capabilities-groups-manager.php:126
+msgid "Custom capabilities"
+msgstr "Benutzerdefinierte Berechtigungen"
+
+#: includes/classes/capability.php:38
+msgid "Error: Capability name must contain latin characters and digits only!"
+msgstr "Fehler: Berechtigungsname darf nur Buchstaben und Zahlen enthalten!"
+
+#: includes/classes/capability.php:47
+msgid "Error: this capability is used internally by WordPress"
+msgstr "Fehler: Diese Berechtigung wird von WordPress intern benutzt"
+
+#: includes/classes/capability.php:54
+msgid "Error: this word is used by WordPress as a role ID"
+msgstr "Fehler: Dieses Wort wird von WordPress als Rollen-ID verwendet"
+
+#: includes/classes/capability.php:79 includes/classes/capability.php:190
+#: includes/classes/editor.php:772 includes/classes/editor.php:841
+#: includes/classes/editor.php:892 includes/classes/editor.php:938
+#: includes/classes/editor.php:1084 includes/classes/editor.php:1126
+#: includes/classes/user-role-editor.php:649
+msgid "Insufficient permissions to work with User Role Editor"
+msgstr "Unzureichende Berechtigung um mit Benutzerrolleneditor zu arbeiten"
+
+#: includes/classes/capability.php:84
+msgid "Wrong Request"
+msgstr "Falsche Anforderung"
+
+#: includes/classes/capability.php:99
+#, php-format
+msgid "Capability %s was added successfully"
+msgstr "Berechtigung %s wurde erfolgreich hinzugefügt"
+
+#: includes/classes/capability.php:101
+#, php-format
+msgid "Capability %s exists already"
+msgstr "Berechtigung %s existiert bereits"
+
+#: includes/classes/capability.php:197 includes/classes/capability.php:202
+msgid "There are no capabilities available for deletion!"
+msgstr "Es sind keine Berechtigungen zum Löschen vorhanden!"
+
+#: includes/classes/capability.php:208
+#, php-format
+msgid "Capability %s was removed successfully"
+msgstr "Berechtigung %s wurde erfolgreich entfernt"
+
+#: includes/classes/capability.php:212
+msgid "capabilities were removed successfully"
+msgstr "Berechtigungen wurden erfolgreich entfernt"
+
+#: includes/classes/editor.php:231 includes/classes/editor.php:233
+msgid "Error: "
+msgstr "Fehler: "
+
+#: includes/classes/editor.php:231
+msgid "Wrong request!"
+msgstr "Falsche Anfrage!"
+
+#: includes/classes/editor.php:233
+#: pro/includes/classes/widgets-show-view.php:146
+msgid "Role"
+msgstr "Rolle"
+
+#: includes/classes/editor.php:234
+msgid "does not exist"
+msgstr "existiert nicht"
+
+#: includes/classes/editor.php:724
+msgid "Role is updated successfully"
+msgstr "Rolle wurde erfolgreich aktualisiert"
+
+#: includes/classes/editor.php:726
+msgid "Roles are updated for all network"
+msgstr "Rollen wurden Netzwerkweit aktualisiert"
+
+#: includes/classes/editor.php:729
+msgid "Error occurred during role(s) update"
+msgstr "Fehler beim Aktualisieren der Rolle (n) aufgetreten"
+
+#: includes/classes/editor.php:733
+msgid "User capabilities are updated successfully"
+msgstr "Nutzerberechtigungen wurden erfolgreich aktualisiert"
+
+#: includes/classes/editor.php:735
+msgid "Error occurred during user update"
+msgstr "Bei der Benutzeraktualisierung ist ein Fehler aufgetreten"
+
+#: includes/classes/editor.php:805
+msgid "Error: Role ID is empty!"
+msgstr "Fehler: Rollen-ID ist leer!"
+
+#: includes/classes/editor.php:814
+msgid ""
+"Error: Role ID must contain latin characters, digits, hyphens or underscore "
+"only!"
+msgstr ""
+"Fehler: Rollen-ID darf nur Buchstaben, Zahlen, Bindestrich oder Unterstrich "
+"enthalten!"
+
+#: includes/classes/editor.php:820
+msgid ""
+"Error: WordPress does not support numeric Role name (ID). Add latin "
+"characters to it."
+msgstr ""
+"Fehler: WordPress unterstützt keine numerischen Rollennamen (ID). Nur "
+"Buchstaben verwenden."
+
+#: includes/classes/editor.php:854
+#, php-format
+msgid "Role %s exists already"
+msgstr "Rolle %s existiert bereits"
+
+#: includes/classes/editor.php:873
+msgid "Error is encountered during new role create operation"
+msgstr "Beim Erstellen der neuen Rolle trat ein Fehler auf"
+
+#: includes/classes/editor.php:880
+#, php-format
+msgid "Role %s is created successfully"
+msgstr "Rolle %s wurde erfolgreich erstellt"
+
+#: includes/classes/editor.php:950
+msgid "Error: Empty role display name is not allowed."
+msgstr "Fehler: Leerer Anzeigename einer Rolle ist nicht erlaubt."
+
+#: includes/classes/editor.php:957
+#, php-format
+msgid "Role %s does not exists"
+msgstr "Rolle %s existiert nicht"
+
+#: includes/classes/editor.php:970
+#, php-format
+msgid "Role %s is renamed to %s successfully"
+msgstr "Rolle %s wurde erfolgreich zu %s umbenannt"
+
+#: includes/classes/editor.php:1035
+msgid "Role does not exist"
+msgstr "Rolle existiert nicht"
+
+#: includes/classes/editor.php:1039
+msgid "You can not delete role"
+msgstr "Sie können die Rolle nicht löschen"
+
+#: includes/classes/editor.php:1065
+msgid "There are no roles for deletion"
+msgstr "Es sind keine Rollen zum Löschen vorhanden"
+
+#: includes/classes/editor.php:1093
+#: pro/includes/classes/import-single-role.php:389
+msgid "Wrong role ID"
+msgstr "Falsche Rollen-ID"
+
+#: includes/classes/editor.php:1102
+msgid "Unused roles are deleted successfully"
+msgstr "Unbenutzte Rollen wurden erfolgreich gel&ouml;scht"
+
+#: includes/classes/editor.php:1104
+#, php-format
+msgid "Role %s is deleted successfully"
+msgstr "Rolle %s wurde erfolgreich gel&ouml;scht"
+
+#: includes/classes/editor.php:1132
+msgid ""
+"This method is only for a single site of WordPress multisite installation."
+msgstr ""
+"Diese Methode ist nur für eine einzelne Website einer WordPress-Installation "
+"mit mehreren Websites geeignet."
+
+#: includes/classes/editor.php:1136
+msgid "Wrong request. Default role can not be empty"
+msgstr "Falsche Anfrage. Die Standardrolle darf nicht leer sein"
+
+#: includes/classes/editor.php:1148
+#, php-format
+msgid "Default role for new users is set to %s successfully"
+msgstr ""
+"Voreingestellte Rolle für neuen Nutzer auf %s wurde erfolgreich eingerichtet"
+
+#: includes/classes/editor.php:1150
+msgid "Error encountered during default role change operation"
+msgstr "Beim &Auml;ndern der voreingestellten Rolle trat ein Fehler auf"
+
+#: includes/classes/editor.php:1153
+msgid "Can not set Administrator role as a default one"
+msgstr "Administratorrolle als Standard kann nicht gesetzt werden"
+
+#: includes/classes/editor.php:1155
+msgid "This role does not exist - "
+msgstr "Diese Rolle existiert nicht - "
+
+#: includes/classes/editor.php:1200
+msgid "User Roles are restored to WordPress default values. "
+msgstr ""
+"Benutzerrollen wurden wieder auf voreingestellte WordPress-Werte "
+"zurückgesetzt. "
+
+#: includes/classes/editor.php:1328
+msgid "Error: wrong request"
+msgstr "Fehler: Falsche Anfrage"
+
+#: includes/classes/editor.php:1357
+msgid "Editor"
+msgstr "Editor"
+
+#: includes/classes/editor.php:1358
+msgid "Author"
+msgstr "Autor"
+
+#: includes/classes/editor.php:1359
+msgid "Contributor"
+msgstr "Mitarbeiter"
+
+#: includes/classes/editor.php:1360
+msgid "Subscriber"
+msgstr "Abonnent"
+
+#: includes/classes/editor.php:1362
+msgid "Switch themes"
+msgstr "Themes wechseln"
+
+#: includes/classes/editor.php:1363
+msgid "Edit themes"
+msgstr "Themes bearbeiten"
+
+#: includes/classes/editor.php:1364
+msgid "Activate plugins"
+msgstr "Plugin aktivieren"
+
+#: includes/classes/editor.php:1365
+msgid "Edit plugins"
+msgstr "Plugin bearbeiten"
+
+#: includes/classes/editor.php:1366
+msgid "Edit users"
+msgstr "Nutzer bearbeiten"
+
+#: includes/classes/editor.php:1367
+msgid "Edit files"
+msgstr "Dateien bearbeiten"
+
+#: includes/classes/editor.php:1368
+msgid "Manage options"
+msgstr "Einstellungen verwalten"
+
+#: includes/classes/editor.php:1369
+msgid "Moderate comments"
+msgstr "Kommentare moderieren"
+
+#: includes/classes/editor.php:1370
+msgid "Manage categories"
+msgstr "Kategorien verwalten"
+
+#: includes/classes/editor.php:1371
+msgid "Manage links"
+msgstr "Links verwalten"
+
+#: includes/classes/editor.php:1372
+msgid "Upload files"
+msgstr "Dateien hochladen"
+
+#: includes/classes/editor.php:1373
+#: pro/includes/classes/import-single-role.php:98
+msgid "Import"
+msgstr "Importieren"
+
+#: includes/classes/editor.php:1374
+msgid "Unfiltered html"
+msgstr "Ungefiltertes html"
+
+#: includes/classes/editor.php:1375
+msgid "Edit posts"
+msgstr "Beiträge bearbeiten"
+
+#: includes/classes/editor.php:1376
+msgid "Edit others posts"
+msgstr "Beiträge anderer bearbeiten"
+
+#: includes/classes/editor.php:1377
+msgid "Edit published posts"
+msgstr "Veröffentlichte Beiträge bearbeiten"
+
+#: includes/classes/editor.php:1378
+msgid "Publish posts"
+msgstr "Beiträge veröffentlichen"
+
+#: includes/classes/editor.php:1379
+msgid "Edit pages"
+msgstr "Seiten bearbeiten"
+
+#: includes/classes/editor.php:1380
+msgid "Read"
+msgstr "Lesen"
+
+#: includes/classes/editor.php:1381
+msgid "Level 10"
+msgstr "Level 10"
+
+#: includes/classes/editor.php:1382
+msgid "Level 9"
+msgstr "Level 9"
+
+#: includes/classes/editor.php:1383
+msgid "Level 8"
+msgstr "Level 8"
+
+#: includes/classes/editor.php:1384
+msgid "Level 7"
+msgstr "Level 7"
+
+#: includes/classes/editor.php:1385
+msgid "Level 6"
+msgstr "Level 6"
+
+#: includes/classes/editor.php:1386
+msgid "Level 5"
+msgstr "Level 5"
+
+#: includes/classes/editor.php:1387
+msgid "Level 4"
+msgstr "Level 4"
+
+#: includes/classes/editor.php:1388
+msgid "Level 3"
+msgstr "Level 3"
+
+#: includes/classes/editor.php:1389
+msgid "Level 2"
+msgstr "Level 2"
+
+#: includes/classes/editor.php:1390
+msgid "Level 1"
+msgstr "Level 1"
+
+#: includes/classes/editor.php:1391
+msgid "Level 0"
+msgstr "Level 0"
+
+#: includes/classes/editor.php:1392
+msgid "Edit others pages"
+msgstr "Seiten anderer bearbeiten"
+
+#: includes/classes/editor.php:1393
+msgid "Edit published pages"
+msgstr "Veröffentlichte Seiten bearbeiten"
+
+#: includes/classes/editor.php:1394
+msgid "Publish pages"
+msgstr "Seiten veröffentlichen"
+
+#: includes/classes/editor.php:1395
+msgid "Delete pages"
+msgstr "Seiten l&ouml;schen"
+
+#: includes/classes/editor.php:1396
+msgid "Delete others pages"
+msgstr "Seiten anderer l&ouml;schen"
+
+#: includes/classes/editor.php:1397
+msgid "Delete published pages"
+msgstr "Ver&ouml;ffentlichte Seiten l&ouml;schen"
+
+#: includes/classes/editor.php:1398
+msgid "Delete posts"
+msgstr "Beiträge l&ouml;schen"
+
+#: includes/classes/editor.php:1399
+msgid "Delete others posts"
+msgstr "Beiträge anderer l&ouml;schen"
+
+#: includes/classes/editor.php:1400
+msgid "Delete published posts"
+msgstr "Ver&ouml;ffentlichte Beiträge l&ouml;schen"
+
+#: includes/classes/editor.php:1401
+msgid "Delete private posts"
+msgstr "Private Beiträge l&ouml;schen"
+
+#: includes/classes/editor.php:1402
+msgid "Edit private posts"
+msgstr "Private Beiträge bearbeiten"
+
+#: includes/classes/editor.php:1403
+msgid "Read private posts"
+msgstr "Private Beiträge lesen"
+
+#: includes/classes/editor.php:1404
+msgid "Delete private pages"
+msgstr "Private Seiten l&ouml;schen"
+
+#: includes/classes/editor.php:1405
+msgid "Edit private pages"
+msgstr "Private Seiten bearbeiten"
+
+#: includes/classes/editor.php:1406
+msgid "Read private pages"
+msgstr "Private Seiten lesen"
+
+#: includes/classes/editor.php:1407
+msgid "Delete users"
+msgstr "Nutzer l&ouml;schen"
+
+#: includes/classes/editor.php:1408
+msgid "Create users"
+msgstr "Nutzer erstellen"
+
+#: includes/classes/editor.php:1409
+msgid "Unfiltered upload"
+msgstr "Ungefilterter Upload"
+
+#: includes/classes/editor.php:1410
+msgid "Edit dashboard"
+msgstr "Dashboard bearbeiten"
+
+#: includes/classes/editor.php:1411
+msgid "Update plugins"
+msgstr "Erweiterungen aktualisieren"
+
+#: includes/classes/editor.php:1412
+msgid "Delete plugins"
+msgstr "Erweiterungen l&ouml;schen"
+
+#: includes/classes/editor.php:1413
+msgid "Install plugins"
+msgstr "Erweiterungen installieren"
+
+#: includes/classes/editor.php:1414
+msgid "Update themes"
+msgstr "Themes aktualisieren"
+
+#: includes/classes/editor.php:1415
+msgid "Install themes"
+msgstr "Themen installieren"
+
+#: includes/classes/editor.php:1416
+msgid "Update core"
+msgstr "Systemkern aktualisieren"
+
+#: includes/classes/editor.php:1417
+msgid "List users"
+msgstr "Nutzer auflisten"
+
+#: includes/classes/editor.php:1418
+msgid "Remove users"
+msgstr "Nutzer entfernen"
+
+#: includes/classes/editor.php:1419
+msgid "Add users"
+msgstr "Nutzer hinzufügen"
+
+#: includes/classes/editor.php:1420
+msgid "Promote users"
+msgstr "Unterst&uuml;tze Nutzer"
+
+#: includes/classes/editor.php:1421
+msgid "Edit theme options"
+msgstr "Theme Einstellungen bearbeiten"
+
+#: includes/classes/editor.php:1422
+msgid "Delete themes"
+msgstr "Themes löschen"
+
+#: includes/classes/editor.php:1423
+#: pro/includes/classes/export-roles-csv.php:40
+#: pro/includes/classes/export-single-role.php:55
+#: pro/includes/classes/user-role-editor-pro.php:243
+msgid "Export"
+msgstr "Export"
+
+#: includes/classes/grant-roles.php:296 includes/classes/grant-roles.php:342
+msgid "Not enough permissions"
+msgstr "Keine ausreichenden Berechtigungen"
+
+#: includes/classes/grant-roles.php:302
+msgid "Can not edit user or invalid data at the users list"
+msgstr ""
+"Benutzer kann nicht bearbeitet werden oder ungültige Daten in der "
+"Benutzerliste"
+
+#: includes/classes/grant-roles.php:310
+msgid "Invalid primary role"
+msgstr "Ungültige Hauptrolle"
+
+#: includes/classes/grant-roles.php:323
+msgid "Invalid data at the other roles list"
+msgstr "Ungültige Daten in der Liste für weitere Rollen"
+
+#: includes/classes/grant-roles.php:332
+msgid "Roles were granted to users successfully"
+msgstr "Rollen wurden Benutzern erfolgreich erteilt"
+
+#: includes/classes/grant-roles.php:349
+msgid "Wrong request, valid user ID was missed"
+msgstr "Falsche Anfrage gültige Benutzer-ID wurde vermisst"
+
+#: includes/classes/grant-roles.php:355
+msgid "Requested user does not exist"
+msgstr "Angeforderter Benutzer existiert nicht"
+
+#: includes/classes/grant-roles.php:378
+msgid "Primary Role: "
+msgstr "Hauptrolle: "
+
+#: includes/classes/grant-roles.php:384 includes/classes/user-view.php:96
+msgid "&mdash; No role for this site &mdash;"
+msgstr "&mdash; Keine Rolle für diese Seite &mdash;"
+
+#: includes/classes/grant-roles.php:398
+msgid "Other Roles: "
+msgstr "Weitere Rollen: "
+
+#: includes/classes/grant-roles.php:441
+msgid "Grant Roles"
+msgstr "Rollen zuordnen"
+
+#: includes/classes/grant-roles.php:443 includes/classes/grant-roles.php:445
+msgid "Add role&hellip;"
+msgstr "Rolle hinzufügen&hellip;"
+
+#: includes/classes/grant-roles.php:448
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: includes/classes/grant-roles.php:450 includes/classes/grant-roles.php:452
+msgid "Revoke role&hellip;"
+msgstr "Rolle widerrufen&hellip;"
+
+#: includes/classes/grant-roles.php:455
+msgid "Revoke"
+msgstr "Widerrufen"
+
+#: includes/classes/grant-roles.php:487
+msgid "Grant roles to selected users"
+msgstr "Rollen den ausgewählten Benutzern zuordnen"
+
+#: includes/classes/grant-roles.php:488
+msgid "Select users to which you wish to grant roles!"
+msgstr "Wählen Sie die Benutzer aus, denen Sie Rollen zuordnen möchten!"
+
+#: includes/classes/grant-roles.php:489
+msgid "Select role(s) which you wish to grant!"
+msgstr "Wählen Sie die Rolle (n) aus, die Sie zuordnen möchten!"
+
+#: includes/classes/lib.php:380
+msgid "Version:"
+msgstr "Version:"
+
+#: includes/classes/lib.php:381
+msgid "Author's website"
+msgstr "Webseite des Autors"
+
+#: includes/classes/lib.php:382
+msgid "Plugin webpage"
+msgstr "Webseite der Erweiterung"
+
+#: includes/classes/lib.php:383
+msgid "Plugin download"
+msgstr "Erweiterung herunterladen"
+
+#: includes/classes/lib.php:384 includes/classes/user-role-editor.php:514
+msgid "Changelog"
+msgstr "Changelog"
+
+#: includes/classes/lib.php:385
+msgid "FAQ"
+msgstr "FAQ"
+
+#: includes/classes/role-additional-options.php:53
+msgid "Hide admin bar"
+msgstr "Admin-Leiste verbergen"
+
+#: includes/classes/role-additional-options.php:113
+msgid "Additional Options"
+msgstr "Zusätzliche Optionen"
+
+#: includes/classes/role-view.php:75
+msgid "None"
+msgstr "Keine/r"
+
+#: includes/classes/role-view.php:112
+msgid "Delete All Unused Roles"
+msgstr "Alle ungenutzten Rollen l&ouml;schen"
+
+#: includes/classes/role-view.php:212 includes/classes/role-view.php:223
+msgid "Role name (ID): "
+msgstr "Rollenname (ID): "
+
+#: includes/classes/role-view.php:214 includes/classes/role-view.php:225
+msgid "Display Role Name: "
+msgstr "Rollenname anzeigen: "
+
+#: includes/classes/role-view.php:216
+msgid "Make copy of: "
+msgstr "Kopie anfertigen von: "
+
+#: includes/classes/role-view.php:232
+msgid "Select Role:"
+msgstr "Rolle wählen:"
+
+#: includes/classes/role-view.php:257
+msgid "Capability name (ID): "
+msgstr "Berechtigungsname (ID): "
+
+#: includes/classes/role-view.php:369 includes/classes/user-view.php:154
+msgid "Show capabilities in human readable form"
+msgstr "Zeige Berechtigungen in lesbarer Form"
+
+#: includes/classes/role-view.php:379 includes/classes/screen-help.php:21
+#: includes/classes/user-view.php:164 includes/settings-template.php:78
+msgid "Show deprecated capabilities"
+msgstr "Zeige abgelehnte Berechtigungen"
+
+#: includes/classes/role-view.php:383
+#: pro/includes/classes/import-roles-view.php:26
+msgid "If checked, then apply action to ALL sites of this Network"
+msgstr "Wenn angehakt, dann gilt die Aktion f&uuml;r ALLE Seiten des Netzwerks"
+
+#: includes/classes/role-view.php:396 includes/classes/tools.php:30
+#: pro/includes/classes/import-roles-view.php:31
+msgid "Apply to All Sites"
+msgstr "Auf alle Seiten anwenden"
+
+#: includes/classes/role-view.php:413
+msgid "Select Role and change its capabilities:"
+msgstr "Wähle Rolle und ver&auml;ndere seine Berechtigungen:"
+
+#: includes/classes/screen-help.php:12 includes/classes/screen-help.php:43
+#: includes/classes/screen-help.php:62 includes/classes/screen-help.php:81
+msgid "User Role Editor Options page help"
+msgstr "Benutzerrolleneditor - Einstellungen Hilfeseite"
+
+#: includes/classes/screen-help.php:15 includes/settings-template.php:61
+msgid "Show Administrator role at User Role Editor"
+msgstr "Zeige Administrator-Rolle im Benutzerrolleneditor"
+
+#: includes/classes/screen-help.php:16
+msgid ""
+"turn this option on in order to make the \"Administrator\" role available at "
+"the User Role Editor roles selection drop-down list. It is hidden by default "
+"for security reasons."
+msgstr ""
+"Schalte diese Option ein um die \"Administrator\"-Rolle in der "
+"Benutzerrolleneditor-Rollenauswahlliste anzuzeigen. Dies ist aus "
+"Sicherheitsgründen in der Voreinstellung ausgeschaltet."
+
+#: includes/classes/screen-help.php:18 includes/settings-template.php:70
+msgid "Show capabilities in the human readable form"
+msgstr "Zeige Berechtigungen in lesbarer Form"
+
+#: includes/classes/screen-help.php:19
+msgid ""
+"automatically converts capability names from the technical form for internal "
+"use like \"edit_others_posts\" to more user friendly form, e.g. \"Edit "
+"others posts\"."
+msgstr ""
+"Automatische Umstellung der Berechtigungsbezeichnungen von der technischen "
+"Form wie \"edit_others_post\" in eine besser lesbare Variante wie \"Edit "
+"other posts\"."
+
+#: includes/classes/screen-help.php:22
+msgid ""
+"Capabilities like \"level_0\", \"level_1\" are deprecated and are not used "
+"by WordPress. They are left at the user roles for the compatibility purpose "
+"with old themes and plugins code. Turning on this option will show those "
+"deprecated capabilities."
+msgstr ""
+"Berechtigungen wie \"level_0\", \"level_1\" sind veraltet und werden von "
+"WordPress nicht verwendet. Sie werden auf den Benutzerrollen belassen, um "
+"die Kompatibilität mit alten Themes und Plugins zu gewährleisten. Wenn Sie "
+"diese Option einschalten, werden diese veralteten Fähigkeiten angezeigt."
+
+#: includes/classes/screen-help.php:25 includes/settings-template.php:86
+msgid "Confirm role update"
+msgstr "Bitte bestätigen Sie Rollenaktualisierung"
+
+#: includes/classes/screen-help.php:26
+msgid "Show confirmation dialog before save changes made to a current role."
+msgstr ""
+"Bestätigungsdialog anzeigen, bevor Änderungen an einer aktuellen Rolle "
+"gespeichert werden."
+
+#: includes/classes/screen-help.php:27 includes/settings-template.php:94
+msgid "Edit user capabilities"
+msgstr "Bearbeite Nutzerberechtigungen"
+
+#: includes/classes/screen-help.php:28
+msgid ""
+"If turned off - capabilities section of selected user is shown in readonly "
+"mode. Administrator can not assign capabilities to the user directly. He "
+"should do it using roles only."
+msgstr ""
+"Wenn ausgeschaltet - wird der Abschnitt über die Berechtigungen des "
+"ausgewählten Benutzers im schreibgeschützten Modus angezeigt. Der "
+"Administrator kann dem Benutzer keine Berechtigungen direkt zuweisen. Er "
+"sollte es nur mit Hilfe von Rollen tun."
+
+#: includes/classes/screen-help.php:47 includes/settings-template.php:141
+msgid "Count users without role"
+msgstr "Zähle Nutzer ohne Rolle"
+
+#: includes/classes/screen-help.php:48
+msgid ""
+"Show at the \"Users\" page a quant of users without role. Module allows to "
+"assign all of them an empty role \"No rights\", in order to look on the "
+"users list with role \"No rights\" at the separate tab then."
+msgstr ""
+"Zeige auf der \"Nutzer\"-Seite die Anzahl Nutzer ohne Rolle. Das Modul "
+"erlaubt, allen eine leere Rolle \"Keine Rechte\" zuzuweisen, damit k&ouml;"
+"nnen dann alle auf dem separaten Tab \"keine Rechte\" angezeigt werden."
+
+#: includes/classes/screen-help.php:65
+msgid "Other default roles for new registered user"
+msgstr "Andere voreingestellte Rollen f&uuml;r neuregistrierte Nutzer"
+
+#: includes/classes/screen-help.php:66
+msgid ""
+"select roles below to assign them to the new user automatically as an "
+"addition to the primary role. Note for multisite environment: take into "
+"account that other default roles should exist at the site, in order to be "
+"assigned to the new registered users."
+msgstr ""
+"W&auml;hle aus den untenstehenden Rollen um Sie dem neuen Nutzer automatisch "
+"zuzuweisen. Anmerkung bei Multisiteumgebung: Es k&ouml;nnen andere Standard-"
+"Nutzerollen existieren, die jedem neuen Nutzer zugewiesen sind."
+
+#: includes/classes/screen-help.php:84
+msgid "Allow non super-administrators to create, edit and delete users"
+msgstr ""
+"Den Nicht-Super-Administratoren erlauben, Benutzer zu erstellen, zu "
+"bearbeiten und zu löschen"
+
+#: includes/classes/screen-help.php:85
+msgid ""
+"Super administrator only may create, edit and delete users under WordPress "
+"multi-site by default. Turn this option on in order to remove this "
+"limitation."
+msgstr ""
+"Super-Administrator kann unter Wordpress Multi-Site standardmäßig nur "
+"erstellen, bearbeiten und löschen. Aktivieren Sie diese Option, um diese "
+"Einschränkung aufzuheben."
+
+#: includes/classes/settings.php:70 includes/classes/settings.php:90
+#: includes/classes/settings.php:140
+msgid "User Role Editor options are updated"
+msgstr "Benutzerrolleneditor Einstellungen wurden aktualisiert"
+
+#: includes/classes/settings.php:120
+msgid "Default Roles are updated"
+msgstr "Voreingestellte Rollen wurden aktualisiert"
+
+#: includes/classes/tools.php:19
+msgid "WARNING!"
+msgstr "WARNUNG!"
+
+#: includes/classes/tools.php:21
+msgid ""
+"Resetting will setup default user roles and capabilities from WordPress core."
+msgstr ""
+"Das Zurücksetzen stellt die Grundeinstellung für Rollen und Berechtigungen "
+"wie unmittelbar nach der Installation von WordPress wieder ein."
+
+#: includes/classes/tools.php:22
+msgid ""
+"If any plugins (such as WooCommerce, S2Member and many others) have changed "
+"user roles and capabilities during installation, those changes will be LOST!"
+msgstr ""
+"Falls Plugins wie WooCommerce, S2Members, etc.) die Benutzerrollen und "
+"Berechtigungen während der Installation verändert haben, gehen diese "
+"Änderungen VERLOREN!"
+
+#: includes/classes/tools.php:23
+msgid ""
+"For more information on how to undo undesired changes and restore plugins "
+"capabilities in case you lost them by mistake go to: "
+msgstr ""
+"Weitere Informationen, wie Sie unerwünschte Änderungen rückgängig machen und "
+"Plugins wiederherstellen können, falls Sie sie versehentlich verloren haben, "
+"finden Sie unter: "
+
+#: includes/classes/tools.php:31
+msgid ""
+"If checked, then apply action to ALL sites. Main site only is affected in "
+"other case."
+msgstr ""
+"Wenn diese Option aktiviert ist, wenden Sie die Aktion auf ALLE Websites an. "
+"Die Hauptseite ist nur in anderen Fällen betroffen."
+
+#: includes/classes/tools.php:36
+msgid "Reset Roles to its original state"
+msgstr "Rollen auf ihren ursprünglichen Status zurücksetzen"
+
+#: includes/classes/tools.php:36 includes/classes/user-role-editor.php:786
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#: includes/classes/tools.php:60
+msgid "Tools: Reset: User Roles were initialized"
+msgstr "Extras: Zurücksetzen: Benutzerrollen wurden initialisiert"
+
+#: includes/classes/user-other-roles.php:96
+#: includes/classes/user-other-roles.php:232
+#: pro/includes/classes/other-roles-access.php:79
+msgid "Other Roles"
+msgstr "Andere Rollen"
+
+#: includes/classes/user-other-roles.php:97
+msgid "Select additional roles for this user"
+msgstr "Wählen Sie zusätzliche Rollen für diesen Benutzer"
+
+#: includes/classes/user-other-roles.php:194
+#, php-format
+msgid "Denied: %s"
+msgstr "Verweigert: %s"
+
+#: includes/classes/user-other-roles.php:211
+#: includes/classes/user-role-editor.php:390
+msgid "Capabilities"
+msgstr "Berechtigungen"
+
+#: includes/classes/user-other-roles.php:218
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: includes/classes/user-other-roles.php:276
+msgid "Additional Capabilities"
+msgstr "Zusätzliche Berechtigungen"
+
+#: includes/classes/user-role-editor.php:287
+msgid "Change role for users without role"
+msgstr "Ändere Rollen für Nutzer ohne Rolle"
+
+#: includes/classes/user-role-editor.php:288
+msgid "To:"
+msgstr "An:"
+
+#: includes/classes/user-role-editor.php:289
+msgid "No rights"
+msgstr "Keine Rechte"
+
+#: includes/classes/user-role-editor.php:290
+msgid "Provide new role"
+msgstr "Ermögliche neue Rolle"
+
+#: includes/classes/user-role-editor.php:362
+#: includes/classes/user-role-editor.php:364
+msgid "You do not have permission to edit this user."
+msgstr "Sie haben nicht die Berechtigung diesen Nutzer zu bearbeiten."
+
+#: includes/classes/user-role-editor.php:488
+#: includes/classes/user-role-editor.php:501
+#: pro/includes/classes/admin-menu-access.php:1106
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/classes/user-role-editor.php:543 includes/settings-template.php:26
+msgid "Additional Modules"
+msgstr "Zusätzliche Module"
+
+#: includes/classes/user-role-editor.php:549 includes/settings-template.php:31
+msgid "Default Roles"
+msgstr "Voreingestellte Rollen"
+
+#: includes/classes/user-role-editor.php:616
+msgid ""
+"You do not have sufficient permissions to manage options for User Role "
+"Editor."
+msgstr ""
+"Sie haben keine ausreichende Berechtigung um Einstellungen im "
+"Benutzerrolleneditor vorzunehmen."
+
+#: includes/classes/user-role-editor.php:736
+#: includes/classes/user-role-editor.php:783
+msgid "Confirm"
+msgstr "Bestätigen"
+
+#: includes/classes/user-role-editor.php:737
+#: includes/classes/user-role-editor.php:784
+msgid "Yes"
+msgstr "Ja"
+
+#: includes/classes/user-role-editor.php:738
+#: includes/classes/user-role-editor.php:785
+msgid "No"
+msgstr "Nein"
+
+#: includes/classes/user-role-editor.php:739
+#: pro/includes/classes/admin-menu-view.php:41
+#: pro/includes/classes/meta-boxes-access.php:57
+#: pro/includes/classes/nav-menus-admin-view.php:44
+#: pro/includes/classes/other-roles-access.php:81
+#: pro/includes/classes/plugins-access-role.php:52
+#: pro/includes/classes/plugins-access-user.php:134
+#: pro/includes/classes/posts-edit-access-role.php:52
+#: pro/includes/classes/posts-view-access.php:66
+#: pro/includes/classes/user-role-editor-pro.php:241
+#: pro/includes/classes/widgets-admin-view.php:42
+#: pro/includes/classes/widgets-show-view.php:103
+msgid "Update"
+msgstr "Aktualisierung"
+
+#: includes/classes/user-role-editor.php:740
+msgid "Please confirm permissions update"
+msgstr "Bitte bestätigen Sie die Berechtigungsaktualisierung"
+
+#: includes/classes/user-role-editor.php:741
+msgid "Add New Role"
+msgstr "Neue Rolle hinzuf&uuml;gen"
+
+#: includes/classes/user-role-editor.php:742
+#: includes/classes/user-role-editor.php:747
+msgid "Rename Role"
+msgstr "Rolle umbenennen"
+
+#: includes/classes/user-role-editor.php:743
+msgid " Role name (ID) can not be empty!"
+msgstr " Rollen Name (ID) darf nicht leer sein!"
+
+#: includes/classes/user-role-editor.php:744
+msgid ""
+" Role name (ID) must contain latin characters, digits, hyphens or underscore "
+"only!"
+msgstr ""
+" Rollenname (ID) darf nur Buchstaben, Zahlen, Binde- oder Unterstrich "
+"enthalten!"
+
+#: includes/classes/user-role-editor.php:745
+msgid ""
+" WordPress does not support numeric Role name (ID). Add latin characters to "
+"it."
+msgstr ""
+" WordPress unterstützt keine numerischen Rollennamen (ID). Füge Buchstaben "
+"hinzu."
+
+#: includes/classes/user-role-editor.php:746
+msgid "Add Role"
+msgstr "Rolle hinzufügen"
+
+#: includes/classes/user-role-editor.php:748
+msgid "Delete Role"
+msgstr "Rolle löschen"
+
+#: includes/classes/user-role-editor.php:749
+#: pro/includes/classes/plugins-access-user.php:135
+#: pro/includes/classes/widgets-show-view.php:101
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: includes/classes/user-role-editor.php:750
+msgid "Add Capability"
+msgstr "Berechtigung hinzufügen"
+
+#: includes/classes/user-role-editor.php:751
+#: includes/classes/user-role-editor.php:755
+msgid "Delete Capability"
+msgstr "Berechtigung löschen"
+
+#: includes/classes/user-role-editor.php:752
+#: includes/classes/user-role-editor.php:792
+msgid "Continue?"
+msgstr "Fortsetzen?"
+
+#: includes/classes/user-role-editor.php:753
+msgid "Default Role"
+msgstr "Voreingestellte Rolle"
+
+#: includes/classes/user-role-editor.php:754
+msgid "Set New Default Role"
+msgstr "Setzt neue voreingestellte Rolle"
+
+#: includes/classes/user-role-editor.php:756
+msgid ""
+"Warning! Be careful - removing critical capability could crash some plugin "
+"or other custom code"
+msgstr ""
+"Achtung! Seien Sie vorsichtig - Beim Entfernen von entscheidenden "
+"Berechtigungen können Erweiterungen oder benutzerdefinierter Code abstürzen"
+
+#: includes/classes/user-role-editor.php:757
+msgid " Capability name (ID) can not be empty!"
+msgstr " Berechtigungsname (ID) darf nicht leer sein!"
+
+#: includes/classes/user-role-editor.php:758
+msgid ""
+" Capability name (ID) must contain latin characters, digits, hyphens or "
+"underscore only!"
+msgstr ""
+" Berechtigungsname (ID) darf nur Buchstaben, Zahlen, Binde- oder Unterstrich "
+"enthalten!"
+
+#: includes/classes/user-role-editor.php:787
+msgid "DANGER!"
+msgstr "VORSICHT!"
+
+#: includes/classes/user-role-editor.php:788
+msgid ""
+" Resetting will restore default user roles and capabilities from WordPress "
+"core."
+msgstr ""
+" Das Zurücksetzen setzt die Grundeinstellung des WordPress Kernels wieder in "
+"Kraft."
+
+#: includes/classes/user-role-editor.php:789
+msgid ""
+"If any plugins (such as WooCommerce, S2Member and many others) have changed "
+"user roles and capabilities during installation, all those changes will be "
+"LOST!"
+msgstr ""
+"Falls Plugins wie WooCommerce, S2Members, etc.) die Benutzerrollen und "
+"Berechtigungen während der Installation verändert haben, gehen diese "
+"Änderungen VERLOREN!"
+
+#: includes/classes/user-role-editor.php:790
+msgid ""
+"For more information on how to undo undesired changes and restore plugin "
+"capabilities go to"
+msgstr ""
+"Weitere Informationen, wie Sie unerwünschte Änderungen rückgängig machen und "
+"Plugins wiederherstellen können, falls Sie sie versehentlich verloren haben, "
+"finden Sie unter"
+
+#: includes/classes/user-view.php:59
+msgid "Switch&nbsp;To"
+msgstr "Wechsle&nbsp;zu"
+
+#: includes/classes/user-view.php:71
+msgid "Network Super Admin"
+msgstr "Netzwerk Superadmin"
+
+#: includes/classes/user-view.php:137
+msgid "Change capabilities for user"
+msgstr "&Auml;ndere Berechtigungen des Nutzers"
+
+#: includes/classes/user-view.php:175
+msgid "Primary Role:"
+msgstr "Hauptrolle:"
+
+#: includes/classes/user-view.php:181
+msgid "bbPress Role:"
+msgstr "bbPress Rolle:"
+
+#: includes/classes/user-view.php:190
+msgid "Other Roles:"
+msgstr "Andere Rollen:"
+
+#: includes/classes/view.php:289
+msgid "Working..."
+msgstr "In Bearbeitung …"
+
+#: includes/classes/view.php:320
+msgid "Group"
+msgstr "Gruppe"
+
+#: includes/classes/view.php:320
+msgid "Total"
+msgstr "Gesamt"
+
+#: includes/classes/view.php:320
+msgid "Granted"
+msgstr "Gewährt"
+
+#: includes/classes/view.php:333
+msgid "Quick filter:"
+msgstr "Schnellfilter:"
+
+#: includes/classes/view.php:336
+msgid "Granted Only"
+msgstr "Nur gewährt"
+
+#: includes/classes/view.php:339
+msgid "Columns:"
+msgstr "Spalten:"
+
+#: includes/settings-template.php:16
+msgid "User Role Editor - Options"
+msgstr "Benutzerrolleneditor - Einstellungen"
+
+#: includes/settings-template.php:42
+msgid "Tools"
+msgstr "Werkzeuge"
+
+#: includes/settings-template.php:46
+msgid "About"
+msgstr "Über"
+
+#: includes/settings-template.php:101
+msgid "Show capabilities in"
+msgstr "Zeige Berechtigungen in"
+
+#: includes/settings-template.php:107
+msgid "columns"
+msgstr "Spalten"
+
+#: includes/settings-template.php:121 includes/settings-template.php:156
+#: includes/settings-template.php:188 includes/settings-template.php:220
+#: pro/includes/classes/content-view-restrictions.php:175
+#: pro/includes/classes/themes-access.php:160
+msgid "Save"
+msgstr "Speichern"
+
+#: includes/settings-template.php:168
+msgid "Primary default role: "
+msgstr "Voreingestellte Standardrolle: "
+
+#: includes/settings-template.php:175
+msgid "Other default roles for new registered user: "
+msgstr "Andere voreingestellte Rollen für neuregistrierte Nutzer: "
+
+#: includes/settings-template.php:181
+msgid ""
+"Note for multisite environment: take into account that other default roles "
+"should exist at the site, in order to be assigned to the new registered "
+"users."
+msgstr ""
+"Anmerkung für Multisite-Umgebung: Bedenke, daß andere voreingestellte Rollen "
+"auf der Seite existieren müssen um diese neuregistrierten Nutzern zuordnen "
+"zu können."
+
+#: includes/settings-template.php:207
+msgid "Allow non super administrators to create, edit, and delete users"
+msgstr ""
+"Erlaube Nicht-Superadmins Nutzer zu erstellen, zu bearbeiten und zu löschen"
+
+#: pro/includes/classes/addons-manager.php:71
+msgid "Admin menu access restrictions"
+msgstr "Admin-Menü Zugriffsbeschränkungen"
+
+#: pro/includes/classes/addons-manager.php:81
+msgid "Widgets admin access restrictions"
+msgstr "Widgets-Zugangsbeschränkung für Admins"
+
+#: pro/includes/classes/addons-manager.php:84
+msgid "Widgets show access restrictions"
+msgstr "Zeige Zugangsbeschränkung für Widgets"
+
+#: pro/includes/classes/addons-manager.php:88
+msgid "Meta Boxes access restrictions"
+msgstr "Meta-Boxen Zugriffsbeschränkungen"
+
+#: pro/includes/classes/addons-manager.php:92
+msgid "Other Roles access restrictions"
+msgstr "Andere Rollen Zugriffsbeschränkungen"
+
+#: pro/includes/classes/addons-manager.php:96
+msgid "Posts/Pages edit access restrictions"
+msgstr "Zugriffsbeschränkungen für Beiträge/Seiten bearbeiten"
+
+#: pro/includes/classes/addons-manager.php:100
+msgid "Plugins activation/deactivation access restrictions"
+msgstr "Zugriffsbeschränkungen für Plugins für die Aktivierung / Deaktivierung"
+
+#: pro/includes/classes/addons-manager.php:113
+msgid "Posts/Pages view access restrictions"
+msgstr "Zugriffsbeschränkungen für Beiträge/Seiten ansehen"
+
+#: pro/includes/classes/admin-menu-access.php:1056
+msgid "My Sites"
+msgstr "Meine Seiten"
+
+#: pro/includes/classes/admin-menu-access.php:1069
+msgid "Network Admin"
+msgstr "Netzwerkverwaltung"
+
+#: pro/includes/classes/admin-menu-access.php:1076
+#: pro/includes/classes/admin-menu-access.php:1147
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: pro/includes/classes/admin-menu-access.php:1082
+msgid "Sites"
+msgstr "Seiten"
+
+#: pro/includes/classes/admin-menu-access.php:1158
+msgid "New Post"
+msgstr "Neuer Beitrag"
+
+#: pro/includes/classes/admin-menu-access.php:1168
+msgid "Manage Comments"
+msgstr "Kommentare verwalten"
+
+#: pro/includes/classes/admin-menu-access.php:1176
+msgid "Visit Site"
+msgstr "Zur Seite"
+
+#: pro/includes/classes/admin-menu-copy.php:245
+#: pro/includes/classes/admin-menu-copy.php:263
+#: pro/includes/classes/admin-menu-view.php:69
+msgid "Profile"
+msgstr "Profil"
+
+#: pro/includes/classes/admin-menu-copy.php:265
+#: pro/includes/classes/admin-menu-view.php:71
+msgid "Your Profile"
+msgstr "Dein Profil"
+
+#: pro/includes/classes/admin-menu-copy.php:268
+#: pro/includes/classes/admin-menu-copy.php:270
+#: pro/includes/classes/admin-menu-view.php:73
+#: pro/includes/classes/admin-menu-view.php:75
+msgid "Add New User"
+msgstr "Neuen Nutzer hinzufügen"
+
+#: pro/includes/classes/admin-menu-url-allowed-args.php:219
+msgid "Wrong request: Missed base URL"
+msgstr "Falsche Anfrage: Fehlende Basis-URL"
+
+#: pro/includes/classes/admin-menu-url-allowed-args.php:238
+msgid "Allowed arguments list was updated successfully"
+msgstr "Die Liste der zulässigen Argumente wurde erfolgreich aktualisiert"
+
+#: pro/includes/classes/admin-menu-view.php:39
+msgid "Admin Menu"
+msgstr "Admin Menü"
+
+#: pro/includes/classes/admin-menu-view.php:40
+msgid "Admin menu"
+msgstr "Admin-Menü"
+
+#: pro/includes/classes/admin-menu-view.php:154
+#: pro/includes/classes/admin-menu-view.php:371
+#: pro/includes/classes/admin-menu.php:179
+#: pro/includes/classes/nav-menus-admin-controller.php:150
+#: pro/includes/classes/widgets-admin-controller.php:311
+msgid "URE: Insufficient permissions to use this add-on"
+msgstr ""
+"Benutzerrolleneditor: Unzureichende Berechtigung um diese Erweiterung nutzen "
+"zu k&ouml;nnen"
+
+#: pro/includes/classes/admin-menu-view.php:189
+msgid "Block menu items:"
+msgstr "Blockiere Menüpunkte:"
+
+#: pro/includes/classes/admin-menu-view.php:191
+#: pro/includes/classes/other-roles.php:200
+#: pro/includes/classes/plugins-access-view.php:47
+#: pro/includes/classes/posts-view.php:178
+#: pro/includes/classes/widgets-admin-view.php:156
+#: pro/includes/classes/widgets-show-view.php:138
+msgid "Selected"
+msgstr "Ausgewählte"
+
+#: pro/includes/classes/admin-menu-view.php:193
+#: pro/includes/classes/other-roles.php:202
+#: pro/includes/classes/plugins-access-view.php:49
+#: pro/includes/classes/posts-view.php:180
+#: pro/includes/classes/widgets-admin-view.php:158
+#: pro/includes/classes/widgets-show-view.php:140
+msgid "Not Selected"
+msgstr "Nicht ausgewählte"
+
+#: pro/includes/classes/admin-menu-view.php:206
+msgid "Menu"
+msgstr "Menü"
+
+#: pro/includes/classes/admin-menu-view.php:207
+msgid "Submenu"
+msgstr "Untermenü"
+
+#: pro/includes/classes/admin-menu-view.php:208
+msgid "User capability"
+msgstr "Nutzerberechtigung"
+
+#: pro/includes/classes/admin-menu-view.php:209
+#: pro/includes/classes/admin-menu-view.php:390
+msgid "URL"
+msgstr "URL"
+
+#: pro/includes/classes/admin-menu-view.php:311
+msgid "Base URL"
+msgstr "Basis URL"
+
+#: pro/includes/classes/admin-menu-view.php:319
+msgid "Allowed arguments"
+msgstr "Erlaubte Argumente"
+
+#: pro/includes/classes/admin-menu-view.php:320
+msgid "(comma separated)"
+msgstr "(durch Kommata getrennt)"
+
+#: pro/includes/classes/admin-menu-view.php:328
+msgid "Extract from URL"
+msgstr "Von einer URL extrahieren"
+
+#: pro/includes/classes/admin-menu-view.php:389
+msgid "Menu item"
+msgstr "Menüpunkt"
+
+#: pro/includes/classes/admin-menu-view.php:391
+msgid "Allowed args"
+msgstr "Erlaubte Argumente"
+
+#: pro/includes/classes/admin-menu.php:185
+msgid ""
+"URE: administrator menu access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrolleneditor: Administrator Zugriff auf das Menü: Falscher "
+"Objekttyp. Die Daten wurden nicht aktualisiert."
+
+#: pro/includes/classes/admin-menu.php:191
+msgid "URE: administrator menu access: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrolleneditor: Administrator Zugriff auf das Menü: Leerer Objektname. "
+"Die Daten wurden nicht aktualisiert"
+
+#: pro/includes/classes/admin-menu.php:202
+msgid "Administrator menu access data was updated successfully"
+msgstr "Administrator-Menü Zugangsdaten wurden erfolgreich aktualisiert"
+
+#: pro/includes/classes/bbpress.php:183
+msgid "bbPress"
+msgstr "bbPress"
+
+#: pro/includes/classes/content-view-restrictions-editor.php:120
+msgid "Content View Restricitions"
+msgstr "Einschränkungen der Inhaltsansicht"
+
+#: pro/includes/classes/content-view-restrictions.php:141
+msgid "Content View Restrictions"
+msgstr "Einschränkungen Inhaltsansicht"
+
+#: pro/includes/classes/content-view-restrictions.php:173
+#: pro/includes/classes/front-end-menu-view.php:63
+#: pro/includes/content-view-restrictions-template.php:28
+msgid "Edit Roles List"
+msgstr "Bearbeite Rollenliste"
+
+#: pro/includes/classes/content-view-restrictions.php:174
+msgid "Roles List restrict/allow content view"
+msgstr "Rollen Liste Inhalt anzeigen einschränken/erlauben"
+
+#: pro/includes/classes/content-view-restrictions.php:176
+#: pro/includes/classes/themes-access.php:161
+#: pro/includes/classes/user-role-editor-pro.php:242
+msgid "Close"
+msgstr "Schließen"
+
+#: pro/includes/classes/export-roles-csv.php:33
+msgid "Export User Roles to CSV file"
+msgstr "Benutzerrollen in CSV-Datei exportieren"
+
+#: pro/includes/classes/export-roles-csv.php:36
+msgid "Roles will be exported only from the main site."
+msgstr "Rollen werden nur von der Hauptsite exportiert."
+
+#: pro/includes/classes/export-roles-csv.php:40
+msgid "Export user roles to CSV"
+msgstr "Exportieren Sie Benutzerrollen in CSV"
+
+#: pro/includes/classes/export-single-role.php:90
+msgid "Role ID is empty"
+msgstr "Rollen-ID ist leer"
+
+#: pro/includes/classes/export-single-role.php:95
+#: pro/includes/classes/import-single-role.php:301
+msgid "Wrong nonce. Action prohibitied."
+msgstr "Falscher NONCE. Aktion verboten."
+
+#: pro/includes/classes/export-single-role.php:100
+msgid "You do not have sufficient permissions to export roles."
+msgstr "Sie haben nicht die nötige Berechtigung, um Rollen zu exportieren."
+
+#: pro/includes/classes/export-single-role.php:105
+msgid "Role requested for export does not exist"
+msgstr "Angeforderte Rolle für den Export existiert nicht"
+
+#: pro/includes/classes/export-single-role.php:249
+msgid "Export data error."
+msgstr "Fehler beim Datenexport."
+
+#: pro/includes/classes/front-end-menu-access.php:69
+msgid "Select roles"
+msgstr "Rollen wählen"
+
+#: pro/includes/classes/front-end-menu-view.php:44
+msgid "What to do:"
+msgstr "Was zu tun ist:"
+
+#: pro/includes/classes/front-end-menu-view.php:46
+msgid "Show to"
+msgstr "Anzeigen für"
+
+#: pro/includes/classes/front-end-menu-view.php:48
+msgid "Hide from"
+msgstr "Verstecken vor"
+
+#: pro/includes/classes/front-end-menu-view.php:51
+msgid "Everyone"
+msgstr "Jeder"
+
+#: pro/includes/classes/front-end-menu-view.php:53
+msgid "Logged-in users"
+msgstr "Angemeldete Benutzer"
+
+#: pro/includes/classes/front-end-menu-view.php:55
+msgid "Logged-in users with roles"
+msgstr "Angemeldete Benutzer mit Rollen"
+
+#: pro/includes/classes/front-end-menu-view.php:58
+msgid "Not logged-in"
+msgstr "Nicht angemeldet"
+
+#: pro/includes/classes/front-end-menu-view.php:60
+msgid "Not logged-in and logged-in users with roles"
+msgstr "Nicht angemeldete und angemeldete Benutzer mit Rollen"
+
+#: pro/includes/classes/gf-access.php:97
+msgid "Gravity Forms Restrictions"
+msgstr "Gravity Forms Beschr&auml;nkungen"
+
+#: pro/includes/classes/gf-access.php:100
+msgid "Allow access to forms with ID (comma separated) "
+msgstr ""
+"Ermöglichen Sie den Zugriff auf Formulare mit ID (durch Komma getrennt) "
+
+#: pro/includes/classes/import-roles-view.php:37
+msgid "Together with selected add-ons data:"
+msgstr "Zusammen mit ausgewählten Add-On-Daten:"
+
+#: pro/includes/classes/import-roles-view.php:38
+msgid ""
+"(addon settings are imported in case addon is presented at the imported file)"
+msgstr ""
+"(Addon-Einstellungen werden importiert, falls das Addon in der importierten "
+"Datei angezeigt wird)"
+
+#: pro/includes/classes/import-single-role.php:99
+msgid "Import Role"
+msgstr "Importiere Rolle"
+
+#: pro/includes/classes/import-single-role.php:100
+msgid "Importing to"
+msgstr "Importieren nach"
+
+#: pro/includes/classes/import-single-role.php:101
+msgid "Select file with role data"
+msgstr "Wählen Sie die Datei mit den Rollendaten aus"
+
+#: pro/includes/classes/import-single-role.php:132
+msgid "Role was imported successfully"
+msgstr "Rolle wurde erfolgreich importiert"
+
+#: pro/includes/classes/import-single-role.php:134
+msgid "Unknown error: Role import was failed"
+msgstr "Unbekannter Fehler: Rollenimport ist fehlgeschlagen"
+
+#: pro/includes/classes/import-single-role.php:189
+msgid "Import failure: Role file is broken or has invalid format."
+msgstr ""
+"Importfehler: Die Rollendatei ist beschädigt oder hat ein ungültiges Format."
+
+#: pro/includes/classes/import-single-role.php:194
+msgid "Import failure: Role ID was not found"
+msgstr "Import fehlgeschlagen: Rollen-ID wurde nicht gefunden"
+
+#: pro/includes/classes/import-single-role.php:306
+msgid "You do not have sufficient permissions to import roles."
+msgstr "Sie haben nicht die nötige Berechtigung, um Rollen zu importieren."
+
+#: pro/includes/classes/import-single-role.php:312
+msgid "File upload error."
+msgstr "Fehler beim Hochladen der Datei."
+
+#: pro/includes/classes/import-single-role.php:318
+msgid "File upload error. Can not write to"
+msgstr "Fehler beim Hochladen der Datei. Kann nicht schreiben auf"
+
+#: pro/includes/classes/import-single-role.php:327
+msgid "Import failure: Role file is broken or has invalid format - "
+msgstr "Importfehler: Rollendatei ist fehlerhaft oder hat ungültiges Format - "
+
+#: pro/includes/classes/import-single-role.php:341
+msgid "There was database error during role import"
+msgstr "Beim Rollenimport ist ein Datenbankfehler aufgetreten"
+
+#: pro/includes/classes/import-single-role.php:343
+msgid "Role was imported"
+msgstr "Rollen wurde importiert"
+
+#: pro/includes/classes/import-single-role.php:358
+msgid "Missed site ID"
+msgstr "Fehlende Website-ID"
+
+#: pro/includes/classes/import-single-role.php:362
+msgid "Wrong site ID"
+msgstr "Falsche Website-ID"
+
+#: pro/includes/classes/import-single-role.php:367
+#: pro/includes/classes/import-single-role.php:379
+msgid "Site does not exist"
+msgstr "Website existiert nicht"
+
+#: pro/includes/classes/import-single-role.php:373
+msgid "Wrong next site ID"
+msgstr "Falsche Next-Website-ID"
+
+#: pro/includes/classes/import-validator.php:21
+msgid "Import failure: role ID contains invalid characters."
+msgstr "Import fehlgeschlagen: Rollen-ID enth&auml;hlt ung&uuml;ltige Zeichen."
+
+#: pro/includes/classes/import-validator.php:23
+msgid "Import failure: role should have an array structure."
+msgstr "Import fehlgeschlagen: Rolle muss eine Array-Struktur haben."
+
+#: pro/includes/classes/import-validator.php:25
+msgid "Import failure: role array is not valid (should have 2 items)."
+msgstr ""
+"Import fehlgeschlagen: Rollen-Array ist nicht gültig (sollte 2 Einträge "
+"haben)."
+
+#: pro/includes/classes/import-validator.php:27
+msgid "Import failure: Wrong role array structure: \"name\" key not found."
+msgstr ""
+"Import fehlgeschlagen: Falsche Rollen-Array-Struktur: Schlüssel \"name\" "
+"nicht gefunden."
+
+#: pro/includes/classes/import-validator.php:29
+msgid ""
+"Import failure: Wrong role array structure: \"capabilities\" key not found."
+msgstr ""
+"Import fehlgeschlagen: Falsche Rollen-Array-Struktur: Schlüssel "
+"\"capabilities\" nicht gefunden."
+
+#: pro/includes/classes/import-validator.php:31
+msgid "Import failure: Wrong characters in the role name - sanitized version:"
+msgstr ""
+"Import fehlgeschlagen: Falsche Zeichen in der Rollenname - bereinigte "
+"Version:"
+
+#: pro/includes/classes/import-validator.php:33
+msgid "Import failure: role capabilities should have an array structure."
+msgstr ""
+"Import fehlgeschlagen: Rollenberechtigung muss eine Array-Struktur haben."
+
+#: pro/includes/classes/import-validator.php:65
+msgid ""
+"Import failure: Wrong characters in the capability ID - sanitized version:"
+msgstr ""
+"Import fehlgeschlagen: falsche Zeichen in der Berechtigungs-ID - bereinigte "
+"Version:"
+
+#: pro/includes/classes/import-validator.php:72
+#, php-format
+msgid ""
+"Import failure: Role \"%s\", wrong capability value for \"%s\" - only TRUE, "
+"FALSE, 1 and 0 are allowed, but \"%s\" found"
+msgstr ""
+"Import fehlgeschlagen: Rolle \"%s\", falscher Berechtigungswert für \"%s\" - "
+"nur TRUE, FALSE, 1 und 0 sind erlaubt, aber \"%s\" wurde gefunden"
+
+#: pro/includes/classes/license-key.php:54
+msgid "Active"
+msgstr "Aktiv"
+
+#: pro/includes/classes/license-key.php:58
+msgid "Expired"
+msgstr "Abgelaufen"
+
+#: pro/includes/classes/license-key.php:62
+msgid "Invalid"
+msgstr "Ungültig"
+
+#: pro/includes/classes/meta-boxes-access.php:42
+msgid "Prohibit access to selected meta_boxes"
+msgstr "Verbiete Zugang zu den ausgewählten Meta-Boxen"
+
+#: pro/includes/classes/meta-boxes-access.php:43
+#: pro/includes/classes/meta-boxes-access.php:55
+#: pro/includes/classes/meta-boxes-access.php:56
+msgid "Meta Boxes"
+msgstr "Meta-Boxen"
+
+#: pro/includes/classes/meta-boxes-access.php:58
+msgid ""
+"Turn ON at least \"edit_posts\" capability to manage access to meta_boxes "
+"for this role"
+msgstr ""
+"Schalten Sie zumindest \"edit_posts\"-Berechtigung ein, um den Zugang der "
+"aktuellen Rolle für die Verwaltung der Meta-Boxen zu erlauben"
+
+#: pro/includes/classes/meta-boxes-access.php:85
+msgid "URE: you do not have enough permissions to access this module."
+msgstr ""
+"Benutzerrolleneditor: Sie verfügen nicht über ausreichende Berechtigungen "
+"für den Zugriff auf dieses Modul."
+
+#: pro/includes/classes/meta-boxes-access.php:91
+msgid "URE: Meta boxes access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrollen: Zugriff auf Meta Boxen: Falscher Objekttyp. Die Daten wurden "
+"nicht aktualisiert."
+
+#: pro/includes/classes/meta-boxes-access.php:96
+msgid "URE: Meta boxes access: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrollen: Zugriff auf Meta Boxen: Leerer Objektname. Die Daten wurden "
+"nicht aktualisiert"
+
+#: pro/includes/classes/meta-boxes-access.php:105
+msgid "Meta boxes access data was updated successfully"
+msgstr "Zugriff für \"Meta Boxen Daten\" wurde erfolgreich aktualisiert"
+
+#: pro/includes/classes/meta-boxes.php:454
+msgid ""
+"Please open post, page and (custom post type) editor page to initilize the "
+"list of available meta_boxes"
+msgstr ""
+"Bitte öffne Beitrags-, Seiten- oder Custom-Post-Type-Editor um die Liste der "
+"verfügbaren Meta-Boxen zu initialisieren"
+
+#: pro/includes/classes/meta-boxes.php:468
+#: pro/includes/classes/nav-menus-admin-view.php:70
+msgid "Block"
+msgstr "Abweisen"
+
+#: pro/includes/classes/meta-boxes.php:469
+msgid "Title"
+msgstr "Titel"
+
+#: pro/includes/classes/meta-boxes.php:470
+msgid "Id"
+msgstr "ID"
+
+#: pro/includes/classes/meta-boxes.php:498
+msgid "Delete from the list of available meta boxes"
+msgstr "Lösche aus der Liste der verfügbaren Meta-Boxen"
+
+#: pro/includes/classes/nav-menus-admin-controller.php:156
+msgid "URE: Nav Menus access: Wrong object type. Data was not updated."
+msgstr ""
+"URE: Zugriff auf Nav-Menüs: Falscher Objekttyp. Daten wurden nicht "
+"aktualisiert."
+
+#: pro/includes/classes/nav-menus-admin-controller.php:161
+msgid "URE: Nav Menus access: Empty object name. Data was not updated"
+msgstr ""
+"URE: Zugriff auf Nav-Menüs: Leerer Objektname. Daten wurden nicht "
+"aktualisiert"
+
+#: pro/includes/classes/nav-menus-admin-controller.php:172
+msgid "Nav. menus access: data was updated successfully"
+msgstr "Nav. Menüzugriff: Daten wurden erfolgreich aktualisiert"
+
+#: pro/includes/classes/nav-menus-admin-view.php:28
+msgid "Prohibit access to selected Navigation Menus"
+msgstr "Zugriff auf ausgewählte Navigationsmenüs nicht zulassen"
+
+#: pro/includes/classes/nav-menus-admin-view.php:29
+#: pro/includes/classes/nav-menus-admin-view.php:42
+msgid "Nav. Menus"
+msgstr "Nav. Menüs"
+
+#: pro/includes/classes/nav-menus-admin-view.php:43
+msgid "Navigation Menus Access"
+msgstr "Zugriff auf Navigationsmenüs"
+
+#: pro/includes/classes/nav-menus-admin-view.php:45
+msgid ""
+"Turn ON \"edit_theme_options\" capability to manage Nav. Menus permissions"
+msgstr ""
+"Aktivieren Sie die Funktion \"edit_theme_options\", um Nav zu verwalten. "
+"Menüberechtigungen"
+
+#: pro/includes/classes/nav-menus-admin-view.php:68
+msgid "Menus"
+msgstr "Menüs"
+
+#: pro/includes/classes/nav-menus-admin-view.php:71
+msgid "Slug"
+msgstr "Slug"
+
+#: pro/includes/classes/nav-menus-admin-view.php:72
+#: pro/includes/classes/posts-view.php:116
+#: pro/includes/classes/widgets-admin-view.php:69
+#: pro/includes/classes/widgets-admin-view.php:104
+msgid "Name"
+msgstr "Name"
+
+#: pro/includes/classes/other-roles-access.php:48
+msgid "Prohibit access to selected roles"
+msgstr "Verbiete ausgewählten Rollen den Zugang"
+
+#: pro/includes/classes/other-roles-access.php:80
+msgid "Other Roles Access"
+msgstr "Zugang zu Andere Rollen"
+
+#: pro/includes/classes/other-roles-access.php:82
+msgid "Blocking any role for \"administrator\" is not allowed."
+msgstr "Das Blockieren von Rollen für \"Administrator\" ist nicht zulässig."
+
+#: pro/includes/classes/other-roles-access.php:83
+msgid ""
+"Turn ON \"edit_users\" capability to manage access of current role to other "
+"roles"
+msgstr ""
+"Schalten Sie \"edit_users\"-Berechtigung ein, um den Zugang der aktuellen "
+"Rolle zu anderen Rollen verwalten zu lassen"
+
+#: pro/includes/classes/other-roles-access.php:110
+#: pro/includes/classes/posts-edit-access-role-controller.php:132
+#: pro/includes/classes/posts-view-access.php:80
+msgid "URE: you have not enough permissions to use this add-on."
+msgstr ""
+"Benutzerrolleneditor: Sie haben  keine ausreichende Berechtigungen zum "
+"Verwenden dieses Add-ons."
+
+#: pro/includes/classes/other-roles-access.php:115
+msgid "URE: other roles access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrolleneditor: Andere Rollen Zugang: Falscher Objekttyp. Die Daten "
+"wurden nicht aktualisiert."
+
+#: pro/includes/classes/other-roles-access.php:120
+msgid "URE: other roles access: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrolleneditor: Andere Rollen Zugang: Leerer Objektname. Die Daten "
+"wurden nicht aktualisiert"
+
+#: pro/includes/classes/other-roles-access.php:130
+msgid "Other roles access data was updated successfully"
+msgstr "Zugangsdaten für \"Andere Rollen\" wurden erfolgreich aktualisiert"
+
+#: pro/includes/classes/other-roles.php:198
+msgid "Block roles:"
+msgstr "Rollen abweisen:"
+
+#: pro/includes/classes/other-roles.php:206
+msgid "Role Name"
+msgstr "Rollenname"
+
+#: pro/includes/classes/other-roles.php:207
+msgid "Role ID"
+msgstr "Rollen-ID"
+
+#: pro/includes/classes/page-permissions-view.php:150
+msgid "User capabilities checked for this page:"
+msgstr "Benutzerfunktionen für diese Seite überprüft:"
+
+#: pro/includes/classes/page-permissions-view.php:180
+msgid "View page permissions"
+msgstr "Seitenberechtigungen anzeigen"
+
+#: pro/includes/classes/plugins-access-role-controller.php:122
+msgid "URE: you do not have enough permissions to use this add-on."
+msgstr ""
+"Benutzerrolleneditor: Sie haben keine ausreichende Berechtigungen zum "
+"Verwenden dieses Add-ons."
+
+#: pro/includes/classes/plugins-access-role-controller.php:127
+msgid "URE: plugins access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrolleneditor: Plugin-Zugriff: Falscher Objekttyp. Die Daten wurden "
+"nicht aktualisiert."
+
+#: pro/includes/classes/plugins-access-role-controller.php:132
+msgid "URE: plugins: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrolleneditor: Plugin: Leerer Objektname. Die Daten wurden nicht "
+"aktualisiert"
+
+#: pro/includes/classes/plugins-access-role-controller.php:138
+msgid "Plugins access data was updated successfully"
+msgstr "Plugin-Zugriff-Daten wurden erfolgreich aktualisiert"
+
+#: pro/includes/classes/plugins-access-role-view.php:31
+msgid "Allow activate/deactivate selected plugins"
+msgstr "Das Aktivieren/Deaktivieren ausgewählter Plugins erlauben"
+
+#: pro/includes/classes/plugins-access-role.php:51
+msgid "Allow manage plugins"
+msgstr "Plugin-Verwaltung erlauben"
+
+#: pro/includes/classes/plugins-access-role.php:53
+msgid "Role should have \"activate_plugins\" capability"
+msgstr "Die Rolle sollte die \"activate_plugins\" Funktion haben"
+
+#: pro/includes/classes/plugins-access-user-view.php:56
+msgid "Plugins available for activation/deactivation"
+msgstr "Plugins für die Aktivierung / Deaktivierung verfügbar"
+
+#: pro/includes/classes/plugins-access-user-view.php:58
+msgid "Edit List"
+msgstr "Liste bearbeiten"
+
+#: pro/includes/classes/plugins-access-user.php:133
+msgid "Allow manage"
+msgstr "Verwalten erlauben"
+
+#: pro/includes/classes/plugins-access-user.php:136
+msgid "selected plugins"
+msgstr "Plugins auswählen"
+
+#: pro/includes/classes/plugins-access-user.php:137
+msgid "all plugins except selected"
+msgstr "alle Plugins außer der ausgewählten"
+
+#: pro/includes/classes/plugins-access-view.php:45
+msgid "Allow plugins:"
+msgstr "Plugins erlauben:"
+
+#: pro/includes/classes/plugins-access-view.php:73
+msgid "Plugin Name"
+msgstr "Plugin-Name"
+
+#: pro/includes/classes/plugins-access-view.php:74
+msgid "Path"
+msgstr "Pfad"
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:86
+msgid "Edit Access"
+msgstr "Zugang bearbeiten"
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:87
+msgid "Editor Restrictions Helper"
+msgstr "Hilfseditor Zugangseinschränkungen"
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:88
+msgid "Apply"
+msgstr "Anwenden"
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:89
+msgid "Provide list of users ID"
+msgstr "Liste der User-ID´s anbieten"
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:99
+msgid "You do not have enough permissions for this action."
+msgstr "Sie haben nicht genügend Berechtigungen für diese Aktion."
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:111
+msgid "Provide users ID list."
+msgstr "Geben Sie die Benutzer-ID-Liste an."
+
+#: pro/includes/classes/posts-edit-access-bulk-action.php:121
+msgid "Provide valid users ID list (integers separated by commas)."
+msgstr ""
+"Geben Sie die gültige Benutzer-ID-Liste an (Zahlen durch Kommas getrennt)."
+
+#: pro/includes/classes/posts-edit-access-role-controller.php:137
+msgid "URE: posts edit access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrolleneditor: Zugang Beitragsbearbeitung: Falscher Objekttyp. Die "
+"Daten wurden nicht aktualisiert."
+
+#: pro/includes/classes/posts-edit-access-role-controller.php:142
+msgid "URE: posts edit access: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrolleneditor: Zugang Beitragsbearbeitung: Leerer Objektname. Die "
+"Daten wurden nicht aktualisiert"
+
+#: pro/includes/classes/posts-edit-access-role-controller.php:147
+msgid "Posts edit access data was updated successfully"
+msgstr ""
+"Zugangsberechtigungen für Beitragsbearbeitung wurden erfolgreich aktualisiert"
+
+#: pro/includes/classes/posts-edit-access-role.php:50
+#: pro/includes/classes/posts-edit-access-view.php:32
+msgid "Posts Edit"
+msgstr "Beitragsbearbeitung"
+
+#: pro/includes/classes/posts-edit-access-role.php:51
+msgid "Posts Edit Access"
+msgstr "Zugangsberechtigung Beitragsbearbeitung"
+
+#: pro/includes/classes/posts-edit-access-view.php:31
+msgid "Allow/Prohibit editing selected posts"
+msgstr "Erlaube/Verbiete Bearbeitung ausgewählter Beiträge"
+
+#: pro/includes/classes/posts-edit-access-view.php:53
+msgid "Posts/Pages/Custom Post Types Editor Restrictions"
+msgstr "Beiträge/Seiten/Custom Post Types Editor Einschränkungen"
+
+#: pro/includes/classes/posts-edit-access-view.php:64
+msgid "What to do"
+msgstr "Was Sie tun können"
+
+#: pro/includes/classes/posts-edit-access-view.php:68
+msgid "Allow"
+msgstr "Erlauben"
+
+#: pro/includes/classes/posts-edit-access-view.php:70
+msgid "Prohibit"
+msgstr "Verbiete"
+
+#: pro/includes/classes/posts-edit-access-view.php:75
+msgid "Look at roles"
+msgstr "Rollen ansehen"
+
+#: pro/includes/classes/posts-edit-access-view.php:83
+#: pro/includes/classes/posts-view.php:194
+msgid "Own data only"
+msgstr "Nur eigene Daten"
+
+#: pro/includes/classes/posts-edit-access-view.php:91
+msgid "with post ID (comma separated)"
+msgstr "mit Post-ID (durch Komma getrennt)"
+
+#: pro/includes/classes/posts-edit-access-view.php:99
+msgid "with category/taxonomy ID (comma separated)"
+msgstr "mit Kategorie/Taxonomie-ID (durch Komma getrennt)"
+
+#: pro/includes/classes/posts-edit-access-view.php:110
+msgid "with author user ID (comma separated)"
+msgstr "bearbeite Beiträge/Seiten mit Autoren-ID (Kommatagetrennt)"
+
+#: pro/includes/classes/posts-edit-access.php:244
+#, php-format
+msgctxt "posts"
+msgid "Mine <span class=\"count\">(%s)</span>"
+msgid_plural "Mine <span class=\"count\">(%s)</span>"
+msgstr[0] "Mein <span class=\"count\">(%s)</span>"
+msgstr[1] "Meine <span class=\"count\">(%s)</span>"
+
+#: pro/includes/classes/posts-view-access.php:35
+msgid "Prohibit view selected posts"
+msgstr "Verbiete Ansicht ausgewählter Beiträge"
+
+#: pro/includes/classes/posts-view-access.php:36
+#: pro/includes/classes/posts-view-access.php:64
+msgid "Posts View"
+msgstr "Beitragsanzeige"
+
+#: pro/includes/classes/posts-view-access.php:65
+msgid "Posts View Access"
+msgstr "Zugang Beitragsanzeige"
+
+#: pro/includes/classes/posts-view-access.php:85
+msgid "URE: posts view access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrolleneditor: Zugang Beitragsansicht: Falscher Objekttyp. Die Daten "
+"wurden nicht aktualisiert."
+
+#: pro/includes/classes/posts-view-access.php:90
+msgid "URE: posts view access: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrolleneditor: Zugang Beitragsansicht: Leerer Objektname. Die Daten "
+"wurden nicht aktualisiert"
+
+#: pro/includes/classes/posts-view-access.php:100
+msgid "URE: posts view access: Data was updated successfully"
+msgstr ""
+"Benutzerrolleneditor: Zugang Beitragsansicht: Daten wurden erfolgreich "
+"akualisiert"
+
+#: pro/includes/classes/posts-view.php:53
+msgid "ID"
+msgstr "ID"
+
+#: pro/includes/classes/posts-view.php:112
+msgid "Page templates:"
+msgstr "Seitenvorlagen:"
+
+#: pro/includes/classes/posts-view.php:117
+msgid "File"
+msgstr "Datei"
+
+#: pro/includes/classes/posts-view.php:176
+msgid "Block:"
+msgstr "Abweisen:"
+
+#: pro/includes/classes/posts-view.php:187
+msgid "Posts ID list (comma separated)"
+msgstr "Beitrags-ID-Liste (durch Komma getrennt)"
+
+#: pro/includes/classes/posts-view.php:191
+msgid "Authors ID list (comma separated)"
+msgstr "Liste der Autoren-IDs (durch Komma getrennt)"
+
+#: pro/includes/classes/screen-help-pro.php:23
+#: pro/includes/settings-template1.php:17
+msgid "Show plugins/themes notices to admin only"
+msgstr "Plugins/Themes Mitteilungen nur Admin zeigen"
+
+#: pro/includes/classes/screen-help-pro.php:24
+msgid ""
+"Show update or install notices generated by plugins or themes to the users "
+"with \"install_plugins\" capability only"
+msgstr ""
+"Zeige Aktualisierung- oder Installationsmeldungen welche von Erweiterungen "
+"oder Themes angezeigt werden nur Nutzern mit \"install_plugins\"-Rechten"
+
+#: pro/includes/classes/screen-help-pro.php:25
+msgid "License key"
+msgstr "Lizenzschlüssel"
+
+#: pro/includes/classes/screen-help-pro.php:36
+msgid "Activate \"Administrator Menu Access\" module"
+msgstr "\"Administratorzugriff Menü\" Modul aktivieren"
+
+#: pro/includes/classes/screen-help-pro.php:37
+msgid ""
+"Adds \"Admin Menu\" button to the \"User Role Editor\" page. Turning on "
+"checkboxes near menu items in the opened dialog window you may block admin "
+"menu items available for the selected role"
+msgstr ""
+"Fügt \"Administration\"-Button zur Benutzerrolleneditor-Seite. Das damit "
+"geöffnete Eingabefenster ermöglicht per Auswahl der Menüpunkte das "
+"blockieren der Anzeige im Administrationsmenü für die ausgewählte Rolle"
+
+#: pro/includes/classes/screen-help-pro.php:39
+#: pro/includes/classes/screen-help-pro.php:43
+#: pro/includes/classes/screen-help-pro.php:47
+#: pro/includes/classes/screen-help-pro.php:51
+#: pro/includes/classes/screen-help-pro.php:56
+#: pro/includes/classes/screen-help-pro.php:71
+#: pro/includes/classes/screen-help-pro.php:95
+msgid "more info..."
+msgstr "mehr Info..."
+
+#: pro/includes/classes/screen-help-pro.php:40
+msgid "Activate \"Front End Menu Access\" module"
+msgstr "Aktiviere \"Frontend-Menü-Zugriffs\" Modul"
+
+#: pro/includes/classes/screen-help-pro.php:41
+msgid ""
+"Allows to manage access to the front end menu items. Select menu item at "
+"\"Appearance->Menu\" page and turn ON needed controls: allow/prohibit, all, "
+"logged-in, not-logged-in, with roles"
+msgstr ""
+"Ermöglicht das Verwalten des Zugriffs auf die Front-End-Menüpunkte. Wählen "
+"Sie den Menüpunkt \"Design -> Menü\" und schalten Sie benötigten "
+"Steuerelemente AN: erlauben/verbieten, alle, eingeloggt, nicht-eingeloggt, "
+"mit Rollen"
+
+#: pro/includes/classes/screen-help-pro.php:44
+msgid "Activate \"Widgets Access\" module"
+msgstr "Aktiviere Widgets Zugangsmodul"
+
+#: pro/includes/classes/screen-help-pro.php:45
+msgid ""
+"Adds \"Widgets\" button to the \"User Role Editor\" page. Turning on "
+"checkboxes near widgets names in the opened dialog window you may block "
+"widgets available for selected role under the \"Appearance\" menu"
+msgstr ""
+"Fügt \"Widget\"-Button zur Benutzerrolleneditor-Seite. Das damit geöffnete "
+"Eingabefenster ermöglicht per Auswahl das blockieren der Widgets im "
+"Administrationsmenü für die ausgewählte Rolle"
+
+#: pro/includes/classes/screen-help-pro.php:48
+msgid "Activate \"Metaboxes Access\" module"
+msgstr "Aktiviere \"Zugang Metaboxen\"-Modul"
+
+#: pro/includes/classes/screen-help-pro.php:49
+msgid ""
+"Adds \"Metaboxes\" button to the \"User Role Editor\" page. Turning on "
+"checkboxes to the left from the meta boxes names in the opened dialog window "
+"you may block meta boxes available for selected role"
+msgstr ""
+"Fügt \"Meta-Box\"-Button zur Benutzerrolleneditor-Seite. Mit den Checkboxen "
+"links von den Meta-Box-Namen im geöffneten Dialogfenster können Sie die "
+"ausgewählten metaboxen für die ausgewählte Rolle blockieren"
+
+#: pro/includes/classes/screen-help-pro.php:52
+msgid "Activate \"Other Roles Access\" module"
+msgstr "Aktivieren Sie \"Zugang zu Andere Rollen\" Modul"
+
+#: pro/includes/classes/screen-help-pro.php:53
+msgid ""
+"Adds \"Other Roles\" button to the \"User Role Editor\" page. Turning on "
+"checkboxes near roles names in the opened dialog window you may block that "
+"roles from selection in the WordPress drop-down lists (e.g \"Role\" at the "
+"user profile page) by the user with current role. Users with blocked roles "
+"will not be available for view/edit at the “Users” page also."
+msgstr ""
+"Fügt \"Andere Rollen\"-Button zur Benutzerrolleneditor-Seite. Das damit "
+"geöffnete Eingabefenster ermöglicht per Auswahl der Rollen das blockieren "
+"der Anzeige in der Auswahlliste z.B. in der Benutzerverwaltung für die "
+"ausgewählte Rolle."
+
+#: pro/includes/classes/screen-help-pro.php:57
+#: pro/includes/settings-template2.php:85
+msgid "Activate per plugin user access management for plugins activation"
+msgstr ""
+"Aktivieren Sie per Plugin Benutzerzugriffsverwaltung für Plugins Aktivierung"
+
+#: pro/includes/classes/screen-help-pro.php:58
+msgid ""
+"this feature is useful when you need to allow different users activate/"
+"deactivate different plugins. When this option is turned on you may input, "
+"what plugins are available for the user with \"activate_plugins\" "
+"capability. Go to such user profile and select plugins you allow him to "
+"manage."
+msgstr ""
+"Diese Funktion ist nützlich, wenn Sie verschiedenen Benutzer erlauben "
+"wollen,  verschiedene Plugins zu aktivieren / deaktivieren. Wenn diese "
+"Option eingeschaltet ist, können Sie festlegen, welche Plug-ins für den "
+"Benutzer mit \"activate_plugins\" -Funktion zur Verfügung stehen. Gehen Sie "
+"zum jeweiligen Benutzerprofil, und wählen Sie die Plugins, die er verwalten "
+"darf."
+
+#: pro/includes/classes/screen-help-pro.php:61
+msgid "Activate \"Create Post/Page\" capability"
+msgstr "Aktivieren Sie \"Erstelle Beitrag / Seite\" -Berechtigung"
+
+#: pro/includes/classes/screen-help-pro.php:62
+msgid ""
+"Turning on this option you automatically add \"create_posts\" and "
+"\"create_pages\" capabilities to the list of WordPress core user "
+"capabilities. After that user with \"edit_posts\" capability (even "
+"administrator) will can not create new post or page until you apparently "
+"include this capability to his user role. \"edit_posts\" will permit just to "
+"edit posts. Go to \"User Role Editor\" and turn on \"create_posts\", "
+"\"create_pages\" capability\" for \"Administrator\" role and other roles of "
+"your choice after this option activation."
+msgstr ""
+"Das Aktivieren dieser Option fügt die Berechtigungen \"Beiträge erstellen\" "
+"und \"Seiten erstellen\" zur Liste der Core-Nutzerberechtigungen hinzu. "
+"Danach werden Nutzer mit der Berechtigung \"Beiträge bearbeiten\" (sogar "
+"Administratoren) nicht mehr in der Lage sein, neue Beiträge und Seiten zu "
+"erstellen, solange Ihnen nicht eine der neuen Berechtigungen hinzugefügt "
+"wird. \"Beiträge bearbeiten\" wird nur Beiträge bearbeiten können. Gehe zum "
+"Benutzerrolleneditor und aktiviere \"Beiträge erstellen\"/\"Seiten erstellen"
+"\" für Administratoren und andere Rollen deiner Wahl zur Aktivierung dieser "
+"Optionen."
+
+#: pro/includes/classes/screen-help-pro.php:67
+msgid "Activate user access management to editing selected posts and pages"
+msgstr ""
+"Aktiviere Nutzer-Zugriffsverwaltung zum Bearbeiten ausgewählter Seiten und "
+"Beiträge"
+
+#: pro/includes/classes/screen-help-pro.php:68
+msgid ""
+"This way you may have for example the user with limited \"Editor\" role, who "
+"may edit just 2-3 posts or pages, but has no access to all the rest. After "
+"this option activation go to the user profile and input allowed posts/pages "
+"ID to the correspondent text input field. That's it."
+msgstr ""
+"Auf diese Weise können Sie beispielsweise einen Benutzer mit begrenzter "
+"\"Editor\" Rolle haben, der nur 2-3 Beiträge oder Seiten bearbeiten zu kann, "
+"aber keinen Zugriff auf alle anderen hat. Nach Aktivierung dieser Option "
+"gehen Sie zu dem Benutzerprofil und setzen Sie über das Texteingabefeld die "
+"Erlaubnis für die jeweiligen Beiträge / Seiten-ID´s. Das war's."
+
+#: pro/includes/classes/screen-help-pro.php:72
+#: pro/includes/settings-template2.php:133
+msgid "Force custom post types to use their own capabilities"
+msgstr ""
+"Ermöglicht benutzerdefinierte Post-Typen, ihre eigenen Fähigkeiten zu "
+"verwenden"
+
+#: pro/includes/classes/screen-help-pro.php:73
+msgid ""
+"Some custom post types use WordPress built-in \"posts\" based capabilities "
+"set: \"edit_posts\", \"delete_posts\", etc. Activating this option your "
+"force such custom post types to use their own capabilities set, based on "
+"custom post type name: for \"videos\" custom post type it will be "
+"\"edit_videos\", \"delete_videos\", etc."
+msgstr ""
+"Einige benutzerdefinierte Beitragstypen verwenden die von Wordpress "
+"vordefinierten Beitragsberechtigungen: \"edit_posts\", \"delete_posts\" "
+"usw.. Die Aktivierung dieser Option zwingt diese benutzerdefinierten "
+"Beitragstypen, ihre eigenen Berechtigungen zu nutzen, diese basieren auf den "
+"benutzerdefinierten Beitragstypnamen: z.B. für \"Videos\"-Typ wird "
+"\"edit_videos\", \"delete_videos\", etc. verwendet."
+
+#: pro/includes/classes/screen-help-pro.php:78
+#: pro/includes/settings-template2.php:144
+msgid "Activate per form user access management for Gravity Forms"
+msgstr ""
+"Aktivieren Sie per Formular Benutzerzugriffsverwaltung für Gravity Forms"
+
+#: pro/includes/classes/screen-help-pro.php:79
+msgid ""
+"after turning on this option you may see the new “Gravity Forms "
+"Restrictions” section at the user profile with input field “Allow access to "
+"forms with ID (comma separated)”. This field will appear at profile of those "
+"users only who have at least one capability from the “Gravity Forms” "
+"capabilities list, e.g. “gravityforms_edit_forms”, "
+"“gravityforms_view_entries”, etc. Look "
+msgstr ""
+"nach dem Einschalten dieser Option können Sie den neuen Abschnitt \"Gravity "
+"Forms Beschränkungen\" im Benutzerprofil mit Eingabefeld finden Sie unter "
+"\"Zugriff für Formulare mit ID (durch Komma getrennt)\". Dieses Feld wird im "
+"Profil nur die Benutzer, die mindestens eine Funktion aus der \"Gravity Forms"
+"\" Fähigkeiten-Liste haben, z.B. \"gravityforms_edit_forms\", "
+"\"gravityforms_view_entries\" erscheinen, usw. Schauen Sie "
+
+#: pro/includes/classes/screen-help-pro.php:84
+msgid "support video"
+msgstr "Support Video"
+
+#: pro/includes/classes/screen-help-pro.php:85
+msgid "for your reference."
+msgstr "Für ihre Referenz."
+
+#: pro/includes/classes/screen-help-pro.php:88
+msgid "Activate [user_role_editor roles=\"role1, role2, ...\"] shortcode:"
+msgstr "Aktiviere [user_role_editor roles=\"role1, role2, ...\"] shortcode:"
+
+#: pro/includes/classes/screen-help-pro.php:89
+msgid ""
+"Allows view the content enclosed inside [user_role_editor roles=\"role1, "
+"role2\"] Some restricted content [/user-role-editor] just to users who have "
+"one of roles listed in the \"roles\" attribute. \"role1\" or \"role2\" in "
+"this case. Other users (except administrator) will not see the \"restricted "
+"content\" at the post or page. When this option is turned off, all "
+"restricted content input earlier, becomes available as usual content."
+msgstr ""
+"Erlaubt die Ansicht eines Inhaltes zwischen  [user_role_editor roles="
+"\"rolle1, rolle2\"] eingeschränkter Inhalt [/user-role-editor] nur für "
+"Nutzer, die eine der definierten Rollen in Ihrer Rollenliste aufweisen, in "
+"diesem Fall \"rolle1\" oder \"rolle2\". Andere Nutzer (ausgenommen "
+"Administrator) werden den Inhalt im Beitrag nicht sehen. Wenn diese Option "
+"ausgeschaltet wird, werden alle bisherigen Inhaltseinschränkungen für jeden "
+"Nutzer als normaler Inhalt sichtbar."
+
+#: pro/includes/classes/screen-help-pro.php:93
+#: pro/includes/settings-template2.php:169
+msgid "Activate content view restrictions"
+msgstr "Einschränkungen Inhaltsansicht aktivieren"
+
+#: pro/includes/classes/screen-help-pro.php:94
+msgid ""
+"Allows to set which roles may or prohibited view what post/page, custom post "
+"type"
+msgstr ""
+"Erlaubt die Definition, welche Rollen den Beitrag, die Seite oder den "
+"Beitragstyp sehen können oder davon ausgeschlossen sind"
+
+#: pro/includes/classes/screen-help-pro.php:111
+#: pro/includes/settings-template-ms.php:19
+msgid "Allow single site administrator access to User Role Editor"
+msgstr ""
+"Erlauben Sie Single-Site-Administrator Zugriff auf Benutzerrolleneditor"
+
+#: pro/includes/classes/screen-help-pro.php:112
+msgid ""
+"Super administator only has access to the User Role Editor under multi-site "
+"WordPress installation by default.Turn on this option if you wish to make "
+"User Role Editor available for subsite administrators ."
+msgstr ""
+"Der Super-Administator hat Standardmäßig nur Zugriff auf den "
+"Benutzerrolleneditor unter Multi-Site-Wordpress-Installation.Aktivieren Sie "
+"diese Option, wenn Sie Benutzerrolleneditor auch für Unterwebsiten-"
+"Administratoren zur Verfügung stellen wollen."
+
+#: pro/includes/classes/screen-help-pro.php:114
+msgid "Show help links for single site administrator"
+msgstr "Hilfe Links für Single-Site-Administratoren anzeigen"
+
+#: pro/includes/classes/screen-help-pro.php:115
+msgid ""
+"Turning off this checkbox you will hide question side icons to the right of "
+"user capabilities at the User Role Editor."
+msgstr ""
+"Mit dem Ausschalten dieses Kontrollkästchen verbergen Sie die Fragezeichen-"
+"Symbole rechts von den Nutzerberechtigungen im Benutzerrolleneditor."
+
+#: pro/includes/classes/screen-help-pro.php:117
+#: pro/includes/settings-template-ms.php:32
+msgid "Enable \"unfiltered_html\" capability"
+msgstr "\"unfiltered_html\" Berechtigung aktivieren"
+
+#: pro/includes/classes/screen-help-pro.php:118
+msgid ""
+"WordPress multisite blocks this capabilities by default for all users except "
+"superadmin. Be careful and double think before enable it. This makes your "
+"site potentially vulnerable."
+msgstr ""
+"Wordpress Multisite blockiert diese Funktionen standardmäßig für alle "
+"Benutzer mit Ausnahme der Superadmin. Seien Sie vorsichtig und denken "
+"zweimal darüber nach, bevor Sie es aktivieren. Das macht Ihre Website "
+"möglicherweise angreifbar."
+
+#: pro/includes/classes/screen-help-pro.php:120
+#: pro/includes/settings-template-ms.php:52
+msgid "Activate access management for themes"
+msgstr "Aktivieren Sie die Zugriffsverwaltung für Themes"
+
+#: pro/includes/classes/screen-help-pro.php:121
+msgid ""
+"with this option active you may setup individual lists of themes available "
+"for activation to selected single sites administrators "
+msgstr ""
+"Ist diese Auswahl aktiviert, können Sie individuelle Listen von verfügbaren "
+"Themes für ausgewählte Unterseiten-Administratoren erstellen "
+
+#: pro/includes/classes/screen-help-pro.php:123
+#: pro/includes/settings-template-ms.php:63
+msgid ""
+"Activate access restrictions to User Role Editor for single site "
+"administrator"
+msgstr ""
+"Aktivieren Sie Zugriffsbeschränkungen auf den Benutzerrolleneditor für "
+"Single-Site-Administratoren"
+
+#: pro/includes/classes/screen-help-pro.php:124
+msgid ""
+"Restrict access of single sites administrators to the selected user "
+"capabilities and Add/Delete role operations inside User Role Editor"
+msgstr ""
+"Beschränken Sie den Zugriff der einzelnen Unterseiten-Administratoren auf "
+"die ausgewählten Nutzer-Berechtigungen durch Hinzufügen / Löschen innerhalb "
+"des Benutzerrolleneditors"
+
+#: pro/includes/classes/themes-access.php:122
+msgid "Themes available for activation"
+msgstr "Themes stehen für die Aktivierung zur Verfügung"
+
+#: pro/includes/classes/themes-access.php:158
+msgid "Edit Themes List"
+msgstr "Liste der Themes bearbeiten"
+
+#: pro/includes/classes/themes-access.php:159
+msgid "Themes list you allow this user to activate/deactivate"
+msgstr "Themes-Liste die dieser Benutzer aktivieren / deaktivieren darf"
+
+#: pro/includes/classes/user-role-editor-pro-view.php:40
+msgid ""
+"After confirmation all sites of the network will get permissions from the "
+"main site. Are you sure?"
+msgstr ""
+"Nach der Bestätigung werden alle Seiten des Netzwerks die Berechtigungen von "
+"der Haupt-Website bekommen. Sind Sie sicher?"
+
+#: pro/includes/classes/user-role-editor-pro-view.php:43
+msgid "It is possible to replicate also:"
+msgstr "Das Kopieren ist auch möglich für:"
+
+#: pro/includes/classes/user-role-editor-pro-view.php:66
+msgid ""
+"After confirmation this user will be added to all sites with the same "
+"permissions as he has at the main site. Are you sure?"
+msgstr ""
+"Nach der Bestätigung wird dieser Benutzer auf alle Websites mit denselben "
+"Berechtigungen hinzugefügt werden, wie er in der Hauptseite hat. Bist du "
+"sicher?"
+
+#: pro/includes/classes/user-role-editor-pro.php:226
+msgid "Update Network"
+msgstr "Netzwerk aktualisieren"
+
+#: pro/includes/classes/user-role-editor-pro.php:239
+msgid "Admin menu allowed arguments for URLs"
+msgstr "Admin-Menü erlaubte Argumente für URLs"
+
+#: pro/includes/classes/user-role-editor-pro.php:240
+msgid "Extract"
+msgstr "Extrahieren"
+
+#: pro/includes/classes/user-role-editor-pro.php:244
+msgid "Input allowed aguments before try to save it."
+msgstr ""
+"Geben Sie zulässige Argumente ein, bevor Sie versuchen, sie zu speichern."
+
+#: pro/includes/classes/widgets-admin-controller.php:317
+msgid "URE: widgets access: Wrong object type. Data was not updated."
+msgstr ""
+"Benutzerrolleneditor: Widgets Zugriff: Falscher Objekttyp. Die Daten wurden "
+"nicht aktualisiert."
+
+#: pro/includes/classes/widgets-admin-controller.php:322
+msgid "URE: widgets access: Empty object name. Data was not updated"
+msgstr ""
+"Benutzerrolleneditor: Widgets Zugriff: Leere Objektnamen. Die Daten wurden "
+"nicht aktualisiert"
+
+#: pro/includes/classes/widgets-admin-controller.php:332
+msgid "Widgets access: data was updated successfully"
+msgstr "Widgets Zugriff: Daten wurden erfolgreich aktualisiert"
+
+#: pro/includes/classes/widgets-admin-view.php:27
+msgid "Prohibit access to selected widgets"
+msgstr "Untersage Zugang zu ausgewählten Widgets"
+
+#: pro/includes/classes/widgets-admin-view.php:28
+#: pro/includes/classes/widgets-admin-view.php:40
+#: pro/includes/classes/widgets-admin-view.php:66
+msgid "Widgets"
+msgstr "Widgets"
+
+#: pro/includes/classes/widgets-admin-view.php:41
+msgid "Widgets Access"
+msgstr "Zugriff auf Widgets"
+
+#: pro/includes/classes/widgets-admin-view.php:43
+msgid "Turn ON \"edit_theme_options\" capability to manage widgets permissions"
+msgstr ""
+"Schalten Sie \"edit_theme_options\"-Fähigkeit ein um Widgets-Berechtigungen "
+"zu verwalten"
+
+#: pro/includes/classes/widgets-admin-view.php:70
+#: pro/includes/classes/widgets-admin-view.php:105
+msgid "Description"
+msgstr "Beschreibung"
+
+#: pro/includes/classes/widgets-admin-view.php:101
+msgid "Sidebars"
+msgstr "Seitenleisten"
+
+#: pro/includes/classes/widgets-admin-view.php:154
+msgid "Block items:"
+msgstr "Elemente blockieren:"
+
+#: pro/includes/classes/widgets-show-view.php:83
+#: pro/includes/classes/widgets-show-view.php:100
+msgid "Access"
+msgstr "Zugang"
+
+#: pro/includes/classes/widgets-show-view.php:102
+msgid "Do not show"
+msgstr "Nicht anzeigen"
+
+#: pro/includes/classes/widgets-show-view.php:136
+msgid "for:"
+msgstr "für:"
+
+#: pro/includes/classes/widgets-show-view.php:175
+msgid "No role for this site"
+msgstr "Keine Rolle für diese Seite"
+
+#: pro/includes/content-view-restrictions-template.php:11
+msgid "View Access:"
+msgstr "Zugang ansehen:"
+
+#: pro/includes/content-view-restrictions-template.php:13
+#: pro/includes/settings-content-view-defaults.php:15
+msgid "Allow View"
+msgstr "Ansicht erlauben"
+
+#: pro/includes/content-view-restrictions-template.php:14
+#: pro/includes/settings-content-view-defaults.php:18
+msgid "Prohibit View"
+msgstr "Ansicht verbieten"
+
+#: pro/includes/content-view-restrictions-template.php:19
+#: pro/includes/settings-content-view-defaults.php:22
+msgid "For Users:"
+msgstr "Für Benutzer:"
+
+#: pro/includes/content-view-restrictions-template.php:22
+#: pro/includes/settings-content-view-defaults.php:25
+msgid "All visitors (logged in or not)"
+msgstr "Alle Besucher (Eingeloggt oder nicht)"
+
+#: pro/includes/content-view-restrictions-template.php:24
+#: pro/includes/settings-content-view-defaults.php:27
+msgid "Any User Role (logged in only)"
+msgstr "Jede Benutzerrolle (nur eingeloggt)"
+
+#: pro/includes/content-view-restrictions-template.php:26
+msgid "Selected User Roles"
+msgstr "Ausgewählte Benutzerrollen"
+
+#: pro/includes/content-view-restrictions-template.php:34
+#: pro/includes/settings-content-view-defaults.php:33
+msgid "Action:"
+msgstr "Aktion:"
+
+#: pro/includes/content-view-restrictions-template.php:38
+#: pro/includes/settings-content-view-defaults.php:42
+msgid "Return HTTP 404 error"
+msgstr "Melde HTTP 404 Fehler"
+
+#: pro/includes/content-view-restrictions-template.php:41
+msgid "Show access error message"
+msgstr "Zeige Zugriffsfehlermeldung"
+
+#: pro/includes/content-view-restrictions-template.php:44
+msgid "Show custom access error message"
+msgstr "Zeige benutzerdefinierte Zugriffsfehlermeldung"
+
+#: pro/includes/content-view-restrictions-template.php:48
+#: pro/includes/settings-content-view-defaults.php:49
+msgid "Redirect to URL"
+msgstr "Umleitung auf URL"
+
+#. Plugin Name of the plugin/theme
+#: pro/includes/content-view-restrictions-template.php:52
+msgid "User Role Editor Pro"
+msgstr "Benutzerrolleneditor Pro"
+
+#: pro/includes/settings-content-view-defaults.php:9
+msgid "Defaults for content view restrictions:"
+msgstr "Standardeinstellungen für Einschränkungen der Inhaltsansicht:"
+
+#: pro/includes/settings-content-view-defaults.php:11
+msgid "View access:"
+msgstr "Zugang ansehen:"
+
+#: pro/includes/settings-content-view-defaults.php:29
+msgid "Selected User Roles / (logged in only)"
+msgstr "Ausgewählte Benutzerrollen / (nur angemeldete)"
+
+#: pro/includes/settings-content-view-defaults.php:38
+msgid "Show Access Error Message"
+msgstr "Zeige Zugriffsfehlermeldung"
+
+#: pro/includes/settings-content-view-defaults.php:44
+msgid "Message for post access error:"
+msgstr "Nachricht für \"post access error\":"
+
+#: pro/includes/settings-template-ms.php:87
+msgid ""
+"Single site administrator can delete roles with allowed capabilities inside "
+"only"
+msgstr ""
+"Single-Site-Administrator kann mit der erlaubten Berechtigung nur innerhalb "
+"seiner Seite Rollen löschen"
+
+#: pro/includes/settings-template-ms.php:88
+msgid "Allow single site administrator Add/Delete roles"
+msgstr ""
+"Erlaube Single Seitenadministrator das bearbeiten und l&ouml;schen von Rollen"
+
+#: pro/includes/settings-template-ms.php:97
+msgid "Blocked capabilities:"
+msgstr "Gesperrte Berechtigungen:"
+
+#: pro/includes/settings-template-ms.php:114
+msgid "Allowed capabilities:"
+msgstr "Erlaubte Berechtigungen:"
+
+#: pro/includes/settings-template1.php:25
+msgid "License"
+msgstr "Lizenz"
+
+#: pro/includes/settings-template1.php:29
+msgid "License Key:"
+msgstr "Lizenzschlüssel:"
+
+#: pro/includes/settings-template1.php:38
+msgid "Not installed!"
+msgstr "Nicht installiert!"
+
+#: pro/includes/settings-template1.php:39
+msgid "Input license key to activate automatic updates from role-editor.com"
+msgstr ""
+"Lizenzschlüssel eingeben, um automatische Updates von role-editor.com zu "
+"aktivieren"
+
+#: pro/includes/settings-template1.php:48
+msgid "License key is hidden to limit access to it"
+msgstr "Lizenzschlüssel ist versteckt, um Zugriff darauf zu beschränken"
+
+#: pro/includes/settings-template1.php:51
+msgid "Installed"
+msgstr "Installiert"
+
+#: pro/includes/settings-template2.php:18
+msgid "Activate Administrator Menu Access module"
+msgstr "Aktiviere Administrator Zugangsmodul-Menü"
+
+#: pro/includes/settings-template2.php:31
+msgid "Activate Front End Menu Access module"
+msgstr "Aktiviere Frontend-Menü-Zugriffs Modul"
+
+#: pro/includes/settings-template2.php:40
+msgid "Activate Navigation Menus Access module"
+msgstr "Aktivieren Sie das Zugriffsmodul für Navigationsmenüs"
+
+#: pro/includes/settings-template2.php:49
+msgid "Activate Widgets Admin Access module"
+msgstr "Aktiviere Widgets Zugangsmodul"
+
+#: pro/includes/settings-template2.php:58
+msgid "Activate Widgets Show Access module"
+msgstr "Aktiviere Widgetsanzeige Zugangsmodul"
+
+#: pro/includes/settings-template2.php:67
+msgid "Activate Meta Boxes Access module"
+msgstr "Aktiviere Meta-Boxen-Zugangs-Modul"
+
+#: pro/includes/settings-template2.php:76
+msgid "Activate Other Roles Access module"
+msgstr "Aktiviere Zugangsmen&uuml; f&uuml;r andere Rollen"
+
+#: pro/includes/settings-template2.php:94
+msgid "Activate wp-admin pages permissions viewer"
+msgstr "Aktivieren Sie den Berechtigungsbetrachter der wp-admin pages"
+
+#: pro/includes/settings-template2.php:103
+msgid "Activate export user roles to CSV"
+msgstr "Aktivieren Sie den Export von Benutzerrollen nach CSV"
+
+#: pro/includes/settings-template2.php:109
+msgid "Content editing restrictions"
+msgstr "Einschränkungen Inhaltsbearbeitung"
+
+#: pro/includes/settings-template2.php:115
+msgid "Activate \"Create\" capability for posts/pages/custom post types"
+msgstr ""
+"Aktivieren Sie \"Erstellen\" Fähigkeit für Beiträge / Seiten / "
+"benutzerdefinierte Beitragstypen"
+
+#: pro/includes/settings-template2.php:124
+msgid ""
+"Activate user access management to editing selected posts, pages, custom "
+"post types"
+msgstr ""
+"Aktivieren Sie Benutzerzugriffsverwaltung zum Bearbeiten ausgewählter "
+"Beiträge, Seiten, benutzerdefinierte Beitragstypen"
+
+#: pro/includes/settings-template2.php:154
+msgid "Content view restrictions"
+msgstr "Einschr&auml;nkungen Inhaltsansicht"
+
+#: pro/includes/settings-template2.php:160
+msgid "Activate [user_role_editor roles=\"role1, role2, ...\"] shortcode"
+msgstr "Aktiviere [user_role_editor roles=\"role1, role2, ...\"] shortcode"
+
+#: pro/includes/settings-template2.php:176
+msgid "Show Defaults..."
+msgstr "Zeige Standards..."
+
+#: pro/includes/settings-template2.php:176
+msgid "Hide Defaults..."
+msgstr "Verberge Standards..."
+
+#: pro/includes/settings-template2.php:184
+msgid "Use additional user capabilities"
+msgstr "Verwenden Sie zusätzliche Benutzerfunktionen"
+
+#: pro/includes/settings-template2.php:190
+msgid "Plugins related"
+msgstr "Plugins verwandt"
+
+#: pro/includes/settings-template2.php:199
+msgid "Languages related"
+msgstr "Sprachen verwandt"
+
+#: pro/includes/settings-template2.php:208
+msgid "Privacy related"
+msgstr "Datenschutz bezogen"
+
+#. Plugin URI of the plugin/theme
+#. Author URI of the plugin/theme
+msgid "https://www.role-editor.com"
+msgstr "https://www.role-editor.com"
+
+#. Description of the plugin/theme
+msgid "Change/add/delete WordPress user roles and capabilities."
+msgstr "Ändern / hinzufügen / löschen von Benutzerrollen und Fähigkeiten."
+
+#. Author of the plugin/theme
+msgid "Vladimir Garagulia"
+msgstr "Vladimir Garagulia"
+
+#~ msgid "Empty or not valid list of roles for deletion"
+#~ msgstr "Leere oder ungültige Liste der zu löschenden Rollen"
+
+#~ msgid "Error encountered during role delete operation"
+#~ msgstr "W&auml;hrend der Rollenl&ouml;schung ist ein Fehler aufgetreten"
+
+#~ msgid "Access error message:"
+#~ msgstr "Zugriffsfehlermeldung:"
+
+#~ msgid "Access error URL:"
+#~ msgstr "URL Zugriffsfehler:"
+
+#~ msgid "Plugins related: deactivate_plugins"
+#~ msgstr "Ähnliche Plugins: deactivate_plugins"
+
+#~ msgid "Languages related: install_languages, update_languages"
+#~ msgstr "Ähnliche Sprachen: install_languages, update_languages"
+
+#~ msgid "Error is occur. Please check the log file."
+#~ msgstr "Fehler festgestellt. Bitte Log-Datei prüfen."
+
+#~ msgid "Select file with roles: "
+#~ msgstr "Wählen Sie eine Datei mit Rollen: "
+
+#~ msgid "Import failure: Wrong role "
+#~ msgstr "Import fehlgeschlagen: Falsche Rolle "
+
+#~ msgid "Capability %s is added successfully"
+#~ msgstr "Berechtigung %s wurde erfolgreich hinzugef&uuml;gt"
+
+#~ msgid "Select All"
+#~ msgstr "Alles auswählen"
+
+#~ msgid "Unselect All"
+#~ msgstr "Alles abwählen"
+
+#~ msgid "Reverse"
+#~ msgstr "Umkehrung"
+
+#~ msgid "DANGER! Resetting will restore default settings from WordPress Core."
+#~ msgstr ""
+#~ "ACHTUNG! Das Zurücksetzen wird die Grundeinstellung des WordPress-Kerns "
+#~ "wiederherstellen."
+
+#~ msgid ""
+#~ "If any plugins have changed capabilities in any way upon installation "
+#~ "(such as S2Member, WooCommerce, and many more), those capabilities will "
+#~ "be DELETED!"
+#~ msgstr ""
+#~ "Wenn irgendeine Erweiterung Berechtigungen gesetzt oder geändert hat "
+#~ "(etwa S2Member, WooCommerce und viele andere), werden diese "
+#~ "Berechtigungen gelöscht !"
+
+#~ msgid ""
+#~ "For more information on how to undo changes and restore plugin "
+#~ "capabilities go to"
+#~ msgstr ""
+#~ "Für Informationen bezüglich der Wiederherstellung von Berechtigungen von "
+#~ "Erweiterungen gehe zu "
+
+#~ msgid "%s (Invalid)"
+#~ msgstr "%s (ungültig)"
+
+#~ msgid "%s (Pending)"
+#~ msgstr "%s (Entwurf)"
+
+#~ msgid "Title Attribute"
+#~ msgstr "Titel Attribut"
+
+#~ msgid "Open link in a new tab"
+#~ msgstr "Öffne Link in einem neuem Tab"
+
+#~ msgid "CSS Classes (optional)"
+#~ msgstr "CSS Klassen (optional)"
+
+#~ msgid "Link Relationship (XFN)"
+#~ msgstr "Link-Beziehungen (XFN)"
+
+#~ msgid ""
+#~ "The description will be displayed in the menu if the current theme "
+#~ "supports it."
+#~ msgstr ""
+#~ "Die Beschreibung wird im Menü angezeigt, sofern das benutzte Theme das "
+#~ "unterstützt."
+
+#~ msgid "Move"
+#~ msgstr "Verschieben"
+
+#~ msgid "Up one"
+#~ msgstr "Eins nach oben"
+
+#~ msgid "Down one"
+#~ msgstr "Eins nach unten"
+
+#~ msgid "To the top"
+#~ msgstr "Zum Seitenanfang"
+
+#~ msgid "Original: %s"
+#~ msgstr "Ursprünglicher Name: %s"
+
+#~ msgid "Remove"
+#~ msgstr "Entfernen"
+
+#~ msgid "Not logged-in only"
+#~ msgstr "Nur nicht Eingeloggte"
+
+#~ msgid "Download jQuery UI CSS from jQuery CDN"
+#~ msgstr "Download jQuery UI CSS von jQuery CDN"
+
+#~ msgid ""
+#~ "Download jQuery UI CSS from jQuery CDN instead of local copy included "
+#~ "into the User Role Editor Pro installation package"
+#~ msgstr ""
+#~ "Laden Sie jQuery UI jQuery CSS von CDN anstelle der lokal enthaltenen "
+#~ "Kopie ins Benutzerrolleneditor Pro Installationspaket"
+
+#~ msgid "User Role Editor full access capability"
+#~ msgstr "Benutzerrolleneditor Berechtigung mit vollem Zugang"
+
+#~ msgid ""
+#~ "if it is empty, then default rule is in action: user should have "
+#~ "\"administrator\" role - for single site WordPress installation, "
+#~ "\"manage_network_users\" capability or be the \"super administrator\" - "
+#~ "for multisite one. Input here your own user capability to change this "
+#~ "logic."
+#~ msgstr ""
+#~ "Wenn dies leer ist, dann ist die voreingestellte Rolle aktiv: Nutzer "
+#~ "sollte für Single-Site-Installation \"Administrator\"-Rolle haben, für "
+#~ "Multisite \"Verwalte Netzwerk-Nutzer\"-Berechtigung oder "
+#~ "\"Superadministrator\" sein. Gebe hier deine eigene Berechtigung ein um "
+#~ "diese Logik zu ändern."
+
+#~ msgid "Roles"
+#~ msgstr "Rollen"
+
+#~ msgid "Widget"
+#~ msgstr "Widget"
+
+#~ msgid "Class"
+#~ msgstr "Class"
+
+#~ msgid "Use jQuery UI CSS from jQuery CDN"
+#~ msgstr "Verwenden Sie jQuery UI CSS von jQuery CDN"
+
+#~ msgid "Delete:"
+#~ msgstr "Löschen:"
+
+#~ msgid "read about"
+#~ msgstr "lesen Sie über"
+
+#~ msgid "user capability"
+#~ msgstr "Nutzerberechtigung"
+
+#~ msgid "Help"
+#~ msgstr "Hilfe"
+
+#~ msgid "Error! You do not have permission to delete this capability: %s!"
+#~ msgstr ""
+#~ "Fehler: Sie haben zum l&ouml;schen dieser Berechtigung keine Befugnis: %s!"
+
+#~ msgid "Type:"
+#~ msgstr "Typ:"
+
+#~ msgid "Prohibit Access"
+#~ msgstr "Zugang verwehren"
+
+#~ msgid "Allow Access"
+#~ msgstr "Zugang erlauben"
+
+#~ msgid "for Roles:"
+#~ msgstr "f&uuml;r Rollen:"
+
+#~ msgid "Error message:"
+#~ msgstr "Fehlermeldung:"
+
+#~ msgid "Mine"
+#~ msgstr "Mein"
+
+#~ msgid "Sticky"
+#~ msgstr "Sticky"
+
+#~ msgid "Core capabilities:"
+#~ msgstr "Kern-Berechtigungen:"

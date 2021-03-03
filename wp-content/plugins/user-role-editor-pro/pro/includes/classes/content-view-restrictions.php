@@ -166,7 +166,7 @@ class URE_Content_View_Restrictions {
             return false;
         }
         wp_enqueue_script( 'jquery-ui-dialog', '', array( 'jquery-ui-core', 'jquery-ui-button', 'jquery') );
-        wp_register_script( 'ure-pro-content-view-restrictions', plugins_url( '/pro/js/content-view-restrictions.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-pro-content-view-restrictions', plugins_url( '/pro/js/content-view-restrictions.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script( 'ure-pro-content-view-restrictions' );
         wp_localize_script( 'ure-pro-content-view-restrictions', 'ure_data_pro', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),

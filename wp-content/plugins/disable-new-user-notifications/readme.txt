@@ -1,9 +1,10 @@
 === Disable New User Notification Emails ===
 Contributors: griffinjt, smub, deb255
 Tags: email, disable user notification emails, disable notification, disable admin notifications, disable user emails, disable notifications, user emails, new user emails
-Requires at least: 3.3.1
-Tested up to: 5.1.1
-Stable tag: 1.0.3
+Requires at least: 4.6
+Requires PHP: 5.3
+Tested up to: 5.6
+Stable tag: 2.0.0
 License: GNU General Public License v2.0 or later
 
 This plugin does one thing - disables new user notification emails.
@@ -33,6 +34,12 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 
 == Changelog ==
 
+= 2.0.0 =
+* Fix: Disable password reset emails sent during registration process.
+* Enhancement: Disable new user notifications sent on multisite installs.
+* Enhancement: Bump minimum WordPress version to 4.6 to support translate.wordpress.org.
+* Rewrite to use PHP namespaces except for replacing pluggable WordPress functions.
+
 = 1.0.3 =
 * Updated Readme.txt.
 * Checked compatibility with WordPress 5.1.1.
@@ -46,3 +53,8 @@ Visit <a href="http://www.wpbeginner.com/" rel="friend" title="WPBeginner">WPBeg
 
 = 1.0.0 =
 * Initial release.
+
+== Upgrade Notice ==
+
+= 2.0.0 =
+Now supports WordPress Multisite and disables password reset notifications sent to admins during the user registration process.

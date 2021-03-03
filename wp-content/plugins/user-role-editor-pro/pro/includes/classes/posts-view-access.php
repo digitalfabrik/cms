@@ -57,7 +57,7 @@ class URE_Posts_View_Access {
 
 
     public function add_js() {
-        wp_register_script( 'ure-posts-view-access', plugins_url( '/pro/js/posts-view-access.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-posts-view-access', plugins_url( '/pro/js/posts-view-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-posts-view-access' );
         wp_localize_script( 'ure-posts-view-access', 'ure_data_posts_view_access',
                 array(

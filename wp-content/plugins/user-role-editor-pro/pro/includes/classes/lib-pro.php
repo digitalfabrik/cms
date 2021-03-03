@@ -95,14 +95,14 @@ class URE_Lib_Pro extends URE_Lib {
      * @param string $role
      * @return boolean
      */
-    public function user_can_role($user, $role) {
+    public function user_can_role( $user, $role ) {
         
-        if (empty($user) || !is_a($user, 'WP_USER') || empty($user->roles)) {
+        if ( empty( $user ) || !is_a( $user, 'WP_User' ) || empty( $user->roles ) ) {
             return false;
         }
         
-        foreach($user->roles as $user_role) {
-            if ($user_role===$role) {
+        foreach( $user->roles as $user_role ) {
+            if ( $user_role===$role ) {
                 return true;
             }
         }

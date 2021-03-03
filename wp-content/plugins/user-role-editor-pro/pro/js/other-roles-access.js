@@ -2,10 +2,10 @@ jQuery(function($) {
     
     $('#ure_other_roles_access_button').button({
         label: ure_data_other_roles_access.other_roles
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         ure_other_roles_access_dialog_prepare();
-    });
+    }));
 
 });
 
@@ -84,7 +84,7 @@ function ure_other_roles_access_dialog(data) {
       $('#dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
       
       $('#ure_other_roles_access_container').html(data.html);
-      $('#ure_other_roles_select_all').click(ure_other_roles_auto_select);
+      $('#ure_other_roles_select_all').on('click', ure_other_roles_auto_select );
     });                                
     
 }

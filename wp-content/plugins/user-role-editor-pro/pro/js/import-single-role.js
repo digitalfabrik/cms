@@ -26,44 +26,43 @@ function ure_importToAllOnClick(cb) {
 
 
 function ure_import_roles_dialog() {
-    jQuery(function ($) {
-        $info = $('#ure_import_roles_dialog');
-        $info.dialog({
-            dialogClass: 'wp-dialog',
-            modal: true,
-            autoOpen: true,
-            closeOnEscape: true,
-            width: 550,
-            height: 400,
-            resizable: false,
-            title: ure_data_import.import_roles_title,
-            'buttons': {
-                'Import': function () {
-                    var file_name = $('#roles_file').val();
-                    if (file_name == '') {
-                        alert(ure_data_import.select_file_with_roles);
-                        return false;
-                    }                    
-                    var form = $('#ure_import_roles_form');
-                    form.attr('action', ure_data.page_url);
-                    $("<input type='hidden'>")
-                            .attr("name", 'ure_nonce')
-                            .attr("value", ure_data.wp_nonce)
-                            .appendTo(form);
-                    form.submit();
-                    $(this).dialog('close');
-                },
-                'Cancel': function () {
-                    $(this).dialog('close');
+    
+    jQuery('#ure_import_roles_dialog').dialog({
+        dialogClass: 'wp-dialog',
+        modal: true,
+        autoOpen: true,
+        closeOnEscape: true,
+        width: 550,
+        height: 400,
+        resizable: false,
+        title: ure_data_import.import_roles_title,
+        'buttons': {
+            'Import': function () {
+                var file_name = jQuery('#roles_file').val();
+                if (file_name == '') {
+                    alert(ure_data_import.select_file_with_roles);
                     return false;
-                }
+                }                    
+                var form = jQuery('#ure_import_roles_form');
+                form.attr('action', ure_data.page_url);
+                jQuery("<input type='hidden'>")
+                        .attr("name", 'ure_nonce')
+                        .attr("value", ure_data.wp_nonce)
+                        .appendTo(form);
+                form.submit();
+                jQuery(this).dialog('close');
+            },
+            'Cancel': function () {
+                jQuery(this).dialog('close');
+                return false;
             }
-        });
-        $('.ui-dialog-buttonpane button:contains("Import")').attr("id", "dialog-import-roles-button");
-        $('#dialog-import-roles-button').html(ure_ui_button_text(ure_data_import.import_roles));
-        $('.ui-dialog-buttonpane button:contains("Cancel")').attr("id", "dialog-cancel-button");
-        $('#dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
-    });                                    
+        }
+    });
+    jQuery('.ui-dialog-buttonpane button:contains("Import")').attr("id", "dialog-import-roles-button");
+    jQuery('#dialog-import-roles-button').html(ure_ui_button_text(ure_data_import.import_roles));
+    jQuery('.ui-dialog-buttonpane button:contains("Cancel")').attr("id", "dialog-cancel-button");
+    jQuery('#dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
+
 }
 
 
@@ -154,10 +153,10 @@ jQuery(function() {
 
     jQuery("#ure_import_roles_button").button({
         label: ure_data_import.import_roles
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         ure_import_roles_dialog();
-    });
+    }));
 
     if (ure_data_import.action==='import-role-next-site') {
         URE_Import_Role.show_status_window();

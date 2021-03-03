@@ -2,8 +2,8 @@
 Contributors: Vladimir Garagulya (https://www.role-editor.com)
 Tags: user, role, editor, security, access, permission, capability
 Requires at least: 4.4
-Tested up to: 5.4.1
-Stable tag: 4.56
+Tested up to: 5.7
+Stable tag: 4.59.2
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -40,33 +40,39 @@ Right decision in this case is to delete free version folder (user-role-editor) 
 
 == Changelog ==
 
-= [4.56] 02.05.2020 =
-* Core version: 4.54
-* Fix: Front-end menu access add-on: 
-* - Do not switch menu walker to custom one starting from WordPress version 5.4 as it natively supports 'wp_nav_menu_item_custom_fields' action.
-* - Do not duplicate UI elements output in case 'wp_nav_menu_item_custom_fields' action is executed more than one time - (for example, by external code incompatible with WordPress 5.4).
-* Core version was updated to 4.54:
-* New: Quick filter hides capabilities, which do not contain search string
-* Update: CSS enhancement: When site has many custom post types capabilities list section maximal height is limited by real height of the left side (capabilities groups) section, not by 720px as earlier.
-* Fix: Empty list of capabilities (0/0) was shown for custom post types (CPT) which are defined with the same capability type as another CPT.
-For example courses CPT from LearnDash plugin is defined with 'course' capability type (edit_courses, etc.) and other CPT from LearnDash were shown with 0/0 capabilities (lessons, topics, quizzes, certificates).
+= [4.59.2] 02.03.2021 =
+* Core version: 4.58.3
+* Fix: "Multisite -> Update Network" did not work due to bug in version 4.59.
+* Fix: Posts/pages, custom post types edit restrictions add-on: 
+*    - Restricted user can some times see a full list of posts or pages due to internal caching issue.
+*    - Media Library restricted items list did not take into account authors ID list restriction criteria for images loaded directly to the Media Library, which does not have parent posts.
+*    - When products editing is restricted by product category/tag, product variations shown by "Admin Columns Pro - WooCommerce" plugin were not available. Now, if product is allowed, then related variations are allowed automatically too.
+* Update: Option "Force custom post types to use their own capabilities" replaces default capabilities for the custom taxonomies also. 
+It takes the slug of the 1st post type associated with such taxonomy (e.g. 'video') and builds own capabilities this way: manage_terms->manage_video_terms, edit_terms->edit_video_terms, delete_terms->delete_video_terms, assign_terms->assign_video_terms.
+URE automatically adds such capabilities to the 'administrator' role. You have to grant these new capabilities to other roles manually.
+* Update: 'edit_css' capability is mapped to 'unfiltered_html' for WordPress multisite, in case 'Enable "unfiltered_html" capability' option is turned ON at the URE's settings 'Multisite' tab. This automatically enables for a single site (blog/subsite) admin the 'Additional CSS' tab at the 'Appearance->Customize' page.
+* Update: Admin menu access add-on: New custom filter 'ure_admin_menu_access_not_block_url' is available. It allows to whitelist not selected URL (without path, like admin.php?page=mlw_quiz_options), which is not presented at the admin menu and it's not possible to select them with the "Block not Selected" model.
+* Core version was updated to version 4.58.3
+* Update: URE automatically adds custom taxonomies user capabilities to administrator role before opening "Users->User Role Editor" page.
+* Fix: Role changes were not saved with option "Confirm role update" switched off. 
 
-= [4.55.2] 30.03.2020 =
-* Core version: 4.53.1
-* Fix: bbPress roles UI elements, like "Forum role", "Change forum role to..." were empty due to fix made with version 44.55.1.
+= [4.59.1] 26.01.2021 =
+* Core version 4.58.2
+* Fix: Import single role: Uncaught TypeError: $ is not a function at HTMLDivElement.Import (import-single-role.js?ver=4.59:46) was fixed.
 
-= [4.55.1] 28.03.2020 =
-* Core version: 4.53.1
-* New: Content view access add-on:
-*   - 'ure_content_view_access_data_for_role' custom filter was added. It takes 2 parameters: 1st - array with content view access data defined for a role, $role_id - role ID, for which content view access data is filtered.
-*   - 'ure_content_view_access_data_for_user' custom filter was added. It takes 2 parameters: 1st - array with content view access data defined for a user, $user_id - user ID, for which content view access data is filtered.
-* New: Front-end menu access add-on: 'ure_show_front_end_menu_item' custom filter was added. It takes 3 parameters: 1st - logical, if TRUE - show menu item, 2nd - nav_menu_item data structure with checked menu item, 3rd - URE restriction data for menu item. Return false to hide menu item from current user.
-* Fix: Changes were not saved to bbPress roles.
-* Fix: Excluded using $this in a static method URE_Admin_Menu_Hashes::require_data_conversion(), line #179.
-* Fix: Excluded using $this in a static method URE_Network_Addons_Data_Replicator::get_for_new_blog(), lines #172, #200.
-* * Core version was updated to 4.53.1:
-* Fix: Undefined variable: message at wp-content/plugins/user-role-editor/includes/classes/editor.php:898
-* Update: Few English grammar enhancements.
-
+= [4.59] 24.01.2021 =
+* Core version 4.58.2
+* Update: Admin menu access add-on: Update button saves changes via AJAX without full page reload.
+* Update: Nav menus admin access add-on: Update button saves changes via AJAX without full page reload.
+* Update: Widgets admin access add-on: Update button saves changes via AJAX without full page reload.
+* Update: All JavaScript files are loaded with URE plugin version number as a query string for cache busting purpose.
+* Fix: Widgets admin access add-on: "PHP Warning:  A non-numeric value encountered in /wp-content/plugins/user-role-editor-pro/pro/includes/classes/widgets-admin-view.php on line 189" was fixed.
+* Fix: "JQMIGRATE: jQuery.fn.click() event shorthand is deprecated" notice was fixed.
+* Fix: "JQMIGRATE: jQuery.fn.submit() event shorthand is deprecated" notice was fixed.
+* Core version was updated to 4.58.2
+* Update: Users->User Role Editor: Update button saves changes via AJAX without full page reload.
+* Fix: New user registered via frontend (wp-login.php?action=register) automatically receives additional (other) default role(s) according to selection made at User Role Editor settings "Other default roles" tab.
+* Fix: "JQMIGRATE: jquery.fn.resize() event shorthand is deprecated" notice was fixed.
+* Fix: "JQMIGRATE: Number-typed values are deprecated for jQuery.fn.css( (property name), value )" notice was fixed.
 
 Full list of changes is available in changelog.txt file.

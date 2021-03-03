@@ -255,7 +255,7 @@ class URE_Other_Roles {
             $current_object = $allowed_roles[0];
         }
      
-        return array('result'=>'success', 'message'=>'Other Roles permissions for '+ $current_object, 'html'=>$html);
+        return array('result'=>'success', 'message'=>'Other Roles permissions for '. $current_object, 'html'=>$html);
     }
     // end of get_html()
 

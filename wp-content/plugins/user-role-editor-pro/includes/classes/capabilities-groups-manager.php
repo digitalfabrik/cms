@@ -225,7 +225,13 @@ class URE_Capabilities_Groups_Manager {
             $caps['manage_network_options'] = array('core', 'multisite', 'general');
             $caps['upgrade_network'] = array('core', 'multisite', 'general');
         }
-                
+        
+        $caps['install_languages'] = array('core', 'general');
+        $caps['resume_plugins'] = array('core', 'plugins');        
+        $caps['resume_themes'] = array('core', 'themes');
+        $caps['view_site_health_checks'] = array('core', 'general');
+        
+        
         $caps = apply_filters('ure_built_in_wp_caps', $caps);
         
         $this->built_in_wp_caps = $caps;
@@ -396,27 +402,24 @@ class URE_Capabilities_Groups_Manager {
     
     
     /**
-     * Private clone method to prevent cloning of the instance of the
-     * *Singleton* instance.
+     * Prevent cloning of the instance of the *Singleton* instance.
      *
      * @return void
      */
-    private function __clone() {
-        
+    public function __clone() {
+        throw new \Exception('Do not clone a singleton instance.');
     }
     // end of __clone()
     
     /**
-     * Private unserialize method to prevent unserializing of the *Singleton*
-     * instance.
+     * Prevent unserializing of the *Singleton* instance.
      *
      * @return void
      */
-    private function __wakeup() {
-        
+    public function __wakeup() {
+        throw new \Exception('Do not unserialize a singleton instance.');
     }
-    // end of __wakeup()
-    
+    // end of __wakeup()    
         
 }
 // end of class URE_Capabilities_Groups_Manager

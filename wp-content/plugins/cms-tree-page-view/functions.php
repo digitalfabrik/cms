@@ -721,7 +721,6 @@ function cms_tpv_options() {
 
 		<?php cms_tpv_show_annoying_box(); ?>
 
-		<?php screen_icon(); ?>
 		<h2><?php echo CMS_TPV_NAME ?> <?php _e("settings", 'cms-tree-page-view') ?></h2>
 
 		<form method="post" action="options.php" class="cmtpv_options_form">
@@ -749,6 +748,7 @@ function cms_tpv_options() {
 						if ( cms_tpv_post_type_is_ignored($one_post_type->name) ) {
 							continue;
 						}
+
 
 						$name = $one_post_type->name;
 
@@ -802,7 +802,7 @@ function cms_tpv_options() {
 			<input type="hidden" name="action" value="update" />
 			<input type="hidden" name="cms_tpv_action" value="save_settings" />
 			<?php // TODO: why is the line below needed? gives deprecated errors ?>
-			<input type="hidden" name="page_options" value="<?php echo join($arr_page_options, ",") ?>" />
+			<input type="hidden" name="page_options" value="<?php echo esc_attr( implode( ',', $arr_page_options ) ); ?>" />
 			<p class="submit">
 				<input type="submit" class="button-primary" value="<?php _e('Save Changes', 'cms-tree-page-view') ?>" />
 			</p>

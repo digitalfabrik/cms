@@ -1,5 +1,98 @@
 User Role Editor Pro CHANGES LOG (full version).
 ================================================
+= [4.59.2] 02.03.2021 =
+* Core version: 4.58.3
+* Fix: "Multisite -> Update Network" did not work due to bug in version 4.59.
+* Fix: Posts/pages, custom post types edit restrictions add-on: 
+*    - Restricted user can some times see a full list of posts or pages due to internal caching issue.
+*    - Media Library restricted items list did not take into account authors ID list restriction criteria for images loaded directly to the Media Library, which does not have parent posts.
+*    - When products editing is restricted by product category/tag, product variations shown by "Admin Columns Pro - WooCommerce" plugin were not available. Now, if product is allowed, then related variations are allowed automatically too.
+* Update: Option "Force custom post types to use their own capabilities" replaces default capabilities for the custom taxonomies also. 
+It takes the slug of the 1st post type associated with such taxonomy (e.g. 'video') and builds own capabilities this way: manage_terms->manage_video_terms, edit_terms->edit_video_terms, delete_terms->delete_video_terms, assign_terms->assign_video_terms.
+URE automatically adds such capabilities to the 'administrator' role. You have to grant these new capabilities to other roles manually.
+* Update: 'edit_css' capability is mapped to 'unfiltered_html' for WordPress multisite, in case 'Enable "unfiltered_html" capability' option is turned ON at the URE's settings 'Multisite' tab. This automatically enables for a single site (blog/subsite) admin the 'Additional CSS' tab at the 'Appearance->Customize' page.
+* Update: Admin menu access add-on: New custom filter 'ure_admin_menu_access_not_block_url' is available. It allows to whitelist not selected URL (without path, like admin.php?page=mlw_quiz_options), which is not presented at the admin menu and it's not possible to select them with the "Block not Selected" model.
+* Core version was updated to version 4.58.3
+* Update: URE automatically adds custom taxonomies user capabilities to administrator role before opening "Users->User Role Editor" page.
+* Fix: Role changes were not saved with option "Confirm role update" switched off. 
+
+= [4.59.1] 26.01.2021 =
+* Core version 4.58.2
+* Fix: Import single role: Uncaught TypeError: $ is not a function at HTMLDivElement.Import (import-single-role.js?ver=4.59:46) was fixed.
+
+= [4.59] 24.01.2021 =
+* Core version 4.58.2
+* Update: Admin menu access add-on: Update button saves changes via AJAX without full page reload.
+* Update: Nav menus admin access add-on: Update button saves changes via AJAX without full page reload.
+* Update: Widgets admin access add-on: Update button saves changes via AJAX without full page reload.
+* Update: All JavaScript files are loaded with URE plugin version number as a query string for cache busting purpose.
+* Fix: Widgets admin access add-on: "PHP Warning:  A non-numeric value encountered in /wp-content/plugins/user-role-editor-pro/pro/includes/classes/widgets-admin-view.php on line 189" was fixed.
+* Fix: "JQMIGRATE: jQuery.fn.click() event shorthand is deprecated" notice was fixed.
+* Fix: "JQMIGRATE: jQuery.fn.submit() event shorthand is deprecated" notice was fixed.
+* Core version was updated to 4.58.2
+* Update: Users->User Role Editor: Update button saves changes via AJAX without full page reload.
+* Fix: New user registered via frontend (wp-login.php?action=register) automatically receives additional (other) default role(s) according to selection made at User Role Editor settings "Other default roles" tab.
+* Fix: "JQMIGRATE: jquery.fn.resize() event shorthand is deprecated" notice was fixed.
+* Fix: "JQMIGRATE: Number-typed values are deprecated for jQuery.fn.css( (property name), value )" notice was fixed.
+
+= [4.58.2] 14.12.2020
+* Core version 4.57.1
+* New: Admin menu access add-on: ure_admin_menu_get_hashes filter was added (pro/includes/classes/admin_menu.php, line #105. URE uses internally the list of the links included into admin menu. Use this filter to modify it, in case you know what you do.
+* New: German Formal (de_DE_formal) translation was added.
+* Fix: PHP Warning:  The magic method __wakeup() must have public visibility. __wakeup() method was defined as private as a part of the Singleton design partern. Method was redefined as public but with exception inside to prevent its usage.
+* Update: jQuery [MultiSelect](http://multiple-select.wenzhixin.net.cn/) plugin was updated to version 1.5.2
+* Core version was updated to 4.57.1
+* Fix: Nextgen Gallery's user capabilities were not shown as granted after current role change via roles selection dropdown list.
+
+= [4.58.1] 30.11.2020 =
+* Core version 4.57
+* Fix: Error message was fixed: Uncaught Error: Object of class stdClass could not be converted to string in /wp-content/plugins/user-role-editor-pro/pro/includes/classes/posts-edit-access-user.php:653
+
+= [4.58] 23.11.2020 =
+* Core version 4.57
+* Update: Marked as compatible with WordPress 5.6.
+* Update: " jQuery( document ).ready( handler ) " was replaced globally with " jQuery( handler ) " for compatibility with [jQuery 3.0](https://api.jquery.com/ready/) and WordPress 5.6.
+* Update: Post edit access add-on: 
+* - Special support was added for the [FooGallery plugin](https://wordpress.org/plugins/foogallery/). Earlier new album, edit album pages showed full list of galleries in spite of the edit restrictions set by URE Pro. URE Pro uses 'foogallery_album_exlcuded_galleries' filter to fix this.
+* - SQL queries are restricted by post type (if known) instead of scan full posts database table.
+* Core version was updated to 4.57:
+* Fix: "Grant Roles" button produced JavaScript error, if single user without any role granted (None) was selected.
+
+= [4.57.1] 07.09.2020 =
+* Core version 4.56.1
+* New: WordPress multisite: "Network admin->User Role Editor->Update Network": 
+*  - 'ure_after_network_roles_update' action hook was added.  It is executed after all roles were replicated from the main site to the all other subsites of the network.
+*  - 'ure_after_network_addons_update' action hook was added. It is executed after selected add-ons settings were replicated from the main site to the all other subsites of the network.
+* Core version was updated to 4.56.1:
+* New: WordPress multisite: Main site: Users->User Role Editor->Apply to All: 'ure_after_network_roles_update' action hook was added. It is executed after all roles were replicated from the main site to the all other subsites of the network.
+* Fix: "Granted Only" filter did not work at the "Users->User Role Editor" page.
+* Fix: Warning was fixed: wp-content/plugins/user-role-editor/js/ure.js: jQuery.fn.attr('checked') might use property instead of attribute.
+
+= [4.57] 11.08.2020 =
+* Core version 4.56
+* New: Frond-end menu access add-on: default option "Show to" was extended to the selection between "Show to" and "Hide from" (If UI does not work as expected, force browser page refresh in order to load the latest version of front-end-menu-access.js).
+* Admin menu access add-on: empty menu/submenu items are removed automatically.
+* Update: minor code updates/optimizations 
+* Core version was updated to 4.56:
+* New: User capabilities 'install_languages', 'resume_plugins', 'resume_themes', 'view_site_health_checks' were added to the list of supported WordPress built-in user capabilities.
+* Update: Single site WordPress installation: URE automatically grants all existing user capabilities to WordPress built-in 'administrator' role before opening its page "Users->User Role Editor". 
+* Fix: Extra slash was removed between URE_PLUGIN_URL and the image resource when outputting URE_PLUGIN_URL .'/images/ajax-loader.gif' at 'Users->User Role Editor' page.
+* Info: Marked as compatible with WordPress 5.5.
+
+= [4.56.2] 06.06.2020 =
+* Core version 4.55.1
+* Core version was updated to 4.55.1:
+* Security fix: User with 'edit_users' capability could assign to another user a role not included into the editable roles list. This fix is required to install ASAP for all sites which have user(s) with 'edit_users' capability granted not via 'administrator' role.
+* Update: URE_Uninstall class properties were made 'protected' to be accessible in URE_Uninstall_Pro class included into the Pro version.
+
+= [4.56.1] 05.06.2020 =
+* Core version 4.55
+* Fix: unfiltered_html enabled for multisite did not work when user saved content from Gutenberg. unfiltered_html activation code was not applied for WP REST API (AJAX) calls.
+* Update: Widgets admin access: It's possible to use "Block not selected" access model to block widgets and sidebars which are not selected in the list.
+* Update: User Role Editor Pro uninstallation was refactored. It fully removes the ('ure_%') user capabilities from the user roles data and users meta.
+* Core version was updated to 4.55
+* Update: User Role Editor uninstallation was refactored. It fully removes the ('ure_%') user capabilities from the user roles data.
+
 = [4.56] 03.05.2020 =
 * Core version: 4.54
 * Fix: Front-end menu access add-on: 

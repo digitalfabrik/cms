@@ -105,6 +105,21 @@ $admin_menu_access_url_args_link_display = $activate_admin_menu_access_module==1
         <td>
         </td>
       </tr>
+<?php
+/*
+?>
+      <tr>
+        <td>
+            <input type="checkbox" name="activate_import_roles_csv" id="activate_import_roles_csv" value="1" 
+                <?php checked( $activate_import_roles_csv, 1 ); ?> /> 
+            <label for="activate_import_roles_csv"><?php esc_html_e('Activate import user roles from CSV', 'user-role-editor'); ?></label>
+        </td>
+        <td>
+        </td>
+      </tr>
+ * 
+ */
+?>      
       <tr>
           <td cospan="2"><h3><?php esc_html_e('Content editing restrictions', 'user-role-editor');?></h3></td>
       </tr>
@@ -196,7 +211,7 @@ if (class_exists('GFForms')) {
           <td>
               <input type="checkbox" name="activate_add_caps_for_languages" id="activate_add_caps_for_languages" value="1" 
                     <?php checked($activate_add_caps_for_languages, 1); ?> />
-              <label for="activate_add_caps_for_languages"><?php esc_html_e('Languages related', 'user-role-editor'); ?> (install_languages, update_languages)</label>
+              <label for="activate_add_caps_for_languages"><?php esc_html_e('Languages related', 'user-role-editor'); ?> (update_languages)</label>
           </td>
           <td>              
           </td>

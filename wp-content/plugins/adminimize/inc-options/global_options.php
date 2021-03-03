@@ -15,8 +15,7 @@ if ( ! function_exists( 'add_action' ) ) {
 
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br/></div>
-		<h3 class="hndle" id="global_options"><?php esc_attr_e( 'Global options', 'adminimize' ); ?></h3>
+		<h3 class="hndle ui-sortable-handle" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>" id="global_options"><?php esc_attr_e( 'Global options', 'adminimize' ); ?></h3>
 
 		<div class="inside">
 			<br class="clear"/>
@@ -175,15 +174,8 @@ if ( ! function_exists( 'add_action' ) ) {
 					<td>
 						<label for="_mw_adminimize_own_options"></label>
 						<textarea name="_mw_adminimize_own_options" cols="60" rows="3"
-						          id="_mw_adminimize_own_options" style="width: 95%;">
-								<?php
-								// The function sanitize the output.
-								// phpcs:disable
-								echo _mw_adminimize_get_option_value(
-									'_mw_adminimize_own_options'
-								);
-								?>
-							</textarea>
+								  id="_mw_adminimize_own_options" style="width: 95%;"><?php
+							echo _mw_adminimize_get_option_value('_mw_adminimize_own_options' ); ?></textarea>
 						<br/>
 						<?php
 						esc_attr_e(
@@ -195,15 +187,8 @@ if ( ! function_exists( 'add_action' ) ) {
 					<td>
 						<label for="_mw_adminimize_own_values"></label>
 						<textarea class="code" name="_mw_adminimize_own_values" cols="60" rows="3"
-						          id="_mw_adminimize_own_values" style="width: 95%;">
-								<?php
-								// The function sanitize the output.
-								// phpcs:disable
-								echo _mw_adminimize_get_option_value(
-									'_mw_adminimize_own_values'
-								);
-								?>
-							</textarea>
+						          id="_mw_adminimize_own_values" style="width: 95%;"><?php
+								echo _mw_adminimize_get_option_value('_mw_adminimize_own_values' ); ?></textarea>
 						<br/>
 						<?php
 						esc_attr_e(

@@ -8,12 +8,19 @@ if ( ! function_exists( 'add_action' ) ) {
 	echo "Hi there!  I'm just a part of plugin, not much I can do when called directly.";
 	exit;
 }
+
+if ( ! isset( $user_roles ) ) {
+	$user_roles = _mw_adminimize_get_all_user_roles();
+}
+
+if ( ! isset( $user_roles_names ) ) {
+	$user_roles_names = _mw_adminimize_get_all_user_roles_names();
+}
 ?>
 
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
-		<h3 class="hndle" id="config_edit_post" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><?php
+		<h3 class="hndle ui-sortable-handle" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>" id="config_edit_post" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><?php
 			esc_attr_e( 'Write options - Post', 'adminimize' ); ?></h3>
 
 		<div class="inside">
@@ -34,8 +41,7 @@ if ( ! function_exists( 'add_action' ) ) {
 					<th><?php esc_attr_e( 'Write options - Post', 'adminimize' ); ?></th>
 					<?php
 					foreach ( (array) $user_roles_names as $role_name ) { ?>
-						<th><?php esc_attr_e( 'Deactivate for', 'adminimize' );
-							echo '<br/>' . $role_name; ?></th>
+						<th><?php esc_attr_e( 'Deactivate for', 'adminimize' ); echo '<br/>' . $role_name; ?></th>
 					<?php } ?>
 				</tr>
 				<tr>
@@ -43,7 +49,7 @@ if ( ! function_exists( 'add_action' ) ) {
 					<?php
 					foreach ( (array) $user_roles as $role_slug ) {
 						echo '<td class="num"><input id="select_all" class="write_post_options_'
-						     . esc_attr( $role_slug ) . '" type="checkbox" name="" value="" /></td>' . "\n";
+							 . esc_attr( $role_slug ) . '" type="checkbox" name="" value="" /></td>' . "\n";
 					} ?>
 				</tr>
 				</thead>

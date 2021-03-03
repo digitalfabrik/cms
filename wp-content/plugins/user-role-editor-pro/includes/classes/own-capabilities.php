@@ -62,12 +62,12 @@ class URE_Own_Capabilities {
         }
         
         $multisite = $lib->get('multisite');
-        if (!$multisite) {
+        if ( !$multisite ) {
             $key_cap = URE_KEY_CAPABILITY;
         } else {
             $enable_simple_admin_for_multisite = $lib->get_option('enable_simple_admin_for_multisite', 0);
-            if ( (defined('URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE') && URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE == 1) || 
-                 $enable_simple_admin_for_multisite) {
+            if ( ( defined('URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE') && URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE == 1 ) || 
+                 $enable_simple_admin_for_multisite ) {
                 $key_cap = URE_KEY_CAPABILITY;
             } else {
                 $key_cap = 'manage_network_plugins';
@@ -89,7 +89,7 @@ class URE_Own_Capabilities {
         
         $lib = URE_Lib::get_instance();
         $settings_cap = $lib->get('settings_capability');
-        if (!empty($settings_cap)) {
+        if ( !empty( $settings_cap ) ) {
             return $settings_cap;
         }
                 
@@ -98,14 +98,14 @@ class URE_Own_Capabilities {
             $settings_cap = 'ure_manage_options';
         } else {
             $enable_simple_admin_for_multisite = $lib->get_option('enable_simple_admin_for_multisite', 0);
-            if ((defined('URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE') && URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE == 1) || 
-                $enable_simple_admin_for_multisite) {
+            if ( ( defined('URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE' ) && URE_ENABLE_SIMPLE_ADMIN_FOR_MULTISITE == 1 ) || 
+                $enable_simple_admin_for_multisite ) {
                 $settings_cap = 'ure_manage_options';
             } else {
                 $settings_cap = self::get_key_capability();
             }
         }
-        $lib->set('settings_capability', $settings_cap);
+        $lib->set('settings_capability', $settings_cap );
         
         return $settings_cap;
     }
@@ -113,13 +113,9 @@ class URE_Own_Capabilities {
 
     
     public static function init_caps() {
-        global $wp_roles;
         
-        if (!isset($wp_roles)) {
-            $wp_roles = new WP_Roles();
-        }
-        
-        if (!isset($wp_roles->roles['administrator'])) {
+        $wp_roles = wp_roles();                
+        if ( !isset( $wp_roles->roles['administrator'] ) ) {
             return;
         }
         
@@ -132,9 +128,9 @@ class URE_Own_Capabilities {
         $wp_roles->use_db = true;
         $administrator = $wp_roles->role_objects['administrator'];
         $ure_caps = self::get_caps();
-        foreach(array_keys($ure_caps) as $cap) {
-            if (!$administrator->has_cap($cap)) {
-                $administrator->add_cap($cap, $turn_on);
+        foreach( array_keys( $ure_caps ) as $cap ) {
+            if ( !$administrator->has_cap( $cap ) ) {
+                $administrator->add_cap( $cap, $turn_on );
             }
         }
         $wp_roles->use_db = $old_use_db;
@@ -149,10 +145,9 @@ class URE_Own_Capabilities {
      */
     public static function get_caps_groups() {
         
-        $ure_caps = self::get_caps();
-        
+        $ure_caps = self::get_caps();        
         $caps = array();
-        foreach($ure_caps as $ure_cap=>$value) {
+        foreach( array_keys( $ure_caps ) as $ure_cap ) {
             $caps[$ure_cap] = array('custom', 'user_role_editor');
         }        
         

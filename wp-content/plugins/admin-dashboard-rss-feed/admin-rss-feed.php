@@ -4,7 +4,7 @@ Plugin Name: Admin Dashboard RSS Feed
 Description: This plugin will display company news in WordPress Admin Dashboard. It uses RSS feed URL as input and display the news synopsis in the Admin Dashboard.
 Plugin URI: https://www.webstix.com
 Author: Webstix
-Version:     1.6
+Version:     1.7
 Text Domain: admin-dashboard-rss-feed
 Author:      Webstix, Inc.
 Author URI:  https://www.webstix.com/wordpress-plugin-development
@@ -89,7 +89,7 @@ function wsx_rss_feed_admin_settings()
 	if($_GET['page'] == "admin-dashboard-rss-feed/admin-rss-feed.php") {
 		wp_enqueue_media();
 
-	}	
+	}
 
 	// Get the Company Logo Title
 	register_setting('wsx-rss-feed-settings-group', 'wsx_logo_title');
@@ -118,8 +118,8 @@ function wsx_rss_feed_admin_settings_page() { ?>
 			<th scope="row">Your Company Name:</th>
 			<td><input type="text" name="wsx_logo_title" value="<?php
 	echo esc_attr(get_option('wsx_logo_title')); ?>" style="width: 450px;" /></td>
-        </tr>	
-	
+        </tr>
+
 		<tr valign="top">
 			<th scope="row">Your Company Logo:</th>
 			<td>
@@ -134,20 +134,20 @@ function wsx_rss_feed_admin_settings_page() { ?>
 	_e('Delete image'); ?>" /><small class="wsx-small">(We suggest 64 pixels wide x 64 pixels high)</small>
 		<input type='hidden' name='image_attachment_id' id='image_attachment_id' value='<?php
 	echo get_option('wsx_rss_feed_image_attachment_id'); ?>'></td>
-        </tr>		
-		
+        </tr>
+
 		<tr valign="top">
 			<th scope="row">Your Company Website:</th>
 			<td><input type="text" name="wsx_logo_target_link" value="<?php
 	echo esc_attr(get_option('wsx_logo_target_link')); ?>" style="width: 450px;" /></td>
         </tr>
-	
+
         <tr valign="top">
 			<th scope="row">Your Company RSS Feed URL:</th>
 			<td><input class="wsx_rss_feed_url" type="text" name="wsx_rss_feed_url" value="<?php
 	echo esc_attr(get_option('wsx_rss_feed_url')); ?>" style="width: 450px;" required /></td>
         </tr>
-         
+
         <tr valign="top">
 			<th scope="row">Number of items to display: <small style="font-weight: normal;">(You can show between 1 to 10)</small></th>
 			<td><input type="text" name="wsx_rss_feed_count" value="<?php
@@ -189,7 +189,7 @@ function wsx_rss_feed_create_box()
 	$wsx_logo_url = wp_get_attachment_url(get_option('wsx_rss_feed_image_attachment_id'));
 	$wsx_logo_title = esc_attr(get_option('wsx_logo_title'));
 	$wsx_logo_target_link = esc_attr(get_option('wsx_logo_target_link'));
-	
+
 	echo '<div class="wsx-rss-feed-widget1">';
 
 		if ($wsx_logo_url <> "" && $wsx_logo_target_link <> "" && $wsx_logo_title <> "")
@@ -231,28 +231,28 @@ function wsx_rss_feed_create_box()
 				echo "<div class='wsx-log-wrap clearfix'><a href=" . $wsx_logo_target_link . " target='_blank'><span class='wsx_company_url'>" . $wsx_logo_target_link . "</span></a></div>";
 			}
 		}
-	
+
 	echo '</div>';
-	
+
 	echo '<ul class="wsx-feed-list">';
 
 	if($rss_feed_url !="http://feeds.feedburner.com/Webstix") {
 
 		$xml = simplexml_load_file($rss_feed_url);
 
-	    $in = 1; 
-	    
+	    $in = 1;
+
 	    $feed_count = esc_attr(get_option('wsx_rss_feed_count'));
-	    
+
 	    foreach($xml->channel->item as $entry) {
 	    	if($in <= $feed_count) {
-				echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
-				echo "<p style='color:grey'>" . date_i18n("j. F Y", strtotime($entry->pubDate)) . "</p>";
+			echo "<li><a href='$entry->link' title='$entry->title'>" . $entry->title . "</a>";
+			echo "<p style='color:grey'>" . date_i18n("j. F Y", strtotime($entry->pubDate)) . "</p>";
 	        	echo "<p>" . wp_html_excerpt($entry->description, 150) . "...</p></li>";
 	        	$in++;
 	        }
-	        
-	    }	    
+
+	    }
 
     } else {
     	$settings = '<a href="' . esc_url(get_admin_url(null, 'options-general.php?page=admin-dashboard-rss-feed%2Fadmin-rss-feed.php')) . '">Settings</a>';

@@ -1,0 +1,173 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Author Chat 1.6.0\n"
+"POT-Creation-Date: 2017-05-07 20:37+0200\n"
+"PO-Revision-Date: 2019-03-05 15:12+0100\n"
+"Language-Team: Pablo Custo\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _e;__;esc_html__\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: \n"
+"Language: it_IT\n"
+"X-Poedit-SearchPath-0: pp-author-chat.php\n"
+"X-Poedit-SearchPath-1: pp-options.php\n"
+
+#: pp-author-chat.php:139
+msgid "You are:"
+msgstr "Tu sei:"
+
+#: pp-author-chat.php:140
+msgid "Today"
+msgstr "Oggi"
+
+#: pp-author-chat.php:141
+msgid "Yesterday"
+msgstr "Ieri"
+
+#: pp-author-chat.php:142
+msgid "Sunday"
+msgstr "Domenica"
+
+#: pp-author-chat.php:143
+msgid "Monday"
+msgstr "Lunedì"
+
+#: pp-author-chat.php:144
+msgid "Tuesday"
+msgstr "Martedì"
+
+#: pp-author-chat.php:145
+msgid "Wednesday"
+msgstr "Mercoledì"
+
+#: pp-author-chat.php:146
+msgid "Thursday"
+msgstr "Giovedì"
+
+#: pp-author-chat.php:147
+msgid "Friday"
+msgstr "Venerdì"
+
+#: pp-author-chat.php:148
+msgid "Saturday"
+msgstr "Sabato"
+
+#: pp-author-chat.php:160 pp-options.php:7
+msgid "Author Chat Options"
+msgstr "Opzioni della Chat degli Autori"
+
+#: pp-author-chat.php:161 pp-author-chat.php:168 pp-author-chat.php:206
+#: pp-author-chat.php:578 pp-author-chat.php:599
+msgid "Author Chat"
+msgstr "Chat degli Autori"
+
+#: pp-author-chat.php:191
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: pp-author-chat.php:219
+msgid "Your message..."
+msgstr "Il tuo messaggio..."
+
+#: pp-author-chat.php:223
+msgid "To send text from here you need to buy premium version of that plugin"
+msgstr "Per mandare un messaggio da qui hai bisogno della versione premium"
+
+#: pp-author-chat.php:225
+msgid "for lifetime 1 domain licence"
+msgstr "per la licenza perpetua per un dominio"
+
+#: pp-author-chat.php:226
+msgid "future premium features included"
+msgstr "future features della versione premium incluse"
+
+#: pp-author-chat.php:581
+msgid "Buy Premium Version"
+msgstr "Acquista la versione premium"
+
+#: pp-author-chat.php:587
+msgid "If your domain name is correct, do not change it"
+msgstr "Se il nome del dominio è corretto, non cambiarlo"
+
+#: pp-options.php:16
+msgid "Delete chat history older than how many days?"
+msgstr "Dopo quanti giorni occorre cancellare lo storico dei messaggi?"
+
+#: pp-options.php:25
+msgid "Who should have access to Author Chat?"
+msgstr "Chi ha accesso alla Chat degli Autori?"
+
+#: pp-options.php:29
+msgid "All users with access to admin area"
+msgstr "Tutti gli utenti devono avere accesso all'admin area"
+
+#: pp-options.php:34
+msgid "Editor"
+msgstr "Editore"
+
+#: pp-options.php:39
+msgid "Author"
+msgstr "Autore"
+
+#: pp-options.php:44
+msgid "Contributor"
+msgstr "Contributore"
+
+#: pp-options.php:49
+msgid "Subscriber"
+msgstr "Sottoscrittore"
+
+#: pp-options.php:56
+msgid "Choose how to display the authors: by Name or by Login?"
+msgstr "Scegli come mostrare il nome degli autori: per nome o login?"
+
+#: pp-options.php:60
+msgid "Login (Username)"
+msgstr "Login (username)"
+
+#: pp-options.php:65
+msgid "Name (Display name)"
+msgstr "Nome (Display Name)"
+
+#: pp-options.php:74
+msgid "Show chat window everywhere (Premium Function)?"
+msgstr "Mostra la finestra ovunque (Funzione premium)?"
+
+#: pp-options.php:85
+msgid "Show my name in the messages?"
+msgstr "Mostrail mio nome nei messaggi?"
+
+#: pp-options.php:96
+msgid "Show thumb preview of the URLs?"
+msgstr "Mostra la thumb di anteprima degli indirizzi URL?"
+
+#: pp-options.php:107
+msgid "Show weekday names of recent days?"
+msgstr "Mostra nomi dei giorni nei messaggi recenti?"
+
+#: pp-options.php:118
+msgid "Refresh interval to check new messages"
+msgstr "Intervallo con cui fare il check dei messaggi"
+
+#: pp-options.php:131
+msgid "second(s)"
+msgstr "secondi"
+
+#: pp-options.php:138
+msgid ""
+"Permanently delete chat history? (data will be deleted when you check this "
+"box and click \"Save Changes\")"
+msgstr ""
+"Cancello definitivamente la storia della chat? (tutti i dati saranno "
+"cancellati quando selezionerai questo campo e farai clic su \"Save Changes"
+"\")"
+
+msgid "for lifetime 1 domain licence (future premium features included)"
+msgstr ""
+"para la licencia de por vida de 1 dominio (las características premium "
+"futuras también están incluidas)"
