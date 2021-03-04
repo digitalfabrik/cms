@@ -25,7 +25,6 @@
 
 	$table_prefix = 'wp_';
 
-	echo "starting migration";
 	define('REPL_DOMAIN_OLD', "cms.integreat-app.de");
 	define('REPL_DOMAIN_NEW', "cms-dev.integreat-app.de");
 	define('REPL_PATH_OLD', "/");
@@ -37,6 +36,58 @@
 		return $objDateTime->format('c');
 	}
 
+	class MPTT {
+		function __construct( $pk_offset = null ) {
+			$this->tree = array();
+			if ( $pk_offset ) {
+				$this->pk_counter = $pk_offset;
+			} else {
+				$this->pk_counter = 0;
+			}
+		}
+
+		function add_node( $node_id, $parent_node_id = null ) {
+			if ( sizeof( $this->tree ) == 0 && $parent_node_id == null ) {
+				$this->tree[]	= array( "id" => $node_id, "parent" => null, "parent_pk" => null, "left" => 1, "right" => 2, "level" => 0, "pk" => $this->pk_counter );
+			} elseif ( sizeof( $this->tree) > 0 && $parent_node_id ) {
+				$parent = $this->get_parent( $parent_node_id );
+				$this->increase_counts( $parent["right"] );
+				$this->tree[] = array( "id" => $node_id, "parent" => $parent_node_id, "parent_pk" => $parent["pk"], "left" => $parent["right"], "right" => ( $parent["right"] + 1 ), "level" => $parent["level"] + 1, "pk" => $this->pk_counter );
+			} else {
+				return false;
+			}
+			$this->pk_counter++;
+			return true;
+		}
+
+		function get_parent( $parent_node_id ) {
+			for ( $i = 0; $i < sizeof( $this->tree ); $i++ ) {
+				if ( $this->tree[$i]["id"] == $parent_node_id ) {
+					return $this->tree[$i];
+				}
+			}
+		}
+
+		function increase_counts( $num ) {
+			for ( $i = 0; $i < sizeof( $this->tree ); $i++ ) {
+				if ( $this->tree[$i]["left"] >= $num ) {
+					$this->tree[$i]["left"] = $this->tree[$i]["left"] + 2;
+				}
+				if ( $this->tree[$i]["right"] >= $num ) {
+					$this->tree[$i]["right"] = $this->tree[$i]["right"] + 2;
+				}
+			}
+		}
+
+		function get_node( $node_id ) {
+			foreach ( $this->tree as $key => $node ) {
+				if ( $node["id"] == $node_id ) {
+					return $node;
+				}
+			}
+		}
+  }
+
 	abstract class DjangoModel {
 		public $pk;
 		public $fields = array();
@@ -44,7 +95,7 @@
 
 		function __construct( $pk = null ) {
 			if ( !array_key_exists( $this->model, self::$pk_counter ) )
-				self::$pk_counter[$this->model] = 0;
+				self::$pk_counter[$this->model] = 1;
 			if ( $pk == null )
 				$this->pk = self::$pk_counter[$this->model];
 			else
@@ -71,12 +122,12 @@
 
 		function init_fields( $blog ) {
 			$this->fields["name"] = $blog->get_blog_option( "blogname" );
-			$this->fields["slug"] = str_replace( "/", "", $blog->path );
-			$this->fields["aliases"] = $blog->get_integreat_setting( "aliases" );
-			$this->fields["status"] = ( $blog->get_integreat_setting( "hidden" ) == 1 ? "HIDDEN" : ( $blog->get_integreat_setting( "active" ) == 1 ? "ACTIVE" : "ARCHIVED" ) );
+			$this->fields["slug"] = ( $blog->get_blog_option( "blogname") == "Integreat" ? "integreat" : str_replace( "/", "", $blog->path ) );
+			$this->fields["aliases"] = ( $blog->get_integreat_setting( "aliases" ) != null ? $blog->get_integreat_setting( "aliases" ) : array() );
+			$this->fields["status"] = ( $blog->get_integreat_setting( "disabled" ) == 1 ? "ARCHIVED" : ( $blog->get_integreat_setting( "hidden" ) == 0 ? "ACTIVE" : "HIDDEN" ) );
 			$this->fields["latitude"] = $blog->get_integreat_setting( "latitude" );
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
-			$this->fields["postal_code"] = $blog->get_integreat_setting( "plz" );
+			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
 			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : "MUNICIPALITY" );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
@@ -86,8 +137,8 @@
 			$this->fields["created_date"] = now();
 			$this->fields["last_updated"] = now();
 			$this->fields["statistics_enabled"] = ( strpos( $blog->get_blog_option( "active_plugins" ), "wp-piwik" ) ? true : false );
-			$this->fields["matomo_url"] = $blog->get_blog_option( "wp-piwik_global-piwik_url" );
-			$this->fields["matomo_token"] = $blog->get_blog_option( "wp-piwik_global-piwik_token" );
+			$this->fields["matomo_url"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_url" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_url" ) : "" );
+			$this->fields["matomo_token"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_token" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_token" ) : "");
 			$this->fields["matomo_ssl_verify"] = true;
 		}
 	}
@@ -102,32 +153,39 @@
 
 		function init_fields( $language ) {
 			$this->fields = array(
-				"code"=>utf8_encode( $language["code"] ),
+				"slug"=>utf8_encode( $language["code"] ),
+				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : utf8_encode($language["tag"]) ),
 				"english_name"=>utf8_encode( $language["english_name"] ),
 				"native_name"=>utf8_encode( $language["native_name"] ),
-				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "rtl" : "ltr"),
-				"table_of_contents"=>null,
+				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "RIGHT_TO_LEFT" : "LEFT_TO_RIGHT"),
+				"table_of_contents"=>"Inhaltsverzeichnis",
 				"created_date"=>now(),
 				"last_updated"=>now(),
 			);
 		}
 	}
 
-	class LanguageTreeNode {
+	class LanguageTreeNode extends DjangoModel {
 		public $model = "cms.languagetreenode";
 
-		function init_fields() {
+		function __construct( $blog, $language, $active, $mptt_node ) {
+			//parent::__construct();
+			$this->pk = $mptt_node["pk"];
+			$this->init_fields( $blog, $language, $active, $mptt_node );
+		}
+
+		function init_fields( $blog, $language, $active, $mptt_node ) {
 			$this->fields = array(
-				"language"=>null,
-				"parent"=>null,
-				"region"=>null,
-				"active"=>null,
-				"created_date"=>null,
-				"last_udpated"=>null,
-				"lft"=>null,
-				"rght"=>null,
-				"tree_id"=>null,
-				"level"=>null,
+				"language"=>$language->pk,
+				"parent"=>$mptt_node["parent_pk"],
+				"region"=>$blog->blog_id,
+				"active"=>$active,
+				"created_date"=>now(),
+				"last_updated"=>now(),
+				"lft"=>$mptt_node["left"],
+				"rght"=>$mptt_node["right"],
+				"tree_id"=>$blog->blog_id,
+				"level"=>$mptt_node["level"],
 			);
 		}
 	}
@@ -194,6 +252,24 @@
 			}
 		}
 
+		function get_language_by_slug( $code ) {
+			foreach ( $this->object_list as $object ) {
+				if ( $object->model == "cms.language"  &&  $object->fields["slug"] == $code ) {
+					return $object;
+				}
+			}
+			return null;
+		}
+
+		function get_languagetreenode_by_language_pk( $blog_id, $pk ) {
+			foreach ( $this->object_list as $object ) {
+				if ( $object->model == "cms.languagetreenode"  && $object->pk == $pk && $object->fields["tree_id"] == $blog_id ) {
+					return $object;
+				}
+			}
+			return null;
+		}
+
 		function dump() {
 			return json_encode( $this->object_list, JSON_PRETTY_PRINT );
 		}
@@ -236,23 +312,54 @@
 		}
 
 		function get_languages() {
-			$query = "SELECT code, english_name, name AS native_name FROM " . $this->dbprefix ."icl_languages l LEFT JOIN " . $this->dbprefix . "icl_languages_translations t ON l.code=t.language_code WHERE t.display_language_code=l.code";
+			$query = "SELECT code, english_name, name AS native_name, tag FROM " . $this->dbprefix ."icl_languages l LEFT JOIN " . $this->dbprefix . "icl_languages_translations t ON l.code=t.language_code WHERE t.display_language_code=l.code";
 			$result = $this->db->query( $query );
 
 			while ( $row = $result->fetch_object() ) {
-				$languages[$row->code] = array( "code"=>$row->code, "english_name"=>$row->english_name, "native_name"=>$row->native_name );
+				$languages[$row->code] = array( "code"=>$row->code, "english_name"=>$row->english_name, "native_name"=>$row->native_name, "tag"=>$row->tag );
 			}
 			return $languages;
 		}
 
-		function get_available_languages() {
-			$query = "SELECT code, active FROM " . $this->dbprefix ."icl_locale_map m LEFT JOIN " . $this->dbprefix . "icl_languages l ON m.code=l.code";
+		function get_used_languages() {
+			$query = "SELECT m.code, active FROM " . $this->dbprefix ."icl_locale_map m LEFT JOIN " . $this->dbprefix ."icl_languages l ON m.code=l.code";
 			$result = $this->db->query( $query );
 			$languages_active = array();
 			while ( $row = $result->fetch_object() ) {
 				$languages_active[$row->code] = $row->active;
 			}
 			return $languages_active;
+		}
+
+		function get_default_language() {
+			$query = "SELECT option_value FROM " . $this->dbprefix ."options WHERE option_name='icl_sitepress_settings'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$data = preg_replace_callback( '!s:(\d+):"(.*?)";!', function($m) {
+					return 's:'.strlen($m[2]).':"'.$m[2].'";';
+				}, $row->option_value );
+				$var = unserialize( $data );
+				if ( array_key_exists( "default_language", $var ) ) {
+					return $var["default_language"];
+				} else {
+					return "de";
+				}
+			}
+			return null;
+		}
+
+		function generate_language_tree( $treenode_pk_counter ) {
+			$language_tree = new MPTT( $treenode_pk_counter );
+
+			$used_languages = $this->get_used_languages();
+			$default_language = $this->get_default_language();
+			$language_tree->add_node(  $default_language );
+			unset( $used_languages[$default_language] );
+			foreach ( $used_languages as $lang_code => $active ) {
+				$language_tree->add_node( $lang_code, $default_language );
+			}
+			return $language_tree;
+
 		}
 	}
 
@@ -264,17 +371,32 @@
 	}
 	$fixtures = new DjangoFixtures();
 	$languages = array();
+	$treenode_pk_counter = 1;
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
 		$fixtures->append( $region );
+
+		/* get available languages */
 		foreach ( $blog->get_languages() as $blog_language ) {
 			if( !array_key_exists( $blog_language["code"], $languages ) ) {
-				$languages[$blog_language["code"]] = $blog_language;
 				$fixtures->append( new Language( $blog_language ) );
+				$languages[$blog_language["code"]] = $blog_language;
 			}
 		}
+
+		/* get used languages and create tree nodes */
+		$language_tree = $blog->generate_language_tree( $treenode_pk_counter );
+		$treenode_pk_counter = $language_tree->pk_counter;
+
+		foreach ( $blog->get_used_languages() as $used_language => $active) {
+			$mptt_node = $language_tree->get_node( $used_language );
+			$lang = $fixtures->get_language_by_slug($used_language);
+			if ( ! $lang ) { fwrite(STDERR, "Blog " . $blog->blog_id . ": Skipping language $used_language.\n"); continue; }
+			$tree_node = new LanguageTreeNode( $blog, $lang, $active, $mptt_node );
+			$fixtures->append( $tree_node );
+		}
 	}
-	
+
 	echo($fixtures->dump());
 ?>
