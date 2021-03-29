@@ -269,7 +269,8 @@ class IntegreatSettingsPlugin {
 						alias = 'logo' OR
 						alias = 'aliases' OR
 						alias = 'longitude' OR
-						alias = 'latitude'
+						alias = 'latitude' OR
+						alias = 'bounding_box'
 				UNION SELECT 'extras', 'bool', (SELECT enabled FROM {$wpdb->prefix}ig_extras_config WHERE enabled LIMIT 1)", OBJECT_K));
 		}, 10, 0);
 		/*
