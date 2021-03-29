@@ -1,0 +1,172 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Author Chat Plugin\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-06-20 18:11+0000\n"
+"PO-Revision-Date: 2020-06-20 18:33+0000\n"
+"Last-Translator: \n"
+"Language-Team: Dutch\n"
+"Language: nl_NL\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.4.0; wp-5.4.2"
+
+#: pp-options.php:37
+msgid "All users with access to admin area"
+msgstr "Alle gebruikers met toegang tot het beheerdersgedeelte"
+
+#: pp-options.php:47
+msgid "Author"
+msgstr "Auteur"
+
+#: pp-author-chat.php:188 pp-author-chat.php:195 pp-author-chat.php:233
+#: pp-author-chat.php:636 pp-author-chat.php:657
+msgid "Author Chat"
+msgstr "Author Chat"
+
+#: pp-author-chat.php:219
+msgid "Author Chat for Android"
+msgstr "Author Chat voor Android"
+
+#: pp-options.php:14
+msgid "Author Chat for Android:"
+msgstr "Author Chat voor Android:"
+
+#: pp-options.php:7 pp-author-chat.php:187
+msgid "Author Chat Options"
+msgstr "Author Chat Opties"
+
+#. Name of the plugin
+msgid "Author Chat Plugin"
+msgstr "Author Chat Plugin"
+
+#: pp-author-chat.php:247 pp-author-chat.php:639
+msgid "Buy Premium Version ($10.99)"
+msgstr "Koop Premium-versie ($ 10,99)"
+
+#: pp-options.php:64
+msgid "Choose how to display the authors: by Name or by Login?"
+msgstr ""
+"Kies hoe de auteurs moeten worden weergegeven: met de naam of met de login?"
+
+#: pp-options.php:52
+msgid "Contributor"
+msgstr "Bijdrager"
+
+#: pp-options.php:24
+msgid "Delete chat history older than how many days?"
+msgstr "Chatgeschiedenis verwijderen ouder dan hoeveel dagen?"
+
+#: pp-options.php:42
+msgid "Editor"
+msgstr "Editor"
+
+#: pp-author-chat.php:249 pp-author-chat.php:281
+msgid "for lifetime 1 domain licence"
+msgstr "voor levenslang 1 domeinlicentie"
+
+#: pp-author-chat.php:250 pp-author-chat.php:282
+msgid "future premium features included"
+msgstr "toekomstige premiumfuncties inbegrepen"
+
+#. Author URI of the plugin
+msgid "https://github.com/Pantsoffski"
+msgstr "https://github.com/Pantsoffski"
+
+#. URI of the plugin
+msgid "https://github.com/Pantsoffski/Author-Chat-Plugin"
+msgstr "https://github.com/Pantsoffski/Author-Chat-Plugin"
+
+#: pp-author-chat.php:256 pp-author-chat.php:645
+msgid ""
+"If your domain name is correct, do not change it. Activation can take up to "
+"24 hours! If you have any problems contact me at piotr.pesta@gmail.com"
+msgstr ""
+"Als uw domeinnaam correct is, verander deze dan niet. Activering kan tot 24 "
+"uur duren! Als je problemen hebt, neem dan contact met mij op via piotr."
+"pesta@gmail.com"
+
+#: pp-options.php:68
+msgid "Login (Username)"
+msgstr "Login (Gebruikersnaam)"
+
+#: pp-options.php:73
+msgid "Name (Display name)"
+msgstr "Naam (Weergavenaam)"
+
+#: pp-options.php:146
+msgid ""
+"Permanently delete chat history? (data will be deleted when you check this "
+"box and click \"Save Changes\")"
+msgstr ""
+"Chatgeschiedenis definitief verwijderen? (gegevens worden verwijderd wanneer "
+"u dit vakje aanvinkt en op \"Wijzigingen opslaan\" klikt)"
+
+#. Author of the plugin
+msgid "Piotr Pesta"
+msgstr "Piotr Pesta"
+
+#. Description of the plugin
+msgid ""
+"Plugin that gives your authors an easy way to communicate through back-end "
+"UI (admin panel)."
+msgstr ""
+"Plug-in die uw auteurs een gemakkelijke manier biedt om te communiceren via "
+"de back-end UI (admin-paneel)."
+
+#: pp-options.php:126
+msgid "Refresh interval to check new messages"
+msgstr "Interval om nieuwe berichten te controleren"
+
+#: pp-options.php:139
+msgid "second(s)"
+msgstr "seconde(n)"
+
+#: pp-author-chat.php:218
+msgid "Settings"
+msgstr "Instellingen"
+
+#: pp-options.php:82
+msgid "Show chat window everywhere (Premium Function)?"
+msgstr "Chatvenster overal weergeven? (Premium-functie)"
+
+#: pp-options.php:93
+msgid "Show my name in the messages?"
+msgstr "Mijn naam tonen in de berichten?"
+
+#: pp-options.php:104
+msgid "Show thumb preview of the URLs?"
+msgstr "Miniaturen van de URL's weergeven?"
+
+#: pp-options.php:115
+msgid "Show weekday names of recent days?"
+msgstr "Weekdagnamen van de afgelopen dagen weergeven?"
+
+#: pp-options.php:57
+msgid "Subscriber"
+msgstr "Abonnee"
+
+#: pp-author-chat.php:279
+msgid "To send text from here you need to buy premium version of that plugin"
+msgstr ""
+"Om vanaf hier tekst te verzenden, moet je de premium-versie van deze plug-in "
+"kopen"
+
+#: pp-options.php:33
+msgid "Who should have access to Author Chat?"
+msgstr "Wie moet toegang hebben tot Author Chat?"
+
+#: pp-author-chat.php:168
+msgid "Yesterday"
+msgstr "Gisteren"
+
+#: pp-author-chat.php:166
+msgid "You are:"
+msgstr "Jij bent:"
+
+#: pp-author-chat.php:275
+msgid "Your message..."
+msgstr "Jouw bericht..."

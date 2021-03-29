@@ -93,7 +93,7 @@ class URE_Widgets_Show_View {
         wp_enqueue_style('wp-jquery-ui-dialog');
         
         wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core','jquery-ui-button', 'jquery') );
-        wp_register_script( 'ure-widgets-show-access', plugins_url('/pro/js/widgets-show-access.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-widgets-show-access', plugins_url('/pro/js/widgets-show-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-widgets-show-access' );
         wp_localize_script( 'ure-widgets-show-access', 'ure_data_widgets_show_access',
                 array(

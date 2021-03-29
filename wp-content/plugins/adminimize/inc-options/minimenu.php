@@ -21,11 +21,20 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 <br class="clear" />
 <div id="poststuff" class="ui-sortable meta-box-sortables"><!-- The ID should be unique. Right now, all the option panels are sharing the $poststuff ID-->
 	<div id="minimenu" class="postbox ">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
-		<h3 class="hndle" id="menu"><?php esc_attr_e( 'MiniMenu', 'adminimize' ) ?></h3>
+		<h3 class="hndle ui-sortable-handle" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>" id="menu"><?php esc_attr_e( 'MiniMenu', 'adminimize' ) ?></h3>
 
 		<div class="inside">
 			<table class="widefat" cellspacing="0">
+				<?php
+					/**
+					* Before first row minimenu
+					*
+					* Add the possibility to add element before first row of the minimenu.
+					*
+					* @since 1.11.6
+					*/
+					do_action( 'mw_adminimize_minimenu_before_first_tr' );
+				?>
 				<tr>
 					<td class="row-title"><a href="#about"><?php esc_attr_e(
 								'About the plugin', 'adminimize'
@@ -128,6 +137,16 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 								'Uninstall Options', 'adminimize'
 							); ?></a></td>
 				</tr>
+				<?php
+					/**
+					* After last row minimenu
+					*
+					* Add the possibility to add element after last row of the minimenu.
+					*
+					* @since 1.11.6
+					*/
+					do_action( 'mw_adminimize_minimenu_after_last_tr' );
+				?>
 			</table>
 		</div>
 	</div>
@@ -135,8 +154,7 @@ if ( _mw_adminimize_is_active_on_multisite() ) {
 
 <div id="poststuff" class="ui-sortable meta-box-sortables">
 	<div id="about" class="postbox">
-		<div class="handlediv" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>"><br /></div>
-		<h3 class="hndle" id="about-sidebar"><?php esc_attr_e( 'About the plugin', 'adminimize' ) ?></h3>
+		<h3 class="hndle ui-sortable-handle" title="<?php esc_attr_e( 'Click to toggle', 'adminimize' ); ?>" id="about-sidebar"><?php esc_attr_e( 'About the plugin', 'adminimize' ) ?></h3>
 
 		<div class="inside">
 			<p>

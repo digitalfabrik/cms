@@ -7,10 +7,10 @@ jQuery(function() {
             var widget_id = obj_id.substr(0, pos);
             jQuery('#'+ obj_id).button({
                 label: ure_data_widgets_show_access.access
-            }).click(function(event) {
+            }).on('click', (function(event) {
                     event.preventDefault();
                     ure_widgets_show_access_dialog_prepare(widget_id);
-            });
+            }));
         }
     });
     
@@ -86,7 +86,7 @@ function ure_widgets_show_access_dialog(data) {
       $('.ui-dialog-buttonpane button:contains("Cancel")').attr("id", "dialog-cancel-button");
       $('#dialog-cancel-button').html(ure_ui_button_text(ure_data_widgets_show_access.cancel));      
       $('#ure_widgets_show_access_container').html(data.html);
-      $('#ure_widgets_show_access_select_all').click(ure_widgets_show_access_auto_select);
+      $('#ure_widgets_show_access_select_all').on('click', ure_widgets_show_access_auto_select);
     });                                
     
 }

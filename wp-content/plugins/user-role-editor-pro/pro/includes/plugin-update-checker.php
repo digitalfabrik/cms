@@ -622,10 +622,11 @@ class PluginUpdateChecker_1_5 {
 
 		if ( $cachedResult === null ) {
 			//Convert both paths to the canonical form before comparison.
-			$muPluginDir = realpath(WPMU_PLUGIN_DIR);
-			$pluginPath  = realpath($this->pluginAbsolutePath);
-
-			$cachedResult = (strpos($pluginPath, $muPluginDir) === 0);
+			$muPluginDir = (string) realpath(WPMU_PLUGIN_DIR);
+			$pluginPath  = (string) realpath($this->pluginAbsolutePath);
+                        if ( !empty( $muPluginDir ) ) {
+                            $cachedResult = ( strpos( $pluginPath, $muPluginDir ) === 0 );                            
+                        }
 		}
 
 		return $cachedResult;

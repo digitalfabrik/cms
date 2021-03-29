@@ -1,6 +1,6 @@
 /* User Role Editor: support of 'Without Roles' button for users.php */
 
-jQuery(document).ready(function() {        
+jQuery(function() {        
     jQuery('#move_from_no_role_content').append(ure_users_data.to +' <select id="ure_new_role" name="ure_new_role"></select>');
     var ure_new_role = jQuery('#ure_new_role');
     var options = jQuery("#new_role > option").clone();

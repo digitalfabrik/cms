@@ -43,7 +43,7 @@ class URE_Plugins_Access_Role {
     
     
     public function add_js() {
-        wp_register_script('ure-plugins-access', plugins_url('/pro/js/plugins-access-role.js', URE_PLUGIN_FULL_PATH));
+        wp_register_script('ure-plugins-access', plugins_url('/pro/js/plugins-access-role.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ('ure-plugins-access');
         wp_localize_script('ure-plugins-access', 'ure_data_plugins_access',
                 array(

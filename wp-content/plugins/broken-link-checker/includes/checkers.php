@@ -89,7 +89,6 @@ class blcCheckerHelper {
 
 		$manager         = blcModuleManager::getInstance();
 		$active_checkers = $manager->get_active_by_category( 'checker' );
-
 		foreach ( $active_checkers as $module_id => $module_data ) {
 			//Try the URL pattern in the header first. If it doesn't match,
 			//we can avoid loading the module altogether.

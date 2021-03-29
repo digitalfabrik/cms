@@ -101,7 +101,8 @@ class URE_Admin_Menu {
     
     public static function get_menu_hashes() {
         
-        $hashes = get_option(self::ADMIN_MENU_HASHES);
+        $hashes = get_option( self::ADMIN_MENU_HASHES );        
+        $hashes = apply_filters('ure_admin_menu_get_hashes', $hashes );
         
         return $hashes;
     }
@@ -119,17 +120,17 @@ class URE_Admin_Menu {
             'user_role', 
             'ure_admin_menu_access_model');
         
-        $access_model = $_POST['ure_admin_menu_access_model'];
+        $access_model = $_POST['values']['ure_admin_menu_access_model'];
         if ($access_model!=1 && $access_model!=2) { // got invalid value
             $access_model = 1;  // use default value
         }        
         $menu_access_data = array('access_model'=>$access_model);
         
-        foreach ($_POST as $key=>$value) {
-            if (in_array($key, $keys_to_skip)) {
+        foreach ($_POST['values'] as $key=>$value) {
+            if ( in_array( $key, $keys_to_skip ) ) {
                 continue;
             }
-            $menu_access_data['data'][] = filter_var($key, FILTER_SANITIZE_STRING);
+            $menu_access_data['data'][] = filter_var( $key, FILTER_SANITIZE_STRING );
         }
         
         return $menu_access_data;
@@ -137,25 +138,27 @@ class URE_Admin_Menu {
     // end of get_menu_access_post_data()
         
     
-    public static function save_menu_access_data_for_role($role_id) {
-        global $wp_roles;
+    public static function save_menu_access_data_for_role( $role_id ) {
+        
+        $wp_roles = wp_roles();
         
         $menu_access_for_role = self::get_menu_access_post_data();
         $menu_access_data = get_option(self::ACCESS_DATA_KEY);        
-        if (!is_array($menu_access_data)) {
+        if ( !is_array( $menu_access_data ) ) {
             $menu_access_data = array();
         }
-        if (count($menu_access_for_role)>0) {
+        if ( count( $menu_access_for_role )>0 ) {
             $menu_access_data[$role_id] = $menu_access_for_role;
         } else {
-            unset($menu_access_data[$role_id]);
+            unset( $menu_access_data[$role_id] );
         }
-        foreach (array_keys($menu_access_data) as $role_id) {
-            if (!isset($wp_roles->role_names[$role_id])) {
-                unset($menu_access_data[$role_id]);
+        foreach ( array_keys( $menu_access_data ) as $role_id ) {
+            if ( !isset( $wp_roles->role_names[$role_id] ) ) {
+                unset( $menu_access_data[$role_id] );
             }
         }
-        update_option(self::ACCESS_DATA_KEY, $menu_access_data);
+        update_option( self::ACCESS_DATA_KEY, $menu_access_data );
+        
     }
     // end of save_menu_access_data_for_role()
     
@@ -170,27 +173,23 @@ class URE_Admin_Menu {
 
     public static function update_data() {
     
-        if (!isset($_POST['action']) || $_POST['action']!=='ure_update_admin_menu_access') {            
-            return;
+        $answer = array('result'=>'error', 'message'=>'');                
+        
+        if ( !current_user_can('ure_admin_menu_access') ) {
+            $answer['message'] = esc_html__('URE: Insufficient permissions to use this add-on','user-role-editor');
+            return $answer;
         }
         
-        $editor = URE_Editor::get_instance();
-        
-        if (!current_user_can('ure_admin_menu_access')) {
-            $editor->set_notification( esc_html__('URE: Insufficient permissions to use this add-on','user-role-editor') );
-            return;
+        $ure_object_type = ( isset( $_POST['values']['ure_object_type'] ) ) ? filter_var( $_POST['values']['ure_object_type'], FILTER_SANITIZE_STRING ) : false;
+        if ( $ure_object_type!=='role' && $ure_object_type!=='user') {
+            $answer['message'] = esc_html__('URE: administrator menu access: Wrong object type. Data was not updated.', 'user-role-editor');
+            return $answer;
         }
         
-        $ure_object_type = filter_input(INPUT_POST, 'ure_object_type', FILTER_SANITIZE_STRING);
-        if ($ure_object_type!=='role' && $ure_object_type!=='user') {
-            $editor->set_notification( esc_html__('URE: administrator menu access: Wrong object type. Data was not updated.', 'user-role-editor') );
-            return;
-        }
-        
-        $ure_object_name = filter_input(INPUT_POST, 'ure_object_name', FILTER_SANITIZE_STRING);
-        if (empty($ure_object_name)) {
-            $editor->set_notification( esc_html__('URE: administrator menu access: Empty object name. Data was not updated', 'user-role-editor') );
-            return;
+        $ure_object_name = isset( $_POST['values']['ure_object_name'] ) ? filter_var( $_POST['values']['ure_object_name'], FILTER_SANITIZE_STRING ) : false;
+        if ( empty( $ure_object_name ) ) {
+            $answer['message'] = esc_html__('URE: administrator menu access: Empty object name. Data was not updated', 'user-role-editor');
+            return $answer;
         }
                         
         if ($ure_object_type=='role') {
@@ -199,7 +198,10 @@ class URE_Admin_Menu {
             URE_Admin_Menu::save_menu_access_data_for_user($ure_object_name);
         }
                 
-        $editor->set_notification( esc_html__('Administrator menu access data was updated successfully', 'user-role-editor') );
+        $answer['result'] = 'success';
+        $answer['message'] = esc_html__('Administrator menu access data was updated successfully', 'user-role-editor');
+        
+        return $answer;
     }
     // end of update_data()
     

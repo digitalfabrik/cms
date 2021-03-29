@@ -115,19 +115,19 @@ var ure_plugins_access = {
       jQuery('.ui-dialog-buttonpane button:contains("Cancel")').attr("id", "dialog-cancel-button");
       jQuery('#dialog-cancel-button').html(ure_data_plugins_access.cancel);
       jQuery('#ure_plugins_access_dialog_content').html(data.html);
-      jQuery('#ure_plugins_access_select_all').click(this.auto_select);
+      jQuery('#ure_plugins_access_select_all').on('click', this.auto_select);
     }
 };
 
 
-jQuery(document).ready(function(){
+jQuery(function(){
     if (jQuery('#ure_plugins_access_list').length==0) {
         return;
     }
-    jQuery("#ure_edit_allowed_plugins").button().click(function(event) {
+    jQuery("#ure_edit_allowed_plugins").button().on('click', (function(event) {
         event.preventDefault();
         ure_plugins_access.selection_dialog_prepare();                
-    });              
+    }));
             
 });    
 

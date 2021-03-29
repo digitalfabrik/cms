@@ -25,7 +25,7 @@
         $link = URE_Settings::get_settings_link();
 
         if (!$multisite || (is_main_site(get_current_blog_id()) || ( is_network_admin() && $lib->is_super_admin() ) )) {
-            if (current_user_can('ure_reset_roles')) {
+            if ( current_user_can('ure_export_roles') ) {
 ?>               
 
                     <div style="margin: 10px 0 10px 0; border: 1px solid green; padding: 0 10px 10px 10px; text-align:left;">

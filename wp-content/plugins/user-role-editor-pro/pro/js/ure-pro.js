@@ -11,11 +11,11 @@ jQuery(function() {
     }
     jQuery('#ure_update_all_network').button({
         label: ure_data_pro.update_network
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         show_update_network_dialog();
                 
-    });
+    }));
 });
 
 

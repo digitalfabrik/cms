@@ -44,15 +44,38 @@ class URE_Admin_Menu_Access {
     }
     // end of __construct()
 
+    
+    // Remove empty items from menu/submenu
+    private function menu_items_cleanup() {        
+        global $menu, $submenu;
+        
+        foreach ( $submenu as $key => $item ) {
+            foreach ( $item as $key1 => $item1 ) {
+                if ( empty( $item1 ) ) {
+                    unset( $submenu[$key][$key1] );
+                }
+            }
+        }
+
+        foreach ( $menu as $key => $item ) {
+            if ( isset( $submenu[$item[2]] ) && empty( $submenu[$item[2]] ) ) {
+                unset( $menu[$key] );
+            }
+        }
+        
+    }
+    // end of menu_items_cleanup()
+    
 
     public function protect() {
         
         $this->remove_blocked_menu_items();
+        $this->menu_items_cleanup();
         $this->redirect_blocked_urls();
         
     }
     // end of protect()
-
+    
 
     /**
      * Check if there is an accessible submenu item - replace menu item capability with submenu item capability then
@@ -84,9 +107,9 @@ class URE_Admin_Menu_Access {
     private function remove_prohibited_items() {
         global $menu;
         
-        foreach ($menu as $key=>$menu_item) {
-            if (!current_user_can($menu_item[1]) && !$this->is_submenu_permitted($menu_item)) {
-                unset($menu[$key]);
+        foreach ( $menu as $key=>$menu_item ) {
+            if ( !current_user_can( $menu_item[1] ) && !$this->is_submenu_permitted( $menu_item ) ) {
+                unset( $menu[$key] );
             }                        
         } // foreach($menu ...
         
@@ -125,18 +148,26 @@ class URE_Admin_Menu_Access {
     public function menu_glitches_cleanup() {
         global $menu, $submenu;
         
-        foreach($menu as $key=>$item) {
-            if (!isset($item[1])) {
-                unset($menu[$key]);
+        foreach( $menu as $key=>$item ) {
+            if ( !isset( $item[1] ) ) {
+                unset( $menu[$key] );
             }
         }
-        foreach($submenu as $key=>$items_list) {
-            foreach($items_list as $item_key=>$item) {
-                if (!isset($item[1]) || empty($item[1])) {
-                    unset($submenu[$key][$item_key]);
+        
+        foreach( $submenu as $key=>$items_list ) {
+            foreach( $items_list as $item_key=>$item ) {
+                if ( empty( $item ) || !isset( $item[1] ) || empty( $item[1] ) ) {
+                    unset( $submenu[$key][$item_key] );
                 }
             }
         }
+            
+        foreach( $menu as $key=>$item ) {            
+            if ( isset( $submenu[$item[2]] ) && empty( $submenu[$item[2]] ) ) {
+                unset( $menu[$key] );
+            }
+        }
+
         
         $this->remove_prohibited_items();
         
@@ -854,14 +885,19 @@ class URE_Admin_Menu_Access {
     // end of is_command_allowed()
     
     
-    private function exclusion_for_not_selected($command, $allowed) {
+    private function exclusion_for_not_selected( $command, $allowed ) {
         
-        if ($this->is_blocked_not_selected_menu_item($command)) {
+        if ( $this->is_blocked_not_selected_menu_item( $command ) ) {
             return false;
         }
         
         // if command was not selected but it does not match with any admin menu (submenu) item - do not block it
-        if (!$this->command_from_main_menu($command)) {
+        if ( !$this->command_from_main_menu( $command ) ) {
+            return true;
+        }
+        
+        $not_block = apply_filters( 'ure_admin_menu_access_not_block_url', false, $command );
+        if ( $not_block ) {
             return true;
         }
         
@@ -881,7 +917,7 @@ class URE_Admin_Menu_Access {
         
         return false;
     }
-    // end of exclusions_for_not_selected()
+    // end of exclusion_for_not_selected()
     
     
     public function redirect_blocked_urls() {        
@@ -894,7 +930,7 @@ class URE_Admin_Menu_Access {
             return;
         }        
         
-        $blocked = URE_Admin_Menu::load_data_for_user($current_user);
+        $blocked = URE_Admin_Menu::load_data_for_user( $current_user );
         if (empty($blocked['data'])) {
             return;
         }
@@ -916,6 +952,7 @@ class URE_Admin_Menu_Access {
                 return;
             }          
             if ($this->exclusion_for_not_selected($command1, $blocked['data'])) {
+                $this->remove_welcome_panel($command1, $blocked['data'], 2);
                 return;                
             }                                    
         }

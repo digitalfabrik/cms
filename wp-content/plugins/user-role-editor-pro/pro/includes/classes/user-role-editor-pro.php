@@ -83,20 +83,21 @@ class User_Role_Editor_Pro extends User_Role_Editor {
             add_action('ure_user_permissions_update', array('URE_Editor_Ext', 'network_update_user'), 10, 1 );
         }
         
-        add_action('ure_load_js', array($this, 'add_js'));        
-        add_action('ure_load_js_settings', array($this, 'add_js_settings'));
+        add_action('ure_load_js', array($this, 'add_js') );        
+        add_action('ure_load_js_settings', array($this, 'add_js_settings') );
         
         $active_for_network = $this->lib->get('active_for_network');
-        if ($multisite && is_network_admin()) {
-            if (!$active_for_network) {
+        if ( $multisite && is_network_admin() ) {
+            if ( !$active_for_network ) {
                 add_filter('network_admin_plugin_action_links_'. URE_PLUGIN_BASE_NAME, 
-                           array($this, 'network_admin_plugin_action_links'), 10, 1);
+                           array($this, 'network_admin_plugin_action_links'), 10, 1 );
             }
-            add_action('ms_user_row_actions', array( $this, 'user_row'), 10, 2);
+            add_action('ms_user_row_actions', array( $this, 'user_row'), 10, 2 );
             add_action('ure_role_edit_toolbar_update', 'URE_Pro_View::add_role_update_network_button');
             add_action('ure_user_edit_toolbar_update', 'URE_Pro_View::add_user_update_network_button');
             add_action('ure_dialogs_html', 'URE_Pro_View::network_update_dialog_html');
-            add_action('ure_load_js_settings', array($this, 'add_js_settings_ms'));
+            add_action('ure_process_user_request', 'URE_Editor_Ext::network_update');
+            add_action('ure_load_js_settings', array($this, 'add_js_settings_ms') );
         }
 /*                
         if (!$multisite) {
@@ -211,7 +212,7 @@ class User_Role_Editor_Pro extends User_Role_Editor {
     
     public function add_js() {
         
-        wp_register_script( 'ure-js-pro', plugins_url( '/pro/js/ure-pro.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-js-pro', plugins_url( '/pro/js/ure-pro.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-js-pro' );
         
         $manager = URE_Addons_Manager::get_instance();
@@ -232,7 +233,7 @@ class User_Role_Editor_Pro extends User_Role_Editor {
 
     public function add_js_settings() {
         
-        wp_register_script( 'ure-settings-pro', plugins_url( '/pro/js/settings.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-settings-pro', plugins_url( '/pro/js/settings.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-settings-pro' );
         wp_localize_script( 'ure-settings-pro', 'ure_settings_data_pro', 
                 array(
@@ -241,6 +242,7 @@ class User_Role_Editor_Pro extends User_Role_Editor {
                     'update_button' => esc_html__('Update', 'user-role-editor'),
                     'close_button' => esc_html__('Close', 'user-role-editor'),
                     'export_button' => esc_html__('Export', 'user-role-editor'),
+                    'import_button' => esc_html__('Import', 'user-role-editor'),
                     'no_allowed_args_to_send' => esc_html__('Input allowed aguments before try to save it.', 'user-role-editor')
                 ));
         
@@ -250,7 +252,7 @@ class User_Role_Editor_Pro extends User_Role_Editor {
     
     public function add_js_settings_ms() {
         
-        wp_register_script( 'ure-jquery-dual-listbox', plugins_url( '/pro/js/jquery.dualListBox-1.3.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-jquery-dual-listbox', plugins_url( '/pro/js/jquery.dualListBox-1.3.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-jquery-dual-listbox' );        
         
     }
@@ -260,11 +262,10 @@ class User_Role_Editor_Pro extends User_Role_Editor {
     protected function allow_unfiltered_html() {
         
         $multisite = $this->lib->get('multisite');
-        if ( !$multisite || !is_admin() ||  
-             ((defined( 'DISALLOW_UNFILTERED_HTML' ) && DISALLOW_UNFILTERED_HTML)) ) {
+        if ( !$multisite ||   
+             ( defined( 'DISALLOW_UNFILTERED_HTML' ) && DISALLOW_UNFILTERED_HTML ) ) {
             return;
-        }
-        
+        }        
         $enable_unfiltered_html_ms = $this->lib->get_option('enable_unfiltered_html_ms', 0);
         if ($enable_unfiltered_html_ms) {
             add_filter('map_meta_cap', array($this, 'allow_unfiltered_html_filter'), 10, 2);
@@ -274,11 +275,11 @@ class User_Role_Editor_Pro extends User_Role_Editor {
     // end of allow_unfiltered_html()
     
     
-    public function allow_unfiltered_html_filter($caps, $cap='') {
-
-        $current_user = wp_get_current_user();
-        if ($cap=='unfiltered_html') {
-            if (isset($current_user->allcaps['unfiltered_html']) && 
+    public function allow_unfiltered_html_filter( $caps, $cap='' ) {
+        
+        if ( $cap==='unfiltered_html' || $cap==='edit_css' ) {
+            $current_user = wp_get_current_user();
+            if ( isset( $current_user->allcaps['unfiltered_html'] ) && 
                 $current_user->allcaps['unfiltered_html'] && $caps[0]=='do_not_allow') {
                 $caps[0] = 'unfiltered_html';
                 return $caps;
@@ -347,6 +348,17 @@ class User_Role_Editor_Pro extends User_Role_Editor {
 ';
     }
     // end of show_notices_to_admin_only()
+    
+    
+    // excute on plugin uninstall via WordPress->Plugins->Delete
+    public static function uninstall() {
+
+        $uninstall = new URE_Uninstall_Pro;
+        $uninstall->act();
+        
+    }
+    // end of uninstall()
+    
     
 }
 // end of class User_Role_Editor_Pro

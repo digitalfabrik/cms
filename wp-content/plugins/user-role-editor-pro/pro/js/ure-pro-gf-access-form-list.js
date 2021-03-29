@@ -4,7 +4,7 @@
  * 
  */
 
-jQuery(document).ready(function($){
+jQuery(function($){
     
   $('tbody.user-list tr.author-self').each(function() { //loop over each row
       if (this.cells[1].className=='column-id') {

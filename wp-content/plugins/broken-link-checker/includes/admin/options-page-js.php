@@ -130,8 +130,8 @@ jQuery(function($){
 
 	//Enable/disable log-related options depending on whether "Enable logging" is on.
 	function blcToggleLogOptions() {
-		$('#blc-logging-options')
-			.find('input')
+		$('.blc-logging-options')
+			.find('input,select')
 			.prop('disabled', ! $('#logging_enabled').is(':checked'));
 	}
 

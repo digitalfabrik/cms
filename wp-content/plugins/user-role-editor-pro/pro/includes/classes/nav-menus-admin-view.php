@@ -3,12 +3,11 @@
 class URE_Nav_Menus_Admin_View {
 
     private $lib = null;
-    private $controller = null;
+
     
     public function __construct() {
         
         $this->lib = URE_Lib_Pro::get_instance();
-        $this->controller = new URE_Nav_Menus_Admin_Controller();
         
         add_action('ure_role_edit_toolbar_service', array($this, 'add_toolbar_buttons'));
         add_action('ure_load_js', array($this, 'add_js'));
@@ -36,7 +35,7 @@ class URE_Nav_Menus_Admin_View {
     
     public function add_js() {
         
-        wp_register_script( 'ure-nav-menus-admin-access', plugins_url( '/pro/js/nav-menus-admin-access.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-nav-menus-admin-access', plugins_url( '/pro/js/nav-menus-admin-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-nav-menus-admin-access' );
         wp_localize_script( 'ure-nav-menus-admin-access', 'ure_data_nav_menus_access',
                 array(
@@ -64,7 +63,7 @@ class URE_Nav_Menus_Admin_View {
 
     private function list_nav_menus( $readonly_mode, $blocked_items ) {
         
-        $menus_list = $this->controller->get_all_nav_menus();
+        $menus_list = URE_Nav_Menus_Admin_Controller::get_all_nav_menus();
 ?>
 <h3><?php esc_html_e( 'Menus', 'user_role-editor' );?></h3>
 <table id="ure_nav_menus_access_table">
@@ -100,7 +99,7 @@ class URE_Nav_Menus_Admin_View {
     
     public function get_html( $user=null ) {
                         
-        $allowed_roles = $this->controller->get_allowed_roles( $user );
+        $allowed_roles = URE_Nav_Menus_Admin_Controller::get_allowed_roles( $user );
         if ( empty( $user ) ) {
             $ure_object_type = 'role';
             $ure_object_name = $allowed_roles[0];
@@ -108,7 +107,7 @@ class URE_Nav_Menus_Admin_View {
         } else {
             $ure_object_type = 'user';
             $ure_object_name = $user->user_login;
-            $blocked_items = $this->controller->load_data_for_user( $ure_object_name );
+            $blocked_items = URE_Nav_Menus_Admin_Controller::load_data_for_user( $ure_object_name );
         }
         
         $multisite = $this->lib->get( 'multisite' );

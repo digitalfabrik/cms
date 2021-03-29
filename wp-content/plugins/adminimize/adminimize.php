@@ -7,7 +7,7 @@
  * Description: Visually compresses the administrative meta-boxes so that more admin page content can be initially seen. The plugin that lets you hide 'unnecessary' items from the WordPress administration menu, for all roles of your install. You can also hide post meta controls on the edit-area to simplify the interface. It is possible to simplify the admin in different for all roles.
  * Author:      Frank Bültge
  * Author URI:  http://bueltge.de/
- * Version:     1.11.5
+ * Version:     1.11.7
  * License:     GPLv2+
  *
  * Php Version 5.6
@@ -15,7 +15,7 @@
  * @package WordPress
  * @author  Frank Bültge <frank@bueltge.de>
  * @license http://opensource.org/licenses/gpl-license.php GNU Public License
- * @version 2019-07-07
+ * @version 2020-07-15
  */
 
 /**
@@ -108,17 +108,16 @@ function _mw_adminimize_exclude_settings_page() {
 		$page = esc_attr( $_GET['page'] );
 	}
 
-	$screen = $page;
 	if ( function_exists( 'get_current_screen' ) ) {
 		$screen_tmp = get_current_screen();
 
 		if ( isset( $screen_tmp->id ) && null !== $screen_tmp->id ) {
-			$screen = $screen_tmp->id;
+			$page = $screen_tmp->id;
+		}
 	}
-}
 
 	// Don't filter on settings page
-	return FALSE !== strpos( $screen, 'adminimize' );
+	return FALSE !== strpos( $page, 'adminimize' );
 }
 
 /**
@@ -132,7 +131,18 @@ function _mw_adminimize_is_active_on_multisite() {
 		require_once ABSPATH . '/wp-admin/includes/plugin.php';
 	}
 
-	if ( is_multisite() && is_plugin_active_for_network( FB_ADMINIMIZE_BASENAME ) ) {
+	/**
+	 * Allow different adminimize options per site on multisite.
+	 *
+	 * @since 1.11.6
+	 *
+	 * @param bool
+	 */
+	$force_single_site_usage = apply_filters( 'adminimize_mu_force_options_per_site', false );
+
+	if ( is_multisite()
+		&& is_plugin_active_for_network( FB_ADMINIMIZE_BASENAME )
+		&& ! $force_single_site_usage ) {
 		return TRUE;
 	}
 
@@ -153,7 +163,7 @@ function _mw_adminimize_get_all_user_roles() {
 
 	$user_roles = array();
 
-	if ( NULL !== $wp_roles->roles && is_array( $wp_roles->roles ) ) {
+	if ( null !== $wp_roles->roles && is_array( $wp_roles->roles ) ) {
 		foreach ( $wp_roles->roles as $role => $data ) {
 			$user_roles[] = $role;
 			// The $data var contains caps, maybe for later use.
@@ -168,7 +178,14 @@ function _mw_adminimize_get_all_user_roles() {
 		);
 	}
 
-	return $user_roles;
+	/**
+	 * Use this filter to add or remove a role in Adminimize options.
+	 *
+	 * @since 1.11.6
+	 *
+	 * @param array
+	 */
+	return apply_filters( 'adminimize_user_roles_filter', $user_roles );
 }
 
 /**
@@ -204,7 +221,14 @@ function _mw_adminimize_get_all_user_roles_names() {
 		);
 	}
 
-	return $user_roles_names;
+		/**
+	 * Use this filter to add or remove a role-name in Adminimize options.
+	 *
+	 * @since 1.11.6
+	 *
+	 * @param array
+	 */
+	return apply_filters( 'adminimize_user_roles_names_filter', $user_roles_names );
 }
 
 /**
@@ -219,14 +243,20 @@ function _mw_adminimize_get_current_post_type() {
 	// We have a post so we can just get the post type from that.
 	if ( $post && $post->post_type ) {
 		return $post->post_type;
-	} // Check the global $typenow - set in admin.php
-	elseif ( $typenow ) {
+	}
+
+	// Check the global $typenow - set in admin.php
+	if ( $typenow ) {
 		return $typenow;
-	} // check the global $current_screen object - set in sceen.php
-	elseif ( $current_screen && $current_screen->post_type ) {
+	}
+
+	// Check the global $current_screen object - set in screen.php
+	if ( $current_screen && $current_screen->post_type ) {
 		return $current_screen->post_type;
-	} // lastly check the post_type querystring
-	elseif ( isset( $_REQUEST['post_type'] ) ) {
+	}
+
+	// lastly check the post_type querystring
+	if ( isset( $_REQUEST['post_type'] ) ) {
 		return sanitize_key( $_REQUEST[ 'post_type' ] );
 	}
 
@@ -257,6 +287,13 @@ function _mw_adminimize_admin_init() {
 	}
 	if ( ! $current_post_type ) { // set hard to post
 		$current_post_type = 'post';
+	}
+
+	// Debug helper
+	if ( class_exists( 'DebugListener' ) ) {
+		$listener = new DebugListener();
+		add_action( 'adminimize.log', [$listener, 'listen'], 10, 2 );
+		add_action( 'wp_footer', array( $listener, 'dump' ), PHP_INT_MAX );
 	}
 
 	// Get all user roles.
@@ -320,16 +357,13 @@ function _mw_adminimize_admin_init() {
 	// Backend options
 	// exclude super admin
 	if ( ! _mw_adminimize_exclude_super_admin() && ! _mw_adminimize_exclude_settings_page() ) {
-
 		$_mw_adminimize_header = (int) _mw_adminimize_get_option_value( '_mw_adminimize_header' );
-		switch ( $_mw_adminimize_header ) {
-			case 1:
-				wp_enqueue_script(
-					'_mw_adminimize_remove_header',
-					WP_PLUGIN_URL . '/' . FB_ADMINIMIZE_BASEFOLDER . '/js/remove_header' . $suffix . '.js',
-					array( 'jquery' )
-				);
-				break;
+		if ( 1 === $_mw_adminimize_header ) {
+			wp_enqueue_script(
+				'_mw_adminimize_remove_header',
+				WP_PLUGIN_URL . '/' . FB_ADMINIMIZE_BASEFOLDER . '/js/remove_header' . $suffix . '.js',
+				[ 'jquery' ]
+			);
 		}
 
 		// Post-page options.
@@ -561,7 +595,7 @@ function _mw_adminimize_set_menu_option() {
 
 	// exclude super admin
 	if ( _mw_adminimize_exclude_super_admin() ) {
-		return NULL;
+		return;
 	}
 
 	// Leave the settings screen from Adminimize to see all areas on settings.
@@ -570,13 +604,26 @@ function _mw_adminimize_set_menu_option() {
 	}
 
 	global $menu, $submenu;
+	$wp_menu    = (array) _mw_adminimize_get_option_value( 'mw_adminimize_default_menu' );
+	$wp_submenu = (array) _mw_adminimize_get_option_value( 'mw_adminimize_default_submenu' );
 
+	// Object to array
+	if ( is_object( $wp_submenu ) ) {
+		$wp_submenu = get_object_vars( $wp_submenu );
+	}
+
+	if ( ! isset( $wp_menu ) || empty( $wp_menu ) ) {
+		$wp_menu = $menu;
+	}
+	if ( ! isset( $wp_submenu ) || empty( $wp_submenu ) ) {
+		$wp_submenu = $submenu;
+	}
 	if ( ! isset( $menu ) || empty( $menu ) ) {
 		return;
 	}
 
-	_mw_adminimize_debug( $menu, 'Adminimize, WordPress Menu:' );
-	_mw_adminimize_debug( $submenu, 'Adminimize, WordPress Sub-Menu:' );
+	_mw_adminimize_debug( $wp_menu, 'Adminimize, WordPress Menu:' );
+	_mw_adminimize_debug( $wp_submenu, 'Adminimize, WordPress Sub-Menu:' );
 
 	$disabled_menu_    = array();
 	$disabled_submenu_ = array();
@@ -622,9 +669,9 @@ function _mw_adminimize_set_menu_option() {
 		$mw_adminimize_submenu = array_unique( $mw_adminimize_submenu );
 	}
 	_mw_adminimize_debug( $mw_adminimize_menu, 'Adminimize, Menu Slugs to hide after Filter.' );
-	_mw_adminimize_debug( $mw_adminimize_menu, 'Adminimize, Sub-Menu Slugs to hide after Filter.' );
+	_mw_adminimize_debug( $mw_adminimize_submenu, 'Adminimize, Sub-Menu Slugs to hide after Filter.' );
 
-	foreach ( $menu as $key => $item ) {
+	foreach ( $wp_menu as $key => $item ) {
 
 		_mw_adminimize_debug( $item, 'Adminimize, Each Menu Item Array to check for hiding.' );
 
@@ -640,8 +687,8 @@ function _mw_adminimize_set_menu_option() {
 			}
 
 			// Sub Menu Settings.
-			if ( isset( $submenu ) && ! empty( $submenu[ $menu_slug ] ) ) {
-				foreach ( (array) $submenu[ $menu_slug ] as $subindex => $subitem ) {
+			if ( isset( $wp_submenu ) && ! empty( $wp_submenu[ $menu_slug ] ) ) {
+				foreach ( (array) $wp_submenu[ $menu_slug ] as $subindex => $subitem ) {
 					// Check, if is Sub Menu item in the user role settings?
 					if (
 						isset( $mw_adminimize_submenu )
@@ -712,6 +759,9 @@ function _mw_adminimize_set_global_option() {
 	}
 	$_mw_adminimize_admin_head .= '<!-- Set Adminimize global options -->' . "\n";
 	$_mw_adminimize_admin_head .= '<style type="text/css">' . $global_options . ' {display:none !important;}</style>' . "\n";
+
+	// List options if the debug option is active.
+	_mw_adminimize_debug($global_options, 'Adminimize: List active global options:');
 
 	if ( '' !== $global_options ) {
 		echo $_mw_adminimize_admin_head;
@@ -1078,6 +1128,7 @@ function _mw_adminimize_small_user_info() {
 }
 
 // include helping functions
+require_once 'inc-setup/DebugListener.php';
 require_once 'inc-setup/helping_hands.php';
 
 // Include message class.
@@ -1165,9 +1216,11 @@ function _mw_adminimize_on_load_page() {
 
 	$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 
+	wp_enqueue_style( 'select2-style', plugins_url( 'css/select2' . $suffix . '.css', __FILE__ ), [], false );
 	wp_register_style( 'adminimize-style', plugins_url( 'css/style' . $suffix . '.css', __FILE__ ) );
 	wp_enqueue_style( 'adminimize-style' );
 
+	wp_enqueue_script( 'select2-script', plugins_url( 'js/select2' . $suffix . '.js', __FILE__ ), array( 'jquery' ),'',false );
 	wp_register_script(
 		'adminimize-settings-script',
 		plugins_url( 'js/adminimize' . $suffix . '.js', __FILE__ ),
@@ -1220,6 +1273,10 @@ function _mw_adminimize_update_option( $options ) {
 
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return FALSE;
+	}
+
+	if ( _mw_adminimize_is_roles_options_import( $options ) ){
+		$options = _mw_adminimize_roles_complete_options( $options );
 	}
 
 	// Remove slashes always.
@@ -1635,6 +1692,19 @@ function _mw_adminimize_update() {
 		$adminimizeoptions[ 'mw_adminimize_default_submenu' ] = $GLOBALS[ 'submenu' ];
 	}
 
+	/**
+	 * Filter the adminimize options.
+	*
+	* Make the options filterable, so we can modify what is saved before it's sent to the db
+	*
+	* @since 1.11.6
+	*
+	* @param array  $adminimizeoptions the original options.
+	* @param array $user_roles Array of the user roles.
+	* @param array  $_POST Post data.
+	*/
+	$adminimizeoptions = apply_filters( 'mw_adminimize_options_before_update', $adminimizeoptions, $user_roles, $_POST );
+
 	// update
 	$update_status = _mw_adminimize_update_option( $adminimizeoptions );
 
@@ -1707,4 +1777,53 @@ function _mw_adminimize_install() {
 		add_option( 'mw_adminimize', $adminimizeoptions );
 	}
 	wp_cache_add( 'mw_adminimize', $adminimizeoptions );
+}
+
+/**
+ * Make sure adminimize option is complete when a role json file is imported
+ *
+ * @param array $roles_options
+ *
+ * @return array
+ */
+function _mw_adminimize_roles_complete_options( $roles_options ){
+
+	$adminimizeoption = _mw_adminimize_get_option_value();
+
+	foreach ( $roles_options as $role_option_name => $role_option_value ){
+		$adminimizeoption[$role_option_name] = $role_option_value;
+	}
+
+	return $adminimizeoption;
+}
+
+/**
+ * Check if options comes from roles adminimize settings export
+ *
+ * @param array $options
+ *
+ * @return bool
+ */
+function _mw_adminimize_is_roles_options_import( $options ){
+	global $wp_roles;
+
+	$roles_options = [];
+	foreach (  $wp_roles->role_names as $role_slug => $role_name ){
+
+		$role_options = array_filter(
+			$options, function ( $option_key ) use ( $role_slug ) {
+				return stripos( $option_key, '_' . $role_slug ) !== false;
+			}, ARRAY_FILTER_USE_KEY
+		);
+
+		if ( empty( $roles_options ) ){
+			$roles_options = $role_options;
+		} else {
+			$roles_options = array_merge( $roles_options, $role_options );
+		}
+	}
+
+	if ( count( $options ) === count( $roles_options ) ){
+		return true;
+	}
 }

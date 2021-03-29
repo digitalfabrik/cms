@@ -245,7 +245,6 @@ class blcTableDelta {
 								( $tablefield->Type != $definition['data_type'] ) ||
 								( $definition['collation'] && ( $tablefield->Collation != $definition['collation'] ) ) ||
 								( $definition['null_allowed'] && ( 'NO' == $tablefield->Null ) ) ||
-								( ! $definition['null_allowed'] && ( 'NO' == $tablefield->Null ) ) ||
 								( $tablefield->Default !== $definition['default'] );
 
 							// Add a query to change the column type

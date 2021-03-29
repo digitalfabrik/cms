@@ -3,8 +3,8 @@ Contributors: Webstix
 Donate link: https://www.webstix.com/payment
 Tags: admin-rss-feed, rss-feed, wordpress-admin-dashboard, show-rss-feed, admin-widget
 Requires at least: 4.7.5
-Tested up to: 5.5.1
-Stable tag: 1.6
+Tested up to: 5.6
+Stable tag: 1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,3 +86,6 @@ This is the second screenshot, which is available in '/assets/screenshot-2.png'
 
 = 1.6 =
 * Updated the plugin to be compatible with 5.5.1.
+
+= 1.7 =
+* Updated the plugin to be compatible with 5.6.

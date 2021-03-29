@@ -40,23 +40,22 @@ class User_Role_Editor {
     
     
     /**
-     * Private clone method to prevent cloning of the instance of the *Singleton* 
+     * Prevent cloning of a *Singleton* instance 
      *
      * @return void
      */
-    private function __clone() {
-        
+    public function __clone() {
+        throw new \Exception('Do not clone a singleton instance.');
     }
     // end of __clone()
     
     /**
-     * Private unserialize method to prevent unserializing of the *Singleton*
-     * instance.
+     * Prevent unserializing of a *Singleton* instance.
      *
      * @return void
      */
-    private function __wakeup() {
-        
+    public function __wakeup() {
+        throw new \Exception('Do not unserialize a singleton instance.');
     }
     // end of __wakeup()
 
@@ -81,12 +80,12 @@ class User_Role_Editor {
         }
         $this->ure_hook_suffixes = array($this->settings_hook_suffix, $this->main_page_hook_suffix);
         
-        // activation action
-        register_activation_hook(URE_PLUGIN_FULL_PATH, array($this, 'setup'));
+        // Activation action
+        register_activation_hook( URE_PLUGIN_FULL_PATH, array($this, 'setup') );
 
-        // deactivation action
-        register_deactivation_hook(URE_PLUGIN_FULL_PATH, array($this, 'cleanup'));
-        		
+        // Deactivation action
+        register_deactivation_hook( URE_PLUGIN_FULL_PATH, array($this, 'cleanup') );
+                        		
         // Who can use this plugin
         $this->key_capability = URE_Own_Capabilities::get_key_capability();
                 
@@ -281,7 +280,7 @@ class User_Role_Editor {
   public function add_js_to_users_page() {
               
       wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core','jquery-ui-button', 'jquery') );
-      wp_register_script( 'ure-users', plugins_url( '/js/users.js', URE_PLUGIN_FULL_PATH ) );
+      wp_register_script( 'ure-users', plugins_url( '/js/users.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
       wp_enqueue_script ( 'ure-users' );      
       wp_localize_script( 'ure-users', 'ure_users_data', array(
         'wp_nonce' => wp_create_nonce('user-role-editor'),
@@ -725,7 +724,7 @@ class User_Role_Editor {
         
         wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core', 'jquery-ui-button', 'jquery'));
         wp_enqueue_script('jquery-ui-selectable', '', array('jquery-ui-core', 'jquery'));
-        wp_register_script('ure', plugins_url('/js/ure.js', URE_PLUGIN_FULL_PATH));
+        wp_register_script('ure', plugins_url('/js/ure.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script('ure');
         wp_localize_script('ure', 'ure_data', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),
@@ -773,10 +772,10 @@ class User_Role_Editor {
         wp_enqueue_script('jquery-ui-tabs', '', array('jquery-ui-core', 'jquery'));
         wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core', 'jquery'));
         wp_enqueue_script('jquery-ui-button', '', array('jquery-ui-core', 'jquery'));
-        wp_register_script('ure-js', plugins_url('/js/settings.js', URE_PLUGIN_FULL_PATH));
-        wp_enqueue_script('ure-js');
+        wp_register_script('ure-settings', plugins_url('/js/settings.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
+        wp_enqueue_script('ure-settings');
         
-        wp_localize_script('ure-js', 'ure_data', array(
+        wp_localize_script('ure-settings', 'ure_data', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),
             'network_admin' => is_network_admin() ? 1 : 0,
             'page_url' => $page_url,
@@ -888,11 +887,20 @@ class User_Role_Editor {
     
     
     // execute on plugin deactivation
-    function cleanup() {
+    public function cleanup() {
 		
     }
     // end of setup()
+   
+    
+    // excute on plugin uninstall via WordPress->Plugins->Delete
+    public static function uninstall() {
+
+        $uninstall = new URE_Uninstall;
+        $uninstall->act();
         
+    }
+    // end of uninstall()
  
 }
 // end of User_Role_Editor

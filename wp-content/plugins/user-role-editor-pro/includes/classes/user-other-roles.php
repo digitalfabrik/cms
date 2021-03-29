@@ -38,7 +38,7 @@ class URE_User_Other_Roles {
             add_action( 'wpmu_activate_user', array($this, 'add_other_roles'), 10, 1 );
             add_action( 'added_existing_user', array($this, 'add_other_roles'), 10, 1);
         }
-        add_action( 'user_register', array($this, 'add_other_roles'), 10, 1 );
+        add_action( 'user_register', array($this, 'add_default_other_roles'), 10, 1 );
             
     }
     // end of set_hooks()
@@ -59,8 +59,14 @@ class URE_User_Other_Roles {
      */
     public function load_css() {
         
+        if ( defined('WP_DEBUG') && !empty( WP_DEBUG ) ) {
+            $file_name = 'multiple-select.css';
+        } else {
+            $file_name = 'multiple-select.min.css';
+        }
+        
         wp_enqueue_style('wp-jquery-ui-dialog');
-        wp_enqueue_style('ure-jquery-multiple-select', plugins_url('/css/multiple-select.css', URE_PLUGIN_FULL_PATH), array(), false, 'screen');
+        wp_enqueue_style('ure-jquery-multiple-select', plugins_url('/css/'. $file_name, URE_PLUGIN_FULL_PATH ), array(), false, 'screen');
         
     }
     // end of load_css()                
@@ -72,13 +78,18 @@ class URE_User_Other_Roles {
             return;
         }
         
+        if ( defined('WP_DEBUG') && !empty( WP_DEBUG ) ) {
+            $ms_file_name = 'multiple-select.js';
+        } else {
+            $ms_file_name = 'multiple-select.min.js';
+        }
         
         $select_primary_role = apply_filters('ure_users_select_primary_role', true);
         
         wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core', 'jquery-ui-button', 'jquery'));
-        wp_register_script('ure-jquery-multiple-select', plugins_url('/js/multiple-select.js', URE_PLUGIN_FULL_PATH));
+        wp_register_script('ure-jquery-multiple-select', plugins_url('/js/'. $ms_file_name, URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script('ure-jquery-multiple-select');
-        wp_register_script('ure-user-profile-other-roles', plugins_url('/js/user-profile-other-roles.js', URE_PLUGIN_FULL_PATH));
+        wp_register_script('ure-user-profile-other-roles', plugins_url('/js/user-profile-other-roles.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script('ure-user-profile-other-roles');
         wp_localize_script('ure-user-profile-other-roles', 'ure_data_user_profile_other_roles', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),
@@ -287,85 +298,84 @@ class URE_User_Other_Roles {
     // end of user_new_form()
     
     
-    // save additional user roles when user profile is updated, as WordPress itself doesn't know about them
-    public function update($user_id) {
-        global $wp_roles;
+    /* 
+     * Save additional user roles when user profile is updated, as WordPress itself doesn't know about them
+     * Returns different numbers for automatic testing purpose
+     */
+    public function update( $user_id ) {
         
-        if (!current_user_can('edit_users')) {
-            return false;
+        if ( !current_user_can('edit_users') ) {
+            return -1;  // No permissions to edit users
         }
-        if (!current_user_can('edit_user', $user_id)) {
-            return false;
+        if ( !current_user_can('edit_user', $user_id) ) {
+            return -1;  // No permissions to edit this user
         }        
-
-        if (!isset($_POST['ure_other_roles'])) {    // add default other roles, there is no related data at the POST
-            return false;
+        if ( !isset( $_POST['ure_other_roles'] ) ) {    
+            return 3;   // Add default other roles, there is no related data at the POST
+        }        
+        if ( empty( $_POST['ure_other_roles'] ) ) { 
+            return 1;   // There is no need in processing of other roles. User did not select them
         }
         
-        if (empty($_POST['ure_other_roles'])) { // there is no need in other roles, user did not selected them
-            return true;
-        }
-        
-        $user = get_userdata($user_id);
-        $data = explode(',', str_replace(' ', '', $_POST['ure_other_roles']));
+        $user = get_userdata( $user_id );
+        $data = explode(',', str_replace(' ', '', $_POST['ure_other_roles'] ) );
+        $editable_roles = get_editable_roles();
         $ure_other_roles = array();
-        foreach($data as $role_id) {
-            if (!isset($wp_roles->roles[$role_id])) {   // skip unexisted roles
+        foreach( $data as $role_id ) {
+            if ( empty( $role_id ) ) {
                 continue;
+            }            
+            if ( !isset( $editable_roles[ $role_id ] ) ) {
+                return -2;   // If the role isn't editable by the current user, stop processing - no permission to assign this role.
             }
-            if (is_array($user->roles) && !in_array($role_id, $user->roles)) {
+            if ( is_array( $user->roles ) && !in_array( $role_id, $user->roles ) ) {
                 $ure_other_roles[] = $role_id;
             }
         }
-        foreach ($ure_other_roles as $role) {
-            $user->add_role($role);
+        foreach( $ure_other_roles as $role ) {
+            $user->add_role( $role );
         }
         
-        return true;        
+        return 2;        
     }
     // end of update()
 
     
-    private function add_default_other_roles($user_id) {
-        if (!current_user_can('edit_users')) {
-            return false;
-        }
-        if (!current_user_can('edit_user', $user_id)) {
-            return false;
-        }
+    public function add_default_other_roles( $user_id ) {
         
-        $user = get_user_by('id', $user_id);
-        if (empty($user->ID)) {
-            return;
+        if ( empty( $user_id ) ) {
+            return false;
+        }
+        $user = get_user_by('id', $user_id );
+        if ( empty( $user->ID ) ) {
+            return true;
         }
 
         // Get default roles if any
-        $other_default_roles = $this->lib->get_option('other_default_roles', array());
-        if (count($other_default_roles) == 0) {
-            return;
+        $other_default_roles = $this->lib->get_option('other_default_roles', array() );
+        if ( count( $other_default_roles ) == 0 ) {
+            return true;
         }
-        foreach ($other_default_roles as $role) {
-            if (!isset($user->caps[$role])) {
-                $user->add_role($role);
+        foreach ( $other_default_roles as $role ) {
+            if ( !isset( $user->caps[$role] ) ) {
+                $user->add_role( $role );
             }
         }
     }
-
     // end of add_default_other_roles()
 
 
-    public function add_other_roles($user_id) {
+    public function add_other_roles( $user_id ) {
 
-        if (empty($user_id)) {
-            return;
+        if ( empty( $user_id ) ) {
+            return false;
         }
 
-        $result = $this->update($user_id);
-        if ($result) {    // roles were assigned manually
-            return;
+        $result = $this->update( $user_id );
+        if ( $result==3 ) {    // Other roles were not selected manually
+            $this->add_default_other_roles( $user_id );
         }
-
-        $this->add_default_other_roles($user_id);
+        
     }
     // end of add_other_roles()    
     

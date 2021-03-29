@@ -32,7 +32,7 @@ class URE_Admin_Menu_View {
     
     public static function add_js() {
         
-        wp_register_script('ure-admin-menu-access', plugins_url( '/pro/js/admin-menu-access.js', URE_PLUGIN_FULL_PATH));
+        wp_register_script('ure-admin-menu-access', plugins_url( '/pro/js/admin-menu-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ('ure-admin-menu-access');
         wp_localize_script('ure-admin-menu-access', 'ure_data_admin_menu_access', 
                 array(

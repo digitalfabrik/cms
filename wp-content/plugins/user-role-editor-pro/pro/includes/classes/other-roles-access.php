@@ -71,7 +71,7 @@ class URE_Other_Roles_Access {
         
         $not_block_local_admin = $this->not_block_local_admin();
         
-        wp_register_script( 'ure-other-roles-access', plugins_url( '/pro/js/other-roles-access.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-other-roles-access', plugins_url( '/pro/js/other-roles-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-other-roles-access' );
         wp_localize_script( 'ure-other-roles-access', 'ure_data_other_roles_access',
                 array(

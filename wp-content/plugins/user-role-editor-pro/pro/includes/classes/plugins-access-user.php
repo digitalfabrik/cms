@@ -126,7 +126,7 @@ class URE_Plugins_Access_User {
         }
         
         wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core', 'jquery-ui-button', 'jquery'));
-        wp_register_script('ure-user-profile-plugins', plugins_url('/pro/js/plugins-access-user.js', URE_PLUGIN_FULL_PATH));
+        wp_register_script('ure-user-profile-plugins', plugins_url('/pro/js/plugins-access-user.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script('ure-user-profile-plugins');
         wp_localize_script('ure-user-profile-plugins', 'ure_data_plugins_access', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),

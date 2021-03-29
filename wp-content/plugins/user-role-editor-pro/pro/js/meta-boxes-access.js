@@ -2,10 +2,10 @@ jQuery(function() {
 
     jQuery("#ure_meta_boxes_access_button").button({
         label: ure_data_meta_boxes_access.meta_boxes
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         ure_meta_boxes_access_dialog_prepare();
-    });
+    }));
 
 });
 

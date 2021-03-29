@@ -13,29 +13,7 @@ class URE_Content_View_Restrictions_Posts_List {
 				
     // List of post ID which current user can edit
     public static $checked_posts = null;
-          
-    
-    /**
-     * Private clone method to prevent cloning of the instance of the *Singleton* instance.
-     *
-     * @return void
-     */
-    private function __clone() {
-        
-    }
-    // end of __clone()
-    
-    
-    /**
-     * Private unserialize method to prevent unserializing of the *Singleton* instance.
-     *
-     * @return void
-     */
-    private function __wakeup() {
-        
-    }
-    // end of __wakeup()
-    
+                  
     
     public static function get_instance() {
         if (self::$instance===null) {        
@@ -345,7 +323,7 @@ class URE_Content_View_Restrictions_Posts_List {
 
     public function hide_prohibited_pages( $pages ) {
         
-        if ( is_admin() ) {   // execute for front-end only
+        if ( is_admin() && !wp_doing_ajax() ) {   // execute for front-end only
             return $pages;
         }
         
@@ -433,9 +411,9 @@ class URE_Content_View_Restrictions_Posts_List {
                         {$table_name}.meta_key=%s OR
                         {$table_name}.meta_key=%s",
                     array(
-                        URE_Content_View_Restrictions::CONTENT_FOR_ROLES,
                         URE_Content_View_Restrictions::PROHIBIT_ALLOW_FLAG,
-                        URE_Content_View_Restrictions::CONTENT_VIEW_WHOM,
+                        URE_Content_View_Restrictions::CONTENT_VIEW_WHOM,                        
+                        URE_Content_View_Restrictions::CONTENT_FOR_ROLES,
                         URE_Content_View_Restrictions::POST_ACCESS_ERROR_ACTION
                         )
                             );
@@ -958,19 +936,21 @@ private function check_roles_for_prohibited($roles, $post_id=0 ) {
     
     public function hide_prohibited_posts( $wp_query ) {
                 
-        if (is_admin()) {   // execute for front-end only
+        if ( is_admin() && !wp_doing_ajax() ) {   // execute for front-end only
             return;
         }        
-        if ($this->lib->is_super_admin()) { // no limits for super admin
+        
+        if ( $this->lib->is_super_admin() ) { // no limits for super admin
             return;
         }
+        
         $query_post_type = $wp_query->get( 'post_type' );
         if ( $this->is_bbpress_topic_reply_query( $query_post_type ) ) {
             return;
         }
         
         $prohibited_posts = $this->get_current_user_prohibited_posts();
-        $prohibited_posts = $this->exclude_redirected_from_prohibited($prohibited_posts, $wp_query);
+        $prohibited_posts = $this->exclude_redirected_from_prohibited( $prohibited_posts, $wp_query );
         if (count($prohibited_posts)>0) {
             $post_not_in = $wp_query->get('post__not_in');
             if (!empty($post_not_in)) {
@@ -1003,7 +983,7 @@ private function check_roles_for_prohibited($roles, $post_id=0 ) {
     public function hide_prohibited_posts2($where, $query) {
         global $wpdb;        
         
-        if ( is_admin() ) {   // execute for front-end only
+        if ( is_admin() && !wp_doing_ajax() ) {   // execute for front-end only
             return $where;
         }        
         if ( $this->lib->is_super_admin() ) { // no limits for super admin
@@ -1028,7 +1008,7 @@ private function check_roles_for_prohibited($roles, $post_id=0 ) {
     
     public function update_adjacent_post_where($where, $in_same_term, $excluded_terms, $taxonomy=null, $post=null) {
         
-        if ( is_admin() ) {   // execute for front-end only
+        if ( is_admin() && !wp_doing_ajax() ) {   // execute for front-end only
             return $where;
         }        
         if ( $this->lib->is_super_admin() ) { // no limits for super admin
@@ -1099,7 +1079,7 @@ private function check_roles_for_prohibited($roles, $post_id=0 ) {
         if ($slug!=='content' && $name!=='product') {
             return $template;
         }
-        if (is_admin()) {   // execute for front-end only
+        if ( is_admin() && !wp_doing_ajax() ) {   // execute for front-end only
             return $template;
         }        
         if ($this->lib->is_super_admin()) { // no limits for super admin
@@ -1119,6 +1099,26 @@ private function check_roles_for_prohibited($roles, $post_id=0 ) {
         return $template;
     }
     // end of hide_prohibited_products()
+
+    /**
+     * Prevent cloning of the instance of the *Singleton* instance.
+     *
+     * @return void
+     */
+    public function __clone() {
+        throw new \Exception('Do not clone a singleton instance.');
+    }
+    // end of __clone()
+    
+    /**
+     * Prevent unserializing of the *Singleton* instance.
+     *
+     * @return void
+     */
+    public function __wakeup() {
+        throw new \Exception('Do not unserialize a singleton instance.');
+    }
+    // end of __wakeup()
     
 }
 // end of URE_Content_View_Restrictions_Posts_List

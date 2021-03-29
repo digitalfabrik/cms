@@ -52,7 +52,7 @@ class URE_Capabilities {
         
         $cap = array();
         $cap['inner'] = $cap_id;
-        $cap['human'] = esc_html__( $this->convert_cap_to_readable( $cap_id) , 'user-role-editor' );
+        $cap['human'] = esc_html__( $this->convert_cap_to_readable( $cap_id ) , 'user-role-editor' );
         if ( isset( $this->built_in_wp_caps[$cap_id] ) ) {
             $cap['wp_core'] = true;
         } else {
@@ -76,8 +76,8 @@ class URE_Capabilities {
             if (!isset($role['capabilities']) || !is_array($role['capabilities'])) {
                 continue;
             }
-            foreach (array_keys($role['capabilities']) as $cap) {
-                $this->add_capability_to_full_caps_list($cap, $full_list );
+            foreach ( array_keys( $role['capabilities'] ) as $cap ) {
+                $this->add_capability_to_full_caps_list( $cap, $full_list );
             }            
         }
         
@@ -149,8 +149,8 @@ class URE_Capabilities {
         $editor = URE_Editor::get_instance();
         $user = $editor->get('user_to_edit');
         $roles = $editor->get('roles');
-        foreach(array_keys($user->caps) as $cap)  {
-            if (!isset($roles[$cap])) {   // it is the user capability, not role
+        foreach( array_keys( $user->caps ) as $cap )  {
+            if ( !isset( $roles[$cap] ) ) {   // it is the user capability, not role
                 $this->add_capability_to_full_caps_list( $cap, $full_list );
             }
         }        
@@ -187,12 +187,12 @@ class URE_Capabilities {
     
     
     public static function add_cap_to_roles( $roles, $cap ) {
-        global $wp_roles;
         
         if ( !is_array( $roles ) || count( $roles )==0 ) {
             return;
         }
         
+        $wp_roles = wp_roles();        
         foreach( $roles as $role ) {
             if ( isset( $wp_roles->role_objects[$role] ) && 
                  !isset( $wp_roles->role_objects[$role]->capabilities[$cap] ) ) {
@@ -205,7 +205,6 @@ class URE_Capabilities {
     
     
     protected function add_custom_post_type_caps( &$full_list ) {
-        global $wp_roles;
         
         $multisite = $this->lib->get( 'multisite' );
         // admin should be capable to edit any posts
@@ -237,15 +236,40 @@ class URE_Capabilities {
             }                        
         }
         
+        $wp_roles = wp_roles();
         if ( !$multisite && isset( $wp_roles->role_objects['administrator'] ) ) {
             // admin should be capable to create posts and pages
             foreach( array( 'post', 'page' ) as $post_type_name ) {
                 $this->add_create_cap_to_admin( $post_type_name );
-            }   
+            }                        
         }   
         
     }
     // end of add_custom_post_type_caps()
+    
+            
+    protected function add_custom_taxonomies_caps( &$full_list ) {
+        
+        $taxonomies = $this->lib->get_custom_taxonomies( 'objects' );
+        if ( empty( $taxonomies ) ) {
+            return;
+        }
+        
+        $multisite = $this->lib->get( 'multisite' );
+        // admin should be capable to edit any taxonomy
+        $cpt_editor_roles0 = !$multisite ? array('administrator') : array();
+        $caps_to_check = array('manage_terms', 'edit_terms', 'delete_terms', 'assign_terms');
+        foreach( $taxonomies as $taxonomy ) {
+            $cpt_editor_roles = apply_filters( 'ure_cpt_editor_roles', $cpt_editor_roles0, $taxonomy->name );
+            foreach( $caps_to_check as $capability ) {
+                $cap_to_check = $taxonomy->cap->$capability;
+                $this->add_capability_to_full_caps_list( $cap_to_check, $full_list );                
+                self::add_cap_to_roles( $cpt_editor_roles, $cap_to_check );
+            }
+        }
+                
+    }
+    // end of add_custom_taxonomies_caps()
     
     
     /**
@@ -255,7 +279,7 @@ class URE_Capabilities {
     protected function add_ure_caps( &$full_list ) {
         
         $key_cap = URE_Own_Capabilities::get_key_capability();
-        if ( !current_user_can( $key_cap ) ) {
+        if ( !current_user_can( $key_cap ) ) {    
             return;
         }
         $ure_caps = URE_Own_Capabilities::get_caps();
@@ -265,6 +289,45 @@ class URE_Capabilities {
         
     }
     // end of add_ure_caps()
+    
+    
+    // Under the single site WordPress installation administrator role should have all existing capabilities included
+    protected function grant_all_caps_to_admin( $full_list ) {
+        
+        $multisite = $this->lib->get( 'multisite' );
+        if ( $multisite ) {
+            // There is a superadmin user under WP multisite, so single site administrator role may do not have full list of capabilities.
+            return;
+        }
+        
+        $wp_roles = wp_roles();
+        if ( !isset( $wp_roles->role_objects['administrator'] ) ) {
+            return;
+        }
+        
+        // Use this filter as the last chance to stop this
+        $grant = apply_filters('ure_grant_all_caps_to_admin', true );        
+        if ( empty( $grant) ) {
+            return;
+        }
+        
+        $admin_role = $wp_roles->role_objects['administrator'];
+        $updated = false;
+        foreach( $full_list as $capability ) {
+            $cap = $capability['inner'];
+            if ( !$admin_role->has_cap( $cap ) ) {
+                $admin_role->add_cap( $cap );
+                $updated = true;
+            }            
+        }
+        if ( $updated ) {   // Flush the changes to the database
+            $use_db = $wp_roles->use_db;
+            $wp_roles->use_db = true;
+            $admin_role->add_cap('read');   // administrator always should can 'read'
+            $wp_roles->use_db = $use_db;            
+        }
+    }
+    // end of grant_all_caps_to_admin()
     
     
     public function init_full_list( $ure_object ) {
@@ -279,9 +342,11 @@ class URE_Capabilities {
         }        
         $this->add_wordpress_caps( $full_list );
         $this->add_custom_post_type_caps( $full_list );
+        $this->add_custom_taxonomies_caps( $full_list );
         $this->add_ure_caps( $full_list );        
         asort( $full_list );        
         $full_list = apply_filters('ure_full_capabilites', $full_list);
+        $this->grant_all_caps_to_admin( $full_list );        
         
         return $full_list;
     }
@@ -295,12 +360,12 @@ class URE_Capabilities {
         $wp_roles = wp_roles();
         // build full capabilities list from all roles
         $full_caps_list = array();
-        foreach ($wp_roles->roles as $role) {
+        foreach ( $wp_roles->roles as $role ) {
             // validate if capabilities is an array
-            if (isset($role['capabilities']) && is_array($role['capabilities'])) {
+            if ( isset( $role['capabilities'] ) && is_array( $role['capabilities'] ) ) {
                 foreach ($role['capabilities'] as $capability => $value) {
-                    if (!isset($full_caps_list[$capability])) {
-                        $full_caps_list[$capability] = 1;
+                    if ( !isset( $full_caps_list[$capability] ) ) {
+                        $full_caps_list[$capability] = true;
                     }
                 }
             }
@@ -322,7 +387,7 @@ class URE_Capabilities {
                 $caps[$cap] = 1;
             }
         }
-        
+         
         return $caps;
     }
     // end of get_visual_composer_caps()
@@ -372,21 +437,24 @@ class URE_Capabilities {
     
     
     /**
-     * Private clone method to prevent cloning of the instance of the
-     * *Singleton* instance.
+     * Prevent cloning of the instance of the *Singleton* instance.
      *
      * @return void
      */
-    private function __clone() { }
+    public function __clone() {
+        throw new \Exception('Do not clone a singleton instance.');
+    }
+    // end of __clone()
     
     /**
-     * Private unserialize method to prevent unserializing of the *Singleton*
-     * instance.
+     * Prevent unserializing of the *Singleton* instance.
      *
      * @return void
      */
-    private function __wakeup() { }
-    
+    public function __wakeup() {
+        throw new \Exception('Do not unserialize a singleton instance.');
+    }
+    // end of __wakeup()    
     
 }
 // end of URE_Capabilities class

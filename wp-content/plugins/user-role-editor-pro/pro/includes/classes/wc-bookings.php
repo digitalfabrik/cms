@@ -46,7 +46,7 @@ class URE_WC_Bookings {
             return $booking_ids;
         }
         
-        $posts_list = $this->user->get_posts_list();
+        $posts_list = $this->user->get_posts_list( 'wc_booking' );
         if (count($posts_list)==0) {
             return $booking_ids;
         }
@@ -161,48 +161,49 @@ class URE_WC_Bookings {
      * @param array $posts
      * @return array
      */
-    public static function add_related_wc_bookings($posts) {
+    public static function add_related_wc_bookings( $posts ) {
         global $pagenow, $wpdb;
         
-        if (!URE_Plugin_Presence::is_active('woocommerce-bookings') || 
+        if ( !URE_Plugin_Presence::is_active('woocommerce-bookings') || 
             $pagenow!=='edit.php' || $_SERVER['QUERY_STRING']!=='post_type=wc_booking') {
             return $posts;
         }
+        
         // Add WooCommerce bookings with products linked to the owner/vendor
-        $add_bookings = apply_filters('ure_edit_posts_access_add_bookings_by_product_owner', true);
-        if (!$add_bookings) {
+        $add_bookings = apply_filters('ure_edit_posts_access_add_bookings_by_product_owner', true ) ;
+        if ( !$add_bookings ) {
             return $posts;
         } 
         
         $current_user_id = get_current_user_id();
-        $query = "select ID, post_type from {$wpdb->posts} where post_type='wc_booking'";
-        $list = $wpdb->get_col($query);        
+        $query = "SELECT ID from {$wpdb->posts} WHERE post_type='wc_booking'";
+        $list = $wpdb->get_col( $query );
         $meta_field = '_booking_product_id';
         $products = array();
         $bookings = array(); 
-        foreach ($list as $post_id) {
+        foreach ( $list as $post_id ) {
             $custom_fields = get_post_meta($post_id);
-            if (!isset($custom_fields[$meta_field][0]) || $custom_fields[$meta_field][0]==='') {
+            if ( !isset( $custom_fields[$meta_field][0] ) || $custom_fields[$meta_field][0]==='') {
                 continue;
             }
             $product_id = $custom_fields[$meta_field][0];
-            if (!isset($products[$product_id])) {
+            if ( !isset( $products[$product_id] ) ) {
                 $product = get_post($product_id);
-                if (!empty($product)) {
+                if ( !empty( $product ) ) {
                     $products[$product_id] = (int) $product->post_author;
                 } else {
                     $products[$product_id] = null;
                 }
             }
-            if ($products[$product_id]===$current_user_id) {
-                $booking = new stdClass();
-                $booking->ID = $post_id;
-                $booking->product_id = $product_id;
-                $booking->post_type = 'wc_booking';
-                $bookings[] = $booking;
+            if ( $products[$product_id]===$current_user_id ) {
+                //$booking = new stdClass();
+                //$booking->ID = $post_id;
+                //$booking->product_id = $product_id;
+                //$booking->post_type = 'wc_booking';
+                $bookings[] = $post_id;
             }
         }
-        $posts = array_merge($posts, $bookings);
+        $posts = array_merge( $posts, $bookings );
         
         return $posts;
     }

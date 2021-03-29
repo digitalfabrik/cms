@@ -118,9 +118,18 @@ class URE_Addons_Manager {
         if (class_exists('URE_Additional_Caps')) {
             $this->add('additional_caps');
         }
-        if (class_exists('URE_Export_Roles_CSV')) {
+        if ( class_exists('URE_Export_Roles_CSV') ) {
             $this->add('export_roles_csv');
         }
+/* 
+ * Prepared for the next release 4.60       
+
+        if ( class_exists('URE_Import_Roles_CSV') ) {
+            $this->add('import_roles_csv');
+        }
+ * 
+ */
+
     }
     // end of init_addons_list()
     
@@ -416,6 +425,18 @@ class URE_Addons_Manager {
         
     }
     // end of load_export_roles_csv()
+    
+    
+    private function load_import_roles_csv() {
+        
+        $activate = $this->lib->get_option('activate_import_roles_csv', false );
+        if ( $activate ) {            
+            new URE_Import_Roles_CSV();
+            $this->activate('import_roles_csv');
+        }
+        
+    }
+    // end of load_import_roles_csv()
     
         
     public function load_addons() {

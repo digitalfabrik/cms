@@ -13,10 +13,10 @@ jQuery(function() {
     // "Posts Edit" button at User Role Editor dialog
     jQuery('#ure_plugins_access_button').button({
         label: ure_data_plugins_access.plugins_button
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         ure_plugins_access.dialog_prepare();
-    });
+    }));
 
 });
 
@@ -87,7 +87,7 @@ var ure_plugins_access = {
         jQuery('#dialog-cancel-button').html(ure_ui_button_text(ure_data.cancel));
 
         jQuery('#ure_plugins_access_container').html(data.html);
-        jQuery('#ure_plugins_access_select_all').click(ure_plugins_access.auto_select);
+        jQuery('#ure_plugins_access_select_all').on('click', ure_plugins_access.auto_select);
     },
     
     auto_select: function() {

@@ -3,7 +3,7 @@
  * email: support@role-editor.com
  */
 
-jQuery(document).ready(function() {
+jQuery(function() {
     
     ure_init_controls('');
     ure_init_controls('_2');          

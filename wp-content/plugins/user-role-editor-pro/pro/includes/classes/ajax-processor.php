@@ -172,7 +172,34 @@ class URE_Pro_Ajax_Processor extends URE_Ajax_Processor {
         return $cap;
     }
     // end of get_required_cap()
+    
+    
+    private function admin_menu_access_update() {
+        
+        $answer = URE_Admin_Menu::update_data();
+        
+        return $answer;
+    }
+    // end of admin_menu_access_update()
                 
+    
+    private function nav_menus_admin_access_update() {
+        
+        $answer = URE_Nav_Menus_Admin_Controller::update_data();
+        
+        return $answer;
+    }
+    // end of nav_menus_admin_access_update()
+
+
+    private function widgets_admin_access_update() {
+        
+        $answer = URE_Widgets_Admin_Controller::update_data();
+        
+        return $answer;
+    }
+    // end of nav_menus_admin_access_update()
+    
     
     /**
      * AJAX requests dispatcher
@@ -244,7 +271,19 @@ class URE_Pro_Ajax_Processor extends URE_Ajax_Processor {
             case 'import_role_to_site': {
                 $answer = $this->import_role_to_site();
                 break;
-            }            
+            }
+            case 'admin_menu_access_update': {
+                $answer = $this->admin_menu_access_update();
+                break;
+            }
+            case 'nav_menus_admin_access_update': {
+                $answer = $this->nav_menus_admin_access_update();
+                break;
+            }
+            case 'widgets_admin_access_update': {
+                $answer = $this->widgets_admin_access_update();
+                break;
+            }
           default:
                 $answer = array('result'=>'error', 'message'=>'unknown action "'. $this->action .'"');
         }

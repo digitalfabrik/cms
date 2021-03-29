@@ -12,7 +12,7 @@ function ure_roles_reset_form_submit() {
     jQuery('#ure_reset_roles_form').submit();
 }
 
-jQuery(document).ready(function() {   
+jQuery(function() {   
         
     jQuery('#ure_reset_roles_button').button({
         label: ure_data.reset

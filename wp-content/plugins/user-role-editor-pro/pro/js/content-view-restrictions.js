@@ -6,7 +6,8 @@
  */
 
 
-jQuery(document).ready(function(){
+jQuery(function(){
+    
     ure_post_view_roles_button();
             
 });    
@@ -22,7 +23,7 @@ function ure_post_view_roles_button() {
     
     jQuery("#edit_content_for_roles").button({
         label: ure_data_pro.edit_content_for_roles
-    }).click(function (event) {
+    }).on('click', (function (event) {
         event.preventDefault();
         jQuery('#edit_roles_list_dialog').dialog({
             dialogClass: 'wp-dialog',
@@ -44,12 +45,12 @@ function ure_post_view_roles_button() {
                 }
             }
         });
-    });
+    }));
     jQuery('.ui-dialog-buttonpane button:contains("Save")').attr("id", "save-roles-list-button");
     jQuery('#save-roles-list-button').html(ure_data_pro.save_roles_list);
     jQuery('.ui-dialog-buttonpane button:contains("Cancel")').attr("id", "dialog-close-button");
     jQuery('#dialog-close-button').html(ure_data_pro.close);
-    jQuery('#ure_roles_auto_select').click(ure_post_view_roles_auto_select);
+    jQuery('#ure_roles_auto_select').on('click', ( ure_post_view_roles_auto_select ) );
 }
 
 

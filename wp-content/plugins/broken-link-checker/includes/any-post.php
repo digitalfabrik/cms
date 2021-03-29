@@ -242,41 +242,56 @@ class blcPostTypeOverlord {
 			$blclog->log( sprintf( '...... %d rows inserted in %.3f seconds', $wpdb->rows_affected, microtime( true ) - $start ) );
 		} else {
 			//Delete synch records corresponding to posts that no longer exist.
-			$blclog->log( '...... Deleting synch records for removed posts' );
-			$start = microtime( true );
-			$q     = "DELETE synch.*
-				  FROM
-					 {$wpdb->prefix}blc_synch AS synch LEFT JOIN {$wpdb->posts} AS posts
-					 ON posts.ID = synch.container_id
-				  WHERE
-					 synch.container_type IN (%s) AND posts.ID IS NULL";
+			//Also delete posts that don't have enabled post status
+			$blclog->log( '...... Deleting synch records for removed posts & post with invalid status' );
+			$start            = microtime( true );
+			$all_posts_id     = get_posts(
+				array(
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					'post_type'      => $this->enabled_post_types,
+					'post_status'    => $this->enabled_post_statuses,
+				)
+			);
+
+			$q = "DELETE synch.* FROM {$wpdb->prefix}blc_synch AS synch WHERE synch.container_id NOT IN (%s)";
+
 			$q     = sprintf(
 				$q,
-				"'" . implode( "', '", $escaped_post_types ) . "'"
+				"'" . implode( "', '", $all_posts_id ) . "'"
 			);
+
 			$wpdb->query( $q );
 			$elapsed = microtime( true ) - $start;
 			$blclog->debug( $q );
 			$blclog->log( sprintf( '...... %d rows deleted in %.3f seconds', $wpdb->rows_affected, $elapsed ) );
 
-			//Delete records where the post status is not one of the enabled statuses.
-			$blclog->log( '...... Deleting synch records for posts that have a disallowed status' );
-			$start = microtime( true );
-			$q     = "DELETE synch.*
-				  FROM
-					 {$wpdb->prefix}blc_synch AS synch
-					 LEFT JOIN {$wpdb->posts} AS posts
-					 ON (synch.container_id = posts.ID and synch.container_type = posts.post_type)
-				  WHERE
-					 posts.post_status NOT IN (%s)";
-			$q     = sprintf(
-				$q,
-				"'" . implode( "', '", $escaped_post_statuses ) . "'"
-			);
-			$wpdb->query( $q );
-			$elapsed = microtime( true ) - $start;
-			$blclog->debug( $q );
-			$blclog->log( sprintf( '...... %d rows deleted in %.3f seconds', $wpdb->rows_affected, $elapsed ) );
+			// //Delete records where the post status is not one of the enabled statuses.
+			// $blclog->log( '...... Deleting synch records for posts that have a disallowed status' );
+			// $start = microtime( true );
+			// $all_posts_status     = get_posts(
+			// 	array(
+			// 		'posts_per_page' => -1,
+			// 		'fields'         => 'ids',
+			// 		'post_type'      => $this->enabled_post_types,
+			// 		'post_status'    => $this->enabled_post_statuses,
+			// 	)
+			// );
+
+			// $q     = "DELETE synch.*
+			// 	  FROM
+			// 		 {$wpdb->prefix}blc_synch AS synch
+			// 	  WHERE
+			// 		 posts.post_status NOT IN (%s)";
+			// $q     = sprintf(
+			// 	$q,
+			// 	"'" . implode( "', '", $escaped_post_statuses ) . "'",
+			// 	"'" . implode( "', '", wp_list_pluck( $all_posts, 'post_status' ) ) . "'",
+			// );
+			// $wpdb->query( $q );
+			// $elapsed = microtime( true ) - $start;
+			// $blclog->debug( $q );
+			// $blclog->log( sprintf( '...... %d rows deleted in %.3f seconds', $wpdb->rows_affected, $elapsed ) );
 
 			//Remove the 'synched' flag from all posts that have been updated
 			//since the last time they were parsed/synchronized.
@@ -585,7 +600,10 @@ class blcAnyPostContainer extends blcContainer {
 			);
 		}
 
-		$post_id = wp_update_post( $this->wrapped_object, true );
+		$post                        = $this->wrapped_object;
+		$post->blc_post_modified     = $post->post_modified;
+		$post->blc_post_modified_gmt = $post->post_modified_gmt;
+		$post_id                     = wp_update_post( $post, true );
 
 		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
@@ -603,7 +621,7 @@ class blcAnyPostContainer extends blcContainer {
 	/**
 	 * Update the the links on pagebuilders
 	 *
-	 * @param $post_id  Post ID of whose content to update
+	 * @param int $post_id  Post ID of whose content to update.
 	 */
 	function update_pagebuilders( $post_id ) {
 
@@ -716,8 +734,6 @@ class blcAnyPostContainer extends blcContainer {
 	}
 }
 
-
-
 /**
  * Universal manager usable for most post types.
  *
@@ -726,7 +742,7 @@ class blcAnyPostContainer extends blcContainer {
  */
 class blcAnyPostContainerManager extends blcContainerManager {
 	var $container_class_name = 'blcAnyPostContainer';
-	var $fields               = array( 'post_content' => 'html' );
+	var $fields               = array( 'post_content' => 'html', 'post_excerpt' => 'html' );
 
 	function init() {
 		parent::init();
@@ -747,6 +763,7 @@ class blcAnyPostContainerManager extends blcContainerManager {
 	 * @return array of blcPostContainer indexed by "container_type|container_id"
 	 */
 	function get_containers( $containers, $purpose = '', $load_wrapped_objects = false ) {
+		global $blclog;
 		$containers = $this->make_containers( $containers );
 
 		//Preload post data if it is likely to be useful later

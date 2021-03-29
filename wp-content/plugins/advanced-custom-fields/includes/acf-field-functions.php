@@ -1204,6 +1204,24 @@ function acf_untrash_field( $id = 0 ) {
 }
 
 /**
+ * Filter callback which returns the previous post_status instead of "draft" for the "acf-field" post type.
+ *
+ * Prior to WordPress 5.6.0, this filter was not needed as restored posts were always assigned their original status.
+ *
+ * @since 5.9.5
+ *
+ * @param string $new_status      The new status of the post being restored.
+ * @param int    $post_id         The ID of the post being restored.
+ * @param string $previous_status The status of the post at the point where it was trashed.
+ * @return string.
+ */
+function _acf_untrash_field_post_status( $new_status, $post_id, $previous_status ) {
+	return ( get_post_type( $post_id ) === 'acf-field' ) ? $previous_status : $new_status;
+}
+
+add_action( 'wp_untrash_post_status', '_acf_untrash_field_post_status', 10, 3 );
+
+/**
  * acf_prefix_fields
  *
  * Changes the prefix for an array of fields by reference.
@@ -1355,22 +1373,17 @@ function acf_get_field_ancestors( $field ) {
  * @return	array
  */
 function acf_duplicate_fields( $fields = array(), $parent_id = 0 ) {
-	
-	// Vars.
-	$duplicates = array();
-	
-	// Loop over fields and pre-generate new field keys (needed for conditional logic).
+
+	// Generate keys for all new fields
+	// - Needed to alter conditional logic rules
+	// - Use usleep() to ensure unique keys.
 	$keys = array();
 	foreach( $fields as $field ) {
-		
-		// Delay for a microsecond to ensure a unique ID.
 		usleep(1);
 		$keys[ $field['key'] ] = uniqid('field_');
 	}
-	
-	// Store these keys for later use.
-	acf_set_data( 'duplicates', $keys );
-		
+	acf_append_data( 'generated_keys', $keys );
+
 	// Duplicate fields.
 	foreach( $fields as $field ) {
 		$field_id = $field['ID'] ? $field['ID'] : $field['key'];
@@ -1407,8 +1420,12 @@ function acf_duplicate_field( $id = 0, $parent_id = 0 ){
 	$field['ID'] = 0;
 	
 	// Generate key.
-	$keys = acf_get_data( 'duplicates' );
-	$field['key'] = isset($keys[ $field['key'] ]) ? $keys[ $field['key'] ] : uniqid('field_');
+	$keys = acf_get_data( 'generated_keys' );
+	if( isset( $keys[ $field['key'] ] ) ) {
+		$field['key'] = $keys[ $field['key'] ];
+	} else {
+		$field['key'] = uniqid('field_');
+	}
 	
 	// Set parent.
 	if( $parent_id ) {
