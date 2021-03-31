@@ -169,7 +169,6 @@
 		public $model = "cms.languagetreenode";
 
 		function __construct( $blog, $language, $active, $mptt_node ) {
-			//parent::__construct();
 			$this->pk = $mptt_node["pk"];
 			$this->init_fields( $blog, $language, $active, $mptt_node );
 		}
@@ -193,19 +192,24 @@
 	class Page {
 		public $model = "cms.page";
 
+		function __construct( $blog, $post, $mptt_node ) {
+			$this->pk = $mptt_node["pk"];
+			$this->init_fields( $blog, $post, $mptt_node );
+		}
+
 		function init_fields() {
 			$this->fields = array(
-				"parent"=>null,
+				"parent"=>$mptt_node["parent_pk"],
 				"icon"=>null,
 				"region"=>null,
 				"explicitly_archived"=>null,
 				"mirrored_page"=>null,
 				"created_date"=>null,
 				"last_updated"=>null,
-				"lft"=>null,
-				"rght"=>null,
-				"tree_id"=>null, // should be the same as the region ID
-				"level"=>null,
+				"lft"=>$mptt_node["left"],
+				"rght"=>$mptt_node["right"],
+				"tree_id"=>$blog->blog_id, // should be the same as the region ID
+				"level"=>$mptt_node["level"],
 				"editors"=>null,
 				"publishers"=>null,
 			);
@@ -372,8 +376,7 @@
 			return $posts;
 		}
 
-		function generate_page_tree( $pagetree_pk_counter ) {
-			$posts = $this->get_pages_for_language( $this->get_default_language() );
+		function generate_page_tree( $posts, $pagetree_pk_counter ) {
 			$page_tree = new MPTT( $pagetree_pk_counter );
 			foreach ( $posts as $post ) {
 				$page_tree->add_node( $post["id"], $post["parent"] );
@@ -381,7 +384,9 @@
 			return $page_tree;
 		}
 
-		function get_page_revisions( $page_id, $language_code ) {
+		/* Create array of all revisions in all translations */
+		function get_page_translations( $page_id ) {
+			
 		
 		}
 	}
@@ -419,6 +424,23 @@
 			$tree_node = new LanguageTreeNode( $blog, $lang, $active, $mptt_node );
 			$fixtures->append( $tree_node );
 		}
+		
+		/* get pages in main language and create tree */
+		$posts = $this->get_pages_for_language( $this->get_default_language() );
+		$page_tree = generate_page_tree( $posts, $pagetree_pk_counter );
+		$pagetree_pk_counter = $page_tree->pk_counter;
+		foreach ( $posts as $post ) {
+			$mptt_node = $page_tree->get_node($post["id"]);
+			$page_tree_node = new Page( $blog, null, $mptt_node );
+			$fixtures->append( $page_tree_node );
+			//foreach ( $blog->get_page_translations() as $translation ) {
+			//	$page_translation = new PageTranslation( $translation );
+			//	$fixtures->append( $page_translation );
+			//}
+
+		}
+	
+		if ( $blog->blog_id >= 15 ) { break; }
 	}
 
 	echo($fixtures->dump());
