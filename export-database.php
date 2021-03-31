@@ -361,6 +361,29 @@
 			return $language_tree;
 
 		}
+
+		function get_pages_for_language( $language_code ) {
+			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code'" ;
+			$result = $this->db->query( $query );
+			$posts = [];
+			while ( $row = $result->fetch_object() ) {
+				$posts[] = ["id" => $row->ID, "parent" => ( $row->post_parent == 0 ? null : $row->post_parent ) ];
+			}
+			return $posts;
+		}
+
+		function generate_page_tree( $pagetree_pk_counter ) {
+			$posts = $this->get_pages_for_language( $this->get_default_language() );
+			$page_tree = new MPTT( $pagetree_pk_counter );
+			foreach ( $posts as $post ) {
+				$page_tree->add_node( $post["id"], $post["parent"] );
+			}
+			return $page_tree;
+		}
+
+		function get_page_revisions( $page_id, $language_code ) {
+		
+		}
 	}
 
 	/* Get all blog IDs */
