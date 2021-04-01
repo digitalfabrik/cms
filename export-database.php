@@ -378,10 +378,10 @@
 
 		function generate_page_tree( $pagetree_pk_counter ) {
 			/* Get pages in hierarchical order, starting with pages with parent = 0 */
-			$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [0] );
+			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [0] );
 			$posts = $new_posts;
 			while ( ! empty( $new_posts ) ) {
-				$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), array_column( $new_posts, "id" ));
+				$new_posts = $this->get_pages_for_language( $this->get_default_language(), array_column( $new_posts, "id" ));
 				$posts = array_merge( $posts, $new_posts );
 			}
 			$page_tree = new MPTT( $pagetree_pk_counter );
@@ -434,7 +434,7 @@
 		}
 		
 		/* get pages in main language and create tree */
-		$page_tree = $blog->generate_page_tree( $posts, $pagetree_pk_counter );
+		$page_tree = $blog->generate_page_tree( $pagetree_pk_counter );
 		$pagetree_pk_counter = $page_tree->pk_counter;
 		foreach ( $posts as $post ) {
 			$mptt_node = $page_tree->get_node( $post["id"] );
