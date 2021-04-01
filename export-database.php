@@ -436,8 +436,7 @@
 		/* get pages in main language and create tree */
 		$page_tree = $blog->generate_page_tree( $pagetree_pk_counter );
 		$pagetree_pk_counter = $page_tree->pk_counter;
-		foreach ( $posts as $post ) {
-			$mptt_node = $page_tree->get_node( $post["id"] );
+		foreach ( $page_tree->tree as $mptt_node ) {
 			$page_tree_node = new Page( $blog, null, $mptt_node );
 			$fixtures->append( $page_tree_node );
 			//foreach ( $blog->get_page_translations() as $translation ) {
