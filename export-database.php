@@ -197,7 +197,7 @@
 			$this->init_fields( $blog, $post, $mptt_node );
 		}
 
-		function init_fields() {
+		function init_fields( $blog, $post, $mptt_node ) {
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
 				"icon"=>null,
@@ -366,8 +366,8 @@
 
 		}
 
-		function get_pages_for_language( $language_code ) {
-			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code'" ;
+		function get_pages_for_language( $language_code, $parents ) {
+			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.page_parent IN (" . implode( ",", $parents ) . ")" ;
 			$result = $this->db->query( $query );
 			$posts = [];
 			while ( $row = $result->fetch_object() ) {
@@ -376,7 +376,14 @@
 			return $posts;
 		}
 
-		function generate_page_tree( $posts, $pagetree_pk_counter ) {
+		function generate_page_tree( $pagetree_pk_counter ) {
+			/* Get pages in hierarchical order, starting with pages with parent = 0 */
+			$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [0] );
+			$posts = $new_posts;
+			while ( ! empty( $new_posts ) ) {
+				$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), array_column( $new_posts, "id" ));
+				$posts = array_merge( $posts, $new_posts );
+			}
 			$page_tree = new MPTT( $pagetree_pk_counter );
 			foreach ( $posts as $post ) {
 				$page_tree->add_node( $post["id"], $post["parent"] );
@@ -400,6 +407,7 @@
 	$fixtures = new DjangoFixtures();
 	$languages = array();
 	$treenode_pk_counter = 1;
+	$pagetree_pk_counter = 1;
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -426,11 +434,10 @@
 		}
 		
 		/* get pages in main language and create tree */
-		$posts = $this->get_pages_for_language( $this->get_default_language() );
-		$page_tree = generate_page_tree( $posts, $pagetree_pk_counter );
+		$page_tree = $blog->generate_page_tree( $posts, $pagetree_pk_counter );
 		$pagetree_pk_counter = $page_tree->pk_counter;
 		foreach ( $posts as $post ) {
-			$mptt_node = $page_tree->get_node($post["id"]);
+			$mptt_node = $page_tree->get_node( $post["id"] );
 			$page_tree_node = new Page( $blog, null, $mptt_node );
 			$fixtures->append( $page_tree_node );
 			//foreach ( $blog->get_page_translations() as $translation ) {
