@@ -434,7 +434,7 @@
 		}
 		
 		/* get level 0 pages and generate a page tree for them */
-		$new_posts = $blog->get_pages_for_language( $this->get_default_language(), [ 0 ] );
+		$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [ 0 ] );
 		foreach ( $new_posts as $root_post ) {
 			$page_tree = $blog->generate_page_tree( $pagetree_pk_counter, $root_post["id"] );
 			$pagetree_pk_counter = $page_tree->pk_counter;
