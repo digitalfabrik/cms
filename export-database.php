@@ -367,7 +367,7 @@
 		}
 
 		function get_pages_for_language( $language_code, $parents ) {
-			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.post_parent IN (" . implode( ",", $parents ) . ")" ;
+			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.post_parent IN (" . implode( ",", $parents ) . ") ORDER BY menu_order ASC" ;
 			$result = $this->db->query( $query );
 			$posts = [];
 			while ( $row = $result->fetch_object() ) {
@@ -376,9 +376,9 @@
 			return $posts;
 		}
 
-		function generate_page_tree( $pagetree_pk_counter ) {
+		function generate_page_tree( $pagetree_pk_counter , $page_id) {
 			/* Get pages in hierarchical order, starting with pages with parent = 0 */
-			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [0] );
+			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [ $page_id ] );
 			$posts = $new_posts;
 			while ( ! empty( $new_posts ) ) {
 				$new_posts = $this->get_pages_for_language( $this->get_default_language(), array_column( $new_posts, "id" ));
@@ -433,18 +433,21 @@
 			$fixtures->append( $tree_node );
 		}
 		
-		/* get pages in main language and create tree */
-		$page_tree = $blog->generate_page_tree( $pagetree_pk_counter );
-		$pagetree_pk_counter = $page_tree->pk_counter;
-		foreach ( $page_tree->tree as $mptt_node ) {
-			$page_tree_node = new Page( $blog, null, $mptt_node );
-			$fixtures->append( $page_tree_node );
-			//foreach ( $blog->get_page_translations() as $translation ) {
-			//	$page_translation = new PageTranslation( $translation );
-			//	$fixtures->append( $page_translation );
-			//}
-
+		/* get level 0 pages and generate a page tree for them */
+		$new_posts = $blog->get_pages_for_language( $this->get_default_language(), [ 0 ] );
+		foreach ( $new_posts as $root_post ) {
+			$page_tree = $blog->generate_page_tree( $pagetree_pk_counter, $root_post["id"] );
+			$pagetree_pk_counter = $page_tree->pk_counter;
+			foreach ( $page_tree->tree as $mptt_node ) {
+				$page_tree_node = new Page( $blog, null, $mptt_node );
+				$fixtures->append( $page_tree_node );
+				//foreach ( $blog->get_page_translations() as $translation ) {
+				//	$page_translation = new PageTranslation( $translation );
+				//	$fixtures->append( $page_translation );
+				//}
+			}
 		}
+
 	
 		if ( $blog->blog_id >= 15 ) { break; }
 	}
