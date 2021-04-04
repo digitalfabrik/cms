@@ -371,20 +371,21 @@
 			$result = $this->db->query( $query );
 			$posts = [];
 			while ( $row = $result->fetch_object() ) {
-				$posts[] = ["id" => $row->ID, "parent" => ( $row->post_parent == 0 ? null : $row->post_parent ) ];
+				$posts[] = ["id" => $row->ID, "parent" => $row->post_parent ];
 			}
 			return $posts;
 		}
 
-		function generate_page_tree( $pagetree_pk_counter , $page_id) {
-			/* Get pages in hierarchical order, starting with pages with parent = 0 */
-			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [ $page_id ] );
+		function generate_page_tree( $pagetree_pk_counter , $root_page_id ) {
+			/* Get pages in hierarchical order, starting with a root page */
+			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [ $root_page_id ] );
 			$posts = $new_posts;
 			while ( ! empty( $new_posts ) ) {
 				$new_posts = $this->get_pages_for_language( $this->get_default_language(), array_column( $new_posts, "id" ));
 				$posts = array_merge( $posts, $new_posts );
 			}
 			$page_tree = new MPTT( $pagetree_pk_counter );
+			$page_tree->add_node( $root_page_id, null );
 			foreach ( $posts as $post ) {
 				$page_tree->add_node( $post["id"], $post["parent"] );
 			}
