@@ -447,9 +447,7 @@
 				//}
 			}
 		}
-
-	
-		if ( $blog->blog_id >= 15 ) { break; }
+		if ( $blog->blog_id >= 3 ) { break; }
 	}
 
 	echo($fixtures->dump());
