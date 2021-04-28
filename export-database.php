@@ -192,23 +192,24 @@
 	class Page {
 		public $model = "cms.page";
 
-		function __construct( $blog, $post, $mptt_node ) {
+		function __construct( $blog, $mptt_node, $page_tree_counter ) {
 			$this->pk = $mptt_node["pk"];
-			$this->init_fields( $blog, $post, $mptt_node );
+			$this->init_fields( $blog, $mptt_node, $page_tree_counter );
 		}
 
-		function init_fields( $blog, $post, $mptt_node ) {
+		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
+			$post = $blog->get_page_details( $mptt_node["id"] );
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
 				"icon"=>null,
-				"region"=>null,
+				"region"=>$blog->blog_id,
 				"explicitly_archived"=>null,
 				"mirrored_page"=>null,
 				"created_date"=>null,
 				"last_updated"=>null,
 				"lft"=>$mptt_node["left"],
 				"rght"=>$mptt_node["right"],
-				"tree_id"=>$blog->blog_id, // should be the same as the region ID
+				"tree_id"=>$page_tree_counter,
 				"level"=>$mptt_node["level"],
 				"editors"=>null,
 				"publishers"=>null,
@@ -395,6 +396,9 @@
 		/* Create array of all revisions in all translations */
 		function get_page_translations( $page_id ) {
 			
+		}
+
+		function get_page_details( $page_id ) {
 		
 		}
 	}
@@ -407,8 +411,9 @@
 	}
 	$fixtures = new DjangoFixtures();
 	$languages = array();
-	$treenode_pk_counter = 1;
-	$pagetree_pk_counter = 1;
+	$lang_tree_node_pk_counter = 1;
+	$page_tree_node_pk_counter = 1;
+	$page_tree_counter = 1;
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -423,8 +428,8 @@
 		}
 
 		/* get used languages and create tree nodes */
-		$language_tree = $blog->generate_language_tree( $treenode_pk_counter );
-		$treenode_pk_counter = $language_tree->pk_counter;
+		$language_tree = $blog->generate_language_tree( $lang_tree_node_pk_counter );
+		$lang_tree_node_pk_counter = $language_tree->pk_counter;
 
 		foreach ( $blog->get_used_languages() as $used_language => $active) {
 			$mptt_node = $language_tree->get_node( $used_language );
@@ -437,16 +442,17 @@
 		/* get level 0 pages and generate a page tree for them */
 		$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [ 0 ] );
 		foreach ( $new_posts as $root_post ) {
-			$page_tree = $blog->generate_page_tree( $pagetree_pk_counter, $root_post["id"] );
-			$pagetree_pk_counter = $page_tree->pk_counter;
+			$page_tree = $blog->generate_page_tree( $page_tree_node_pk_counter, $root_post["id"] );
+			$page_tree_node_pk_counter = $page_tree->pk_counter;
 			foreach ( $page_tree->tree as $mptt_node ) {
-				$page_tree_node = new Page( $blog, null, $mptt_node );
+				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
 				$fixtures->append( $page_tree_node );
 				//foreach ( $blog->get_page_translations() as $translation ) {
 				//	$page_translation = new PageTranslation( $translation );
 				//	$fixtures->append( $page_translation );
 				//}
 			}
+			$page_tree_counter++;
 		}
 		if ( $blog->blog_id >= 3 ) { break; }
 	}
