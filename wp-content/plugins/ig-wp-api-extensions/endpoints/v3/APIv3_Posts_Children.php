@@ -3,6 +3,7 @@
 class APIv3_Posts_Children extends APIv3_Posts_Relatives_Abstract {
 
 	const ROUTE = 'children';
+	const POST_TYPE = 'page';
 
 	public function get_children(WP_REST_Request $request) {
 		$parameters = $request->get_params();
