@@ -30,7 +30,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 		return $this->get_changed_posts($request, array_map([$this, 'prepare'], $posts));
 	}
 
-	private function get_posts_recursive($id = 0) {
+	public function get_posts_recursive($id = 0, $ttl = -1) {
 		$direct_children = (new WP_Query([
 			'post_type' => static::POST_TYPE,
 			'post_status' => 'publish',
@@ -40,7 +40,7 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 			'posts_per_page' => -1
 		]))->posts;
 		$post = ($id == 0 ? [] : [get_post($id)]);
-		if (empty($direct_children)) {
+		if (empty($direct_children) || $ttl == 0) {
 			return $post;
 		} else {
 			return array_reduce(
@@ -54,8 +54,9 @@ abstract class APIv3_Posts_Abstract extends APIv3_Base_Abstract {
 							return $child->ID;
 						},
 						$direct_children
-					)
-				),
+					),
+					array_fill(0, sizeof($direct_children), ($ttl - 1))
+			),
 				function ($all_children, $grand_children) {
 					return array_merge($all_children, $grand_children);
 				},
