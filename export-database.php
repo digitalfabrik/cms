@@ -37,7 +37,8 @@
 	}
 
 	class MPTT {
-		function __construct( $pk_offset = null ) {
+		function __construct( $pk_offset = null, $id = null ) {
+			$this->id = $id;
 			$this->tree = array();
 			if ( $pk_offset ) {
 				$this->pk_counter = $pk_offset;
@@ -377,7 +378,8 @@
 			return $posts;
 		}
 
-		function generate_page_tree( $pagetree_pk_counter , $root_page_id ) {
+		function generate_page_tree( $page_tree_node_pk_counter, $root_page_id, $page_tree_counter ) {
+			global $page_pk_map;
 			/* Get pages in hierarchical order, starting with a root page */
 			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [ $root_page_id ] );
 			$posts = $new_posts;
@@ -385,10 +387,16 @@
 				$new_posts = $this->get_pages_for_language( $this->get_default_language(), array_column( $new_posts, "id" ));
 				$posts = array_merge( $posts, $new_posts );
 			}
-			$page_tree = new MPTT( $pagetree_pk_counter );
-			$page_tree->add_node( $root_page_id, null );
+			$page_tree = new MPTT( $pk_offset = $page_tree_node_pk_counter, $id = $page_tree_counter );
+			if ( $page_tree->add_node( $root_page_id, null ) ) {
+				$page_pk_map[$this->blog_id][$post["id"]] = $page_tree->pk_counter - 1;
+			} else {
+				return false;
+			}
 			foreach ( $posts as $post ) {
-				$page_tree->add_node( $post["id"], $post["parent"] );
+				if ( $page_tree->add_node( $post["id"], $post["parent"] ) ) {
+					$page_pk_map[$this->blog_id][$post["id"]] = $page_tree->pk_counter - 1;
+				}
 			}
 			return $page_tree;
 		}
@@ -396,9 +404,6 @@
 		/* Create array of all revisions in all translations */
 		function get_page_translations( $page_id ) {
 			
-		}
-
-		function get_page_details( $page_id ) {
 		
 		}
 	}
@@ -414,6 +419,7 @@
 	$lang_tree_node_pk_counter = 1;
 	$page_tree_node_pk_counter = 1;
 	$page_tree_counter = 1;
+	$page_pk_map = array(); // an array that maps a blog and post ID to the Django page primary key
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -428,8 +434,8 @@
 		}
 
 		/* get used languages and create tree nodes */
-		$language_tree = $blog->generate_language_tree( $lang_tree_node_pk_counter );
-		$lang_tree_node_pk_counter = $language_tree->pk_counter;
+		$language_tree = $blog->generate_language_tree( $treenode_pk_counter );
+		$treenode_pk_counter = $language_tree->pk_counter;
 
 		foreach ( $blog->get_used_languages() as $used_language => $active) {
 			$mptt_node = $language_tree->get_node( $used_language );
@@ -442,20 +448,23 @@
 		/* get level 0 pages and generate a page tree for them */
 		$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [ 0 ] );
 		foreach ( $new_posts as $root_post ) {
-			$page_tree = $blog->generate_page_tree( $page_tree_node_pk_counter, $root_post["id"] );
+			$page_tree = $blog->generate_page_tree( $page_tree_node_pk_counter, $root_post["id"], $page_tree_counter );
 			$page_tree_node_pk_counter = $page_tree->pk_counter;
 			foreach ( $page_tree->tree as $mptt_node ) {
-				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
+				$page_tree_node = new Page( $blog, null, $mptt_node );
 				$fixtures->append( $page_tree_node );
 				//foreach ( $blog->get_page_translations() as $translation ) {
 				//	$page_translation = new PageTranslation( $translation );
 				//	$fixtures->append( $page_translation );
 				//}
 			}
-			$page_tree_counter++;
 		}
+		$page_tree_node_pk_counter++;
 		if ( $blog->blog_id >= 3 ) { break; }
 	}
+
+
+	// after all pages have been exported, look up the live content pages
 
 	echo($fixtures->dump());
 ?>
