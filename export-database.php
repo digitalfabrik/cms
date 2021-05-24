@@ -199,15 +199,14 @@
 		}
 
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
-			$post = $blog->get_page_details( $mptt_node["id"] );
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
 				"icon"=>null,
 				"region"=>$blog->blog_id,
 				"explicitly_archived"=>null,
 				"mirrored_page"=>null,
-				"created_date"=>null,
-				"last_updated"=>null,
+				"created_date"=>now(),
+				"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
 				"rght"=>$mptt_node["right"],
 				"tree_id"=>$page_tree_counter,
@@ -389,7 +388,7 @@
 			}
 			$page_tree = new MPTT( $pk_offset = $page_tree_node_pk_counter, $id = $page_tree_counter );
 			if ( $page_tree->add_node( $root_page_id, null ) ) {
-				$page_pk_map[$this->blog_id][$post["id"]] = $page_tree->pk_counter - 1;
+				$page_pk_map[$this->blog_id][$root_page_id] = $page_tree->pk_counter - 1;
 			} else {
 				return false;
 			}
@@ -434,7 +433,7 @@
 		}
 
 		/* get used languages and create tree nodes */
-		$language_tree = $blog->generate_language_tree( $treenode_pk_counter );
+		$language_tree = $blog->generate_language_tree( $lang_tree_node_pk_counter );
 		$treenode_pk_counter = $language_tree->pk_counter;
 
 		foreach ( $blog->get_used_languages() as $used_language => $active) {
@@ -451,20 +450,20 @@
 			$page_tree = $blog->generate_page_tree( $page_tree_node_pk_counter, $root_post["id"], $page_tree_counter );
 			$page_tree_node_pk_counter = $page_tree->pk_counter;
 			foreach ( $page_tree->tree as $mptt_node ) {
-				$page_tree_node = new Page( $blog, null, $mptt_node );
+				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
 				$fixtures->append( $page_tree_node );
 				//foreach ( $blog->get_page_translations() as $translation ) {
 				//	$page_translation = new PageTranslation( $translation );
 				//	$fixtures->append( $page_translation );
 				//}
 			}
+			$page_tree_counter++;
 		}
-		$page_tree_node_pk_counter++;
 		if ( $blog->blog_id >= 3 ) { break; }
 	}
 
 
-	// after all pages have been exported, look up the live content pages
+	// after all pages have been exported, loop over all fixtures with type page again and look up mirrored page PK
 
 	echo($fixtures->dump());
 ?>
