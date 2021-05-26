@@ -466,6 +466,7 @@
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
+		fwrite(STDERR, "Exporting blog " . $blog->blog_id . "\n");
 		$fixtures->append( $region );
 
 		/* get available languages */
@@ -499,6 +500,7 @@
 				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
 				$fixtures->append( $page_tree_node );
 				foreach ( $blog->get_used_languages() as $used_language => $active) {
+					if ( ! array_key_exists( $used_language, $language_pk_map ) ) continue;
 					foreach ( $blog->get_page_translations( $mptt_node, $used_language, $language_pk_map[$used_language] ) as $page_translation ) {
 						$fixtures->append( $page_translation );
 					}
@@ -506,7 +508,7 @@
 			}
 			$page_tree_counter++;
 		}
-		if ( $blog->blog_id >= 3 ) { break; }
+		//if ( $blog->blog_id >= 3 ) { break; }
 	}
 
 
