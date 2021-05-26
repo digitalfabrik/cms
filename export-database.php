@@ -190,7 +190,7 @@
 		}
 	}
 
-	class Page {
+	class Page extends DjangoModel {
 		public $model = "cms.page";
 
 		function __construct( $blog, $mptt_node, $page_tree_counter ) {
@@ -217,23 +217,28 @@
 		}
 	}
 
-	class PageTranslation {
+	class PageTranslation extends DjangoModel {
 		public $model = "cms.pagetranslation";
 
-		function init_fields() {
+		function __construct( $translation ) {
+			parent::__construct();
+			$this->init_fields( $translation );
+		}
+
+		function init_fields( $translation ) {
 			$this->fields = array(
-				"page"=>null,
-				"slug"=>null,
-				"title"=>null,
-				"status"=>null,
-				"text"=>null,
-				"language"=>null,
-				"currently_in_translation"=>null,
-				"version"=>null,
-				"minor_edit"=>null,
-				"creator"=>null,
-				"created_date"=>null,
-				"last_updated"=>null,
+				"page"=>$translation["page"],
+				"slug"=>$translation["slug"],
+				"title"=>utf8_encode($translation["title"]),
+				"status"=>$translation["status"],
+				"text"=>utf8_encode($translation["text"]),
+				"language"=>$translation["language"],
+				"currently_in_translation"=>$translation["currently_in_translation"],
+				"version"=>$translation["version"],
+				"minor_edit"=>$translation["minor_edit"],
+				"creator"=>$translation["creator"],
+				"created_date"=>$translation["created_date"],
+				"last_updated"=>$translation["last_updated"],
 			);
 		}
 	}
@@ -403,10 +408,44 @@
 			return $page_tree;
 		}
 
+		/* Get the post ID that is the first version (post parent) of the page in the given language */
+		function get_page_language_root_id( $post_id, $language ) {
+			$query = "SELECT element_id FROM " . $this->dbprefix . "icl_translations WHERE trid IN (SELECT trid FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page' AND element_id='" . $post_id . "') AND language_code = '" . $language . "'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				return $row->element_id;
+			}
+			return false;
+		}
+
 		/* Create array of all revisions in all translations */
-		function get_page_translations( $mptt_node ) {
-			
-		
+		function get_page_translations( $mptt_node, $language, $language_pk ) {
+			$parent = $this->get_page_language_root_id( $mptt_node["id"], $language );
+			if ( !$parent ) {
+				return [];
+			}
+			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE post_parent = " . $parent . " OR ID = " . $parent . " ORDER BY post_modified ASC" ;
+			$result = $this->db->query( $query );
+			$translations = [];
+			$version = 1;
+			while ( $row = $result->fetch_object() ) {
+				$page_translations[] = new PageTranslation([
+					"page"=>$mptt_node["pk"],
+					"slug"=>null,
+					"title"=>$row->post_title,
+					"status"=>null,
+					"text"=>$row->post_content,
+					"language"=>$language_pk,
+					"currently_in_translation"=>null,
+					"version"=>$version,
+					"minor_edit"=>false,
+					"creator"=>null,
+					"created_date"=>$row->post_date_gmt,
+					"last_updated"=>$row->post_modified_gmt,
+				]);
+				$version++;
+			}
+			return $page_translations;
 		}
 	}
 
@@ -418,11 +457,12 @@
 	}
 	$fixtures = new DjangoFixtures();
 	$languages = array();
+	$language_pk_map = array(); // map a language code to the Django primary key
 	$lang_tree_node_pk_counter = 1;
 	$page_tree_node_pk_counter = 1;
 	$page_tree_counter = 1;
-	$page_pk_map = array(); // an array that maps a blog and post ID to the Django page primary key
-	$page_wp_map = array(); // an array that maps Django page PKs to WP blog and post IDs
+	$page_pk_map = array(); // map a blog and post ID to the Django page primary key
+	$page_wp_map = array(); // map Django page PKs to WP blog and post IDs
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -431,7 +471,9 @@
 		/* get available languages */
 		foreach ( $blog->get_languages() as $blog_language ) {
 			if( !array_key_exists( $blog_language["code"], $languages ) ) {
-				$fixtures->append( new Language( $blog_language ) );
+				$lang_fixture = new Language( $blog_language );
+				$language_pk_map[$blog_language["code"]] = $lang_fixture->pk;
+				$fixtures->append( $lang_fixture );
 				$languages[$blog_language["code"]] = $blog_language;
 			}
 		}
@@ -456,11 +498,10 @@
 			foreach ( $page_tree->tree as $mptt_node ) {
 				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
 				$fixtures->append( $page_tree_node );
-				$version = 1;
-				foreach ( $blog->get_page_translations( $mptt_node ) as $translation ) {
-					$page_translation = new PageTranslation( $translation, $version );
-					$fixtures->append( $page_translation );
-					$version++;
+				foreach ( $blog->get_used_languages() as $used_language => $active) {
+					foreach ( $blog->get_page_translations( $mptt_node, $used_language, $language_pk_map[$used_language] ) as $page_translation ) {
+						$fixtures->append( $page_translation );
+					}
 				}
 			}
 			$page_tree_counter++;
