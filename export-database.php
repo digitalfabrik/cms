@@ -379,6 +379,7 @@
 
 		function generate_page_tree( $page_tree_node_pk_counter, $root_page_id, $page_tree_counter ) {
 			global $page_pk_map;
+			global $page_wp_map;
 			/* Get pages in hierarchical order, starting with a root page */
 			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [ $root_page_id ] );
 			$posts = $new_posts;
@@ -389,19 +390,21 @@
 			$page_tree = new MPTT( $pk_offset = $page_tree_node_pk_counter, $id = $page_tree_counter );
 			if ( $page_tree->add_node( $root_page_id, null ) ) {
 				$page_pk_map[$this->blog_id][$root_page_id] = $page_tree->pk_counter - 1;
+				$page_wp_map[$page_tree->pk_counter - 1] = array( "blog_id" => $this->blog_id, "post_id" => $root_page_id );
 			} else {
 				return false;
 			}
 			foreach ( $posts as $post ) {
 				if ( $page_tree->add_node( $post["id"], $post["parent"] ) ) {
 					$page_pk_map[$this->blog_id][$post["id"]] = $page_tree->pk_counter - 1;
+					$page_wp_map[$page_tree->pk_counter - 1] = array( "blog_id" => $this->blog_id, "post_id" => $post["id"] );
 				}
 			}
 			return $page_tree;
 		}
 
 		/* Create array of all revisions in all translations */
-		function get_page_translations( $page_id ) {
+		function get_page_translations( $mptt_node ) {
 			
 		
 		}
@@ -419,6 +422,7 @@
 	$page_tree_node_pk_counter = 1;
 	$page_tree_counter = 1;
 	$page_pk_map = array(); // an array that maps a blog and post ID to the Django page primary key
+	$page_wp_map = array(); // an array that maps Django page PKs to WP blog and post IDs
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -452,10 +456,12 @@
 			foreach ( $page_tree->tree as $mptt_node ) {
 				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
 				$fixtures->append( $page_tree_node );
-				//foreach ( $blog->get_page_translations() as $translation ) {
-				//	$page_translation = new PageTranslation( $translation );
-				//	$fixtures->append( $page_translation );
-				//}
+				$version = 1;
+				foreach ( $blog->get_page_translations( $mptt_node ) as $translation ) {
+					$page_translation = new PageTranslation( $translation, $version );
+					$fixtures->append( $page_translation );
+					$version++;
+				}
 			}
 			$page_tree_counter++;
 		}
