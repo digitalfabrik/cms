@@ -133,14 +133,11 @@
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
-			$this->fields["push_notification_channels"] = array("news");
 			$this->fields["admin_mail"] = "info@integreat-app.de";
 			$this->fields["created_date"] = now();
 			$this->fields["last_updated"] = now();
 			$this->fields["statistics_enabled"] = ( strpos( $blog->get_blog_option( "active_plugins" ), "wp-piwik" ) ? true : false );
-			$this->fields["matomo_url"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_url" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_url" ) : "" );
 			$this->fields["matomo_token"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_token" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_token" ) : "");
-			$this->fields["matomo_ssl_verify"] = true;
 		}
 	}
 
@@ -430,17 +427,17 @@
 			$version = 1;
 			$status = "DRAFT";
 			while ( $row = $result->fetch_object() ) {
-				if ( $post->post_status == "auto-draft" || $post->post_status == "draft" )
+				if ( $row->post_status == "auto-draft" || $row->post_status == "draft" )
 					$status = "DRAFT";
-				elseif ( $post->post_status == "private" || $post->post_status == "trash" )
+				elseif ( $row->post_status == "private" || $row->post_status == "trash" )
 					$status = "REVIEW";
-				elseif ( $post->post_status == "publish" )
+				elseif ( $row->post_status == "publish" )
 					$status = "PUBLIC";
 				else
 					$status = $status; // inherit
 				$page_translations[] = new PageTranslation([
 					"page"=>$mptt_node["pk"],
-					"slug"=>$post->post_name,
+					"slug"=>$row->post_name,
 					"title"=>$row->post_title,
 					"status"=>$status,
 					"text"=>$row->post_content,
