@@ -228,7 +228,7 @@
 		function init_fields( $translation ) {
 			$this->fields = array(
 				"page"=>$translation["page"],
-				"slug"=>$translation["slug"],
+				"slug"=>utf8_encode($translation["slug"]),
 				"title"=>utf8_encode($translation["title"]),
 				"status"=>$translation["status"],
 				"text"=>utf8_encode($translation["text"]),
@@ -428,15 +428,24 @@
 			$result = $this->db->query( $query );
 			$translations = [];
 			$version = 1;
+			$status = "DRAFT";
 			while ( $row = $result->fetch_object() ) {
+				if ( $post->post_status == "auto-draft" || $post->post_status == "draft" )
+					$status = "DRAFT";
+				elseif ( $post->post_status == "private" || $post->post_status == "trash" )
+					$status = "REVIEW";
+				elseif ( $post->post_status == "publish" )
+					$status = "PUBLIC";
+				else
+					$status = $status; // inherit
 				$page_translations[] = new PageTranslation([
 					"page"=>$mptt_node["pk"],
-					"slug"=>null,
+					"slug"=>$post->post_name,
 					"title"=>$row->post_title,
-					"status"=>null,
+					"status"=>$status,
 					"text"=>$row->post_content,
 					"language"=>$language_pk,
-					"currently_in_translation"=>null,
+					"currently_in_translation"=>false,
 					"version"=>$version,
 					"minor_edit"=>false,
 					"creator"=>null,
