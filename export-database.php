@@ -117,7 +117,7 @@
 		public $model = "cms.region";
 
 		function __construct( $blog ) {
-			parent::__construct( $blog->blog_id );
+			parent::__construct( (int)$blog->blog_id );
 			$this->init_fields( $blog );
 		}
 
@@ -198,18 +198,18 @@
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
-				"icon"=>null,
+				"icon"=>"",
 				"region"=>$blog->blog_id,
-				"explicitly_archived"=>null,
+				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
 				"created_date"=>now(),
-				"last_updated"=>now(),
+				//"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
 				"rght"=>$mptt_node["right"],
 				"tree_id"=>$page_tree_counter,
 				"level"=>$mptt_node["level"],
-				"editors"=>null,
-				"publishers"=>null,
+				"editors"=>[],
+				"publishers"=>[],
 			);
 		}
 	}
@@ -234,8 +234,8 @@
 				"version"=>$translation["version"],
 				"minor_edit"=>$translation["minor_edit"],
 				"creator"=>$translation["creator"],
-				"created_date"=>$translation["created_date"],
-				"last_updated"=>$translation["last_updated"],
+				//"created_date"=>str_replace("0000-00-00","1970-01-01",$translation["created_date"]),
+				"last_updated"=>str_replace("0000-00-00","1970-01-01",$translation["last_updated"]),
 			);
 		}
 	}
@@ -487,7 +487,8 @@
 
 		/* get used languages and create tree nodes */
 		$language_tree = $blog->generate_language_tree( $lang_tree_node_pk_counter );
-		$treenode_pk_counter = $language_tree->pk_counter;
+		$lang_tree_node_pk_counter = $language_tree->pk_counter;
+		//fwrite(STDERR, "TreeNode PK Counter: " . $lang_tree_node_pk_counter . "\n");
 
 		foreach ( $blog->get_used_languages() as $used_language => $active) {
 			$mptt_node = $language_tree->get_node( $used_language );
@@ -514,7 +515,7 @@
 			}
 			$page_tree_counter++;
 		}
-		//if ( $blog->blog_id >= 3 ) { break; }
+		//if ( $blog->blog_id >= 2 ) { break; }
 	}
 
 
