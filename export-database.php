@@ -226,7 +226,7 @@
 			$this->fields = array(
 				"page"=>$translation["page"],
 				"slug"=>utf8_encode($translation["slug"]),
-				"title"=>utf8_encode($translation["title"]),
+				"title"=>mb_substr(utf8_encode($translation["title"]), 0, 250),
 				"status"=>$translation["status"],
 				"text"=>utf8_encode($translation["text"]),
 				"language"=>$translation["language"],
