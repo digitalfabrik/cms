@@ -3,7 +3,7 @@
  * User Role Editor: support of 'Grant Roles' button for Users page (wp-admin/users.php)
  */
 
-jQuery(document).ready(function() {
+jQuery(function() {
     jQuery('#ure_grant_roles').click(function() {
         ure_prepare_grant_roles_dialog();
     });
@@ -33,11 +33,11 @@ function ure_show_grant_roles_dialog_pre_selected(response) {
         alert(response.message);
         return;
     }
-    if (response.primary_role.length>0 && jQuery('#primary_role').length>0) {
+    if (response.primary_role!==null && response.primary_role.length>0 && jQuery('#primary_role').length>0) {
         jQuery('#primary_role').val(response.primary_role);
     }
     
-    if (response.other_roles.length>0) {
+    if (response.other_roles!==null && response.other_roles.length>0) {
         for(i=0;i<response.other_roles.length;i++) {
             jQuery('#wp_role_'+ response.other_roles[i]).prop('checked', true);
         }

@@ -21,53 +21,53 @@
 })(jQuery);
 
 
-jQuery(document).ready(function() {
+jQuery(function() {
 
     jQuery( '#ure_add_role' ).button({
         label: ure_data.add_role
-    }).click(function ( event ) {
+    }).on('click', (function ( event ) {
         event.preventDefault();
         ure_main.show_add_role_dialog();
-    });
+    }));
 
     jQuery( '#ure_add_capability' ).button({
         label: ure_data.add_capability
-    }).click( function ( event ) {
+    }).on('click', ( function ( event ) {
         event.preventDefault();
         ure_main.show_add_capability_dialog();
-    });
+    }));
 
     var del_cap = jQuery( '#ure_delete_capability' );
     if ( del_cap.length > 0 ) {
         del_cap.button({
             label: ure_data.delete_capability
-        }).click(function ( event ) {
+        }).on('click', (function ( event ) {
             event.preventDefault();
             jQuery.ajax( ure_main.get_caps_to_remove );
-        });
+        }));
     }            
 
     var del_role = jQuery( '#ure_delete_role' );
     if ( del_role.length>0 ) {
         del_role.button({
             label: ure_data.delete_role
-        }).click(function ( event ) {
+        }).on('click', (function ( event ) {
             event.preventDefault();
             ure_main.show_delete_role_dialog();
-        });
+        }));
     }
 
     jQuery('#ure_rename_role').button({
         label: ure_data.rename_role
-    }).click(function (event) {
+    }).on('click', (function (event) {
         event.preventDefault();
         ure_main.show_rename_role_dialog();
-    });
+    }));
 
 
 
     if ( jQuery('#ure_select_all_caps').length>0 ) {
-        jQuery('#ure_select_all_caps').click( ure_main.auto_select_caps );
+        jQuery('#ure_select_all_caps').on('click', ( ure_main.auto_select_caps ) );
     }    
 
     ure_main.count_caps_in_groups();
@@ -80,7 +80,7 @@ jQuery(document).ready(function() {
         }
     });
     ure_main.select_selectable_element( jQuery('#ure_caps_groups_list'), jQuery('#ure_caps_group_all') );
-    jQuery('#granted_only').click( ure_main.show_granted_caps_only );
+    jQuery('#granted_only').on('click', ( ure_main.show_granted_caps_only ) );
     
 });
 
@@ -157,7 +157,7 @@ var ure_main = {
 
     
     caps_refresh_for_group: function (group_id) {
-        var show_deprecated = jQuery('#ure_show_deprecated_caps').attr('checked');
+        var show_deprecated = jQuery('#ure_show_deprecated_caps').prop('checked');
         jQuery('.ure-cap-div').each(function () {
             var el = jQuery(this);
             if (el.hasClass(ure_main.class_prefix + group_id)) {
@@ -192,9 +192,9 @@ var ure_main = {
         var selected_index = parseInt( jQuery('#caps_columns_quant').val() );
         var columns = ure_main.validate_columns( selected_index );
         var el = jQuery('#ure_caps_list');
-        el.css('-moz-column-count', columns);
-        el.css('-webkit-column-count', columns);
-        el.css('column-count', columns);
+        el.css('-moz-column-count', String( columns ) );
+        el.css('-webkit-column-count', String( columns ) );
+        el.css('column-count', String( columns ) );
 
     },
 
@@ -209,7 +209,7 @@ var ure_main = {
             ure_main.caps_refresh_for_group( group_id );
         }    
         ure_main.change_caps_columns_quant();
-        jQuery('#granted_only').attr('checked', false);
+        jQuery('#granted_only').prop('checked', false);
     },
     
     
@@ -267,15 +267,15 @@ var ure_main = {
 
 
     show_granted_caps_only: function () {
-        var show_deprecated = jQuery('#ure_show_deprecated_caps').attr('checked');
-        var hide_flag = jQuery('#granted_only').attr('checked');
+        var show_deprecated = jQuery('#ure_show_deprecated_caps').prop('checked');
+        var hide_flag = jQuery('#granted_only').prop('checked');
         jQuery('.ure-cap-div').each(function () {
             var cap_div = jQuery(this);
             if ( !cap_div.hasClass(ure_main.class_prefix + ure_main.selected_group ) ) {    // apply to the currently selected group only
                 return;
             }
             var cap_id = cap_div.attr('id').substr( 12 );        
-            var granted = jQuery('#'+ cap_id).attr('checked');
+            var granted = jQuery('#'+ cap_id).prop('checked');
             if ( granted ) {
                 return;
             }
@@ -687,7 +687,7 @@ var ure_main = {
         jQuery('#dialog-delete-capability-button').html(this.ui_button_text(ure_data.delete_capability));
         jQuery('.ui-dialog-buttonpane button:contains("CancelDeleteCapability")').attr('id', 'delete-capability-dialog-cancel-button');
         jQuery('#delete-capability-dialog-cancel-button').html(this.ui_button_text(ure_data.cancel));
-        jQuery('#ure_remove_caps_select_all').click(this.remove_caps_auto_select);
+        jQuery('#ure_remove_caps_select_all').on('click', (this.remove_caps_auto_select) );
     },
     
     
@@ -958,6 +958,43 @@ var ure_main = {
             event.target.checked = true; 
         }
 
+    },
+    
+    update_role: function() {
+        
+        var values = {};
+        jQuery.each( jQuery('#ure_form').serializeArray(), function( i, field ) {
+            values[field.name] = field.value;
+        });
+        jQuery('#ure_task_status').show();
+        jQuery.ajax( {
+            url: ajaxurl,
+            type: 'POST',
+            dataType: 'json',
+            async: true,
+            data: {
+                action: 'ure_ajax',
+                sub_action: 'update_role',
+                values: values,
+                user_role_id: values['user_role'],
+                network_admin: ure_data.network_admin,
+                wp_nonce: ure_data.wp_nonce
+            },
+            success: ure_main.update_role_success,
+            error: ure_main.ajax_error
+        } );
+        
+    },
+    
+    update_role_success: function( data ) {
+        
+        jQuery('#ure_task_status').hide();
+        if ( data.result=='success' ) {    
+            ure_main.count_caps_in_groups();
+            ure_main.show_notice( data.message, 'success' );            
+        } else {
+            ure_main.show_notice( data.message, 'error' );
+        }
     }
     
 
@@ -976,18 +1013,23 @@ jQuery(function ($) {
             
     $('#ure_update_role').button({
         label: ure_data.update
-    }).click(function () {
-        if (ure_data.confirm_role_update == 1) {
-            event.preventDefault();
-            ure_confirm(ure_data.confirm_submit, ure_form_submit);
+    }).on('click', (function () {
+        event.preventDefault();
+        if (ure_data.confirm_role_update == 1) {            
+            //ure_confirm(ure_data.confirm_submit, ure_form_submit);
+            ure_confirm( ure_data.confirm_submit, ure_main.update_role );
+        } else {
+            ure_main.update_role();
         }
-    });
+    }));
 
-
+/*
     function ure_form_submit() {
         $('#ure_form').submit();
     }
+*/
 
+    
     
     function ure_show_default_role_dialog() {
         $('#ure_default_role_dialog').dialog({
@@ -1022,10 +1064,10 @@ jQuery(function ($) {
     if ($('#ure_default_role').length > 0) {
         $('#ure_default_role').button({
             label: ure_data.default_role
-        }).click(function (event) {
+        }).on('click', (function (event) {
             event.preventDefault();                
             ure_show_default_role_dialog();
-        });
+        }));
     }
     
 
@@ -1091,6 +1133,6 @@ function ure_turn_deprecated_caps(user_id) {
 // ure_turn_deprecated_caps()
 
 
-jQuery(window).resize(function () {
+jQuery(window).on('resize', (function () {
     ure_main.sizes_update();
-});
+}));

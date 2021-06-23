@@ -18,8 +18,7 @@ class URE_Posts_Edit_Access {
     
         $this->lib = URE_Lib_Pro::get_instance();        
         new URE_Posts_Edit_Access_Role();
-        new URE_Posts_Edit_Access_Bulk_Action();
-        $this->user = new URE_Posts_Edit_Access_User($this);                        
+        new URE_Posts_Edit_Access_Bulk_Action();                                
         
         add_action( 'init', array($this, 'set_hooks_general') );
         add_action( 'admin_init', array($this, 'set_hooks_admin') );
@@ -48,28 +47,36 @@ class URE_Posts_Edit_Access {
         $this->pre_get_posts_hook();
 
         // apply restrictions to the pages list from stuff respecting get_pages filter
-        add_filter('get_pages', array($this, 'restrict_pages_list'));
+        add_filter('get_pages', array($this, 'restrict_pages_list') );
 
         // Refresh counters at the Views by post statuses
-        add_filter('wp_count_posts', array($this, 'recount_wp_posts'), 10, 3);        
-        add_action('current_screen', array($this, 'add_views_filter'));                
+        add_filter('wp_count_posts', array($this, 'recount_wp_posts'), 10, 3 );
+        add_action('current_screen', array($this, 'add_views_filter') );
                         
         // Auto assign to a new created post the 1st from the allowed terms
-        add_filter('wp_insert_post', array($this, 'auto_assign_term'), 10, 3);
+        add_filter('wp_insert_post', array($this, 'auto_assign_term'), 10, 3 );
         
-        if ($wc_bookings_active) {  
-            new URE_WC_Bookings($this->user);
-        }                
+        if ( $wc_bookings_active ) {  
+            new URE_WC_Bookings( $this->user );
+        }   
         
-        if (URE_Plugin_Presence::is_active('duplicate-post')) {
-            add_action('dp_duplicate_post', 'URE_Duplicate_Post::prevent_term_remove', 45, 2);
-            add_action('dp_duplicate_page', 'URE_Duplicate_Post::prevent_term_remove', 45, 2);
+        if ( URE_Plugin_Presence::is_active('duplicate-post') ) {
+            add_action('dp_duplicate_post', 'URE_Duplicate_Post::prevent_term_remove', 45, 2 );
+            add_action('dp_duplicate_page', 'URE_Duplicate_Post::prevent_term_remove', 45, 2 );
         }
+        
+        if ( URE_Plugin_Presence::is_active('foogallery') || URE_Plugin_Presence::is_active('foogallery-premium') ) {
+            new URE_FooGallery( $this->user );
+        }
+        
     }
     // end of set_hooks_admin()
         
 
     public function set_hooks_general() {
+                
+        // use init action in order have current user initialized already
+        $this->user = new URE_Posts_Edit_Access_User( $this );
         
         // restrict categories available for selection at the post editor
         add_filter('list_terms_exclusions', array($this, 'exclude_terms'));        
@@ -111,7 +118,7 @@ class URE_Posts_Edit_Access {
             }
         }
         $restriction_type = $this->user->get_restriction_type();
-        $posts_list = $this->user->get_posts_list();
+        $posts_list = $this->user->get_posts_list( $type );
         if ($restriction_type==1) {   // Allow
             if (count($posts_list)==0) {
                 $query = false;
@@ -213,7 +220,7 @@ class URE_Posts_Edit_Access {
         $query .= " AND post_status NOT IN ( $post_statuses )";
         
         $restriction_type = $this->user->get_restriction_type();        
-        $posts_list = $this->user->get_posts_list();
+        $posts_list = $this->user->get_posts_list( $post_type );
         if (count($posts_list)>0) {
             $posts_list_str = URE_Base_Lib::esc_sql_in_list('int', $posts_list);
             if ($restriction_type==1) {   // Allow
@@ -259,9 +266,7 @@ class URE_Posts_Edit_Access {
             
     
     public function block_edit_post($caps, $cap='', $user_id=0, $args=array()) {
-        
-        // return $caps;   // Debugging!!!
-        
+               
         $current_user_id = get_current_user_id();
         if ($current_user_id==0) {
             return $caps;
@@ -304,7 +309,10 @@ class URE_Posts_Edit_Access {
             return $caps;
         }
         
-        $posts_list = $this->user->get_posts_list();                                   
+        if ( empty( $this->user ) ) {
+            $this->user = new URE_Posts_Edit_Access_User( $this );
+        }
+        $posts_list = $this->user->get_posts_list( $post->post_type );
         if (count($posts_list)==0) {        
             return $caps;
         }                                
@@ -341,10 +349,10 @@ class URE_Posts_Edit_Access {
     // end of block_edit_post()
                                
     
-    private function update_post_query($query) {
+    private function update_post_query( $query ) {
         
         $restriction_type = $this->user->get_restriction_type();
-        $posts_list = $this->user->get_posts_list();
+        $posts_list = $this->user->get_posts_list( $query->query['post_type'] );
         
         if ($restriction_type==1) {   // Allow
             if (count($posts_list)==0) {
@@ -365,8 +373,8 @@ class URE_Posts_Edit_Access {
     
         global $pagenow;
         
-        if (!($pagenow == 'edit.php' || $pagenow == 'upload.php' || 
-            ($pagenow=='admin-ajax.php' && !empty($_POST['action']) && $_POST['action']=='query-attachments'))) {
+        if ( !( $pagenow=='edit.php' || $pagenow=='upload.php' ||
+            ( $pagenow=='admin-ajax.php' && !empty($_POST['action']) && $_POST['action']=='query-attachments' ) ) ) {
             if (!function_exists('cms_tpv_get_options')) {   // if  "CMS Tree Page View" plugin is not active
                 return false;
             } elseif ($pagenow!=='index.php') { //  add Dashboard page for "CMS Tree Page View" plugin widget
@@ -399,14 +407,39 @@ class URE_Posts_Edit_Access {
     // end of leave_just_allowed()
     
     
-    private function _restrict_posts_list($query) {
+    private function restrict_attachments( $query ) {
         
-        if (!$this->should_apply_restrictions_to_wp_page()) {
+        $show_full_list = apply_filters('ure_attachments_show_full_list', false);
+        if ( $show_full_list ) { // show full list of attachments
+            return;
+        }            
+        $restriction_type = $this->user->get_restriction_type();
+        $attachments_list = $this->user->get_attachments_list();
+        if ( $restriction_type==1 ) {   // Allow
+            if ( count( $attachments_list )==0 ) {
+                $attachments_list[] = -1;
+                $query->set('post__in', $attachments_list );
+            } elseif ( empty( $query->query['post__in'] ) ) {
+                $query->set('post__in', $attachments_list);
+            } else {
+                $this->leave_just_allowed( $query, $attachments_list );
+            }
+        } else {    // Prohibit
+            $query->set('post__not_in', $attachments_list );
+        }
+        
+    }
+    // end of restrict_attachments()
+    
+    
+    private function _restrict_posts_list( $query ) {
+        
+        if ( !$this->should_apply_restrictions_to_wp_page() ) {
             return;
         }                        
         
         // do not limit user with Administrator role or the user for whome posts/pages edit restrictions were not set
-        if (!$this->user->is_restriction_applicable()) {
+        if ( !$this->user->is_restriction_applicable() ) {
             return;
         }
 
@@ -415,37 +448,19 @@ class URE_Posts_Edit_Access {
             return;
         }                   
         
-        if (!empty($query->query['post_type'])) {
-            $restrict_it = apply_filters('ure_restrict_edit_post_type', $query->query['post_type']);
-            if (empty($restrict_it)) {
+        if ( !empty( $query->query['post_type'] ) ) {
+            $restrict_it = apply_filters('ure_restrict_edit_post_type', $query->query['post_type'] );
+            if ( empty( $restrict_it ) ) {
                 return;
             }         
         }
         
-        if ($query->query['post_type']=='attachment') {             
-            $show_full_list = apply_filters('ure_attachments_show_full_list', false);
-            if ($show_full_list) { // show full list of attachments
-                return;
-            }            
-            $restriction_type = $this->user->get_restriction_type();
-            $attachments_list = $this->user->get_attachments_list();
-            if ($restriction_type==1) {   // Allow
-                if (count($attachments_list)==0) {
-                    $attachments_list[] = -1;
-                    $query->set('post__in', $attachments_list);
-                } elseif (empty($query->query['post__in'])) {
-                    $query->set('post__in', $attachments_list);
-                } else {
-                    $this->leave_just_allowed($query, $attachments_list);
-                }
-            } else {    // Prohibit
-                $query->set('post__not_in', $attachments_list);
-            }            
+        if ( $query->query['post_type']=='attachment' ) {
+            $this->restrict_attachments( $query );
         } else {
-            $this->update_post_query($query);
+            $this->update_post_query( $query );
         }
-        
-        
+                
     }
     // end of _restrict_posts_list()
     
@@ -479,19 +494,22 @@ class URE_Posts_Edit_Access {
             return $pages;
         }
         
-        $posts_list = $this->user->get_posts_list();
-        if (count($posts_list)==0) {
-            return $pages;
-        } 
-        
         $restriction_type = $this->user->get_restriction_type();
+        $posts_list = $this->user->get_posts_list( 'page' );
+        if ( count( $posts_list )==0 ) {    // Allow
+            if ($restriction_type==1) {
+                return array(); // There is no available pages
+            } else {    // Prohibit
+                return $pages;  //  All pages are available
+            }
+            
+        }                 
         
         $pages1 = array();
         foreach($pages as $page) {
             if ($restriction_type==1) { // Allow: not edit others
                 if (in_array($page->ID, $posts_list)) {    // not edit others
-                    $pages1[] = $page;
-                    
+                    $pages1[] = $page;                    
                 }
             } else {    // Prohibit: Not edit these
                 if (!in_array($page->ID, $posts_list)) {    // not edit these

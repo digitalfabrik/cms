@@ -7,16 +7,16 @@
 
 var ure = {};
 
-jQuery(document).ready(function(){    
+jQuery(function(){    
     
-    jQuery('.ure_show_to').click(function(event) {
+    jQuery('.ure_apply_to').on('click', (function(event) {
         ure_selected_roles_refresh(event);
-    });
+    }));
     
-    jQuery('.ure_edit_roles_list').click(function(event) {
+    jQuery('.ure_edit_roles_list').on('click', (function(event) {
         event.preventDefault();
         ure_edit_roles_list_dialog(event);
-    });
+    }));
     
     jQuery(document.body).append('<div id="ure_select_roles_dialog"></div>');
     
@@ -97,14 +97,14 @@ function ure_store_selected_roles(el_number) {
 
 
 function ure_show_hide_roles_list(el_number) {
-    var with_roles1 = jQuery('#ure_show_to_logged_in_with_roles_'+ el_number).prop('checked');    
+    var with_roles1 = jQuery('#ure_apply_to_logged_in_with_roles_'+ el_number).prop('checked');    
     var container_id = 'ure_selected_roles_container_'+ el_number;    
     if (with_roles1) {    // logged-in with selected roles
         jQuery('#'+ container_id).appendTo(jQuery('#ure_roles_container1_'+ el_number));
         jQuery('#'+ container_id).show();
     }
     
-    var with_roles2 = jQuery('#ure_show_to_not_logged_in_and_with_roles_'+ el_number).prop('checked');    
+    var with_roles2 = jQuery('#ure_apply_to_not_logged_in_and_with_roles_'+ el_number).prop('checked');    
     if (with_roles2) {    // not logged-in and logged-in users with selected roles
         jQuery('#'+ container_id).appendTo(jQuery('#ure_roles_container2_'+ el_number));
         jQuery('#'+ container_id).show();

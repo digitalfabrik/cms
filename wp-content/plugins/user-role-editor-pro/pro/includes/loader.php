@@ -15,6 +15,7 @@ require_once(URE_PLUGIN_DIR .'pro/includes/classes/license-key.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/plugin-presence.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/bbpress.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/duplicate-post.php');
+require_once(URE_PLUGIN_DIR .'pro/includes/classes/foogallery.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/wc-bookings.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/assign-role-pro.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/screen-help-pro.php');
@@ -117,12 +118,14 @@ require_once(URE_PLUGIN_DIR .'pro/includes/classes/editor-ext.php');
 
 
 // User Role Editor Pro Settings - Tools
-require_once(URE_PLUGIN_DIR .'pro/includes/classes/export-roles-csv.php');
-require_once(URE_PLUGIN_DIR .'pro/includes/classes/tools-ext.php');
+require_once( URE_PLUGIN_DIR .'pro/includes/classes/export-roles-csv.php');
+//require_once( URE_PLUGIN_DIR .'pro/includes/classes/import-roles-csv.php');
+require_once( URE_PLUGIN_DIR .'pro/includes/classes/tools-ext.php');
 
 // User Role Editor Pro Settings
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/settings-pro.php');
 
 // User Role Editor Pro
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/user-role-editor-pro-view.php');
+require_once(URE_PLUGIN_DIR .'pro/includes/classes/uninstall-pro.php');
 require_once(URE_PLUGIN_DIR .'pro/includes/classes/user-role-editor-pro.php');

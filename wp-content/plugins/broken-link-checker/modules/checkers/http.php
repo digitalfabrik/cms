@@ -42,23 +42,13 @@ class blcHttpChecker extends blcChecker {
 				$this->module_manager
 			);
 		} else {
-			//Try to load Snoopy.
-			if ( ! class_exists( 'Snoopy' ) ) {
-				$snoopy_file = ABSPATH . WPINC . '/class-snoopy.php';
-				if ( file_exists( $snoopy_file ) ) {
-					include $snoopy_file;
-				}
-			}
-
-			//If Snoopy is available, it will be used in place of CURL.
-			if ( class_exists( 'Snoopy' ) ) {
-				$this->implementation = new blcSnoopyHttp(
-					$this->module_id,
-					$this->cached_header,
-					$this->plugin_conf,
-					$this->module_manager
-				);
-			}
+			//try and use wp request method
+			$this->implementation = new blcWPHttp(
+				$this->module_id,
+				$this->cached_header,
+				$this->plugin_conf,
+				$this->module_manager
+			);
 		}
 	}
 
@@ -199,7 +189,10 @@ class blcCurlHttp extends blcHttpCheckerBase {
 		//Redirects don't work when safe mode or open_basedir is enabled.
 		if ( ! blcUtility::is_safe_mode() && ! blcUtility::is_open_basedir() ) {
 			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		} else {
+			$log .= "[Warning] Could't follow the redirect URL (if any) because safemode or open base dir enabled\n";
 		}
+
 		//Set maximum redirects
 		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
 
@@ -267,6 +260,7 @@ class blcCurlHttp extends blcHttpCheckerBase {
 
 		$info = curl_getinfo( $ch );
 
+		// var_dump( $info ); die();
 		//Store the results
 		$result['http_code']        = intval( $info['http_code'] );
 		$result['final_url']        = $info['url'];
@@ -317,6 +311,10 @@ class blcCurlHttp extends blcHttpCheckerBase {
 					$result['status_code'] = BLC_LINK_STATUS_WARNING;
 					$result['status_text'] = __( 'Unknown Error', 'broken-link-checker' );
 			}
+		} elseif ( 999 === $result['http_code'] ) {
+			$result['status_code'] = BLC_LINK_STATUS_WARNING;
+			$result['status_text'] = __( 'Unknown Error', 'broken-link-checker' );
+			$result['warning'] = true;
 		} else {
 			$result['broken'] = $this->is_error_code( $result['http_code'] );
 		}
@@ -335,7 +333,9 @@ class blcCurlHttp extends blcHttpCheckerBase {
 			)
 		);
 
-		if ( $nobody && $result['broken'] && ! $result['timeout'] && ! $use_get ) {
+		$use_get = apply_filters( 'blc_use_get_checker', false, $result );
+
+		if ( $nobody && !$result['timeout'] && !$use_get && ($result['broken'] || $result['redirect_count'] == 1)){
 			//The site in question might be expecting GET instead of HEAD, so lets retry the request
 			//using the GET verb...but not in cases of timeout, or where we've already done it.
 			return $this->check( $url, true );
@@ -403,10 +403,11 @@ class blcCurlHttp extends blcHttpCheckerBase {
 
 }
 
-class blcSnoopyHttp extends blcHttpCheckerBase {
+class blcWPHttp extends blcHttpCheckerBase {
 
 	function check( $url ) {
-		$url = $this->clean_url( $url );
+
+		// $url = $this->clean_url( $url );
 		//Note : Snoopy doesn't work too well with HTTPS URLs.
 
 		$result = array(
@@ -422,20 +423,23 @@ class blcSnoopyHttp extends blcHttpCheckerBase {
 		$start_time = microtime_float();
 
 		//Fetch the URL with Snoopy
-		$snoopy               = new Snoopy;
-		$snoopy->read_timeout = $timeout; //read timeout in seconds
-		$snoopy->agent        = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'; //masquerade as IE 7
-		$snoopy->referer      = home_url(); //valid referer helps circumvent some hotlink protection schemes
-		$snoopy->maxlength    = 1024 * 5; //load up to 5 kilobytes
-		$snoopy->fetch( $this->urlencodefix( $url ) );
+		$snoopy               = new WP_Http;
+		$request_args         = array(
+			'timeout'    => $timeout,
+			'user-agent' => 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)', //masquerade as IE 7
+			'aa' => 1024 * 5,
+		);
+		$request = wp_safe_remote_get( $this->urlencodefix( $url ), $request_args );
 
-		$result['request_duration'] = microtime_float() - $start_time;
-
-		$result['http_code'] = $snoopy->status; //HTTP status code
-		//Snoopy returns -100 on timeout
-		if ( -100 == $result['http_code'] ) {
+		//request timeout results in WP ERROR
+		if ( is_wp_error( $request ) ) {
 			$result['http_code'] = 0;
 			$result['timeout']   = true;
+			$result['message']   = $request::get_error_message();
+		} else {
+			$http_resp           = $request['http_response'];
+			$result['http_code'] = $request['response']['status']; //HTTP status code
+			$result['message']   = $request['response']['message'];
 		}
 
 		//Build the log
@@ -447,31 +451,22 @@ class blcSnoopyHttp extends blcHttpCheckerBase {
 		}
 		$log .= " ===\n\n";
 
-		if ( $snoopy->error ) {
-			$log .= $snoopy->error . "\n";
+		if ( $result['message'] ) {
+			$log .= $result['message'] . "\n";
 		}
-		if ( $snoopy->timed_out ) {
+
+		if ( is_wp_error( $request ) ) {
 			$log              .= __( 'Request timed out.', 'broken-link-checker' ) . "\n";
 			$result['timeout'] = true;
-		}
-
-		if ( is_array( $snoopy->headers ) ) {
-			$log .= implode( '', $snoopy->headers ) . "\n"; //those headers already contain newlines
-		}
-
-		//Redirected?
-		if ( $snoopy->lastredirectaddr ) {
-			$result['final_url']      = $snoopy->lastredirectaddr;
-			$result['redirect_count'] = $snoopy->_redirectdepth;
-		} else {
-			$result['final_url'] = $url;
 		}
 
 		//Determine if the link counts as "broken"
 		$result['broken'] = $this->is_error_code( $result['http_code'] ) || $result['timeout'];
 
-		$log          .= '<em>(' . __( 'Using Snoopy', 'broken-link-checker' ) . ')</em>';
+		$log          .= '<em>(' . __( 'Using WP HTTP', 'broken-link-checker' ) . ')</em>';
 		$result['log'] = $log;
+
+		$result['final_url'] = $url;
 
 		//The hash should contain info about all pieces of data that pertain to determining if the
 		//link is working.

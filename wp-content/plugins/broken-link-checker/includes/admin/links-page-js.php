@@ -42,13 +42,13 @@ function reloadDetailsRow(link_id){
 	var details_row = jQuery('#link-details-'+link_id);
 
 	//Load up the new link info                     (so sue me)
-	details_row.find('td').html('<center><?php echo esc_js( __( 'Loading...', 'broken-link-checker' ) ); ?></center>').load(
+	details_row.find('td').html('<center><?php echo esc_js( __( 'Loading...', 'broken-link-checker' ) ); ?></center>').on( 'load', function() {
 		"<?php echo admin_url( 'admin-ajax.php' ); ?>",
 		{
 			'action' : 'blc_link_details',
 			'link_id' : link_id
 		}
-	);
+	});
 }
 
 jQuery(function($){
@@ -650,69 +650,74 @@ jQuery(function($){
 	$(".blc-unlink-button").click(function () {
 		var me = this;
 		var master = $(me).parents('.blc-row');
-		$(me).html('<?php echo esc_js( __( 'Wait...', 'broken-link-checker' ) ); ?>');
 
-		//Find the link ID
-		var link_id = master.attr('id').split('-')[2];
+		var confirm_msg = "<?php echo esc_js( __( 'Are you sure you want to unlink and remove this link from all posts?', 'broken-link-checker' ) ); ?>";
 
-		$.post(
-			"<?php echo admin_url( 'admin-ajax.php' ); ?>",
-			{
-				'action' : 'blc_unlink',
-				'link_id' : link_id,
-				'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_unlink' ) ); ?>'
-			},
-			function (data, textStatus){
-				eval('data = ' + data);
+		if( confirm( confirm_msg ) ) {
+			//Find the link ID
+			var link_id = master.attr('id').split('-')[2];
+			$(me).html('<?php echo esc_js( __( 'Wait...', 'broken-link-checker' ) ); ?>');
 
-				if ( data && (typeof(data['error']) != 'undefined') ){
-					//An internal error occurred before the link could be edited.
-					//data.error is an error message.
-					alert(data.error);
-				} else {
-					if ( data.errors.length == 0 ){
-						//The link was successfully removed. Hide its details.
-						$('#link-details-'+link_id).hide();
-						//Flash the main row green to indicate success, then hide it.
-						var oldColor = master.css('background-color');
-						master.animate({ backgroundColor: "#E0FFB3" }, 200).animate({ backgroundColor: oldColor }, 300, function(){
-							master.hide();
-						});
+			$.post(
+				"<?php echo admin_url( 'admin-ajax.php' ); ?>",
+				{
+					'action' : 'blc_unlink',
+					'link_id' : link_id,
+					'_ajax_nonce' : '<?php echo esc_js( wp_create_nonce( 'blc_unlink' ) ); ?>'
+				},
+				function (data, textStatus){
+					eval('data = ' + data);
 
-						alterLinkCounter(-1);
-
-						return;
+					if ( data && (typeof(data['error']) != 'undefined') ){
+						//An internal error occurred before the link could be edited.
+						//data.error is an error message.
+						alert(data.error);
 					} else {
-						//Build and display an error message.
-						var msg = '';
+						if ( data.errors.length == 0 ){
+							//The link was successfully removed. Hide its details.
+							$('#link-details-'+link_id).hide();
+							//Flash the main row green to indicate success, then hide it.
+							var oldColor = master.css('background-color');
+							master.animate({ backgroundColor: "#E0FFB3" }, 200).animate({ backgroundColor: oldColor }, 300, function(){
+								master.hide();
+							});
 
-						if ( data.cnt_okay > 0 ){
-							msg = msg + sprintf(
-								'<?php echo esc_js( __( '%d instances of the link were successfully unlinked.', 'broken-link-checker' ) ); ?>\n',
-								data.cnt_okay
-							);
+							alterLinkCounter(-1);
 
-							if ( data.cnt_error > 0 ){
-								msg = msg + sprintf(
-									'<?php echo esc_js( __( "However, %d instances couldn't be removed.", 'broken-link-checker' ) ); ?>\n',
-									data.cnt_error
-								);
-							}
+							return;
 						} else {
-							msg = msg + '<?php echo esc_js( __( 'The plugin failed to remove the link.', 'broken-link-checker' ) ); ?>\n';
+							//Build and display an error message.
+							var msg = '';
+
+							if ( data.cnt_okay > 0 ){
+								msg = msg + sprintf(
+									'<?php echo esc_js( __( '%d instances of the link were successfully unlinked.', 'broken-link-checker' ) ); ?>\n',
+									data.cnt_okay
+								);
+
+								if ( data.cnt_error > 0 ){
+									msg = msg + sprintf(
+										'<?php echo esc_js( __( "However, %d instances couldn't be removed.", 'broken-link-checker' ) ); ?>\n',
+										data.cnt_error
+									);
+								}
+							} else {
+								msg = msg + '<?php echo esc_js( __( 'The plugin failed to remove the link.', 'broken-link-checker' ) ); ?>\n';
+							}
+
+							msg = msg + '\n<?php echo esc_js( __( 'The following error(s) occured :', 'broken-link-checker' ) ); ?>\n* ';
+							msg = msg + data.errors.join('\n* ');
+
+							//Show the error message
+							alert(msg);
 						}
-
-						msg = msg + '\n<?php echo esc_js( __( 'The following error(s) occured :', 'broken-link-checker' ) ); ?>\n* ';
-						msg = msg + data.errors.join('\n* ');
-
-						//Show the error message
-						alert(msg);
 					}
-				}
 
-				$(me).html('<?php echo esc_js( __( 'Unlink', 'broken-link-checker' ) ); ?>');
-			}
-		);
+					$(me).html('<?php echo esc_js( __( 'Unlink', 'broken-link-checker' ) ); ?>');
+				}
+			);
+
+		}
 	});
 
 	//--------------------------------------------

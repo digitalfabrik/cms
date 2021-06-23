@@ -129,9 +129,8 @@ class blcYouTubeChecker extends blcChecker {
 		if ( isset( $api['error'] ) && ( 404 !== $result['http_code'] ) ) { //404's are handled later.
 			$result['status_code'] = BLC_LINK_STATUS_WARNING;
 			$result['warning']     = true;
-
-			if ( isset( $api['error']['message'] ) ) {
-				$result['status_text'] = $api['error']['message'];
+			if ( isset( $api['error']['errors'] ) ) {
+				$result['status_text'] = $api['error']['errors'][0]['reason'];
 			} else {
 				$result['status_text'] = __( 'Unknown Error', 'broken-link-checker' );
 			}
@@ -287,8 +286,7 @@ class blcYouTubeChecker extends blcChecker {
 	public function get_youtube_api_key() {
 		$conf = blc_get_configuration();
 
-		//todo: Remove defualt API key.
-		$api_key = ! empty( $conf->options['youtube_api_key'] ) ? $conf->options['youtube_api_key'] : 'AIzaSyCE2HKP0BneF8YdVT45UpadENdBeYCzFrE';
+		$api_key = ! empty( $conf->options['youtube_api_key'] ) ? $conf->options['youtube_api_key'] : '';
 
 		return apply_filters( 'blc_youtube_api_key', $conf->options['youtube_api_key'] );
 	}

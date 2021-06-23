@@ -541,5 +541,20 @@ class URE_Lib extends URE_Base_Lib {
     }
     // end of get_all_roles()
             
+    /*
+     * Wrapper to get_taxonomies() to get the custom taxonomies list
+     */
+    public function get_custom_taxonomies( $output='names' ) {
+        $args = array(
+            'show_ui'=>true,
+            'public'=>true,
+            '_builtin'=>false
+        );
+        $taxonomies = get_taxonomies( $args, $output );
+        
+        return $taxonomies;
+    }
+    // end of get_custom_taxonomies()        
+    
 }
 // end of URE_Lib class

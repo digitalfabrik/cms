@@ -12,9 +12,19 @@ class URE_Front_End_Menu_Controller {
     const MENU_ITEM_META_KEY = 'ure_front_end_menu_access';
     
     
-    public static function get($item_id) {
+    public static function get( $item_id ) {
         
-        $data = get_post_meta($item_id, self::MENU_ITEM_META_KEY, true);
+        $data = get_post_meta( $item_id, self::MENU_ITEM_META_KEY, true );
+        if ( empty( $data ) || !is_array( $data ) ) {
+            $data = array(
+                'what_todo'=>1, 
+                'whom'=>1, 
+                'roles' =>'');
+        } else {
+            if ( !isset( $data['what_todo'] ) || ($data['what_todo']!=1 && $data['what_todo']!=2 ) ) {
+                $data['what_todo'] = 1; // Show to
+            }
+        }
         
         return $data;
     }
@@ -31,12 +41,19 @@ class URE_Front_End_Menu_Controller {
     
     public static function update($menu_id, $menu_item_db_id) {
         global $wp_roles; 
+
         
-        if (empty($_POST['ure_show_to'][$menu_item_db_id])) {
+        
+        if (empty($_POST['ure_what_todo'][$menu_item_db_id])) {
             return;
         }
         
-        $whom = (int) $_POST['ure_show_to'][$menu_item_db_id];
+        $what_todo = (int) $_POST['ure_what_todo'][$menu_item_db_id];
+        if ($what_todo<1 || $what_todo>2) {
+            $whom = 1;
+        }
+        
+        $whom = (int) $_POST['ure_apply_to'][$menu_item_db_id];
         if ($whom<1 || $whom>5) {
             $whom = 1;
         }
@@ -52,7 +69,7 @@ class URE_Front_End_Menu_Controller {
             }
             $roles_list = implode(',', $roles1);
         }
-        $data = array('whom'=>$whom, 'roles' => $roles_list);
+        $data = array('what_todo'=>$what_todo, 'whom'=>$whom, 'roles' => $roles_list);
         self::set($menu_item_db_id, $data);
         
     }

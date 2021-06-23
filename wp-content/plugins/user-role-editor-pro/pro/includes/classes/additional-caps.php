@@ -93,8 +93,7 @@ class URE_Additional_Caps {
      * @return array
      */
     public function add_languages_caps_to_groups($caps) {
-        
-        $caps['install_languages'] = array('core', 'general');  
+                
         $caps['update_languages'] = array('core', 'general');              
         
         return $caps;
@@ -127,17 +126,12 @@ class URE_Additional_Caps {
         $old_use_db = $roles->use_db;
         $roles->use_db = true;
         $admin_role = get_role('administrator');
-        if (!isset($admin_role->capabilities['install_languages'])) {            
-            $admin_role->add_cap('install_languages', true);
-        }
-        if (!isset($admin_role->capabilities['update_languages'])) {
-            $admin_role->add_cap('update_languages', true);
+        if ( !$admin_role->has_cap('update_languages') ) {
+            $admin_role->add_cap('update_languages', true );
         }
         $roles->use_db = $old_use_db;
 
-        add_filter('ure_built_in_wp_caps', array($this, 'add_languages_caps_to_groups'), 10, 1);        
-        // deactivate WordPress default grant for languages capabilities 
-        remove_filter('user_has_cap', 'wp_maybe_grant_install_languages_cap', 1);
+        add_filter('ure_built_in_wp_caps', array($this, 'add_languages_caps_to_groups'), 10, 1);                
         add_filter('map_meta_cap', array($this, 'map_update_languages'), 10, 2);
     }
     // end of activate_for_languages()

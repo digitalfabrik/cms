@@ -79,7 +79,7 @@ class URE_Posts_Edit_Access_Bulk_Action {
 <?php
         
         wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core','jquery-ui-button', 'jquery') );
-        wp_register_script( 'ure-bulk-edit-access', plugins_url( '/pro/js/ure-bulk-edit-access.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-bulk-edit-access', plugins_url( '/pro/js/ure-bulk-edit-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-bulk-edit-access' );      
         wp_localize_script( 'ure-bulk-edit-access', 'ure_bulk_edit_access_data', array(
             'wp_nonce' => wp_create_nonce('user-role-editor'),

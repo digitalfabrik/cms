@@ -6,7 +6,7 @@
  * 
  */
 
-jQuery(document).ready(function(){
+jQuery(function(){
     if (jQuery('#ure_allow_themes').length==0) {
         return;
     }

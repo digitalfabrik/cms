@@ -93,13 +93,13 @@ class URE_Role_Additional_Options {
         
         // Save additonal options section for the current role
         $this->active_items[$current_role] = array();
-        foreach($this->items as $item) {
-            if (isset($_POST[$item->id])) {
+        foreach( $this->items as $item ) {
+            if ( isset( $_POST['values'][$item->id] ) ) {
                 $this->active_items[$current_role][$item->id] = 1;
             }
         }
         
-        update_option(self::STORAGE_ID, $this->active_items);
+        update_option( self::STORAGE_ID, $this->active_items );
         
     }
     // end of save()

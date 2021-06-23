@@ -9,10 +9,10 @@ jQuery(function() {
     // "Posts View" button at User Role Editor dialog
     jQuery("#ure_posts_view_access_button").button({
         label: ure_data_posts_view_access.posts_view
-    }).click(function(event) {
+    }).on('click', (function(event) {
         event.preventDefault();
         ure_posts_view_access_dialog_prepare();
-    });
+    }));
 
 });
 
@@ -83,10 +83,10 @@ function ure_posts_view_access_dialog(data) {
       
       $('#ure_posts_view_access_container').html(data.html);
       $('.ure_cb_select_all_terms').each(function() {
-            $(this).click(ure_posts_view_auto_select_terms);      
+            $(this).on('click', ure_posts_view_auto_select_terms);
       });
       $('.ure_cb_select_all_templates').each(function() {
-            $(this).click(ure_posts_view_auto_select_templates);      
+            $(this).on('click', ure_posts_view_auto_select_templates);
       });
     });
 }

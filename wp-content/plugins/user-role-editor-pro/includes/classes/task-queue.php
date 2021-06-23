@@ -125,24 +125,22 @@ class URE_Task_Queue {
     // end of process();
     
     /**
-     * Private clone method to prevent cloning of the instance of the
-     * *Singleton* instance.
+     * Prevent cloning of the instance of the *Singleton* instance.
      *
      * @return void
      */
-    private function __clone() {
-        
+    public function __clone() {
+        throw new \Exception('Do not clone a singleton instance.');
     }
     // end of __clone()
     
     /**
-     * Private unserialize method to prevent unserializing of the *Singleton*
-     * instance.
+     * Prevent unserializing of the *Singleton* instance.
      *
      * @return void
      */
-    private function __wakeup() {
-        
+    public function __wakeup() {
+        throw new \Exception('Do not unserialize a singleton instance.');
     }
     // end of __wakeup()
 

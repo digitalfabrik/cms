@@ -48,7 +48,7 @@ class URE_Meta_Boxes_Access {
     
     
     public function add_js() {
-        wp_register_script( 'ure-meta_boxes-access', plugins_url( '/pro/js/meta-boxes-access.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-meta_boxes-access', plugins_url( '/pro/js/meta-boxes-access.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-meta_boxes-access' );
         wp_localize_script( 'ure-meta_boxes-access', 'ure_data_meta_boxes_access',
                 array(

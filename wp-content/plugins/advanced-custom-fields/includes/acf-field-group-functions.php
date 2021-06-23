@@ -224,9 +224,10 @@ function acf_validate_field_group( $field_group = array() ) {
 	// Convert types.
 	$field_group['ID'] = (int) $field_group['ID'];
 	$field_group['menu_order'] = (int) $field_group['menu_order'];
+	$field_group['active'] = (bool) $field_group['active'];
 	
 	// Field group is now valid.
-	$field_group['_valid'] = 1;
+	$field_group['_valid'] = true;
 	
 	/**
 	 * Filters the $field_group array to validate settings.
@@ -761,6 +762,24 @@ function acf_untrash_field_group( $id = 0 ) {
 	// Return true.
 	return true;
 }
+
+/**
+ * Filter callback which returns the previous post_status instead of "draft" for the "acf-field-group" post type.
+ *
+ * Prior to WordPress 5.6.0, this filter was not needed as restored posts were always assigned their original status.
+ *
+ * @since 5.9.5
+ *
+ * @param string $new_status      The new status of the post being restored.
+ * @param int    $post_id         The ID of the post being restored.
+ * @param string $previous_status The status of the post at the point where it was trashed.
+ * @return string.
+ */
+function _acf_untrash_field_group_post_status( $new_status, $post_id, $previous_status ) {
+	return ( get_post_type( $post_id ) === 'acf-field-group' ) ? $previous_status : $new_status;
+}
+
+add_action( 'wp_untrash_post_status', '_acf_untrash_field_group_post_status', 10, 3 );
 
 /**
  * acf_is_field_group

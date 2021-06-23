@@ -1,5 +1,9 @@
 <?php
 
+if ( get_option( 'blc_activation_enabled' ) ) {
+	return;
+}
+
 global $blclog, $blc_config_manager, $wpdb;
 $queryCnt = $wpdb->num_queries;
 
@@ -116,3 +120,5 @@ $blclog->info(
 $blclog->info( sprintf( 'Total time: %.3f seconds', microtime( true ) - $activation_start ) );
 $blclog->save();
 
+// for multisite support.
+update_option( 'blc_activation_enabled', true );

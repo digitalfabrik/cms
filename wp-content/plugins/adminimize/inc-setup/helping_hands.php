@@ -83,27 +83,23 @@ function _mw_adminimize_current_user_has_role( $role ) {
  * @return string|void
  */
 function _mw_adminimize_debug( $data, $description = '' ) {
-
-	// Don't run on export data of Adminimize settings.
-	if ( isset( $_POST['_mw_adminimize_export'] ) ) {
-		return;
-	}
-
 	if ( ! _mw_adminimize_get_option_value( 'mw_adminimize_debug' ) ) {
 		return;
 	}
 
-	if ( '' === $description ) {
-		$description = 'Debug in Console via Adminimize Plugin:';
+	if ( ! class_exists( 'DebugListener' ) ) {
+		return;
 	}
 
-	// Buffering to solve problems with WP core, header() etc.
+	// Buffering.
 	ob_start();
-	$output  = 'console.info(' . json_encode( $description ) . ');';
+	$output  = '';
+	$output .= 'console.info(' . json_encode( $description ) . ');';
 	$output .= 'console.log(' . json_encode( $data ) . ');';
-	$output  = sprintf( '<script>%s</script>', $output );
 
-	echo $output;
+	echo sprintf( '<script>%s</script>', $output );
+
+	do_action( 'adminimize.log', $description, $data );
 }
 
 /**

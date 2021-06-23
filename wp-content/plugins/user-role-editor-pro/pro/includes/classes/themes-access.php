@@ -137,27 +137,42 @@ class URE_Themes_Access {
      */
     public function admin_load_js($hook_suffix) {
         
-        if ($hook_suffix === 'user-edit.php') {
-            wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core', 'jquery-ui-button', 'jquery'));
-            wp_register_script('ure-jquery-multiple-select', plugins_url('/js/multiple-select.js', URE_PLUGIN_FULL_PATH));
-            wp_enqueue_script('ure-jquery-multiple-select');
-            wp_register_script('ure-user-profile-themes', plugins_url('/pro/js/user-profile-themes.js', URE_PLUGIN_FULL_PATH));
-            wp_enqueue_script('ure-user-profile-themes');
-            wp_localize_script('ure-user-profile-themes', 'ure_pro_data_themes', array(
-                'wp_nonce' => wp_create_nonce('user-role-editor'),
-                'edit_allowed_themes' => __('Edit Themes List', 'user-role-editor'),
-                'edit_allowed_themes_title' => __('Themes list you allow this user to activate/deactivate', 'user-role-editor'),
-                'save_themes_list' => __('Save', 'user-role-editor'),
-                'close' => __('Close', 'user-role-editor'),
-            ));
+        if ($hook_suffix !== 'user-edit.php') {
+            return;
         }
+        
+        if ( defined('WP_DEBUG') && !empty( WP_DEBUG ) ) {
+            $ms_file_name = 'multiple-select.js';
+        } else {
+            $ms_file_name = 'multiple-select.min.js';
+        }
+
+        
+        wp_enqueue_script('jquery-ui-dialog', '', array('jquery-ui-core', 'jquery-ui-button', 'jquery') );
+        wp_register_script('ure-jquery-multiple-select', plugins_url('/js/'. $ms_file_name, URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
+        wp_enqueue_script('ure-jquery-multiple-select');
+        wp_register_script('ure-user-profile-themes', plugins_url('/pro/js/user-profile-themes.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
+        wp_enqueue_script('ure-user-profile-themes');
+        wp_localize_script('ure-user-profile-themes', 'ure_pro_data_themes', array(
+            'wp_nonce' => wp_create_nonce('user-role-editor'),
+            'edit_allowed_themes' => __('Edit Themes List', 'user-role-editor'),
+            'edit_allowed_themes_title' => __('Themes list you allow this user to activate/deactivate', 'user-role-editor'),
+            'save_themes_list' => __('Save', 'user-role-editor'),
+            'close' => __('Close', 'user-role-editor'),
+        ));
+        
     }
     // end of admin_load_js()
     
     
     public function admin_css_action() {        
+        if ( defined('WP_DEBUG') && !empty( WP_DEBUG ) ) {
+            $ms_file_name = 'multiple-select.css';
+        } else {
+            $ms_file_name = 'multiple-select.min.css';
+        }
         wp_enqueue_style('wp-jquery-ui-dialog');
-        wp_enqueue_style('ure-jquery-multiple-select', plugins_url('/css/pro/multiple-select.css', URE_PLUGIN_FULL_PATH), array(), false, 'screen');
+        wp_enqueue_style('ure-jquery-multiple-select', plugins_url('/css/'. $ms_file_name, URE_PLUGIN_FULL_PATH ), array(), false, 'screen');
     }
     // end of admin_css_action()
                         

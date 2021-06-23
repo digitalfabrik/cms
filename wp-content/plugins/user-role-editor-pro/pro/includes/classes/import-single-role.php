@@ -91,7 +91,7 @@ class URE_Import_Single_Role {
             $message = '';
         }
         
-        wp_register_script( 'ure-import', plugins_url( '/pro/js/import-single-role.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-import', plugins_url( '/pro/js/import-single-role.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-import' );       
         wp_localize_script( 'ure-import', 'ure_data_import', 
                 array(

@@ -122,6 +122,15 @@ class URE_Editor_Ext {
     // end of network_update_user()    
 
     
+    public static function network_update() {
+        
+        $editor = URE_Editor::get_instance();
+        $editor->update_network();
+        
+    }
+    // end of network_update_roles()
+    
+    
     /**
      * Update roles for all network using direct database access - quicker in several times
      * Really updates only when is executed from the Network admin

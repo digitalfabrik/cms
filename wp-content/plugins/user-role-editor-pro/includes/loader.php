@@ -31,4 +31,5 @@ require_once( URE_PLUGIN_DIR .'includes/classes/user-view.php' );
 require_once( URE_PLUGIN_DIR .'includes/classes/editor.php' );
 require_once( URE_PLUGIN_DIR .'includes/classes/tools.php' );
 require_once( URE_PLUGIN_DIR .'includes/classes/settings.php' );
+require_once( URE_PLUGIN_DIR .'includes/classes/uninstall.php' );
 require_once( URE_PLUGIN_DIR .'includes/classes/user-role-editor.php' );

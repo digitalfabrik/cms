@@ -148,6 +148,9 @@ class URE_Network_Addons_Data_Replicator {
             }
         }   
         
+        // Use this action to hook a code to execute after add-ons data were updated at all subsites of the multisite network        
+        do_action('ure_after_network_addons_update');
+        
         return true;        
     }
     // end of replicate_for_all_network()

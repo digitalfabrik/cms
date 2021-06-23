@@ -3,10 +3,10 @@
  * 
  */
 
-jQuery(document).ready(function () {
+jQuery(function () {
     jQuery('<option>').val('edit_access').text(ure_bulk_edit_access_data.action_title).appendTo("select[name='action']");
     jQuery('<option>').val('edit_access').text(ure_bulk_edit_access_data.action_title).appendTo("select[name='action2']");
-    var original_do_action = jQuery('#doaction, #doaction2').click(function (e) {
+    var original_do_action = jQuery('#doaction, #doaction2').on('click', (function (e) {
         var control = jQuery(this).attr("id").substr(2);
         if ("edit_access" === jQuery('select[name="' + control + '"]').val()) {
             e.preventDefault();
@@ -14,7 +14,7 @@ jQuery(document).ready(function () {
         } else {
             original_do_action;
         }
-    });
+    }));
 
 });
 

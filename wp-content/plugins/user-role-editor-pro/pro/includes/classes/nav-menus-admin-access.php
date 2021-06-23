@@ -93,7 +93,7 @@ class URE_Nav_Menus_Admin_Access {
             return;
         }
         
-        wp_register_script( 'ure-nav-menus-block-new', plugins_url( '/pro/js/nav-menus-block-new.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-nav-menus-block-new', plugins_url( '/pro/js/nav-menus-block-new.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-nav-menus-block-new' );
         
     }

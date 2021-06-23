@@ -48,7 +48,7 @@ class URE_Export_Single_Role {
         if (!current_user_can('ure_export_roles')) {
             return;
         }
-        wp_register_script( 'ure-export', plugins_url( '/pro/js/export-single-role.js', URE_PLUGIN_FULL_PATH ) );
+        wp_register_script( 'ure-export', plugins_url( '/pro/js/export-single-role.js', URE_PLUGIN_FULL_PATH ), array(), URE_VERSION );
         wp_enqueue_script ( 'ure-export' );
         wp_localize_script( 'ure-export', 'ure_data_export', 
                 array(

@@ -1,21 +1,20 @@
 === Broken Link Checker ===
 Contributors: managewp, wpmudev
-Donate link:
-Tags: links, broken, maintenance, blogroll, custom fields, admin, comments, posts
+Tags: links, broken links, internal link, external link, broken images, seo, test links, check links, bad links
 Requires at least: 4.6
-Tested up to: 5.4
-Stable tag: 1.11.12
+Tested up to: 5.5
+Stable tag: 1.11.15
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-This plugin will check your posts, comments and other content for broken links and missing images, and notify you if any are found.
+Check posts, pages & all content for broken links & missing images to improve SEO. Get notified when bad links are found.
 
 == Description ==
-This plugin will monitor your blog looking for broken links and let you know if any are found.
+Broken Link Checker monitors and tests all internal links & external links on your site looking for broken links. It helps you fix bad links to improve SEO and user experience.
 
 **Features**
 
-* Monitors links in your posts, pages, comments, the blogroll, and custom fields (optional).
+* Monitors external links and internal links in your posts, pages, comments, the blogroll, and custom fields (optional).
 * Detects links that don't work, missing images and redirects.
 * Notifies you either via the Dashboard or by email.
 * Makes broken links display differently in posts (optional).
@@ -67,6 +66,26 @@ To upgrade your installation
 1. Reactivate the plugin. Your settings will be retained from the previous version.
 
 == Changelog ==
+= 1.11.15 =
+* Added integration with WP External Links plugin
+
+= 1.11.14 =
+* Added compatibility for WP 5.5.
+
+= 1.11.13 =
+* Added filter for disabling email notifications.
+* Added filter to use GET requests. (Thanks to [Stian Lund](https://github.com/Pathduck))
+* Added option to disable last updated time on post types.
+* Added option to check post excerpts.
+* Added a confirmation box when unlinking.
+* Added basic multisite support.
+* Added proper error messages on YouTube video errors.
+* Fixed bulk recheck option.
+* Fixed minor database errors.
+* Improved performance.
+* Removed default YouTube API key.
+* Removed usage of depricated WP Snoopy.
+
 = 1.11.12 =
 * Added an interface to use personal YouTube API Key
 * Fixed database errors on installation for some hosts.

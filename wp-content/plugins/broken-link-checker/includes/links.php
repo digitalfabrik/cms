@@ -283,6 +283,7 @@ if ( ! class_exists( 'blcLink' ) ) {
 
 			$results = array_merge( $defaults, $rez );
 
+
 			//Some HTTP errors can be treated as warnings.
 			$results = $this->decide_warning_state( $results );
 

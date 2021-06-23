@@ -1,0 +1,186 @@
+# Translation of Plugins - Author Chat - Development (trunk) in Persian
+# This file is distributed under the same license as the Plugins - Author Chat - Development (trunk) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2019-01-09 15:42+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 2.0.1\n"
+"Language: fa\n"
+"Project-Id-Version: Plugins - Author Chat - Development (trunk)\n"
+"POT-Creation-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+
+#: pp-author-chat.php:251 pp-author-chat.php:644
+msgid "Buy Premium Version ($10.99)"
+msgstr "خرید نگارش کامل"
+
+#: pp-author-chat.php:260 pp-author-chat.php:650
+msgid "If your domain name is correct, do not change it. Activation can take up to 24 hours! If you have any problems contact me at piotr.pesta@gmail.com"
+msgstr ""
+"اگر دامین شما درست است تغییرش ندهید . فعال کردن پلاگین ممکن است 24 ساعت زمان ببرد .اگر هر گونه وجود داشت با ما تماس بگیرید.\n"
+"piotr.pesta@gmail.com"
+
+#: pp-author-chat.php:222
+msgid "Author Chat for Android"
+msgstr "پیام رسان نویسندگان برای اندروید ."
+
+#. Author URI of the plugin/theme
+msgid "https://github.com/Pantsoffski"
+msgstr "https://github.com/Pantsoffski"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/Pantsoffski/Author-Chat-Plugin"
+msgstr "https://github.com/Pantsoffski/Author-Chat-Plugin"
+
+#: pp-options.php:142
+msgid "second(s)"
+msgstr "ثانیه"
+
+#: pp-options.php:129
+msgid "Refresh interval to check new messages"
+msgstr "تازه کردن صفحه برای بررسی پیام جدید"
+
+#: pp-options.php:118
+msgid "Show weekday names of recent days?"
+msgstr "نشان دادن روزهای هفته برای نوشتهای روز گذشته"
+
+#: pp-options.php:107
+msgid "Show thumb preview of the URLs?"
+msgstr "پیش نمایش انگشت شست از URL ها را نمایش دهید؟"
+
+#: pp-options.php:96
+msgid "Show my name in the messages?"
+msgstr "نشان دادن نام در پیام ؟"
+
+#: pp-author-chat.php:254 pp-author-chat.php:286
+msgid "future premium features included"
+msgstr "ویژگی های حق بیمه آینده شامل"
+
+#: pp-author-chat.php:253 pp-author-chat.php:285
+msgid "for lifetime 1 domain licence"
+msgstr "لاینسیس برای یک دامین ماداملعمر"
+
+#: pp-author-chat.php:283
+msgid "To send text from here you need to buy premium version of that plugin"
+msgstr "برای ارسال پیام از اینجا نیاز به خرید نسخه کامل پلاگین هستید"
+
+#: pp-author-chat.php:221
+msgid "Settings"
+msgstr "تنظیمات"
+
+#: pp-author-chat.php:178
+msgid "Saturday"
+msgstr "شنبه"
+
+#: pp-author-chat.php:177
+msgid "Friday"
+msgstr "جمعه"
+
+#: pp-author-chat.php:176
+msgid "Thursday"
+msgstr "پنج شنبه"
+
+#: pp-author-chat.php:175
+msgid "Wednesday"
+msgstr "چهارشنبه"
+
+#: pp-author-chat.php:174
+msgid "Tuesday"
+msgstr "سه شنبه"
+
+#: pp-author-chat.php:173
+msgid "Monday"
+msgstr "دوشنبه"
+
+#: pp-author-chat.php:172
+msgid "Sunday"
+msgstr "یک شنبه"
+
+#: pp-author-chat.php:171
+msgid "Yesterday"
+msgstr "دیروز"
+
+#: pp-author-chat.php:170
+msgid "Today"
+msgstr "امروز"
+
+#: pp-options.php:85
+msgid "Show chat window everywhere (Premium Function)?"
+msgstr "ایا پیام رسان در همه نقاط نمایش داده شود؟ (فقط با خرید لاینسیس امکان پذیر است)"
+
+#: pp-options.php:67
+msgid "Choose how to display the authors: by Name or by Login?"
+msgstr "انتخاب کنید نامتان چگونه نمایش داده شود : با نام و یا با نام کاربری"
+
+#: pp-options.php:60
+msgid "Subscriber"
+msgstr "دنبال کردن"
+
+#: pp-options.php:55
+msgid "Contributor"
+msgstr "مشارکت کننده"
+
+#: pp-options.php:50
+msgid "Author"
+msgstr "نویسنده"
+
+#: pp-options.php:45
+msgid "Editor"
+msgstr "ویرایشگر"
+
+#: pp-options.php:40
+msgid "All users with access to admin area"
+msgstr "همه کاربران که به ادمین سایت دسترسی دارند"
+
+#: pp-options.php:36
+msgid "Who should have access to Author Chat?"
+msgstr "چه کسی به برنامه چت دسترسی داشته باشد"
+
+#: pp-options.php:27
+msgid "Delete chat history older than how many days?"
+msgstr "پاک کردن تاریخچه پیامها بعد چند روز؟"
+
+#: pp-author-chat.php:169
+msgid "You are:"
+msgstr "شما هستید :"
+
+#: pp-author-chat.php:279
+msgid "Your message..."
+msgstr "پیام شما ..."
+
+#: pp-author-chat.php:191 pp-author-chat.php:198 pp-author-chat.php:237
+#: pp-author-chat.php:641 pp-author-chat.php:662
+msgid "Author Chat"
+msgstr "Author Chat"
+
+#: pp-author-chat.php:190 pp-options.php:7
+msgid "Author Chat Options"
+msgstr "تنظیمات پیام رسان"
+
+#. Author of the plugin/theme
+msgid "Piotr Pesta"
+msgstr "آقای پیوتر پِستا Piotr Pesta"
+
+#. Description of the plugin/theme
+msgid "Plugin that gives your authors an easy way to communicate through back-end UI (admin panel)."
+msgstr "پلاگینی که به نویسندگان شما و بقیه اعضا(به انتخاب شما) این امکان را میدهد  به آسانی با یکدیگرارتباط برقرارکنید (فقط در پنل مدیریت) ."
+
+#. Plugin Name of the plugin/theme
+msgid "Author Chat Plugin"
+msgstr "پلاگین پیام رسان نویسندگان"
+
+#: pp-options.php:149
+msgid "Permanently delete chat history? (data will be deleted when you check this box and click \"Save Changes\")"
+msgstr "!!!تاریخچه چت را به طور کامل حذف کنید! (وقتی این کادر را علامت بزنید داده ها به طور کامل حذف می شوند و باید \"ذخیره تغییرات\" را کلیک کنید)"
+
+#: pp-options.php:76
+msgid "Name (Display name)"
+msgstr "نام ( نمایش نام)"
+
+#: pp-options.php:71
+msgid "Login (Username)"
+msgstr "ورود ( نام کاربری)"

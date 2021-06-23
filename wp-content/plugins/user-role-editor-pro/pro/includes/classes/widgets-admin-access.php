@@ -12,14 +12,12 @@
 class URE_Widgets_Admin_Access {
 
     private $lib = null;    // reference to the code library object
-    private $controller = null;
     private $unregistered_widgets = null;
     private $blocked = null;
 
     public function __construct() {
         
         $this->lib = URE_Lib_Pro::get_instance();
-        $this->controller = new URE_Widgets_Admin_Controller();        
         new URE_Widgets_Admin_View();                
         
         add_action('widgets_admin_page', array($this, 'unregister_blocked_sidebars'), 100);
@@ -32,13 +30,12 @@ class URE_Widgets_Admin_Access {
     
     protected function get_blocked() {
                 
-        if ($this->blocked!==null) {
+        if ( $this->blocked!==null ) {
             return;
         }
         
-        $current_user = wp_get_current_user();
-        $this->blocked = $this->controller->load_data_for_user($current_user);
-        
+        $user = wp_get_current_user();
+        $this->blocked = URE_Widgets_Admin_Controller::load_data_for_user( $user );        
         
     }
     // end of get_blocked()
@@ -72,7 +69,7 @@ class URE_Widgets_Admin_Access {
             return;
         }
                         
-        $widgets = $this->controller->get_all_widgets();
+        $widgets = URE_Widgets_Admin_Controller::get_all_widgets();
         $this->unregistered_widgets = array();
         foreach($this->blocked['widgets'] as $widget) {
             if ( !isset( $widgets[$widget] ) ) {

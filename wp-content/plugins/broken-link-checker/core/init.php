@@ -42,7 +42,7 @@ if ( defined( 'BLC_ACTIVE' ) ) {
 	define( 'BLC_FOR_EDITING', 'edit' );
 	define( 'BLC_FOR_PARSING', 'parse' );
 	define( 'BLC_FOR_DISPLAY', 'display' );
-	define( 'BLC_DATABASE_VERSION', 10 );
+	define( 'BLC_DATABASE_VERSION', 16 );
 
 	/***********************************************
 					Configuration
@@ -96,6 +96,8 @@ if ( defined( 'BLC_ACTIVE' ) ) {
 			'failure_duration_threshold'       => 3, // (days) Assume a link is permanently broken if it still hasn't recovered after this many days.
 			'logging_enabled'                  => false,
 			'log_file'                         => '',
+			'incorrect_path'                   => false,
+			'clear_log_on'                     => '',
 			'custom_log_file_enabled'          => false,
 			'installation_complete'            => false,
 			'installation_flag_cleared_on'     => 0,
@@ -104,6 +106,7 @@ if ( defined( 'BLC_ACTIVE' ) ) {
 			'donation_flag_fixed'              => false,
 			'show_link_actions'                => array( 'blc-deredirect-action' => false ), //Visible link actions.
 			'youtube_api_key'                  => '',
+			'blc_post_modified'                => '',
 		)
 	);
 
@@ -256,12 +259,7 @@ if ( defined( 'BLC_ACTIVE' ) ) {
 					Main functionality
 	************************************************/
 
-	//Execute the installation/upgrade script when the plugin is activated.
-	function blc_activation_hook() {
-		require BLC_DIRECTORY . '/includes/activation.php';
-	}
-
-	register_activation_hook( BLC_PLUGIN_FILE, 'blc_activation_hook' );
+	require BLC_DIRECTORY . '/includes/activation.php';
 
 	//Load the plugin if installed successfully
 	if ( $blc_config_manager->options['installation_complete'] ) {
@@ -324,11 +322,6 @@ if ( defined( 'BLC_ACTIVE' ) ) {
 			$messages = array(
 				'<strong>' . __( 'Broken Link Checker installation failed. Try deactivating and then reactivating the plugin.', 'broken-link-checker' ) . '</strong>',
 			);
-
-			if ( is_multisite() && is_plugin_active_for_network( plugin_basename( BLC_PLUGIN_FILE ) ) ) {
-				$messages[] = __( 'Please activate the plugin separately on each site. Network activation is not supported.', 'broken-link-checker' );
-				$messages[] = '';
-			}
 
 			if ( ! $blc_config_manager->db_option_loaded ) {
 				$messages[] = sprintf(
