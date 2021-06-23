@@ -202,8 +202,8 @@
 				"region"=>$blog->blog_id,
 				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
+				"mirrored_page_first"=>null,
 				"created_date"=>now(),
-				//"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
 				"rght"=>$mptt_node["right"],
 				"tree_id"=>$page_tree_counter,
@@ -382,6 +382,7 @@
 		function generate_page_tree( $page_tree_node_pk_counter, $root_page_id, $page_tree_counter ) {
 			global $page_pk_map;
 			global $page_wp_map;
+			global $page_mirror_map;
 			/* Get pages in hierarchical order, starting with a root page */
 			$new_posts = $this->get_pages_for_language( $this->get_default_language(), [ $root_page_id ] );
 			$posts = $new_posts;
@@ -393,6 +394,7 @@
 			if ( $page_tree->add_node( $root_page_id, null ) ) {
 				$page_pk_map[$this->blog_id][$root_page_id] = $page_tree->pk_counter - 1;
 				$page_wp_map[$page_tree->pk_counter - 1] = array( "blog_id" => $this->blog_id, "post_id" => $root_page_id );
+				$page_mirror_map[$this->blog_id][$root_page_id] = $this->get_mirrored_page( $root_page_id );
 			} else {
 				return false;
 			}
@@ -400,6 +402,7 @@
 				if ( $page_tree->add_node( $post["id"], $post["parent"] ) ) {
 					$page_pk_map[$this->blog_id][$post["id"]] = $page_tree->pk_counter - 1;
 					$page_wp_map[$page_tree->pk_counter - 1] = array( "blog_id" => $this->blog_id, "post_id" => $post["id"] );
+					$page_mirror_map[$this->blog_id][$post["id"]] = $this->get_mirrored_page( $post["id"] );
 				}
 			}
 			return $page_tree;
@@ -413,6 +416,24 @@
 				return $row->element_id;
 			}
 			return false;
+		}
+
+		function get_mirrored_page( $post_id ) {
+			$query = "SELECT * FROM " . $this->dbprefix . "postmeta WHERE post_id=" . $post_id . " AND (meta_key='ig-attach-content-position' OR meta_key='ig-attach-content-blog' OR meta_key='ig-attach-content-page') AND meta_value IS NOT Null" ;
+			$result = $this->db->query( $query );
+			$source_page = array();
+			while ( $row = $result->fetch_object() ) {
+				if ( $row->meta_key == "ig-attach-content-position" ) {
+					$source_page["pos"] = $row->meta_value;
+				}
+				elseif ( $row->meta_key == "ig-attach-content-blog" ) {
+					$source_page["blog_id"] = $row->meta_value;
+				}
+				elseif ( $row->meta_key == "ig-attach-content-page" ) {
+					$source_page["post_id"] = $row->meta_value;
+				}
+			}
+			return $source_page;
 		}
 
 		/* Create array of all revisions in all translations */
@@ -469,6 +490,8 @@
 	$page_tree_counter = 1;
 	$page_pk_map = array(); // map a blog and post ID to the Django page primary key
 	$page_wp_map = array(); // map Django page PKs to WP blog and post IDs
+	$page_mirror_map = array(); // Map WP source to target page. source is the content source, target the page were the content is included.
+	                            // structure: $page_mirror_map[tgt_blog_id][tgt_post_id] = array("blog_id"=>src_blog_id, "post_id"=>src_post_id, "pos_beg":bool).
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -518,8 +541,17 @@
 		//if ( $blog->blog_id >= 2 ) { break; }
 	}
 
-
 	// after all pages have been exported, loop over all fixtures with type page again and look up mirrored page PK
+	foreach ( $fixtures->object_list as $key => $object ) {
+		if ( $object->model == "cms.page") {
+			$source_page = $page_mirror_map[$page_wp_map[$object->pk]["blog_id"]][$page_wp_map[$object->pk]["post_id"]];
+			$object->fields["mirrored_page"] = $page_pk_map[$source_page["blog_id"]][$source_page["post_id"]];
+			$object->fields["mirrored_page_first"] = ( $source_page["pos"] == "end" ? 0 : 1 );
+			$fixtures->object_list[$key] = $object;
+		}
+	}
+
+
 
 	echo($fixtures->dump());
 ?>
