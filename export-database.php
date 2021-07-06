@@ -198,8 +198,8 @@
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
-				"icon"=>"",
-				"region"=>$blog->blog_id,
+				"icon"=>null,
+				"region"=>(int)$blog->blog_id,
 				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
 				"mirrored_page_first"=>null,
