@@ -199,7 +199,7 @@
 			global $media_pk_map;
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
-				"icon"=>$media_pk_map[$blog->blog_id][$blog->get_post_thumbnail_id( $post_id )],
+				"icon"=>$media_pk_map[$blog->blog_id][$blog->get_post_thumbnail_id( $mptt_node["id"] )],
 				"region"=>(int)$blog->blog_id,
 				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
