@@ -196,9 +196,10 @@
 		}
 
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
+			global $media_pk_map;
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
-				"icon"=>null,
+				"icon"=>$media_pk_map[$blog->blog_id][get_post_thumbnail_id( $post_id )],
 				"region"=>(int)$blog->blog_id,
 				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
@@ -238,7 +239,49 @@
 				"last_updated"=>str_replace("0000-00-00","1970-01-01",$translation["last_updated"]),
 			);
 		}
-	}
+  }
+
+	class MediaFile extends DjangoModel {
+		public $model = "cms.mediafile";
+
+		function __construct( $blog, $item ) {
+			parent::__construct();
+			$this->init_fields( $blog, $item );
+		}
+
+		function init_fields( $blog, $item ) {
+			$file_path = explode("/", $item->meta_data);
+			$this->fields = array(
+				"file" => $blog->blog_id . "/" . $item->meta_value,
+				"thumbnail" => $blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2],
+				"type" => $item->post_mime_type,
+				"name" => $file_path[2],
+				"parent_directory" => null,
+				"region" => $blog->blog_id,
+				"alt_text" => "",
+				"uploaded_date" => $item->post_date_gmt
+			);
+		}
+  }
+
+	class Directory extends DjangoModel {
+		public $model = "cms.directory";
+
+		function __construct(  ) {
+			parent::__construct();
+			$this->init_fields(  );
+		}
+
+		function init_fields( $translation ) {
+			$this->fields = array(
+				"name" => "",
+				"region" => null,
+				"parent" => null,
+				"created_date" => ""
+			);
+		}
+  }
+
 
 	class DjangoFixtures {
 
@@ -474,6 +517,22 @@
 			}
 			return $page_translations;
 		}
+
+		function export_attached_files( ) {
+			global $media_pk_map;
+			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$media_file = new MediaFile( $blog, $row, $meda_file_counter );
+				$media_pk_map[$this->blog_id][$row->ID] = $media_file->pk;
+				fixtures->append( $media_file );
+			}
+		}
+
+		function get_post_thumbnail_id( $post_id ) {
+			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id='attachment' AND meta_key='_thumbnail_id' LIMIT 1";
+			return $this->db->query( $query )->fetch_object()->meta_value;
+		}
 	}
 
 	/* Get all blog IDs */
@@ -492,6 +551,7 @@
 	$page_wp_map = array(); // map Django page PKs to WP blog and post IDs
 	$page_mirror_map = array(); // Map WP source to target page. source is the content source, target the page were the content is included.
 	                            // structure: $page_mirror_map[tgt_blog_id][tgt_post_id] = array("blog_id"=>src_blog_id, "post_id"=>src_post_id, "pos_beg":bool).
+	$media_pk_map = array(); // map WP blog and attachment post ID to Django PK
 
 	foreach ( $blogs as $blog ) {
 		$region = new Region( $blog );
@@ -520,7 +580,10 @@
 			$tree_node = new LanguageTreeNode( $blog, $lang, $active, $mptt_node );
 			$fixtures->append( $tree_node );
 		}
-		
+
+		// export images into fixtures and create WordPress
+		$blog->export_attached_files();
+
 		/* get level 0 pages and generate a page tree for them */
 		$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [ 0 ] );
 		foreach ( $new_posts as $root_post ) {
@@ -541,7 +604,7 @@
 		//if ( $blog->blog_id >= 2 ) { break; }
 	}
 
-	// after all pages have been exported, loop over all fixtures with type page again and look up mirrored page PK
+	// after all pages have been exported, loop over all fixtures with type page again and look up mirrored page PK and page icons
 	fwrite(STDERR, "Fixing mirrored pages foreign keys.");
 	foreach ( $fixtures->object_list as $key => $object ) {
 		if ( $object->model == "cms.page") {
