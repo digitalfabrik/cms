@@ -264,7 +264,7 @@
 		}
   }
 
-	class Directory extends DjangoModel {
+	class Directory2 extends DjangoModel {
 		public $model = "cms.directory";
 
 		function __construct(  ) {
