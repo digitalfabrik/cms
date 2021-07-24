@@ -197,9 +197,10 @@
 
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
 			global $media_pk_map;
+			$attachment_id = $blog->get_post_thumbnail_id( $mptt_node["id"] );
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
-				"icon"=>$media_pk_map[$blog->blog_id][$blog->get_post_thumbnail_id( $mptt_node["id"] )],
+				"icon"=>( $attachment_id ? $media_pk_map[$blog->blog_id][$attachment_id] : null),
 				"region"=>(int)$blog->blog_id,
 				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
