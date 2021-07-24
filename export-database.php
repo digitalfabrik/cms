@@ -520,12 +520,13 @@
 
 		function export_attached_files( ) {
 			global $media_pk_map;
+			global $fixtures;
 			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment'";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				$media_file = new MediaFile( $this, $row );
 				$media_pk_map[$this->blog_id][$row->ID] = $media_file->pk;
-				fixtures->append( $media_file );
+				$fixtures->append( $media_file );
 			}
 		}
 
