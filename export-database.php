@@ -533,7 +533,10 @@
 
 		function get_post_thumbnail_id( $post_id ) {
 			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id='attachment' AND meta_key='_thumbnail_id' LIMIT 1";
-			return $this->db->query( $query )->fetch_object()->meta_value;
+			while ( $row = $this->db->query( $query )->fetch_object() ) {
+				return $row->meta_value;
+			}
+			return null;
 		}
 	}
 
