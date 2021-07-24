@@ -615,13 +615,13 @@
 	}
 
 	// after all pages have been exported, loop over all fixtures with type page again and look up mirrored page PK and page icons
-	fwrite(STDERR, "Fixing mirrored pages foreign keys.");
+	fwrite(STDERR, "Fixing mirrored pages foreign keys.\n");
 	foreach ( $fixtures->object_list as $key => $object ) {
 		if ( $object->model == "cms.page") {
 			$source_page = $page_mirror_map[$page_wp_map[$object->pk]["blog_id"]][$page_wp_map[$object->pk]["post_id"]];
 			if ( ! $source_page ) continue;
 			$object->fields["mirrored_page"] = $page_pk_map[$source_page["blog_id"]][$source_page["post_id"]];
-			$object->fields["mirrored_page_first"] = ( $source_page["pos"] == "end" ? 0 : 1 );
+			$object->fields["mirrored_page_first"] = ( array_key_exists("pos", $source_page) && $source_page["pos"] == "end" ? 0 : 1 );
 			$fixtures->object_list[$key] = $object;
 		}
 	}
