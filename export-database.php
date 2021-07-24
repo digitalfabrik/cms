@@ -258,10 +258,10 @@
 				$file_path[2] = $item->meta_value;
 			}
 			$this->fields = array(
-				"file" => $blog->blog_id . "/" . $item->meta_value,
-				"thumbnail" => $blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2],
-				"type" => $item->post_mime_type,
-				"name" => $file_path[2],
+				"file" => utf8_encode($blog->blog_id . "/" . $item->meta_value),
+				"thumbnail" => utf8_encode($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]),
+				"type" => utf8_encode($item->post_mime_type),
+				"name" => utf8_encode($file_path[2]),
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
 				"alt_text" => "",
@@ -328,6 +328,7 @@
 
 		function dump() {
 			return json_encode( $this->object_list, JSON_PRETTY_PRINT );
+			fwrite(STDERR, "JSON ERROR: ". json_last_error());
 		}
 	}
 
