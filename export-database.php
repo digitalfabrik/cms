@@ -252,6 +252,11 @@
 
 		function init_fields( $blog, $item ) {
 			$file_path = explode("/", $item->meta_value);
+			if ( count( $file_path ) < 2 ) {
+				$file_path[0] = "2021";
+				$file_path[1] = "07";
+				$file_path[2] = $item->meta_value;
+			}
 			$this->fields = array(
 				"file" => $blog->blog_id . "/" . $item->meta_value,
 				"thumbnail" => $blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2],
