@@ -528,7 +528,8 @@
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
-			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment'";
+			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' AND post_parent=0";
+			// TODO: get latest post meta (alt text)
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				$media_file = new MediaFile( $this, $row );
