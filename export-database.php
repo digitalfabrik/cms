@@ -197,10 +197,11 @@
 
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
 			global $media_pk_map;
-			$attachment_id = $blog->get_post_thumbnail_id( $mptt_node["id"] );
+			$attachment_guid = $blog->get_post_thumbnail_guid( $mptt_node["id"] );
+			//var_dump($attachment_guid);
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
-				"icon"=>( $attachment_id ? $media_pk_map[$blog->blog_id][$attachment_id] : null),
+				"icon"=>( $attachment_guid ? $media_pk_map[$blog->blog_id][$attachment_guid] : null),
 				"region"=>(int)$blog->blog_id,
 				"explicitly_archived"=>false,
 				"mirrored_page"=>null,
@@ -259,7 +260,7 @@
 			}
 			$this->fields = array(
 				"file" => utf8_encode($blog->blog_id . "/" . $item->meta_value),
-				"thumbnail" => utf8_encode($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]),
+				"thumbnail" => (substr($item->meta_value, -3) !== "pdf" ? utf8_encode($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
 				"type" => utf8_encode($item->post_mime_type),
 				"name" => utf8_encode($file_path[2]),
 				"parent_directory" => null,
@@ -528,20 +529,28 @@
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
-			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' AND post_parent=0";
+			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
 			// TODO: get latest post meta (alt text)
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				$media_file = new MediaFile( $this, $row );
-				$media_pk_map[$this->blog_id][$row->ID] = $media_file->pk;
 				$fixtures->append( $media_file );
+				$media_pk_map[$this->blog_id][$row->guid] = $media_file->pk;
 			}
 		}
 
-		function get_post_thumbnail_id( $post_id ) {
-			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id='attachment' AND meta_key='_thumbnail_id' LIMIT 1";
+		function get_post_thumbnail_guid( $post_id ) {
+			// latest post revision -> post meta -> meta_key -> post guid
+			$thumbnail_post = null;
+			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT post_id,meta_value FROM " . $this->dbprefix . "postmeta WHERE meta_key='_thumbnail_id') AS m ON m.post_id=p.ID WHERE p.post_parent=$post_id AND post_status='publish' AND meta_value!='' ORDER BY p.ID DESC LIMIT 1";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$thumbnail_post = (int)$row->meta_value;
+			}
+			if ( ! $thumbnail_post ) return null;
+			$query = "SELECT guid FROM " . $this->dbprefix . "posts WHERE ID=$thumbnail_post";
 			while ( $row = $this->db->query( $query )->fetch_object() ) {
-				return $row->meta_value;
+				return $row->guid;
 			}
 			return null;
 		}
@@ -595,7 +604,7 @@
 
 		// export images into fixtures and create WordPress
 		$blog->export_attached_files();
-
+		//var_dump($media_pk_map);
 		/* get level 0 pages and generate a page tree for them */
 		$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [ 0 ] );
 		foreach ( $new_posts as $root_post ) {
