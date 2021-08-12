@@ -17,6 +17,7 @@ abstract class APIv3_Posts_Relatives_Abstract extends APIv3_Posts_Abstract {
 			'url' => [
 				'required' => false,
 				'validate_callback' => function($url) {
+					remove_all_filters('url_to_postid');
 					return $this->is_valid(url_to_postid($url));
 				}
 			]
