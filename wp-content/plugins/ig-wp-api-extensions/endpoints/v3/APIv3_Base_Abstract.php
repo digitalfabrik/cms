@@ -19,7 +19,7 @@ abstract class APIv3_Base_Abstract {
 				$this,
 				$this->callback
 			],
-            'args' => $this->args
+				'args' => $this->args
 		]);
 	}
 
