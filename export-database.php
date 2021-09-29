@@ -125,14 +125,14 @@
 			$group = $this->select_role( $this->combine_roles( $blog_roles ));
 
 			$this->fields["username"] = $user->user_login;
-			$this->fields["password"] = $user->user_pass;
+			$this->fields["password"] = "bcrypt_php$" . $user->user_pass;
 			$this->fields["email"] = $user->user_email;
 			$this->fields["first_name"] = "";
 			$this->fields["last_name"] = "";
-			$this->fields["is_superuser"] = null;
+			$this->fields["is_superuser"] = False;
 			$this->fields["is_staff"] = False;
 			$this->fields["is_active"] = True;
-			$this->fields["groups"] = array( $group );
+			$this->fields["groups"] = ( is_null( $group ) ? array( $group ) : array() );
 			$this->fields["regions"] = array_keys( $blog_roles );
 			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
 		}
@@ -153,6 +153,7 @@
 			} elseif ( in_array( "event_planer", $roles )) {
 				return 3; // -> Role EVENT_MANAGER
 			}
+			return null;
 		}
 	}
 
