@@ -111,6 +111,48 @@
 			}
 			return true;
 		}
+  }
+
+	class User extends DjangoModel {
+		public $model = "cms.user";
+
+		function __construct( $user, $blog_roles ) {
+			parent::__construct( (int)$user->id );
+			$this->init_fields( $user, $blog_roles );
+		}
+
+		function init_fields( $user, $blog_roles ) {
+			$group = $this->select_role( $this->combine_roles( $blog_roles ));
+
+			$this->fields["username"] = $user->user_login;
+			$this->fields["password"] = $user->user_pass;
+			$this->fields["email"] = $user->email;
+			$this->fields["first_name"] = "";
+			$this->fields["last_name"] = "";
+			$this->fields["is_superuser"] = null;
+			$this->fields["is_staff"] = False;
+			$this->fields["is_active"] = True;
+			$this->fields["groups"] = array( $group );
+			$this->fields["regions"] = array_keys( $blog_roles );
+			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
+		}
+
+		static function combine_roles( $blog_roles ) {
+			$all_roles = array();
+			foreach ( $blog_roles as $blog => $roles ) {
+				$all_roles = array_unique( array_merge( $all_roles, $roles ));
+			}
+		}
+
+		static function select_role( $roles ) {
+			if ( in_array( "manager", $roles ))	{
+				return 1; // -> Role MANAGEMENT
+			} elseif ( in_array( "trustworthy_organization", $roles )) {
+				return 2; // -> Role EDITOR
+			} elseif ( in_array( "event_planer", $roles )) {
+				return 3; // -> Role EVENT_MANAGER
+			}
+		}
 	}
 
 	class Region extends DjangoModel {
@@ -556,6 +598,25 @@
 		}
 	}
 
+	function get_users() {
+		$query = "SELECT * FROM wp_users";
+		$users = array();
+		while ( $row = $db->query( $query )->fetch_object() ) {
+			array_push($users, $row);
+		}
+		return $users;
+	}
+
+	function get_user_blog_roles( $user_id ) {
+		$query = "SELECT * FROM wp_usermeta WHERE user_id=$user_id AND meta_key LIKE '%_capabilities';";
+		$blogs = array();
+		while ( $row = $db->Squery( $query )->fetch_object()) {
+			$blog_id = (int)str_replace(str_replace($row->meta_key, "wp_", ""), "_capabilities", "");
+			$blogs[$blog_id] = unserialize($row->meta_value);
+		}
+		return $blogs;
+	}
+
 	/* Get all blog IDs */
 	$query = "SELECT blog_id, path FROM " . $table_prefix . "blogs";
 	$result = $db->query( $query );
@@ -635,6 +696,10 @@
 			$object->fields["mirrored_page_first"] = ( array_key_exists("pos", $source_page) && $source_page["pos"] == "end" ? 0 : 1 );
 			$fixtures->object_list[$key] = $object;
 		}
+	}
+
+	foreach ( get_users() as $user ) {
+		$fixtures->append( new User( $user, get_user_blog_roles() ));
 	}
 
 	fwrite(STDERR, "Dumping fixtures.");
