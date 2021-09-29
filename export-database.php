@@ -123,10 +123,7 @@
 
 		function init_fields( $user, $blog_roles ) {
 			$group = $this->select_role( $this->combine_roles( $blog_roles ));
-			$regions = array_keys( $blog_roles );
-			if (($key = array_search(0, $regions)) !== false) {
-				unset($regions[$key]);
-			}
+			$regions = $this->filter_regions( array_keys( $blog_roles ) );
 			$this->fields["username"] = $user->user_login;
 			$this->fields["password"] = "bcrypt_php$" . $user->user_pass;
 			$this->fields["email"] = $user->user_email;
@@ -138,6 +135,19 @@
 			$this->fields["groups"] = ( is_null( $group ) ? array() : array( $group ) );
 			$this->fields["regions"] = $regions;
 			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
+		}
+
+		static function filter_regions( $regions ) {
+			global $existing_regions;
+			$result = [];
+			foreach ( $regions as $region ) {
+				if ( $region === 0 || in_array( $region, $existing_regions ) ) {
+					// pass
+				} else {
+					$result[] = $region;
+				} 
+			}
+			return $result;
 		}
 
 		static function combine_roles( $blog_roles ) {
@@ -706,6 +716,7 @@
 	}
 
 	fwrite(STDERR, "Dumping users.\n");
+	$existing_regions = array_keys( $page_pk_map );
 	$users = get_users( $db );
 	foreach ( $users as $user ) {
 		fwrite(STDERR, "User " . $user->ID . "\n");
