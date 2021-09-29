@@ -123,7 +123,10 @@
 
 		function init_fields( $user, $blog_roles ) {
 			$group = $this->select_role( $this->combine_roles( $blog_roles ));
-
+			$regions = array_keys( $blog_roles );
+			if (($key = array_search(0, $regions)) !== false) {
+				unset($regions[$key]);
+			}
 			$this->fields["username"] = $user->user_login;
 			$this->fields["password"] = "bcrypt_php$" . $user->user_pass;
 			$this->fields["email"] = $user->user_email;
@@ -133,7 +136,7 @@
 			$this->fields["is_staff"] = False;
 			$this->fields["is_active"] = True;
 			$this->fields["groups"] = ( is_null( $group ) ? array() : array( $group ) );
-			$this->fields["regions"] = array_keys( $blog_roles );
+			$this->fields["regions"] = $regions;
 			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
 		}
 
