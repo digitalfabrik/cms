@@ -132,7 +132,7 @@
 			$this->fields["is_superuser"] = False;
 			$this->fields["is_staff"] = False;
 			$this->fields["is_active"] = True;
-			$this->fields["groups"] = ( is_null( $group ) ? array( $group ) : array() );
+			$this->fields["groups"] = ( is_null( $group ) ? array() : array( $group ) );
 			$this->fields["regions"] = array_keys( $blog_roles );
 			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
 		}
