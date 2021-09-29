@@ -117,7 +117,7 @@
 		public $model = "cms.user";
 
 		function __construct( $user, $blog_roles ) {
-			parent::__construct( (int)$user->id );
+			parent::__construct( (int)$user->ID );
 			$this->init_fields( $user, $blog_roles );
 		}
 
@@ -598,7 +598,7 @@
 		}
 	}
 
-	function get_users() {
+	function get_users( $db ) {
 		$query = "SELECT * FROM wp_users";
 		$users = array();
 		while ( $row = $db->query( $query )->fetch_object() ) {
@@ -607,7 +607,7 @@
 		return $users;
 	}
 
-	function get_user_blog_roles( $user_id ) {
+	function get_user_blog_roles( $db, $user_id ) {
 		$query = "SELECT * FROM wp_usermeta WHERE user_id=$user_id AND meta_key LIKE '%_capabilities';";
 		$blogs = array();
 		while ( $row = $db->Squery( $query )->fetch_object()) {
@@ -698,8 +698,8 @@
 		}
 	}
 
-	foreach ( get_users() as $user ) {
-		$fixtures->append( new User( $user, get_user_blog_roles() ));
+	foreach ( get_users( $db ) as $user ) {
+		$fixtures->append( new User( $user, get_user_blog_roles( $db, $user->ID ) ));
 	}
 
 	fwrite(STDERR, "Dumping fixtures.");
