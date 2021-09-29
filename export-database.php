@@ -615,7 +615,7 @@
 		$blogs = array();
 		$result = $db->query( $query );
 		while ( $row = $result->fetch_object()) {
-			$blog_id = (int)str_replace(str_replace($row->meta_key, "wp_", ""), "_capabilities", "");
+			$blog_id = (int)str_replace("_capabilities", "", str_replace("wp_", "", $row->meta_key));
 			$blogs[$blog_id] = unserialize($row->meta_value);
 		}
 		return $blogs;
