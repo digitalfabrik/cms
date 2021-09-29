@@ -601,7 +601,8 @@
 	function get_users( $db ) {
 		$query = "SELECT * FROM wp_users";
 		$users = array();
-		while ( $row = $db->query( $query )->fetch_object() ) {
+		$result = db->$query( $query );
+		while ( $row = $result->fetch_object() ) {
 			$users[] = $row;
 		}
 		return $users;
@@ -610,7 +611,8 @@
 	function get_user_blog_roles( $db, $user_id ) {
 		$query = "SELECT * FROM wp_usermeta WHERE user_id=$user_id AND meta_key LIKE '%_capabilities';";
 		$blogs = array();
-		while ( $row = $db->Squery( $query )->fetch_object()) {
+		$result = db->$query( $query );
+		while ( $row = $result->fetch_object()) {
 			$blog_id = (int)str_replace(str_replace($row->meta_key, "wp_", ""), "_capabilities", "");
 			$blogs[$blog_id] = unserialize($row->meta_value);
 		}
