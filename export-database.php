@@ -141,7 +141,7 @@
 			global $existing_regions;
 			$result = [];
 			foreach ( $regions as $region ) {
-				if ( $region === 0 || in_array( $region, $existing_regions ) ) {
+				if ( $region === 0 || !in_array( $region, $existing_regions ) ) {
 					// pass
 				} else {
 					$result[] = $region;
