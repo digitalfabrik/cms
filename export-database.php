@@ -698,7 +698,9 @@
 		}
 	}
 
-	foreach ( get_users( $db ) as $user ) {
+	fwrite(STDERR, "Dumping users.\n");
+  foreach ( get_users( $db ) as $user ) {
+		fwrite(STDERR, "User " . $user->ID . "\n");
 		$fixtures->append( new User( $user, get_user_blog_roles( $db, $user->ID ) ));
 	}
 
