@@ -126,7 +126,7 @@
 
 			$this->fields["username"] = $user->user_login;
 			$this->fields["password"] = $user->user_pass;
-			$this->fields["email"] = $user->email;
+			$this->fields["email"] = $user->user_email;
 			$this->fields["first_name"] = "";
 			$this->fields["last_name"] = "";
 			$this->fields["is_superuser"] = null;
