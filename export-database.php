@@ -1,4 +1,9 @@
 <?php
+
+	if (php_sapi_name() != 'cli') {
+		die("Only cli execution is allowed.");
+	}
+
 	$debug = false;
 
 	$configuration = parse_ini_file("config.ini", true);
