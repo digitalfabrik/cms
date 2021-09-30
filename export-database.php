@@ -150,7 +150,7 @@
 					// pass
 				} else {
 					$result[] = $region;
-				} 
+				}
 			}
 			return $result;
 		}
@@ -164,11 +164,11 @@
 		}
 
 		static function select_role( $roles ) {
-			if ( in_array( "manager", $roles ))	{
+			if ( array_key_exists( "manager", $roles )) {
 				return 1; // -> Role MANAGEMENT
-			} elseif ( in_array( "trustworthy_organization", $roles )) {
+			} elseif ( array_key_exists( "trustworthy_organization", $roles )) {
 				return 2; // -> Role EDITOR
-			} elseif ( in_array( "event_planer", $roles )) {
+			} elseif ( array_key_exists( "event_planer", $roles )) {
 				return 3; // -> Role EVENT_MANAGER
 			}
 			return null;
