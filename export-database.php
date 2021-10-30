@@ -184,14 +184,14 @@
 		}
 
 		function init_fields( $blog ) {
-			$this->fields["name"] = $blog->get_blog_option( "blogname" );
+			$this->fields["name"] = ( $blog->get_integreat_setting( "name_without_prefix" ) ? $blog->get_integreat_setting( "name_without_prefix" ) : $blog->get_blog_option( "blogname" ) );
 			$this->fields["slug"] = ( $blog->get_blog_option( "blogname") == "Integreat" ? "integreat" : str_replace( "/", "", $blog->path ) );
 			$this->fields["aliases"] = ( $blog->get_integreat_setting( "aliases" ) != null ? $blog->get_integreat_setting( "aliases" ) : array() );
 			$this->fields["status"] = ( $blog->get_integreat_setting( "disabled" ) == 1 ? "ARCHIVED" : ( $blog->get_integreat_setting( "hidden" ) == 0 ? "ACTIVE" : "HIDDEN" ) );
 			$this->fields["latitude"] = $blog->get_integreat_setting( "latitude" );
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
 			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
-			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : "MUNICIPALITY" );
+			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : ( $blog->get_integreat_setting( "prefix" ) == "Stadt" ? "CITY" : "MUNICIPALITY" ) );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
