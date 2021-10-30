@@ -215,6 +215,7 @@
 			$this->fields = array(
 				"slug"=>utf8_encode( $language["code"] ),
 				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : utf8_encode($language["tag"]) ),
+				"primary_country_code"=>utf8_encode( $language["code"] ),
 				"english_name"=>utf8_encode( $language["english_name"] ),
 				"native_name"=>utf8_encode( $language["native_name"] ),
 				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "RIGHT_TO_LEFT" : "LEFT_TO_RIGHT"),
