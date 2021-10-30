@@ -158,7 +158,7 @@
 		static function combine_roles( $blog_roles ) {
 			$all_roles = array();
 			foreach ( $blog_roles as $blog => $roles ) {
-				$all_roles = array_unique( array_merge( $all_roles, $roles ));
+				$all_roles = array_merge( $all_roles, $roles );
 			}
 			return $all_roles;
 		}
