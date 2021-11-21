@@ -583,7 +583,7 @@
 					"currently_in_translation"=>false,
 					"version"=>$version,
 					"minor_edit"=>false,
-					"creator"=>null,
+					"creator"=>$row->post_author,
 					"created_date"=>$row->post_date_gmt,
 					"last_updated"=>$row->post_modified_gmt,
 				]);
