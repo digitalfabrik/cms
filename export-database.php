@@ -212,6 +212,9 @@
 		}
 
 		function init_fields( $language ) {
+			if ( empty($language["tag"]) ) {
+				$language["tag"] = $language["code"];
+			}
 			$this->fields = array(
 				"slug"=>utf8_encode( $language["code"] ),
 				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : utf8_encode($language["tag"]) ),
@@ -580,7 +583,7 @@
 					"currently_in_translation"=>false,
 					"version"=>$version,
 					"minor_edit"=>false,
-					"creator"=>null,
+					"creator"=>$row->post_author,
 					"created_date"=>$row->post_date_gmt,
 					"last_updated"=>$row->post_modified_gmt,
 				]);
