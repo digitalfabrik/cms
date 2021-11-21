@@ -158,7 +158,7 @@
 		static function combine_roles( $blog_roles ) {
 			$all_roles = array();
 			foreach ( $blog_roles as $blog => $roles ) {
-				$all_roles = array_unique( array_merge( $all_roles, $roles ));
+				$all_roles = array_merge( $all_roles, $roles );
 			}
 			return $all_roles;
 		}
@@ -184,14 +184,14 @@
 		}
 
 		function init_fields( $blog ) {
-			$this->fields["name"] = $blog->get_blog_option( "blogname" );
+			$this->fields["name"] = ( $blog->get_integreat_setting( "name_without_prefix" ) ? $blog->get_integreat_setting( "name_without_prefix" ) : $blog->get_blog_option( "blogname" ) );
 			$this->fields["slug"] = ( $blog->get_blog_option( "blogname") == "Integreat" ? "integreat" : str_replace( "/", "", $blog->path ) );
 			$this->fields["aliases"] = ( $blog->get_integreat_setting( "aliases" ) != null ? $blog->get_integreat_setting( "aliases" ) : array() );
 			$this->fields["status"] = ( $blog->get_integreat_setting( "disabled" ) == 1 ? "ARCHIVED" : ( $blog->get_integreat_setting( "hidden" ) == 0 ? "ACTIVE" : "HIDDEN" ) );
 			$this->fields["latitude"] = $blog->get_integreat_setting( "latitude" );
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
 			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
-			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : "MUNICIPALITY" );
+			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : ( $blog->get_integreat_setting( "prefix" ) == "Stadt" ? "CITY" : "MUNICIPALITY" ) );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
@@ -215,6 +215,7 @@
 			$this->fields = array(
 				"slug"=>utf8_encode( $language["code"] ),
 				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : utf8_encode($language["tag"]) ),
+				"primary_country_code"=>utf8_encode( $language["code"] ),
 				"english_name"=>utf8_encode( $language["english_name"] ),
 				"native_name"=>utf8_encode( $language["native_name"] ),
 				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "RIGHT_TO_LEFT" : "LEFT_TO_RIGHT"),
