@@ -212,6 +212,9 @@
 		}
 
 		function init_fields( $language ) {
+			if ( empty($language["tag"]) ) {
+				$language["tag"] = $language["code"];
+			}
 			$this->fields = array(
 				"slug"=>utf8_encode( $language["code"] ),
 				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : utf8_encode($language["tag"]) ),
