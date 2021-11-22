@@ -216,11 +216,11 @@
 				$language["tag"] = $language["code"];
 			}
 			$this->fields = array(
-				"slug"=>utf8_encode( $language["code"] ),
-				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : utf8_encode($language["tag"]) ),
-				"primary_country_code"=>utf8_encode(mb_substr($language["code"], 0, 2)),
-				"english_name"=>utf8_encode( $language["english_name"] ),
-				"native_name"=>utf8_encode( $language["native_name"] ),
+				"slug"=>$language["code"],
+				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : $language["tag"] ),
+				"primary_country_code"=>mb_substr($language["code"], 0, 2),
+				"english_name"=>$language["english_name"],
+				"native_name"=>$language["native_name"],
 				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "RIGHT_TO_LEFT" : "LEFT_TO_RIGHT"),
 				"table_of_contents"=>"Inhaltsverzeichnis",
 				"created_date"=>now(),
@@ -294,10 +294,10 @@
 		function init_fields( $translation ) {
 			$this->fields = array(
 				"page"=>$translation["page"],
-				"slug"=>utf8_encode($translation["slug"]),
-				"title"=>mb_substr(utf8_encode($translation["title"]), 0, 250),
+				"slug"=>$translation["slug"],
+				"title"=>mb_substr($translation["title"], 0, 250),
 				"status"=>$translation["status"],
-				"text"=>utf8_encode($translation["text"]),
+				"text"=>$translation["text"],
 				"language"=>$translation["language"],
 				"currently_in_translation"=>$translation["currently_in_translation"],
 				"version"=>$translation["version"],
@@ -325,10 +325,10 @@
 				$file_path[2] = $item->meta_value;
 			}
 			$this->fields = array(
-				"file" => utf8_encode($blog->blog_id . "/" . $item->meta_value),
-				"thumbnail" => (substr($item->meta_value, -3) !== "pdf" ? utf8_encode($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
-				"type" => utf8_encode($item->post_mime_type),
-				"name" => utf8_encode($file_path[2]),
+				"file" => $blog->blog_id . "/" . $item->meta_value,
+				"thumbnail" => (substr($item->meta_value, -3) !== "pdf" ? ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
+				"type" =>$item->post_mime_type,
+				"name" =>$file_path[2],
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
 				"alt_text" => "",
@@ -394,7 +394,7 @@
 		}
 
 		function dump() {
-			return json_encode( $this->object_list, JSON_PRETTY_PRINT );
+			return json_encode( $this->object_list, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 			fwrite(STDERR, "JSON ERROR: ". json_last_error());
 		}
 	}
@@ -415,7 +415,7 @@
 			$query = "SELECT option_value FROM " . $this->dbprefix . "options WHERE option_name='" . $option_name . "'";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
-				return utf8_encode($row->option_value);
+				return $row->option_value;
 			}
 		}
 
@@ -423,7 +423,7 @@
 			$query = "SELECT value FROM " . $this->dbprefix . "ig_settings_config c LEFT JOIN wp_ig_settings s ON c.setting_id=s.id WHERE alias='$alias'";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
-				return utf8_encode($row->value);
+				return $row->value;
 			}
 		}
 
@@ -727,9 +727,22 @@
 	fwrite(STDERR, "Dumping users.\n");
 	$existing_regions = array_keys( $page_pk_map );
 	$users = get_users( $db );
+	$user_id_list = [];
 	foreach ( $users as $user ) {
 		fwrite(STDERR, "User " . $user->ID . "\n");
+		$user_id_list[] = $user->ID;
 		$fixtures->append( new User( $user, get_user_blog_roles( $db, $user->ID ) ));
+	}
+
+	// Fix page translation owners (removed WP users that still own pages)
+	fwrite(STDERR, "Fixing page translation creators.\n");
+	foreach ( $fixtures->object_list as $key => $object ) {
+		if ( $object->model == "cms.pagetranslation") {
+			if ( ! in_array( $object->fields["creator"], $user_id_list ) ) {
+				$object->fields["creator"] = Null;
+			}
+		}
+		$fixtures->object_list[$key] = $object;
 	}
 
 	fwrite(STDERR, "Dumping fixtures.");
