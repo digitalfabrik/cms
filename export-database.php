@@ -727,9 +727,22 @@
 	fwrite(STDERR, "Dumping users.\n");
 	$existing_regions = array_keys( $page_pk_map );
 	$users = get_users( $db );
+	$user_id_list = [];
 	foreach ( $users as $user ) {
 		fwrite(STDERR, "User " . $user->ID . "\n");
+		$user_id_list[] = $user->ID;
 		$fixtures->append( new User( $user, get_user_blog_roles( $db, $user->ID ) ));
+	}
+
+	// Fix page translation owners (removed WP users that still own pages)
+	fwrite(STDERR, "Fixing page translation creators.\n");
+	foreach ( $fixtures->object_list as $key => $object ) {
+		if ( $object->model == "cms.pagetranslation") {
+			if ( ! in_array( $object->fields["creator"], $user_id_list ) ) {
+				$object->fields["creator"] = Null;
+			}
+		}
+		$fixtures->object_list[$key] = $object;
 	}
 
 	fwrite(STDERR, "Dumping fixtures.");
