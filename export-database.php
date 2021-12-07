@@ -559,7 +559,7 @@
 			if ( !$parent ) {
 				return [];
 			}
-			$query = "SELECT * FROM " . $this->dbprefix . "posts (WHERE post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY post_modified ASC" ;
+			$query = "SELECT * FROM " . $this->dbprefix . "posts (WHERE post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY ID ASC" ;
 			$result = $this->db->query( $query );
 			$translations = [];
 			$version = 1;
