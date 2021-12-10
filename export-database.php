@@ -559,7 +559,7 @@
 			if ( !$parent ) {
 				return [];
 			}
-			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE post_parent = " . $parent . " OR ID = " . $parent . " ORDER BY post_modified ASC" ;
+			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE (post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY ID ASC" ;
 			$result = $this->db->query( $query );
 			$translations = [];
 			$version = 1;
@@ -599,6 +599,7 @@
 			// TODO: get latest post meta (alt text)
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
+				if ( $row->meta_value === null ) { continue; }
 				$media_file = new MediaFile( $this, $row );
 				$fixtures->append( $media_file );
 				$media_pk_map[$this->blog_id][$row->guid] = $media_file->pk;
