@@ -564,7 +564,9 @@
 			$translations = [];
 			$version = 1;
 			$status = "DRAFT";
+			$slug = null;
 			while ( $row = $result->fetch_object() ) {
+				if ( is_null($slug) ) $slug = $row->post_name;
 				if ( $row->post_status == "auto-draft" || $row->post_status == "draft" )
 					$status = "DRAFT";
 				elseif ( $row->post_status == "private" || $row->post_status == "trash" )
@@ -575,7 +577,7 @@
 					$status = $status; // inherit
 				$page_translations[] = new PageTranslation([
 					"page"=>$mptt_node["pk"],
-					"slug"=>$row->post_name,
+					"slug"=>$slug,
 					"title"=>$row->post_title,
 					"status"=>$status,
 					"text"=>$row->post_content,
