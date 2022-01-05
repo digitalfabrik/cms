@@ -200,7 +200,7 @@
 			$this->fields["last_updated"] = now();
 			$this->fields["statistics_enabled"] = ( strpos( $blog->get_blog_option( "active_plugins" ), "wp-piwik" ) ? true : false );
 			$this->fields["matomo_token"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_token" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_token" ) : "");
-			$this->fields["matomo_id"] = $blog->get_blog_option( "wp-piwik-site_id" );
+			$this->fields["matomo_id"] = ( $blog->get_blog_option( "wp-piwik-site_id" ) == "n/a" ? null : $blog->get_blog_option( "wp-piwik-site_id" ) );
 		}
 	}
 
