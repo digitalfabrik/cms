@@ -54,11 +54,11 @@
 
 		function add_node( $node_id, $parent_node_id = null ) {
 			if ( sizeof( $this->tree ) == 0 && $parent_node_id == null ) {
-				$this->tree[]	= array( "id" => $node_id, "parent" => null, "parent_pk" => null, "left" => 1, "right" => 2, "level" => 0, "pk" => $this->pk_counter );
+				$this->tree[]	= array( "id" => $node_id, "parent" => null, "parent_pk" => null, "left" => 1, "right" => 2, "depth" => 1, "pk" => $this->pk_counter );
 			} elseif ( sizeof( $this->tree) > 0 && $parent_node_id ) {
 				$parent = $this->get_parent( $parent_node_id );
 				$this->increase_counts( $parent["right"] );
-				$this->tree[] = array( "id" => $node_id, "parent" => $parent_node_id, "parent_pk" => $parent["pk"], "left" => $parent["right"], "right" => ( $parent["right"] + 1 ), "level" => $parent["level"] + 1, "pk" => $this->pk_counter );
+				$this->tree[] = array( "id" => $node_id, "parent" => $parent_node_id, "parent_pk" => $parent["pk"], "left" => $parent["right"], "right" => ( $parent["right"] + 1 ), "depth" => $parent["depth"] + 1, "pk" => $this->pk_counter );
 			} else {
 				return false;
 			}
@@ -247,9 +247,9 @@
 				"created_date"=>now(),
 				"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
-				"rght"=>$mptt_node["right"],
+				"rgt"=>$mptt_node["right"],
 				"tree_id"=>$blog->blog_id,
-				"level"=>$mptt_node["level"],
+				"depth"=>$mptt_node["depth"],
 			);
 		}
 	}
@@ -275,9 +275,9 @@
 				"mirrored_page_first"=>null,
 				"created_date"=>now(),
 				"lft"=>$mptt_node["left"],
-				"rght"=>$mptt_node["right"],
+				"rgt"=>$mptt_node["right"],
 				"tree_id"=>$page_tree_counter,
-				"level"=>$mptt_node["level"],
+				"depth"=>$mptt_node["depth"],
 				"editors"=>[],
 				"publishers"=>[],
 			);
@@ -696,7 +696,7 @@
 		// export images into fixtures and create WordPress
 		$blog->export_attached_files();
 		//var_dump($media_pk_map);
-		/* get level 0 pages and generate a page tree for them */
+		/* get depth 1 pages and generate a page tree for them */
 		$new_posts = $blog->get_pages_for_language( $blog->get_default_language(), [ 0 ] );
 		foreach ( $new_posts as $root_post ) {
 			$page_tree = $blog->generate_page_tree( $page_tree_node_pk_counter, $root_post["id"], $page_tree_counter );
