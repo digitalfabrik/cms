@@ -54,7 +54,7 @@
 
 		function add_node( $node_id, $parent_node_id = null ) {
 			if ( sizeof( $this->tree ) == 0 && $parent_node_id == null ) {
-				$this->tree[]	= array( "id" => $node_id, "parent" => null, "parent_pk" => null, "left" => 1, "right" => 2, "level" => 0, "pk" => $this->pk_counter );
+				$this->tree[]	= array( "id" => $node_id, "parent" => null, "parent_pk" => null, "left" => 1, "right" => 2, "level" => 1, "pk" => $this->pk_counter );
 			} elseif ( sizeof( $this->tree) > 0 && $parent_node_id ) {
 				$parent = $this->get_parent( $parent_node_id );
 				$this->increase_counts( $parent["right"] );
@@ -247,9 +247,9 @@
 				"created_date"=>now(),
 				"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
-				"rght"=>$mptt_node["right"],
+				"rgt"=>$mptt_node["right"],
 				"tree_id"=>$blog->blog_id,
-				"level"=>$mptt_node["level"],
+				"depth"=>$mptt_node["level"],
 			);
 		}
 	}
@@ -275,9 +275,9 @@
 				"mirrored_page_first"=>null,
 				"created_date"=>now(),
 				"lft"=>$mptt_node["left"],
-				"rght"=>$mptt_node["right"],
+				"rgt"=>$mptt_node["right"],
 				"tree_id"=>$page_tree_counter,
-				"level"=>$mptt_node["level"],
+				"depth"=>$mptt_node["level"],
 				"editors"=>[],
 				"publishers"=>[],
 			);
@@ -298,7 +298,7 @@
 				"slug"=>$translation["slug"],
 				"title"=>mb_substr($translation["title"], 0, 250),
 				"status"=>$translation["status"],
-				"text"=>$translation["text"],
+				"content"=>$translation["content"],
 				"language"=>$translation["language"],
 				"currently_in_translation"=>$translation["currently_in_translation"],
 				"version"=>$translation["version"],
@@ -581,7 +581,7 @@
 					"slug"=>$slug,
 					"title"=>$row->post_title,
 					"status"=>$status,
-					"text"=>$row->post_content,
+					"content"=>$row->post_content,
 					"language"=>$language_pk,
 					"currently_in_translation"=>false,
 					"version"=>$version,
