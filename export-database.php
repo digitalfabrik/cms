@@ -191,7 +191,8 @@
 			$this->fields["latitude"] = $blog->get_integreat_setting( "latitude" );
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
 			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
-			$this->fields["administrative_division"] = ( $blog->get_integreat_setting( "prefix" ) == "Landkreis" ? "RURAL_DISTRICT" : ( $blog->get_integreat_setting( "prefix" ) == "Stadt" ? "CITY" : "MUNICIPALITY" ) );
+			$this->fields["administrative_division"] = $this->get_administrative_division( $blog->get_blog_option( "blogname" ), $blog->get_integreat_setting( "prefix" ) );
+			$this->fields["administrative_division_included"] = !is_null( $blog->get_integreat_setting( "prefix" ) );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
@@ -202,6 +203,34 @@
 			$this->fields["matomo_token"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_token" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_token" ) : "");
 			$this->fields["matomo_id"] = ( in_array( $blog->get_blog_option( "wp-piwik-site_id" ) , ["n/a", null, "", "0"] ) ? null : $blog->get_blog_option( "wp-piwik-site_id" ) );
 		}
+
+		function get_administrative_division( $name, $prefix ) {
+			switch ($prefix) {
+				case "Landkreis":
+					$administrative_division = "RURAL_DISTRICT";
+					break;
+				case "Kreis":
+					$administrative_division = "DISTRICT";
+					break;
+				case "Stadt":
+					$administrative_division = "CITY";
+					break;
+				case "Stadt und Landkreis":
+					$administrative_division = "CITY_AND_DISTRICT";
+					break;
+				case "Region":
+					$administrative_division = "REGION";
+					break;
+				default:
+					if (stripos($name, "kreis") !== false) {
+						$administrative_division = "RURAL_DISTRICT";
+					} else {
+						$administrative_division = "MUNICIPALITY";
+					}
+			}
+			return $administrative_division;
+		}
+
 	}
 
 	class Language extends DjangoModel {
