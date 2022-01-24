@@ -641,9 +641,9 @@
 		}
 
 		function get_post_thumbnail_guid( $post_id ) {
-			// latest post revision -> post meta -> meta_key -> post guid
+			// original post ID -> post meta -> meta_key -> post guid
 			$thumbnail_post = null;
-			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT post_id,meta_value FROM " . $this->dbprefix . "postmeta WHERE meta_key='_thumbnail_id') AS m ON m.post_id=p.ID WHERE p.post_parent=$post_id AND post_status='publish' AND meta_value!='' ORDER BY p.ID DESC LIMIT 1";
+			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id=$post_id AND meta_key='_thumbnail_id'";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				$thumbnail_post = (int)$row->meta_value;
