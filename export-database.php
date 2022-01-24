@@ -6,6 +6,8 @@
 
 	$debug = false;
 
+	require_once("wp-includes/formatting.php");
+
 	$configuration = parse_ini_file("config.ini", true);
 
 	// ** MySQL settings - You can get this info from your web host ** //
@@ -610,7 +612,7 @@
 					"slug"=>$slug,
 					"title"=>$row->post_title,
 					"status"=>$status,
-					"content"=>$row->post_content,
+					"content"=>wpautop($row->post_content),
 					"language"=>$language_pk,
 					"currently_in_translation"=>false,
 					"version"=>$version,
