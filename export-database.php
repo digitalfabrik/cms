@@ -194,7 +194,7 @@
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
 			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
 			$this->fields["administrative_division"] = $this->get_administrative_division( $blog->get_blog_option( "blogname" ), $blog->get_integreat_setting( "prefix" ) );
-			$this->fields["administrative_division_included"] = !is_null( $blog->get_integreat_setting( "prefix" ) );
+			$this->fields["administrative_division_included"] = ( $blog->get_integreat_setting( "prefix" ) !== "" );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
