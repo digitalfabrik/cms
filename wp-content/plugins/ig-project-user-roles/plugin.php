@@ -123,6 +123,7 @@ register_activation_hook(__FILE__, function ($network_wide) {
 			/* Events */
 			'delete_events' => true,
 			'edit_events' => true,
+			'create_events' => true,
 
 			'delete_recurring_events' => true,
 			'edit_recurring_events' => true,
