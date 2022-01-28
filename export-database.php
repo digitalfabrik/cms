@@ -194,7 +194,7 @@
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
 			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
 			$this->fields["administrative_division"] = $this->get_administrative_division( $blog->get_blog_option( "blogname" ), $blog->get_integreat_setting( "prefix" ) );
-			$this->fields["administrative_division_included"] = !is_null( $blog->get_integreat_setting( "prefix" ) );
+			$this->fields["administrative_division_included"] = ( $blog->get_integreat_setting( "prefix" ) !== "" );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
@@ -247,10 +247,12 @@
 			if ( empty($language["tag"]) ) {
 				$language["tag"] = $language["code"];
 			}
+			list($primary_cc, $secondary_cc) = $this->get_country_codes( mb_substr( $language["code"], 0, 2 ) );
 			$this->fields = array(
 				"slug"=>$language["code"],
 				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : $language["tag"] ),
-				"primary_country_code"=>mb_substr($language["code"], 0, 2),
+				"primary_country_code"=>$primary_cc,
+				"secondary_country_code"=>$secondary_cc,
 				"english_name"=>$language["english_name"],
 				"native_name"=>$language["native_name"],
 				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "RIGHT_TO_LEFT" : "LEFT_TO_RIGHT"),
@@ -259,6 +261,59 @@
 				"last_updated"=>now(),
 			);
 		}
+
+		function get_country_codes( $language_code ) {
+			$country_code_mapping = [
+				"am" => ["et", "er"],
+				"ar" => ["dz", "sa"],
+				"bs" => ["ba", ""],
+				"ca" => ["es", ""],
+				"ck" => ["ir", "iq"],
+				"cs" => ["cz", ""],
+				"cy" => ["gb", ""],
+				"da" => ["dk", ""],
+				"el" => ["gr", ""],
+				"en" => ["gb", "us"],
+				"et" => ["ee", ""],
+				"eu" => ["es", "fr"],
+				"fa" => ["ir", "af"],
+				"ga" => ["ie", "gb"],
+				"hb" => ["rs", ""],
+				"he" => ["il", ""],
+				"hi" => ["in", ""],
+				"hy" => ["am", ""],
+				"ja" => ["jp", ""],
+				"km" => ["sy", "tr"],
+				"ko" => ["kr", "kp"],
+				"ku" => ["sy", "tr"],
+				"la" => ["va", ""],
+				"mo" => ["md", "ro"],
+				"ms" => ["my", ""],
+				"nb" => ["no", ""],
+				"ne" => ["np", ""],
+				"pa" => ["pk", "in"],
+				"pe" => ["ir", "af"],
+				"qu" => ["bo", "ec"],
+				"sl" => ["si", ""],
+				"sq" => ["al", ""],
+				"sr" => ["rs", ""],
+				"sv" => ["se", ""],
+				"ta" => ["in", "lk"],
+				"ti" => ["er", "et"],
+				"uk" => ["ua", ""],
+				"ur" => ["pk", "in"],
+				"vi" => ["vn", ""],
+				"yi" => ["ba", "ro"],
+				"zh" => ["cn", ""],
+				"zu" => ["za", "bw"],
+			];
+			if (in_array( $language_code, $country_code_mapping )) {
+				return $country_code_mapping[$language_code];
+			} else {
+				return [$language_code, ""];
+			}
+		}
+
 	}
 
 	class LanguageTreeNode extends DjangoModel {
