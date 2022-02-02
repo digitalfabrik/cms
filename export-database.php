@@ -138,7 +138,7 @@
 			$this->fields["last_name"] = "";
 			$this->fields["is_superuser"] = False;
 			$this->fields["is_staff"] = False;
-			$this->fields["is_active"] = True;
+			$this->fields["is_active"] = (sizeof($regions) == 0 ? False : True);
 			$this->fields["groups"] = ( is_null( $group ) ? array() : array( $group ) );
 			$this->fields["regions"] = $regions;
 			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
