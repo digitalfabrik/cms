@@ -138,8 +138,8 @@
 			$this->fields["last_name"] = "";
 			$this->fields["is_superuser"] = False;
 			$this->fields["is_staff"] = False;
-			$this->fields["is_active"] = True;
-			$this->fields["groups"] = ( is_null( $group ) ? array() : array( $group ) );
+			$this->fields["is_active"] = (sizeof($regions) == 0 ? False : True);
+			$this->fields["groups"] = ( is_null( $group ) ? array(2) : array( $group ) );
 			$this->fields["regions"] = $regions;
 			$this->fields["expert_mode"] = ( $group === 1 ? true : false );  // turn on if Verwalter
 		}
@@ -194,7 +194,7 @@
 			$this->fields["longitude"] = $blog->get_integreat_setting( "longitude" );
 			$this->fields["postal_code"] = ( $blog->get_integreat_setting( "plz" ) != null ? $blog->get_integreat_setting( "plz" ) : 1);
 			$this->fields["administrative_division"] = $this->get_administrative_division( $blog->get_blog_option( "blogname" ), $blog->get_integreat_setting( "prefix" ) );
-			$this->fields["administrative_division_included"] = !is_null( $blog->get_integreat_setting( "prefix" ) );
+			$this->fields["administrative_division_included"] = ( $blog->get_integreat_setting( "prefix" ) !== "" );
 			$this->fields["events_enabled"] = true;
 			$this->fields["chat_enabled"] = true;
 			$this->fields["push_notifications_enabled"] = ( $blog->get_integreat_setting( "push_notifications" ) == 1 ? true : false );
@@ -247,10 +247,12 @@
 			if ( empty($language["tag"]) ) {
 				$language["tag"] = $language["code"];
 			}
+			list($primary_cc, $secondary_cc) = $this->get_country_codes( mb_substr( $language["code"], 0, 2 ) );
 			$this->fields = array(
 				"slug"=>$language["code"],
 				"bcp47_tag"=>( $language["tag"] == "uz-uz" && $language["code"] == "ur" ? "ur-ur" : $language["tag"] ),
-				"primary_country_code"=>mb_substr($language["code"], 0, 2),
+				"primary_country_code"=>$primary_cc,
+				"secondary_country_code"=>$secondary_cc,
 				"english_name"=>$language["english_name"],
 				"native_name"=>$language["native_name"],
 				"text_direction"=>(in_array($language["code"], array('ar','fa','ckb')) ? "RIGHT_TO_LEFT" : "LEFT_TO_RIGHT"),
@@ -259,6 +261,59 @@
 				"last_updated"=>now(),
 			);
 		}
+
+		function get_country_codes( $language_code ) {
+			$country_code_mapping = [
+				"am" => ["et", "er"],
+				"ar" => ["dz", "sa"],
+				"bs" => ["ba", ""],
+				"ca" => ["es", ""],
+				"ck" => ["ir", "iq"],
+				"cs" => ["cz", ""],
+				"cy" => ["gb", ""],
+				"da" => ["dk", ""],
+				"el" => ["gr", ""],
+				"en" => ["gb", "us"],
+				"et" => ["ee", ""],
+				"eu" => ["es", "fr"],
+				"fa" => ["ir", "af"],
+				"ga" => ["ie", "gb"],
+				"hb" => ["rs", ""],
+				"he" => ["il", ""],
+				"hi" => ["in", ""],
+				"hy" => ["am", ""],
+				"ja" => ["jp", ""],
+				"km" => ["sy", "tr"],
+				"ko" => ["kr", "kp"],
+				"ku" => ["sy", "tr"],
+				"la" => ["va", ""],
+				"mo" => ["md", "ro"],
+				"ms" => ["my", ""],
+				"nb" => ["no", ""],
+				"ne" => ["np", ""],
+				"pa" => ["pk", "in"],
+				"pe" => ["ir", "af"],
+				"qu" => ["bo", "ec"],
+				"sl" => ["si", ""],
+				"sq" => ["al", ""],
+				"sr" => ["rs", ""],
+				"sv" => ["se", ""],
+				"ta" => ["in", "lk"],
+				"ti" => ["er", "et"],
+				"uk" => ["ua", ""],
+				"ur" => ["pk", "in"],
+				"vi" => ["vn", ""],
+				"yi" => ["ba", "ro"],
+				"zh" => ["cn", ""],
+				"zu" => ["za", "bw"],
+			];
+			if (in_array( $language_code, $country_code_mapping )) {
+				return $country_code_mapping[$language_code];
+			} else {
+				return [$language_code, ""];
+			}
+		}
+
 	}
 
 	class LanguageTreeNode extends DjangoModel {
@@ -519,7 +574,7 @@
 		}
 
 		function get_pages_for_language( $language_code, $parents ) {
-			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.post_parent IN (" . implode( ",", $parents ) . ") ORDER BY menu_order ASC" ;
+			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.post_parent IN (" . implode( ",", $parents ) . ") AND p.post_status!='auto-draft' ORDER BY menu_order ASC" ;
 			$result = $this->db->query( $query );
 			$posts = [];
 			while ( $row = $result->fetch_object() ) {
@@ -641,9 +696,9 @@
 		}
 
 		function get_post_thumbnail_guid( $post_id ) {
-			// latest post revision -> post meta -> meta_key -> post guid
+			// original post ID -> post meta -> meta_key -> post guid
 			$thumbnail_post = null;
-			$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT post_id,meta_value FROM " . $this->dbprefix . "postmeta WHERE meta_key='_thumbnail_id') AS m ON m.post_id=p.ID WHERE p.post_parent=$post_id AND post_status='publish' AND meta_value!='' ORDER BY p.ID DESC LIMIT 1";
+			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id=$post_id AND meta_key='_thumbnail_id'";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				$thumbnail_post = (int)$row->meta_value;
