@@ -574,7 +574,7 @@
 		}
 
 		function get_pages_for_language( $language_code, $parents ) {
-			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.post_parent IN (" . implode( ",", $parents ) . ") ORDER BY menu_order ASC" ;
+			$query = "SELECT p.ID, p.post_parent FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_page') t ON t.element_id=p.ID WHERE t.language_code='$language_code' AND p.post_parent IN (" . implode( ",", $parents ) . ") AND p.post_status!='auto-draft' ORDER BY menu_order ASC" ;
 			$result = $this->db->query( $query );
 			$posts = [];
 			while ( $row = $result->fetch_object() ) {
