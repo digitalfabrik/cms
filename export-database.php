@@ -695,10 +695,12 @@
 		}
 
 		function get_trashed_status( $post_id ) {
-			$query = "SELECT post_status FROM " . $this->dbprefix . "posts WHERE ID=$post_id AND post_status='trashed'";
+			$query = "SELECT post_status FROM wp_166_posts WHERE (post_parent=$post_id OR ID=$post_id) AND post_status!='inherit' ORDER BY ID DESC LIMIT 1";
 			$result = $this->db->query( $query );
-			if ($result->num_rows == 1) {
-				return true;
+			while ( $row = $result->fetch_object() ) {
+				if ( $row->post_status == "trash" ) {
+					return true;
+				}
 			}
 			return false;
 		}
