@@ -307,7 +307,7 @@
 				"zh" => ["cn", ""],
 				"zu" => ["za", "bw"],
 			];
-			if (in_array( $language_code, $country_code_mapping )) {
+			if (array_key_exists( $language_code, $country_code_mapping )) {
 				return $country_code_mapping[$language_code];
 			} else {
 				return [$language_code, ""];
@@ -381,7 +381,7 @@
 			$this->fields = array(
 				"page"=>$translation["page"],
 				"slug"=>$translation["slug"],
-				"title"=>mb_substr($translation["title"], 0, 250),
+				"title"=>( empty($translation["title"]) ? "No title" : mb_substr($translation["title"], 0, 250) ),
 				"status"=>$translation["status"],
 				"content"=>$translation["content"],
 				"language"=>$translation["language"],
