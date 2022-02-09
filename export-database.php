@@ -351,12 +351,11 @@
 		function init_fields( $blog, $mptt_node, $page_tree_counter ) {
 			global $media_pk_map;
 			$attachment_guid = $blog->get_post_thumbnail_guid( $mptt_node["id"] );
-			//var_dump($attachment_guid);
 			$this->fields = array(
 				"parent"=>$mptt_node["parent_pk"],
 				"icon"=>( $attachment_guid ? $media_pk_map[$blog->blog_id][$attachment_guid] : null),
 				"region"=>(int)$blog->blog_id,
-				"explicitly_archived"=>false,
+				"explicitly_archived"=>$blog->get_trashed_status( $mptt_node["id"] ),
 				"mirrored_page"=>null,
 				"mirrored_page_first"=>null,
 				"created_date"=>now(),
@@ -693,6 +692,17 @@
 				$fixtures->append( $media_file );
 				$media_pk_map[$this->blog_id][$row->guid] = $media_file->pk;
 			}
+		}
+
+		function get_trashed_status( $post_id ) {
+			$query = "SELECT post_status FROM wp_166_posts WHERE (post_parent=$post_id OR ID=$post_id) AND post_status!='inherit' ORDER BY ID DESC LIMIT 1";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				if ( $row->post_status == "trash" ) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		function get_post_thumbnail_guid( $post_id ) {
