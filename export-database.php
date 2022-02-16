@@ -406,7 +406,7 @@
 		function init_fields( $blog, $item, $file_path) {
 			$this->fields = array(
 				"file" => $blog->blog_id . "/" . $item->meta_value,
-				"thumbnail" => (in_array(strtolower(substr($item->meta_value, -3)), ["svg", "pdf"]) ? ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
+				"thumbnail" => (in_array(strtolower(substr($item->meta_value, -4)), [".svg", ".pdf", "docx", ".doc", ".xls", "xlsx"]) ? ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
 				"type" =>$item->post_mime_type,
 				"name" =>$file_path[2],
 				"parent_directory" => null,
@@ -692,11 +692,9 @@
 
 				$full_file_path = '/var/www/cms/wp-content/uploads/sites/' . $this->blog_id . "/" .  $row->meta_value;
 				if ( ! file_exists($full_file_path) ) {
-					fwrite(STDERR, "Skipping media item: ". $full_file_path ."\n");
+					if ( $debug ) { fwrite(STDERR, "Skipping media item: ". $full_file_path ."\n"); }
 					continue;
 				}
-				fwrite(STDERR, "Migrating: ". $full_file_path ."\n");
-
 
 				$media_file = new MediaFile( $this, $row, $file_path );
 				$fixtures->append( $media_file );
