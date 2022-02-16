@@ -692,11 +692,9 @@
 
 				$full_file_path = '/var/www/cms/wp-content/uploads/sites/' . $this->blog_id . "/" .  $row->meta_value;
 				if ( ! file_exists($full_file_path) ) {
-					fwrite(STDERR, "Skipping media item: ". $full_file_path ."\n");
+					if ( $debug ) { fwrite(STDERR, "Skipping media item: ". $full_file_path ."\n"); }
 					continue;
 				}
-				fwrite(STDERR, "Migrating: ". $full_file_path ."\n");
-
 
 				$media_file = new MediaFile( $this, $row, $file_path );
 				$fixtures->append( $media_file );
