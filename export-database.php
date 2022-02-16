@@ -398,18 +398,12 @@
 	class MediaFile extends DjangoModel {
 		public $model = "cms.mediafile";
 
-		function __construct( $blog, $item ) {
+		function __construct( $blog, $item, $file_path ) {
 			parent::__construct();
-			$this->init_fields( $blog, $item );
+			$this->init_fields( $blog, $item, $file_path );
 		}
 
-		function init_fields( $blog, $item ) {
-			$file_path = explode("/", $item->meta_value);
-			if ( count( $file_path ) < 2 ) {
-				$file_path[0] = "2021";
-				$file_path[1] = "07";
-				$file_path[2] = $item->meta_value;
-			}
+		function init_fields( $blog, $item, $file_path) {
 			$this->fields = array(
 				"file" => $blog->blog_id . "/" . $item->meta_value,
 				"thumbnail" => (substr($item->meta_value, -3) !== "pdf" ? ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
@@ -688,7 +682,23 @@
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->meta_value === null ) { continue; }
-				$media_file = new MediaFile( $this, $row );
+
+				$file_path = explode("/", $row->meta_value);
+				if ( count( $file_path ) < 2 ) {
+				$file_path[0] = "1970";
+					$file_path[1] = "01";
+					$file_path[2] = $row->meta_value;
+				}
+
+				$full_file_path = '/var/www/cms/wp-content/uploads/sites/' . $this->blog_id . "/" .  $row->meta_value;
+				if ( ! file_exists($full_file_path) ) {
+					fwrite(STDERR, "Skipping media item: ". $full_file_path ."\n");
+					continue;
+				}
+				fwrite(STDERR, "Migrating: ". $full_file_path ."\n");
+
+
+				$media_file = new MediaFile( $this, $row, $file_path );
 				$fixtures->append( $media_file );
 				$media_pk_map[$this->blog_id][$row->guid] = $media_file->pk;
 			}
