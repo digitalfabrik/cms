@@ -406,7 +406,7 @@
 		function init_fields( $blog, $item, $file_path) {
 			$this->fields = array(
 				"file" => $blog->blog_id . "/" . $item->meta_value,
-				"thumbnail" => (in_array(strtolower(substr($item->meta_value, -4)), [".svg", ".pdf", "docx", ".doc", ".xls", "xlsx"]) ? ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) : null),
+				"thumbnail" => (in_array(strtolower(substr($item->meta_value, -4)), [".svg", ".pdf", "docx", ".doc", ".xls", "xlsx"]) ? null : ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) ),
 				"type" =>$item->post_mime_type,
 				"name" =>$file_path[2],
 				"parent_directory" => null,
