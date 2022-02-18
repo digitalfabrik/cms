@@ -394,6 +394,45 @@
 			);
 		}
   }
+	class Imprint extends DjangoModel {
+		public $model = "cms.imprintpage";
+
+		function __construct( $blog ) {
+			parent::__construct();
+			$this->init_fields( $blog );
+		}
+
+		function init_fields( $blog ) {
+			$this->fields = array(
+				"region"=>(int)$blog->blog_id,
+				"created_date"=>now(),
+			);
+		}
+	}
+
+	class ImprintTranslation extends DjangoModel {
+		public $model = "cms.imprintpagetranslation";
+
+		function __construct( $translation ) {
+			parent::__construct();
+			$this->init_fields( $translation );
+		}
+
+		function init_fields( $translation ) {
+			$this->fields = array(
+				"page_id"=>$translation["page"],
+				"title"=>( empty($translation["title"]) ? "Impressum" : mb_substr($translation["title"], 0, 250) ),
+				"status"=>"PUBLIC",
+				"content"=>$translation["content"],
+				"language_id"=>$translation["language"],
+				"currently_in_translation"=>False,
+				"version"=>1,
+				"minor_edit"=>False,
+				"creator_id"=>$translation["creator"],
+				"last_updated"=>str_replace("0000-00-00","1970-01-01",$translation["last_updated"]),
+			);
+		}
+	}
 
 	class MediaFile extends DjangoModel {
 		public $model = "cms.mediafile";
@@ -674,6 +713,35 @@
 			return $page_translations;
 		}
 
+		function export_imprint( $language_pk_map ) {
+			global $fixtures;
+			$imprintpage = new Imprint( $this );
+			$fixtures->append( $imprintpage );
+
+			foreach ( $this->get_used_languages() as $used_language => $active) {
+				if ( ! array_key_exists( $used_language, $language_pk_map ) ) continue;
+				$version = 1;
+				$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_disclaimer') t ON t.element_id=p.ID WHERE t.language_code='".$used_language."' AND p.post_type='disclaimer' ORDER BY ID ASC";
+				$result = $this->db->query( $query );
+				while ( $row = $result->fetch_object() ) {
+					$fixtures->append( new ImprintTranslation([
+						"page"=>$imprintpage->pk,
+						"title"=>$row->post_title,
+						"status"=>"PUBLIC",
+						"content"=>wpautop($row->post_content),
+						"language"=>$language_pk_map[$row->language_code],
+						"currently_in_translation"=>false,
+						"version"=>$version,
+						"minor_edit"=>false,
+						"creator"=>$row->post_author,
+						"last_updated"=>$row->post_modified_gmt,
+					]) );
+					$version++;
+				}
+			}
+		}
+
+
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
@@ -692,7 +760,6 @@
 
 				$full_file_path = '/var/www/cms/wp-content/uploads/sites/' . $this->blog_id . "/" .  $row->meta_value;
 				if ( ! file_exists($full_file_path) ) {
-					if ( $debug ) { fwrite(STDERR, "Skipping media item: ". $full_file_path ."\n"); }
 					continue;
 				}
 
@@ -817,6 +884,7 @@
 			}
 			$page_tree_counter++;
 		}
+		$blog->export_imprint( $language_pk_map );
 		//if ( $blog->blog_id >= 2 ) { break; }
 	}
 
