@@ -696,7 +696,7 @@
 					$status = $status; // inherit
 				$page_translations[] = new PageTranslation([
 					"page"=>$mptt_node["pk"],
-					"slug"=>$slug,
+					"slug"=>str_replace( ["!", "#", "&", "'", "(", ")", "*", "*", "+", ",", "/", ":", ";", "=", "?", "@", "[", "]"], "", urldecode($slug) ),
 					"title"=>$row->post_title,
 					"status"=>$status,
 					"content"=>wpautop($row->post_content),
