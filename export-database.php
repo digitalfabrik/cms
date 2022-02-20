@@ -283,6 +283,7 @@
 				"hi" => ["in", ""],
 				"hy" => ["am", ""],
 				"ja" => ["jp", ""],
+				"ka" => ["ge", ""],
 				"km" => ["sy", "tr"],
 				"ko" => ["kr", "kp"],
 				"ku" => ["sy", "tr"],
@@ -293,6 +294,7 @@
 				"ne" => ["np", ""],
 				"pa" => ["pk", "in"],
 				"pe" => ["ir", "af"],
+				"pu" => ["af", "ir"],
 				"qu" => ["bo", "ec"],
 				"sl" => ["si", ""],
 				"sq" => ["al", ""],
@@ -450,7 +452,7 @@
 				"name" =>$file_path[2],
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
-				"alt_text" => "",
+				"alt_text" => $item->post_title,
 				"uploaded_date" => $item->post_date_gmt
 			);
 		}
@@ -745,8 +747,7 @@
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
-			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
-			// TODO: get latest post meta (alt text)
+			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt,post_title FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->meta_value === null ) { continue; }
