@@ -452,7 +452,7 @@
 				"name" =>$file_path[2],
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
-				"alt_text" => $item->post_excerpt,
+				"alt_text" => "",
 				"uploaded_date" => $item->post_date_gmt
 			);
 		}
@@ -747,7 +747,8 @@
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
-			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt,post_excerpt FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' AND post_parent!=0";
+			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
+			// TODO: get latest post meta (alt text)
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->meta_value === null ) { continue; }
