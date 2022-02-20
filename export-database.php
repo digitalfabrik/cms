@@ -452,7 +452,7 @@
 				"name" =>$file_path[2],
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
-				"alt_text" => "",
+				"alt_text" => $blog->get_media_alt_text( $item->guid ),
 				"uploaded_date" => $item->post_date_gmt
 			);
 		}
@@ -748,7 +748,6 @@
 			global $media_pk_map;
 			global $fixtures;
 			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
-			// TODO: get latest post meta (alt text)
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->meta_value === null ) { continue; }
@@ -768,6 +767,18 @@
 				$media_file = new MediaFile( $this, $row, $file_path );
 				$fixtures->append( $media_file );
 				$media_pk_map[$this->blog_id][$row->guid] = $media_file->pk;
+			}
+		}
+
+		function get_media_alt_text( $guid ) {
+			$query = "SELECT post_excerpt, meta_value FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attachment_image_alt') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' and guid='$guid' ORDER BY ID DESC";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				if ( !empty($row->post_excerpt) ) {
+					return $row->post_excerpt;
+				} elseif ( !empty($row->meta_value) ) {
+					return $row->meta_value;
+				}
 			}
 		}
 
