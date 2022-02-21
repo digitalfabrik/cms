@@ -771,7 +771,7 @@
 		}
 
 		function get_trashed_status( $post_id ) {
-			$query = "SELECT post_status FROM " . $this->dbprefix . "posts WHERE (post_parent=$post_id OR ID=$post_id) AND post_status!='inherit' ORDER BY ID DESC LIMIT 1";
+			$query = "SELECT post_status FROM " . $this->dbprefix . "posts WHERE ((post_parent=$post_id AND post_type='revision') OR ID=$post_id) AND post_status!='inherit' ORDER BY ID DESC LIMIT 1";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->post_status == "trash" ) {
