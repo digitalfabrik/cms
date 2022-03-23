@@ -567,7 +567,7 @@
 		}
 
 		function get_used_languages() {
-			$query = "SELECT m.code, active FROM " . $this->dbprefix ."icl_locale_map m LEFT JOIN " . $this->dbprefix ."icl_languages l ON m.code=l.code";
+			$query = "SELECT code, active FROM " . $this->dbprefix ."icl_languages WHERE active=1";
 			$result = $this->db->query( $query );
 			$languages_active = array();
 			while ( $row = $result->fetch_object() ) {
