@@ -38,6 +38,11 @@
 	define('REPL_PATH_NEW', "/");
 	$db = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
+	$slug_map_file = tempnam('tmp', 'integreat-export-');
+	fwrite(STDERR, "Slug Mapping File: ". $slug_map_file . "\n");
+	$slug_map_file_resource = fopen($slug_map_file, 'w');
+	fputs($slug_map_file_resource, "Region Slug;Page ID;Translation ID;Language ID;Version;WP Slug\n");
+
 	function now() {
 		$objDateTime = new DateTime('NOW');
 		return $objDateTime->format('c');
@@ -187,7 +192,7 @@
 
 		function init_fields( $blog ) {
 			$this->fields["name"] = ( $blog->get_integreat_setting( "name_without_prefix" ) ? $blog->get_integreat_setting( "name_without_prefix" ) : $blog->get_blog_option( "blogname" ) );
-			$this->fields["slug"] = ( $blog->get_blog_option( "blogname") == "Integreat" ? "integreat" : str_replace( "/", "", $blog->path ) );
+			$this->fields["slug"] = ( $blog->slug );
 			$this->fields["aliases"] = ( $blog->get_integreat_setting( "aliases" ) != null ? $blog->get_integreat_setting( "aliases" ) : array() );
 			$this->fields["status"] = ( $blog->get_integreat_setting( "disabled" ) == 1 ? "ARCHIVED" : ( $blog->get_integreat_setting( "hidden" ) == 0 ? "ACTIVE" : "HIDDEN" ) );
 			$this->fields["latitude"] = $blog->get_integreat_setting( "latitude" );
@@ -453,7 +458,9 @@
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
 				"alt_text" => $item->post_title,
-				"uploaded_date" => $item->post_date_gmt
+				"uploaded_date" => $item->post_date_gmt,
+				"file_size" => 1,
+				"last_modified" => now()
 			);
 		}
   }
@@ -525,11 +532,14 @@
 			$this->db = $db;
 			$this->blog_id = $blog_id;
 			$this->path = $path;
+
 			if ( $blog_id == 1 ) {
 				$this->dbprefix = "wp_";
 			} else {
 				$this->dbprefix = "wp_".$blog_id."_";
 			}
+
+			$this->slug = ( $this->get_blog_option( "blogname") == "Integreat" ? "integreat" : str_replace( "/", "", $path ) );
 		}
 
 		function get_blog_option( $option_name ) {
@@ -567,7 +577,7 @@
 		}
 
 		function get_used_languages() {
-			$query = "SELECT m.code, active FROM " . $this->dbprefix ."icl_locale_map m LEFT JOIN " . $this->dbprefix ."icl_languages l ON m.code=l.code";
+			$query = "SELECT code, active FROM " . $this->dbprefix ."icl_languages WHERE active=1";
 			$result = $this->db->query( $query );
 			$languages_active = array();
 			while ( $row = $result->fetch_object() ) {
@@ -696,7 +706,8 @@
 					$status = "PUBLIC";
 				else
 					$status = $status; // inherit
-				$page_translations[] = new PageTranslation([
+
+				$page_translation = new PageTranslation([
 					"page"=>$mptt_node["pk"],
 					"slug"=>str_replace( ["!", "#", "&", "'", "(", ")", "*", "*", "+", ",", "/", ":", ";", "=", "?", "@", "[", "]"], "", urldecode($slug) ),
 					"title"=>$row->post_title,
@@ -710,6 +721,9 @@
 					"created_date"=>$row->post_date_gmt,
 					"last_updated"=>$row->post_modified_gmt,
 				]);
+				global $slug_map_file_resource;
+				fputs($slug_map_file_resource, "$this->slug;$mptt_node[pk];$page_translation->pk;$language_pk;$version;$slug\n");
+				$page_translations[] = $page_translation;
 				$version++;
 			}
 			return $page_translations;
@@ -923,5 +937,6 @@
 	}
 
 	fwrite(STDERR, "Dumping fixtures.");
+	fclose($slug_map_file_resource);
 	echo($fixtures->dump());
-?>
+	?>
