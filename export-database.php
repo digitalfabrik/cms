@@ -458,7 +458,9 @@
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
 				"alt_text" => $item->post_title,
-				"uploaded_date" => $item->post_date_gmt
+				"uploaded_date" => $item->post_date_gmt,
+				"file_size" => 1,
+				"last_modified" => now()
 			);
 		}
   }
