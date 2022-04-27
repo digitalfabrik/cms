@@ -580,6 +580,7 @@
 			$query = "SELECT code, active FROM " . $this->dbprefix ."icl_languages WHERE active=1";
 			$result = $this->db->query( $query );
 			$languages_active = array();
+			$languages_active[$this->get_default_language()] = 1;
 			while ( $row = $result->fetch_object() ) {
 				$languages_active[$row->code] = $row->active;
 			}
