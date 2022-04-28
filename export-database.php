@@ -457,7 +457,7 @@
 				"name" =>$file_path[2],
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
-				"alt_text" => $item->post_title,
+				"alt_text" => ( is_null($item->alt_text) ? $item->post_title : $item->alt_text ),
 				"uploaded_date" => $item->post_date_gmt,
 				"file_size" => 1,
 				"last_modified" => now()
@@ -762,7 +762,7 @@
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
-			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt,post_title FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
+			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt,post_title,alt_text FROM (" . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id) LEFT JOIN (SELECT post_id,meta_value AS alt_text FROM " . $this->dbprefix. "postmeta WHERE meta_key='_wp_attachment_image_alt') at ON at.post_id=p.ID WHERE post_type='attachment' GROUP BY guid";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->meta_value === null ) { continue; }
