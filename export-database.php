@@ -326,17 +326,18 @@
 	class LanguageTreeNode extends DjangoModel {
 		public $model = "cms.languagetreenode";
 
-		function __construct( $blog, $language, $active, $mptt_node ) {
+		function __construct( $blog, $language, $active, $visible, $mptt_node ) {
 			$this->pk = $mptt_node["pk"];
-			$this->init_fields( $blog, $language, $active, $mptt_node );
+			$this->init_fields( $blog, $language, $active, $visible, $mptt_node );
 		}
 
-		function init_fields( $blog, $language, $active, $mptt_node ) {
+		function init_fields( $blog, $language, $active, $visible, $mptt_node ) {
 			$this->fields = array(
 				"language"=>$language->pk,
 				"parent"=>$mptt_node["parent_pk"],
 				"region"=>$blog->blog_id,
 				"active"=>$active,
+				"visible"=>$visible,
 				"created_date"=>now(),
 				"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
@@ -372,6 +373,7 @@
 				"depth"=>$mptt_node["level"],
 				"editors"=>[],
 				"publishers"=>[],
+				"api_token"=>$blog->get_api_token( $mptt_node["id"] ),
 			);
 		}
 	}
@@ -451,13 +453,13 @@
 
 		function init_fields( $blog, $item, $file_path) {
 			$this->fields = array(
-				"file" => $blog->blog_id . "/" . $item->meta_value,
+				"file" => "regions/" . $blog->blog_id . "/" . $item->meta_value,
 				"thumbnail" => (in_array(strtolower(substr($item->meta_value, -4)), [".svg", ".pdf", "docx", ".doc", ".xls", "xlsx"]) ? null : ($blog->blog_id . "/" . $file_path[0] . "/" . $file_path[1] . "/thumbnail/" . $file_path[2]) ),
 				"type" =>$item->post_mime_type,
 				"name" =>$file_path[2],
 				"parent_directory" => null,
 				"region" => $blog->blog_id,
-				"alt_text" => $item->post_title,
+				"alt_text" => ( is_null($item->alt_text) ? $item->post_title : $item->alt_text ),
 				"uploaded_date" => $item->post_date_gmt,
 				"file_size" => 1,
 				"last_modified" => now()
@@ -604,6 +606,21 @@
 			return null;
 		}
 
+		function get_hidden_languages() {
+			$query = "SELECT option_value FROM " . $this->dbprefix ."options WHERE option_name='icl_sitepress_settings'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$data = preg_replace_callback( '!s:(\d+):"(.*?)";!', function($m) {
+					return 's:'.strlen($m[2]).':"'.$m[2].'";';
+				}, $row->option_value );
+				$var = unserialize( $data );
+				if ( array_key_exists( "hidden_languages", $var ) ) {
+					return $var["hidden_languages"];
+				}
+			}
+			return [];
+		}
+
 		function generate_language_tree( $treenode_pk_counter ) {
 			$language_tree = new MPTT( $treenode_pk_counter );
 
@@ -685,18 +702,29 @@
 			return $source_page;
 		}
 
+		function duplicate_content( $post_id ) {
+			$query = "SELECT meta_value FROM " . $this->dbprefix. "postmeta WHERE post_id=$post_id AND meta_key='_icl_lang_duplicate_of'";
+			$result = $this->db->query( $query );
+			if ( $result->num_rows == 0 ) {
+				return false;
+			}
+			return true;
+		}
+
 		/* Create array of all revisions in all translations */
 		function get_page_translations( $mptt_node, $language, $language_pk ) {
 			$parent = $this->get_page_language_root_id( $mptt_node["id"], $language );
 			if ( !$parent ) {
 				return [];
 			}
+
 			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE (post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY ID ASC" ;
 			$result = $this->db->query( $query );
 			$translations = [];
 			$version = 1;
 			$status = "DRAFT";
 			$slug = null;
+			$duplicate_content = $this->duplicate_content( $parent );
 			while ( $row = $result->fetch_object() ) {
 				if ( is_null($slug) ) $slug = $row->post_name;
 				if ( $row->post_status == "auto-draft" || $row->post_status == "draft" )
@@ -713,7 +741,7 @@
 					"slug"=>str_replace( ["!", "#", "&", "'", "(", ")", "*", "*", "+", ",", "/", ":", ";", "=", "?", "@", "[", "]"], "", urldecode($slug) ),
 					"title"=>$row->post_title,
 					"status"=>$status,
-					"content"=>wpautop($row->post_content),
+					"content"=> ( $duplicate_content ? "" : wpautop($row->post_content) ),
 					"language"=>$language_pk,
 					"currently_in_translation"=>false,
 					"version"=>$version,
@@ -762,7 +790,7 @@
 		function export_attached_files( ) {
 			global $media_pk_map;
 			global $fixtures;
-			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt,post_title FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id WHERE post_type='attachment' GROUP BY guid";
+			$query = "SELECT ID,guid,meta_value,post_mime_type,post_date_gmt,post_title,alt_text FROM (" . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "postmeta WHERE meta_key='_wp_attached_file') AS pm ON p.ID=pm.post_id) LEFT JOIN (SELECT post_id,meta_value AS alt_text FROM " . $this->dbprefix. "postmeta WHERE meta_key='_wp_attachment_image_alt') at ON at.post_id=p.ID WHERE post_type='attachment' GROUP BY guid";
 			$result = $this->db->query( $query );
 			while ( $row = $result->fetch_object() ) {
 				if ( $row->meta_value === null ) { continue; }
@@ -792,6 +820,15 @@
 				if ( $row->post_status == "trash" ) {
 					return true;
 				}
+			}
+			return false;
+		}
+
+		function get_api_token( $post_id ) {
+			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id=$post_id AND meta_key='ig_push_content_token'";
+			$result = $this->db->query( $query );
+			if ( $result->num_rows == 1 ) {
+				return true;
 			}
 			return false;
 		}
@@ -853,6 +890,7 @@
 	$media_pk_map = array(); // map WP blog and attachment post ID to Django PK
 
 	foreach ( $blogs as $blog ) {
+		if ( $blog->blog_id == 1 ) { continue; }
 		$region = new Region( $blog );
 		fwrite(STDERR, "Exporting blog " . $blog->blog_id . "\n");
 		$fixtures->append( $region );
@@ -871,12 +909,13 @@
 		$language_tree = $blog->generate_language_tree( $lang_tree_node_pk_counter );
 		$lang_tree_node_pk_counter = $language_tree->pk_counter;
 		//fwrite(STDERR, "TreeNode PK Counter: " . $lang_tree_node_pk_counter . "\n");
+		$hidden_languages = $blog->get_hidden_languages();
 
 		foreach ( $blog->get_used_languages() as $used_language => $active) {
 			$mptt_node = $language_tree->get_node( $used_language );
 			$lang = $fixtures->get_language_by_slug($used_language);
 			if ( ! $lang ) { fwrite(STDERR, "Blog " . $blog->blog_id . ": Skipping language $used_language.\n"); continue; }
-			$tree_node = new LanguageTreeNode( $blog, $lang, $active, $mptt_node );
+			$tree_node = new LanguageTreeNode( $blog, $lang, $active, !in_array($lang, $hidden_languages), $mptt_node );
 			$fixtures->append( $tree_node );
 		}
 
