@@ -853,6 +853,7 @@
 	$media_pk_map = array(); // map WP blog and attachment post ID to Django PK
 
 	foreach ( $blogs as $blog ) {
+		if ( $blog->blog_id == 1 ) { continue; }
 		$region = new Region( $blog );
 		fwrite(STDERR, "Exporting blog " . $blog->blog_id . "\n");
 		$fixtures->append( $region );
