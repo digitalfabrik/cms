@@ -915,7 +915,7 @@
 			$mptt_node = $language_tree->get_node( $used_language );
 			$lang = $fixtures->get_language_by_slug($used_language);
 			if ( ! $lang ) { fwrite(STDERR, "Blog " . $blog->blog_id . ": Skipping language $used_language.\n"); continue; }
-			$tree_node = new LanguageTreeNode( $blog, $lang, $active, !in_array($lang, $hidden_languages), $mptt_node );
+			$tree_node = new LanguageTreeNode( $blog, $lang, $active, !in_array($used_language, $hidden_languages), $mptt_node );
 			$fixtures->append( $tree_node );
 		}
 
