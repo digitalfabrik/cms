@@ -326,17 +326,18 @@
 	class LanguageTreeNode extends DjangoModel {
 		public $model = "cms.languagetreenode";
 
-		function __construct( $blog, $language, $active, $mptt_node ) {
+		function __construct( $blog, $language, $active, $visible, $mptt_node ) {
 			$this->pk = $mptt_node["pk"];
-			$this->init_fields( $blog, $language, $active, $mptt_node );
+			$this->init_fields( $blog, $language, $active, $visible, $mptt_node );
 		}
 
-		function init_fields( $blog, $language, $active, $mptt_node ) {
+		function init_fields( $blog, $language, $active, $visible, $mptt_node ) {
 			$this->fields = array(
 				"language"=>$language->pk,
 				"parent"=>$mptt_node["parent_pk"],
 				"region"=>$blog->blog_id,
 				"active"=>$active,
+				"visible"=>$visible,
 				"created_date"=>now(),
 				"last_updated"=>now(),
 				"lft"=>$mptt_node["left"],
@@ -602,6 +603,21 @@
 				}
 			}
 			return null;
+		}
+
+		function get_hidden_languages() {
+			$query = "SELECT option_value FROM " . $this->dbprefix ."options WHERE option_name='icl_sitepress_settings'";
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$data = preg_replace_callback( '!s:(\d+):"(.*?)";!', function($m) {
+					return 's:'.strlen($m[2]).':"'.$m[2].'";';
+				}, $row->option_value );
+				$var = unserialize( $data );
+				if ( array_key_exists( "hidden_languages", $var ) ) {
+					return $var["hidden_languages"];
+				}
+			}
+			return [];
 		}
 
 		function generate_language_tree( $treenode_pk_counter ) {
@@ -871,12 +887,13 @@
 		$language_tree = $blog->generate_language_tree( $lang_tree_node_pk_counter );
 		$lang_tree_node_pk_counter = $language_tree->pk_counter;
 		//fwrite(STDERR, "TreeNode PK Counter: " . $lang_tree_node_pk_counter . "\n");
+		$hidden_languages = $blog->get_hidden_languages();
 
 		foreach ( $blog->get_used_languages() as $used_language => $active) {
 			$mptt_node = $language_tree->get_node( $used_language );
 			$lang = $fixtures->get_language_by_slug($used_language);
 			if ( ! $lang ) { fwrite(STDERR, "Blog " . $blog->blog_id . ": Skipping language $used_language.\n"); continue; }
-			$tree_node = new LanguageTreeNode( $blog, $lang, $active, $mptt_node );
+			$tree_node = new LanguageTreeNode( $blog, $lang, $active, !in_array($lang, $hidden_languages), $mptt_node );
 			$fixtures->append( $tree_node );
 		}
 
