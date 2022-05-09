@@ -827,8 +827,8 @@
 		function get_api_token( $post_id ) {
 			$query = "SELECT meta_value FROM " . $this->dbprefix . "postmeta WHERE post_id=$post_id AND meta_key='ig_push_content_token'";
 			$result = $this->db->query( $query );
-			if ( $result->num_rows == 1 ) {
-				return true;
+			while ( $row = $result->fetch_object() ) {
+				return $row->meta_value;
 			}
 			return false;
 		}
