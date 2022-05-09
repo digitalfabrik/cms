@@ -685,18 +685,29 @@
 			return $source_page;
 		}
 
+		function duplicate_content( $post_id ) {
+			$query = "SELECT meta_value FROM " . $this->dbprefix. "postmeta WHERE post_id=$post_id AND meta_key='_icl_lang_duplicate_of'";
+			$result = $this->db->query( $query );
+			if ( $result->num_rows == 0 ) {
+				return false;
+			}
+			return true;
+		}
+
 		/* Create array of all revisions in all translations */
 		function get_page_translations( $mptt_node, $language, $language_pk ) {
 			$parent = $this->get_page_language_root_id( $mptt_node["id"], $language );
 			if ( !$parent ) {
 				return [];
 			}
+
 			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE (post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY ID ASC" ;
 			$result = $this->db->query( $query );
 			$translations = [];
 			$version = 1;
 			$status = "DRAFT";
 			$slug = null;
+			$duplicate_content = $this->duplicate_content( $parent );
 			while ( $row = $result->fetch_object() ) {
 				if ( is_null($slug) ) $slug = $row->post_name;
 				if ( $row->post_status == "auto-draft" || $row->post_status == "draft" )
@@ -713,7 +724,7 @@
 					"slug"=>str_replace( ["!", "#", "&", "'", "(", ")", "*", "*", "+", ",", "/", ":", ";", "=", "?", "@", "[", "]"], "", urldecode($slug) ),
 					"title"=>$row->post_title,
 					"status"=>$status,
-					"content"=>wpautop($row->post_content),
+					"content"=> ( $duplicate_content ? "" : wpautop($row->post_content) ),
 					"language"=>$language_pk,
 					"currently_in_translation"=>false,
 					"version"=>$version,
