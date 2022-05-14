@@ -48,6 +48,21 @@
 		return $objDateTime->format('c');
 	}
 
+	function slugify( $string ) {
+		return str_replace( ["!", "#", "&", "'", "(", ")", "*", "*", "+", ",", "/", ":", ";", "=", "?", "@", "[", "]"], "", urldecode($string) );
+	}
+
+	function map_status ( $status ) {
+		if ( $status == "auto-draft" || $status == "draft" )
+			return "DRAFT";
+		elseif ( $status == "private" || $status == "trash" )
+			return "REVIEW";
+		elseif ( $status == "publish" )
+			return "PUBLIC";
+		else
+			return null;
+	}
+
 	class MPTT {
 		function __construct( $pk_offset = null, $id = null ) {
 			$this->id = $id;
@@ -402,7 +417,8 @@
 				"last_updated"=>str_replace("0000-00-00","1970-01-01",$translation["last_updated"]),
 			);
 		}
-  }
+	}
+
 	class Imprint extends DjangoModel {
 		public $model = "cms.imprintpage";
 
@@ -485,6 +501,108 @@
 		}
   }
 
+	class Poi extends DjangoModel {
+		public $model = "cms.poi";
+
+		function __construct( $item ) {
+			parent::__construct();
+			$this->init_fields( $item );
+		}
+
+		function init_fields( $item ) {
+			$this->fields = array(
+				"region" => $item["region"],
+				"created_date" => str_replace("0000-00-00","1970-01-01",$item["created_date"]),
+				"address" => $item["address"],
+				"postcode" => $item["postcode"],
+				"city" => $item["city"],
+				"country" => $item["country"],
+				"latitude" => $item["latitude"],
+				"longitude" => $item["longitude"],
+				"location_on_map" => $item["location_on_map"],
+				"icon" => $item["icon"],
+				"archived" => $item["archived"],
+				"website" => $item["website"],
+				"email" => $item["email"],
+				"phone_number" => $item["phone_number"]
+			);
+		}
+	}
+
+	class PoiTranslation extends DjangoModel {
+		public $model = "cms.poitranslation";
+
+		function __construct( $translation ) {
+			parent::__construct();
+			$this->init_fields( $translation );
+		}
+
+		function init_fields( $translation ) {
+			$this->fields = array(
+				"poi" => $translation["poi"],
+				"short_description" => $translation["short_description"],
+				"title" => $translation["title"],
+				"slug" => $translation["slug"],
+				"status" => $translation["status"],
+				"content" => $translation["content"],
+				"language" => $translation["language"],
+				"currently_in_translation" => $translation["currently_in_translation"],
+				"version" => $translation["version"],
+				"minor_edit" => $translation["minor_edit"],
+				"last_updated" => str_replace("0000-00-00","1970-01-01",$translation["last_updated"]),
+				"creator" => $translation["creator"]
+			);
+		}
+  }
+
+	class Event extends DjangoModel {
+		public $model = "cms.event";
+
+		function __construct( $item ) {
+			parent::__construct();
+			$this->init_fields( $item );
+		}
+
+		function init_fields( $item ) {
+			$this->fields = array(
+				"location" => $item["location"],
+				"start_date" => $item["start_date"],
+				"start_time" => $item["start_time"],
+				"end_date" => $item["end_date"],
+				"end_time" => $item["end_time"],
+				"recurrence_rule" => $item["recurrence_rule"],
+				"icon" => $item["icon"],
+				"archived" => $item["archived"],
+				"region" => $item["region"],
+				"created_date" => str_replace("0000-00-00","1970-01-01",$item["created_date"])
+			);
+		}
+	}
+
+	class EventTranslation extends DjangoModel {
+		public $model = "cms.eventtranslation";
+
+		function __construct( $translation ) {
+			parent::__construct();
+			$this->init_fields( $translation );
+		}
+
+		function init_fields( $translation ) {
+			$this->fields = array(
+				"event" => $translation["event"],
+				"title" => $translation["title"],
+				"slug" => $translation["slug"],
+				"status" => $translation["status"],
+				"content" => $translation["content"],
+				"language" => $translation["language"],
+				"currently_in_translation" => $translation["currently_in_translation"],
+				"version" => $translation["version"],
+				"minor_edit" => $translation["minor_edit"],
+				"last_updated" => str_replace("0000-00-00","1970-01-01",$translation["last_updated"]),
+				"creator" => $translation["creator"]
+			);
+		}
+	}
 
 	class DjangoFixtures {
 
@@ -727,18 +845,15 @@
 			$duplicate_content = $this->duplicate_content( $parent );
 			while ( $row = $result->fetch_object() ) {
 				if ( is_null($slug) ) $slug = $row->post_name;
-				if ( $row->post_status == "auto-draft" || $row->post_status == "draft" )
-					$status = "DRAFT";
-				elseif ( $row->post_status == "private" || $row->post_status == "trash" )
-					$status = "REVIEW";
-				elseif ( $row->post_status == "publish" )
-					$status = "PUBLIC";
-				else
-					$status = $status; // inherit
+				$cur_status = map_status( $row->post_status );
+				// if $cur_status is null, the status does not change (inherit)
+				if ( !is_null($cur_status) ) {
+					$status = $cur_status;
+				}
 
 				$page_translation = new PageTranslation([
 					"page"=>$mptt_node["pk"],
-					"slug"=>str_replace( ["!", "#", "&", "'", "(", ")", "*", "*", "+", ",", "/", ":", ";", "=", "?", "@", "[", "]"], "", urldecode($slug) ),
+					"slug"=>slugify($slug),
 					"title"=>$row->post_title,
 					"status"=>$status,
 					"content"=> ( $duplicate_content ? "" : wpautop($row->post_content) ),
@@ -758,12 +873,12 @@
 			return $page_translations;
 		}
 
-		function export_imprint( $language_pk_map ) {
+		function export_imprint( $used_languages, $language_pk_map ) {
 			global $fixtures;
 			$imprintpage = new Imprint( $this );
 			$fixtures->append( $imprintpage );
 
-			foreach ( $this->get_used_languages() as $used_language => $active) {
+			foreach ( $used_languages as $used_language => $active) {
 				if ( ! array_key_exists( $used_language, $language_pk_map ) ) continue;
 				$version = 1;
 				$query = "SELECT * FROM " . $this->dbprefix . "posts p LEFT JOIN (SELECT * FROM " . $this->dbprefix . "icl_translations WHERE element_type='post_disclaimer') t ON t.element_id=p.ID WHERE t.language_code='".$used_language."' AND p.post_type='disclaimer' ORDER BY ID ASC";
@@ -848,6 +963,140 @@
 			}
 			return null;
 		}
+
+		function export_events( $used_languages ) {
+			global $fixtures;
+			$query = "SELECT * FROM ((".$this->dbprefix."em_events e LEFT JOIN ".$this->dbprefix."icl_translations t ON t.element_id=e.post_id) LEFT JOIN ".$this->dbprefix."posts p ON e.post_id=p.ID) LEFT JOIN ".$this->dbprefix."em_locations l ON e.location_id=l.location_id WHERE event_start_date>='" . date("Y-m-d") . "' AND t.language_code='".$this->get_default_language()."'";
+			$result = $this->db->query( $query );
+			$events = [];
+			while ( $row = $result->fetch_object() ) {
+				if ( is_null($row->location_id) ) {
+					$poi_pk = null;
+				} else {
+					$poi = new Poi ([
+						"address" => $row->location_address,
+						"postcode" => ( is_null($row->location_postcode) ? "0" : $row->location_postcode ),
+						"city" => ( is_null($row->location_town) ? $this->path : $row->location_town ),
+						"country" => "Deutschland",
+						"latitude" => $row->location_latitude,
+						"longitude" => $row->location_longitude,
+						"location_on_map" => false,
+						"icon" => null,
+						"archived" => false,
+						"website" => "",
+						"email" => "",
+						"phone_number" => "",
+						"region" => $this->blog_id,
+						"created_date" => $row->post_date_gmt,
+					]);
+					$fixtures->append( $poi );
+					$poi_pk = $poi->pk;
+				}
+				$event = new Event ([
+					"location" => $poi_pk,
+					"start_date" => $row->event_start_date,
+					"start_time" => $row->event_start_time,
+					"end_date" => $row->event_end_date,
+					"end_time" => $row->event_end_time,
+					"recurrence_rule" => null,
+					"icon" => null,
+					"archived" => false,
+					"region" => $this->blog_id,
+					"created_date" => $row->post_date_gmt,
+				]);
+				$fixtures->append( $event );
+				foreach ( $used_languages as $used_language => $active ) {
+					if ( !is_null($poi_pk) ) {
+						$this->export_poi_translations ( $row->location_id, $used_language, $poi_pk );
+					}
+					$this->export_event_translations ( $row->trid, $used_language, $event->pk );
+				}
+			}
+		}
+
+		function export_event_translations ( $trid, $language, $event_id ) {
+			global $language_pk_map;
+			global $fixtures;
+			$query = "SELECT element_id FROM ".$this->dbprefix."icl_translations WHERE trid='$trid' AND language_code='$language'";
+			$result = $this->db->query( $query );
+			$parent = false;
+			while ( $row = $result->fetch_object() ) {
+				$parent = $row->element_id;
+			}
+			if ( !$parent ) return;
+			$version = 0;
+			$translations = [];
+			$status = "DRAFT";
+			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE (post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY ID ASC" ;
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$cur_status = map_status( $row->post_status );
+				// if $cur_status is null, the status does not change (inherit)
+				if ( !is_null($cur_status) ) {
+					$status = $cur_status;
+				}
+				$fixtures->append( new EventTranslation([
+					"event" => $event_id,
+					"title" => $row->post_title,
+					"slug" => slugify($row->post_name),
+					"status" => $status,
+					"content" => $row->post_content,
+					"language" => $language_pk_map[$language],
+					"currently_in_translation" => false,
+					"version" => $version,
+					"minor_edit" => false,
+					"last_updated" => $row->post_modified_gmt,
+					"creator" => $row->post_author
+				]) );
+				$version++;
+			}
+		}
+
+		function export_poi_translations ( $location_id, $language, $poi_id ) {
+			global $language_pk_map;
+			global $fixtures;
+			$query = "SELECT trid FROM ".$this->dbprefix."em_locations l LEFT JOIN ".$this->dbprefix."icl_translations t ON t.element_id=l.post_id WHERE location_id=$location_id";
+			$result = $this->db->query( $query );
+			$trid = false;
+			while ( $row = $result->fetch_object() ) {
+				$trid = $row->trid;
+			}
+			if ( !$trid ) return;
+			$query = "SELECT element_id FROM ".$this->dbprefix."icl_translations WHERE trid='$trid' AND language_code='$language'";
+			$result = $this->db->query( $query );
+			$parent = false;
+			while ( $row = $result->fetch_object() ) {
+				$parent = $row->element_id;
+			}
+			if ( !$parent ) return;
+			$version = 0;
+			$translations = [];
+			$status = "DRAFT";
+			$query = "SELECT * FROM " . $this->dbprefix . "posts WHERE (post_parent = " . $parent . " AND post_type='revision') OR ID = " . $parent . " ORDER BY ID ASC" ;
+			$result = $this->db->query( $query );
+			while ( $row = $result->fetch_object() ) {
+				$cur_status = map_status( $row->post_status );
+				// if $cur_status is null, the status does not change (inherit)
+				if ( !is_null($cur_status) ) {
+					$status = $cur_status;
+				}
+				$fixtures->append( new PoiTranslation([
+					"poi" => $poi_id,
+					"short_description" => $row->post_title,
+					"title" => $row->post_title,
+					"slug" => $row->post_name,
+					"status" => $status,
+					"content" => $row->post_content,
+					"language" => $language_pk_map[$language],
+					"currently_in_translation" => false,
+					"version" => $version,
+					"minor_edit" => false,
+					"last_updated" => $row->post_modified_gmt,
+					"creator" => $row->post_author
+				]) );
+				$version++;
+			}
+		}
 	}
 
 	function get_users( $db ) {
@@ -910,8 +1159,9 @@
 		$lang_tree_node_pk_counter = $language_tree->pk_counter;
 		//fwrite(STDERR, "TreeNode PK Counter: " . $lang_tree_node_pk_counter . "\n");
 		$hidden_languages = $blog->get_hidden_languages();
+		$used_languages = $blog->get_used_languages();
 
-		foreach ( $blog->get_used_languages() as $used_language => $active) {
+		foreach ( $used_languages as $used_language => $active) {
 			$mptt_node = $language_tree->get_node( $used_language );
 			$lang = $fixtures->get_language_by_slug($used_language);
 			if ( ! $lang ) { fwrite(STDERR, "Blog " . $blog->blog_id . ": Skipping language $used_language.\n"); continue; }
@@ -930,7 +1180,7 @@
 			foreach ( $page_tree->tree as $mptt_node ) {
 				$page_tree_node = new Page( $blog, $mptt_node, $page_tree_counter );
 				$fixtures->append( $page_tree_node );
-				foreach ( $blog->get_used_languages() as $used_language => $active) {
+				foreach ( $used_languages as $used_language => $active) {
 					if ( ! array_key_exists( $used_language, $language_pk_map ) ) continue;
 					foreach ( $blog->get_page_translations( $mptt_node, $used_language, $language_pk_map[$used_language] ) as $page_translation ) {
 						$fixtures->append( $page_translation );
@@ -939,7 +1189,9 @@
 			}
 			$page_tree_counter++;
 		}
-		$blog->export_imprint( $language_pk_map );
+		$blog->export_imprint( $used_languages, $language_pk_map );
+		$blog->export_events( $used_languages );
+
 		//if ( $blog->blog_id >= 2 ) { break; }
 	}
 
@@ -968,7 +1220,7 @@
 	// Fix page translation owners (removed WP users that still own pages)
 	fwrite(STDERR, "Fixing page translation creators.\n");
 	foreach ( $fixtures->object_list as $key => $object ) {
-		if ( $object->model == "cms.pagetranslation") {
+		if ( $object->model == "cms.pagetranslation" || $object->model == "cms.eventtranslation" || $object->model == "cms.poitranslation" ) {
 			if ( ! in_array( $object->fields["creator"], $user_id_list ) ) {
 				$object->fields["creator"] = Null;
 			}
