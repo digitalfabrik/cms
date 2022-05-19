@@ -192,6 +192,8 @@
 				return 2; // -> Role EDITOR
 			} elseif ( array_key_exists( "event_planer", $roles )) {
 				return 3; // -> Role EVENT_MANAGER
+			} elseif ( array_key_exists( "organizer", $roles )) {
+				return 8; // -> Role AUTHOR
 			}
 			return null;
 		}
