@@ -272,7 +272,7 @@
 				"slug"=> slugify($offer->alias),
 				"thumbnail"=> $offer->thumbnail,
 				"url"=> $offer->url,
-				"post_data"=> $offer->post,
+				"post_data"=> (is_null($offer->post ? "" : $offer->post ),
 				"use_postal_code"=> "GET",
 				"created_date"=> now(),
 				"last_updated"=> now()
