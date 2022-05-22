@@ -697,7 +697,7 @@
 
 
 		function get_blog_extras() {
-			$query = "SELECT extr_id FROM " . $this->dbprefix . "ig_extras_config WHERE enabled=1";
+			$query = "SELECT extra_id FROM " . $this->dbprefix . "ig_extras_config WHERE enabled=1";
 			$result = $this->db->query( $query );
 			$extras = [];
 			while ( $row = $result->fetch_object() ) {
