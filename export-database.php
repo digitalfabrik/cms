@@ -226,6 +226,7 @@
 			$this->fields["statistics_enabled"] = ( strpos( $blog->get_blog_option( "active_plugins" ), "wp-piwik" ) ? true : false );
 			$this->fields["matomo_token"] = ( $blog->get_blog_option( "wp-piwik_global-piwik_token" ) != null ? $blog->get_blog_option( "wp-piwik_global-piwik_token" ) : "");
 			$this->fields["matomo_id"] = ( in_array( $blog->get_blog_option( "wp-piwik-site_id" ) , ["n/a", null, "", "0"] ) ? null : $blog->get_blog_option( "wp-piwik-site_id" ) );
+			$this->fields["offers"] = $blog->get_blog_extras();
 		}
 
 		function get_administrative_division( $name, $prefix ) {
@@ -255,6 +256,28 @@
 			return $administrative_division;
 		}
 
+	}
+
+	class OfferTemplate extends DjangoModel {
+		public $model = "cms.offertemplate";
+
+		function __construct( $offer ) {
+			$this->pk = $offer->id;
+			$this->init_fields( $offer );
+		}
+
+		function init_fields( $offer ) {
+			$this->fields = array(
+				"name"=> $offer->name,
+				"slug"=> slugify($offer->alias),
+				"thumbnail"=> $offer->thumbnail,
+				"url"=> $offer->url,
+				"post_data"=> $offer->post,
+				"use_postal_code"=> "GET",
+				"created_date"=> now(),
+				"last_updated"=> now()
+			);
+		}
 	}
 
 	class Language extends DjangoModel {
@@ -670,6 +693,17 @@
 			while ( $row = $result->fetch_object() ) {
 				return $row->option_value;
 			}
+		}
+
+
+		function get_blog_extras() {
+			$query = "SELECT extr_id FROM " . $this->dbprefix . "ig_extras_config WHERE enabled=1";
+			$result = $this->db->query( $query );
+			$extras = [];
+			while ( $row = $result->fetch_object() ) {
+				$extras[] = $row->extra_id;
+			}
+			return $extras;
 		}
 
 		function get_integreat_setting( $alias ) {
@@ -1139,6 +1173,12 @@
 	$page_mirror_map = array(); // Map WP source to target page. source is the content source, target the page were the content is included.
 	                            // structure: $page_mirror_map[tgt_blog_id][tgt_post_id] = array("blog_id"=>src_blog_id, "post_id"=>src_post_id, "pos_beg":bool).
 	$media_pk_map = array(); // map WP blog and attachment post ID to Django PK
+
+	$query = "SELECT * FROM wp_ig_extras";
+	$result = $db->query( $query );
+	while ( $row = $result->fetch_object() ) {
+		$fixtures->append(new OfferTemplate( $row ));
+	}
 
 	foreach ( $blogs as $blog ) {
 		if ( $blog->blog_id == 1 ) { continue; }
