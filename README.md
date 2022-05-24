@@ -1,3 +1,7 @@
+# End of Life
+
+This project has reached its End of Life. Please migrate to [https://github.com/digitalfabrik/integreat-cms](https://github.com/digitalfabrik/integreat-cms).
+
 [![Build Status](https://travis-ci.org/Integreat/cms.svg?branch=develop)](https://travis-ci.org/Integreat/cms)
 
 # Integreat
